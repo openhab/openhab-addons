@@ -12,7 +12,8 @@ This binding supports 2 different types of matter functionality which operate in
   - This allows openHAB to discover and control other Matter devices like lights, thermostats, window coverings, locks, etc...
 
 - [Matter Bridge](#matter-bridge)
-  - This allows openHAB to expose items as Matter devices to other Matter clients.  This allows local control of openHAB devices from other ecosystems like Apple Home, Amazon, and Google Home.
+  - This allows openHAB to expose items as Matter devices to other Matter clients.
+  This allows local control of openHAB devices from other ecosystems like Apple Home, Amazon, and Google Home.
 
 For more information on the Matter specification, see the [Matter Ecosystem Overview](#matter-ecosystem-overview) section at the end of this document.
 
@@ -20,11 +21,14 @@ For more information on the Matter specification, see the [Matter Ecosystem Over
 
 This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the the Matter 1.4 protocol.
 
-As such, this binding requires NodesJS 18+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system. Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
+As such, this binding requires NodesJS 18+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
+Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
 
 ## Matter and IPv6
 
-Matter **requires** IPv6 to be enabled and be routable between openHAB and the Matter device.  This means IPv6 needs to be enabled on the host openHAB is running, and the network must be able route IPv6 unicast and multicast messages.  Docker, VLANs, subnets and other configurations can prohibit Matter from working if not configured correctly.
+Matter **requires** IPv6 to be enabled and be routable between openHAB and the Matter device.
+This means IPv6 needs to be enabled on the host openHAB is running, and the network must be able route IPv6 unicast and multicast messages.
+Docker, VLANs, subnets and other configurations can prohibit Matter from working if not configured correctly.
 
 
 # Matter Client
@@ -35,15 +39,21 @@ This describes the Matter controller functionality for discovering and controlli
 
 The Matter Binding supports the following types of things:
 
-- `controller`: The main controller that interfaces with Matter devices. It requires the configuration parameter  `nodeId` which sets the local Matter node ID for this controller (must be unique in the fabric).  **This must be added manually.**
-- `node`: Represents an individual Node within the Matter network. The only configuration parameter is `nodeId`.  A standard Node will map Matter endpoints to openHAB channel groups. **This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
-- `endpoint`: Represents an standalone endpoint as a child of a `node` thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups.  An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.  
-
-**Note: The `bridged-endpoint` thing type is deprecated in favor of the `endpoint` thing type and will be removed in a future release.**
+- `controller`: The main controller that interfaces with Matter devices.
+It requires the configuration parameter  `nodeId` which sets the local Matter node ID for this controller (must be unique in the fabric).
+**This must be added manually.**
+- `node`: Represents an individual Node within the Matter network.
+The only configuration parameter is `nodeId`.
+A standard Node will map Matter endpoints to openHAB channel groups.
+**This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
+- `endpoint`: Represents an standalone endpoint as a child of a `node` thing.
+Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups.
+An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
 
 ## Discovery
 
-Matter controllers must be added manually.  Nodes (devices) will be discovered when a `pairCode` is used to search for a device to add. 
+Matter controllers must be added manually.
+Nodes (devices) will be discovered when a `pairCode` is used to search for a device to add.
 Bridged endpoints will be added to the inbox once the parent Node is added as a thing.
 
 ### Device Pairing: General
@@ -62,49 +72,55 @@ The same codes can also be used in the openHAB Thing discovery UI, although feed
 
 ### Device Pairing: Code Types
 
-In order to pair (commission in matter terminology) a device, you must have an 11 digit manual pairing code (eg 123-4567-8901 or 12345678901) or a QR Code (eg MT:ABCDEF1234567890123).  If the device has not been paired before, use the code provided by the manufacturer and **ensure the device is in pairing mode**, refer to your devices instructions for pairing for more information. You can include dashes or omit them in a manual pairing code.
+In order to pair (commission in matter terminology) a device, you must have an 11 digit manual pairing code (eg 123-4567-8901 or 12345678901) or a QR Code (eg MT:ABCDEF1234567890123).
+If the device has not been paired before, use the code provided by the manufacturer and **ensure the device is in pairing mode**, refer to your devices instructions for pairing for more information.
+You can include dashes or omit them in a manual pairing code.
 
-If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.  The pairing code and device will only be available for commissioning for a limited time.  Refer to the ecosystem that generated the code for the exact duration (typically 5-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem. 
+If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.  
+The pairing code and device will only be available for commissioning for a limited time.
+Refer to the ecosystem that generated the code for the exact duration (typically 5-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem.
 
-If the device seems to be found in the logs, but can not be added, its possible the device has been already paired.  Hard resetting the device may help this case.  See your device documentation for how to hard reset the device.
+If the device seems to be found in the logs, but can not be added, its possible the device has been already paired.
+Hard resetting the device may help this case.
+See your device documentation for how to hard reset the device.
 
 ### Device Pairing: Thread Devices
 
-Thread devices require a Thread Border Router and a bluetooth enabled device to facilitate the thread joining process (typically a mobile device).  
-Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code using that ecosystem and add the device normally.  
+Thread devices require a Thread Border Router and a bluetooth enabled device to facilitate the thread joining process (typically a mobile device).
+Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code using that ecosystem and add the device normally.
 This will still allow openHAB to have direct access to the device using only the embedded thread border router and does not interact with the underlying providers home automation stack.
 
 Support for using a Open Thread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients. 
 
 ### Enabling IPv6 Thread Connectivity on Linux Hosts
 
-It is important to make sure that Route Announcements (RA) and Route Information Options (RIO) are enabled on your host so that Thread boarder routers can announce routes to the Thread network. 
+It is important to make sure that Route Announcements (RA) and Route Information Options (RIO) are enabled on your host so that Thread boarder routers can announce routes to the Thread network.
 This is done by setting the following sysctl options:
 
 1. `net.ipv6.conf.wlan0.accept_ra` should be at least `1` if ip forwarding is not enabled, and `2` otherwise.
-2. `net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen` should not be smaller than `64`.
+1. `net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen` should not be smaller than `64`.
 
-the `accept_ra` is defaulted to `1` for most distributions. 
+the `accept_ra` is defaulted to `1` for most distributions.
 
-There may be other network daemons which will override this option (for example, dhcpcd on Raspberry Pi will override accept_ra to 0). 
+There may be other network daemons which will override this option (for example, dhcpcd on Raspberry Pi will override accept_ra to 0).
 
 You can check the accept_ra value with:
 
-```
+```shell
 $ sudo sysctl -n net.ipv6.conf.wlan0.accept_ra
 0
 ```
 
 And set the value to 1 (or 2 in case IP forwarding is enabled) with:
 
-```
+```shell
 $ sudo sysctl -w net.ipv6.conf.wlan0.accept_ra=1
 Net.ipv6.conf.wlan0.accept_ra = 1
 ```
 
 The accept_ra_rt_info_max_plen option on most Linux distributions is default to 0, set it to 64 with:
 
-```
+```shell
 $ sudo sysctl -w net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen=64
 net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen = 64
 ```
@@ -123,11 +139,8 @@ noipv6
 noipv6rs
 ```
 
-***NOTE:  Please ensure you use the right interface name for your network interface.*** The above examples use `wlan0` and `eth0` as examples.  You can find the correct interface name by running `ip a` and looking for the interface that has an IPv6 address assigned to it. 
-
-## Binding Configuration
-
-This binding does not require any general configuration settings.
+***NOTE:  Please ensure you use the right interface name for your network interface.*** The above examples use `wlan0` and `eth0` as examples.
+You can find the correct interface name by running `ip a` and looking for the interface that has an IPv6 address assigned to it.
 
 ## Thing Configuration
 
@@ -135,9 +148,9 @@ This binding does not require any general configuration settings.
 
 The controller thing must be created manually before devices can be discovered.
 
-| Name                      | Type    | Description                                                                                                                       | Default | Required | Advanced |
-|---------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| nodeId                    | number  | The matter node ID for this controller                                                                                            | 0       | yes      | no       |
+| Name   | Type   | Description                            | Default | Required | Advanced |
+|--------|--------|----------------------------------------|---------|----------|----------|
+| nodeId | number | The matter node ID for this controller | 0       | yes      | no       |
 
 ### Node Thing Configuration
 
@@ -155,8 +168,6 @@ Endpoints are discovered automatically (see [Discovery](#Discovery) for more inf
 |------------|--------|------------------------------------|---------|----------|----------|
 | endpointId | number | The endpoint ID within the node    | N/A     | yes      | no       |
 
-Note: The `bridged-endpoint` thing type is deprecated in favor of the `endpoint` thing type and will be removed in a future release.
-
 ## Thing Actions
 
 ### Node Thing Actions
@@ -172,11 +183,12 @@ Note: The `bridged-endpoint` thing type is deprecated in favor of the `endpoint`
 
 ### Controller Channels
 
-Controller have no channels.
+Controllers have no channels.
 
 ### Node and Bridge Endpoint Channels
 
-Channels are dynamically added based on the endpoint type and matter cluster supported. Each endpoint is represented as a channel group.
+Channels are dynamically added based on the endpoint type and matter cluster supported.
+Each endpoint is represented as a channel group.
 Possible channels include:
 
 ## Endpoint Channels
@@ -275,11 +287,17 @@ sitemap home label="Home"
 
 # Matter Bridge
 
-openHAB can also expose Items and Item groups as Matter devices to 3rd party Matter clients like Google Home, Apple Home and Amazon Alexa. This allows local control for those ecosystems and can be used instead of cloud based integrations for features like voice assistants. 
+openHAB can also expose Items and Item groups as Matter devices to 3rd party Matter clients like Google Home, Apple Home and Amazon Alexa. This allows local control for those ecosystems and can be used instead of cloud based integrations for features like voice assistants.
 
 ## Configuration
 
-The openHAB matter bridge uses Metadata tags with the key "matter", similar to the Alexa, Google Assistant and Apple Homekit integrations.  Matter Metadata tag values generally follow the Matter "Device Type" and "Cluster" specification as much as possible.  Items and item groups are initially tagged with a Matter "Device Type", which are Matter designations for common device types like lights, thermostats, locks, window coverings, etc... For single items, like a light switch or dimmer, simply tagging the item with the Matter device type is enough.  For more complicated devices, like thermostats, A group item is tagged with the device type, and its child members are tagged with the cluster attribute(s) that it will be associated with.  Multiple attributes use a comma delimited format like `attribute1, attribute2, ... attributeN`.  For devices like fans that support groups with multiple items, but you are only using one item to control (like On/Off or Speed), you can tag the regular item with both the device type and the cluster attribute(s) separated by a comma.
+The openHAB matter bridge uses Metadata tags with the key "matter", similar to the Alexa, Google Assistant and Apple Homekit integrations.
+Matter Metadata tag values generally follow the Matter "Device Type" and "Cluster" specification as much as possible.
+Items and item groups are initially tagged with a Matter "Device Type", which are Matter designations for common device types like lights, thermostats, locks, window coverings, etc...
+For single items, like a light switch or dimmer, simply tagging the item with the Matter device type is enough.
+For more complicated devices, like thermostats, A group item is tagged with the device type, and its child members are tagged with the cluster attribute(s) that it will be associated with.
+Multiple attributes use a comma delimited format like `attribute1, attribute2, ... attributeN`.
+For devices like fans that support groups with multiple items, but you are only using one item to control (like On/Off or Speed), you can tag the regular item with both the device type and the cluster attribute(s) separated by a comma.
 
 Pairing codes and other options can be found in the MainUI under "Settings -> Add-on Settings -> Matter Binding"
 
@@ -320,10 +338,9 @@ Pairing codes and other options can be found in the MainUI under "Settings -> Ad
 | System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,ON=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
 | Running Mode        | Number, String         | thermostat.runningMode             |                                                                                          |
 
-
 For `systemMode` the `ON` option should map to the system mode custom value that would be appropriate if a 'ON' command was issued, defaults to the `AUTO` mapping.
 
-The following attributes can be set in the options of any thermostat member or on the Group item to set temperature options
+The following attributes can be set in the options of any thermostat member or on the Group item to set temperature options.
 
 | Setting                              | Description                                                                                     | Value (in 0.01°C) |
 |--------------------------------------|-------------------------------------------------------------------------------------------------|-------------------|
@@ -339,14 +356,13 @@ The following attributes can be set in the options of any thermostat member or o
 
 ### Fan group member tags
 
-| Type           | Item Type              | Tag                   | Options                                                 |
-|----------------|------------------------|-----------------------|---------------------------------------------------------|
-| Fan Mode       | Number, String, Switch | fanControl.fanMode    | [OFF=0, LOW=1, MEDIUM=2, HIGH=3, ON=4, AUTO=5, SMART=6] |
-| Fan Percentage | Dimmer                 | fanControl.percentSetting |   
-| Fan OnOff      | Switch                 | onOff.onOff            |                                                      |
+| Type           | Item Type              | Tag                       | Options                                                 |
+|----------------|------------------------|---------------------------|---------------------------------------------------------|
+| Fan Mode       | Number, String, Switch | fanControl.fanMode        | [OFF=0, LOW=1, MEDIUM=2, HIGH=3, ON=4, AUTO=5, SMART=6] |
+| Fan Percentage | Dimmer                 | fanControl.percentSetting |                                                         |
+| Fan OnOff      | Switch                 | onOff.onOff               |                                                         |
 
-
-The following attributes can be set on the Fan Mode item or the Group item to set fan options
+The following attributes can be set on the Fan Mode item or the Group item to set fan options.
 
 | Setting                      | Description                                                                                              | Value |
 |------------------------------|----------------------------------------------------------------------------------------------------------|-------|
@@ -363,12 +379,9 @@ The following attributes can be set on the Fan Mode item or the Group item to se
 | 4     | OffHighAuto       |
 | 5     | OffHigh           |
 
-
-
-
 ### Example
 
-```perl
+```java
 Dimmer                TestDimmer               "Test Dimmer [%d%%]"                                                      {matter="DimmableLight" [label="My Custom Dimmer", fixedLabels="room=Bedroom 1, floor=2, direction=up, customLabel=Custom Value"]}
 
 Group                 TestHVAC                 "Thermostat"                             ["HVAC"]                         {matter="Thermostat" [thermostat-minHeatSetpointLimit=0, thermostat-maxHeatSetpointLimit=3500]}
@@ -396,15 +409,17 @@ Switch                TestFanSingleItem         "On/Off"                        
 ### Bridge FAQ
 
 * Alexa: When pairing, after a minute Alexa reports "Something went wrong" 
-  * Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.  Eventually the pairing will complete, which for a large number of devices may be a few minutes. 
+  * Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.
+  Eventually the pairing will complete, which for a large number of devices may be a few minutes.
 * Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
   * Check the Settings page in the Main UI to confirm the bridge is running
   * Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
-  * Rarely, you may need to reboot the Alexa device.  If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
+  * Rarely, you may need to reboot the Alexa device.
+  If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
 
 # Matter Ecosystem Overview
 
-Matter is an open-source connectivity standard for smart home devices, allowing seamless communication between a wide range of devices, controllers, and ecosystems. 
+Matter is an open-source connectivity standard for smart home devices, allowing seamless communication between a wide range of devices, controllers, and ecosystems.
 
 Below is a high-level overview of the Matter ecosystem as well as common terminology used in the Matter standard.
 
@@ -412,7 +427,11 @@ Below is a high-level overview of the Matter ecosystem as well as common termino
 
 ### Nodes and Endpoints
 
-In the Matter ecosystem, a **node** represents a single device that joins a Matter network and will have a locally routable IPv6 address. A **node** can have multiple **endpoints**, which are logical representations of specific features or functionalities of the device. For example, a smart thermostat (node) may have an endpoint for general thermostat control (heating, cooling, current temperature, operating state, etc....) and another endpoint for humidity sensing.  Many devices will only have a single endpoint.  [Matter Bridges](#bridges) will expose multiple endpoints for each device they are bridging, and the bridge itself will be a node.
+In the Matter ecosystem, a **node** represents a single device that joins a Matter network and will have a locally routable IPv6 address.
+A **node** can have multiple **endpoints**, which are logical representations of specific features or functionalities of the device.
+For example, a smart thermostat (node) may have an endpoint for general thermostat control (heating, cooling, current temperature, operating state, etc....) and another endpoint for humidity sensing.
+Many devices will only have a single endpoint.
+[Matter Bridges](#bridges) will expose multiple endpoints for each device they are bridging, and the bridge itself will be a node.
 
 **Example:**
 
@@ -420,7 +439,9 @@ In the Matter ecosystem, a **node** represents a single device that joins a Matt
 
 ### Controllers
 
-A **controller** manages the interaction between Matter devices and other parts of the network. Controllers can send commands, receive updates, and facilitate device communication. They also handle the commissioning process when new devices are added to the network.
+A **controller** manages the interaction between Matter devices and other parts of the network.
+Controllers can send commands, receive updates, and facilitate device communication.
+They also handle the commissioning process when new devices are added to the network.
 
 **Example:**
 
@@ -428,25 +449,31 @@ A **controller** manages the interaction between Matter devices and other parts 
 
 ### Bridges
 
-A **bridge** is a special type of node that connects non-Matter devices to a Matter network, effectively translating between protocols. Bridges allow legacy devices to be controlled via the Matter standard.
+A **bridge** is a special type of node that connects non-Matter devices to a Matter network, effectively translating between protocols.
+Bridges allow legacy devices to be controlled via the Matter standard.
 
-openHAB fully supports connecting to Matter bridges. In addition, openHAB has support for running its own Matter bridge service, exposing openHAB items as Matter endpoints to 3rd party systems.  See [Matter Bridge](#Matter-Bridge) for information on running a Bridge server. 
+openHAB fully supports connecting to Matter bridges. 
+In addition, openHAB has support for running its own Matter bridge service, exposing openHAB items as Matter endpoints to 3rd party systems.
+See [Matter Bridge](#Matter-Bridge) for information on running a Bridge server.
 
 **Example:**
 
-- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
+- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem.
+The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
 
 ### Thread Border Routers
 
-A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet. It facilitates IPv6-based communication between Thread networks and the local IP network.
+A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet. 
+It facilitates IPv6-based communication between Thread networks and the local IP network.
 
 **Example:**
 
-- An Open Thread Boarder Router (open source) as well as recent versions of Apple TVs, Amazon Echos and Google Nest Hubs all have embedded thread boarder routers. 
+- An Open Thread Boarder Router (open source) as well as recent versions of Apple TVs, Amazon Echos and Google Nest Hubs all have embedded thread boarder routers.
 
 ## IPv6 and Network Connectivity
 
-Matter devices operate over an IPv6 network, and obtaining an IPv6 address is required for communication. Devices can connect to the network via different interfaces:
+Matter devices operate over an IPv6 network, and obtaining an IPv6 address is required for communication.
+Devices can connect to the network via different interfaces:
 
 ### Ethernet
 
@@ -454,37 +481,39 @@ Ethernet-connected Matter devices receive an IPv6 address through standard DHCPv
 
 ### Wi-Fi
 
-Wi-Fi-enabled Matter devices also receive an IPv6 address using DHCPv6 or SLAAC. They rely on the existing Wi-Fi infrastructure for communication within the Matter ecosystem.
+Wi-Fi-enabled Matter devices also receive an IPv6 address using DHCPv6 or SLAAC.
+They rely on the existing Wi-Fi infrastructure for communication within the Matter ecosystem.
 
 ### Thread
 
-Thread-based Matter devices connect to the network via a **Thread Border Router**. They receive an IPv6 address from the Thread router
+Thread-based Matter devices connect to the network via a **Thread Border Router**.
+They receive an IPv6 address from the Thread router.
 
 ## IPv6 Requirements
 
-For Matter devices to function correctly, **IPv6 must be enabled** and supported in both the local network (router) and the Matter controllers. 
-Without IPv6, devices won't be able to communicate properly within the Matter ecosystem. 
+For Matter devices to function correctly, **IPv6 must be enabled** and supported in both the local network (router) and the Matter controllers.
+Without IPv6, devices won't be able to communicate properly within the Matter ecosystem.
 Ensure that your router has IPv6 enabled and that any Matter controllers (like smart hubs, apps or openHAB) are configured to support IPv6 as well.
 
 **Note that environments like Docker require special configurations to enable IPv6**
 
-
 ## Matter Commissioning and Pairing Codes
 
-Commissioning a Matter device involves securely adding it to the network using a **pairing code**. 
+Commissioning a Matter device involves securely adding it to the network using a **pairing code**.
 This process ensures that only authorized devices can join the network.
 
 ### Pairing Code from the Device
 
-When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network. 
+When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network.
 Once a device pairing code is in use, it typically can not be used again to pair other controllers.
 
 ### Additional Pairing Code from a Controller
 
-If a device has already been commissioned and you want to add it to another Matter controller, the existing controller can generate an additional pairing code. 
-This is useful when sharing access to a device across multiple hubs or apps. 
+If a device has already been commissioned and you want to add it to another Matter controller, the existing controller can generate an additional pairing code.
+This is useful when sharing access to a device across multiple hubs or apps.
 Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing codes for existing paired devices.
 
 ### Example:
 
-- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB. If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
+- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB.
+If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
