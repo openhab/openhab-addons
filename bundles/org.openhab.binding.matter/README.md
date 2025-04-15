@@ -1,7 +1,5 @@
 # Matter Binding
 
-![Matter](doc/matter_logo.jpg)
-
 The Matter Binding for openHAB allows seamless integration with Matter-compatible devices.
 
 ## Supported functionality
