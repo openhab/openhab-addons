@@ -7,6 +7,7 @@
 	<bridge-type id="hub">
 		<label>Harmony Hub</label>
 		<description>A Logitech Harmony Hub</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="currentActivity" typeId="currentActivity"/>
 			<channel id="activityStarting" typeId="eventTrigger">
@@ -48,6 +49,7 @@
 		</supported-bridge-type-refs>
 		<label>Harmony Device</label>
 		<description>Logitech Harmony Hub Device</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="buttonPress" typeId="buttonPress"/>
 		</channels>
