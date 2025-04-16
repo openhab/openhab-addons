@@ -61,7 +61,7 @@
 	<thing-type id="tuyaDevice" extensible="color,switch,dimmer,number,string,ir-code">
 		<label>Generic Tuya Device</label>
 		<description>A generic Tuya device. Can be extended with channels.</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
