@@ -10,6 +10,7 @@
 		<description>
 			Tasmota Smart Plug
 		</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power">
@@ -58,7 +59,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -120,6 +121,7 @@
 		<description>The date/time when the energy total measurement started</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
