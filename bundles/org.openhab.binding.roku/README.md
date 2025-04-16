@@ -123,7 +123,7 @@ Player Player_Control          "Control"                       { channel="roku:r
 String Player_PlayMode         "Status: [%s]"                  { channel="roku:roku_player:myplayer1:playMode" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%s]"            { channel="roku:roku_player:myplayer1:timeElapsed" }
 Number:Time Player_TimeTotal   "Total Time: [%s]"              { channel="roku:roku_player:myplayer1:timeTotal" }
-DateTime Player_EndTime        "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_player:myplayer1:endTime" }
+DateTime Player_EndTime        "End Time: [%s]"                { channel="roku:roku_player:myplayer1:endTime" }
 Dimmer Player_Progress         "Progress [%.0f%%]"             { channel="roku:roku_player:myplayer1:progress" }
 
 // Roku TV items:
@@ -137,7 +137,7 @@ Player Player_Control            "Control"                       { channel="roku
 String Player_PlayMode           "Status: [%s]"                  { channel="roku:roku_tv:mytv1:playMode" }
 Number:Time Player_TimeElapsed   "Elapsed Time: [%s]"            { channel="roku:roku_tv:mytv1:timeElapsed" }
 Number:Time Player_TimeTotal     "Total Time: [%s]"              { channel="roku:roku_tv:mytv1:timeTotal" }
-DateTime Player_EndTime          "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_tv:mytv1:endTime" }
+DateTime Player_EndTime          "End Time: [%s]"                { channel="roku:roku_tv:mytv1:endTime" }
 Dimmer Player_Progress           "Progress [%.0f%%]"             { channel="roku:roku_tv:mytv1:progress" }
 String Player_ActiveChannel      "Current Channel: [%s]"         { channel="roku:roku_tv:mytv1:activeChannel" }
 String Player_SignalMode         "Signal Mode: [%s]"             { channel="roku:roku_tv:mytv1:signalMode" }
