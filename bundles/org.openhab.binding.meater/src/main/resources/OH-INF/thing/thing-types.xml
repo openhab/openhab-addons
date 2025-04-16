@@ -37,7 +37,7 @@
 
 		<label>MEATER Probe</label>
 		<description>This thing represents a MEATER Probe</description>
-		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="internalTemperature" typeId="internalTemperature"/>
 			<channel id="ambientTemperature" typeId="ambientTemperature"/>
