@@ -94,6 +94,17 @@
 			<description>true = Enable reply to push notifications, false otherwise.</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="answeroptions" type="text">
+			<advanced>true</advanced>
+			<label>Answer Options</label>
+			<description>Specify predefined answer options divided by a pipe character, e.g. Yes|No|Maybe</description>
+		</parameter>
+		<parameter name="answerforce" type="boolean">
+			<advanced>true</advanced>
+			<label>Answer Force</label>
+			<description>true = force an answer. The user will be prompted to answer, the message will be open directly.</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

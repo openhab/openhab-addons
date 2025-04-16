@@ -159,7 +159,7 @@
 	</channel-type>
 
 	<channel-type id="modulationLevel">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Modulelation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
@@ -263,7 +263,7 @@
 	</channel-type>
 
 	<channel-type id="valvePosition">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Valve Position</label>
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>

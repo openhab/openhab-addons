@@ -67,6 +67,36 @@ class ProtoTest {
     }
 
     @Test
+    void testProtoDecoding() {
+        try {
+            FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/proto-1.blob");
+            byte[] data = fis.readAllBytes();
+            boolean success = false;
+            String previousMessage = "";
+            for (int i = 0; i < data.length && !success; i++) {
+                int newLength = data.length - i;
+                byte[] dataOffset = new byte[newLength];
+                System.arraycopy(data, i, dataOffset, 0, newLength);
+                try {
+                    PushMessage pm = VehicleEvents.PushMessage.parseFrom(dataOffset);
+                    success = true;
+                    assertTrue(VehicleEvents.PushMessage.MsgCase.VEPUPDATES.equals(pm.getMsgCase()));
+                    break;
+                } catch (IOException f) {
+                    String message = f.getMessage();
+                    assertNotNull(message);
+                    if (!previousMessage.equals(message)) {
+                        previousMessage = message;
+                    }
+                }
+            }
+            fis.close();
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    @Test
     void testProtoBlob2Json() {
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/MB-BEV-EQA-Charging.blob");

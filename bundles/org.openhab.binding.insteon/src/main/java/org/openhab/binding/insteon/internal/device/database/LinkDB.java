@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
-import org.openhab.binding.insteon.internal.device.InsteonScene;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +50,9 @@ public class LinkDB {
 
     private final Logger logger = LoggerFactory.getLogger(LinkDB.class);
 
-    private InsteonDevice device;
-    private TreeMap<Integer, LinkDBRecord> records = new TreeMap<>(Collections.reverseOrder());
-    private TreeMap<Integer, LinkDBChange> changes = new TreeMap<>(Collections.reverseOrder());
+    private final InsteonDevice device;
+    private final TreeMap<Integer, LinkDBRecord> records = new TreeMap<>(Collections.reverseOrder());
+    private final TreeMap<Integer, LinkDBChange> changes = new TreeMap<>(Collections.reverseOrder());
     private DatabaseStatus status = DatabaseStatus.EMPTY;
     private int delta = -1;
     private int firstLocation = 0x0FFF;
@@ -556,8 +555,8 @@ public class LinkDB {
                     .filter(record -> record.isActive() && record.isResponder()
                             && record.getAddress().equals(modem.getAddress()) && record.getComponentId() == componentId
                             && record.getOnLevel() > 0)
-                    .map(LinkDBRecord::getGroup).filter(InsteonScene::isValidGroup).map(Integer::valueOf).distinct()
-                    .toList();
+                    .map(LinkDBRecord::getGroup).filter(modem.getDB()::isValidBroadcastGroup).map(Integer::valueOf)
+                    .distinct().toList();
         }
         return groups;
     }
