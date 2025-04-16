@@ -5,10 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="controller">
-
 		<label>UniFi Controller</label>
 		<description>A UniFi controller</description>
-		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
