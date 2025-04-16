@@ -7,7 +7,7 @@
 	<bridge-type id="sc-site">
 		<label>Solcast Site</label>
 		<description>Solcast service site definition</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="average" typeId="average-values"/>
 			<channel-group id="optimistic" typeId="optimistic-values"/>
