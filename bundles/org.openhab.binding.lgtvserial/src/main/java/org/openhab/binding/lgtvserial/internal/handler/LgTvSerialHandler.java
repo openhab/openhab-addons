@@ -26,6 +26,7 @@ import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponseListener;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.commands.CommandFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -104,9 +105,10 @@ public class LgTvSerialHandler extends BaseThingHandler {
 
     @Override
     public synchronized void initialize() {
-        String portName = (String) getThing().getConfiguration().get("port");
-        int refreshInterval = ((BigDecimal) getThing().getConfiguration().get("refreshInterval")).intValue();
-        BigDecimal setIdParam = (BigDecimal) getThing().getConfiguration().get("setId");
+        Configuration config = getThing().getConfiguration();
+        String portName = (String) config.get("port");
+        int refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValue();
+        BigDecimal setIdParam = (BigDecimal) config.get("setId");
         int setId = 1;
         if (setIdParam != null) {
             setId = setIdParam.intValue();
