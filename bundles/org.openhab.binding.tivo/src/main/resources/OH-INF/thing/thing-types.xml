@@ -10,6 +10,8 @@
 			The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR over a TCP local
 			network connection. The commands allow control of channel changes, user interface navigation and allow the client to
 			send simulated remote control button presses to the Digital Video Recorder.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+
 		<channels>
 			<channel id="channelSet" typeId="channelSet"/>
 			<channel id="channelForce" typeId="channelForce"/>
