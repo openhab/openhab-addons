@@ -97,7 +97,6 @@ public class MatterBridge implements MatterClientListener {
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     private boolean resetStorage = false;
-    private boolean commissioningWindowOpen = false;
     private @Nullable ScheduledFuture<?> modifyFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
     private RunningState runningState = RunningState.Stopped;
@@ -269,11 +268,9 @@ public class MatterBridge implements MatterClientListener {
         } else if (message instanceof BridgeEventTriggered bridgeEventTriggered) {
             switch (bridgeEventTriggered.data.eventName) {
                 case "commissioningWindowOpen":
-                    commissioningWindowOpen = true;
                     updateConfig(Map.of("openCommissioningWindow", true));
                     break;
                 case "commissioningWindowClosed":
-                    commissioningWindowOpen = false;
                     updateConfig(Map.of("openCommissioningWindow", false));
                     break;
                 default:
@@ -315,7 +312,6 @@ public class MatterBridge implements MatterClientListener {
         }
 
         try {
-            commissioningWindowOpen = false;
             String folderName = OpenHAB.getUserDataFolder() + File.separator + "matter";
             File folder = new File(folderName);
             if (!folder.exists()) {
@@ -518,7 +514,6 @@ public class MatterBridge implements MatterClientListener {
             BridgeCommissionState state = client.getCommissioningState().get();
             updateConfig(Map.of("manualPairingCode", state.pairingCodes.manualPairingCode, "qrCode",
                     state.pairingCodes.qrPairingCode, "openCommissioningWindow", state.commissioningWindowOpen));
-            commissioningWindowOpen = state.commissioningWindowOpen;
         } catch (CancellationException | InterruptedException | ExecutionException e) {
             logger.debug("Could not query codes", e);
         }

@@ -87,9 +87,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final MatterChannelTypeProvider channelTypeProvider;
     protected HashMap<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
-
     private @Nullable ScheduledFuture<?> pollingTask;
-    private static final long DEFAULT_POLLING_INTERVAL = 300; // seconds
 
     public MatterBaseThingHandler(Thing thing, MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelTypeProvider) {
@@ -103,6 +101,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected abstract ThingTypeUID getDynamicThingTypeUID();
 
     protected abstract boolean isBridgeType();
+
+    public abstract Integer getPollInterval();
 
     /**
      * When processing endpoints, give implementers the ability to ignore certain endpoints
@@ -418,11 +418,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      */
     private synchronized void startPolling() {
         stopPolling();
-        pollingTask = scheduler.scheduleWithFixedDelay(() -> {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                devices.values().forEach(deviceType -> deviceType.pollClusters());
-            }
-        }, DEFAULT_POLLING_INTERVAL, DEFAULT_POLLING_INTERVAL, TimeUnit.SECONDS);
+        Integer pollInterval = getPollInterval();
+        if (pollInterval > 0) {
+            pollingTask = scheduler.scheduleWithFixedDelay(() -> {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    devices.values().forEach(deviceType -> deviceType.pollClusters());
+                }
+            }, pollInterval, pollInterval, TimeUnit.SECONDS);
+        }
     }
 
     public void stopPolling() {

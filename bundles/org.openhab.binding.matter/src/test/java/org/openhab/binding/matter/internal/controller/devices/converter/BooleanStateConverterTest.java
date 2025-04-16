@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.math.BigInteger;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,12 +32,9 @@ import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BooleanStateCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -48,8 +44,6 @@ import org.openhab.core.types.StateDescription;
  */
 @NonNullByDefault
 class BooleanStateConverterTest {
-
-    private static final ThingTypeUID THING_TYPE_TEST = new ThingTypeUID("matter", "test");
 
     @Mock
     @NonNullByDefault({})
@@ -67,35 +61,6 @@ class BooleanStateConverterTest {
     private TestMatterBaseThingHandler mockHandler;
     @NonNullByDefault({})
     private BooleanStateConverter converter;
-
-    // Test subclass to access protected method
-    private static class TestMatterBaseThingHandler extends MatterBaseThingHandler {
-        public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient,
-                MatterStateDescriptionOptionProvider stateDescriptionProvider,
-                MatterChannelTypeProvider channelTypeProvider) {
-            super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), stateDescriptionProvider, channelTypeProvider);
-        }
-
-        @Override
-        public void updateState(String channelId, org.openhab.core.types.State state) {
-            super.updateState(channelId, state);
-        }
-
-        @Override
-        public BigInteger getNodeId() {
-            return BigInteger.ONE;
-        }
-
-        @Override
-        public ThingTypeUID getDynamicThingTypeUID() {
-            return THING_TYPE_TEST;
-        }
-
-        @Override
-        public boolean isBridgeType() {
-            return false;
-        }
-    }
 
     @SuppressWarnings("null")
     @BeforeEach

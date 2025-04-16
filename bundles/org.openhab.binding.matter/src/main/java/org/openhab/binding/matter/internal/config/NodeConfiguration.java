@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NodeConfiguration {
 
     public String nodeId = "0";
+    public Integer pollInterval = 1800;
 }

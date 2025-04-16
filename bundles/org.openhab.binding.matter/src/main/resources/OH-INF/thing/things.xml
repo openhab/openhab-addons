@@ -29,6 +29,12 @@
 				<label>Node Id</label>
 				<description>The Matter Node Id</description>
 			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" min="0">
+				<label>Poll Interval (seconds)</label>
+				<description>The interval (in seconds) to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+				<advanced>true</advanced>
+				<default>1800</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -43,6 +49,12 @@
 			<parameter name="endpointId" type="integer" required="true">
 				<label>Endpoint Id</label>
 				<description>The Matter Endpoint Id</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" min="0">
+				<label>Poll Interval (seconds)</label>
+				<description>The interval (in seconds) to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+				<advanced>true</advanced>
+				<default>1800</default>
 			</parameter>
 		</config-description>
 	</thing-type>

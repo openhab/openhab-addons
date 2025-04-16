@@ -71,4 +71,9 @@ public class TestMatterBaseThingHandler extends MatterBaseThingHandler {
     public boolean isBridgeType() {
         return false;
     }
+
+    @Override
+    public Integer getPollInterval() {
+        return 0;
+    }
 }

@@ -53,6 +53,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 @NonNullByDefault
 public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler {
     protected BigInteger nodeId = BigInteger.valueOf(0);
+    private Integer pollInterval = 0;
     private ConcurrentHashMap<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
 
     public NodeHandler(Bridge bridge, MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -64,6 +65,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     public void initialize() {
         NodeConfiguration config = getConfigAs(NodeConfiguration.class);
         nodeId = new BigInteger(config.nodeId);
+        pollInterval = config.pollInterval;
         logger.debug("initialize endpoint {}", nodeId);
         super.initialize();
     }
@@ -81,6 +83,11 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     @Override
     public boolean isBridgeType() {
         return true;
+    }
+
+    @Override
+    public Integer getPollInterval() {
+        return pollInterval;
     }
 
     @Override

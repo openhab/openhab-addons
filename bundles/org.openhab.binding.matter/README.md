@@ -44,9 +44,7 @@ It requires the configuration parameter  `nodeId` which sets the local Matter no
 The only configuration parameter is `nodeId`.
 A standard Node will map Matter endpoints to openHAB channel groups.
 **This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
-- `endpoint`: Represents an standalone endpoint as a child of a `node` thing.
-Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups.
-An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
+- `endpoint`: Represents an standalone endpoint as a child of a `node` thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups. An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
 
 ## Discovery
 
@@ -456,8 +454,7 @@ See [Matter Bridge](#Matter-Bridge) for information on running a Bridge server.
 
 **Example:**
 
-- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem.
-The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
+- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
 
 ### Thread Border Routers
 
@@ -513,5 +510,4 @@ Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing
 
 ### Example:
 
-- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB.
-If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
+- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB. If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.

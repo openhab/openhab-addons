@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EndpointConfiguration {
 
     public Integer endpointId = 0;
+    public Integer pollInterval = 1800;
 }

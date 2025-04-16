@@ -42,6 +42,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 @NonNullByDefault
 public class EndpointHandler extends MatterBaseThingHandler {
     private Integer endpointId = 0;
+    private Integer pollInterval = 0;
 
     public EndpointHandler(Thing thing, MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelGroupTypeProvider) {
@@ -52,6 +53,7 @@ public class EndpointHandler extends MatterBaseThingHandler {
     public void initialize() {
         EndpointConfiguration config = getConfigAs(EndpointConfiguration.class);
         endpointId = config.endpointId;
+        pollInterval = config.pollInterval;
         logger.debug("initialize bridge endpoint {}", config.endpointId);
         super.initialize();
     }
@@ -73,6 +75,11 @@ public class EndpointHandler extends MatterBaseThingHandler {
     @Override
     public boolean isBridgeType() {
         return false;
+    }
+
+    @Override
+    public Integer getPollInterval() {
+        return pollInterval;
     }
 
     @Override
