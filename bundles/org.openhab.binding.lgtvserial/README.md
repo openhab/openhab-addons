@@ -43,10 +43,11 @@ No discovery supported; manual configuration is required.
 
 The thing has the following configuration parameters:
 
-| Parameter Label        | Parameter ID         | Description                                                                     | Accepted values  |
-|------------------------|----------------------|---------------------------------------------------------------------------------|------------------|
-| Serial Port            | port                 | Serial port to use for connecting to TV/monitor/projector.                      | Serial port name |
-| Set ID                 | setId                | Set ID configured in the TV. If 0, will send the commands to every chained TV.  | 0-99; default 1  |
+| Parameter Label        | Parameter ID         | Description                                                                     | Accepted values       |
+|------------------------|----------------------|---------------------------------------------------------------------------------|-----------------------|
+| Serial Port            | port                 | Serial port to use for connecting to TV/monitor/projector.                      | Serial port name      |
+| Refresh Interval       | refreshInterval      | Interval at which updates are pulled from the TV (in seconds).                  | 10-65535; default 120 |
+| Set ID                 | setId                | Set ID configured in the TV. If 0, will send the commands to every chained TV.  | 0-99; default 1       |
 
 It is necessary to specify the serial port used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).
