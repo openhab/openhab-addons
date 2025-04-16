@@ -97,7 +97,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/onOffLabel</label>
 		<description>@text/onOffDescription</description>
-		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 		</channels>
@@ -318,7 +318,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/accessLabel</label>
 		<description>@text/accessDescription</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 		<channels>
 			<channel id="bellbutton" typeId="bellbutton"/>
 			<channel id="lock" typeId="lock"/>
