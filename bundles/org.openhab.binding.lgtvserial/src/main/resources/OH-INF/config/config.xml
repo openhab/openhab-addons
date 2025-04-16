@@ -14,6 +14,7 @@
 			<label>Refresh Interval</label>
 			<description>Refresh interval in seconds</description>
 			<default>120</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="setId" type="integer" required="true">
 			<label>Set ID</label>
