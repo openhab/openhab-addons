@@ -401,7 +401,7 @@
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
 	<channel-type id="chapter_num">

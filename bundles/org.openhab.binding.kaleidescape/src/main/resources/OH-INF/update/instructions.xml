@@ -29,6 +29,9 @@
 			<update-channel id="title_loc" groupIds="ui">
 				<type>kaleidescape:title_loc</type>
 			</update-channel>
+			<update-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
 			<update-channel id="chapter_length" groupIds="ui">
 				<type>kaleidescape:chapter_length</type>
 			</update-channel>
@@ -73,6 +76,9 @@
 			<update-channel id="title_loc" groupIds="c1-alto_ui">
 				<type>kaleidescape:title_loc</type>
 			</update-channel>
+			<update-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
 			<update-channel id="chapter_length" groupIds="c1-alto_ui">
 				<type>kaleidescape:chapter_length</type>
 			</update-channel>
@@ -114,6 +120,9 @@
 			<update-channel id="title_loc" groupIds="c1-alto_ui">
 				<type>kaleidescape:title_loc</type>
 			</update-channel>
+			<update-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
 			<update-channel id="chapter_length" groupIds="c1-alto_ui">
 				<type>kaleidescape:chapter_length</type>
 			</update-channel>
@@ -148,6 +157,9 @@
 			</update-channel>
 			<update-channel id="title_loc" groupIds="strato_ui">
 				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="endtime" groupIds="strato_ui">
+				<type>kaleidescape:endtime</type>
 			</update-channel>
 			<update-channel id="chapter_length" groupIds="strato_ui">
 				<type>kaleidescape:chapter_length</type>
