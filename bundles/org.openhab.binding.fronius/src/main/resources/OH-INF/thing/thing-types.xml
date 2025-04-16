@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>Fronius Symo Inverter</label>
 		<description>Fronius Symo power inverter</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="inverterdatachannelpac" typeId="pac"/>
@@ -63,6 +64,7 @@
 		</supported-bridge-type-refs>
 		<label>Fronius Smart Meter</label>
 		<description>Fronius Smart Meter</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="enable" typeId="meter_enable"/>
