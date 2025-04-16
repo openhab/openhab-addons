@@ -8,7 +8,7 @@
 	<bridge-type id="cloud">
 		<label>SleepIQ Cloud</label>
 		<description>The SleepIQ cloud service provides connections to all beds in an account.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Select Comfort</property>
 		</properties>
@@ -40,6 +40,7 @@
 
 		<label>Single Chamber Bed</label>
 		<description>A Sleep Number bed with SleepIQ and a single air chamber</description>
+		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 
 		<channel-groups>
 		<channel-group id="bed" typeId="chamberGroupType"/>
@@ -62,7 +63,7 @@
 
 		<label>Dual Chamber Bed</label>
 		<description>A Sleep Number bed with SleepIQ and two individual air chambers</description>
-
+		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="left" typeId="chamberGroupType"/>
 			<channel-group id="right" typeId="chamberGroupType"/>

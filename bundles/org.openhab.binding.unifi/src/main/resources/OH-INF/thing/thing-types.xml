@@ -8,7 +8,7 @@
 
 		<label>UniFi Controller</label>
 		<description>A UniFi controller</description>
-
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
@@ -41,7 +41,7 @@
 
 		<label>UniFi Network</label>
 		<description>A UniFi Network</description>
-
+		<semantic-equipment-tag>NetworkSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="enable" typeId="networkEnable"/>
 			<channel id="totalClients" typeId="totalClients"/>
@@ -62,7 +62,7 @@
 
 		<label>UniFi WLAN</label>
 		<description>A UniFi Wireless LAN</description>
-
+		<semantic-equipment-tag>NetworkSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="enable" typeId="wlanEnable"/>
 			<channel id="wirelessClients" typeId="wirelessClients"/>
@@ -88,7 +88,7 @@
 		</supported-bridge-type-refs>
 		<label>UniFi Wired Client</label>
 		<description>A wired client connected to a UniFi switch</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
@@ -114,7 +114,7 @@
 		</supported-bridge-type-refs>
 		<label>UniFi Wireless Client</label>
 		<description>A wireless client connected to a UniFi wireless network</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
@@ -148,7 +148,7 @@
 
 		<label>UniFi PoE Port</label>
 		<description>A Power Over Ethernet (PoE) port on a UniFi switch</description>
-
+		<semantic-equipment-tag>NetworkSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="online" typeId="portOnline"/>
 			<channel id="mode" typeId="poeMode"/>
@@ -169,7 +169,7 @@
 
 		<label>UniFi Access Point</label>
 		<description>An access point managed by a UniFi controller</description>
-
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="online" typeId="online">
 				<description>Online status of the device</description>

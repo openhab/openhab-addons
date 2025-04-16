@@ -10,7 +10,7 @@
 		<description>
 			Tasmota Smart Plug
 		</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power">
 				<label>Power</label>

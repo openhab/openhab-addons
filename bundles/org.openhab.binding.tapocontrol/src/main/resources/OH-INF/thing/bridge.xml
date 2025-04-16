@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Cloud-Login</label>
 		<description>Cloud Connector. Acts as device-bridge</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="bridge-type:tapo:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>
