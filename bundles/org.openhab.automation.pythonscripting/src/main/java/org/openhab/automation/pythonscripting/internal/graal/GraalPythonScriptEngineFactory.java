@@ -113,20 +113,14 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
 
     @Override
     public Object getParameter(String key) {
-        switch (key) {
-            case ScriptEngine.NAME:
-                return NAME;
-            case ScriptEngine.ENGINE:
-                return getEngineName();
-            case ScriptEngine.ENGINE_VERSION:
-                return getEngineVersion();
-            case ScriptEngine.LANGUAGE:
-                return getLanguageName();
-            case ScriptEngine.LANGUAGE_VERSION:
-                return getLanguageVersion();
-            default:
-                return null;
-        }
+        return switch (key) {
+            case ScriptEngine.NAME -> NAME;
+            case ScriptEngine.ENGINE -> getEngineName();
+            case ScriptEngine.ENGINE_VERSION -> getEngineVersion();
+            case ScriptEngine.LANGUAGE -> getLanguageName();
+            case ScriptEngine.LANGUAGE_VERSION -> getLanguageVersion();
+            default -> null;
+        };
     }
 
     @Override

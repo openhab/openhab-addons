@@ -138,40 +138,43 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
                     .findEntries(resourceLibPath, "*.py", true);
 
-            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)
-                    && Files.list(PYTHON_OPENHAB_LIB_PATH).count() > 0) {
-                Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
-                        Pattern.CASE_INSENSITIVE);
+            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
+                try (Stream<Path> files = Files.list(PYTHON_OPENHAB_LIB_PATH)) {
+                    if (files.count() > 0) {
+                        Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
+                                Pattern.CASE_INSENSITIVE);
 
-                Version includedVersion = null;
-                try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
-                        .getResourceAsStream(resourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
-                    try (InputStreamReader isr = new InputStreamReader(is);
-                            BufferedReader reader = new BufferedReader(isr)) {
-                        String fileContent = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-                        Matcher includedMatcher = pattern.matcher(fileContent);
-                        if (includedMatcher.find()) {
-                            includedVersion = Version.parse(includedMatcher.group(1));
+                        Version includedVersion = null;
+                        try (InputStream is = PythonScriptEngineFactory.class.getClassLoader().getResourceAsStream(
+                                resourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
+                            try (InputStreamReader isr = new InputStreamReader(is);
+                                    BufferedReader reader = new BufferedReader(isr)) {
+                                String fileContent = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                                Matcher includedMatcher = pattern.matcher(fileContent);
+                                if (includedMatcher.find()) {
+                                    includedVersion = Version.parse(includedMatcher.group(1));
+                                }
+                            }
+                        }
+
+                        Version currentVersion = null;
+                        String fileContent = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
+                        Matcher currentMatcher = pattern.matcher(fileContent);
+                        if (currentMatcher.find()) {
+                            currentVersion = Version.parse(currentMatcher.group(1));
+                        }
+
+                        if (currentVersion == null) {
+                            logger.warn("Unable to detect installed helper lib version. Skip installing helper libs.");
+                            return;
+                        } else if (includedVersion == null) {
+                            logger.error("Unable to detect provided helper lib version. Skip installing helper libs.");
+                            return;
+                        } else if (currentVersion.compareTo(includedVersion) >= 0) {
+                            logger.info("Newest helper lib version is deployed.");
+                            return;
                         }
                     }
-                }
-
-                Version currentVersion = null;
-                String fileContent = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
-                Matcher currentMatcher = pattern.matcher(fileContent);
-                if (currentMatcher.find()) {
-                    currentVersion = Version.parse(currentMatcher.group(1));
-                }
-
-                if (currentVersion == null) {
-                    logger.warn("Unable to detect installed helper lib version. Skip installing helper libs.");
-                    return;
-                } else if (includedVersion == null) {
-                    logger.error("Unable to detect provided helper lib version. Skip installing helper libs.");
-                    return;
-                } else if (currentVersion.compareTo(includedVersion) >= 0) {
-                    logger.info("Newest helper lib version is deployed.");
-                    return;
                 }
             }
 
