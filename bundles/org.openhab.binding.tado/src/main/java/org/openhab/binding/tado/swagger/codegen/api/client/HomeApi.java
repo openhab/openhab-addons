@@ -512,15 +512,13 @@ public class HomeApi {
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
-    public void updatePresenceLock(Long homeId, HomePresence json) throws IOException, ApiException {
+    /**
+     * If the {@link HomePresence} DTO is null we send an HTTP DELETE otherwise we send an HTTP PUT.
+     */
+    public void updatePresenceLock(Long homeId, HomePresence dto) throws IOException, ApiException {
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updatePresenceLock");
-        }
-
-        // verify the required parameter 'json' is set
-        if (json == null) {
-            throw new ApiException(400, "Missing the required parameter 'json' when calling updatePresenceLock");
         }
 
         startHttpClient(CLIENT);
@@ -528,18 +526,20 @@ public class HomeApi {
         // create path and map variables
         String path = "/homes/{home_id}/presenceLock".replaceAll("\\{" + "home_id" + "\\}", homeId.toString());
 
-        Request request = CLIENT.newRequest(baseUrl + path).method(HttpMethod.PUT).timeout(timeout,
-                TimeUnit.MILLISECONDS);
+        Request request = CLIENT.newRequest(baseUrl + path).method(dto == null ? HttpMethod.DELETE : HttpMethod.PUT)
+                .timeout(timeout, TimeUnit.MILLISECONDS);
 
-        request.accept("application/json");
         request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
         }
 
-        String serializedBody = gson.toJson(json);
-        request.content(new StringContentProvider(serializedBody), "application/json");
+        if (dto != null) {
+            String serializedBody = gson.toJson(dto);
+            request.content(new StringContentProvider(serializedBody), "application/json");
+            request.accept("application/json");
+        }
 
         ContentResponse response;
         try {
