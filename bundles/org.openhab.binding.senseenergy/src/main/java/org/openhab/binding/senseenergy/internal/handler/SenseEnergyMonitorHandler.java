@@ -634,13 +634,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     @Override
     public void onWebSocketError(String msg) {
         logger.debug("onWebSocketError {}", msg);
-        try {
-            webSocket.restartWithBackoff(getApi().getAccessToken());
-        } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.warn("Exeception when restarting webSocket: {}", e.getMessage());
-            // will retry at next heartbeat
-        }
+        // restart will occur on onWebSocketClose
     }
 
     @Override

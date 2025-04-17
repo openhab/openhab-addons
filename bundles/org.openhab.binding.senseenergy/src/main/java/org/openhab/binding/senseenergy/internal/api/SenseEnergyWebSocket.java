@@ -132,7 +132,6 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     @Override
     public void onWebSocketConnect(@Nullable Session session) {
         closing = false;
-        backOffTime = BACKOFF_TIME_START;
         logger.debug("Connected to Sense Energy WebSocket");
         listener.onWebSocketConnect();
     }
@@ -159,6 +158,8 @@ public class SenseEnergyWebSocket implements WebSocketListener {
             return;
         }
 
+        logger.debug("onWebSocketText");
+
         try {
             JsonObject jsonResponse = JsonParser.parseString(message).getAsJsonObject();
             String type = jsonResponse.get("type").getAsString();
@@ -170,6 +171,9 @@ public class SenseEnergyWebSocket implements WebSocketListener {
                 if (update != null) {
                     listener.onWebSocketRealtimeUpdate(update);
                 }
+                // Clear backoff time after a successful received packet to address issue of immediate Error/Close after
+                // Connect
+                backOffTime = BACKOFF_TIME_START;
             } else if ("error".equals(type)) {
                 logger.warn("WebSocket error {}", jsonResponse.get("payload").toString());
             }
