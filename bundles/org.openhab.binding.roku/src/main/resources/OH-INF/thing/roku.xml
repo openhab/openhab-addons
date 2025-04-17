@@ -10,6 +10,7 @@
 		<description>
 			A Roku Streaming Media Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="activeApp" typeId="activeApp"/>
@@ -30,7 +31,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -44,6 +45,7 @@
 		<description>
 			A Roku Streaming Media TV
 		</description>
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -73,7 +75,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -176,6 +178,10 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -183,14 +189,18 @@
 		<item-type>Number:Time</item-type>
 		<label>Playback Time</label>
 		<description>The Current Playback Time Elapsed</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="timeTotal">
 		<item-type>Number:Time</item-type>
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="endTime">
@@ -202,7 +212,7 @@
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
 	<channel-type id="progress">

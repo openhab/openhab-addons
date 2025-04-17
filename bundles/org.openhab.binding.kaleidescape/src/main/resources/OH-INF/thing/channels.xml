@@ -10,6 +10,7 @@
 		<description>
 			A Kaleidescape Movie Player (KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen)
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="ui">
@@ -33,7 +34,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -45,6 +46,7 @@
 		<description>
 			A Kaleidescape Cinema One (2nd Generation) Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="c1-alto_ui">
@@ -68,7 +70,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -80,6 +82,7 @@
 		<description>
 			A Kaleidescape Alto Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="c1-alto_ui">
@@ -99,7 +102,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -111,6 +114,7 @@
 		<description>
 			A Kaleidescape Strato Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="strato_ui">
@@ -130,7 +134,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -349,6 +353,10 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current playback mode of the movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -370,14 +378,18 @@
 		<item-type>Number:Time</item-type>
 		<label>Title Length</label>
 		<description>The total running time of the currently playing movie</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="title_loc">
 		<item-type>Number:Time</item-type>
 		<label>Title Location</label>
 		<description>The running time elapsed of the currently playing movie</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="endtime">
@@ -389,7 +401,7 @@
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
 	<channel-type id="chapter_num">
@@ -403,14 +415,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Chapter Length</label>
 		<description>The total running time of the current chapter</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="chapter_loc">
 		<item-type>Number:Time</item-type>
 		<label>Chapter Location</label>
 		<description>The running time elapsed of the current chapter</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="movie_media_type">
@@ -643,14 +655,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
 		<description>The total running time of the current playing track</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="track_position">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>The running time elapsed of the current playing track</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="track_progress">
@@ -743,7 +755,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Running time</label>
 		<description>The total running time of the selected item</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="actors">

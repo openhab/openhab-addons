@@ -80,10 +80,10 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                 }
                 case "LONG":
                     if (usesLongStart) {
-                        // HM-IP devices do long press repetitions via LONG instead of CONT events,
-                        // so clear previous value to force re-triggering of event
+                        // HM-IP devices do long press repetitions via LONG instead of CONT events;
+                        // besides that the logic is the same as in the CONT handling below
+                        vdp.setValue(null);
                         if (isLongPressActive) {
-                            vdp.setValue(null);
                             vdp.setValue(LONG_REPEATED_EVENT);
                         }
                     } else {

@@ -10,6 +10,7 @@
 		<description>
 			Grand Concerto or Essentia G Amplifier System
 		</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="system" typeId="system">

@@ -10,6 +10,7 @@
 		<description>
 			Controls an Oppo Blu-ray Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -39,6 +40,10 @@
 			<channel id="hdr_mode" typeId="hdr_mode"/>
 			<channel id="remote_button" typeId="remote_button"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="model" type="integer" required="true">
@@ -90,6 +95,10 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -116,9 +125,13 @@
 
 	<channel-type id="time_display">
 		<item-type>Number:Time</item-type>
-		<label>Time Display (S)</label>
-		<description>The Playback Time Elapsed/Remaining in Seconds</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<label>Time Display</label>
+		<description>The Playback Time Elapsed/Remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current_title">
