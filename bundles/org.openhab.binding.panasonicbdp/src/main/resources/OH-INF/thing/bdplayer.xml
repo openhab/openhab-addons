@@ -26,6 +26,10 @@
 			<channel id="chapter-total" typeId="chapter-total"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>uuid</representation-property>
 
 		<config-description>
@@ -114,6 +118,10 @@
 		<item-type>String</item-type>
 		<label>Player Status</label>
 		<description>The current player status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -122,7 +130,11 @@
 		<label>Playback Time</label>
 		<description>The current playback time elapsed</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="time-total">
@@ -130,7 +142,7 @@
 		<label>Total Time</label>
 		<description>The total length of the current title</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="chapter-current">
