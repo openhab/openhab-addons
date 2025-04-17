@@ -97,7 +97,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/onOffLabel</label>
 		<description>@text/onOffDescription</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 		</channels>
@@ -115,7 +115,7 @@
 		</supported-bridge-type-refs>
 		<label>@text/dimmerLabel</label>
 		<description>@text/dimmerDescription</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
