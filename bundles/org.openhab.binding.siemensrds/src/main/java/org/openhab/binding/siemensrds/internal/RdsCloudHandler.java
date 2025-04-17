@@ -15,6 +15,8 @@ package org.openhab.binding.siemensrds.internal;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -111,7 +113,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
                 }
 
                 String url = URL_TOKEN;
-                String payload = String.format(TOKEN_REQUEST, config.userEmail, config.userPassword);
+                String payload = String.format(TOKEN_REQUEST,
+                        URLEncoder.encode(config.userEmail, StandardCharsets.UTF_8),
+                        URLEncoder.encode(config.userPassword, StandardCharsets.UTF_8));
 
                 logger.debug(LOG_HTTP_COMMAND, HTTP_POST, url.length());
                 logger.debug(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);
