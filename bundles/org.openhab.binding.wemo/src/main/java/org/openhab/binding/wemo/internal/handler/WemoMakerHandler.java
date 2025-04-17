@@ -25,7 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -61,8 +61,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoMakerHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -136,7 +136,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.warn("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
@@ -160,7 +160,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
                 logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());

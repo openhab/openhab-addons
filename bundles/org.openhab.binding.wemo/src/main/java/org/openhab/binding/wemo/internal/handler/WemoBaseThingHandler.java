@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.handler;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,14 +20,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ChannelUID;
@@ -49,20 +59,21 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private static final int PORT_RANGE_START = 49151;
     private static final int PORT_RANGE_END = 49157;
+    private static final int HTTP_TIMEOUT_SECONDS = 2;
+
+    protected final HttpClient httpClient;
 
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
     private final UpnpIOService service;
     private final Object upnpLock = new Object();
 
-    protected WemoHttpCall wemoHttpCaller;
-
     private @Nullable String host;
     private Map<String, Instant> subscriptions = new ConcurrentHashMap<>();
 
-    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+    public WemoBaseThingHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
         super(thing);
         this.service = upnpIOService;
-        this.wemoHttpCaller = wemoHttpCaller;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -193,7 +204,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         for (Integer portCheck : portsToCheck) {
             String urlProbe = "http://" + host + ":" + portCheck;
             logger.trace("Probing {} to find port", urlProbe);
-            if (!wemoHttpCaller.probeURL(urlProbe)) {
+            if (!probeURL(urlProbe)) {
                 continue;
             }
             port = portCheck;
@@ -220,5 +231,39 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             }
         }
         return null;
+    }
+
+    private boolean probeURL(String url) {
+        try {
+            httpClient.newRequest(url).timeout(250, TimeUnit.MILLISECONDS).method(HttpMethod.GET).send();
+            return true;
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return false;
+        }
+    }
+
+    protected String executeCall(String wemoURL, String soapHeader, String soapBody) throws IOException {
+        Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .header(HttpHeader.CONTENT_TYPE, WemoBindingConstants.HTTP_CALL_CONTENT_HEADER)
+                .header("SOAPACTION", soapHeader).method(HttpMethod.POST).content(new StringContentProvider(soapBody));
+
+        logger.trace("Performing HTTP call for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
+                soapBody);
+
+        try {
+            ContentResponse response = request.send();
+
+            String responseContent = response.getContentAsString();
+            logger.trace("HTTP response body: '{}'", responseContent);
+
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IOException("The request failed with HTTP error " + status);
+            }
+
+            return responseContent;
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            throw new IOException("The HTTP request failed", e);
+        }
     }
 }

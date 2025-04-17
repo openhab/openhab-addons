@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
@@ -71,8 +71,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
      */
     private static final int DIM_STEPSIZE = 5;
 
-    public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoDimmerHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoDimmerHandler for thing '{}'", getThing().getUID());
     }
@@ -449,7 +449,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
             variable = "BinaryState";
             this.onValueReceived(variable, value, actionService + "1");
@@ -470,7 +470,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
             variable = "startTime";
             this.onValueReceived(variable, value, actionService + "1");
@@ -520,7 +520,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument + ">" + value + "</"
                     + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
@@ -544,7 +544,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     <u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">\
                     """
                     + value + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
-            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to set timerStart '{}' for device '{}': {}", value, getThing().getUID(),

@@ -26,7 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
@@ -66,8 +66,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoCoffeeHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoCoffeeHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoCoffeeHandler for thing '{}'", getThing().getUID());
     }
@@ -160,7 +160,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                                 </s:Envelope>\
                                 """;
 
-                        wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                        executeCall(wemoURL, soapHeader, content);
                         updateState(CHANNEL_STATE, OnOffType.ON);
                         State newMode = new StringType("Brewing");
                         updateState(CHANNEL_COFFEE_MODE, newMode);
@@ -196,7 +196,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 

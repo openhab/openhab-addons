@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
@@ -60,8 +60,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoCrockpotHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
     }
@@ -156,7 +156,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                         """
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                executeCall(wemoURL, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
@@ -192,7 +192,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             String action = "GetCrockpotState";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
             String time = substringBetween(wemoCallResponse, "<time>", "</time>");
             String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");

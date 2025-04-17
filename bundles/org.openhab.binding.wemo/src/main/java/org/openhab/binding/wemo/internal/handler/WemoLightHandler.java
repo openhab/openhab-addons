@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -70,8 +70,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoLightHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoLightHandler for thing '{}'", getThing().getUID());
     }
@@ -253,7 +253,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                             + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                             + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    executeCall(wemoURL, soapHeader, content);
                     if ("10008".equals(capability)) {
                         OnOffType binaryState = null;
                         binaryState = OnOffType.from(!"0".equals(value));
@@ -301,7 +301,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     """
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             wemoCallResponse = unescapeXml(wemoCallResponse);
             String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
             logger.trace("wemoNewLightState = {}", response);

@@ -30,7 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -74,8 +74,8 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoHolmesHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
     }
@@ -249,7 +249,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
-            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
@@ -284,7 +284,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
             // Due to Belkins bad response formatting, we need to run this twice.

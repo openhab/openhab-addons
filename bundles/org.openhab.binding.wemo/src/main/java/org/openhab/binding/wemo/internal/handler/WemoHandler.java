@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -52,8 +52,8 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
     }
@@ -123,7 +123,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -157,7 +157,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             if ("InsightParams".equals(variable)) {
                 value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
             } else {
