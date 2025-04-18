@@ -244,6 +244,13 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                             closeSerialPort(sp);
                         }
                     });
+
+                    if (inputStream.isEmpty() || outputStream.isEmpty()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                "Serial Error: Communication stream not available");
+                        throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                    }
+
                     return sp;
                 } catch (PortInUseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
