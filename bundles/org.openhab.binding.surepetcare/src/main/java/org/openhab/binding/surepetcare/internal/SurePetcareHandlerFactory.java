@@ -80,6 +80,8 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
             return new SurePetcareDeviceHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_FEEDER_DEVICE)) {
             return new SurePetcareDeviceHandler(thing, petcareAPI);
+        } else if (thingTypeUID.equals(THING_TYPE_WATER_DEVICE)) {
+            return new SurePetcareDeviceHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_PET)) {
             return new SurePetcarePetHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
