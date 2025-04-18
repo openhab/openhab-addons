@@ -648,7 +648,8 @@ Import-Package: \\
         <configuration>
           <validationSets>
             <validationSet>
-              <dir>src/main/resources/OH-INF/thing/</dir>
+              <dir>${session.executionRootDirectory}</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
               <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
             </validationSet>
           </validationSets>
