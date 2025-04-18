@@ -43,7 +43,7 @@
 
 		<label>Insteon Device (Legacy)</label>
 		<description>An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<representation-property>address</representation-property>
 
 		<config-description>
