@@ -47,8 +47,8 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Air Conditioner Mode</label>
-		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<description>Air Conditioner Mode</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="airConditionerMode" typeId="airConditionerMode-channel">
 				<label>Air Conditioner Mode</label>
@@ -196,8 +196,8 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color</label>
-		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<description>Color</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="colorValue" typeId="colorValue-channel">
 				<label>Color Value</label>
