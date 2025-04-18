@@ -497,7 +497,7 @@
 		</supported-bridge-type-refs>
 		<label>Media Controller</label>
 		<description>Allows for the control of a media controller device</description>
-		<semantic-equipment-tag>ControlDevicek</semantic-equipment-tag>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="activities" typeId="activities-channel">
 				<label>Activities</label>
