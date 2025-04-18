@@ -496,7 +496,6 @@
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @mherwege
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
-/itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.persistence.mapdb.tests/ @openhab/add-ons-maintainers
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
