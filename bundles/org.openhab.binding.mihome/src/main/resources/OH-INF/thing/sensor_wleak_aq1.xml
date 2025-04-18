@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Water Leak Sensor</label>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="leak" typeId="leak"></channel>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
