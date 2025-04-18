@@ -589,8 +589,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             // First get the last update state and time
             currentValue = db.getLastDatasourceValue(DATASOURCE_STATE);
             lastUpdate = db.getLastArchiveUpdateTime();
-            if (currentValue == Double.NaN) {
-                logger.debug("Could not find persisted value for item '{}' in rrjd4j database", itemName);
+            if (Double.isNaN(currentValue)) {
+                logger.debug("Could not find persisted value for item '{}' in rrd4j database", itemName);
                 return null;
             }
 
