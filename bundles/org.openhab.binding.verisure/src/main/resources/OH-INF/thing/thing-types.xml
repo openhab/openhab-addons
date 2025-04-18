@@ -217,7 +217,7 @@
 
 		<label>Verisure Siren</label>
 		<description>A climate device in a Siren.</description>
-		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
