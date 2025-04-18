@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Chlorinator</label>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
 		<channels>
 			<channel id="chlorEnable" typeId="system.power"/>
 			<channel id="chlorOperatingMode" typeId="chlorOperatingMode"/>

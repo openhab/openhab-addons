@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Pump</label>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>

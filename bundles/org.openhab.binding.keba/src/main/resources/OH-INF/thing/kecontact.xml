@@ -7,7 +7,7 @@
 	<thing-type id="kecontact">
 		<label>KeContact EV Charging Station</label>
 		<description>A KeContact EV Charging Station</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="enabledsystem" typeId="enabledsystem"/>
 			<channel id="enableduser" typeId="enableduser"/>

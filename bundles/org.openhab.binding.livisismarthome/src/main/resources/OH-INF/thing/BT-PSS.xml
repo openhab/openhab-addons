@@ -11,7 +11,7 @@
 
 		<label>Bluetooth Pluggable Smart Switch (BT-PSS)</label>
 		<description>A pluggable switch that can be switched on and off and which can measure the current energy consumption.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switchActuator"/>
 		</channels>

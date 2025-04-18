@@ -11,7 +11,7 @@
 
 		<label>Two-Way-Meter</label>
 		<description>The Two-Way-Meter from the LIVISI PowerControlSolar product.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="powerWatt" typeId="powerConsumptionWatt"/>
 			<channel id="totalEnergy" typeId="totalEnergyConsumption"/>
