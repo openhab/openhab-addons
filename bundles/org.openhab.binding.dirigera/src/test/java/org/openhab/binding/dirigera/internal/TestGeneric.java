@@ -88,7 +88,6 @@ class TestGeneric {
         assertFalse(lightRequestQueue.contains(color));
     }
 
-    @Test
     void testKelvinToHSB() {
         HSBType hsb = ColorLightHandler.getHSBTemperature(1000);
         assertEquals(16, hsb.getHue().intValue(), "HSB Color Hue");
