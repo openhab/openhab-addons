@@ -54,11 +54,13 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -485,8 +487,16 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                     removeChannels.add(channel);
                 }
             }
-            if (!removeChannels.isEmpty()) {
-                updateThing(editThing().withoutChannels(removeChannels).build());
+            boolean isDrapes = ShadeCapabilitiesDatabase.DRAPES_TYPES.contains(dataReader.getTypeId());
+            if (isDrapes || !removeChannels.isEmpty()) {
+                ThingBuilder thingBuilder = editThing();
+                if (isDrapes) {
+                    thingBuilder = thingBuilder.withSemanticEquipmentTag(Equipment.DRAPES);
+                }
+                if (!removeChannels.isEmpty()) {
+                    thingBuilder = thingBuilder.withoutChannels(removeChannels);
+                }
+                updateThing(thingBuilder.build());
             }
         }
 
