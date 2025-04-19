@@ -77,7 +77,7 @@ public class WemoInsightHandler extends WemoHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -99,7 +99,7 @@ public class WemoInsightHandler extends WemoHandler {
                     String channel = entry.getKey();
                     State state = entry.getValue();
 
-                    logger.trace("New InsightParam {} '{}' for device '{}' received", channel, state,
+                    logger.trace("New InsightParam {} '{}' for thing '{}' received", channel, state,
                             getThing().getUID());
                     updateState(channel, state);
                     if (channel.equals(WemoBindingConstants.CHANNEL_CURRENT_POWER_RAW)

@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.time.Instant;
 import java.util.Set;
@@ -91,10 +92,9 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoCoffeeHandler disposed.");
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -102,12 +102,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
-
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -165,10 +161,10 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                         State newMode = new StringType("Brewing");
                         updateState(CHANNEL_COFFEE_MODE, newMode);
                         updateStatus(ThingStatus.ONLINE);
-                    } catch (Exception e) {
-                        logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                    } catch (IOException e) {
+                        logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                                 e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 }
                 // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched
@@ -204,7 +200,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                 stringParser = unescapeXml(stringParser);
                 stringParser = unescapeXml(stringParser);
 
-                logger.trace("CoffeeMaker response '{}' for device '{}' received", stringParser, getThing().getUID());
+                logger.trace("CoffeeMaker response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";
 
@@ -328,8 +324,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
             } catch (Exception e) {
                 logger.warn("Failed to parse attributeList for WeMo CoffeMaker '{}'", this.getThing().getUID(), e);
             }
-        } catch (Exception e) {
-            logger.warn("Failed to get attributes for device '{}'", getThing().getUID(), e);
+        } catch (IOException e) {
+            logger.debug("Failed to get attributes for thing '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -339,7 +335,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
         try {
             value = Long.parseLong(attributeValue);
         } catch (NumberFormatException e) {
-            logger.warn("Unable to parse attributeValue '{}' for device '{}'; expected long", attributeValue,
+            logger.warn("Unable to parse attributeValue '{}' for thing '{}'; expected long", attributeValue,
                     getThing().getUID());
             return null;
         }

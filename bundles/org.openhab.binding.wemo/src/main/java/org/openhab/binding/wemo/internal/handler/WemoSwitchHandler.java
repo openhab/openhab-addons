@@ -53,7 +53,7 @@ public class WemoSwitchHandler extends WemoHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -71,7 +71,7 @@ public class WemoSwitchHandler extends WemoHandler {
             if (binaryState != null) {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
                     State state = OnOffType.from(!"0".equals(binaryState));
-                    logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
+                    logger.debug("State '{}' for thing '{}' received", state, getThing().getUID());
                     updateState(WemoBindingConstants.CHANNEL_STATE, state);
                 }
             }

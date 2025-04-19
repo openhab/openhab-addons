@@ -85,10 +85,9 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoCrockpotHandler disposed.");
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -96,11 +95,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -159,7 +155,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                 executeCall(wemoURL, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
-                logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+                logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -168,7 +164,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
-                this.getThing().getUID());
+                getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
@@ -223,7 +219,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             updateState(CHANNEL_COOKED_TIME, newCoockedTime);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
+            logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,11 +97,9 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoDimmerHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -108,11 +107,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -345,7 +341,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
             String oldBinaryState = this.stateMap.get("BinaryState");
@@ -354,7 +350,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                 case "BinaryState":
                     if (oldBinaryState == null || !oldBinaryState.equals(value)) {
                         State state = OnOffType.from(!"0".equals(value));
-                        logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
+                        logger.debug("State '{}' for thing '{}' received", state, getThing().getUID());
                         updateState(CHANNEL_BRIGHTNESS, state);
                         if (state.equals(OnOffType.OFF)) {
                             updateState(CHANNEL_TIMER_START, OnOffType.OFF);
@@ -362,7 +358,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     break;
                 case "brightness":
-                    logger.debug("brightness '{}' for device '{}' received", value, getThing().getUID());
+                    logger.debug("brightness '{}' for thing '{}' received", value, getThing().getUID());
                     int newBrightnessValue = Integer.valueOf(value);
                     State newBrightnessState = new PercentType(newBrightnessValue);
                     String binaryState = this.stateMap.get("BinaryState");
@@ -374,18 +370,18 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     currentBrightness = newBrightnessValue;
                     break;
                 case "fader":
-                    logger.debug("fader '{}' for device '{}' received", value, getThing().getUID());
+                    logger.debug("fader '{}' for thing '{}' received", value, getThing().getUID());
                     String[] splitFader = value.split(":");
                     if (splitFader[0] != null) {
                         int faderSeconds = Integer.valueOf(splitFader[0]);
                         State faderMinutes = new DecimalType(faderSeconds / 60);
-                        logger.debug("faderTime '{} minutes' for device '{}' received", faderMinutes,
+                        logger.debug("faderTime '{} minutes' for thing '{}' received", faderMinutes,
                                 getThing().getUID());
                         updateState(CHANNEL_FADER_COUNT_DOWN_TIME, faderMinutes);
                     }
                     if (splitFader[1] != null) {
                         State isTimerRunning = OnOffType.from(!"-1".equals(splitFader[1]));
-                        logger.debug("isTimerRunning '{}' for device '{}' received", isTimerRunning,
+                        logger.debug("isTimerRunning '{}' for thing '{}' received", isTimerRunning,
                                 getThing().getUID());
                         updateState(CHANNEL_TIMER_START, isTimerRunning);
                         if (isTimerRunning.equals(OnOffType.ON)) {
@@ -394,7 +390,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     if (splitFader[2] != null) {
                         State isFaderEnabled = OnOffType.from(!"0".equals(splitFader[1]));
-                        logger.debug("isFaderEnabled '{}' for device '{}' received", isFaderEnabled,
+                        logger.debug("isFaderEnabled '{}' for thing '{}' received", isFaderEnabled,
                                 getThing().getUID());
                         updateState(CHANNEL_FADER_ENABLED, isFaderEnabled);
                     }
@@ -402,19 +398,19 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                 case "nightMode":
                     State nightModeState = OnOffType.from(!"0".equals(value));
                     currentNightModeState = value;
-                    logger.debug("nightModeState '{}' for device '{}' received", nightModeState, getThing().getUID());
+                    logger.debug("nightModeState '{}' for thing '{}' received", nightModeState, getThing().getUID());
                     updateState(CHANNEL_NIGHT_MODE, nightModeState);
                     break;
                 case "startTime":
                     State startTimeState = getDateTimeState(value);
-                    logger.debug("startTimeState '{}' for device '{}' received", startTimeState, getThing().getUID());
+                    logger.debug("startTimeState '{}' for thing '{}' received", startTimeState, getThing().getUID());
                     if (startTimeState != null) {
                         updateState(CHANNEL_START_TIME, startTimeState);
                     }
                     break;
                 case "endTime":
                     State endTimeState = getDateTimeState(value);
-                    logger.debug("endTimeState '{}' for device '{}' received", endTimeState, getThing().getUID());
+                    logger.debug("endTimeState '{}' for thing '{}' received", endTimeState, getThing().getUID());
                     if (endTimeState != null) {
                         updateState(CHANNEL_END_TIME, endTimeState);
                     }
@@ -423,7 +419,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     int nightModeBrightnessValue = Integer.valueOf(value);
                     currentNightModeBrightness = nightModeBrightnessValue;
                     State nightModeBrightnessState = new PercentType(nightModeBrightnessValue);
-                    logger.debug("nightModeBrightnessState '{}' for device '{}' received", nightModeBrightnessState,
+                    logger.debug("nightModeBrightnessState '{}' for thing '{}' received", nightModeBrightnessState,
                             getThing().getUID());
                     updateState(CHANNEL_NIGHT_MODE_BRIGHTNESS, nightModeBrightnessState);
                     break;
@@ -460,8 +456,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             variable = "fader";
             this.onValueReceived(variable, value, actionService + "1");
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         action = "GetNightModeConfiguration";
@@ -484,8 +480,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             variable = "nightModeBrightness";
             this.onValueReceived(variable, value, actionService + "1");
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
+        } catch (IOException e) {
+            logger.debug("Failed to get actual NightMode state for thing '{}': {}", getThing().getUID(),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -496,7 +492,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         try {
             value = Long.parseLong(attributeValue);
         } catch (NumberFormatException e) {
-            logger.warn("Unable to parse attributeValue '{}' for device '{}'; expected long", attributeValue,
+            logger.warn("Unable to parse attributeValue '{}' for thing '{}'; expected long", attributeValue,
                     getThing().getUID());
             return null;
         }
@@ -522,8 +518,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
             executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
+        } catch (IOException e) {
+            logger.warn("Failed to set binaryState '{}' for thing '{}': {}", value, getThing().getUID(),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -546,8 +542,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     + value + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
             executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.debug("Failed to set timerStart '{}' for device '{}': {}", value, getThing().getUID(),
+        } catch (IOException e) {
+            logger.debug("Failed to set timerStart '{}' for thing '{}': {}", value, getThing().getUID(),
                     e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

@@ -99,11 +99,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoHolmesHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -111,11 +109,8 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -252,7 +247,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             executeCall(wemoURL, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
-            logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+            logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -260,7 +255,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
-                this.getThing().getUID());
+                getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
@@ -291,7 +286,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             stringParser = unescapeXml(stringParser);
             stringParser = unescapeXml(stringParser);
 
-            logger.trace("AirPurifier response '{}' for device '{}' received", stringParser, getThing().getUID());
+            logger.trace("AirPurifier response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
             stringParser = "<data>" + stringParser + "</data>";
 
@@ -487,7 +482,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
-            logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
+            logger.debug("Failed to get actual state for thing '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -72,11 +73,9 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoHandler disposed for thing {}", getThing().getUID());
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -84,11 +83,8 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -125,10 +121,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     String content = createBinaryStateContent(binaryState);
                     executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
-                    logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                } catch (IOException e) {
+                    logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                             e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }
@@ -164,12 +160,12 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
             }
             if (value.length() != 0) {
-                logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                logger.trace("New state '{}' for thing '{}' received", value, getThing().getUID());
                 this.onValueReceived(variable, value, actionService + "1");
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.warn("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
