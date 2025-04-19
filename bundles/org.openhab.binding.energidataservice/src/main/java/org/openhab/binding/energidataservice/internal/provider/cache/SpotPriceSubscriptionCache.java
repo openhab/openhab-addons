@@ -16,11 +16,11 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
@@ -34,16 +34,14 @@ import org.openhab.binding.energidataservice.internal.provider.subscription.Spot
 @NonNullByDefault
 public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCache<ElspotpriceRecord[]> {
 
-    private static final int MAX_CACHE_SIZE = 24 + 11 + NUMBER_OF_HISTORIC_HOURS;
-
     private final SpotPriceSubscription subscription;
 
     public SpotPriceSubscriptionCache(SpotPriceSubscription subscription) {
-        this(subscription, Clock.systemDefaultZone());
+        this(subscription, Clock.systemDefaultZone(), Duration.ofHours(1));
     }
 
-    public SpotPriceSubscriptionCache(SpotPriceSubscription subscription, Clock clock) {
-        super(clock, MAX_CACHE_SIZE);
+    public SpotPriceSubscriptionCache(SpotPriceSubscription subscription, Clock clock, Duration priceDuration) {
+        super(clock, priceDuration);
         this.subscription = subscription;
     }
 
@@ -79,11 +77,14 @@ public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCach
      * @return true if spot prices are fully cached
      */
     public boolean arePricesFullyCached() {
-        Instant end = ZonedDateTime.of(LocalDate.now(clock), LocalTime.of(23, 0), NORD_POOL_TIMEZONE).toInstant();
-        LocalTime now = LocalTime.now(clock);
-        if (now.isAfter(DAILY_REFRESH_TIME_CET)) {
-            end = end.plus(24, ChronoUnit.HOURS);
+        LocalDate date = LocalDate.now(clock);
+
+        if (LocalTime.now(clock).isAfter(DAILY_REFRESH_TIME_CET)) {
+            date = date.plusDays(1);
         }
+
+        Instant end = ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, NORD_POOL_TIMEZONE).minus(priceDuration)
+                .toInstant();
 
         return arePricesCached(end);
     }
