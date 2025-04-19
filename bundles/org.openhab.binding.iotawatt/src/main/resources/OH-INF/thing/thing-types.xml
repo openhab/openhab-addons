@@ -8,7 +8,7 @@
 	<thing-type id="iotawatt">
 		<label>IoTaWatt Binding Thing</label>
 		<description>An IoTaWatt devices</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

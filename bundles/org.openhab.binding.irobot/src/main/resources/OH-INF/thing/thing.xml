@@ -8,6 +8,7 @@
 		<label>Roomba</label>
 		<description>A Roomba vacuum robot</description>
 		<category>CleaningRobot</category>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>

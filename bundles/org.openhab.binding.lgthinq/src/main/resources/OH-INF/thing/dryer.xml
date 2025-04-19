@@ -11,6 +11,7 @@
 
 		<label>Dryer</label>
 		<description>LG ThinQ Dryer</description>
+		<semantic-equipment-tag>Dryer</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dr-dashboard"/>
 			<channel-group id="rs-grp" typeId="dr-rs-grp"/>

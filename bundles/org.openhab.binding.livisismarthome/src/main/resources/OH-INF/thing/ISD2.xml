@@ -11,7 +11,7 @@
 
 		<label>In Wall Smart Dimmer (ISD2)</label>
 		<description>An in wall dimmer with push buttons.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="dimmer" typeId="dimmerActuator"/>
 			<channel id="button1" typeId="system.button"/>

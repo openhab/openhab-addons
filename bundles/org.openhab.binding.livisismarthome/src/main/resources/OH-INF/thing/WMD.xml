@@ -11,7 +11,7 @@
 
 		<label>Wall Mounted Motion Detector Indoor (WMD)</label>
 		<description>A battery powered motion detector, that also measures luminance.</description>
-
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="motionCount" typeId="motionDetectionSensor"/>
 			<channel id="luminance" typeId="luminanceSensor"/>

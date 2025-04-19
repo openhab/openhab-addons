@@ -8,6 +8,7 @@
 
 		<label>Loxone Miniserver</label>
 		<description>IP gateway for Loxone Smarthome system</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 

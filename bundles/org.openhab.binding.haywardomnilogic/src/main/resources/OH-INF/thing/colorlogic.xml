@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Color Logic Light</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="colorLogicLightEnable" typeId="system.power"/>
 			<channel id="colorLogicLightState" typeId="lightState"/>

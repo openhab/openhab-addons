@@ -7,6 +7,7 @@
 	<thing-type id="collection">
 		<label>HCC NZ Rubbish Collection</label>
 		<description>Rubbish collection days for Hamilton City Council (NZ).</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="day" typeId="day"/>

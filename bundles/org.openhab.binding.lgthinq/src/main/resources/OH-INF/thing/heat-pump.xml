@@ -11,7 +11,7 @@
 
 		<label>Heat Pump</label>
 		<description>LG ThinQ Heat Pump</description>
-
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="hp-dashboard"/>
 			<channel-group id="extended-information" typeId="hp-extra-info"/>

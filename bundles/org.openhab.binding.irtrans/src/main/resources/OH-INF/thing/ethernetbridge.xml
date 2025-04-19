@@ -8,6 +8,7 @@
 	<bridge-type id="ethernet">
 		<label>IRtrans Ethernet Bridge</label>
 		<description>This is an Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">

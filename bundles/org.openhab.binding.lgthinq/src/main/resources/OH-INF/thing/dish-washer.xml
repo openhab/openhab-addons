@@ -11,6 +11,7 @@
 
 		<label>Dish Washer</label>
 		<description>LG ThinQ Dish Washer</description>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dw-dashboard"/>
 		</channel-groups>

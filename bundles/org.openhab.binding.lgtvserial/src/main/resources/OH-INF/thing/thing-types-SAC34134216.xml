@@ -11,7 +11,7 @@
 	<thing-type id="lgtv-LV-series">
 		<label>LV/LW Series</label>
 		<description>This thing supports the LED LCD TV models LV and LW except *LV255C, *LV355B, *LV355C</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>
@@ -44,6 +44,7 @@
 	<thing-type id="lgtv-LVx55-series">
 		<label>LV/LW Series</label>
 		<description>This thing supports the *LV255C, *LV355B, *LV355C models</description>
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>
@@ -77,7 +78,7 @@
 	<thing-type id="lgtv-LK-series">
 		<label>LK Series</label>
 		<description>This thing supports the LCD TV models LK</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>
@@ -109,7 +110,7 @@
 	<thing-type id="lgtv-PW-series">
 		<label>PW Series</label>
 		<description>This thing supports the PLASMA TV models PW</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>
