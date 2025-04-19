@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
@@ -60,8 +60,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoCrockpotHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
     }
@@ -85,10 +85,9 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoCrockpotHandler disposed.");
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -96,11 +95,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -156,7 +152,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                         """
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                executeCall(wemoURL, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
@@ -168,7 +164,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
-                this.getThing().getUID());
+                getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
@@ -192,7 +188,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             String action = "GetCrockpotState";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
             String time = substringBetween(wemoCallResponse, "<time>", "</time>");
             String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");

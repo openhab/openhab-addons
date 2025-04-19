@@ -25,7 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -61,8 +61,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoMakerHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -85,11 +85,9 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoMakerHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -97,11 +95,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -136,7 +131,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.warn("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
@@ -160,16 +155,16 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
-                logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                logger.trace("Escaped Maker response for thing '{}' :", getThing().getUID());
                 logger.trace("'{}'", stringParser);
 
                 // Due to Belkins bad response formatting, we need to run this twice.
                 stringParser = unescapeXml(stringParser);
                 stringParser = unescapeXml(stringParser);
-                logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
+                logger.trace("Maker response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";
 

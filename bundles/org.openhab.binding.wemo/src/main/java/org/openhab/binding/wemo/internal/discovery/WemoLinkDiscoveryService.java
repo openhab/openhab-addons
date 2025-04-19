@@ -15,21 +15,31 @@ package org.openhab.binding.wemo.internal.discovery;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -56,51 +66,26 @@ import org.xml.sax.InputSource;
 @NonNullByDefault
 public class WemoLinkDiscoveryService extends AbstractDiscoveryService implements UpnpIOParticipant {
 
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
+    private static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
+    private static final int SCAN_INTERVAL_SECONDS = 120;
+
     private final Logger logger = LoggerFactory.getLogger(WemoLinkDiscoveryService.class);
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
-
-    public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
-
-    /**
-     * Maximum time to search for devices in seconds.
-     */
-    private static final int SEARCH_TIME = 20;
-
-    /**
-     * Scan interval for scanning job in seconds.
-     */
-    private static final int SCAN_INTERVAL = 120;
-
-    /**
-     * The handler for WeMo Link bridge
-     */
     private final WemoBridgeHandler wemoBridgeHandler;
-
-    /**
-     * Job which will do the background scanning
-     */
     private final WemoLinkScan scanningRunnable;
+    private final UpnpIOService service;
+    private final HttpClient httpClient;
 
-    /**
-     * Schedule for scanning
-     */
     private @Nullable ScheduledFuture<?> scanningJob;
 
-    /**
-     * The Upnp service
-     */
-    private UpnpIOService service;
-
-    private final WemoHttpCall wemoHttpCaller;
-
-    public WemoLinkDiscoveryService(WemoBridgeHandler wemoBridgeHandler, UpnpIOService upnpIOService,
-            WemoHttpCall wemoHttpCaller) {
-        super(SEARCH_TIME);
+    public WemoLinkDiscoveryService(final WemoBridgeHandler wemoBridgeHandler, final UpnpIOService upnpIOService,
+            final HttpClient httpClient) {
+        super(DISCOVERY_TIMEOUT_SECONDS);
         this.service = upnpIOService;
         this.wemoBridgeHandler = wemoBridgeHandler;
 
-        this.wemoHttpCaller = wemoHttpCaller;
+        this.httpClient = httpClient;
 
         this.scanningRunnable = new WemoLinkScan();
         this.activate(null);
@@ -139,7 +124,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                 String deviceURL = substringBefore(descriptorURL.toString(), "/setup.xml");
                 String wemoURL = deviceURL + "/upnp/control/bridge1";
 
-                String endDeviceRequest = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                String endDeviceRequest = executeCall(wemoURL, soapHeader, content);
 
                 logger.trace("endDeviceRequest answered '{}'", endDeviceRequest);
 
@@ -246,7 +231,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
         if (job == null || job.isCancelled()) {
             this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable,
-                    LINK_DISCOVERY_SERVICE_INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+                    LINK_DISCOVERY_SERVICE_INITIAL_DELAY, SCAN_INTERVAL_SECONDS, TimeUnit.SECONDS);
         } else {
             logger.trace("scanningJob active");
         }
@@ -292,6 +277,31 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
         @Override
         public void run() {
             startScan();
+        }
+    }
+
+    private String executeCall(String wemoURL, String soapHeader, String soapBody) throws IOException {
+        Request request = httpClient.newRequest(wemoURL).timeout(2, TimeUnit.SECONDS)
+                .header(HttpHeader.CONTENT_TYPE, WemoBindingConstants.HTTP_CALL_CONTENT_HEADER)
+                .header("SOAPACTION", soapHeader).method(HttpMethod.POST).content(new StringContentProvider(soapBody));
+
+        logger.trace("Performing HTTP call for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
+                soapBody);
+
+        try {
+            ContentResponse response = request.send();
+
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IOException("The request failed with HTTP error " + status);
+            }
+
+            String responseContent = response.getContentAsString();
+            logger.trace("HTTP response body: '{}'", responseContent);
+
+            return responseContent;
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            throw new IOException("The HTTP request failed", e);
         }
     }
 }
