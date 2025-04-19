@@ -15,6 +15,7 @@
 
 		<label>RFXCOM Home Confort Remote</label>
 		<description>A Home Confort device.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>

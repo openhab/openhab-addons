@@ -8,6 +8,7 @@
 	<thing-type id="x5">
 		<label>X5 Integrated Amplifier</label>
 		<description>Connection to the Rotel Michi X5 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

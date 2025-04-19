@@ -15,6 +15,7 @@
 
 		<label>RFXCOM Security2 Sensor</label>
 		<description>A Security2 device.</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>

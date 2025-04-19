@@ -8,6 +8,7 @@
 	<thing-type id="rx1052">
 		<label>RX-1052 Stereo Receiver</label>
 		<description>Connection to the Rotel RX-1052 stereo receiver</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="mainZone" typeId="mainZoneType6"/>

@@ -13,6 +13,7 @@
 			Sensor reports the temperature when there's a difference of around 0.5°C. If there is no significant temperature
 			change then the sensor reports temperature once every 50 minutes.
 		</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>

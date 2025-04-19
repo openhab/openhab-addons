@@ -7,6 +7,7 @@
 	<bridge-type id="ip150">
 		<label>Paradox IP150 Module Connector</label>
 		<description>Paradox IP150 module connector</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="communicationCommand" typeId="command"/>

@@ -15,6 +15,7 @@
 
 		<label>RFXCOM Security1 Sensor</label>
 		<description>A Security1 device.</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="status" typeId="status"/>

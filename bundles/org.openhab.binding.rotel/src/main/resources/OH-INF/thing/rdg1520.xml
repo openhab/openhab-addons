@@ -8,6 +8,7 @@
 	<thing-type id="rdg1520">
 		<label>RDG-1520 Tuner</label>
 		<description>Connection to the Rotel RDG-1520 tuner</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

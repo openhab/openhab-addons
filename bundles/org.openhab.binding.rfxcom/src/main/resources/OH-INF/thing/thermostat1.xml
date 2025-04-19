@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Thermostat1 Sensor</label>
 		<description>A Thermostat1 device.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>

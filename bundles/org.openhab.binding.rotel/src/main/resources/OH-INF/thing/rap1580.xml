@@ -8,6 +8,7 @@
 	<thing-type id="rap1580">
 		<label>RAP-1580 Surround Amplified Processor</label>
 		<description>Connection to the Rotel RAP-1580 or RAP-1580MKII surround amplified processor</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

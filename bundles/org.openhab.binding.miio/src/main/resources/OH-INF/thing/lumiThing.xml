@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Xiaomi Mi Lumi Device</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="basicactions"/>

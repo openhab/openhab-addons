@@ -11,6 +11,7 @@
 
 		<label>Electric Vehicle</label>
 		<description>Battery Electric Vehicle (BEV)</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="update" typeId="ev-vehicle-update"/>

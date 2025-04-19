@@ -8,6 +8,7 @@
 	<bridge-type id="xgw3000">
 		<label>Miele XGW3000</label>
 		<description>The Miele bridge represents the Miele@home XGW 3000 gateway.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Miele</property>

@@ -8,7 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Xiaomi Mi Smart Home Bridge</label>
 		<description>Multifunctional Gateway - a bridge for the sensors</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>

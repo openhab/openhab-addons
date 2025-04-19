@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Room with one or more Wi-Fi enabled heaters</label>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature"/>

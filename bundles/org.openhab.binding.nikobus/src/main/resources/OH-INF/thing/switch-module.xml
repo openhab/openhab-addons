@@ -11,6 +11,7 @@
 
 		<label>Switch Module</label>
 		<description>Nikobus Switch module</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="switch-output">

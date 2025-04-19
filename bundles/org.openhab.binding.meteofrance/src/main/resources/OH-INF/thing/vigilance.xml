@@ -11,6 +11,7 @@
 
 		<label>Department Awareness</label>
 		<description>Provides weather alert levels for a department.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="vague-submersion" typeId="vague-submersion"/>
