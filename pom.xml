@@ -641,6 +641,30 @@ Import-Package: \\
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>${session.executionRootDirectory}</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
+              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
+            </validationSet>
+          </validationSets>
+          <catalogs>
+            <catalog>${session.executionRootDirectory}/src/thing-type-xml-validation-catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <extensions>
       <extension>
