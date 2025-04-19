@@ -6,7 +6,7 @@
 	<thing-type id="color-bulb">
 		<label>WiZ Color Bulb</label>
 		<description>Supports WiZ Full Color with Tunable White Bulbs</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="temperature" typeId="system.color-temperature"/>
@@ -26,7 +26,7 @@
 	<thing-type id="tunable-bulb">
 		<label>WiZ Tunable Bulb</label>
 		<description>Supports WiZ Tunable White Bulbs</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="system.color-temperature"/>
 			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
@@ -46,7 +46,7 @@
 	<thing-type id="dimmable-bulb">
 		<label>WiZ Dimmable Bulb</label>
 		<description>Supports WiZ Single Color Dimmable Bulbs</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="mode" typeId="light-mode"/>
@@ -64,7 +64,7 @@
 	<thing-type id="plug">
 		<label>WiZ Smart Plug</label>
 		<description>Supports WiZ Smart Plugs</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="system.power"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -80,7 +80,7 @@
 	<thing-type id="fan">
 		<label>WiZ Ceiling Fan</label>
 		<description>Supports WiZ Ceiling Fans</description>
-
+		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="system.power"/>
 			<channel id="speed" typeId="fan-speed"/>
@@ -99,7 +99,7 @@
 	<thing-type id="fan-with-dimmable-bulb">
 		<label>WiZ Ceiling Fan With Dimmable Bulb</label>
 		<description>Supports WiZ Ceiling Fans With a Dimmable Bulb</description>
-
+		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="device" typeId="device-channels"/>
 			<channel-group id="light" typeId="dimmable-light"/>

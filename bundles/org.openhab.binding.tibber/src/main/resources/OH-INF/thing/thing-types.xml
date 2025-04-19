@@ -7,6 +7,7 @@
 	<thing-type id="tibberapi">
 		<label>Tibber API</label>
 		<description>Tibber API connector</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="current_total" typeId="price"/>
 			<channel id="current_startsAt" typeId="timestamp"/>

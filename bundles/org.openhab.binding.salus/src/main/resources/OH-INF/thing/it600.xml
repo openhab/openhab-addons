@@ -17,6 +17,7 @@
 			setting the desired temperature, and defining the operation type. The operation of this device depends on a unique
 			Data Source Name (DSN) which serves as an identifier in the Salus cloud system.
 		</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="it600-temp-channel"/>
 			<channel id="expected-temperature" typeId="it600-expected-temp-channel"/>

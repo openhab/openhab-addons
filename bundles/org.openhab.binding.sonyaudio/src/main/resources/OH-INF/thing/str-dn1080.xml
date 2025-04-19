@@ -153,7 +153,7 @@
 	<thing-type id="STR-DN1080">
 		<label>SONY Receiver STR-DN1080</label>
 		<description>SONY receiver STR-DN1080</description>
-
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="masterControls" id="master"/>
 			<channel-group typeId="zone1Controls" id="zone1"/>

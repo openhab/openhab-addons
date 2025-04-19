@@ -13,7 +13,7 @@
 		<label>SAIC Car</label>
 		<description>iSMART enabled car</description>
 		<category>Car</category>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
 			<channel id="odometer" typeId="odometer-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>

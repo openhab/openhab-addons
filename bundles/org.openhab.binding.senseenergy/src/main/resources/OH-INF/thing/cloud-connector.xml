@@ -7,7 +7,7 @@
 	<bridge-type id="cloud-connector">
 		<label>Sense Energy Cloud Connector</label>
 		<description>The Sense Home cloud connector establishes connection to the Sense cloud API and services.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email</label>

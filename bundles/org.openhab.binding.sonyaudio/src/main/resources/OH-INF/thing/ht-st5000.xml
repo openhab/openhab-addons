@@ -45,6 +45,7 @@
 	<thing-type id="HT-ST5000">
 		<label>SONY Soundbar HT-ST5000</label>
 		<description>SONY Soundbar HT-ST5000</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-st5000"/>

@@ -10,7 +10,7 @@
 	<thing-type id="computer">
 		<label>Systeminfo</label>
 		<description>The computer operating system and hardware information</description>
-
+		<semantic-equipment-tag>Computer</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="memory" typeId="memoryGroup"/>
 			<channel-group id="storage" typeId="storageGroup"/>

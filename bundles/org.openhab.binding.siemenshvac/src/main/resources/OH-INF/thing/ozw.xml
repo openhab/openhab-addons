@@ -8,7 +8,7 @@
 	<bridge-type id="ozw">
 		<label>OZW IP Gateway</label>
 		<description>This is a OZW IP interface</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
 				<label>Base URL</label>

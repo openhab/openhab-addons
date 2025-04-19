@@ -10,7 +10,7 @@
 		<label>Leviton UPB 6-Button Scene Switch</label>
 		<description>A wall-mounted panel with six pushbuttons labeled ON, A, B, C, D, and OFF.</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="btnOn" typeId="scene-selection">
 				<label>ON Button</label>

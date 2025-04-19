@@ -5,10 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="controller">
-
 		<label>UniFi Controller</label>
 		<description>A UniFi controller</description>
-
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
@@ -169,7 +167,7 @@
 
 		<label>UniFi Access Point</label>
 		<description>An access point managed by a UniFi controller</description>
-
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="online" typeId="online">
 				<description>Online status of the device</description>

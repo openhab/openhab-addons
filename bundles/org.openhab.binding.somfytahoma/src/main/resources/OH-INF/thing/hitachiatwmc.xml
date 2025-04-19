@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Hitachi Air To Water Main Component</label>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="auto_manu_mode" typeId="auto_manu_mode"></channel>
 			<channel id="unit_control" typeId="unit_control"></channel>

@@ -12,7 +12,7 @@
 
 		<label>Tesla Model X</label>
 		<description>A Tesla Model X Vehicle</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
 			<channel id="destinationname" typeId="destinationname"/>
 			<channel id="destinationlocation" typeId="destinationlocation"/>

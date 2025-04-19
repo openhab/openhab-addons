@@ -8,6 +8,7 @@
 		<label>Shelly BLU Button</label>
 		<description>@text/thing-type.shelly.shellyblubutton.description</description>
 		<category>WallSwitch</category>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="status" typeId="buttonState"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -22,6 +23,7 @@
 		<label>Shelly BLU Door/Window</label>
 		<description>@text/thing-type.shelly.shellybludw.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -36,6 +38,7 @@
 		<label>Shelly BLU Motion</label>
 		<description>@text/thing-type.shelly.shellyblumotion.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -63,6 +66,7 @@
 	<thing-type id="shellyblugw">
 		<label>Shelly BLU Gateway</label>
 		<description>@text/thing-type.shelly.shellyblugw.description</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
