@@ -37,6 +37,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -224,6 +225,9 @@ public class ShadeThingHandler extends BaseThingHandler {
                 updateCapabilities(shade);
                 updateProperties(shade);
                 updateDynamicChannels(shade);
+                if (shade.getType() instanceof Integer type && ShadeCapabilitiesDatabase.DRAPES_TYPES.contains(type)) {
+                    updateThing(editThing().withSemanticEquipmentTag(Equipment.DRAPES).build());
+                }
                 isInitialized = true;
             }
             updateChannels(shade);
