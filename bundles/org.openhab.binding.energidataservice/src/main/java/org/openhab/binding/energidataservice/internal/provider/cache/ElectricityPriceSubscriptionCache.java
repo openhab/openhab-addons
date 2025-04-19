@@ -16,17 +16,20 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.NavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Electricity price specific {@link SubscriptionDataCache} implementation.
+ * All price durations must be the same.
  *
  * @author Jacob Laursen - Initial contribution
  */
@@ -35,13 +38,16 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
 
     public static final int NUMBER_OF_HISTORIC_HOURS = 24;
 
-    protected final Map<Instant, BigDecimal> priceMap;
+    protected final NavigableMap<Instant, BigDecimal> priceMap;
 
     protected final Clock clock;
 
-    protected ElectricityPriceSubscriptionCache(Clock clock, int initialCapacity) {
+    protected final Duration priceDuration;
+
+    protected ElectricityPriceSubscriptionCache(Clock clock, Duration priceDuration) {
         this.clock = clock.withZone(NORD_POOL_TIMEZONE);
-        this.priceMap = new ConcurrentHashMap<>(initialCapacity);
+        this.priceDuration = priceDuration;
+        this.priceMap = new ConcurrentSkipListMap<>();
     }
 
     @Override
@@ -68,19 +74,11 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
      */
     @Override
     public @Nullable BigDecimal get(Instant time) {
-        return priceMap.get(getHourStart(time));
-    }
-
-    /**
-     * Get number of future prices including current hour.
-     * 
-     * @return number of future prices
-     */
-    @Override
-    public long getNumberOfFuturePrices() {
-        Instant currentHourStart = getCurrentHourStart();
-
-        return priceMap.entrySet().stream().filter(p -> !p.getKey().isBefore(currentHourStart)).count();
+        Map.Entry<Instant, BigDecimal> entry = priceMap.floorEntry(time);
+        if (entry != null && !time.isAfter(entry.getKey().plus(priceDuration))) {
+            return entry.getValue();
+        }
+        return null;
     }
 
     /**
@@ -94,9 +92,8 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
     }
 
     protected boolean arePricesCached(Instant end) {
-        for (Instant hourStart = getFirstHourStart(); hourStart.compareTo(end) <= 0; hourStart = hourStart.plus(1,
-                ChronoUnit.HOURS)) {
-            if (priceMap.get(hourStart) == null) {
+        for (Instant start = getFirstHourStart(); start.compareTo(end) <= 0; start = start.plus(priceDuration)) {
+            if (priceMap.get(start) == null) {
                 return false;
             }
         }
