@@ -54,7 +54,7 @@ public class WemoMotionHandler extends WemoHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
 
         updateStatus(ThingStatus.ONLINE);
 

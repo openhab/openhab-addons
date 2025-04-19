@@ -247,7 +247,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
                 .header(HttpHeader.CONTENT_TYPE, WemoBindingConstants.HTTP_CALL_CONTENT_HEADER)
                 .header("SOAPACTION", soapHeader).method(HttpMethod.POST).content(new StringContentProvider(soapBody));
 
-        logger.trace("Performing HTTP call for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
+        logger.trace("Performing HTTP request for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
                 soapBody);
 
         try {
@@ -258,7 +258,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
             int status = response.getStatus();
             if (!HttpStatus.isSuccess(status)) {
-                throw new IOException("The request failed with HTTP error " + status);
+                throw new IOException("The HTTP request failed with error " + status);
             }
 
             return responseContent;

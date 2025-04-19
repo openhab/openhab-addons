@@ -72,11 +72,9 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoHandler disposed for thing {}", getThing().getUID());
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -84,11 +82,8 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -164,7 +159,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
             }
             if (value.length() != 0) {
-                logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                logger.trace("New state '{}' for thing '{}' received", value, getThing().getUID());
                 this.onValueReceived(variable, value, actionService + "1");
             }
             updateStatus(ThingStatus.ONLINE);

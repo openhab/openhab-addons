@@ -91,10 +91,9 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoCoffeeHandler disposed.");
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -102,12 +101,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
-
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -204,7 +199,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                 stringParser = unescapeXml(stringParser);
                 stringParser = unescapeXml(stringParser);
 
-                logger.trace("CoffeeMaker response '{}' for device '{}' received", stringParser, getThing().getUID());
+                logger.trace("CoffeeMaker response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";
 

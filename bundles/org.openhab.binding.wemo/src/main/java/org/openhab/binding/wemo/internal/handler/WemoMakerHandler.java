@@ -85,11 +85,9 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoMakerHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -97,11 +95,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -163,13 +158,13 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
-                logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                logger.trace("Escaped Maker response for thing '{}' :", getThing().getUID());
                 logger.trace("'{}'", stringParser);
 
                 // Due to Belkins bad response formatting, we need to run this twice.
                 stringParser = unescapeXml(stringParser);
                 stringParser = unescapeXml(stringParser);
-                logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
+                logger.trace("Maker response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";
 

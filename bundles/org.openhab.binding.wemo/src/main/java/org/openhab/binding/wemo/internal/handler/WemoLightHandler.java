@@ -109,11 +109,9 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoLightHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -137,11 +135,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -180,7 +175,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 return;
             }
             String devUDN = "uuid:" + wemoBridge.getThing().getConfiguration().get(UDN).toString();
-            logger.trace("WeMo Bridge to send command to : {}", devUDN);
+            logger.trace("WeMo Bridge to send command to: {}", devUDN);
 
             String value = null;
             String capability = null;
@@ -332,7 +327,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
         String capabilityId = substringBetween(value, "<CapabilityId>", "</CapabilityId>");
         String newValue = substringBetween(value, "<Value>", "</Value>");
         switch (capabilityId) {
