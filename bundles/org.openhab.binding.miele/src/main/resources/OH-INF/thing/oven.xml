@@ -12,6 +12,7 @@
 
 		<label>Oven</label>
 		<description>This is a Miele@home compatible oven</description>
+		<semantic-equipment-tag>Oven</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>
