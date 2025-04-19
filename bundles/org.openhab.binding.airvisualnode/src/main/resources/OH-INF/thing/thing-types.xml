@@ -7,6 +7,7 @@
 	<thing-type id="avnode">
 		<label>AirVisual Node</label>
 		<description>AirVisual Node air quality monitor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<!-- Channels -->
 

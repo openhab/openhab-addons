@@ -7,6 +7,7 @@
 	<thing-type id="comfoair">
 		<label>Generic ComfoAir Ventilation System</label>
 		<description>Provides a generic access to a ComfoAir compatible ventilation system</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="bindingControl" typeId="bindingControl"/>
@@ -52,6 +53,7 @@
 	<thing-type id="WHR930">
 		<label>Zehnder WHR930 Ventilation System</label>
 		<description>Provides a generic access to a Zehnder WHR930 ventilation device</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="bindingControl" typeId="bindingControl"/>

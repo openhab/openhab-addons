@@ -12,6 +12,7 @@
 
 		<label>BTicino Smarther Chronothermostat</label>
 		<description>This thing represents a BTicino Smarther chronothermostat module.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="measures" typeId="module-measures"/>

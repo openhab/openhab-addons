@@ -8,7 +8,7 @@
 	<bridge-type id="bondBridge">
 		<label>Bond Home Bridge</label>
 		<description>The RF/IR/Wifi Bridge</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>serialNumber</representation-property>
 		<config-description-ref uri="thing-type:bondhome:bondbridge"/>
 

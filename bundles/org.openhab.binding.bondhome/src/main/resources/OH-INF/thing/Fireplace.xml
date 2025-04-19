@@ -12,7 +12,7 @@
 
 		<label>Bond Home Fireplace</label>
 		<description>An RF or IR remote controlled fireplace with or without a fan</description>
-
+		<semantic-equipment-tag>Furnace</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="common" typeId="commonChannelGroup"/>
 			<channel-group id="fireplace" typeId="fireplaceChannelGroup"/>

@@ -8,7 +8,7 @@
 	<thing-type id="floureonthermostat">
 		<label>Floureon Thermostat</label>
 		<description>A heating device thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mode" typeId="mode"/>
@@ -29,7 +29,7 @@
 	<thing-type id="hysenthermostat">
 		<label>Hysen Thermostat</label>
 		<description>A heating device thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mode" typeId="mode"/>
@@ -50,6 +50,7 @@
 	<thing-type id="rmuniversaldevice">
 		<label>Rm Universal Device</label>
 		<description>A universal infrared remote</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="learningmode" typeId="learningmode"/>
 			<channel id="savelearned" typeId="savelearned"/>

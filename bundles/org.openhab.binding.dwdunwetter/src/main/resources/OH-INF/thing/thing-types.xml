@@ -7,6 +7,8 @@
 	<thing-type id="dwdwarnings">
 		<label>Weather Warnings</label>
 		<description>Weather Warnings for an area.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
+
 		<channels>
 			<channel typeId="lastUpdated" id="lastUpdated"/>
 		</channels>

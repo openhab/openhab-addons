@@ -8,7 +8,7 @@
 
 		<label>ShieldTV</label>
 		<description>Nvidia ShieldTV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
@@ -98,7 +98,7 @@
 
 		<label>GoogleTV</label>
 		<description>GoogleTV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
@@ -170,7 +170,7 @@
 	<thing-type id="philipstv">
 		<label>Philips TV</label>
 		<description>A Philips TV device</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>

@@ -12,7 +12,7 @@
 
 		<label>Bond Home Ceiling Fan</label>
 		<description>An RF or IR remote controlled ceiling fan with or without a light</description>
-
+		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="common" typeId="commonChannelGroup"/>
 			<channel-group id="fan" typeId="ceilingFanChannelGroup"/>

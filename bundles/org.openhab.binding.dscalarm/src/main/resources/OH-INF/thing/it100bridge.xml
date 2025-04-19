@@ -7,6 +7,7 @@
 	<bridge-type id="it100">
 		<label>DSC IT-100</label>
 		<description>This bridge represents the DSC IT-100 Serial interface.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="bridge_reset" typeId="reset">

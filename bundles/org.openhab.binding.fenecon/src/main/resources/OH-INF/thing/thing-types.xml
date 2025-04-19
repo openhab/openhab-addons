@@ -10,6 +10,7 @@
 		<label>FENECON Home</label>
 		<description>Thing for FENECON Home Device</description>
 		<category>Solarplant</category>
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>
