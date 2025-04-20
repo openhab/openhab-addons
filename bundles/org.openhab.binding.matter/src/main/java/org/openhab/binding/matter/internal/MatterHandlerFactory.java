@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.matter.internal;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_BRIDGE_ENDPOINT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_CONTROLLER;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_ENDPOINT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_NODE;
@@ -36,8 +35,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MatterHandlerFactory} is responsible for creating things and thing
@@ -48,9 +45,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, MatterHandlerFactory.class })
 public class MatterHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(MatterHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_NODE,
-            THING_TYPE_ENDPOINT, THING_TYPE_BRIDGE_ENDPOINT);
+            THING_TYPE_ENDPOINT);
 
     private final MatterStateDescriptionOptionProvider stateDescriptionProvider;
     private final MatterWebsocketService websocketService;
@@ -86,18 +82,11 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID derivedTypeUID = baseTypeUID != null ? baseTypeUID : thingTypeUID;
 
         if (THING_TYPE_NODE.equals(derivedTypeUID)) {
-            return new NodeHandler((Bridge) thing, stateDescriptionProvider, channelGroupTypeProvider);
+            return new NodeHandler((Bridge) thing, this, stateDescriptionProvider, channelGroupTypeProvider);
         }
 
         if (THING_TYPE_ENDPOINT.equals(derivedTypeUID)) {
-            return new EndpointHandler(thing, stateDescriptionProvider, channelGroupTypeProvider);
-        }
-
-        // TODO remove this once we move users to the new endpoint thing type
-        if (THING_TYPE_BRIDGE_ENDPOINT.equals(derivedTypeUID)) {
-            logger.warn(
-                    "IMPORTANT: 'bridge-endpoint' is deprecated, use 'endpoint' instead.  This will be removed in a future release.");
-            return new EndpointHandler(thing, stateDescriptionProvider, channelGroupTypeProvider);
+            return new EndpointHandler(thing, this, stateDescriptionProvider, channelGroupTypeProvider);
         }
 
         return null;

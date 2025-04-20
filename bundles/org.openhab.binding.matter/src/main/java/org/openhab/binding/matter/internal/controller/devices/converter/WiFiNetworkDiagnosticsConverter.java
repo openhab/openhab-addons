@@ -52,6 +52,7 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
         handler.readAttribute(endpointNumber, initializingCluster.name, WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI)
                 .thenAccept(rssi -> {
                     updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI, new DecimalType(rssi));
+                    updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, rssi);
                 }).exceptionally(e -> {
                     logger.debug("Error polling wifi network diagnostics", e);
                     return null;
@@ -73,8 +74,9 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
             case WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI:
                 if (message.value instanceof Number number) {
                     updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI, new DecimalType(number));
-
+                    updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, number);
                 }
+                break;
         }
         super.onEvent(message);
     }
@@ -83,5 +85,6 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
     public void initState() {
         updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
                 initializingCluster.rssi != null ? new DecimalType(initializingCluster.rssi) : UnDefType.NULL);
+        updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, initializingCluster.rssi);
     }
 }

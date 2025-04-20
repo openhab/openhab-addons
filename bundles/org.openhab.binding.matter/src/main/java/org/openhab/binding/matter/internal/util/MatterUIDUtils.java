@@ -51,7 +51,7 @@ public class MatterUIDUtils {
     }
 
     /**
-     * Returns the base Thing type (node, endpoint,bridge-endpoint, etc...) for a dynamic thing
+     * Returns the base Thing type (node, etc...) for a dynamic thing
      *
      * @param thingTypeUID
      * @return
@@ -63,8 +63,6 @@ public class MatterUIDUtils {
                 return MatterBindingConstants.THING_TYPE_NODE;
             case "endpoint":
                 return MatterBindingConstants.THING_TYPE_ENDPOINT;
-            case "bridge-endpoint":
-                return MatterBindingConstants.THING_TYPE_BRIDGE_ENDPOINT;
             default:
                 return null;
         }

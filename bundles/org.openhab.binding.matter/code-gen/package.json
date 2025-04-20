@@ -15,7 +15,7 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
-        "@matter/main": "v0.13.0-alpha.0-20250413-d5a27700d",
+        "@matter/main": "v0.13.0-alpha.0-20250418-8cfc0b832",
         "handlebars": "^4.7.8"
     },
     "files": [

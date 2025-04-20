@@ -106,7 +106,7 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
      * Inform all cluster converters to refresh their channel state
      */
     public void initState() {
-        channelUIDToConverters.forEach((channelUID, converter) -> converter.initState());
+        clusterToConverters.forEach((clusterId, converter) -> converter.initState());
     }
 
     public Integer endpointNumber() {
@@ -133,11 +133,11 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
             GenericConverter<? extends BaseCluster> converter = createConverter(cluster, clusters, label);
             if (converter != null) {
                 logger.debug("Converter found for cluster: {}", clusterName);
+                clusterToConverters.put(cluster.id, converter);
                 Map<Channel, @Nullable StateDescription> converterChannels = converter.createChannels(channelGroupUID);
                 for (Channel channel : converterChannels.keySet()) {
                     channelUIDToConverters.put(channel.getUID(), converter);
                     channelUIDToStateDescription.put(channel.getUID(), converterChannels.get(channel));
-                    clusterToConverters.put(cluster.id, converter);
                     boolean hasMatchingUID = channels.stream().anyMatch(c -> channel.getUID().equals(c.getUID()));
                     if (!hasMatchingUID) {
                         channels.add(channel);

@@ -114,4 +114,8 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
         }
         return channelLabel;
     }
+
+    protected void updateThingAttributeProperty(String attributeName, @Nullable Object value) {
+        handler.updateClusterAttributeProperty(initializingCluster.name, attributeName, value);
+    }
 }

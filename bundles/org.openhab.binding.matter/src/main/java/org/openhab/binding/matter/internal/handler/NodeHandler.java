@@ -36,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -56,9 +57,10 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     private Integer pollInterval = 0;
     private ConcurrentHashMap<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
 
-    public NodeHandler(Bridge bridge, MatterStateDescriptionOptionProvider stateDescriptionProvider,
+    public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
+            MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelGroupTypeProvider) {
-        super(bridge, stateDescriptionProvider, channelGroupTypeProvider);
+        super(bridge, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider);
     }
 
     @Override

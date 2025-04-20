@@ -55,7 +55,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -83,15 +85,18 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         implements AttributeListener, EventTriggeredListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final BaseThingHandlerFactory thingHandlerFactory;
     protected final MatterStateDescriptionOptionProvider stateDescriptionProvider;
     protected final MatterChannelTypeProvider channelTypeProvider;
     protected HashMap<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private @Nullable ScheduledFuture<?> pollingTask;
 
-    public MatterBaseThingHandler(Thing thing, MatterStateDescriptionOptionProvider stateDescriptionProvider,
+    public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
+            MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelTypeProvider) {
         super(thing);
+        this.thingHandlerFactory = thingHandlerFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeProvider = channelTypeProvider;
     }
@@ -257,6 +262,21 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return cachedClient;
     }
 
+    /**
+     * Update the property of the thing for a given cluster and attribute name. Null values will remove the property.
+     * 
+     * @param clusterName
+     * @param attributeName
+     * @param value
+     */
+    public void updateClusterAttributeProperty(String clusterName, String attributeName, @Nullable Object value) {
+        getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
+    }
+
+    public void registerService(Class<? extends ThingHandlerService> klass) {
+        // thingHandlerFactory.registerService(this, klass);
+    }
+
     protected @Nullable ControllerHandler controllerHandler() {
         Bridge bridge = getBridge();
         while (bridge != null) {
@@ -274,19 +294,29 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected void updateRootProperties(Endpoint root) {
         BaseCluster cluster = root.clusters.get(BasicInformationCluster.CLUSTER_NAME);
         if (cluster != null && cluster instanceof BasicInformationCluster basicCluster) {
-            thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
-            thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
-            thing.setProperty(Thing.PROPERTY_VENDOR, basicCluster.vendorName);
-            thing.setProperty(Thing.PROPERTY_MODEL_ID, basicCluster.productName);
-            thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
+            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_SERIAL_NUMBER,
+                    basicCluster.serialNumber);
+            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_FIRMWARE_VERSION,
+                    basicCluster.softwareVersionString);
+            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_VENDOR,
+                    basicCluster.vendorName);
+            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_MODEL_ID,
+                    basicCluster.productName);
+            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_HARDWARE_VERSION,
+                    basicCluster.hardwareVersionString);
         } else {
             cluster = root.clusters.get(BridgedDeviceBasicInformationCluster.CLUSTER_NAME);
             if (cluster != null && cluster instanceof BridgedDeviceBasicInformationCluster basicCluster) {
-                thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
-                thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
-                thing.setProperty(Thing.PROPERTY_VENDOR, basicCluster.vendorName);
-                thing.setProperty(Thing.PROPERTY_MODEL_ID, basicCluster.productName);
-                thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
+                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
+                        Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
+                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
+                        Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
+                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_VENDOR,
+                        basicCluster.vendorName);
+                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
+                        Thing.PROPERTY_MODEL_ID, basicCluster.productName);
+                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
+                        Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
             }
         }
         cluster = root.clusters.get(GeneralDiagnosticsCluster.CLUSTER_NAME);
@@ -294,7 +324,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
             List<String> allIpv6Addresses = new ArrayList<>();
             List<String> allIpv4Addresses = new ArrayList<>();
             for (NetworkInterface ni : generalCluster.networkInterfaces) {
-                thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, MatterLabelUtils.formatMacAddress(ni.hardwareAddress));
+                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME, Thing.PROPERTY_MAC_ADDRESS,
+                        MatterLabelUtils.formatMacAddress(ni.hardwareAddress));
                 if (!ni.iPv6Addresses.isEmpty()) {
                     allIpv6Addresses.addAll(ni.iPv6Addresses.stream().map(MatterLabelUtils::formatIPv6Address)
                             .collect(Collectors.toList()));
@@ -305,11 +336,18 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 }
             }
             if (!allIpv6Addresses.isEmpty()) {
-                thing.setProperty("ipv6Address", String.join(",", allIpv6Addresses));
+                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME,
+                        GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv6",
+                        String.join(",", allIpv6Addresses));
             }
             if (!allIpv4Addresses.isEmpty()) {
-                thing.setProperty("ipv4Address", String.join(",", allIpv4Addresses));
+                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME,
+                        GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv4",
+                        String.join(",", allIpv4Addresses));
             }
+            // todo remove this after cleanup
+            getThing().setProperty("ipv6Address", null);
+            getThing().setProperty("ipv4Address", null);
         }
     }
 

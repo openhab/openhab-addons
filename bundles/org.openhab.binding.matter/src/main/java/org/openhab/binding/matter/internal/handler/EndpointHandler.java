@@ -28,6 +28,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
@@ -44,9 +45,10 @@ public class EndpointHandler extends MatterBaseThingHandler {
     private Integer endpointId = 0;
     private Integer pollInterval = 0;
 
-    public EndpointHandler(Thing thing, MatterStateDescriptionOptionProvider stateDescriptionProvider,
+    public EndpointHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
+            MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelGroupTypeProvider) {
-        super(thing, stateDescriptionProvider, channelGroupTypeProvider);
+        super(thing, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider);
     }
 
     @Override

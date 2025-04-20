@@ -32,10 +32,6 @@ public class MatterBindingConstants {
     public static final ThingTypeUID THING_TYPE_NODE = new ThingTypeUID(BINDING_ID, "node");
     public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");
 
-    // Most endpoints are represented as channel groups on Nodes, bridges for now can be represented as standalone
-    // endpoint things
-    public static final ThingTypeUID THING_TYPE_BRIDGE_ENDPOINT = new ThingTypeUID(BINDING_ID, "bridge-endpoint");
-
     // This was borrowed from the zigbee binding as Matter uses the same cluster API model
     // List of Channel UIDs
     public static final String CHANNEL_LABEL_ONOFF_ONOFF = "On Off";
@@ -251,34 +247,6 @@ public class MatterBindingConstants {
     public static final String ITEM_TYPE_ROLLERSHUTTER = "Rollershutter";
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_STRING = "String";
-
-    // Thread Network Diagnostics
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL = "threadnetworkdiagnostics-channel";
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE = "threadnetworkdiagnostics-routingrole";
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME = "threadnetworkdiagnostics-networkname";
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID = "threadnetworkdiagnostics-panid";
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID = "threadnetworkdiagnostics-extendedpanid";
-    public static final String CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16 = "threadnetworkdiagnostics-rloc16";
-
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_CHANNEL = "Channel";
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_ROUTINGROLE = "Routing Role";
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_NETWORKNAME = "Network Name";
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_PANID = "PAN ID";
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID = "Extended PAN ID";
-    public static final String CHANNEL_LABEL_THREADNETWORKDIAGNOSTICS_RLOC16 = "RLOC16";
-
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_CHANNEL = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL);
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_ROUTINGROLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE);
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_NETWORKNAME = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME);
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_PANID = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID);
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID);
-    public static final ChannelTypeUID CHANNEL_THREADNETWORKDIAGNOSTICS_RLOC16 = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16);
 
     public static final String CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_BORDERROUTERNAME = "threadborderroutermgmt-borderroutername";
     public static final String CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_BORDERAGENTID = "threadborderroutermgmt-borderagentid";

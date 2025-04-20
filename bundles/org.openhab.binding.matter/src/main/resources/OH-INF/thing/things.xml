@@ -58,19 +58,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<thing-type id="bridge-endpoint">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="node"/>
-		</supported-bridge-type-refs>
-		<label>Matter Bridge Endpoint (Deprecated)</label>
-		<description>A Matter Bridge Endpoint represented as a standalone Thing (Deprecated)</description>
-		<representation-property>endpointId</representation-property>
-		<config-description>
-			<parameter name="endpointId" type="integer" required="true">
-				<label>Endpoint Id</label>
-				<description>The Matter Endpoint Id</description>
-			</parameter>
-		</config-description>
-	</thing-type>
 </thing:thing-descriptions>

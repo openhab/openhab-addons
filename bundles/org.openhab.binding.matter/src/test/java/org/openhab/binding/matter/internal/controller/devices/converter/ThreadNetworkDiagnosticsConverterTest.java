@@ -12,22 +12,14 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE;
 
 import java.math.BigInteger;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -40,12 +32,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkD
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.RoutingRoleEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Test class for ThreadNetworkDiagnosticsConverter
@@ -81,52 +67,10 @@ class ThreadNetworkDiagnosticsConverterTest {
         mockCluster.channel = 15;
         mockCluster.routingRole = ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER;
         mockCluster.networkName = "TestNetwork";
-        mockCluster.panId = 0x1234;
+        mockCluster.panId = 0x1234; // 4660
         mockCluster.extendedPanId = BigInteger.valueOf(223372036854775807L);
-        mockCluster.rloc16 = 0xABCD;
-        converter = new ThreadNetworkDiagnosticsConverter(mockCluster, mockHandler, 1, "TestLabel");
-    }
-
-    @Test
-    void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
-        assertEquals(6, channels.size());
-
-        // Verify each channel was created with correct UID and item type
-        for (Channel channel : channels.keySet()) {
-            String uid = channel.getUID().toString();
-            if (uid.contains("channel")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-channel", uid);
-                assertEquals("Number", channel.getAcceptedItemType());
-            } else if (uid.contains("routingrole")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-routingrole", uid);
-                assertEquals("Number", channel.getAcceptedItemType());
-            } else if (uid.contains("networkname")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-networkname", uid);
-                assertEquals("String", channel.getAcceptedItemType());
-            } else if (uid.endsWith("-panid")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-panid", uid);
-                assertEquals("Number", channel.getAcceptedItemType());
-            } else if (uid.endsWith("-extendedpanid")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-extendedpanid", uid);
-                assertEquals("Number", channel.getAcceptedItemType());
-            } else if (uid.contains("rloc16")) {
-                assertEquals("matter:node:test:12345:1#threadnetworkdiagnostics-rloc16", uid);
-                assertEquals("Number", channel.getAcceptedItemType());
-            }
-        }
-    }
-
-    @Test
-    void testOnEventWithChannel() {
-        AttributeChangedMessage message = new AttributeChangedMessage();
-        message.path = new Path();
-        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL;
-        message.value = 15;
-        converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL),
-                eq(new DecimalType(15)));
+        mockCluster.rloc16 = 0xABCD; // 43981
+        converter = Mockito.spy(new ThreadNetworkDiagnosticsConverter(mockCluster, mockHandler, 1, "TestLabel"));
     }
 
     @Test
@@ -136,8 +80,9 @@ class ThreadNetworkDiagnosticsConverterTest {
         message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE;
         message.value = RoutingRoleEnum.LEADER;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE),
-                eq(new DecimalType(ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER.getValue())));
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE),
+                eq(ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER));
     }
 
     @Test
@@ -147,8 +92,8 @@ class ThreadNetworkDiagnosticsConverterTest {
         message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME;
         message.value = "TestNetwork";
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME),
-                eq(new StringType("TestNetwork")));
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME), eq("TestNetwork"));
     }
 
     @Test
@@ -158,8 +103,8 @@ class ThreadNetworkDiagnosticsConverterTest {
         message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID;
         message.value = 0x1234;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID),
-                eq(new DecimalType(0x1234)));
+        verify(converter, times(1)).updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID),
+                eq(4660));
     }
 
     @Test
@@ -169,8 +114,8 @@ class ThreadNetworkDiagnosticsConverterTest {
         message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID;
         message.value = 223372036854775807L;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID),
-                eq(new DecimalType(223372036854775807L)));
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID), eq(223372036854775807L));
     }
 
     @Test
@@ -180,37 +125,27 @@ class ThreadNetworkDiagnosticsConverterTest {
         message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16;
         message.value = 0xABCD;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16),
-                eq(new DecimalType(0xABCD)));
-    }
-
-    @Test
-    void testOnEventWithNonNumberValue() {
-        AttributeChangedMessage message = new AttributeChangedMessage();
-        message.path = new Path();
-        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL;
-        message.value = "invalid";
-        converter.onEvent(message);
-        // Should not call updateState for non-number values
-        verify(mockHandler, times(0)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL),
-                eq(new DecimalType(15)));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16), eq(43981));
     }
 
     @Test
     void testInitState() {
         converter.initState();
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL),
-                eq(new DecimalType(15)));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE),
-                eq(new DecimalType(ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER.getValue())));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME),
-                eq(new StringType("TestNetwork")));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID),
-                eq(new DecimalType(0x1234)));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID),
-                eq(new DecimalType(223372036854775807L)));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16),
-                eq(new DecimalType(0xABCD)));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL), eq(15));
+        verify(converter, atLeastOnce()).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE),
+                eq(ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER));
+        verify(converter, atLeastOnce()).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME), eq("TestNetwork"));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID), eq(4660));
+        verify(converter, atLeastOnce()).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID),
+                eq(BigInteger.valueOf(223372036854775807L)));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16), eq(43981));
     }
 
     @Test
@@ -222,17 +157,17 @@ class ThreadNetworkDiagnosticsConverterTest {
         mockCluster.extendedPanId = null;
         mockCluster.rloc16 = null;
         converter.initState();
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL),
-                eq(UnDefType.NULL));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE),
-                eq(UnDefType.NULL));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME),
-                eq(UnDefType.NULL));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID),
-                eq(UnDefType.NULL));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID),
-                eq(UnDefType.NULL));
-        verify(mockHandler, times(1)).updateState(eq(1), eq(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16),
-                eq(UnDefType.NULL));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16), eq(null));
     }
 }

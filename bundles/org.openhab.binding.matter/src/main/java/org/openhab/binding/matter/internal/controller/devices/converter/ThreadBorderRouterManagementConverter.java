@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.actions.MatterOTBRActions;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralCommissioningCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadBorderRouterManagementCluster;
@@ -80,6 +81,7 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
     public ThreadBorderRouterManagementConverter(ThreadBorderRouterManagementCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
+        handler.registerService(MatterOTBRActions.class);
     }
 
     @Override

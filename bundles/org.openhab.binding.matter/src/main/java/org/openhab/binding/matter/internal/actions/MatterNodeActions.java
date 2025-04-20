@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "matter")
 public class MatterNodeActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
-    private @Nullable NodeHandler handler;
+    protected @Nullable NodeHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {

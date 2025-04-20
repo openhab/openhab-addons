@@ -494,64 +494,6 @@
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<!-- Thread Network Diagnostics -->
-	<channel-type id="threadnetworkdiagnostics-channel" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel</label>
-		<description>The current Thread network channel</description>
-		<category>Network</category>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="threadnetworkdiagnostics-routingrole" advanced="true">
-		<item-type>Number</item-type>
-		<label>Routing Role</label>
-		<description>The current Thread network routing role</description>
-		<category>Network</category>
-		<state readOnly="true">
-			<options>
-				<option value="0">Unspecified</option>
-				<option value="1">Unassigned</option>
-				<option value="2">Sleepy End Device</option>
-				<option value="3">End Device</option>
-				<option value="4">REED</option>
-				<option value="5">Router</option>
-				<option value="6">Leader</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="threadnetworkdiagnostics-networkname" advanced="true">
-		<item-type>String</item-type>
-		<label>Network Name</label>
-		<description>The Thread network name</description>
-		<category>Network</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="threadnetworkdiagnostics-panid" advanced="true">
-		<item-type>Number</item-type>
-		<label>PAN ID</label>
-		<description>The Thread network PAN ID</description>
-		<category>Network</category>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="threadnetworkdiagnostics-extendedpanid" advanced="true">
-		<item-type>Number</item-type>
-		<label>Extended PAN ID</label>
-		<description>The Thread network extended PAN ID</description>
-		<category>Network</category>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="threadnetworkdiagnostics-rloc16" advanced="true">
-		<item-type>Number</item-type>
-		<label>RLOC16</label>
-		<description>The Thread network RLOC16 address</description>
-		<category>Network</category>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
 
 	<!-- Thread Border Router Management -->
 	<channel-type id="threadborderroutermgmt-borderroutername">
