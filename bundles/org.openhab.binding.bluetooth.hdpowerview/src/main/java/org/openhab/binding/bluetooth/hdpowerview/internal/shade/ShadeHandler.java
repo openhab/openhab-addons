@@ -487,14 +487,14 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                     removeChannels.add(channel);
                 }
             }
-            boolean isDrape = ShadeCapabilitiesDatabase.DRAPES_TYPES.contains(dataReader.getTypeId());
-            if (!removeChannels.isEmpty() || isDrape) {
+            boolean isDrapes = ShadeCapabilitiesDatabase.DRAPES_TYPES.contains(dataReader.getTypeId());
+            if (isDrapes || !removeChannels.isEmpty()) {
                 ThingBuilder thingBuilder = editThing();
+                if (isDrapes) {
+                    thingBuilder = thingBuilder.withSemanticEquipmentTag(Equipment.DRAPES);
+                }
                 if (!removeChannels.isEmpty()) {
                     thingBuilder = thingBuilder.withoutChannels(removeChannels);
-                }
-                if (isDrape) {
-                    thingBuilder = thingBuilder.withSemanticEquipmentTag(Equipment.DRAPES);
                 }
                 updateThing(thingBuilder.build());
             }
