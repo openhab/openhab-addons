@@ -240,7 +240,7 @@
 		</supported-bridge-type-refs>
 		<label>Coffee Machine</label>
 		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
-		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
+		<semantic-equipment-tag>CoffeeMaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
