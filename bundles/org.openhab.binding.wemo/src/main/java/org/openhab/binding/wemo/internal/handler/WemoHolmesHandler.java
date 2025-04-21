@@ -127,12 +127,6 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(DEVICEACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         String attribute = null;
         String value = null;
 
@@ -244,7 +238,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
-            executeCall(wemoURL, soapHeader, content);
+            probeAndExecuteCall(DEVICEACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
@@ -270,16 +264,11 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = DEVICEACTION;
-        String wemoURL = getWemoURL(actionService);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
             String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
             // Due to Belkins bad response formatting, we need to run this twice.

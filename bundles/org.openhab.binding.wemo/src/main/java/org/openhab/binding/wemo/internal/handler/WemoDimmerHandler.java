@@ -433,11 +433,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
      *
      */
     protected void updateWemoState() {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         String action = "GetBinaryState";
         String variable = null;
         String actionService = BASICACTION;
@@ -445,7 +440,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(BASICACTION, soapHeader, content);
             value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
             variable = "BinaryState";
             this.onValueReceived(variable, value, actionService + "1");
@@ -466,7 +461,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(BASICACTION, soapHeader, content);
             value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
             variable = "startTime";
             this.onValueReceived(variable, value, actionService + "1");
@@ -500,11 +495,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     }
 
     public void setBinaryState(String action, String argument, String value) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
             String content = """
@@ -516,7 +506,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument + ">" + value + "</"
                     + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-            executeCall(wemoURL, soapHeader, content);
+            probeAndExecuteCall(BASICACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.warn("Failed to set binaryState '{}' for thing '{}': {}", value, getThing().getUID(),
@@ -526,11 +516,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     }
 
     public void setTimerStart(String action, String argument, String value) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.warn("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
             String content = """
@@ -540,7 +525,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     <u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">\
                     """
                     + value + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
-            executeCall(wemoURL, soapHeader, content);
+            probeAndExecuteCall(BASICACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("Failed to set timerStart '{}' for thing '{}': {}", value, getThing().getUID(),

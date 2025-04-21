@@ -15,17 +15,15 @@ package org.openhab.binding.wemo.internal.handler;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,7 +57,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private static final int PORT_RANGE_START = 49151;
     private static final int PORT_RANGE_END = 49157;
-    private static final int HTTP_TIMEOUT_SECONDS = 2;
+    private static final int HTTP_TIMEOUT_MS = 1000;
 
     protected final HttpClient httpClient;
 
@@ -68,6 +66,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     private final Object upnpLock = new Object();
 
     private @Nullable String host;
+    private @Nullable Integer port;
     private Map<String, Instant> subscriptions = new ConcurrentHashMap<>();
 
     public WemoBaseThingHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
@@ -80,7 +79,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     public void initialize() {
         logger.debug("Registering UPnP participant for {}", getThing().getUID());
         service.registerParticipant(this);
-        initializeHost();
     }
 
     @Override
@@ -163,55 +161,12 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         }
     }
 
-    public @Nullable String getWemoURL(String actionService) {
-        String host = getHost();
-        if (host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return null;
-        }
-        int port = scanForPort(host);
-        if (port == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
-            return null;
-        }
-        return "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
-    }
-
     private @Nullable String getHost() {
         if (host != null) {
             return host;
         }
-        initializeHost();
-        return host;
-    }
-
-    private void initializeHost() {
         host = getHostFromService();
-    }
-
-    private int scanForPort(String host) {
-        Integer portFromService = getPortFromService();
-        List<Integer> portsToCheck = new ArrayList<>(PORT_RANGE_END - PORT_RANGE_START + 1);
-        Stream<Integer> portRange = IntStream.rangeClosed(PORT_RANGE_START, PORT_RANGE_END).boxed();
-        if (portFromService != null) {
-            portsToCheck.add(portFromService);
-            portRange = portRange.filter(p -> p.intValue() != portFromService);
-        }
-        portsToCheck.addAll(portRange.collect(Collectors.toList()));
-        int port = 0;
-        for (Integer portCheck : portsToCheck) {
-            String urlProbe = "http://" + host + ":" + portCheck;
-            logger.trace("Probing {} to find port", urlProbe);
-            if (!probeURL(urlProbe)) {
-                continue;
-            }
-            port = portCheck;
-            logger.trace("Successfully detected port {}", port);
-            break;
-        }
-        return port;
+        return host;
     }
 
     private @Nullable String getHostFromService() {
@@ -220,6 +175,14 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             return descriptorURL.getHost();
         }
         return null;
+    }
+
+    private @Nullable Integer getPort() {
+        if (port != null) {
+            return port;
+        }
+        port = getPortFromService();
+        return port;
     }
 
     private @Nullable Integer getPortFromService() {
@@ -233,17 +196,51 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         return null;
     }
 
-    private boolean probeURL(String url) {
-        try {
-            httpClient.newRequest(url).timeout(250, TimeUnit.MILLISECONDS).method(HttpMethod.GET).send();
-            return true;
-        } catch (TimeoutException | ExecutionException | InterruptedException e) {
-            return false;
+    protected String probeAndExecuteCall(String actionService, String soapHeader, String soapBody) throws IOException {
+        String host = getHost();
+        if (host == null) {
+            throw new IOException("@text/config-status.error.missing-ip");
         }
+
+        Integer lastPort = getPort();
+        Integer portFromService = getPortFromService();
+
+        // Build prioritized list of ports to try
+        Set<Integer> portsToCheck = new LinkedHashSet<>();
+
+        // Last known working port
+        if (lastPort != null) {
+            portsToCheck.add(lastPort);
+        }
+
+        // Port announced via UPnP service
+        if (portFromService != null) {
+            portsToCheck.add(portFromService);
+        }
+
+        // Add remaining ports from the defined range
+        for (int port = PORT_RANGE_START; port <= PORT_RANGE_END; port++) {
+            portsToCheck.add(port);
+        }
+
+        for (Integer port : portsToCheck) {
+            String wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
+            try {
+                String response = executeCall(wemoURL, soapHeader, soapBody);
+                this.port = port;
+                return response;
+            } catch (IOException e) {
+                logger.debug("Failed to connect to device: {}", e.getMessage());
+            }
+        }
+
+        String attemptedPorts = portsToCheck.stream().map(String::valueOf).collect(Collectors.joining(", "));
+
+        throw new IOException("Failed to connect to device. All attempts on ports [" + attemptedPorts + "] failed.");
     }
 
-    protected String executeCall(String wemoURL, String soapHeader, String soapBody) throws IOException {
-        Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    private String executeCall(String wemoURL, String soapHeader, String soapBody) throws IOException {
+        Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .header(HttpHeader.CONTENT_TYPE, WemoBindingConstants.HTTP_CALL_CONTENT_HEADER)
                 .header("SOAPACTION", soapHeader).method(HttpMethod.POST).content(new StringContentProvider(soapBody));
 

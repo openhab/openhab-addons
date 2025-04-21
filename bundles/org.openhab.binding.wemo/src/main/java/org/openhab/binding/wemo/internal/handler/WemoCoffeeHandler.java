@@ -120,12 +120,6 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         if (command instanceof RefreshType) {
             try {
                 updateWemoState();
@@ -156,7 +150,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                                 </s:Envelope>\
                                 """;
 
-                        executeCall(wemoURL, soapHeader, content);
+                        probeAndExecuteCall(BASICACTION, soapHeader, content);
                         updateState(CHANNEL_STATE, OnOffType.ON);
                         State newMode = new StringType("Brewing");
                         updateState(CHANNEL_COFFEE_MODE, newMode);
@@ -183,16 +177,11 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = DEVICEACTION;
-        String wemoURL = getWemoURL(actionService);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 

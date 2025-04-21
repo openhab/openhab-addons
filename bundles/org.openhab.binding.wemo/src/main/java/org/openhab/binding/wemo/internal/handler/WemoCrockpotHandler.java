@@ -113,12 +113,6 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         String mode = "0";
         String time = null;
 
@@ -152,7 +146,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                         """
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                executeCall(wemoURL, soapHeader, content);
+                probeAndExecuteCall(BASICACTION, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
@@ -179,16 +173,11 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = BASICEVENT;
-        String wemoURL = getWemoURL(actionService);
-        if (wemoURL == null) {
-            logger.warn("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String action = "GetCrockpotState";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
             String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
             String time = substringBetween(wemoCallResponse, "<time>", "</time>");
             String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");

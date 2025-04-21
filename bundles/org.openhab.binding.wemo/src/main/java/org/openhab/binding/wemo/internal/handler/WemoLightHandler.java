@@ -154,12 +154,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         if (command instanceof RefreshType) {
             try {
                 getDeviceState();
@@ -249,7 +243,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                             + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                             + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    executeCall(wemoURL, soapHeader, content);
+                    probeAndExecuteCall(BASICACTION, soapHeader, content);
                     if ("10008".equals(capability)) {
                         OnOffType binaryState = null;
                         binaryState = OnOffType.from(!"0".equals(value));
@@ -281,11 +275,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
      */
     public void getDeviceState() {
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
-        String wemoURL = getWemoURL(BRIDGEACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
             String content = """
@@ -297,7 +286,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     """
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoCallResponse = executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(BRIDGEACTION, soapHeader, content);
             wemoCallResponse = unescapeXml(wemoCallResponse);
             String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
             logger.trace("wemoNewLightState = {}", response);
