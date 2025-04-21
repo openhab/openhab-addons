@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.mideaac.internal;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
@@ -22,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jose4j.base64url.Base64;
 import org.openhab.core.util.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -34,6 +39,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class Utils {
+    private static Logger logger = LoggerFactory.getLogger(Utils.class);
+
     static byte[] empty = new byte[0];
 
     /**
@@ -189,22 +196,37 @@ public class Utils {
     }
 
     /**
-     * String Builder
+     * String Builder for Hash
      * 
      * @param json JSON object
      * @return string
      */
-    public static String getQueryString(JsonObject json) {
+    public static String getQueryString(JsonObject json, boolean hash) {
         StringBuilder sb = new StringBuilder();
         Iterator<String> keys = json.keySet().stream().sorted().iterator();
         while (keys.hasNext()) {
             @Nullable
             String key = keys.next();
-            sb.append(key);
-            sb.append("=");
-            sb.append(json.get(key).getAsString());
-            if (keys.hasNext()) {
-                sb.append("&"); // To allow for another argument.
+            String value = json.get(key).getAsString();
+
+            try {
+                String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8.toString());
+                String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+
+                if (hash) {
+                    // For hash generation, preserve + and @ characters in values.
+                    encodedValue = encodedValue.replace("%2B", "+");
+                    encodedValue = encodedValue.replace("%40", "@");
+                }
+
+                // Append the encoded key and value to the query string
+                sb.append(encodedKey).append("=").append(encodedValue);
+
+                if (keys.hasNext()) {
+                    sb.append("&"); // To allow for another argument.
+                }
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("Error encoding key and value", e);
             }
         }
         return sb.toString();

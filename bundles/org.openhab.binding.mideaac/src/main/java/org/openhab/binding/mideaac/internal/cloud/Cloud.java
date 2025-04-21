@@ -172,7 +172,7 @@ public class Cloud {
         if (!cloudProvider.proxied().isBlank()) {
             request.content(new StringContentProvider(json));
         } else {
-            String body = Utils.getQueryString(data);
+            String body = Utils.getQueryString(data, false);
             logger.debug("Request body: {}", body);
             request.content(new StringContentProvider(body));
         }
