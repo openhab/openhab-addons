@@ -360,9 +360,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     haComponents.remove(known.getComponentId());
                     haComponentsByHaId.remove(removed);
                     componentActuallyRemoved = true;
-                }
-                if (known == updateComponent) {
-                    updateComponent = null;
+
+                    if (known.equals(updateComponent)) {
+                        updateComponent = null;
+                    }
                 }
             }
             if (componentActuallyRemoved) {
