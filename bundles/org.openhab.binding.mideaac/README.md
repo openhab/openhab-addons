@@ -4,13 +4,13 @@ This binding integrates Air Conditioners that use the Midea protocol. Midea is a
 
 An AC device is likely supported if it uses one of the following Android apps or it's iOS equivalent.
 
-| Application                                  | Comment                               | Options      |
-|--:-------------------------------------------|--:------------------------------------|--------------|
-| Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates | Midea Air    |
-| NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates | NetHome Plus |
-| SmartHome/MSmartHome (com.midea.ai.overseas) | Full Support of key and token updates | MSmartHome   |
+| Application                                  | Comment                                  | Options      | Default |
+|----------------------------------------------|------------------------------------------|--------------|---------|
+| Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates    | Midea Air    |         |
+| NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates    | NetHome Plus | Yes     |
+| SmartHome/MSmartHome (com.midea.ai.overseas) | Note: Reports that this cloud is offline | MSmartHome   |         |
 
-Note: The Air Conditioner must already be set-up on the WiFi network and have a fixed IP Address with one of the three apps listed above for full discovery and key and token updates.
+Note: The Air Conditioner must already be set-up on the WiFi network and have a fixed IP Address to be discovered.
 
 ## Supported Things
 
@@ -18,12 +18,10 @@ This binding supports one Thing type `ac`.
 
 ## Discovery
 
-Once the Air Conditioner is on the network (WiFi active) activating an Inbox scan with this binding will send an IP broadcast message.
-Every responding unit gets added to the Inbox. When adding each thing, the required parameters of ipAddress, ipPort, deviceId, pollingTime,
-timeout, promptTone and version will be populated with either discovered values or the default settings. A V.2 device will be Online.
-A V.3 device will require you to enter the cloud provider, token and key before becoming Online. The token and key can be discovered by entering
-your email and password for your cloud account. The email and password are stored securely, but can be deleted after the token and key are entered,
-unless key and token update is activated.
+Once the Air Conditioner is on the network (WiFi active) activating the Inbox scan with this binding will send an IP broadcast message.
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either discovered values 
+or the default settings. For a V.3 device, if the defaults did not get the token and key enter your cloud provider, email and password.
+For security replace the default cloud provider, email and password with your account information. Required if keyTokenUpdate is used.
 
 ## Binding Configuration
 
@@ -31,31 +29,31 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter     | Required ?  | Comment                                                           | Default |
-|--:------------|--:----------|--:----------------------------------------------------------------|---------|
-| ipAddress     | Yes         | IP Address of the device.                                         |         |
-| ipPort        | Yes         | IP port of the device                                             | 6444    |
-| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
-| cloud         | Yes for V.3 | Cloud Provider name for email and password                        |         |
-| email         | No          | Email for cloud account chosen in Cloud Provider.                 |         |
-| password      | No          | Password for cloud account chosen in Cloud Provider.              |         |
-| token         | Yes for V.3 | Secret Token (length 128 HEX)                                     |         |
-| key           | Yes for V.3 | Secret Key (length 64 HEX)                                        |         |
-| pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
-| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0       |
-| timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
-| promptTone    | Yes         | "Ding" tone when command is received and executed.                | False   |
-| version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0       |
+| Parameter     | Required ?  | Comment                                                           | Default                   |
+|---------------|-------------|-------------------------------------------------------------------|---------------------------|
+| ipAddress     | Yes         | IP Address of the device.                                         |                           |
+| ipPort        | Yes         | IP port of the device                                             | 6444                      |
+| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0                         |
+| cloud         | Yes for V.3 | Cloud Provider name for email and password                        | NetHome Plus              |
+| email         | No          | Email for cloud account chosen in Cloud Provider.                 | nethome+us@mailinator.com |
+| password      | No          | Password for cloud account chosen in Cloud Provider.              | password1                 |
+| token         | Yes for V.3 | Secret Token (length 128 HEX)                                     |                           |
+| key           | Yes for V.3 | Secret Key (length 64 HEX)                                        |                           |
+| pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60                        |
+| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0                         |
+| timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4                         |
+| promptTone    | Yes         | "Ding" tone when command is received and executed.                | False                     |
+| version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0                         |
 
 ## Channels
 
 Following channels are available:
 
 | Channel                      | Type               | Description                                                                                            | Read only | Advanced |
-|--:---------------------------|--:-----------------|--:-----------------------------------------------------------------------------------------------------|--:--------|--:-------|
+|------------------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
 | power                        | Switch             | Turn the AC on or off.                                                                                 |           |          |
 | target-temperature           | Number:Temperature | Target temperature.                                                                                    |           |          |
-| operational-mode             | String             | Operational mode: OFF (turns off), AUTO, COOL, DRY, HEAT, FAN ONLY                                     |           |          |
+| operational-mode             | String             | Operational mode: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                 |           |          |
 | fan-speed                    | String             | Fan speed: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.     |           |          |
 | swing-mode                   | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
 | eco-mode                     | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
@@ -105,11 +103,11 @@ Switch temperature_unit "Fahrenheit or Celsius"                             { ch
 ### `demo.sitemap` Example
 
 ```java
-sitemap midea label="Split AC MBR"{
+sitemap midea label="Split AC"{
     Frame label="AC Unit" {
         Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
         Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"
-        Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=63.0 maxValue=78 step=1.0
+        Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=62.0 maxValue=86 step=1.0
         Switch item=power label="Midea AC Power"
         Switch item=temperature_unit label= "Temp Unit" mappings=[ON="Fahrenheit", OFF="Celsius"]
         Selection item=fan_speed label="Midea AC Fan Speed"

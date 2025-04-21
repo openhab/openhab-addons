@@ -64,17 +64,19 @@
 					<option value="NetHome Plus">NetHome Plus</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<default></default>
+				<default>NetHome Plus</default>
 			</parameter>
 			<parameter name="email" type="text" required="false">
 				<context>email</context>
 				<label>Email</label>
 				<description>Email for cloud account chosen in Cloud Provider.</description>
+				<default>nethome+us@mailinator.com</default>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for cloud account chosen in Cloud Provider.</description>
+				<default>password1</default>
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<context>token</context>
