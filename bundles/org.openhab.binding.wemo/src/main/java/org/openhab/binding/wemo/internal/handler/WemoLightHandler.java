@@ -15,13 +15,14 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -226,6 +227,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     }
                     break;
             }
+
             try {
                 if (capability != null && value != null) {
                     String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
@@ -251,7 +253,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     }
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (IOException e) {
+            } catch (MissingHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+            } catch (WemoException e) {
                 logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                         e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -275,6 +280,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
      */
     public void getDeviceState() {
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
+
         try {
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
             String content = """
@@ -308,7 +314,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
             logger.debug("Could not retrieve new Wemo light state for thing '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

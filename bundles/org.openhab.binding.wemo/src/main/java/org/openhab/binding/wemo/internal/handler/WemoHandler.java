@@ -15,13 +15,14 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -83,30 +84,22 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            try {
-                logger.debug("Polling job for thing {}", getThing().getUID());
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
             }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            updateWemoState();
         } else if (CHANNEL_STATE.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 try {
@@ -115,7 +108,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     String content = createBinaryStateContent(binaryState);
                     probeAndExecuteCall(BASICACTION, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
+                } catch (MissingHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                } catch (WemoException e) {
                     logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                             e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -153,7 +149,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 this.onValueReceived(variable, value, actionService + "1");
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
             logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

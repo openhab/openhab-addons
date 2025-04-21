@@ -15,7 +15,6 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.time.Instant;
 import java.util.Set;
@@ -28,6 +27,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
@@ -102,68 +103,61 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            try {
-                logger.debug("Polling job for thing {}", getThing().getUID());
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
             }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            updateWemoState();
         } else if (channelUID.getId().equals(CHANNEL_STATE)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    try {
-                        String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
+            if (command.equals(OnOffType.ON)) {
+                try {
+                    String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
 
-                        String content = """
-                                <?xml version="1.0"?>\
-                                <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
-                                <s:Body>\
-                                <u:SetAttributes xmlns:u="urn:Belkin:service:deviceevent:1">\
-                                <attributeList>&lt;attribute&gt;&lt;name&gt;Brewed&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;\
-                                &lt;attribute&gt;&lt;name&gt;LastCleaned&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;\
-                                &lt;name&gt;ModeTime&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;Brewing&lt;/name&gt;\
-                                &lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;TimeRemaining&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;\
-                                &lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;WaterLevelReached&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;\
-                                attribute&gt;&lt;name&gt;Mode&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;CleanAdvise&lt;/name&gt;\
-                                &lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;FilterAdvise&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;\
-                                &lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>\
-                                </u:SetAttributes>\
-                                </s:Body>\
-                                </s:Envelope>\
-                                """;
+                    String content = """
+                            <?xml version="1.0"?>\
+                            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                            <s:Body>\
+                            <u:SetAttributes xmlns:u="urn:Belkin:service:deviceevent:1">\
+                            <attributeList>&lt;attribute&gt;&lt;name&gt;Brewed&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;\
+                            &lt;attribute&gt;&lt;name&gt;LastCleaned&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;\
+                            &lt;name&gt;ModeTime&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;Brewing&lt;/name&gt;\
+                            &lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;TimeRemaining&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;\
+                            &lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;WaterLevelReached&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;\
+                            attribute&gt;&lt;name&gt;Mode&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;CleanAdvise&lt;/name&gt;\
+                            &lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;FilterAdvise&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;\
+                            &lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>\
+                            </u:SetAttributes>\
+                            </s:Body>\
+                            </s:Envelope>\
+                            """;
 
-                        probeAndExecuteCall(BASICACTION, soapHeader, content);
-                        updateState(CHANNEL_STATE, OnOffType.ON);
-                        State newMode = new StringType("Brewing");
-                        updateState(CHANNEL_COFFEE_MODE, newMode);
-                        updateStatus(ThingStatus.ONLINE);
-                    } catch (IOException e) {
-                        logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
-                                e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
+                    probeAndExecuteCall(BASICACTION, soapHeader, content);
+                    updateState(CHANNEL_STATE, OnOffType.ON);
+                    State newMode = new StringType("Brewing");
+                    updateState(CHANNEL_COFFEE_MODE, newMode);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (MissingHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                } catch (WemoException e) {
+                    logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
+                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-                // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched
-                // off remotely
             }
+            // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched
+            // off remotely
         }
     }
 
@@ -313,7 +307,10 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
             } catch (Exception e) {
                 logger.warn("Failed to parse attributeList for WeMo CoffeMaker '{}'", this.getThing().getUID(), e);
             }
-        } catch (IOException e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
             logger.debug("Failed to get attributes for thing '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

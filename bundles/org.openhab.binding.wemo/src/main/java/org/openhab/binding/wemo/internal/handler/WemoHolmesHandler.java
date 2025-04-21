@@ -31,6 +31,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -109,19 +111,15 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            try {
-                logger.debug("Polling job for thing {}", getThing().getUID());
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
             }
+            updateWemoState();
         }
     }
 
@@ -226,6 +224,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             attribute = "SetTemperature";
             value = command.toString();
         }
+
         try {
             String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
             String content = """
@@ -240,7 +239,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     + "</s:Envelope>";
             probeAndExecuteCall(DEVICEACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
             logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -470,7 +472,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException | WemoException e) {
             logger.debug("Failed to get actual state for thing '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

@@ -15,16 +15,13 @@ package org.openhab.binding.wemo.internal.discovery;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,13 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.ApiController;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -75,7 +66,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
     private final WemoBridgeHandler wemoBridgeHandler;
     private final WemoLinkScan scanningRunnable;
     private final UpnpIOService service;
-    private final HttpClient httpClient;
+    private final ApiController apiController;
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
@@ -84,8 +75,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
         super(DISCOVERY_TIMEOUT_SECONDS);
         this.service = upnpIOService;
         this.wemoBridgeHandler = wemoBridgeHandler;
-
-        this.httpClient = httpClient;
+        this.apiController = new ApiController(httpClient);
 
         this.scanningRunnable = new WemoLinkScan();
         this.activate(null);
@@ -124,7 +114,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                 String deviceURL = substringBefore(descriptorURL.toString(), "/setup.xml");
                 String wemoURL = deviceURL + "/upnp/control/bridge1";
 
-                String endDeviceRequest = executeCall(wemoURL, soapHeader, content);
+                String endDeviceRequest = apiController.executeCall(wemoURL, soapHeader, content);
 
                 logger.trace("endDeviceRequest answered '{}'", endDeviceRequest);
 
@@ -277,31 +267,6 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
         @Override
         public void run() {
             startScan();
-        }
-    }
-
-    private String executeCall(String wemoURL, String soapHeader, String soapBody) throws IOException {
-        Request request = httpClient.newRequest(wemoURL).timeout(2, TimeUnit.SECONDS)
-                .header(HttpHeader.CONTENT_TYPE, WemoBindingConstants.HTTP_CALL_CONTENT_HEADER)
-                .header("SOAPACTION", soapHeader).method(HttpMethod.POST).content(new StringContentProvider(soapBody));
-
-        logger.trace("Performing HTTP call for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader,
-                soapBody);
-
-        try {
-            ContentResponse response = request.send();
-
-            int status = response.getStatus();
-            if (!HttpStatus.isSuccess(status)) {
-                throw new IOException("The request failed with HTTP error " + status);
-            }
-
-            String responseContent = response.getContentAsString();
-            logger.trace("HTTP response body: '{}'", responseContent);
-
-            return responseContent;
-        } catch (TimeoutException | ExecutionException | InterruptedException e) {
-            throw new IOException("The HTTP request failed", e);
         }
     }
 }

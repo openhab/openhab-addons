@@ -15,7 +15,6 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +26,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -96,30 +97,22 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            try {
-                logger.debug("Polling job for thing {}", getThing().getUID());
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
             }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            updateWemoState();
         } else if (channelUID.getId().equals(CHANNEL_RELAY)) {
             if (command instanceof OnOffType) {
                 try {
@@ -128,7 +121,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     String content = createBinaryStateContent(binaryState);
                     probeAndExecuteCall(BASICACTION, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
+                } catch (MissingHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                } catch (WemoException e) {
                     logger.warn("Failed to send command '{}' for thing '{}' ", command, getThing().getUID(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -206,7 +202,10 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             } catch (Exception e) {
                 logger.warn("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
             }
-        } catch (IOException e) {
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
             logger.debug("Failed to get attributes for thing '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
