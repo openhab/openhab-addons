@@ -15,11 +15,12 @@
 			<channel-group id="humidity" typeId="humidity"/>
 			<channel-group id="recuperator" typeId="recuperator"/>
 			<channel-group id="service" typeId="service"/>
+			<channel-group id="operation" typeId="operation"/>
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Danfoss</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<representation-property>serialNumber</representation-property>
@@ -124,6 +125,14 @@
 			</channel>
 			<channel id="filter_life" typeId="filter-life"/>
 			<channel id="filter_period" typeId="filterPeriod"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="operation">
+		<label>Operation</label>
+		<channels>
+			<channel id="power_cycles" typeId="power-cycles"/>
+			<channel id="operating_hours" typeId="operating-hours"/>
 		</channels>
 	</channel-group-type>
 
@@ -238,11 +247,27 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+
 	<channel-type id="defrost" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Defrost</label>
 		<description>Defrost status. Active when low outdoor temperatures pose a risk of ice formation in the heat exchanger</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-cycles">
+		<item-type>Number</item-type>
+		<label>Power Cycles</label>
+		<description>The total count of power cycles, indicating how many times the unit has been turned off and on again</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operating-hours">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Operating Hours</label>
+		<description>The number of hours the unit has been in operation (in minutes)</description>
+		<category>Time</category>
+		<state pattern="%1$tdd %1$tHh %1$tMm" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
