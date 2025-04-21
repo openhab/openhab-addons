@@ -501,13 +501,13 @@ public class Security {
         try {
             path = new URI(url).getPath();
 
-            String query = Utils.getQueryString(payload);
+            String query = Utils.getQueryString(payload, true);
 
             String sign = path + query + cloudProvider.appkey();
             logger.trace("sign: {}", sign);
             return Utils.bytesToHexLowercase(sha256((sign).getBytes(StandardCharsets.US_ASCII)));
         } catch (URISyntaxException e) {
-            logger.warn("Syntax error{}", e.getMessage());
+            logger.warn("Error parsing URI '{}': {}", url, e.getMessage());
         }
 
         return null;
@@ -564,7 +564,7 @@ public class Security {
      * 
      * @param loginId Login ID
      * @param password Login password
-     * @return string
+     * @return lower case byte string
      */
     public @Nullable String encryptPassword(@Nullable String loginId, String password) {
         try {
@@ -584,11 +584,11 @@ public class Security {
     }
 
     /**
-     * Encrypts password for cloud API using MD5
+     * Encrypts password for cloud API using MD5 for proxied provider
      * 
      * @param loginId Login ID
      * @param password Login password
-     * @return string
+     * @return lower case byte string
      */
     public @Nullable String encryptIamPassword(@Nullable String loginId, String password) {
         try {
@@ -597,9 +597,6 @@ public class Security {
 
             MessageDigest mdSecond = MessageDigest.getInstance("MD5");
             mdSecond.update(Utils.bytesToHexLowercase(md.digest()).getBytes(StandardCharsets.US_ASCII));
-
-            // if self._use_china_server:
-            // return mdSecond.hexdigest()
 
             String loginHash = loginId + Utils.bytesToHexLowercase(mdSecond.digest()) + cloudProvider.appkey();
             return Utils.bytesToHexLowercase(sha256(loginHash.getBytes(StandardCharsets.US_ASCII)));
