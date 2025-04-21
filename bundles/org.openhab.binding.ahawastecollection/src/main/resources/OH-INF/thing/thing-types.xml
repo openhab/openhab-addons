@@ -48,7 +48,7 @@
 		<description>Next collection day for general waste</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>TimeStamp</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
@@ -58,7 +58,7 @@
 		<description>Next collection day for leightweight packaging</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>TimeStamp</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
@@ -68,7 +68,7 @@
 		<description>Next collection day for bio waste</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>TimeStamp</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
@@ -78,7 +78,7 @@
 		<description>Next collection day for paper</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>TimeStamp</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
