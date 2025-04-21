@@ -8,6 +8,7 @@
 	<thing-type id="airunit">
 		<label>Danfoss Air Unit</label>
 		<description>The Danfoss Air Unit Heat Exchanger, CCM and Air Dial</description>
+		<semantic-equipment-tag>HeatRecovery</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="main" typeId="main"/>
