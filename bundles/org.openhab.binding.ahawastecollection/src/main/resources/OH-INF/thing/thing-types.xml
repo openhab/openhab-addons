@@ -1,8 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ahawastecollection"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="ahawastecollection" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="collectionSchedule">
 		<label>aha Waste Collection Schedule</label>
@@ -17,24 +13,24 @@
 		</channels>
 
 		<config-description>
-			<parameter name="commune" type="text" required="true">
+			<parameter name="commune" required="true" type="text">
 				<label>Commune</label>
 				<description>The selected commune, taken from the form field 'gemeinde'. </description>
 			</parameter>
-			<parameter name="street" type="text" required="true">
+			<parameter name="street" required="true" type="text">
 				<label>Street</label>
 				<description>The selected street, taken from the form field 'strasse'. This value must look like
 					67269@Rosmarinweg+/+Kirchhorst@Kirchhorst</description>
 			</parameter>
-			<parameter name="houseNumber" type="text" required="true">
+			<parameter name="houseNumber" required="true" type="text">
 				<label>House Number</label>
 				<description>The selected house number, taken from the form field 'hausnr'.</description>
 			</parameter>
-			<parameter name="houseNumberAddon" type="text" required="false">
+			<parameter name="houseNumberAddon" required="false" type="text">
 				<label>House Number Addon</label>
 				<description>The selected house number addon, taken from the form field 'hausnraddon'.</description>
 			</parameter>
-			<parameter name="collectionPlace" type="text" required="true">
+			<parameter name="collectionPlace" required="true" type="text">
 				<label>Collection Place</label>
 				<description>Form value for the collection place, taken from the form field `ladeort`. This value must look like
 					67269-0010+</description>
@@ -47,25 +43,29 @@
 		<item-type>DateTime</item-type>
 		<label>General Waste</label>
 		<description>Next collection day for general waste</description>
-		<state readOnly="true" pattern="%1$tF"/>
+		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
+<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDateLeightweightPackaging">
 		<item-type>DateTime</item-type>
 		<label>Leightweight Packaging</label>
 		<description>Next collection day for leightweight packaging</description>
-		<state readOnly="true" pattern="%1$tF"/>
+		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
+<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDateBioWaste">
 		<item-type>DateTime</item-type>
 		<label>Bio Waste</label>
 		<description>Next collection day for bio waste</description>
-		<state readOnly="true" pattern="%1$tF"/>
+		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
+<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDatePaper">
 		<item-type>DateTime</item-type>
 		<label>Paper</label>
 		<description>Next collection day for paper</description>
-		<state readOnly="true" pattern="%1$tF"/>
+		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
+<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 
 
