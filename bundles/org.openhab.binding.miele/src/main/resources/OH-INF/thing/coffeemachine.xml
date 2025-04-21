@@ -12,7 +12,7 @@
 
 		<label>Coffee Machine</label>
 		<description>This is a Miele@home compatible coffee machine</description>
-		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
+		<semantic-equipment-tag>CoffeeMaker</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>

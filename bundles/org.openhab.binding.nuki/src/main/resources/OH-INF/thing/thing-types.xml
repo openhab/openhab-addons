@@ -121,7 +121,7 @@
 		</supported-bridge-type-refs>
 		<label>Nuki Opener</label>
 		<description>Nuki Opener which is paired via Bluetooth to a Nuki Bridge.</description>
-		<semantic-equipment-tag>FrontDoor</semantic-equipment-tag>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="openerState" typeId="openerState"/>
 			<channel id="openerMode" typeId="openerMode"/>

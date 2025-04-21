@@ -14,7 +14,7 @@
 
 		<label>RFXCOM Rain Sensor</label>
 		<description>A Rain device.</description>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rainRate" typeId="rainrate"/>

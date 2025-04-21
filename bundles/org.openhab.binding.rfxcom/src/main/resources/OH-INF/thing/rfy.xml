@@ -14,7 +14,7 @@
 
 		<label>RFXCOM Rfy Actuator</label>
 		<description>A Rfy device.</description>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>Window</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>
