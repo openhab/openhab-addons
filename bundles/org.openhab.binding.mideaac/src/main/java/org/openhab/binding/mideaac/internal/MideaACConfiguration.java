@@ -41,17 +41,17 @@ public class MideaACConfiguration {
     /**
      * Cloud Account email
      */
-    public String email = "";
+    public String email = "nethome+us@mailinator.com";
 
     /**
      * Cloud Account Password
      */
-    public String password = "";
+    public String password = "password1";
 
     /**
      * Cloud Provider
      */
-    public String cloud = "";
+    public String cloud = "NetHome Plus";
 
     /**
      * Token
