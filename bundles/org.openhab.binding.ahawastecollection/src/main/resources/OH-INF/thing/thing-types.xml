@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="ahawastecollection" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="ahawastecollection"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="collectionSchedule">
 		<label>aha Waste Collection Schedule</label>
@@ -43,29 +46,41 @@
 		<item-type>DateTime</item-type>
 		<label>General Waste</label>
 		<description>Next collection day for general waste</description>
-		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
-<state pattern="%1$tF" readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>TimeStamp</tag>
+		</tags>
+		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDateLeightweightPackaging">
 		<item-type>DateTime</item-type>
 		<label>Leightweight Packaging</label>
 		<description>Next collection day for leightweight packaging</description>
-		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
-<state pattern="%1$tF" readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>TimeStamp</tag>
+		</tags>
+		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDateBioWaste">
 		<item-type>DateTime</item-type>
 		<label>Bio Waste</label>
 		<description>Next collection day for bio waste</description>
-		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
-<state pattern="%1$tF" readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>TimeStamp</tag>
+		</tags>
+		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 	<channel-type id="collectionDatePaper">
 		<item-type>DateTime</item-type>
 		<label>Paper</label>
 		<description>Next collection day for paper</description>
-		<tags><tag>Status</tag><tag>TimeStamp</tag></tags>
-<state pattern="%1$tF" readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>TimeStamp</tag>
+		</tags>
+		<state pattern="%1$tF" readOnly="true"/>
 	</channel-type>
 
 
