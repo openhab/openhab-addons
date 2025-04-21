@@ -79,6 +79,15 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="5">
+			<add-channel id="power_cycles" groupIds="operation">
+				<type>danfossairunit:power-cycles</type>
+			</add-channel>
+			<add-channel id="operating_hours" groupIds="operation">
+				<type>danfossairunit:operating-hours</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

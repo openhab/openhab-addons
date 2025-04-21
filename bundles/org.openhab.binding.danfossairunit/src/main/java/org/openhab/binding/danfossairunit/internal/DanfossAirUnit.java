@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
@@ -255,6 +256,14 @@ public class DanfossAirUnit {
     public DateTimeType getCurrentTime() throws IOException, UnexpectedResponseValueException {
         Instant timestamp = getTimestamp(Parameter.CURRENT_TIME);
         return new DateTimeType(timestamp);
+    }
+
+    public QuantityType<Time> getOperationTime() throws IOException, UnexpectedResponseValueException {
+        return new QuantityType<>(getInt(Parameter.OPERATION_TIME), Units.MINUTE);
+    }
+
+    public DecimalType getPowerCycles() throws IOException {
+        return new DecimalType(BigDecimal.valueOf(getByte(Parameter.POWER_CYCLE_COUNTER)));
     }
 
     public PercentType setManualFanStep(Command cmd) throws IOException {
