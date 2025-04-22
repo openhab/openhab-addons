@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
@@ -57,8 +58,11 @@ public class SpotPriceSubscriptionCache extends ElectricityPriceSubscriptionCach
         boolean anyChanges = false;
         int oldSize = priceMap.size();
         for (ElspotpriceRecord record : records) {
-            BigDecimal newValue = (isDKK ? record.spotPriceDKK() : record.spotPriceEUR())
-                    .divide(BigDecimal.valueOf(1000));
+            BigDecimal spotPrice = isDKK ? record.spotPriceDKK() : record.spotPriceEUR();
+            if (Objects.isNull(spotPrice)) {
+                continue;
+            }
+            BigDecimal newValue = spotPrice.divide(BigDecimal.valueOf(1000));
             BigDecimal oldValue = priceMap.put(record.hour(), newValue);
             if (oldValue == null || newValue.compareTo(oldValue) != 0) {
                 anyChanges = true;
