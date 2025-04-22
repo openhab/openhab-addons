@@ -13,7 +13,7 @@
 
 		<label>Airthings Wave Mini</label>
 		<description>Indoor air quality monitor</description>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
