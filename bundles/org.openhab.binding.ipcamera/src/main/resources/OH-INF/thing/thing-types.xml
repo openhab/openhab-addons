@@ -7,7 +7,7 @@
 	<thing-type id="group">
 		<label>Group Multiple Cameras</label>
 		<description>Show multiple cameras as a single rotating feed</description>
-		<semantic-equipment-tag>Display</semantic-equipment-tag>
+
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="mjpegUrl" typeId="mjpegUrl"/>

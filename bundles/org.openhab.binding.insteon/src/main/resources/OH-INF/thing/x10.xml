@@ -13,7 +13,6 @@
 
 		<label>X10 Device</label>
 		<description>An X10 device such as a switch, dimmer or sensor.</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="houseCode" type="text" pattern="[A-P]" required="true">

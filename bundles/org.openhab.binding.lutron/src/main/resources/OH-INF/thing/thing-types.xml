@@ -136,7 +136,7 @@
 		<label>Lutron Dimmer</label>
 		<description>Controls dimmable loads</description>
 		<category>Lightbulb</category>
-		<semantic-equipment-tag>Dial</semantic-equipment-tag>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
