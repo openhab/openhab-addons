@@ -295,7 +295,8 @@ public class PythonScriptEngine
                             .newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>").build());
                 }
             } catch (IOException e) {
-                throw new IllegalArgumentException("Failed to generate import wrapper", e);
+                logger.error("Failed to inject import wrapper", e);
+                throw new IllegalArgumentException("Failed to inject import wrapper", e);
             }
         }
 
