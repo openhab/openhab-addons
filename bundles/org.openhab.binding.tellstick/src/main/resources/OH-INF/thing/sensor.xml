@@ -31,7 +31,7 @@
 
 		<label>RainSensor</label>
 		<description>This Thing defines a Rain Sensor</description>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="rainrate" typeId="rainrate"/>
@@ -64,7 +64,7 @@
 
 		<label>WindSensor</label>
 		<description>This Thing defines a Wind Sensor</description>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="windgust" typeId="windgust"/>

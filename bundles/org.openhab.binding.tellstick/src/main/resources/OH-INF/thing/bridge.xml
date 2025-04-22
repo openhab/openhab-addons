@@ -26,7 +26,7 @@
 	<bridge-type id="telldus-live">
 		<label>Telldus Live Gateway</label>
 		<description>This bridge represents the Telldus live cloud service.</description>
-		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="privateKey" type="text" required="true">
 				<context>password</context>

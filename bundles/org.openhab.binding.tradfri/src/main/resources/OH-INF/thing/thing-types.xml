@@ -110,7 +110,7 @@
 
 		<label>Non-Colour Controller</label>
 		<description>This represents the wireless dimmer sensor capable of reporting the battery level.</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
