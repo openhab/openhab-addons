@@ -486,7 +486,7 @@
 
 		<label>Dimmer</label>
 		<description>Smart dimmer capable of controlling any dimmable lamp.</description>
-		<semantic-equipment-tag>Dial</semantic-equipment-tag>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
