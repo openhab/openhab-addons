@@ -123,7 +123,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -514,14 +514,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
 		<description>The Total Running Time of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="track_position">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>The Running Time Elapsed of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="button_press">
