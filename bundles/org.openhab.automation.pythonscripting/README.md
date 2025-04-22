@@ -476,6 +476,72 @@ This is a helper class which makes it possible to use a python 'set' as an argum
 
 ## Others
 
+### Threading
+
+Thread or timer objects which was started by itself should be registered in the lifecycleTracker to be cleaned during script unload.
+
+```python
+import scope
+import threading
+
+class Timer(theading.Timer):
+    def __init__(self, duration, callback):
+        super().__init__(duration, callback)
+
+    def shutdown(self):
+        if not self.is_alive():
+            return
+        self.cancel()
+        self.join()
+
+def test():
+    print("timer triggered")
+
+job = Timer(60, test)
+job.start()
+
+scope.lifecycleTracker.addDisposeHook(job.shutdown)
+```
+
+Timer objects created via `openhab.Timer.createTimeout`, however, automatically register in the disposeHook and are cleaned on script unload.
+
+```python
+from openhab import Timer
+
+def test():
+    print("timer triggered")
+
+Timer.createTimeout(60, test)
+```
+
+Below is a complex example of 2 sensor values ​​that are expected to be transmitted in a certain time window (e.g. one after the other).
+
+After the first state change, the timer wait 5 seconds, before it updates the final target value. If the second value arrives before this time frame, the final target value is updated immediately.
+
+```python
+from openhab import rule, Registry
+from openhab.triggers import ItemStateChangeTrigger
+
+@rule(
+    triggers = [
+        ItemStateChangeTrigger("Room_Temperature_Value"),
+        ItemStateChangeTrigger("Room_Humidity_Value")
+    ]
+)
+class UpdateInfo:
+    def __init__(self):
+        self.update_timer = None
+    
+    def updateInfoMessage(self):
+        msg = "{}{} °C, {} %".format(Registry.getItemState("Room_Temperature_Value").format("%.1f"), Registry.getItemState("Room_Temperature_Value").format("%.0f"))
+        Registry.getItem("Room_Info").postUpdate(msg)
+        self.update_timer = None
+
+    def execute(self, module, input):
+        self.update_timer = Timer.createTimeout(5, self.updateInfoMessage, old_timer = self.update_timer, max_count=2 )
+
+```
+
 ### python <=> java conversion
 
 Conversion occurs in both directions
@@ -488,6 +554,18 @@ Conversion occurs in both directions
 | list                      | Collection    |
 | Set(set)                  | Set           |
 | Item                      | Item          |
+
+### typical log errors
+
+#### Exception during helper lib initialisation
+
+There were problems during the deployment of the helper libs. A typical error is an insufficient permission. The folder "conf/automation/python/" must be writeable by openhab.
+
+#### Failed to inject import wrapper
+
+The reading the python source file "conf/automation/python/lib/openhab/__wrapper__.py" failed.
+
+This could either a permission/owner problem or a problem during deployment of the helper libs. You should check that this file exists and it is readable by openhab. You should also check your logs for a message related to the helper lib deployment by just grep for "helper lib"
 
 ### limitations
 
