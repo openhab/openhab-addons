@@ -7,6 +7,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ink Level</label>
 		<description>Shows the amount of Ink/Toner remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%f %%"/>
 	</channel-type>
 
@@ -14,6 +18,9 @@
 		<item-type>Number</item-type>
 		<label>Totals</label>
 		<description>Amount of pages.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -21,6 +28,9 @@
 		<item-type>Number</item-type>
 		<label>Totals</label>
 		<description>Amount of pages.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -28,6 +38,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Marking Used</label>
 		<description>Shows the amount of Ink/Toner used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%f mL"/>
 	</channel-type>
 
@@ -35,6 +49,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Printer Status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ready">Idle</option>
