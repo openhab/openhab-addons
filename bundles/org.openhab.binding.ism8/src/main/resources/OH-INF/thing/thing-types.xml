@@ -37,6 +37,10 @@
 				</options>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="switch-r">
@@ -124,6 +128,10 @@
 	<channel-type id="temperature-r">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -145,6 +153,10 @@
 	<channel-type id="temperature-rw">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
@@ -165,6 +177,10 @@
 	<channel-type id="pressure-r">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -185,6 +201,10 @@
 	<channel-type id="power-r">
 		<item-type>Number:Power</item-type>
 		<label>Power Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -226,6 +246,10 @@
 	<channel-type id="active-energy-r">
 		<item-type>Number:Energy</item-type>
 		<label>Active Energy Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>

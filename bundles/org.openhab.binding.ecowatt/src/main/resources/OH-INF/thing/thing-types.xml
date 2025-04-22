@@ -69,6 +69,10 @@
 		<description>The signal relating to the forecast consumption level. Values are 0 for normal consumption (green) and
 			carbon-free production, 1 for normal consumption (green), 2 for strained electrical system (orange) and 3 for very
 			strained electrical system (red).</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Green + carbon-free production</option>

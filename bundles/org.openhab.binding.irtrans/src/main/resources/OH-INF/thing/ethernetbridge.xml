@@ -64,6 +64,10 @@
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="receiver">
@@ -83,6 +87,10 @@
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

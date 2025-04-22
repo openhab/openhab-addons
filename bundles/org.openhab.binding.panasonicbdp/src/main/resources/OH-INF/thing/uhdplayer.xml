@@ -52,6 +52,10 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="POWERON">Power On</option>
@@ -120,6 +124,10 @@
 		<label>Control</label>
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="player-status">

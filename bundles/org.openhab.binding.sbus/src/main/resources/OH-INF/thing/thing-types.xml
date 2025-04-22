@@ -110,6 +110,10 @@
 				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dimmer-channel">
@@ -130,6 +134,10 @@
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="paired-channel">
@@ -147,6 +155,10 @@
 				<description>The physical channel number of the paired channel (will be set to opposite state)</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="temperature-channel">
@@ -154,6 +166,10 @@
 		<label>Temperature</label>
 		<description>Temperature reading from the device</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -183,6 +199,10 @@
 				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

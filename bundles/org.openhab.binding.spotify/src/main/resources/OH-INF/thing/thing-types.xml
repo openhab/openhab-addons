@@ -152,6 +152,10 @@
 		<item-type>Switch</item-type>
 		<label>Active Device Shuffle</label>
 		<description>If shuffle is on or off on the active device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="playlists">
@@ -224,6 +228,10 @@
 		<item-type>String</item-type>
 		<label>Track Duration (m:ss)</label>
 		<description>The duration currently played track formatted (m:ss)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackProgress">
@@ -348,6 +356,10 @@
 		<item-type>Switch</item-type>
 		<label>Device Shuffle</label>
 		<description>If shuffle is on or off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="deviceActive" advanced="true">
 		<item-type>Switch</item-type>

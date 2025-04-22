@@ -190,6 +190,10 @@
 		<item-type>Switch</item-type>
 		<label>All Zones</label>
 		<description>Toggles All Zones</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="sysControllers" advanced="true">
 		<item-type>String</item-type>
@@ -264,16 +268,28 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>Whether the zone is ON or OFF</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zoneVolume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume level of zone</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zoneMute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Whether the zone is muted</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="zonePage" advanced="true">
 		<item-type>Switch</item-type>
@@ -449,6 +465,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Provider Mode or Streaming Service</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcShuffleMode" advanced="true">

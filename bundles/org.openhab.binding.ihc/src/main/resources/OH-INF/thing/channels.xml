@@ -26,6 +26,10 @@
 		<item-type>Switch</item-type>
 		<label>Generic Switch</label>
 		<description>Generic switch channel</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
@@ -75,6 +79,10 @@
 		<item-type>Number</item-type>
 		<label>Generic Number</label>
 		<description>Generic number channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
@@ -104,6 +112,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Generic Dimmer</label>
 		<description>Generic dimmer channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
@@ -138,6 +150,10 @@
 		<item-type>DateTime</item-type>
 		<label>Generic Datetime</label>
 		<description>Generic datetime channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
@@ -196,6 +212,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Generic Roller Shutter</label>
 		<description>Generic roller shutter channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="false"></state>
 		<config-description>
 			<parameter name="resourceId" type="integer" required="true">
@@ -227,6 +247,10 @@
 		<label>RF Device Low Battery Warning</label>
 		<description>RF device low battery warning.</description>
 		<category>Battery</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true"></state>
 		<config-description>
 			<parameter name="serialNumber" type="integer" required="true">
@@ -240,6 +264,10 @@
 		<label>RF Device Signal Strength</label>
 		<description>RF device signal strength.</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true" min="0" max="4">
 			<options>
 				<option value="0">No signal</option>

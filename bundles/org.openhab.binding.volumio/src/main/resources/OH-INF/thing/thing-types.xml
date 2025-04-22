@@ -107,6 +107,10 @@
 		<label>Volume</label>
 		<description>Set or get the master volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state max="100" min="0" step="10"/>
 	</channel-type>
 
@@ -115,6 +119,10 @@
 		<label>Media Control</label>
 		<description>Control the state of the Volumio Player</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="album-art" advanced="true">

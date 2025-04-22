@@ -28,6 +28,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Maximum Wind Speed</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -68,6 +72,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<category>Moisture</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -162,6 +170,10 @@
 	<channel-type id="lightning-counter">
 		<item-type>Number</item-type>
 		<label>Lightning Counter</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -169,12 +181,20 @@
 		<item-type>DateTime</item-type>
 		<label>Lightning Time</label>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lightning-distance">
 		<item-type>Number:Length</item-type>
 		<label>Lightning Distance</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 

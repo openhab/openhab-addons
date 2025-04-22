@@ -129,6 +129,10 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
@@ -139,6 +143,10 @@
 		<item-type>String</item-type>
 		<label>Play or Open a Favorite</label>
 		<description>Play or open the given favorite by sending a command with the favorite's title</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
@@ -442,6 +450,10 @@
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="genreList">
@@ -472,6 +484,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
@@ -484,6 +500,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="id" advanced="true">
@@ -496,6 +516,10 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="channels" advanced="true">
 		<item-type>Number</item-type>

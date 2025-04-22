@@ -7,40 +7,72 @@
 		<item-type>String</item-type>
 		<label>Emergency Power Status</label>
 		<description>Indicates if Emergency Power Supply is possible or not, active or inactive</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="battery-charging-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Battery Charge Locked</label>
 		<description>Battery charging is locked</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="battery-discharging-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Battery Discharge Locked</label>
 		<description>Battery discharging is locked</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="emergency-power-possible-channel">
 		<item-type>Switch</item-type>
 		<label>Emergency Power Possible</label>
 		<description>Emergency Power Supply is possible</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="weather-predicted-charging-channel">
 		<item-type>Switch</item-type>
 		<label>Weather Predicted Battery Charging</label>
 		<description>Weather Predicted Battery Charging is activated</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="regulation-status-channel">
 		<item-type>Switch</item-type>
 		<label>Grid Power Supply Regulation</label>
 		<description>Grid Power Supply is currently regulated</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="charge-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Charge Lock Time Active</label>
 		<description>Charge Lock Time is currently active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="discharge-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Discharge Lock Time Active</label>
 		<description>Discharge Lock Time is currently active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

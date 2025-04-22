@@ -81,26 +81,46 @@
 		<item-type>String</item-type>
 		<label>String Result</label>
 		<description>Execute query and binds result value to channel as a String</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="result-channel-number">
 		<item-type>Number</item-type>
 		<label>Number Result</label>
 		<description>Execute query and binds result value to channel as a Number</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="result-channel-datetime">
 		<item-type>DateTime</item-type>
 		<label>DateTime Result</label>
 		<description>Execute query and binds result value to channel as a DateTime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="result-channel-contact">
 		<item-type>DateTime</item-type>
 		<label>Contact Result</label>
 		<description>Execute query and binds result value to channel as a Contact</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="result-channel-switch">
 		<item-type>Switch</item-type>
 		<label>Switch Result</label>
 		<description>Execute query and binds result value to channel as a Switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="parameters-channel">
 		<item-type>String</item-type>
@@ -110,6 +130,10 @@
 		<item-type>Switch</item-type>
 		<label>Last Query Worked</label>
 		<description>True if last query executed correctly</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="calculate-parameters-channel">
 		<kind>trigger</kind>

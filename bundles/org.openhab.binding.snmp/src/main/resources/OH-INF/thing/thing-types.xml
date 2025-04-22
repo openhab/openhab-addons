@@ -294,6 +294,10 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

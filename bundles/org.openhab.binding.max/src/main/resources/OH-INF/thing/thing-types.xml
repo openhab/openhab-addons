@@ -430,6 +430,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="false">
 			<options>
 				<option value="AUTOMATIC">AUTOMATIC</option>

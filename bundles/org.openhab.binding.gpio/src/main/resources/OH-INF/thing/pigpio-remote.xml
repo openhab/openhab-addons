@@ -259,6 +259,10 @@
 				<default>OFF</default>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

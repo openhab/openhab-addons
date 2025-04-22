@@ -62,24 +62,40 @@
 		<item-type>Number:Length</item-type>
 		<label>Level</label>
 		<description>Level in the container</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f m"/>
 	</channel-type>
 	<channel-type id="raw-level-channel">
 		<item-type>Number:Length</item-type>
 		<label>Level Raw Data</label>
 		<description>Level in the container as measured by the device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.4f m"/>
 	</channel-type>
 	<channel-type id="fill-indicator-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fill Indicator</label>
 		<description>Indicates the fill level based on max content and measured content</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="measure-channel">
 		<item-type>Switch</item-type>
 		<label>Measure</label>
 		<description>Triggers a measurement</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="pump-runs-channel">
 		<item-type>Number</item-type>
@@ -91,6 +107,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Pump Total Runtime</label>
 		<description>Seconds the pump has run since manufacturing</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 </thing:thing-descriptions>

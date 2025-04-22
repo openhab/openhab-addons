@@ -412,6 +412,10 @@
 		<label>Activate Binding Control</label>
 		<description>Activate (control through openHAB) or deactivate (return control to CCEase) binding control</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -451,6 +455,9 @@
 		<label>Filter Error</label>
 		<description>Filter full</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -547,6 +554,10 @@
 		<label>Fan In (%)</label>
 		<description>Current relative speed (%) of incoming fan</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -555,6 +566,10 @@
 		<label>Fan Out (%)</label>
 		<description>Current relative speed (%) of outgoing fan</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -903,6 +918,10 @@
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -1589,6 +1608,9 @@
 		<label>Error Current</label>
 		<description>Current errors</description>
 		<category>Text</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -101,6 +101,10 @@
 		<label>Gate Status</label>
 		<description>Position of the gate or state if moving</description>
 		<category>door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Position</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OPEN">Open</option>
@@ -193,6 +197,10 @@
 				<default>60</default>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -19,6 +19,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Constant Score</label>
 		<description>Score for driving with constant speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bonus">

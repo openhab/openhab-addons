@@ -55,11 +55,19 @@
 	<channel-type id="scene-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scene-group-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="automation-enabled">
@@ -105,6 +113,10 @@
 		<item-type>Switch</item-type>
 		<label>Blinking Enabled</label>
 		<description>Blink during commands</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ble-signal-strength">

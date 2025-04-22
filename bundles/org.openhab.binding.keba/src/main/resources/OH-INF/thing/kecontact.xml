@@ -80,6 +80,10 @@
 		<item-type>Number</item-type>
 		<label>Operation State</label>
 		<description>Current operational state of the wallbox</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Starting</option>
@@ -112,6 +116,10 @@
 		<item-type>Switch</item-type>
 		<label>Vehicle Plugged</label>
 		<description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="locked" advanced="true">
@@ -124,12 +132,20 @@
 		<item-type>Switch</item-type>
 		<label>Enabled (System)</label>
 		<description>Activation state of the wallbox (System)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="enableduser">
 		<item-type>Switch</item-type>
 		<label>Enabled (User)</label>
 		<description>Activation state of the wallbox (User)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="x1" advanced="true">
@@ -202,6 +218,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Active Power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="powerfactor" advanced="true">

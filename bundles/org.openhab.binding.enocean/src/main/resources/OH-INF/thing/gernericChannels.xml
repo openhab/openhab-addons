@@ -11,6 +11,10 @@
 		<description>The switch channel allows to switch something on and off.</description>
 		<category>Switch</category>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Rollershutter Channel with transformation configuration -->
@@ -20,6 +24,10 @@
 		<description>Rollershutter</description>
 		<category>Blinds</category>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Dimmer Channel with transformation configuration -->
@@ -29,6 +37,10 @@
 		<description>Dimmer</description>
 		<category>Light</category>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="genericNumber">
@@ -48,6 +60,10 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<!-- generic Teach in Channel -->

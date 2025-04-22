@@ -32,6 +32,10 @@
 		<item-type>Switch</item-type>
 		<label>Digital Input (C.M.I. -> OH)</label>
 		<description>A digital channel sent from C.M.I. to openHAB</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -54,6 +58,10 @@
 				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 	<!-- COA analog Channel Type -->
 	<channel-type id="coe-analog-in">
@@ -110,6 +118,10 @@
 				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<thing-type id="cmiSchema" extensible="schema-switch-ro,schema-switch-rw,schema-numeric-ro,schema-state-ro">
@@ -150,12 +162,20 @@
 		<item-type>Switch</item-type>
 		<label>Switch State (Read-Only)</label>
 		<description>An On/Off state read from C.M.I.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="schema-switch-rw">
 		<item-type>Switch</item-type>
 		<label>Switch State (Changeable)</label>
 		<description>A modifiable On/Off state read from C.M.I.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="schema-numeric-ro">
 		<item-type>Number</item-type>
@@ -173,6 +193,10 @@
 		<item-type>DateTime</item-type>
 		<label>Time Value</label>
 		<description>A time read from C.M.I. - Only the time is supplied, the date part is set to the current day.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>

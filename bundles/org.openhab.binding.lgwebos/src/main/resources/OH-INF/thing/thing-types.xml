@@ -48,11 +48,19 @@
 		<item-type>String</item-type>
 		<label>Toast</label>
 		<description>Send a message onto the TV screen.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mediaStopType">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop Playback</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="app-launcher">
 		<item-type>String</item-type>

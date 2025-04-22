@@ -89,6 +89,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the projector</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="input">
@@ -101,24 +105,40 @@
 		<item-type>Switch</item-type>
 		<label>Audio Mute</label>
 		<description>Select the audio mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="videoMute">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="audioAndVideoMute">
 		<item-type>Switch</item-type>
 		<label>Audio and Video Mute</label>
 		<description>Select the audio and video mute status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lampHours">
 		<item-type>Number</item-type>
 		<label>Lamp Hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
@@ -133,6 +153,10 @@
 		<item-type>Switch</item-type>
 		<label>Lamp Active</label>
 		<description>Is the lamp in use?</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">

@@ -14,11 +14,19 @@
 	<channel-type id="service-date-channel">
 		<item-type>DateTime</item-type>
 		<label>Service Date</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tb %1$tY"/>
 	</channel-type>
 	<channel-type id="service-mileage-channel">
 		<item-type>Number:Length</item-type>
 		<label>Mileage till Service</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

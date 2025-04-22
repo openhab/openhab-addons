@@ -105,12 +105,20 @@
 		<item-type>String</item-type>
 		<label>String Data</label>
 		<description>Channel for sending/receiving data as a string to/from the serial port</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="binaryData">
 		<item-type>String</item-type>
 		<label>Binary Data</label>
 		<description>Channel for sending/receiving data encoded as Base64 to/from the serial port</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="string">
@@ -137,6 +145,10 @@
 					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="number">
@@ -163,6 +175,10 @@
 					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dimmer">
@@ -205,6 +221,10 @@
 					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="switch">
@@ -235,6 +255,10 @@
 					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollershutter">
@@ -273,6 +297,10 @@
 					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

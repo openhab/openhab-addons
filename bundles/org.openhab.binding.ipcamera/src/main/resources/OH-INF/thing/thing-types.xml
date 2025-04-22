@@ -2702,6 +2702,10 @@
 		<label>MJPEG URL</label>
 		<description>A link you can use in openHAB/HABpanel to fetch a MJPEG video feed from the camera.</description>
 		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2710,6 +2714,10 @@
 		<label>HLS URL</label>
 		<description>A link you can use in openHAB to cast video feeds.</description>
 		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2753,6 +2761,10 @@
 		<label>Motion Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2782,6 +2794,10 @@
 		<label>Cell Motion Alarm</label>
 		<description>Cell based motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2854,6 +2870,10 @@
 		<label>Line Crossing Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2954,6 +2974,10 @@
 		<label>Enable Motion Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="externalMotion" advanced="true">
@@ -2976,6 +3000,10 @@
 		<label>Enable Line Crossing Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableAudioAlarm" advanced="true">
@@ -3011,6 +3039,10 @@
 		<item-type>Switch</item-type>
 		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableLED" advanced="true">

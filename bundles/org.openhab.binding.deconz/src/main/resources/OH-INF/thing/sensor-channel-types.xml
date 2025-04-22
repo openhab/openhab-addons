@@ -9,6 +9,10 @@
 		<label>Air Quality</label>
 		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor,
 			...</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -17,6 +21,10 @@
 		<label>Air Quality (ppb)</label>
 		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
 			specified in ppb (parts per billion).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -24,6 +32,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Alarm was triggered.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -46,6 +57,10 @@
 		<item-type>Switch</item-type>
 		<label>Carbon-monoxide</label>
 		<description>Carbon-monoxide was detected.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -54,6 +69,10 @@
 		<label>Consumption</label>
 		<description>Current consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -62,6 +81,10 @@
 		<label>Current</label>
 		<description>Current current</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -69,6 +92,10 @@
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -76,18 +103,30 @@
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="externalwindowopen">
 		<item-type>Contact</item-type>
 		<label>External Window Open</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="fire">
 		<item-type>Switch</item-type>
 		<label>Fire</label>
 		<description>A fire was detected.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -122,6 +161,10 @@
 		<label>Target Temperature</label>
 		<description>Target temperature</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"/>
 	</channel-type>
 
@@ -130,6 +173,10 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -138,6 +185,10 @@
 		<label>Last Seen</label>
 		<description>The date and time when the sensor was last seen.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -146,12 +197,20 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="light">
 		<item-type>String</item-type>
 		<label>Lightlevel</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="daylight">Daylight</option>
@@ -165,6 +224,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current light illuminance</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -180,6 +243,10 @@
 		<label>Locked</label>
 		<description>Status of this thermostat's child lock.</description>
 		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="mode">
@@ -187,6 +254,10 @@
 		<label>Mode</label>
 		<description>Current mode</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -200,6 +271,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<description>Current moisture</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -207,6 +282,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Offset</label>
 		<description>Temperature offset</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.2f %unit%" step="0.01"/>
 	</channel-type>
 
@@ -220,6 +299,10 @@
 		<item-type>Contact</item-type>
 		<label>Open/Close</label>
 		<description>Open/Close detected</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -246,6 +329,10 @@
 		<label>Power</label>
 		<description>Current power usage</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -254,6 +341,10 @@
 		<label>Pressure</label>
 		<description>Current pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -261,6 +352,10 @@
 		<item-type>Switch</item-type>
 		<label>Tampered</label>
 		<description>A zone is being tampered.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -269,12 +364,20 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="tiltangle">
 		<item-type>Number:Angle</item-type>
 		<label>Tilt Angle</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -282,6 +385,10 @@
 		<item-type>Number</item-type>
 		<label>Daylight Value</label>
 		<description>Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -289,6 +396,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Valve position</label>
 		<description>Current valve position</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -296,6 +407,10 @@
 		<item-type>Switch</item-type>
 		<label>Vibration</label>
 		<description>Vibration was detected.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -303,6 +418,10 @@
 		<item-type>Number</item-type>
 		<label>Vibrationstrength</label>
 		<description>Vibration strength, value is device-dependent.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -311,6 +430,10 @@
 		<label>Voltage</label>
 		<description>Current voltage</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -318,12 +441,20 @@
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Water leakage detected</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="windowopen">
 		<item-type>Contact</item-type>
 		<label>Window Open</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

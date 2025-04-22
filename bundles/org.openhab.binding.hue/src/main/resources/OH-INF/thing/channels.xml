@@ -8,6 +8,10 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -26,6 +30,10 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -33,6 +41,10 @@
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -40,6 +52,10 @@
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -47,6 +63,10 @@
 		<item-type>Number</item-type>
 		<label>Dimmer Switch State</label>
 		<description>The Button that was last pressed on the dimmer switch.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="1000">On (Initial Press)</option>
@@ -172,6 +192,10 @@
 		<item-type>Switch</item-type>
 		<label>Flag</label>
 		<description>Flag of CLIP sensor.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Scene Channel -->
@@ -179,6 +203,10 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<!-- API v2 Channel Types -->
@@ -281,18 +309,30 @@
 		<item-type>Contact</item-type>
 		<label>Open/Closed</label>
 		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="security-tamper">
 		<item-type>Contact</item-type>
 		<label>Normal/Tamper</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tampered</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="automation-enable">
 		<item-type>Switch</item-type>
 		<label>Enable</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-group-type id="automation">

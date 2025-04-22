@@ -136,20 +136,36 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="bae-do">
 		<item-type>Switch</item-type>
 		<label>Digital Out</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="bae-di">
 		<item-type>Switch</item-type>
 		<label>Digital In</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<!-- Analog In (ADC) -->
 	<channel-type id="bae-analog">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Analog Input</label>
 		<description>Analog input (ADC)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="hires" type="boolean">

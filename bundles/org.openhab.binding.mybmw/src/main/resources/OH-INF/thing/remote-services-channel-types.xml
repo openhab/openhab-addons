@@ -6,6 +6,10 @@
 	<channel-type id="remote-command-channel">
 		<item-type>String</item-type>
 		<label>Remote Command</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>

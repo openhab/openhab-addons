@@ -298,6 +298,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f min"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>

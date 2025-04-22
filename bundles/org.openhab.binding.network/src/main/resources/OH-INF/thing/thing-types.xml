@@ -238,6 +238,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Status timestamp</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -252,6 +256,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Latency</label>
 		<description>States the latency time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -260,6 +268,10 @@
 		<label>Last Seen</label>
 		<description>States the last seen date/time</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

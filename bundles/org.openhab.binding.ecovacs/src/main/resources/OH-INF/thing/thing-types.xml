@@ -139,6 +139,10 @@
 		<item-type>String</item-type>
 		<label>Current Cleaning Mode</label>
 		<description>Mode used in current clean cycle</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
@@ -155,6 +159,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Cleaning Time</label>
 		<description>Cleaning time in current clean cycle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -176,6 +184,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Cleaning Time</label>
 		<description>Cleaning time in device life time</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -197,6 +209,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Cleaning Start</label>
 		<description>Start time of last completed cleaning run</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -204,6 +220,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Last Cleaning Duration</label>
 		<description>Duration of last completed cleaning run</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -218,6 +238,10 @@
 		<item-type>String</item-type>
 		<label>Last Cleaning Mode</label>
 		<description>Operation mode used in last completed cleaning run</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
@@ -260,6 +284,10 @@
 		<item-type>String</item-type>
 		<label>Cleaning Power Level</label>
 		<description>Amount of suction power to be used while cleaning</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="silent">Silent</option>
@@ -280,6 +308,10 @@
 		<item-type>Switch</item-type>
 		<label>Water System Present</label>
 		<description>Water plate with mop attached to device?</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -322,6 +354,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Dust Filter Lifetime</label>
 		<description>Remaining life time of dust bin filter in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -336,6 +372,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Voice Volume</label>
 		<description>Volume level of voice reports</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="10"/>
 	</channel-type>
 
@@ -350,6 +390,9 @@
 		<item-type>String</item-type>
 		<label>Last Error Description</label>
 		<description>A text describing the last encountered error</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

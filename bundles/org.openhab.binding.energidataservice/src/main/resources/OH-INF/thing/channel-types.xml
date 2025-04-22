@@ -26,6 +26,10 @@
 		<label>CO₂ Emission</label>
 		<description>CO₂ emission in g/kWh.</description>
 		<category>Smoke</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 

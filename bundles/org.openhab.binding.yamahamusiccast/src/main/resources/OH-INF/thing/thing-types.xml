@@ -94,12 +94,20 @@
 		<label>Volume</label>
 		<description>Volume level - Absolute value</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volumeDB">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Volume in dB</label>
 		<description>Volume level - decibel (dB)</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="-80" max="12" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="input">
@@ -111,6 +119,10 @@
 		<item-type>String</item-type>
 		<label>Sound Program</label>
 		<description>SoundProgram</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="selectPreset">
 		<item-type>String</item-type>
@@ -121,6 +133,10 @@
 		<item-type>Player</item-type>
 		<label>NetRadio/USB Player</label>
 		<description>Player for Net Radio/USB</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="sleep">
 		<item-type>Number</item-type>
@@ -177,6 +193,10 @@
 		<item-type>String</item-type>
 		<label>Repeat</label>
 		<description>Repeat mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -189,6 +209,10 @@
 		<item-type>String</item-type>
 		<label>Shuffle</label>
 		<description>Shuffle mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -207,6 +231,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Play Time</label>
 		<description>Play Time</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="totalTime">
 		<item-type>String</item-type>

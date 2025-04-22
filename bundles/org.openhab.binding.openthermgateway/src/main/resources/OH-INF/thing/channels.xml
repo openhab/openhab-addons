@@ -48,7 +48,7 @@
 		<description>Current room temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -84,7 +84,7 @@
 		<description>Central heating water setpoint set at boiler</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -96,7 +96,7 @@
 		<description>Central heating water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -120,7 +120,7 @@
 		<description>Central heating 2 water setpoint set at boiler</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -132,7 +132,7 @@
 		<description>Central heating 2 water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -168,7 +168,7 @@
 		<description>Domestic hot water temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -239,7 +239,7 @@
 		<description>Central heating enabled set at boiler</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -250,7 +250,7 @@
 		<description>Central heating enabled requested by thermostat</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<label>Central Heating Overridden</label>
 		<description>Central heating enabled overridden at OTGW</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -272,7 +272,7 @@
 		<description>Central heating 2 enabled set at boiler</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -283,7 +283,7 @@
 		<description>Central heating 2 enabled requested by thermostat</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -294,7 +294,7 @@
 		<description>Central heating 2 enabled overridden at OTGW</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -305,7 +305,7 @@
 		<description>Central heating active</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -316,7 +316,7 @@
 		<description>Domestic hot water enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -327,7 +327,7 @@
 		<description>Domestic hot water active</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -349,7 +349,7 @@
 		<description>Relative modulation level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<label>Maximum Relative Modulation Level</label>
 		<description>Maximum relative modulation level</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -390,7 +390,8 @@
 		<label>Lockout-Reset Enabled</label>
 		<description>Lockout-reset enabled</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -494,7 +495,7 @@
 		<label>Domestic Hot Water Pump/Valve Starts</label>
 		<description>Domestic hot water pump/valve starts</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -504,7 +505,7 @@
 		<label>Domestic Hot Water Burner Starts</label>
 		<description>Domestic hot water burner starts</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -514,7 +515,7 @@
 		<label>Burner Hours</label>
 		<description>Burner hours</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -525,7 +526,7 @@
 		<label>Central Heating Pump Hours</label>
 		<description>Central heating pump hours</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -536,7 +537,7 @@
 		<label>Domestic Hot Water Pump/Valve Hours</label>
 		<description>Domestic hot water pump/valve hours</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -547,7 +548,7 @@
 		<label>Domestic Hot Water Burner Hours</label>
 		<description>Domestic hot water burner hours</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -601,7 +602,7 @@
 		<description>Ventilation enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -611,8 +612,8 @@
 		<label>Bypass Position</label>
 		<description>Bypass position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -703,7 +704,7 @@
 		<description>Free ventilation status</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Ventilation</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -821,7 +822,8 @@
 		<label>Speed Control</label>
 		<description>Speed control</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -966,7 +968,7 @@
 		<description>Nominal ventilation value transfer enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -976,7 +978,8 @@
 		<label>Nominal Ventilation Value</label>
 		<description>Nominal ventilation value</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
+			<tag>Ventilation</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1003,7 +1006,7 @@
 		<description>Filter Check enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1054,7 +1057,7 @@
 		<description>Ventilation setpoint override</description>
 		<tags>
 			<tag>Setpoint</tag>
-			<tag>Speed</tag>
+			<tag>Ventilation</tag>
 		</tags>
 		<state readOnly="false" min="0" max="100" step="1"/>
 	</channel-type>

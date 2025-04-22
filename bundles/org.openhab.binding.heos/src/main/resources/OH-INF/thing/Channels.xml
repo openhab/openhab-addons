@@ -7,6 +7,10 @@
 	<channel-type id="ungroup">
 		<item-type>Switch</item-type>
 		<label>Group</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
@@ -21,6 +25,10 @@
 	<channel-type id="buildGroup">
 		<item-type>Switch</item-type>
 		<label>Make Group</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playlists" advanced="true">
 		<item-type>String</item-type>
@@ -41,6 +49,10 @@
 	<channel-type id="reboot">
 		<item-type>Switch</item-type>
 		<label>Reboot</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>

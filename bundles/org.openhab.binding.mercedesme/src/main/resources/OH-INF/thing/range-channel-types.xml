@@ -26,16 +26,28 @@
 	<channel-type id="soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charged">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Charged Battery Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="uncharged">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Uncharged Battery Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-fuel">
@@ -51,12 +63,20 @@
 	<channel-type id="fuel-level">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="adblue-level">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>AdBlue Level</label>
 		<description>AdBlue tank level in percent </description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuel-remain">
@@ -67,6 +87,10 @@
 	<channel-type id="fuel-open">
 		<item-type unitHint="l,gal">Number:Volume</item-type>
 		<label>Open Fuel Capacity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-hybrid">

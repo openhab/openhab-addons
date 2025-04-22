@@ -18,6 +18,10 @@
 		<item-type>Number</item-type>
 		<label>Charge Coupler AC</label>
 		<description>Coupler AC Status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
@@ -40,6 +44,10 @@
 		<item-type>Number</item-type>
 		<label>Charge Coupler Lock</label>
 		<description>Coupler Lock Status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Locked</option>
@@ -88,6 +96,10 @@
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Charge Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f kW" readOnly="true"/>
 	</channel-type>
 	<channel-type id="program">
@@ -98,6 +110,10 @@
 	<channel-type id="end-time">
 		<item-type>DateTime</item-type>
 		<label>Charge End Estimation</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-soc">
@@ -119,5 +135,9 @@
 		<item-type>Switch</item-type>
 		<label>Coupler Auto Unlock</label>
 		<description>Auto unlock coupler after charging </description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

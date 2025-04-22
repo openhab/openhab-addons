@@ -42,12 +42,20 @@
 		<label>Switch</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Switch Items</description>
 		<config-description-ref uri="channel-type:knx:single"/>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="switch-control">
 		<item-type>Switch</item-type>
 		<label>Switch Control</label>
 		<description>Control a switch item via KNX (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Dimmer -->
@@ -56,12 +64,20 @@
 		<label>Dimmer</label>
 		<description>A channel to control a dimmer</description>
 		<config-description-ref uri="channel-type:knx:dimmer"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="dimmer-control">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Control</label>
 		<description>Control a dimmer item via KNX (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:dimmer-control"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Rollershutter -->
@@ -70,12 +86,20 @@
 		<label>Rollershutter</label>
 		<description>A channel to control a rollershutter</description>
 		<config-description-ref uri="channel-type:knx:rollershutter"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="rollershutter-control">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
 		<description>Control a rollershutter item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:rollershutter"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Color -->
@@ -84,12 +108,20 @@
 		<label>Color</label>
 		<description>A channel to control color information (RGB)</description>
 		<config-description-ref uri="channel-type:knx:color"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="color-control">
 		<item-type>Color</item-type>
 		<label>Color Control</label>
 		<description>Control a color item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:color-control"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Contact -->
@@ -112,6 +144,10 @@
 		<label>Number</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with Number Items</description>
 		<config-description-ref uri="channel-type:knx:single"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="number-control">
 		<item-type>Number</item-type>
@@ -140,12 +176,20 @@
 		<label>DateTime</label>
 		<description>A channel to manage a generic Group Addresses with a DPT compatible with DateTime Items</description>
 		<config-description-ref uri="channel-type:knx:single"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="datetime-control">
 		<item-type>DateTime</item-type>
 		<label>DateTime Control</label>
 		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 
