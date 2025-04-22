@@ -44,6 +44,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -63,6 +64,9 @@ class ColorControlConverterTest {
     private LevelControlCluster mockLevelCluster;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
@@ -79,8 +83,8 @@ class ColorControlConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockColorCluster.featureMap = new ColorControlCluster.FeatureMap(true, false, false, false, true);
         mockColorCluster.colorTempPhysicalMinMireds = 153;
         mockColorCluster.colorTempPhysicalMaxMireds = 500;
@@ -140,7 +144,7 @@ class ColorControlConverterTest {
         converter.onEvent(satMsg);
 
         // Wait for color update timer
-        Thread.sleep(600); // Wait slightly longer than the 500ms timer
+        // Thread.sleep(600); // Wait slightly longer than the 500ms timer
 
         verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-color"),
                 eq(new HSBType(new DecimalType(180), new PercentType(100), new PercentType(100))));

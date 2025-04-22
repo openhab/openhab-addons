@@ -22,6 +22,7 @@ import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
@@ -35,10 +36,11 @@ public class TestMatterBaseThingHandler extends MatterBaseThingHandler {
 
     private final MatterControllerClient mockClient;
 
-    public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient,
+    public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelTypeProvider) {
-        super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), stateDescriptionProvider, channelTypeProvider);
+        super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), thingHandlerFactory, stateDescriptionProvider,
+                channelTypeProvider);
         this.mockClient = new MatterControllerClient();
     }
 

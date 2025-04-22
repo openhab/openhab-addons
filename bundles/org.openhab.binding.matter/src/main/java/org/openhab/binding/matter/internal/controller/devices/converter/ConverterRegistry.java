@@ -39,6 +39,8 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkD
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ConverterRegistry}
@@ -47,6 +49,7 @@ import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
  */
 @NonNullByDefault
 public class ConverterRegistry {
+    private static final Logger logger = LoggerFactory.getLogger(ConverterRegistry.class);
     private static final Map<Integer, Class<? extends GenericConverter<? extends BaseCluster>>> CONVERTERS = new HashMap<>();
 
     static {
@@ -94,7 +97,7 @@ public class ConverterRegistry {
                         .getConstructor(constructorParameterTypes);
                 return constructor.newInstance(cluster, handler, endpointNumber, labelPrefix);
             } catch (Exception e) {
-                // ignore
+                logger.error("Error creating converter for cluster {}", cluster.id, e);
             }
         }
         return null;

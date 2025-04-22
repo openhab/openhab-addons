@@ -37,6 +37,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
@@ -56,6 +57,9 @@ class ElectricalPowerMeasurementConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -69,8 +73,8 @@ class ElectricalPowerMeasurementConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.activeCurrent = BigInteger.valueOf(1000); // 1A
         mockCluster.voltage = BigInteger.valueOf(230000); // 230V
         converter = new ElectricalPowerMeasurementConverter(mockCluster, mockHandler, 1, "TestLabel");

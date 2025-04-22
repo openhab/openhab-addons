@@ -129,8 +129,8 @@ public class MatterBindingConstants {
     public static final ChannelTypeUID CHANNEL_FANCONTROL_PERCENT = new ChannelTypeUID("matter:fancontrol-percent");
 
     public static final String CHANNEL_LABEL_FANCONTROL_MODE = "Fan Control Mode";
-    public static final String CHANNEL_ID_FANCONTROL_MODE = "fancontrol-mode";
-    public static final ChannelTypeUID CHANNEL_FANCONTROL_MODE = new ChannelTypeUID("matter:fancontrol-mode");
+    public static final String CHANNEL_ID_FANCONTROL_MODE = "fancontrol-fanmode";
+    public static final ChannelTypeUID CHANNEL_FANCONTROL_MODE = new ChannelTypeUID("matter:fancontrol-fanmode");
 
     public static final String CHANNEL_LABEL_TEMPERATUREMEASURMENT_MEASUREDVALUE = "Temperature";
     public static final String CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE = "temperaturemeasurement-measuredvalue";

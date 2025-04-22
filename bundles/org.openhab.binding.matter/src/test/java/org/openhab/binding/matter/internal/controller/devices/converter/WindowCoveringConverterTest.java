@@ -38,6 +38,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -56,6 +57,9 @@ class WindowCoveringConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -69,8 +73,8 @@ class WindowCoveringConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         converter = new WindowCoveringConverter(mockCluster, mockHandler, 1, "TestLabel");
     }
 

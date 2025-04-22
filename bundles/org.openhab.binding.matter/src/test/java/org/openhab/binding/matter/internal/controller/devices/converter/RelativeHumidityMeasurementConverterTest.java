@@ -38,6 +38,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -56,6 +57,9 @@ class RelativeHumidityMeasurementConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -69,8 +73,8 @@ class RelativeHumidityMeasurementConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.measuredValue = 5000; // 50.00%
         converter = new RelativeHumidityMeasurementConverter(mockCluster, mockHandler, 1, "TestLabel");
     }

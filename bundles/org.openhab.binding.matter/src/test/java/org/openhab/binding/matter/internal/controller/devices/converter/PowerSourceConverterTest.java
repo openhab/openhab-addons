@@ -36,6 +36,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
@@ -55,6 +56,9 @@ class PowerSourceConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -68,8 +72,8 @@ class PowerSourceConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.featureMap = Mockito.mock(PowerSourceCluster.FeatureMap.class);
         mockCluster.featureMap.battery = true;
         mockCluster.batPercentRemaining = 100; // 50%

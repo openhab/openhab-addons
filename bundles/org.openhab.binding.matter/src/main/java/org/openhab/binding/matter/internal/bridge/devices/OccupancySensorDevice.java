@@ -48,8 +48,7 @@ public class OccupancySensorDevice extends GenericDevice {
     }
 
     @Override
-    public MatterDeviceOptions activate() {
-        dispose();
+    protected MatterDeviceOptions activate() {
         primaryItem.addStateChangeListener(this);
         MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();

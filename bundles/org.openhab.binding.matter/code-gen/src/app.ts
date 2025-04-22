@@ -23,6 +23,7 @@ interface ExtendedClusterElement extends ClusterElement {
     maps: AnyValueElement[],
     typeMapping: Map<string, string | undefined>
 }
+
 function toJSON(data: any, space = 2) {
     return JSON.stringify(data, (_, value) => {
         if (typeof value === "bigint") {
@@ -136,10 +137,10 @@ function toTitleCase(str: string | undefined): string {
     return str
         .replace(/([a-z])([A-Z])/g, '$1 $2') // Add a space before uppercase letters that follow lowercase letters
         .replace(/[_\s]+/g, ' ') // Replace underscores or multiple spaces with a single space
-        .trim() // Remove leading and trailing spaces
-        .split(' ') // Split into words
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
-        .join(' '); // Join the words with a space
+        .trim()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) 
+        .join(' ');
 }
 
 function toEnumField(str: string): string {
@@ -161,7 +162,7 @@ function toUpperSnakeCase(str: string | undefined) {
     return str
         .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert underscore between camelCase
         .replace(/[\s-]+/g, '_') // Replace spaces and hyphens with underscore
-        .toUpperCase(); // Convert to uppercase
+        .toUpperCase();
 }
 
 function toHex(decimal: number, length = 0) {
@@ -265,7 +266,6 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
     }
     if (mappedType == 'list') {
         const ct = dt.children?.[0].type
-        //console.log(ct)
         //if the type is cluster.type then its referring to type in another cluster
         if (ct && ct.indexOf('.') > 0) {
             const [otherCluster, otherType] = ct.split('.');
@@ -295,7 +295,6 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
 /**
  * Certain clusters have complex inheritance that we don't support yet (and don't need right now)
  */
-//const skipClusters = new Set(['Messages', 'Channel', 'ContentLauncher']);
 const skipClusters = new Set(['Messages']);
 
 /**
@@ -326,7 +325,6 @@ const clusters: ExtendedClusterElement[] = (matterData.children as ClusterElemen
     .filter(c => c.tag === 'cluster')
     .filter(c => !skipClusters.has(c.name))
     .map(cluster => {
-        //todo reference LevelControl cluster for lookups in ColorControl (seems to be a one off)
     // typeMapping is a map of matter types to Java types
     const typeMapping = new Map<string, string | undefined>(globalTypeMapping);
     const dataTypes = (cluster.children || []).filter(c => c.tag === 'datatype') as DatatypeElement[];
@@ -349,7 +347,6 @@ const clusters: ExtendedClusterElement[] = (matterData.children as ClusterElemen
         }
         const parent = matterData.children.find(c => c.name == cluster.type);
         if (parent) {
-            //console.log(`Add additional types to ${cluster.name} from parent ${cluster.type}`)
             let pDataType = parent.children?.filter(c => c.tag == 'datatype') as DatatypeElement[];
             combineArray(dataTypes, pDataType)
             let pMaps = parent.children?.filter(c => c.type?.startsWith('map')) as ClusterElement.Child[];
@@ -475,25 +472,16 @@ clusters.forEach(cluster => {
     });
 });
 
-// const lcc = clusters.find(c => c.name == 'LevelControl')
-// const ccc = clusters.find(c => c.name == 'ColorControl')
-// if (lcc && ccc) {
-//     copyClusterDatatype(lcc, ccc, 'Options')
-// }
-
-
 // Compile Handlebars template
-const clusterSource = fs.readFileSync('src/templates/cluster-class.hbs', 'utf8');
+const clusterSource = fs.readFileSync('src/templates/cluster-class.java.hbs', 'utf8');
 const clusterTemplate = handlebars.compile(clusterSource);
-// const dataTypeSource = fs.readFileSync('src/templates/data-types-class.hbs', 'utf8');
-// const dataTypeTemplate = handlebars.compile(dataTypeSource);
-const baseClusterSource = fs.readFileSync('src/templates/base-cluster.hbs', 'utf8');
+const baseClusterSource = fs.readFileSync('src/templates/base-cluster.java.hbs', 'utf8');
 const baseClusterTemplate = handlebars.compile(baseClusterSource);
-const deviceTypeSource = fs.readFileSync('src/templates/device-types-class.hbs', 'utf8');
+const deviceTypeSource = fs.readFileSync('src/templates/device-types-class.java.hbs', 'utf8');
 const deviceTypeTemplate = handlebars.compile(deviceTypeSource);
-const clusterRegistrySource = fs.readFileSync('src/templates/cluster-registry.hbs', 'utf8');
+const clusterRegistrySource = fs.readFileSync('src/templates/cluster-registry.java.hbs', 'utf8');
 const clusterRegistryTemplate = handlebars.compile(clusterRegistrySource);
-const clusterConstantsSource = fs.readFileSync('src/templates/cluster-constants.hbs', 'utf8');
+const clusterConstantsSource = fs.readFileSync('src/templates/cluster-constants.java.hbs', 'utf8');
 const clusterConstantsTemplate = handlebars.compile(clusterConstantsSource);
 
 // Generate Java code
@@ -516,8 +504,6 @@ const datatypes = {
 
 fs.mkdir('out', { recursive: true }, (err) => {
 });
-// const dataTypeClass = dataTypeTemplate(datatypes);
-// fs.writeFileSync(`out/DataTypes.java`, dataTypeClass);
 
 const baseClusterClass = baseClusterTemplate(datatypes);
 fs.writeFileSync(`out/BaseCluster.java`, baseClusterClass);

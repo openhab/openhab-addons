@@ -42,6 +42,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnos
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
+import org.openhab.binding.matter.internal.controller.devices.converter.GenericConverter;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceTypeRegistry;
 import org.openhab.binding.matter.internal.util.MatterLabelUtils;
@@ -103,11 +104,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
 
     public abstract BigInteger getNodeId();
 
+    public abstract Integer getPollInterval();
+
     protected abstract ThingTypeUID getDynamicThingTypeUID();
 
     protected abstract boolean isBridgeType();
-
-    public abstract Integer getPollInterval();
 
     /**
      * When processing endpoints, give implementers the ability to ignore certain endpoints
@@ -199,23 +200,52 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
     }
 
+    /**
+     * Update the state of a channel.
+     *
+     * @param endpointNumber The endpoint number.
+     * @param channelId The channel ID.
+     * @param state The state to update.
+     */
     public void updateState(Integer endpointNumber, String channelId, State state) {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), endpointNumber.toString());
         ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
         super.updateState(channelUID, state);
     }
 
+    /**
+     * Trigger a channel event.
+     *
+     * @param endpointNumber The endpoint number.
+     * @param channelId The channel ID.
+     * @param event The event to trigger.
+     */
     public void triggerChannel(Integer endpointNumber, String channelId, String event) {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), endpointNumber.toString());
         ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
         super.triggerChannel(channelUID, event);
     }
 
+    /**
+     * Set the thing status of the endpoint.
+     *
+     * @param status The status to set.
+     * @param detail The detail of the status.
+     * @param description The description of the status.
+     */
     public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, String description) {
         logger.debug("setEndpointStatus {} {} {} {}", status, detail, description, getNodeId());
         updateStatus(status, detail, description);
     }
 
+    /**
+     * Send a cluster command to the MatterControllerClient.
+     *
+     * @param endpointId The endpoint ID.
+     * @param clusterName The cluster name.
+     * @param command The command to send.
+     * @return CompletableFuture<JsonElement>
+     */
     public CompletableFuture<JsonElement> sendClusterCommand(Integer endpointId, String clusterName,
             ClusterCommand command) {
         MatterControllerClient client = getClient();
@@ -226,6 +256,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         throw new IllegalStateException("Client is null");
     }
 
+    /**
+     * Write an attribute to the MatterControllerClient.
+     *
+     * @param endpointId The endpoint ID.
+     * @param clusterName The cluster name.
+     * @param attributeName The attribute name.
+     * @param value The value to write.
+     */
     public void writeAttribute(Integer endpointId, String clusterName, String attributeName, String value) {
         MatterControllerClient ws = getClient();
         if (ws != null) {
@@ -235,6 +273,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
     }
 
+    /**
+     * Read an attribute from the MatterControllerClient.
+     *
+     * @param endpointId The endpoint ID.
+     * @param clusterName The cluster name.
+     * @param attributeName The attribute name.
+     * @return CompletableFuture<String>
+     */
     public CompletableFuture<String> readAttribute(Integer endpointId, String clusterName, String attributeName) {
         MatterControllerClient ws = getClient();
         if (ws != null) {
@@ -243,6 +289,15 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         throw new IllegalStateException("Client is null");
     }
 
+    /**
+     * Read a cluster from the MatterControllerClient.
+     *
+     * @param <T> The type of the cluster to read.
+     * @param type The class of the cluster to read.
+     * @param endpointId The endpoint ID.
+     * @param clusterId The cluster ID.
+     * @return CompletableFuture<T>
+     */
     public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, Integer endpointId,
             Integer clusterId) {
         MatterControllerClient ws = getClient();
@@ -252,6 +307,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         throw new IllegalStateException("Client is null");
     }
 
+    /**
+     * Get the MatterControllerClient instance.
+     *
+     * @return The MatterControllerClient instance, or null if not available.
+     */
     public @Nullable MatterControllerClient getClient() {
         if (cachedClient == null) {
             ControllerHandler c = controllerHandler();
@@ -273,8 +333,31 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
     }
 
+    /**
+     * Registers a service with the thing handler factory.
+     *
+     * @param klass The class of the service to register.
+     */
     public void registerService(Class<? extends ThingHandlerService> klass) {
-        // thingHandlerFactory.registerService(this, klass);
+        thingHandlerFactory.registerService(this, klass);
+    }
+
+    /**
+     * Finds the first matching converter of the specified type across all managed devices (endpoints).
+     *
+     * @param <T> The type of the converter to find.
+     * @param converterType The class of the converter to find (e.g., OnOffConverter.class).
+     * @return The first matching converter of the specified type, or null if none is found.
+     */
+    public <T extends GenericConverter<? extends BaseCluster>> @Nullable T findConverterByType(Class<T> converterType) {
+        for (DeviceType deviceType : devices.values()) {
+            for (GenericConverter<? extends BaseCluster> converter : deviceType.getClusterConverters().values()) {
+                if (converterType.isInstance(converter)) {
+                    return converterType.cast(converter);
+                }
+            }
+        }
+        return null;
     }
 
     protected @Nullable ControllerHandler controllerHandler() {

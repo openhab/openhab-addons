@@ -38,6 +38,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
@@ -57,6 +58,9 @@ class ThermostatConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -70,8 +74,8 @@ class ThermostatConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, false, false, true, false, false,
                 false);
         mockCluster.absMinHeatSetpointLimit = 500; // 5°C

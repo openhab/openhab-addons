@@ -38,6 +38,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -56,6 +57,9 @@ class FanControlConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -69,8 +73,8 @@ class FanControlConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.fanModeSequence = FanControlCluster.FanModeSequenceEnum.OFF_LOW_MED_HIGH_AUTO;
         converter = new FanControlConverter(mockCluster, mockHandler, 1, "TestLabel");
     }
@@ -84,7 +88,7 @@ class FanControlConverterTest {
         for (Channel channel : channels.keySet()) {
             String channelId = channel.getUID().getIdWithoutGroup();
             switch (channelId) {
-                case "fancontrol-mode":
+                case "fancontrol-fanmode":
                     assertEquals("Number", channel.getAcceptedItemType());
                     break;
                 case "fancontrol-percent":
@@ -96,7 +100,7 @@ class FanControlConverterTest {
 
     @Test
     void testHandleCommandMode() {
-        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#fancontrol-mode");
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#fancontrol-fanmode");
         converter.handleCommand(channelUID, new DecimalType(1)); // Low mode
         verify(mockHandler, times(1)).writeAttribute(eq(1), eq(FanControlCluster.CLUSTER_NAME), eq("fanMode"), eq("1"));
     }
@@ -132,7 +136,7 @@ class FanControlConverterTest {
         message.path.attributeName = "fanMode";
         message.value = FanControlCluster.FanModeEnum.LOW;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-mode"), eq(new DecimalType(1)));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-fanmode"), eq(new DecimalType(1)));
     }
 
     @Test
@@ -150,7 +154,7 @@ class FanControlConverterTest {
         mockCluster.fanMode = FanControlCluster.FanModeEnum.LOW;
         mockCluster.percentSetting = 50;
         converter.initState();
-        verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-mode"),
+        verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-fanmode"),
                 eq(new DecimalType(mockCluster.fanMode.value)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-percent"), eq(new PercentType(50)));
     }

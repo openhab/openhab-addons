@@ -36,10 +36,10 @@ import java.util.Map;
 {{/each}}
     }
 {{#each deviceTypes}}
-/**
-* {{details}}
-**/
-public static final Integer {{asUpperSnakeCase name}} = {{id}};
+    /**
+    * {{details}}
+    **/
+    public static final Integer {{asUpperSnakeCase name}} = {{id}};
 {{/each}}
  }
  

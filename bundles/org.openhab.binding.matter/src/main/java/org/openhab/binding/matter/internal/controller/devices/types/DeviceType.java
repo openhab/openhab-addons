@@ -96,6 +96,12 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
         }
     }
 
+    /**
+     * Handles a openHAB command for a specific channel
+     * 
+     * @param channelUID The UID of the channel
+     * @param command The command to handle
+     */
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command for channel: {}", channelUID);
         Optional.ofNullable(channelUIDToConverters.get(channelUID))
@@ -109,6 +115,11 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
         clusterToConverters.forEach((clusterId, converter) -> converter.initState());
     }
 
+    /**
+     * Returns the endpoint number for this device
+     * 
+     * @return The endpoint number
+     */
     public Integer endpointNumber() {
         return endpointNumber;
     }
@@ -150,14 +161,36 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
         return channels;
     }
 
+    /**
+     * Returns an unmodifiable map of channel UID to state description for this device type.
+     */
     public Map<ChannelUID, @Nullable StateDescription> getStateDescriptions() {
         return Collections.unmodifiableMap(new HashMap<>(channelUIDToStateDescription));
     }
 
+    /**
+     * Calls the pollCluster method on all cluster converters
+     */
     public void pollClusters() {
         clusterToConverters.forEach((clusterId, converter) -> {
             converter.pollCluster();
         });
+    }
+
+    /**
+     * Returns an unmodifiable map of all clusters associated with this device type.
+     * The map keys are cluster names
+     */
+    public Map<String, BaseCluster> getAllClusters() {
+        return Collections.unmodifiableMap(allClusters);
+    }
+
+    /**
+     * Returns an unmodifiable map of cluster converters associated with this device type.
+     * The map keys are cluster IDs
+     */
+    public Map<Integer, GenericConverter<? extends BaseCluster>> getClusterConverters() {
+        return Collections.unmodifiableMap(clusterToConverters);
     }
 
     // This method is designed to be overridden in subclasses

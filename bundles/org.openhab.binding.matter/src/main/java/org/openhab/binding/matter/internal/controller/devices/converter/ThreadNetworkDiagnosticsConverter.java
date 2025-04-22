@@ -55,7 +55,9 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
                             cluster.extendedPanId);
                     updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
                     updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                            cluster.neighborTable);
+                            gson.toJson(cluster.neighborTable));
+                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
+                            gson.toJson(cluster.routeTable));
                 }).exceptionally(e -> {
                     logger.debug("Error polling thread network diagnostics", e);
                     return null;

@@ -45,6 +45,7 @@ public abstract class GenericDevice implements StateChangeListener {
     protected @Nullable Metadata primaryItemMetadata;
     protected final MatterBridgeClient client;
     protected final MetadataRegistry metadataRegistry;
+    protected boolean activated = false;
 
     public GenericDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem primaryItem) {
         this.metadataRegistry = metadataRegistry;
@@ -61,7 +62,7 @@ public abstract class GenericDevice implements StateChangeListener {
      * 
      * @return
      */
-    public abstract MatterDeviceOptions activate();
+    protected abstract MatterDeviceOptions activate();
 
     /**
      * Dispose of the device, inherited classes should unregister the device and remove the listeners
@@ -96,8 +97,12 @@ public abstract class GenericDevice implements StateChangeListener {
         // updateState(item, state);
     }
 
-    public CompletableFuture<String> registerDevice() {
+    public synchronized CompletableFuture<String> registerDevice() {
+        if (activated) {
+            throw new IllegalStateException("Device already registered");
+        }
         MatterDeviceOptions options = activate();
+        activated = true;
         return client.addEndpoint(deviceType(), primaryItem.getName(), options.label, primaryItem.getName(),
                 "Type " + primaryItem.getType(), String.valueOf(primaryItem.getName().hashCode()), options.clusters);
     }

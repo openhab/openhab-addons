@@ -156,8 +156,7 @@ public class FanDevice extends GenericDevice {
     }
 
     @Override
-    public MatterDeviceOptions activate() {
-        dispose();
+    protected MatterDeviceOptions activate() {
         primaryItem.addStateChangeListener(this);
         Map<String, Object> attributeMap = new HashMap<>();
         MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);

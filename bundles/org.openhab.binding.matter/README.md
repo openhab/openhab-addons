@@ -4,7 +4,7 @@ The Matter Binding for openHAB allows seamless integration with Matter-compatibl
 
 ## Supported functionality
 
-This binding supports 2 different types of matter functionality which operate independently of each other.
+This binding supports two different types of Matter functionality which operate independently of each other.
 
 - [Matter Client](#matter-client)
   - This allows openHAB to discover and control other Matter devices like lights, thermostats, window coverings, locks, etc...

@@ -32,6 +32,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkD
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.RoutingRoleEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 
 /**
  * Test class for ThreadNetworkDiagnosticsConverter
@@ -49,6 +50,9 @@ class ThreadNetworkDiagnosticsConverterTest {
     private MatterBridgeClient mockBridgeClient;
     @Mock
     @NonNullByDefault({})
+    private BaseThingHandlerFactory mockThingHandlerFactory;
+    @Mock
+    @NonNullByDefault({})
     private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
     @Mock
     @NonNullByDefault({})
@@ -62,8 +66,8 @@ class ThreadNetworkDiagnosticsConverterTest {
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockStateDescriptionProvider,
-                mockChannelTypeProvider));
+        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
+                mockStateDescriptionProvider, mockChannelTypeProvider));
         mockCluster.channel = 15;
         mockCluster.routingRole = ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER;
         mockCluster.networkName = "TestNetwork";
