@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -142,20 +141,5 @@ public class DummyThing implements Thing {
     @Override
     public boolean isEnabled() {
         return false;
-    }
-
-    @Override
-    public @Nullable String getSemanticEquipmentTag() {
-        return "";
-    }
-
-    @Override
-    public void setSemanticEquipmentTag(@Nullable String s) {
-
-    }
-
-    @Override
-    public void setSemanticEquipmentTag(@Nullable SemanticTag semanticTag) {
-
     }
 }
