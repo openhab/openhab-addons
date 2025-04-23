@@ -106,6 +106,10 @@
 
 		<category>ColorLight</category>
 
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description>
 			<parameter name="dp" type="integer" required="true">
 				<label>Color DP</label>
@@ -114,10 +118,6 @@
 				<label>Switch DP</label>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="switch">
@@ -126,15 +126,15 @@
 
 		<category>Switch</category>
 
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="dp" type="integer" required="true">
 				<label>DP</label>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 
@@ -144,6 +144,10 @@
 
 		<category>Light</category>
 
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description>
 			<parameter name="dp" type="integer" required="true">
 				<label>Value DP</label>
@@ -165,10 +169,6 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="number">

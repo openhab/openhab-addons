@@ -236,11 +236,11 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
-		<config-description-ref uri="channel-type:robonect:jobType"/>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
+		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

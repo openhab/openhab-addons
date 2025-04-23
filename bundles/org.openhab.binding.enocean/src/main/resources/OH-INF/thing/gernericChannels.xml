@@ -10,11 +10,11 @@
 		<label>Switch</label>
 		<description>The switch channel allows to switch something on and off.</description>
 		<category>Switch</category>
-		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
+		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
 
 	<!-- Rollershutter Channel with transformation configuration -->
@@ -23,11 +23,11 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter</description>
 		<category>Blinds</category>
-		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
 		</tags>
+		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
 
 	<!-- Dimmer Channel with transformation configuration -->
@@ -36,11 +36,11 @@
 		<label>Dimmer</label>
 		<description>Dimmer</description>
 		<category>Light</category>
-		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
+		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
 
 	<channel-type id="genericNumber">
@@ -59,11 +59,11 @@
 	<channel-type id="genericColor">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>Color</tag>
 		</tags>
+		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
 
 	<!-- generic Teach in Channel -->

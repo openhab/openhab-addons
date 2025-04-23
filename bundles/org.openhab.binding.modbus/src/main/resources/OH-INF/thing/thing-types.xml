@@ -53,50 +53,50 @@
 		<item-type>Number</item-type>
 		<label>Value as Number</label>
 		<description>Number item channel</description>
-		<config-description></config-description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Channel</tag>
 		</tags>
+		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-successful-read-type">
 		<item-type>DateTime</item-type>
 		<label>Last Successful Read</label>
 		<description>Date of last read</description>
-		<config-description></config-description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-read-type">
 		<item-type>DateTime</item-type>
 		<label>Last Erroring Read</label>
 		<description>Date of last read error</description>
-		<config-description></config-description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-successful-write-type">
 		<item-type>DateTime</item-type>
 		<label>Last Successful Write</label>
 		<description>Date of last write</description>
-		<config-description></config-description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-write-type">
 		<item-type>DateTime</item-type>
 		<label>Last Erroring Write</label>
 		<description>Date of last write error</description>
-		<config-description></config-description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<config-description></config-description>
 	</channel-type>
 </thing:thing-descriptions>

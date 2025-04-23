@@ -190,11 +190,11 @@
 		<item-type>Switch</item-type>
 		<label>Fan Timer Mode</label>
 		<description>Lists the current fan timer mode</description>
-		<config-description-ref uri="channel-type:nest:sdm_fan_timer_mode"/>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
 		</tags>
+		<config-description-ref uri="channel-type:nest:sdm_fan_timer_mode"/>
 	</channel-type>
 
 	<channel-type id="SDMFanTimerTimeout">

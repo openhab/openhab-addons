@@ -104,16 +104,16 @@
 		<label>Switch State</label>
 		<description>Switch state (ON/OFF)</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
 				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="dimmer-channel">
@@ -121,6 +121,10 @@
 		<label>Dimmer State</label>
 		<description>Dimmer state (0-100%)</description>
 		<category>DimmableLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
@@ -134,10 +138,6 @@
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="paired-channel">
@@ -145,6 +145,10 @@
 		<label>Rollershutter Control</label>
 		<description>Rollershutter control (UP/DOWN) - controls two opposite channels</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
@@ -155,10 +159,6 @@
 				<description>The physical channel number of the paired channel (will be set to opposite state)</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="temperature-channel">
@@ -193,16 +193,16 @@
 		<label>Color</label>
 		<description>Color control</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
 				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

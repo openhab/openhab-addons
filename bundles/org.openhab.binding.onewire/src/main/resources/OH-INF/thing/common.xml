@@ -170,6 +170,10 @@
 	<channel-type id="dio">
 		<item-type>Switch</item-type>
 		<label>Digital I/O</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
 				<label>Mode</label>
@@ -190,10 +194,6 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<!-- Pressure Channel -->
 	<channel-type id="pressure">

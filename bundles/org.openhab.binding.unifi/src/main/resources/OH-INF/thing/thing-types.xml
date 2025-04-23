@@ -459,11 +459,11 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If PoE is enabled</description>
-		<config-description-ref uri="channel-type:unifi:poeEnable"/>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
+		<config-description-ref uri="channel-type:unifi:poeEnable"/>
 	</channel-type>
 
 	<channel-type id="poeMode">

@@ -575,6 +575,10 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description>
 			<parameter name="matchColors" type="boolean">
 				<label>Match Colors</label>
@@ -583,10 +587,6 @@
 				<default>false</default>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="colorName">
 		<item-type>String</item-type>

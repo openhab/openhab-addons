@@ -21,6 +21,10 @@
 	<channel-type id="switch-rw">
 		<item-type>Switch</item-type>
 		<label>Digital DataPoint</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -37,10 +41,6 @@
 				</options>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="switch-r">

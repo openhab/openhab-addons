@@ -147,11 +147,11 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-color"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>Color</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-color"/>
 	</channel-type>
 
 	<channel-type id="contact">
@@ -163,21 +163,21 @@
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>DateTime Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config"/>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config"/>
 	</channel-type>
 
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-dimmer"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-dimmer"/>
 	</channel-type>
 
 	<channel-type id="image">
@@ -189,41 +189,41 @@
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config"/>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>GeoLocation</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config"/>
 	</channel-type>
 
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-number"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>Channel</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-number"/>
 	</channel-type>
 
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-player"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-player"/>
 	</channel-type>
 
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-rollershutter"/>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-rollershutter"/>
 	</channel-type>
 
 	<channel-type id="string">
@@ -235,11 +235,11 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch Channel</label>
-		<config-description-ref uri="channel-type:http:channel-config-switch"/>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
+		<config-description-ref uri="channel-type:http:channel-config-switch"/>
 	</channel-type>
 
 </thing:thing-descriptions>

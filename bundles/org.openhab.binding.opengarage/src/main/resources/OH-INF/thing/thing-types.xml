@@ -104,6 +104,10 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Switch</label>
@@ -116,10 +120,6 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="opengarage-status-contact">
 		<item-type>Contact</item-type>

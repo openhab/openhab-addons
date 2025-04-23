@@ -48,6 +48,10 @@
 		<item-type>Switch</item-type>
 		<label>Digital Output (OH -> C.M.I.)</label>
 		<description>A digital channel sent from OpenHAB to C.M.I.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Opening</tag>
+		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -58,10 +62,6 @@
 				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Opening</tag>
-		</tags>
 	</channel-type>
 	<!-- COA analog Channel Type -->
 	<channel-type id="coe-analog-in">
@@ -80,6 +80,10 @@
 		<item-type>Number</item-type>
 		<label>Analog Output Channel (OH -> C.M.I.)</label>
 		<description>A Analog Channel sent to the C.M.I.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -118,10 +122,6 @@
 				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<thing-type id="cmiSchema" extensible="schema-switch-ro,schema-switch-rw,schema-numeric-ro,schema-state-ro">

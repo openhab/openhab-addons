@@ -118,6 +118,10 @@
 		<item-type>Switch</item-type>
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -155,10 +159,6 @@
 				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="switch-pro">
 		<item-type>Switch</item-type>
@@ -200,6 +200,10 @@
 		<item-type>Switch</item-type>
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -241,10 +245,6 @@
 				<description>The number of times to repeat or `-1` for an infinitely repeating pulse</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="temperature-pro">
 		<item-type>Number:Temperature</item-type>

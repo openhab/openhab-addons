@@ -34,16 +34,16 @@
 		<label>Blinds Position</label>
 		<description>Controls the blinds</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Position</label>
 				<description>When invert is true than 0 on LIVISI is UP and 100 is DOWN</description>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<!-- BooleanSwitch Channel -->

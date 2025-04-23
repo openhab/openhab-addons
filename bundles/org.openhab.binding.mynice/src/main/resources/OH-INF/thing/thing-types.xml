@@ -190,6 +190,10 @@
 		<label>Courtesy Light</label>
 		<description>Courtesy Light illuminates the area around your gates.</description>
 		<category>lightbulb</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 		<config-description>
 			<parameter name="duration" type="integer" min="0" unit="s" step="1">
 				<label>Duration</label>
@@ -197,10 +201,6 @@
 				<default>60</default>
 			</parameter>
 		</config-description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
