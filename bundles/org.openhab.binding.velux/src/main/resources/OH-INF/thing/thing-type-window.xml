@@ -15,6 +15,7 @@
 		<label>@text/thing-type.velux.window.label</label>
 		<description>@text/thing-type.velux.window.description</description>
 		<category>Window</category>
+		<semantic-equipment-tag>Window</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="windowPosition"></channel>
 			<channel id="limitMinimum" typeId="limitMinimum"/>
