@@ -70,6 +70,15 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(AzureBlobWatcherConfiguration.class);
+        if (config.azureAccountName.isBlank() || config.azureContainerName.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Account name or container configuration is invalid");
+            return;
+        } else if (config.pollIntervalAzure == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Polling interval must be greater than 0 seconds");
+            return;
+        }
 
         if (config.azureAnonymous) {
             azure = new AzureActions(httpClientFactory, config.azureAccountName, config.azureContainerName);
@@ -78,14 +87,8 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
                     config.azureAccessKey);
         }
         updateStatus(ThingStatus.UNKNOWN);
-        if (config.pollIntervalAzure > 0) {
-            executionJob = scheduler.scheduleWithFixedDelay(this::refreshAzureBlobInformation, 0,
-                    config.pollIntervalAzure, TimeUnit.SECONDS);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Polling interval must be greater then 0 seconds");
-            return;
-        }
+        executionJob = scheduler.scheduleWithFixedDelay(this::refreshAzureBlobInformation, 0, config.pollIntervalAzure,
+                TimeUnit.SECONDS);
     }
 
     private boolean refreshAzureBlobInformation() {
