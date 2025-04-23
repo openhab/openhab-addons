@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>A.C. Device</label>
 		<description>Air conditioning device</description>
-
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel"/>
 			<channel id="offline" typeId="offline-channel"/>

@@ -8,6 +8,7 @@
 	<bridge-type id="controller">
 		<label>OmniLink Controller</label>
 		<description>An OmniLink controller.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="system_date" typeId="system_date"/>
 			<channel id="enable_disable_beeper" typeId="console_enable_disable_beeper">

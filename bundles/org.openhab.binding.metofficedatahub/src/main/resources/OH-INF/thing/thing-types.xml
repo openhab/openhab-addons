@@ -8,6 +8,7 @@
 
 		<label>MetOffice DataHub Account</label>
 		<description>MetOffice DataHub API Account</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<properties>
 			<property name="Site Specific API Call Count"/>
@@ -36,6 +37,7 @@
 
 		<label>Forecast Data</label>
 		<description>Site Specific forecast data</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current-forecast" typeId="site-hr-forecast-grp">

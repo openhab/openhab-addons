@@ -11,6 +11,7 @@
 			Bridge to the OpenUV Project API. In order to receive the data, you must register an account on
 			https://www.openuv.io/auth/google and get your API token.
 		</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
@@ -30,6 +31,7 @@
 
 		<label>UV Report</label>
 		<description>Provides various UV data from the OpenUV Project for a given location.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="UVIndex" typeId="UVIndex"/>

@@ -11,6 +11,7 @@
 
 		<label>Rollershutter Module</label>
 		<description>Nikobus Rollershutter module</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="rollershutter-output">

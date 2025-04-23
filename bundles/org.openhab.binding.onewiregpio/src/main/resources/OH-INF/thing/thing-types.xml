@@ -7,6 +7,7 @@
 	<thing-type id="sensor">
 		<label>Temperature Sensor</label>
 		<description>OneWire GPIO Temperature sensor</description>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>

@@ -7,7 +7,7 @@
 	<bridge-type id="neatoaccount">
 		<label>Neato Account</label>
 		<description>Access to Neato Account. Used to discover robots tied to account.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>E-mail Address</label>
@@ -30,7 +30,7 @@
 
 		<label>Neato Vacuum Cleaner</label>
 		<description>Provides communication with Neato Vacuum cleaner.</description>
-
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="state" typeId="state"/>

@@ -7,6 +7,7 @@
 	<bridge-type id="mcdBridge">
 		<label>MCD Bridge</label>
 		<description>C&amp;S Managing Care Digital (MCD) account that is used to send data.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="userEmail" type="text" required="true">
 				<context>email</context>
@@ -27,6 +28,7 @@
 		</supported-bridge-type-refs>
 		<label>MCD Sensor</label>
 		<description>Sends data for one mcdSensor to MCD, the C&amp;S cloud application.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="lastValue" typeId="lastValue"/>
 			<channel id="sendEvent" typeId="sendEvent"/>

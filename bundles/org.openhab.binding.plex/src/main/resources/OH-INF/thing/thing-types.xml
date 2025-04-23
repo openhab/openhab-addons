@@ -7,6 +7,7 @@
 	<bridge-type id="server">
 		<label>PLEX Server</label>
 		<description>Represents a PLEX Server</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="currentPlayer" typeId="currentPlayers"/>
 			<channel id="currentPlayersActive" typeId="currentPlayersActive"/>
@@ -20,6 +21,7 @@
 		</supported-bridge-type-refs>
 		<label>PLEX Player</label>
 		<description>Represents a PLEX player</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="power" typeId="power"/>

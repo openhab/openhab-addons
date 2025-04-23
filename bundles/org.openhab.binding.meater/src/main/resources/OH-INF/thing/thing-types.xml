@@ -7,7 +7,7 @@
 	<bridge-type id="meaterapi">
 		<label>MEATER Cloud REST API</label>
 		<description>This bridge represents the MEATER Cloud REST API connector</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status"/>
 		</channels>
@@ -37,7 +37,7 @@
 
 		<label>MEATER Probe</label>
 		<description>This thing represents a MEATER Probe</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="internalTemperature" typeId="internalTemperature"/>
 			<channel id="ambientTemperature" typeId="ambientTemperature"/>

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>A Pulseaudio Source</label>
 		<description>represents a pulseaudio source</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="volume" typeId="volume"/>

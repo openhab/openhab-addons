@@ -7,7 +7,7 @@
 	<thing-type id="receiver">
 		<label>MagentaTV Media Receiver</label>
 		<description>Represents a Telekom Media Receiver for MagentaTV</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="control">
 				<label>Control</label>

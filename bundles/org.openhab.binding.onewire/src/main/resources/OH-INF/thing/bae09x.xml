@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor BAE0910</label>
 		<description>1-wire multisensor (BAE0910-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<properties>
 			<property name="sensorCount">1</property>
 		</properties>

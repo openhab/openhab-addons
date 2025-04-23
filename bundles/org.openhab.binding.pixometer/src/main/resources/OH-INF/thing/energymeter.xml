@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Energymeter</label>
 		<description>A specific energy meter.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="last_reading_value" typeId="last_reading_value_energy"/>
 			<channel id="last_reading_date" typeId="last_reading_date"/>

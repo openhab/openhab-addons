@@ -7,6 +7,7 @@
 	<thing-type id="mystromplug">
 		<label>myStrom Smart Plug</label>
 		<description>Controls the myStrom smart plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="switch" typeId="system.power"/>

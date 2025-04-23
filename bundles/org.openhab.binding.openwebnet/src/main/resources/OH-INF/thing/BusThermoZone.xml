@@ -12,7 +12,7 @@
 
 		<label>Thermo Zone</label>
 		<description>An OpenWebNet BUS/SCS configured thermo zone (managed via Central Unit or stand alone).</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<!-- read only -->
 			<channel id="temperature" typeId="temperature"/>

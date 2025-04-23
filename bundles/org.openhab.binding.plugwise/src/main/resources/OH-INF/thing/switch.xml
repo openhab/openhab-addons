@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Plugwise Switch</label>
 		<description>A wireless wall switch</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="lastseen" typeId="lastseen"/>
 			<channel id="leftbuttonstate" typeId="leftbuttonstate"/>

@@ -7,6 +7,7 @@
 	<thing-type id="pjLinkDevice">
 		<label>PJLink Device</label>
 		<description>A PJLink compatible device, e.g. a digital projector</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>

@@ -12,6 +12,7 @@
 
 		<label>Weather Information</label>
 		<description>Weather data from the meteoblue service</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="forecastToday" typeId="forecast">

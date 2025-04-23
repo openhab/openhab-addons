@@ -7,6 +7,7 @@
 	<bridge-type id="http">
 		<label>OpenSprinkler HTTP Bridge</label>
 		<description>A connection to a stand alone OpenSprinkler device which communicates over HTTP.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -63,6 +64,7 @@
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Station</label>
 		<description>Controls a station connected to the OpenSprinkler device.</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="stationState" typeId="stationState"></channel>
@@ -87,6 +89,7 @@
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Device</label>
 		<description>A thing that receives data from the OpenSprinkler device directly.</description>
+		<semantic-equipment-tag>Horticulture</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>

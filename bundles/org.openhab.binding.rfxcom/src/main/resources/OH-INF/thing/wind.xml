@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Wind Sensor</label>
 		<description>A Wind device.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="avgWindSpeed" typeId="windspeed">

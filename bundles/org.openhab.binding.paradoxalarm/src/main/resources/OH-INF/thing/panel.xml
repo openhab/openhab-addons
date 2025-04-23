@@ -11,6 +11,7 @@
 
 		<label>Paradox Panel</label>
 		<description>Paradox panel various information</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="panelState"/>

@@ -12,7 +12,7 @@
 
 		<label>Alarm System</label>
 		<description>A OpenWebNet BUS/SCS alarm system.</description>
-
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<!-- read only -->
 			<channel id="state" typeId="alarmSystemState"/>

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Plugwise Sense</label>
 		<description>A wireless temperature and humidity sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="lastseen" typeId="lastseen"/>

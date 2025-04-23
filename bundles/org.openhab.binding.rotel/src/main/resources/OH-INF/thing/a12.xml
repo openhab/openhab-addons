@@ -8,6 +8,7 @@
 	<thing-type id="a12">
 		<label>A12 Integrated Amplifier</label>
 		<description>Connection to the Rotel A12 or A12MKII integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
