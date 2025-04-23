@@ -40,7 +40,7 @@ public class ScriptExtensionModuleProvider {
 
     private final Logger logger = LoggerFactory.getLogger(ScriptExtensionModuleProvider.class);
 
-    private Map<String, Object> globals = new HashMap<String, Object>();
+    private Map<String, Object> globals = new HashMap<>();
 
     public ScriptExtensionModuleProvider() {
     }

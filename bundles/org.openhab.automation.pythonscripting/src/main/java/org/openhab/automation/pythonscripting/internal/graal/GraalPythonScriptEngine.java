@@ -78,7 +78,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     GraalPythonScriptEngine(GraalPythonScriptEngineFactory factory, Engine engine, Context.Builder contextConfig) {
         Engine engineToUse = (engine != null) ? engineToUse = engine : factory.getPolyglotEngine();
-        // this.factory = (factory == null) ? new GraalPythonScriptEngineFactory(engineToUse) : factory;
 
         Context.Builder contextConfigToUse = contextConfig;
         if (contextConfigToUse == null) {

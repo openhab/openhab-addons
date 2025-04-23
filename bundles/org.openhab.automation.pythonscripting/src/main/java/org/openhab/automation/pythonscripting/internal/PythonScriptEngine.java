@@ -153,12 +153,6 @@ public class PythonScriptEngine
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
-     *
-     * @param pythonDependencyTracker
-     * @param injectionEnabled
-     * @param scopeEnabled
-     * @param cachingEnabled
-     * @param jythonEmulation
      */
     public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker,
             PythonScriptEngineConfiguration pythonScriptEngineConfiguration) {
@@ -357,7 +351,6 @@ public class PythonScriptEngine
     // collect JSR223 (scope) variables separately, because they are delivered via 'import scope'
     public void put(String key, Object value) {
         if ("javax.script.filename".equals(key)) {
-            // super.put("__file__", value);
             super.put(key, value);
         } else {
             // use a custom lifecycleTracker to handle dispose hook before polyglot context is closed
@@ -398,11 +391,7 @@ public class PythonScriptEngine
     @Override
     public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
         boolean acquired = lock.tryLock(l, timeUnit);
-        if (acquired) {
-            logger.debug("Lock acquired.");
-        } else {
-            logger.debug("Lock not acquired.");
-        }
+        logger.debug("{}", acquired ? "Lock acquired." : "Lock not acquired.");
         return acquired;
     }
 

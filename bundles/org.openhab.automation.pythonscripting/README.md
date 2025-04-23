@@ -330,7 +330,7 @@ from scope import cache
 from scope import osgi
 ```
 
-Additionally you can import all java classes from 'org.openhab' package like
+Additionally you can import all Java classes from 'org.openhab' package like
 
 
 ```python
@@ -542,7 +542,7 @@ class UpdateInfo:
 
 ```
 
-### python <=> java conversion
+### Python <=> Java conversion
 
 Conversion occurs in both directions
 
