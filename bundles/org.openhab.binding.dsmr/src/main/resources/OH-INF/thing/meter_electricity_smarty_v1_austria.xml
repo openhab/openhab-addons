@@ -11,7 +11,7 @@
 
 		<label>Electricity Meter Austria</label>
 		<description>This is an electricity meter that complies to the Austria's Smarty V1.0 specification.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="p1_timestamp" typeId="p1TimestampType"/>
 			<channel id="p1_version_output" typeId="p1VersionType"/>

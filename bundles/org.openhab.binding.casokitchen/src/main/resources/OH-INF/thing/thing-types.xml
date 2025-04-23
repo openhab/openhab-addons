@@ -7,6 +7,7 @@
 	<thing-type id="winecooler-2z">
 		<label>Wine Cooler 2 Zones</label>
 		<description>Wine cooler with 2 cooling zones</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="top" typeId="top-values"/>
