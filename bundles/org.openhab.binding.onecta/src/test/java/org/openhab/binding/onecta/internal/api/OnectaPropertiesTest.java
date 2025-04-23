@@ -28,24 +28,23 @@ public class OnectaPropertiesTest {
     @Test
     public void startScanTest() {
 
-        assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6",
+        assertEquals("https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6",
                 OnectaProperties.getBaseUrl(UNITID));
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/onOffMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/onOffMode",
                 OnectaProperties.getUrlOnOff(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/powerfulMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/powerfulMode",
                 OnectaProperties.getUrlPowerFulModeOnOff(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/econoMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/econoMode",
                 OnectaProperties.getEconoMode(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/operationMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/operationMode",
                 OnectaProperties.getOperationModeUrl(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/targetTemperature",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/targetTemperature",
                 OnectaProperties.getTargetTemperaturUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals(20f, OnectaProperties.getTargetTemperaturCommand(20f).value);
@@ -55,7 +54,7 @@ public class OnectaPropertiesTest {
         assertEquals(null, OnectaProperties.getOperationModeCommand(Enums.OperationMode.DEHUMIDIFIER).path);
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/temperatureControl",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/temperatureControl",
                 OnectaProperties.getTemperatureControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals(20f, OnectaProperties.getTemperatureRoomControlCommand(20f, Enums.OperationMode.COLD).value);
@@ -76,7 +75,7 @@ public class OnectaPropertiesTest {
                 OnectaProperties.getTemperatureHotWaterControlCommand(20f, Enums.OperationMode.AUTO).path);
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/fanControl",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/fanControl",
                 OnectaProperties.getTFanControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals("fixed",
@@ -100,15 +99,15 @@ public class OnectaPropertiesTest {
                 OnectaProperties.getTFanDirectionVerCommand(Enums.OperationMode.FAN, Enums.FanMovementVer.SWING).path);
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/streamerMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/streamerMode",
                 OnectaProperties.getStreamerMode(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/holidayMode",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/holidayMode",
                 OnectaProperties.getHolidayMode(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals(
-                "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/demandControl",
+                "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/demandControl",
                 OnectaProperties.getTDemandControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals("scheduled", OnectaProperties.getTDemandControlCommand(Enums.DemandControl.SCHEDULED).value);
