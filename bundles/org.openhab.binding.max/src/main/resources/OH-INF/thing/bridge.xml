@@ -7,6 +7,7 @@
 		<label>MAX! Cube LAN Gateway</label>
 		<description>This bridge represents the MAX! Cube LAN Gateway.
 		</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="free_mem" typeId="free_mem"/>

@@ -12,7 +12,7 @@
 		<label>Thermo Sensor</label>
 		<description>An OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
 			L/N/NT4577 etc.</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>

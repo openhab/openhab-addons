@@ -10,7 +10,7 @@
 
 		<label>MAX! HeatingThermostat</label>
 		<description>This is a MAX! HeatingThermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="valve" typeId="valve"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
