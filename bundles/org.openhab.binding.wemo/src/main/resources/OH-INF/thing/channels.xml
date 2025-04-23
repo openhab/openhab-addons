@@ -86,7 +86,7 @@
 		<description>The current power consumption</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
