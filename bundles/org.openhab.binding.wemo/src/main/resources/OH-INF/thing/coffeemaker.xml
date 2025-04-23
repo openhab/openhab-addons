@@ -7,7 +7,7 @@
 	<thing-type id="CoffeeMaker">
 		<label>Mr. Coffee WeMo Enabled Coffeemaker</label>
 		<description>This is a WeMo enabled coffee maker</description>
-
+		<semantic-equipment-tag>CoffeeMaker</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="coffeeMode" typeId="coffeeMode"/>

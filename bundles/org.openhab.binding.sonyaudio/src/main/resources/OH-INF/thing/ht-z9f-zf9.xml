@@ -50,6 +50,7 @@
 	<thing-type id="HT-Z9F">
 		<label>SONY Soundbar HT-Z9F</label>
 		<description>SONY Soundbar HT-Z9F</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-z9f-zf9"/>
@@ -64,6 +65,7 @@
 	<thing-type id="HT-ZF9">
 		<label>SONY Soundbar HT-ZF9</label>
 		<description>SONY Soundbar HT-ZF9</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-z9f-zf9"/>

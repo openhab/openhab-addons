@@ -13,6 +13,7 @@
 
 		<label>Sensor</label>
 		<description>This Thing defines a Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -30,6 +31,7 @@
 
 		<label>RainSensor</label>
 		<description>This Thing defines a Rain Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="rainrate" typeId="rainrate"/>
@@ -45,6 +47,7 @@
 
 		<label>PowerSensor</label>
 		<description>This Thing defines a Power Sensor</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="watt" typeId="watt"/>
@@ -61,6 +64,7 @@
 
 		<label>WindSensor</label>
 		<description>This Thing defines a Wind Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="windgust" typeId="windgust"/>

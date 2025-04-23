@@ -6,7 +6,7 @@
 	<thing-type id="generic">
 		<label>SolarEdge</label>
 		<description>data retrieved from SolarEdge web interface</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="genericweb-live" id="live"/>
 			<channel-group typeId="genericweb-aggregate-day" id="aggregate_day"/>

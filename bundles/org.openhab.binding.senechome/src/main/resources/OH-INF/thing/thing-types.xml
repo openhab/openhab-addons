@@ -8,7 +8,7 @@
 	<thing-type id="senechome">
 		<label>Senec Home</label>
 		<description>Senec Home</description>
-
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 		<channels>
 			<!-- SenecHomePower -->
 			<channel id="powerLimitation" typeId="powerLimitation"/>

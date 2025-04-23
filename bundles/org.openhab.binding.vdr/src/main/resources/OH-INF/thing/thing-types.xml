@@ -6,7 +6,7 @@
 	<thing-type id="vdr">
 		<label>VDR</label>
 		<description>VDR - The Video Disk Recorder (https://tvdr.de)</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="channel" typeId="vdrChannel"/>

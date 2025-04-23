@@ -7,7 +7,7 @@
 	<bridge-type id="int-rs">
 		<label>INT-RS</label>
 		<description>RS-232 communication module</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>

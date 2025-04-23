@@ -8,7 +8,7 @@
 
 		<label>Cloud Connect Inverter</label>
 		<description>The inverter representation that is retrieved from Solax cloud API</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="inverter-output-power" typeId="system.electric-power">
 				<label>Inverter Input/Output Power</label>

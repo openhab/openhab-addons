@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy CO2 Sensor</label>
+		<semantic-equipment-tag>CO2Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="co2_concentration" typeId="co2_concentration"></channel>
 		</channels>

@@ -8,7 +8,7 @@
 		<label>KP401</label>
 		<description>TP-Link KP401 Kasa Smart WiFi Outdoor Plug</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>

@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>iSMART Account</label>
 		<description>Your iSMART account data</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:saicismart:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

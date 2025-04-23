@@ -8,7 +8,7 @@
 		<label>KP400</label>
 		<description>TP-Link KP400 Smart Outdoor Plug</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="groupSwitch" typeId="switch-group"/>
 			<channel-group id="outlet1" typeId="switch-outlet">

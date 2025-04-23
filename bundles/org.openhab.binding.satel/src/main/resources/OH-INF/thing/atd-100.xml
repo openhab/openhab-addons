@@ -14,7 +14,7 @@
 		<label>ATD-100</label>
 		<description><![CDATA[Wireless temperature detector designed for operation as part of the ABAX two-way wireless system.]]></description>
 		<category>Sensor</category>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="zoneTemperature" id="temperature"/>
 			<channel typeId="system.low-battery" id="device_lobatt"/>

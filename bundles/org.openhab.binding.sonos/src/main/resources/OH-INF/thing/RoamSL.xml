@@ -8,7 +8,7 @@
 	<thing-type id="RoamSL" listed="false">
 		<label>Roam SL</label>
 		<description>Represents SONOS Roam SL speaker</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

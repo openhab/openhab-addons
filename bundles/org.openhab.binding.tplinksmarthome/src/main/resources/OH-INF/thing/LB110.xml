@@ -8,7 +8,7 @@
 		<label>LB110</label>
 		<description>TP-Link LB110 Smart Wi-Fi LED Bulb with Dimmable Light</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="power" typeId="power"/>

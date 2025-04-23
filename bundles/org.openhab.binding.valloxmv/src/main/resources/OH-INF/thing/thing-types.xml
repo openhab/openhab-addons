@@ -6,6 +6,7 @@
 	<thing-type id="valloxmv">
 		<label>Vallox Ventilation Unit</label>
 		<description>Interface to online interface of Vallox ventilation unit</description>
+		<semantic-equipment-tag>SmartVent</semantic-equipment-tag>
 		<channels>
 			<channel id="onoff" typeId="onoff"/>
 			<channel id="state" typeId="state"/>

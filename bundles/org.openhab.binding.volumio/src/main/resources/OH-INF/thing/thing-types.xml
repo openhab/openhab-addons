@@ -7,7 +7,7 @@
 	<thing-type id="player">
 		<label>Volumio Device</label>
 		<description>A Volumio device</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="title" typeId="title"/>
 			<channel id="artist" typeId="artist"/>

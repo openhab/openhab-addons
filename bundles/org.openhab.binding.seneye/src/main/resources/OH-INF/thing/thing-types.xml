@@ -7,7 +7,7 @@
 	<thing-type id="monitor">
 		<label>Seneye Monitor</label>
 		<description>Seneye Monitor</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="ph" typeId="ph"/>

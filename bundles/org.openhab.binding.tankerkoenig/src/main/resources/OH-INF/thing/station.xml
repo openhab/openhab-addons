@@ -10,6 +10,7 @@
 		<label>Gas-Station</label>
 		<description>Provides the prices of gas types E5-, E10- and Diesel of that station and if that station reports as
 			opened.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="diesel" typeId="diesel"/>
 			<channel id="e10" typeId="e10"/>

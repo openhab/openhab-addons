@@ -7,7 +7,7 @@
 	<thing-type id="Crockpot">
 		<label>Crock-Pot Slow Cooker</label>
 		<description>Crock-Pot Smart Slow Cooker with WeMo</description>
-
+		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
 		<channels>
 			<channel id="cookMode" typeId="cookMode"/>
 			<channel id="warmCookTime" typeId="warmCookTime"/>

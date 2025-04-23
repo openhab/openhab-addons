@@ -8,7 +8,7 @@
 	<thing-type id="inverter">
 		<label>SolarMax Power Inverter</label>
 		<description>Basic thing for the SolarMax Power Inverter binding</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="lastUpdated" typeId="lastUpdated"/>
 			<channel id="startups" typeId="startups"/>

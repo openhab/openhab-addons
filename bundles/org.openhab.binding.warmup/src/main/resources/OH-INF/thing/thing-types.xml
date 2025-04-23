@@ -8,6 +8,7 @@
 		<label>My Warmup Account</label>
 		<description>Connection to the https://my.warmup.com site</description>
 		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<context>email</context>
@@ -35,7 +36,7 @@
 		<label>Room</label>
 		<description>Warmup WiFi connected Thermostat(s) controlling a room</description>
 		<category>RadiatorControl</category>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="currentTemperature" typeId="system.indoor-temperature"/>
 			<channel id="targetTemperature" typeId="targetTemperature"/>

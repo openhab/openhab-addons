@@ -6,7 +6,7 @@
 	<thing-type id="meter">
 		<label>Solar-Log Meter</label>
 		<description>Basic thing for the Solar-Log Binding</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="lastupdate" typeId="lastupdate"></channel>
 			<channel id="pac" typeId="pac"></channel>

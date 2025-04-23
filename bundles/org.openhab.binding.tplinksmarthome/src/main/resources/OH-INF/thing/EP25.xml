@@ -8,7 +8,7 @@
 		<label>EP25</label>
 		<description>TP-Link EP25 Kasa Smart WiFi Plug Slim with Energy Monitoring</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="rssi" typeId="rssi"/>

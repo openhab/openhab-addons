@@ -7,7 +7,7 @@
 	<bridge-type id="server">
 		<label>ZoneMinder Server</label>
 		<description>Represents a ZoneMinder server</description>
-
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel id="imageMonitorId" typeId="id">
 				<label>Image Monitor Id</label>
@@ -40,6 +40,7 @@
 
 		<label>ZoneMinder Monitor</label>
 		<description>Represents a ZoneMinder monitor</description>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="id"/>
 			<channel id="name" typeId="name"/>

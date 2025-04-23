@@ -8,7 +8,7 @@
 	<thing-type id="colorTouchThermostat">
 		<label>ColorTouch Thermostat</label>
 		<description>Venstar ColorTouch Thermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>

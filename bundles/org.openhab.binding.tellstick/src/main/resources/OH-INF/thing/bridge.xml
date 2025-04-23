@@ -7,7 +7,7 @@
 	<bridge-type id="telldus-core">
 		<label>Telldus Core Gateway</label>
 		<description>This bridge represents the Telldus center on a local computer.</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="libraryPath" type="text" required="false">
 				<label>The Location of Telldus Core DLL/SO</label>
@@ -26,7 +26,7 @@
 	<bridge-type id="telldus-live">
 		<label>Telldus Live Gateway</label>
 		<description>This bridge represents the Telldus live cloud service.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="privateKey" type="text" required="true">
 				<context>password</context>
@@ -58,7 +58,7 @@
 	<bridge-type id="telldus-local">
 		<label>Telldus Local API</label>
 		<description>This bridge represents the Telldus local API.</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Local IP Address</label>

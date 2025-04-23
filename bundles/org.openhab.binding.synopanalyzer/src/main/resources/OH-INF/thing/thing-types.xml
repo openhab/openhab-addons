@@ -7,7 +7,7 @@
 	<thing-type id="synopanalyzer">
 		<label>Synop Message</label>
 		<description>This is the interpretation of the last message of a given station.</description>
-
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="pressure" typeId="system.barometric-pressure"/>

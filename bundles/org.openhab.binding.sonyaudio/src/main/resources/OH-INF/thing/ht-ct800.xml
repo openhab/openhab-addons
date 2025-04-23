@@ -44,6 +44,7 @@
 	<thing-type id="HT-CT800">
 		<label>SONY Soundbar HT-CT800</label>
 		<description>SONY Soundbar HT-CT800</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-ct800"/>
