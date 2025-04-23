@@ -1430,7 +1430,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             SemanticTag equipmentTag = Equipment.LIGHTBULB; // default;
 
             if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
-                equipmentTag = Equipment.LIGHT_SOURCE;
+                equipmentTag = Equipment.ZONE;
             }
             if (thisResource.getProductData() instanceof ProductData productData
                     && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
