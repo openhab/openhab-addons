@@ -8,6 +8,7 @@
 	<thing-type id="fan">
 		<label>BigAssFan</label>
 		<description>Big Ass Fan</description>
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 
 		<channels>
 			<!-- Channels related to fan functions -->

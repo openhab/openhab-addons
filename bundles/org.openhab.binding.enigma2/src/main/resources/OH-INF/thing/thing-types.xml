@@ -6,6 +6,7 @@
 	<thing-type id="device">
 		<label>Enigma2</label>
 		<description>The Thing represents an Enigma2 device</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="powerType"/>
 			<channel id="mute" typeId="muteType"/>

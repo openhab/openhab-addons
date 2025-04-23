@@ -11,7 +11,7 @@
 
 		<label>Rollershutter Actuator</label>
 		<description>Rollershutter like Eltako FSB14/61/71, FJ62 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

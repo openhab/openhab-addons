@@ -11,6 +11,7 @@
 
 		<label>Flume Meter Device</label>
 		<description>Flume water meter device.</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="instant-usage" typeId="instant-usage"/>

@@ -11,6 +11,7 @@
 
 		<label>Ecovacs Vacuum Cleaner</label>
 		<description>Represents an Ecovacs vacuum cleaner</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>

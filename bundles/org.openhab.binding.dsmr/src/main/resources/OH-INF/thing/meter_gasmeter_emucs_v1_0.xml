@@ -11,7 +11,7 @@
 
 		<label>Gas Meter (e-MUCS V1.0)</label>
 		<description>This is a gas meter that complies to the e-MUCS V1.0 specification.</description>
-
+		<semantic-equipment-tag>GasMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="meter_device_type" typeId="deviceType"/>
 			<channel id="meter_equipment_identifier" typeId="equipmentIdType"/>

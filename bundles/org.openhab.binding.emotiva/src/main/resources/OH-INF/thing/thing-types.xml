@@ -7,7 +7,7 @@
 	<thing-type id="processor">
 		<label>Emotiva Processor</label>
 		<description>Emotiva Processor Thing for Emotiva Binding</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="main-zone" typeId="zone">

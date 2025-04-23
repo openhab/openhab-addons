@@ -8,6 +8,7 @@
 	<bridge-type id="ecovacsapi">
 		<label>Ecovacs API Account</label>
 		<description>The API account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="email" type="text">

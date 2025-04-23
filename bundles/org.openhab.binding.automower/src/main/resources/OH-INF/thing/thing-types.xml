@@ -8,6 +8,8 @@
 	<bridge-type id="bridge">
 		<label>Automower Connect Bridge</label>
 		<description>The bridge to communicate with the Automower Connect API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
 
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
@@ -41,6 +43,7 @@
 
 		<label>Automower</label>
 		<description>An automatic lawn mower</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="status" typeId="statusType"/>

@@ -7,6 +7,7 @@
 	<bridge-type id="api">
 		<label>Electrolux Group API</label>
 		<description>This bridge represents the web API connector.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Electrolux</property>
@@ -36,7 +37,7 @@
 
 		<label>Air Purifier</label>
 		<description>This thing represents the Electrolux Air Purifier.</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -77,7 +78,7 @@
 
 		<label>Washing Machine</label>
 		<description>This thing represents the Electrolux Washing Machine.</description>
-
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="door-state" typeId="door-state"/>
 			<channel id="door-lock" typeId="door-lock"/>

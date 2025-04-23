@@ -11,7 +11,7 @@
 
 		<label>Temperature/Humidity Sensor</label>
 		<description>Sensor which sends temperature and humidity data (EEP: A5-04)</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

@@ -8,6 +8,7 @@
 	<bridge-type id="shc">
 		<label>Smart Home Controller</label>
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="scenario-triggered" typeId="scenario-triggered"/>
@@ -32,6 +33,7 @@
 
 		<label>In-wall Switch</label>
 		<description>A simple light control.</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -50,6 +52,7 @@
 
 		<label>Compact Smart Plug</label>
 		<description>A compact smart plug with energy monitoring capabilities.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -68,6 +71,7 @@
 
 		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -94,6 +98,7 @@
 
 		<label>Door/Window Contact</label>
 		<description>Detects open windows and doors.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -112,6 +117,7 @@
 
 		<label>Door/Window Contact II</label>
 		<description>Detects open windows and doors and features an additional button.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -132,6 +138,7 @@
 
 		<label>Door/Window Contact II Plus</label>
 		<description>Detects open windows and doors, provides a configurable button and a vibration sensor.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -156,6 +163,7 @@
 		<label>Motion Detector</label>
 		<description>Detects every movement through an intelligent combination of passive infra-red technology and an
 			additional temperature sensor.</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
@@ -179,6 +187,8 @@
 
 		<label>Shutter Control</label>
 		<description>Control of your shutter to take any position you desire.</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -195,6 +205,7 @@
 
 		<label>Shutter Control II</label>
 		<description>Second generation shutter control.</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -215,6 +226,7 @@
 
 		<label>Light Control II</label>
 		<description>Advanced light control with two switch circuits.</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -237,6 +249,7 @@
 
 		<label>Thermostat</label>
 		<description>Radiator thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -259,6 +272,7 @@
 		<label>Climate Control</label>
 		<description>This is a virtual device which is automatically created for all rooms that have
 			thermostats in it.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -276,6 +290,7 @@
 
 		<label>Wall Thermostat</label>
 		<description>Display of the current room temperature as well as the relative humidity in the room.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -295,6 +310,7 @@
 
 		<label>Security Camera 360</label>
 		<description>Indoor security camera with 360° view and motion detection.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
 		<channels>
 			<channel id="privacy-mode" typeId="privacy-mode"/>
@@ -312,6 +328,7 @@
 
 		<label>Security Camera Eyes</label>
 		<description>Outdoor security camera with motion detection and light.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
 		<channels>
 			<channel id="privacy-mode" typeId="privacy-mode"/>
@@ -329,6 +346,7 @@
 
 		<label>Intrusion Detection System</label>
 		<description>Allows to retrieve and control the state of the intrusion detection alarm system.</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="system-availability" typeId="system-availability"/>
@@ -349,6 +367,7 @@
 
 		<label>Smart Bulb</label>
 		<description>A smart bulb connected via Zigbee.</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -367,6 +386,7 @@
 
 		<label>Smoke Detector</label>
 		<description>The smoke detector warns you in case of fire.</description>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
@@ -404,6 +424,7 @@
 
 		<label>Universal Switch</label>
 		<description>Universally configurable switch with two buttons.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
@@ -422,6 +443,7 @@
 
 		<label>Universal Switch II</label>
 		<description>Universally configurable switch with four buttons.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
@@ -440,6 +462,7 @@
 
 		<label>Smoke Detector II</label>
 		<description>The smoke detector warns you in case of fire.</description>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
@@ -463,6 +486,7 @@
 
 		<label>Dimmer</label>
 		<description>Smart dimmer capable of controlling any dimmable lamp.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -481,6 +505,7 @@
 
 		<label>Water Detector</label>
 		<description>Smart sensor to detect water leakage.</description>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="water-leakage" typeId="water-leakage"/>
@@ -503,6 +528,7 @@
 
 		<label>Relay</label>
 		<description>The smart switching relay is your universal all-rounder for smart switching.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="signal-strength" typeId="system.signal-strength"/>

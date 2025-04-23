@@ -11,7 +11,7 @@
 
 		<label>Thermostat</label>
 		<description>Sensor and actuator to control radiator thermostats</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

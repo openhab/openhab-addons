@@ -7,6 +7,7 @@
 	<thing-type id="service">
 		<label>Amber Electric</label>
 		<description>Amber Electric - wholesale access to power prices</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="electricity-price" typeId="electricity-price"/>

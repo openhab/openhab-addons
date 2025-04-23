@@ -13,6 +13,7 @@
 
 		<label>RadonEye RD200</label>
 		<description>Indoor radon monitor</description>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>

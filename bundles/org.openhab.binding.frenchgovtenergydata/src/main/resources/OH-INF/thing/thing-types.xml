@@ -7,6 +7,7 @@
 	<thing-type id="base">
 		<label>Base Tariff</label>
 		<description>Default Tariff Subscription</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="tariff-start" typeId="timestamp"/>
@@ -40,6 +41,7 @@
 	<thing-type id="hphc">
 		<label>HP-HC Tariff</label>
 		<description>High / Low usage Tariff Subscription</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="tariff-start" typeId="timestamp"/>

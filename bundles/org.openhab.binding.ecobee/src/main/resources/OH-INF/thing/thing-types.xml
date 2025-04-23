@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Ecobee Account</label>
 		<description>Represents an account at Ecobee</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:ecobee:account"/>
 	</bridge-type>
 
@@ -18,6 +19,8 @@
 		</supported-bridge-type-refs>
 		<label>Ecobee Thermostat</label>
 		<description>An Ecobee thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
 		<channel-groups>
 			<channel-group id="info" typeId="info">
 				<label>Thermostat Info</label>

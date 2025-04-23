@@ -8,6 +8,7 @@
 	<bridge-type id="envoy">
 		<label>Envoy</label>
 		<description>Envoy gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="production" typeId="envoy-production">
@@ -77,6 +78,7 @@
 
 		<label>Inverter</label>
 		<description>Inverter</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lastReportWatts" typeId="last-report-watts"/>
@@ -110,6 +112,7 @@
 
 		<label>Relay Controller</label>
 		<description>Network system relay controller</description>
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 
 		<channels>
 			<channel id="relay" typeId="relay"/>

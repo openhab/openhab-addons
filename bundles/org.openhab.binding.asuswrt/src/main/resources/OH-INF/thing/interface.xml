@@ -12,6 +12,8 @@
 
 		<label>Router Interface</label>
 		<description>Interface of router</description>
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
+
 		<channel-groups>
 			<channel-group id="network-info" typeId="if-info-group"></channel-group>
 			<channel-group id="traffic" typeId="traffic-group"></channel-group>

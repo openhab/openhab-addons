@@ -6,7 +6,8 @@
 
 	<thing-type id="device">
 		<label>Bose SoundTouch Device</label>
-		<description>Aan unknown Bose SoundTouch Device</description>
+		<description>An unknown Bose SoundTouch Device</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>

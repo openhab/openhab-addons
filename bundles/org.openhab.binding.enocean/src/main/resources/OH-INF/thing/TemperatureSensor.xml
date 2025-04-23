@@ -11,7 +11,7 @@
 
 		<label>Temperature Sensor</label>
 		<description>Sensor which send temperature data (EEP: A5-02)</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

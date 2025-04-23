@@ -7,6 +7,8 @@
 	<thing-type id="d101">
 		<label>Doorbird Doorbell D101/D201/D205/D1101V</label>
 		<description>Doorbird doorbell model D101/D201/D205/D1101V</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
+
 		<channels>
 			<channel id="doorbell" typeId="system.rawbutton">
 				<label>Doorbell</label>
@@ -36,6 +38,8 @@
 	<thing-type id="d210x">
 		<label>Doorbird D210x Doorbell</label>
 		<description>Doorbird doorbell model D210x</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
+
 		<channels>
 			<channel id="doorbell" typeId="system.rawbutton">
 				<label>Doorbell</label>

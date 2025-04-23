@@ -13,7 +13,7 @@
 
 		<label>RuuviTag SmartBeacon</label>
 		<description>A RuuviTag SmartBeacon</description>
-
+		<semantic-equipment-tag>Tracker</semantic-equipment-tag>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>

@@ -16,7 +16,7 @@
 
 		<label>Bosch Indego</label>
 		<description>Indego which supports the connect feature.</description>
-
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="textualstate" typeId="textualstate"/>

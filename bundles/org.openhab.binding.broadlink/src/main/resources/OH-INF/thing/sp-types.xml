@@ -7,6 +7,7 @@
 	<thing-type id="sp1">
 		<label>Broadlink SP1</label>
 		<description>The Broadlink SP1 is a Wi-Fi smart socket.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 		</channels>
@@ -16,6 +17,7 @@
 	<thing-type id="sp2">
 		<label>Broadlink SP2</label>
 		<description>The Broadlink SP2 is a Wi-Fi smart socket.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 		</channels>
@@ -25,6 +27,7 @@
 	<thing-type id="sp2-s">
 		<label>Broadlink SP2-s</label>
 		<description>The Broadlink SP2-s is a Wi-Fi smart socket with power consumption measurement.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="power-consumption" typeId="system.electric-energy"/>
@@ -35,6 +38,7 @@
 	<thing-type id="sp3">
 		<label>Broadlink SP3</label>
 		<description>The Broadlink SP3 is a Wi-Fi smart socket with night light. The SP mini 3 omits the night light.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="night-light" typeId="night-light">
@@ -47,6 +51,7 @@
 	<thing-type id="sp3-s">
 		<label>Broadlink SP3-s</label>
 		<description>The Broadlink SP3-s is a Wi-Fi smart socket with power consumption measurement</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="power-consumption" typeId="system.electric-energy"/>
