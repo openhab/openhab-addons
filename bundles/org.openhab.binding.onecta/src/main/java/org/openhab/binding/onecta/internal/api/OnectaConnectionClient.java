@@ -88,8 +88,8 @@ public class OnectaConnectionClient {
              * onectaSignInClient.signIn();
              * }
              */
-            response = onectaConfiguration.getHttpClient().newRequest(OnectaProperties.getBaseUrl(""))
-                    .method(HttpMethod.GET)
+            String testUrl = OnectaProperties.getBaseUrl("");
+            response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)

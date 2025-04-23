@@ -13,7 +13,7 @@
 package org.openhab.binding.onecta.internal.oauth2.config.servlet;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,9 +78,9 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     }
 
     private String renderClientIdAndClientSecret(HttpServletRequest request, String skeleton) {
-        String prefilledClientId = Optional.ofNullable(request.getParameter(CLIENT_ID_PARAMETER_NAME)).orElse("");
-        String prefilledClientSecret = Optional.ofNullable(request.getParameter(CLIENT_SECRET_PARAMETER_NAME))
-                .orElse("");
+        String prefilledClientId = Objects.requireNonNullElse(request.getParameter(CLIENT_ID_PARAMETER_NAME), "");
+        String prefilledClientSecret = Objects.requireNonNullElse(request.getParameter(CLIENT_SECRET_PARAMETER_NAME),
+                "");
         return skeleton.replace(CLIENT_ID_PLACEHOLDER, prefilledClientId).replace(CLIENT_SECRET_PLACEHOLDER,
                 prefilledClientSecret);
     }

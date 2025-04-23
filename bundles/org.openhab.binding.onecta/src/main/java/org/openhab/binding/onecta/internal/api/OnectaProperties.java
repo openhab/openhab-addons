@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.onecta.internal.api;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onecta.internal.api.dto.commands.CommandFloat;
 import org.openhab.binding.onecta.internal.api.dto.commands.CommandInteger;
@@ -50,7 +51,7 @@ public class OnectaProperties {
     private static final String COMMAND_SUBPATH_DEMAND_CONTROL_FIXED_VALUE = "/modes/fixed";
 
     public static String getBaseUrl(String unitId) {
-        return String.format(BASE_URL, unitId);
+        return StringUtils.removeEnd(String.format(BASE_URL, unitId), "/");
     }
 
     public static String getUrlOnOff(String unitId, Enums.ManagementPoint managementPointType) {
