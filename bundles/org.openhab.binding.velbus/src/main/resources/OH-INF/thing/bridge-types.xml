@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Velbus Serial Bridge</label>
 		<description>This bridge represents a Velbus Serial-interface</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
 		</channel-groups>
@@ -16,6 +17,7 @@
 	<bridge-type id="networkbridge">
 		<label>Velbus Network Bridge</label>
 		<description>This bridge represents a Velbus connection over TCP/IP</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
 		</channel-groups>

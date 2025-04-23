@@ -7,7 +7,7 @@
 	<bridge-type id="squeezeboxserver">
 		<label>SqueezeBox Server</label>
 		<description>This is a SqueezeBox Server instance.</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="favoritesList" typeId="favoritesList"/>
 		</channels>
@@ -54,7 +54,7 @@
 
 		<label>SqueezeBox Player</label>
 		<description>This is a SqueezeBox Player instance</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="mute" typeId="mute"/>
