@@ -11,7 +11,7 @@
 
 		<label>In Wall Smart Controller (ISC2)</label>
 		<description>A smart controller with two push buttons.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="button1" typeId="system.button"/>
 			<channel id="button2" typeId="system.button"/>

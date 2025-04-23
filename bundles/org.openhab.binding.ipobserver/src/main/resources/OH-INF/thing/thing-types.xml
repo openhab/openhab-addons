@@ -7,6 +7,7 @@
 	<thing-type id="weatherstation">
 		<label>Weather Station</label>
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channels>
 			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
 			<channel id="temperatureOutdoor" typeId="system.outdoor-temperature"/>

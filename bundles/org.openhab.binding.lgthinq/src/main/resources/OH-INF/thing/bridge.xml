@@ -6,6 +6,7 @@
 	<bridge-type id="cloud-account">
 		<label>LG ThinQ Gateway</label>
 		<description>A connection to a LG ThinQ Gateway</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="language" type="text" required="true">

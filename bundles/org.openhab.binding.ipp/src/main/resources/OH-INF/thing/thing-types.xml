@@ -5,6 +5,7 @@
 	<thing-type id="printer">
 		<label>Printer</label>
 		<description>An IPP Printer</description>
+		<semantic-equipment-tag>Printer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="jobs" typeId="jobs"/>

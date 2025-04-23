@@ -11,7 +11,7 @@
 
 		<label>Air Conditioner</label>
 		<description>LG ThinQ Air Conditioner</description>
-
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="ac-dashboard"/>
 			<channel-group id="extended-information" typeId="ac-extended-info"/>

@@ -8,7 +8,7 @@
 		<label>HomeWizard Wi-Fi P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the http interface of the HomeWizard
 			Wi-Fi P1 Meter.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="active_current" typeId="system.electric-current">
 				<label>Current</label>

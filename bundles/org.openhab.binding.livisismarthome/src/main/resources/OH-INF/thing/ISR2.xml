@@ -11,7 +11,7 @@
 
 		<label>In Wall Smart Roller Shutter (ISR2)</label>
 		<description>An in wall rollershutter with two push buttons.</description>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutterActuator"/>
 			<channel id="button1" typeId="system.button"/>

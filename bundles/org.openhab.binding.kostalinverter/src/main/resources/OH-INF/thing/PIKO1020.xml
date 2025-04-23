@@ -7,6 +7,7 @@
 		<label>KOSTAL PIKO 10-20</label>
 		<description>Bindings for the KOSTAL PIKO 10-20</description>
 		<category>Inverter</category>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
 			<channel typeId="statistic-yield-day-second-gen" id="yieldDaySecondGen"/>

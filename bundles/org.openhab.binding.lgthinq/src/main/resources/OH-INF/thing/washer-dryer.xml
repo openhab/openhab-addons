@@ -11,6 +11,7 @@
 
 		<label>LGThinQ Washer</label>
 		<description>LG ThinQ Washing Machine</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="wm-dashboard"/>
 			<channel-group id="rs-grp" typeId="wm-rs-grp"/>

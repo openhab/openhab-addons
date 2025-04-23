@@ -11,7 +11,7 @@
 
 		<label>Wall Mounted Smoke Detector (WSD2)</label>
 		<description>A battery powered smoke detector sensor with integrated alarm (2nd version with long-life battery).</description>
-
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="smoke" typeId="smokeDetectorSensor"/>
 			<channel id="alarm" typeId="alarmActuator"/>

@@ -9,7 +9,7 @@
 		<description>This is an interface to the GROHE ONDUS Account as it is used by the app. If username and password are
 			not set, you can configure to use a `refreshToken` to login. Read the README to get more info.
 		</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>Username</label>
@@ -30,7 +30,7 @@
 
 		<label>GROHE SENSE GUARD Appliance</label>
 		<description>A SENSE GUARD device</description>
-
+		<semantic-equipment-tag>HotWaterFaucet</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="pressure" typeId="pressure"/>
@@ -71,6 +71,7 @@
 
 		<label>GROHE SENSE Appliance</label>
 		<description>A SENSE device</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="name"/>

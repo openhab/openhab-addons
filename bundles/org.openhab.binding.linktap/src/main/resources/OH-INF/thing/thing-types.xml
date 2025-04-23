@@ -7,6 +7,7 @@
 	<bridge-type id="gateway">
 		<label>LinkTap Gateway</label>
 		<description>This represents a LinkTap gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<properties>
 			<property name="gatewayId"/>
@@ -63,6 +64,7 @@
 
 		<label>LinkTap Binding Thing</label>
 		<description>LinkTap Binding Device</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="mode" typeId="mode-type"/>

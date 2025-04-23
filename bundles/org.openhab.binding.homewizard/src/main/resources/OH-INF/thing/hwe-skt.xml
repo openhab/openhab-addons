@@ -8,7 +8,7 @@
 		<label>HomeWizard Energy Socket</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
 			Energy Socket.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="energy" typeId="skt-energy-group"/>
 			<channel-group id="control" typeId="skt-control-group"/>

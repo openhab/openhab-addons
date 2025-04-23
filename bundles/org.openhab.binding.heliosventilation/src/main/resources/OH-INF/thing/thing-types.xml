@@ -8,6 +8,7 @@
 	<thing-type id="ventilation">
 		<label>HeliosVentilation (KWL)</label>
 		<description>A domestic ventilation system (KWL) from Helios.</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channels>
 			<channel id="outsideTemp" typeId="outside_temperature"/>

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Filter</label>
+		<semantic-equipment-tag>WaterFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>

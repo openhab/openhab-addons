@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>MobileLink Account</label>
 		<description>MobileLink Cloud Account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:generacmobilelink:account"/>
 	</bridge-type>
 
@@ -16,6 +17,7 @@
 		</supported-bridge-type-refs>
 		<label>MobileLink Generator</label>
 		<description>MobileLink Generator</description>
+		<semantic-equipment-tag>Generator</semantic-equipment-tag>
 		<channels>
 			<channel id="heroImageUrl" typeId="heroImageUrl"/>
 			<channel id="statusLabel" typeId="statusLabel"/>
