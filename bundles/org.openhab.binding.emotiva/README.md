@@ -15,7 +15,7 @@ The binding can discover devices on your network as long as port 7001 is opened 
 
 ### Network Openings
 
-The following ports are required to be opened in the firewall of you OpenHAB machine to have a fully working binding:
+The following ports are required to be opened in the firewall of you openHAB machine to have a fully working binding:
 
 * 7001/udp - Used for device discovery, cannot be changed.
 * 7003/udp - Used for regular notifications from the Emotiva device, can be changed via the **notifyPort** configuration.
