@@ -56,7 +56,7 @@ The FENECON binding currently only provides access to read out the values from t
 ### fenecon.things
 
 ```java
-Thing fenecon:home-device:local "FENECON Home" [hostname="192.168.1.11", refreshInterval=5]
+Thing fenecon:home-device:local "FENECON Home" [hostname="192.168.1.11", refreshInterval=30]
 ```
 
 ### demo.items
@@ -66,7 +66,7 @@ Thing fenecon:home-device:local "FENECON Home" [hostname="192.168.1.11", refresh
 Group   Home                    "MyHome"              <house>                                 ["Indoor"]
 Group   GF                      "GroundFloor"         <groundfloor>          (Home)           ["GroundFloor"]
 // Utility room
-Group   GF_UtilityRoom          "Utility room"        <energy>               (Home, GF)       ["Room"]
+Group   GF_UtilityRoom          "Utility room"        <energy>               (GF)             ["Room"]
 Group   GF_UtilityRoomSolar     "Utility room solar"  <solarplant>           (GF_UtilityRoom) ["Inverter"]
 
 // FENECON items
@@ -93,6 +93,12 @@ Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRo
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
 Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
+
+// Daily values
+Number:Power         MaxProductionActivePowerOfTheDay   "Solar peak of the day [%.2f %unit%]"         <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Power"]
+Number:Energy        ProductionActivePowerOfTheDay      "Production of the day [%.2f %unit%]"         <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
+Number:Energy        ConsumptionActivePowerOfTheDay     "Consumption of the day [%.2f %unit%]"        <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
+Number:Energy        BuyFromGridPowerOfTheDay           "Grid purchase of the day [%.2f %unit%]"      <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
 ```
 
 ### demo.sitemap
@@ -102,6 +108,21 @@ sitemap demo label="FENECON Example Sitemap" {
     Frame label="Groundfloor" icon="groundfloor" {
         Group item=GF_UtilityRoom
     }
+}
+```
+
+### rrd4j.persist
+
+```perl
+Strategies {
+    everyMinute : "0 * * * * ?"
+    default = everyChange
+}
+
+Items {
+    ProductionActivePower: strategy = everyUpdate, everyMinute, restoreOnStartup
+    ConsumptionActivePower: strategy = everyUpdate, everyMinute, restoreOnStartup
+    BuyFromGridPower: strategy = everyUpdate, everyMinute, restoreOnStartup
 }
 ```
 
@@ -151,6 +172,25 @@ then
     var current = (TotalBuyEnergy.getState() as Number).intValue()
     var result = current * purchasedPricePerKiloWattHour;
     PurchasedEnergy.postUpdate(result)
+end
+
+// !!! This is only designed as a demonstration, the calculation should only be executed every 30 or 60 minutes if necessary. And for the calculation, be sure to consider the persistence example: rrd4j.persist!
+rule "Calculation daily power values"
+when
+  Item LastFeneconUpdate changed
+then    
+    var dailyMax = (ProductionActivePower.maximumSince(now.with(LocalTime.of(0,0,0,0))).state as Number).floatValue()
+    MaxProductionActivePowerOfTheDay.postUpdate(dailyMax)
+
+    var dailyProduction = (ProductionActivePower.sumSince(now.with(LocalTime.of(0,0,0,0))) as Number).floatValue() / 60 / 1000
+    ProductionActivePowerOfTheDay.postUpdate(dailyProduction)
+
+    var dailyConsumption = (ConsumptionActivePower.sumSince(now.with(LocalTime.of(0,0,0,0))) as Number).floatValue() / 60 / 1000
+    ConsumptionActivePowerOfTheDay.postUpdate(dailyConsumption)
+
+    var dailyBuyFromGrid = (BuyFromGridPower.sumSince(now.with(LocalTime.of(0,0,0,0))) as Number).floatValue() / 60 / 1000
+    BuyFromGridPowerOfTheDay.postUpdate(dailyBuyFromGrid)
+
 end
 ```
 
