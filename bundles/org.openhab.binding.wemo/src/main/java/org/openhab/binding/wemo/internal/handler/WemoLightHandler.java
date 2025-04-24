@@ -20,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -70,8 +72,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoLightHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoLightHandler for thing '{}'", getThing().getUID());
     }
@@ -109,11 +111,9 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoLightHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -137,11 +137,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
             try {
-                logger.debug("Polling job");
+                logger.debug("Polling job for thing {}", getThing().getUID());
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -158,12 +155,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         if (command instanceof RefreshType) {
             try {
                 getDeviceState();
@@ -180,7 +171,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 return;
             }
             String devUDN = "uuid:" + wemoBridge.getThing().getConfiguration().get(UDN).toString();
-            logger.trace("WeMo Bridge to send command to : {}", devUDN);
+            logger.trace("WeMo Bridge to send command to: {}", devUDN);
 
             String value = null;
             String capability = null;
@@ -236,6 +227,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     }
                     break;
             }
+
             try {
                 if (capability != null && value != null) {
                     String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
@@ -253,7 +245,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                             + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                             + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    probeAndExecuteCall(BASICACTION, soapHeader, content);
                     if ("10008".equals(capability)) {
                         OnOffType binaryState = null;
                         binaryState = OnOffType.from(!"0".equals(value));
@@ -261,10 +253,13 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     }
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (Exception e) {
-                logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+            } catch (MissingHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+            } catch (WemoException e) {
+                logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                         e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -285,11 +280,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
      */
     public void getDeviceState() {
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
-        String wemoURL = getWemoURL(BRIDGEACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
+
         try {
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
             String content = """
@@ -301,7 +292,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     """
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(BRIDGEACTION, soapHeader, content);
             wemoCallResponse = unescapeXml(wemoCallResponse);
             String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
             logger.trace("wemoNewLightState = {}", response);
@@ -323,16 +314,19 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.debug("Could not retrieve new Wemo light state for '{}':", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
+            logger.debug("Could not retrieve new Wemo light state for thing '{}':", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
         String capabilityId = substringBetween(value, "<CapabilityId>", "</CapabilityId>");
         String newValue = substringBetween(value, "<Value>", "</Value>");
         switch (capabilityId) {

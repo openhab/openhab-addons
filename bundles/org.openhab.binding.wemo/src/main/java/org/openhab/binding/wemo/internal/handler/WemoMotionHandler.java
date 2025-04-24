@@ -17,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -40,8 +40,8 @@ public class WemoMotionHandler extends WemoHandler {
     private final Logger logger = LoggerFactory.getLogger(WemoMotionHandler.class);
     private final Map<String, String> stateMap = new ConcurrentHashMap<>();
 
-    public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoMotionHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class WemoMotionHandler extends WemoHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+                new Object[] { variable, value, service, getThing().getUID() });
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -72,7 +72,7 @@ public class WemoMotionHandler extends WemoHandler {
             if (binaryState != null) {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
                     State state = OnOffType.from(!"0".equals(binaryState));
-                    logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
+                    logger.debug("State '{}' for thing '{}' received", state, getThing().getUID());
                     updateState(WemoBindingConstants.CHANNEL_MOTION_DETECTION, state);
                     if (OnOffType.ON.equals(state)) {
                         State lastMotionDetected = new DateTimeType();

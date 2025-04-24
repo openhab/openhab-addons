@@ -10,18 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wemo.internal;
+package org.openhab.binding.wemo.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**
- * {@link WemoHttpCallFactory} creates {@link WemoHttpCall}s.
+ * {@link MissingHostException} is thrown when attempting to communicate
+ * with a WeMo device while the host/IP address has not yet been obtained
+ * through UPnP.
  *
- * @author Wouter Born - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public interface WemoHttpCallFactory {
+public class MissingHostException extends WemoException {
 
-    WemoHttpCall createHttpCall();
+    private static final long serialVersionUID = 1L;
+
+    public MissingHostException(String message) {
+        super(message);
+    }
 }
