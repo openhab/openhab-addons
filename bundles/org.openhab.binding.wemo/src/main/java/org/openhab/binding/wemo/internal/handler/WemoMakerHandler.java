@@ -25,7 +25,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -61,8 +63,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, wemoHttpcaller);
+    public WemoMakerHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -85,11 +87,9 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoMakerHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -97,50 +97,36 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                 return;
             }
-            try {
-                logger.debug("Polling job");
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(BASICACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            updateWemoState();
         } else if (channelUID.getId().equals(CHANNEL_RELAY)) {
             if (command instanceof OnOffType) {
                 try {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    probeAndExecuteCall(BASICACTION, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
-                    logger.warn("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                } catch (MissingHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                } catch (WemoException e) {
+                    logger.warn("Failed to send command '{}' for thing '{}' ", command, getThing().getUID(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }
@@ -151,25 +137,20 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = DEVICEACTION;
-        String wemoURL = getWemoURL(actionService);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
             try {
                 String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
-                logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                logger.trace("Escaped Maker response for thing '{}' :", getThing().getUID());
                 logger.trace("'{}'", stringParser);
 
                 // Due to Belkins bad response formatting, we need to run this twice.
                 stringParser = unescapeXml(stringParser);
                 stringParser = unescapeXml(stringParser);
-                logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
+                logger.trace("Maker response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
                 stringParser = "<data>" + stringParser + "</data>";
 
@@ -205,13 +186,13 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                     switch (attributeName) {
                         case "Switch":
                             State relayState = OnOffType.from(!"0".equals(attributeValue));
-                            logger.debug("New relayState '{}' for device '{}' received", relayState,
+                            logger.debug("New relayState '{}' for thing '{}' received", relayState,
                                     getThing().getUID());
                             updateState(CHANNEL_RELAY, relayState);
                             break;
                         case "Sensor":
                             State sensorState = OnOffType.from(!"1".equals(attributeValue));
-                            logger.debug("New sensorState '{}' for device '{}' received", sensorState,
+                            logger.debug("New sensorState '{}' for thing '{}' received", sensorState,
                                     getThing().getUID());
                             updateState(CHANNEL_SENSOR, sensorState);
                             break;
@@ -221,8 +202,11 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             } catch (Exception e) {
                 logger.warn("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
             }
-        } catch (Exception e) {
-            logger.warn("Failed to get attributes for device '{}'", getThing().getUID(), e);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
+            logger.debug("Failed to get attributes for thing '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
