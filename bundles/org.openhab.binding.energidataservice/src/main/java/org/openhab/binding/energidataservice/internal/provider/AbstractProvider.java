@@ -76,7 +76,6 @@ public abstract class AbstractProvider<L extends SubscriptionListener> {
         }
 
         Set<L> listenersForSubscription = subscriptionToListeners.get(subscription);
-
         boolean isLastDistinctSubscription = false;
         if (listenersForSubscription != null) {
             listenersForSubscription.remove(listener);
