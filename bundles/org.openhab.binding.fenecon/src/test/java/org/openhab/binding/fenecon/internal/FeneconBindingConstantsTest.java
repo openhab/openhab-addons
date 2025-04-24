@@ -48,6 +48,23 @@ public class FeneconBindingConstantsTest {
     }
 
     @Test
+    void checkAllAddressesAreUnique() throws IllegalArgumentException, IllegalAccessException {
+        List<Address> findAddresses = new ArrayList<>();
+
+        for (Field eachDeclaredField : FeneconBindingConstants.class.getDeclaredFields()) {
+            if (eachDeclaredField.getName().endsWith("_ADDRESS")) {
+                String address = (String) eachDeclaredField.get(FeneconBindingConstants.class);
+                if (address != null) {
+                    Address findAddress = new Address(address);
+                    assertFalse(findAddresses.contains(findAddress),
+                            "Duplicate address found: " + findAddress + " for field " + eachDeclaredField.getName());
+                    findAddresses.add(findAddress);
+                }
+            }
+        }
+    }
+
+    @Test
     void checkAllAddressesConsistOfComponentAndChannel() throws IllegalArgumentException, IllegalAccessException {
         for (Field eachDeclaredField : FeneconBindingConstants.class.getDeclaredFields()) {
             if (eachDeclaredField.getName().endsWith("_ADDRESS")) {
