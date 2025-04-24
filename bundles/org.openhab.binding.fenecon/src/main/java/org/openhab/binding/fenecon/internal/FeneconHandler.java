@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.fenecon.internal.api.Address;
 import org.openhab.binding.fenecon.internal.api.BatteryPower;
 import org.openhab.binding.fenecon.internal.api.FeneconController;
 import org.openhab.binding.fenecon.internal.api.FeneconResponse;
@@ -71,10 +72,10 @@ public class FeneconHandler extends BaseThingHandler {
     }
 
     private void pollingCode() {
-        for (String eachChannel : FeneconBindingConstants.ADDRESSES) {
+        for (Address eachChannel : FeneconBindingConstants.ADDRESSES) {
             try {
                 @SuppressWarnings("null")
-                Optional<FeneconResponse> response = feneconController.requestChannel(eachChannel);
+                Optional<FeneconResponse> response = feneconController.requestChannel(eachChannel.getAddress());
 
                 if (response.isPresent()) {
                     processDataPoint(response.get());

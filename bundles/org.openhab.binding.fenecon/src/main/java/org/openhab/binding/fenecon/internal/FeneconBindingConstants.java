@@ -15,6 +15,7 @@ package org.openhab.binding.fenecon.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.fenecon.internal.api.Address;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -47,12 +48,13 @@ public class FeneconBindingConstants {
     public static final String GRID_SELL_ACTIVE_ENERGY_ADDRESS = "_sum/GridSellActiveEnergy";
     public static final String GRID_BUY_ACTIVE_ENERGY_ADDRESS = "_sum/GridBuyActiveEnergy";
     // Group of all FENECON Addresses
-    public static final List<String> ADDRESSES = List.of(STATE_ADDRESS, GRID_MODE_ADDRESS,
-            CONSUMPTION_ACTIVE_POWER_ADDRESS, CONSUMPTION_ACTIVE_POWER_PHASE1_ADDRESS,
-            CONSUMPTION_ACTIVE_POWER_PHASE2_ADDRESS, CONSUMPTION_ACTIVE_POWER_PHASE3_ADDRESS,
-            CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS, PRODUCTION_MAX_ACTIVE_POWER_ADDRESS, PRODUCTION_ACTIVE_POWER_ADDRESS,
-            GRID_ACTIVE_POWER_ADDRESS, GRID_BUY_ACTIVE_ENERGY_ADDRESS, GRID_SELL_ACTIVE_ENERGY_ADDRESS, ESS_SOC_ADDRESS,
-            ESS_DISCHARGE_POWER_ADDRESS);
+    public static final List<Address> ADDRESSES = List.of(new Address(STATE_ADDRESS), new Address(GRID_MODE_ADDRESS),
+            new Address(CONSUMPTION_ACTIVE_POWER_ADDRESS), new Address(CONSUMPTION_ACTIVE_POWER_PHASE1_ADDRESS),
+            new Address(CONSUMPTION_ACTIVE_POWER_PHASE2_ADDRESS), new Address(CONSUMPTION_ACTIVE_POWER_PHASE3_ADDRESS),
+            new Address(CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS), new Address(PRODUCTION_MAX_ACTIVE_POWER_ADDRESS),
+            new Address(PRODUCTION_ACTIVE_POWER_ADDRESS), new Address(GRID_ACTIVE_POWER_ADDRESS),
+            new Address(GRID_BUY_ACTIVE_ENERGY_ADDRESS), new Address(GRID_SELL_ACTIVE_ENERGY_ADDRESS),
+            new Address(ESS_SOC_ADDRESS), new Address(ESS_DISCHARGE_POWER_ADDRESS));
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
