@@ -497,7 +497,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     /**
      * Update the hourly forecast time series channel from the last OpenWeatherMap data retrieved.
-     * 
+     *
      * @param channelUID the id identifying the channel to be updated
      */
     private void updateHourlyForecastTimeSeries(ChannelUID channelUID) {
@@ -584,6 +584,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                         .toUnit(KILO(METRE));
                 state = (tempstate == null ? state : tempstate);
+                break;
             case CHANNEL_PRECIP_PROBABILITY:
                 state = getQuantityTypeState(forecastData.getPop() * 100.0, PERCENT);
                 break;
@@ -789,6 +790,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                         .toUnit(KILO(METRE));
                 state = (tempstate == null ? state : tempstate);
+                break;
             case CHANNEL_PRECIP_PROBABILITY:
                 state = getQuantityTypeState(forecastData.getPop() * 100.0, PERCENT);
                 break;
