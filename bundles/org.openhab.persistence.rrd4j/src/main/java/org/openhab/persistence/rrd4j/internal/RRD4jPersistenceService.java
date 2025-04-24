@@ -81,6 +81,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.DsType;
+import org.rrd4j.core.Archive;
 import org.rrd4j.core.FetchData;
 import org.rrd4j.core.FetchRequest;
 import org.rrd4j.core.RrdDb;
@@ -486,7 +487,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                     } else {
                         ConsolFun consolFun = getConsolidationFunction(db);
                         FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
-                        start = db.findMatchingArchive(request).getStartTime();
+                        Archive archive = db.findMatchingArchive(request);
+                        start = archive.getStartTime() - archive.getArcStep();
                     }
                 } else {
                     throw new UnsupportedOperationException(
@@ -599,7 +601,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             // change found in this archive, don't update last change.
             ConsolFun consolFun = getConsolidationFunction(db);
             FetchRequest request = db.createFetchRequest(consolFun, lastUpdate, lastUpdate, 1);
-            long archiveStart = db.findMatchingArchive(request).getStartTime();
+            Archive archive = db.findMatchingArchive(request);
+            long archiveStart = archive.getStartTime() - archive.getArcStep();
+            if (archiveStart > lastUpdate) {
+                logger.debug("rrd4j for item '{}': archive start ({}) > last update ({}), only restore last update",
+                        itemName, archiveStart, lastUpdate);
+                archiveStart = lastUpdate;
+            }
             request = db.createFetchRequest(consolFun, archiveStart, lastUpdate, 1);
             FetchData result = request.fetchData();
 
