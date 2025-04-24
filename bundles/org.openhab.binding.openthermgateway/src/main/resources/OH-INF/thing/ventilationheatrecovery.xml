@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Ventilation / Heat Recovery</label>
 		<description>Ventilation or Heat Recovery unit</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="vh_ventilationenable" typeId="vh_ventilationenable"/>
 			<channel id="vh_bypassposition" typeId="vh_bypassposition"/>
