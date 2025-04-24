@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AddressComponentChannelSplitter} is a small helper class to split a list of {@link Address} in
+ * The {@link AddressComponentChannelUtil} is a small helper class for e.g. to split a list of {@link Address} in
  * {@link AddressComponent} and a list of {@link AddressChannel}.
  *
  * @author Philipp Schneider - Initial contribution
  */
 @NonNullByDefault
-public class AddressComponentChannelSplitter {
+public class AddressComponentChannelUtil {
 
     public static Map<AddressComponent, List<AddressChannel>> split(List<Address> addresses) {
 
@@ -35,5 +35,13 @@ public class AddressComponentChannelSplitter {
                     existing.addAll(newest);
                     return existing;
                 }));
+    }
+
+    public static String createComponentRequest(AddressComponent component, List<AddressChannel> channels) {
+        // Grouping REST-API requests - e.g. http://...:8084/rest/channel/_sum0/(State|EssSoc)
+
+        // For valid URIs the pipe delimiter must be encoded as %7C
+        return component.component() + "/("
+                + String.join("%7C", channels.stream().map(AddressChannel::channel).toList()) + ")";
     }
 }

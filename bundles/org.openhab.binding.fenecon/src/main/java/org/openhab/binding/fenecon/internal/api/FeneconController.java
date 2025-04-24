@@ -14,7 +14,8 @@ package org.openhab.binding.fenecon.internal.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -33,6 +34,8 @@ import org.openhab.binding.fenecon.internal.exception.FeneconException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -68,16 +71,18 @@ public class FeneconController {
     }
 
     /**
-     * Queries the data for a specified channel.
+     * Queries the data for a specified channel group.
      *
-     * @param channel Channel to be queried, e.g. _sum/State .
+     * @param channel Channel group to be queried, e.g. _sum/(State|EssSoc) .
      * @return {@link FeneconResponse} can be optional if values are not available.
      * @throws FeneconException is thrown if there are problems with the connection or processing of data to the FENECON
      *             system.
      */
-    public Optional<FeneconResponse> requestChannel(String channel) throws FeneconException {
+    public List<FeneconResponse> requestChannel(String channel) throws FeneconException {
         try {
             URI uri = new URI(getBaseUrl(config) + "rest/channel/" + channel);
+
+            logger.trace("FENECON - uri: {}", uri);
 
             Request request = httpClient.newRequest(uri).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
             logger.trace("FENECON - request: {}", request);
@@ -96,30 +101,41 @@ public class FeneconController {
                     throw new FeneconCommunicationException("Unexpected http status code: " + statusCode);
                 }
             } else {
-                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()).getAsJsonObject());
+                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()).getAsJsonArray());
             }
         } catch (TimeoutException | ExecutionException | UnsupportedOperationException | InterruptedException err) {
-            throw new FeneconCommunicationException("Communication error with FENECON system on channel: " + channel,
-                    err);
+            throw new FeneconCommunicationException(
+                    "Communication error: " + err.getMessage() + " with FENECON system on channel: " + channel, err);
         } catch (URISyntaxException | JsonSyntaxException err) {
-            throw new FeneconCommunicationException("Syntax error on channel: " + channel, err);
+            throw new FeneconCommunicationException("Syntax error: " + err.getMessage() + " on channel: " + channel,
+                    err);
         }
     }
 
-    private Optional<FeneconResponse> createResponseFromJson(JsonObject response) {
-        // Example response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
-        // 0..100","unit":"%","value":99}
+    private List<FeneconResponse> createResponseFromJson(JsonArray jsonArray) {
+        // Example response: [{"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+        // 0..100","unit":"%","value":99}]
 
-        if (response.get("value").isJsonNull()) {
-            // Example problem response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
-            // 0..100","unit":"%","value":null}
-            return Optional.empty();
+        List<FeneconResponse> result = new ArrayList<>();
+
+        for (JsonElement eachResult : jsonArray) {
+            if (eachResult.isJsonObject()) {
+
+                JsonObject jsonResult = eachResult.getAsJsonObject();
+                if (jsonResult.get("value").isJsonNull()) {
+                    // Example problem response:
+                    // {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+                    // 0..100","unit":"%","value":null}
+                    continue;
+                }
+
+                String address = jsonResult.get("address").getAsString();
+                String text = jsonResult.get("text").getAsString();
+                String value = jsonResult.get("value").getAsString();
+
+                result.add(new FeneconResponse(address, text, value));
+            }
         }
-
-        String address = response.get("address").getAsString();
-        String text = response.get("text").getAsString();
-        String value = response.get("value").getAsString();
-
-        return Optional.of(new FeneconResponse(address, text, value));
+        return result;
     }
 }

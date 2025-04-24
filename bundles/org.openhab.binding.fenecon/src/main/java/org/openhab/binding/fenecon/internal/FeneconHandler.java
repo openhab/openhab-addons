@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.fenecon.internal;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.fenecon.internal.api.Address;
+import org.openhab.binding.fenecon.internal.api.AddressChannel;
+import org.openhab.binding.fenecon.internal.api.AddressComponent;
+import org.openhab.binding.fenecon.internal.api.AddressComponentChannelUtil;
 import org.openhab.binding.fenecon.internal.api.BatteryPower;
 import org.openhab.binding.fenecon.internal.api.FeneconController;
 import org.openhab.binding.fenecon.internal.api.FeneconResponse;
@@ -72,18 +76,25 @@ public class FeneconHandler extends BaseThingHandler {
     }
 
     private void pollingCode() {
-        for (Address eachChannel : FeneconBindingConstants.ADDRESSES) {
+        Map<AddressComponent, List<AddressChannel>> addresses = AddressComponentChannelUtil
+                .split(FeneconBindingConstants.ADDRESSES);
+
+        for (Entry<AddressComponent, List<AddressChannel>> eachComponent : addresses.entrySet()) {
+
+            String restApiRequest = AddressComponentChannelUtil.createComponentRequest(eachComponent.getKey(),
+                    eachComponent.getValue());
+
             try {
                 @SuppressWarnings("null")
-                Optional<FeneconResponse> response = feneconController.requestChannel(eachChannel.getAddress());
+                List<FeneconResponse> responses = feneconController.requestChannel(restApiRequest);
 
-                if (response.isPresent()) {
-                    processDataPoint(response.get());
+                for (FeneconResponse eachResponse : responses) {
+                    processDataPoint(eachResponse);
                 }
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (FeneconException err) {
-                logger.trace("FENECON - connection problem on FENECON channel {}", eachChannel, err);
+                logger.trace("FENECON - connection problem on FENECON channel {}", restApiRequest, err);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, err.getMessage());
                 return;
             }

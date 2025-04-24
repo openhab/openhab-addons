@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.fenecon.internal.FeneconBindingConstants;
 
 /**
- * Test for {@link AddressComponentChannelSplitter}.
+ * Test for {@link AddressComponentChannelUtil}.
  *
  * @author Philipp Schneider - Initial contribution
  */
 @NonNullByDefault
-public class AddressComponentChannelSplitterTest {
+public class AddressComponentChannelUtilTest {
 
     @Test
     void testSplit() {
@@ -45,7 +45,7 @@ public class AddressComponentChannelSplitterTest {
                 .flatMap(Collection::stream).toList();
 
         // ACT
-        Map<AddressComponent, List<AddressChannel>> result = AddressComponentChannelSplitter.split(addresses);
+        Map<AddressComponent, List<AddressChannel>> result = AddressComponentChannelUtil.split(addresses);
 
         // ASSERT
         assertTrue(result.getOrDefault(new Address(FeneconBindingConstants.STATE_ADDRESS).getComponent(), List.of())
@@ -56,5 +56,21 @@ public class AddressComponentChannelSplitterTest {
 
         assertTrue(result.getOrDefault(new AddressComponent("scify"), List.of())
                 .containsAll(expectedScyFiList.stream().map(Address::getChannel).toList()));
+    }
+
+    @Test
+    void testCreateRequest() {
+        // ARRANGE
+        List<Address> expectedSumList = List.of(new Address(FeneconBindingConstants.STATE_ADDRESS),
+                new Address(FeneconBindingConstants.GRID_MODE_ADDRESS));
+
+        // ACT
+        AddressComponent component = new AddressComponent("_sum");
+        Map<AddressComponent, List<AddressChannel>> split = AddressComponentChannelUtil.split(expectedSumList);
+        List<AddressChannel> sciFyChannels = split.getOrDefault(component, List.of());
+        String result = AddressComponentChannelUtil.createComponentRequest(component, sciFyChannels);
+
+        // ASSERT
+        assertEquals("_sum/(State%7CGridMode)", result);
     }
 }
