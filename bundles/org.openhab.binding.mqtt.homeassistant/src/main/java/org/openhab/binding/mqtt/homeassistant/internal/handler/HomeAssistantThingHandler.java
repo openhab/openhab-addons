@@ -247,6 +247,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     // we need to join all the stops, otherwise they might not be done when start is called
                     .collect(FutureCollector.allOf()).join();
 
+            haComponents.clear();
+            haComponentsByUniqueId.clear();
+            haComponentsByHaId.clear();
+            channelStates.clear();
+            discoveryHomeAssistantIDs.clear();
+            updateComponent = null;
             started = false;
         }
         super.stop();

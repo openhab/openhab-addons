@@ -7,6 +7,7 @@
 	<thing-type id="rm-pro">
 		<label>Broadlink RM Pro</label>
 		<description>The Broadlink RM Pro is a Wi-Fi IR transmitter with a temperature sensor.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
@@ -18,6 +19,7 @@
 	<thing-type id="rm3">
 		<label>Broadlink RM3</label>
 		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
@@ -28,6 +30,7 @@
 	<thing-type id="rm3-q">
 		<label>Broadlink RM3 v44057</label>
 		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter running v44057 firmware.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
@@ -38,6 +41,7 @@
 	<thing-type id="rm4-mini">
 		<label>Broadlink RM4 Mini</label>
 		<description>The Broadlink RM 4 Mini is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
@@ -50,6 +54,7 @@
 	<thing-type id="rm4-pro">
 		<label>Broadlink RM4 Pro</label>
 		<description>The Broadlink RM 4 Pro is a Wi-Fi IR and RF transmitter with temperature and humidity sensors.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>

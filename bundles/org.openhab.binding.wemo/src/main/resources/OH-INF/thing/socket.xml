@@ -7,7 +7,7 @@
 	<thing-type id="socket">
 		<label>WeMo Switch</label>
 		<description>This is a standard WeMo Switch</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 		</channels>

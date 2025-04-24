@@ -7,6 +7,7 @@
 	<bridge-type id="world">
 		<label>Corona Statistics (World)</label>
 		<description>Bridge for accessing data from https://corona-stats.online/ website and representing world statistics.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="cases" typeId="cases"/>
