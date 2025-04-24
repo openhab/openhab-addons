@@ -193,17 +193,13 @@
 		<description>Now playing URI</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="favoriteselect">
 		<item-type>String</item-type>
 		<label>Select Favorite</label>
 		<description>Select favorite to play</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="favorite">
@@ -229,7 +225,7 @@
 		<description>Now playing album</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -239,7 +235,7 @@
 		<description>Now playing album art</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -249,7 +245,7 @@
 		<description>Now playing creator</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -259,7 +255,7 @@
 		<description>Now playing publisher</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -279,7 +275,7 @@
 		<description>Now playing track number</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -289,7 +285,7 @@
 		<description>Now playing track duration</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -299,7 +295,7 @@
 		<description>Now playing track position</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Channel</tag>
+			<tag>Position</tag>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -310,7 +306,7 @@
 		<category>MediaControl</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Position</tag>
 		</tags>
 	</channel-type>
 
@@ -328,8 +324,8 @@
 		<label>Current Media Id</label>
 		<description>Current id of media entry or container, option list to browse hierarchy</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="search">
@@ -355,7 +351,7 @@
 		<description>Playlist name</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="playlistaction">
