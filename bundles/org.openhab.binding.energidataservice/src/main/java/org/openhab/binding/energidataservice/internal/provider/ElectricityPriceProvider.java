@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -142,7 +141,6 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            Set<ElectricityPriceListener> spotPricesUpdatedListeners = new HashSet<>();
             boolean spotPricesSubscribed = false;
             boolean arePricesFullyCached = true;
 
@@ -151,12 +149,9 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
                 Subscription subscription = subscriptionListener.getKey();
                 Set<ElectricityPriceListener> listeners = subscriptionListener.getValue();
 
-                boolean pricesUpdated = downloadPrices(subscription, false);
+                downloadPrices(subscription, false);
                 if (subscription instanceof SpotPriceSubscription) {
                     spotPricesSubscribed = true;
-                    if (pricesUpdated) {
-                        spotPricesUpdatedListeners.addAll(listeners);
-                    }
                     boolean arePricesFullyCachedForSubscription = getSpotPriceSubscriptionDataCache(subscription)
                             .arePricesFullyCached();
                     if (!arePricesFullyCachedForSubscription) {
@@ -171,7 +166,6 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
 
             if (spotPricesSubscribed) {
                 if (arePricesFullyCached) {
-                    spotPricesUpdatedListeners.forEach(listener -> listener.onDayAheadAvailable());
                     retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
                 } else {
                     logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
@@ -291,6 +285,10 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             isUpdated = cache.put(spotPriceRecords);
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
+
+            if (isUpdated && cache.arePricesFullyCached()) {
+                getListeners(subscription).forEach(listener -> listener.onDayAheadAvailable());
+            }
         }
         return isUpdated;
     }
