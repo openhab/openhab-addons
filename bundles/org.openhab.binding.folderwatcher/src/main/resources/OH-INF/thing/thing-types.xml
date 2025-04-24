@@ -4,6 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-type id="newfile-channel">
+		<kind>trigger</kind>
+		<label>New File Name(s)</label>
+		<description>A new file name</description>
+		<category>String</category>
+		<event/>
+	</channel-type>
+
 	<thing-type id="ftpfolder">
 		<label>FTP Folder</label>
 		<description>FTP folder to be watched</description>
@@ -82,14 +90,6 @@
 
 	</thing-type>
 
-	<channel-type id="newfile-channel">
-		<kind>trigger</kind>
-		<label>New File Name(s)</label>
-		<description>A new file name</description>
-		<category>String</category>
-		<event/>
-	</channel-type>
-
 	<thing-type id="localfolder">
 		<label>Local Folder</label>
 		<description>Local folder to be watched</description>
@@ -166,6 +166,44 @@
 				<description>AWS secret</description>
 				<context>password</context>
 				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="azureblob">
+		<label>Azure Blob Storage</label>
+		<description>Azure Blob Storage to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="azureAccountName" type="text" required="true">
+				<label>Azure Account Name</label>
+				<description>Name of the Azure account where the conaner located</description>
+			</parameter>
+			<parameter name="azureContainerName" type="text" required="true">
+				<label>Azure Blob Container Name</label>
+				<description>Name of the Azure container to be watched</description>
+			</parameter>
+			<parameter name="contanerPath" type="text">
+				<label>Container Path</label>
+				<description>Container path (folder) to be monitored</description>
+			</parameter>
+			<parameter name="pollIntervalAzure" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling Azure contaner changes, in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="azureAnonymous" type="boolean">
+				<label>Anonymous Connection</label>
+				<default>false</default>
+				<description>Connect anonymously (works for public containers)</description>
+			</parameter>
+			<parameter name="azureAccessKey" type="text">
+				<label>Azure Access Key</label>
+				<description>Access Key for Azure storage account</description>
 			</parameter>
 		</config-description>
 	</thing-type>
