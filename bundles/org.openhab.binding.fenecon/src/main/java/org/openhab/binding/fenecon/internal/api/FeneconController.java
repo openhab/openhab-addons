@@ -81,7 +81,6 @@ public class FeneconController {
     public List<FeneconResponse> requestChannel(String channel) throws FeneconException {
         try {
             URI uri = new URI(getBaseUrl(config) + "rest/channel/" + channel);
-
             logger.trace("FENECON - uri: {}", uri);
 
             Request request = httpClient.newRequest(uri).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);

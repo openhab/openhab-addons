@@ -21,15 +21,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link AddressComponentChannelUtil} is a small helper class for e.g. to split a list of {@link Address} in
- * {@link AddressComponent} and a list of {@link AddressChannel}.
+ * {@link AddressComponent} and a list of {@link AddressChannel} for a group REST-API request.
  *
  * @author Philipp Schneider - Initial contribution
  */
 @NonNullByDefault
 public class AddressComponentChannelUtil {
 
-    public static Map<AddressComponent, List<AddressChannel>> split(List<Address> addresses) {
+    public static List<String> createComponentRequests(List<Address> addresses) {
+        return split(addresses).entrySet().stream()
+                .map(entry -> createComponentRequest(entry.getKey(), entry.getValue())).toList();
+    }
 
+    protected static Map<AddressComponent, List<AddressChannel>> split(List<Address> addresses) {
         return addresses.stream().collect(Collectors.toMap(Address::getComponent,
                 value -> new ArrayList<AddressChannel>(List.of(value.getChannel())), (existing, newest) -> {
                     existing.addAll(newest);
@@ -37,7 +41,7 @@ public class AddressComponentChannelUtil {
                 }));
     }
 
-    public static String createComponentRequest(AddressComponent component, List<AddressChannel> channels) {
+    protected static String createComponentRequest(AddressComponent component, List<AddressChannel> channels) {
         // Grouping REST-API requests - e.g. http://...:8084/rest/channel/_sum0/(State|EssSoc)
 
         // For valid URIs the pipe delimiter must be encoded as %7C

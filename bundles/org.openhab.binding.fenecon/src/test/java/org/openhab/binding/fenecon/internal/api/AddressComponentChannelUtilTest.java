@@ -32,6 +32,23 @@ import org.openhab.binding.fenecon.internal.FeneconBindingConstants;
 public class AddressComponentChannelUtilTest {
 
     @Test
+    void testCreateComponentRequests() {
+        // ARRANGE
+        List<Address> expectedSumList = List.of(new Address(FeneconBindingConstants.STATE_ADDRESS),
+                new Address(FeneconBindingConstants.GRID_MODE_ADDRESS), new Address("system/Version"),
+                new Address("battery/SoH"), new Address("battery/Current"));
+
+        // ACT
+        List<String> result = AddressComponentChannelUtil.createComponentRequests(expectedSumList);
+
+        // ASSERT
+        assertTrue(result.size() == 3);
+        assertEquals("_sum/(State%7CGridMode)", result.get(0));
+        assertEquals("system/(Version)", result.get(1));
+        assertEquals("battery/(SoH%7CCurrent)", result.get(2));
+    }
+
+    @Test
     void testSplit() {
         // ARRANGE
         List<Address> expectedSumList = List.of(new Address(FeneconBindingConstants.STATE_ADDRESS),
