@@ -241,7 +241,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 		<representation-property>location</representation-property>
 
