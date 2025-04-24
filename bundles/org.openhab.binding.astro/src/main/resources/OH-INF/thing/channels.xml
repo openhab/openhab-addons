@@ -30,7 +30,7 @@
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -40,7 +40,7 @@
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -50,7 +50,7 @@
 		<label>Shade Length Ratio</label>
 		<description>Projected shade length ratio (derived from Elevation)</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -60,7 +60,7 @@
 		<label>Direct Radiation</label>
 		<description>Level of radiation after penetration of the atmospheric layer</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -70,7 +70,7 @@
 		<label>Diffuse Radiation</label>
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -80,7 +80,7 @@
 		<label>Total Radiation</label>
 		<description>Total quantity of radiation on the ground</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -112,7 +112,7 @@
 		<label>Start Time</label>
 		<description>The start time of the event</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -124,7 +124,7 @@
 		<label>End Time</label>
 		<description>The end time of the event</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -136,7 +136,7 @@
 		<label>Duration</label>
 		<description>The duration of the event</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -172,6 +172,7 @@
 		<description>The sign of the zodiac</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -218,6 +219,7 @@
 		<description>The name of the current season</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -234,7 +236,7 @@
 		<label>Spring</label>
 		<description>The beginning of spring</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -245,7 +247,7 @@
 		<label>Summer</label>
 		<description>The beginning of summer</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -256,7 +258,7 @@
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -267,7 +269,7 @@
 		<label>Winter</label>
 		<description>The beginning of winter</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -293,7 +295,7 @@
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -304,7 +306,7 @@
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -315,7 +317,7 @@
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -391,7 +393,7 @@
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -402,7 +404,7 @@
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -413,7 +415,7 @@
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -424,7 +426,7 @@
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -435,7 +437,7 @@
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -446,7 +448,7 @@
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -456,7 +458,7 @@
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -466,7 +468,7 @@
 		<label>Moon Illumination</label>
 		<description>The illumination of the moon</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -550,7 +552,8 @@
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -560,7 +563,7 @@
 		<label>Distance</label>
 		<description>The distance of the object</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

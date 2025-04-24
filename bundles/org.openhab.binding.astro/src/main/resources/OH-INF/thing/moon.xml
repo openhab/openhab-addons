@@ -7,7 +7,7 @@
 	<thing-type id="moon">
 		<label>Astro Moon Data</label>
 		<description>Provides astronomical data from the moon</description>
-		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<semantic-equipment-tag>Application</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="rise" typeId="moonRange">
