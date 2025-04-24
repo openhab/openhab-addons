@@ -73,6 +73,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     private final TadoBatteryChecker batteryChecker;
     private final TadoHandlerFactory tadoHandlerFactory;
+    private final HomePresence cachedHomePresence;
 
     private @NonNullByDefault({}) TadoHomeConfig configuration;
     private @NonNullByDefault({}) String confPendingText;
@@ -87,6 +88,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         this.batteryChecker = new TadoBatteryChecker(this);
         this.configuration = getConfigAs(TadoHomeConfig.class);
         this.tadoHandlerFactory = tadoHandlerFactory;
+        this.cachedHomePresence = new HomePresence();
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -205,7 +207,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     public void updateHomeState() {
         try {
-            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
+            HomeState homeState = getHomeState();
+            PresenceState homePresence = homeState.getPresence();
+            cachedHomePresence.setHomePresence(homePresence);
+            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
+            updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -220,19 +226,54 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             return;
         }
 
+        final @Nullable HomePresence newHomePresence;
+        String commandString = command.toFullString().toUpperCase();
         switch (id) {
-            case CHANNEL_HOME_PRESENCE_MODE:
-                HomePresence presence = new HomePresence();
-                presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
-                        || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME
-                                : PresenceState.AWAY);
-                try {
-                    api.updatePresenceLock(homeId, presence);
-                } catch (IOException | ApiException e) {
-                    logger.warn("Error setting home presence: {}", e.getMessage(), e);
+            case CHANNEL_HOME_GEOFENCING_ENABLED:
+                switch (commandString) {
+                    case "ON":
+                        newHomePresence = null;
+                        break;
+                    case "OFF":
+                        newHomePresence = cachedHomePresence;
+                        break;
+                    default:
+                        return;
                 }
-
                 break;
+
+            case CHANNEL_HOME_PRESENCE_MODE:
+                switch (commandString) {
+                    case "ON", "HOME":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.HOME);
+                        cachedHomePresence.setHomePresence(PresenceState.HOME);
+                        break;
+                    case "OFF", "AWAY":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.AWAY);
+                        cachedHomePresence.setHomePresence(PresenceState.AWAY);
+                        break;
+                    default:
+                        return;
+                }
+                break;
+
+            default:
+                return;
+        }
+
+        try {
+            api.updatePresenceLock(homeId, newHomePresence);
+        } catch (ApiException e) {
+            if (CHANNEL_HOME_GEOFENCING_ENABLED.equals(id) && "ON".equals(commandString)) {
+                updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.OFF);
+                logger.warn("Failed to enable geofencing. You need a tado Auto Assist subscription.");
+            } else {
+                logger.warn("Error setting home presence: {}", e.getMessage(), e);
+            }
+        } catch (IOException e) {
+            logger.warn("Error setting home presence: {}", e.getMessage(), e);
         }
     }
 
