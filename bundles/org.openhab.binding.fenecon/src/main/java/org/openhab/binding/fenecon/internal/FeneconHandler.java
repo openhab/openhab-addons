@@ -195,6 +195,12 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState(FeneconBindingConstants.BATT_INVERTER_BMS_PACK_TEMP_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), SIUnits.CELSIUS));
                 break;
+            case FeneconBindingConstants.BATT_TOWER_PACK_VOLTAGE_ADDRESS:
+                // {"address": "battery0/Tower0PackVoltage", "type": "INTEGER", "accessMode": "RO", "text": "", "unit":
+                // "", "value": 2749 }
+                updateState(FeneconBindingConstants.BATT_TOWER_PACK_VOLTAGE_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()) / 1000.0, Units.VOLT));
+                break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());
                 break;

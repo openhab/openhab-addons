@@ -31,29 +31,30 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 The FENECON binding currently only provides access to read out the values from the energy storage system.
 
-| Channel                       | Type                 | Read/Write | Description                                                                 |
-|-------------------------------|----------------------|------------|-----------------------------------------------------------------------------|
-| state                         | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
-| fems-version                  | String               | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3              |
-| last-update                   | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
-| ess-soc                       | Number:Dimensionless | R          | Battery state of charge in percent                                          |
-| charger-power                 | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
-| discharger-power              | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
-| emergency-power-mode          | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
-| production-active-power       | Number:Power         | R          | Current active power producer load in watt.                                 |
-| production-max-active-power   | Number:Power         | R          | Maximum active production power in watt that was measured.                  |
-| export-to-grid-power          | Number:Power         | R          | Current export power to grid in watt.                                       |
-| exported-to-grid-energy       | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
-| consumption-active-power      | Number:Power         | R          | Current active power consumer load in watt.                                 |
-| consumption-max-active-power  | Number:Power         | R          | Maximum active consumption power in watt that was measured.                 |
-| consumption-active-power-l1   | Number:Power         | R          | Current active power consumer load in watt on phase 1.                      |
-| consumption-active-power-l2   | Number:Power         | R          | Current active power consumer load in watt on phase 2.                      |
-| consumption-active-power-l3   | Number:Power         | R          | Current active power consumer load in watt on phase 3.                      |
-| import-from-grid-power        | Number:Power         | R          | Current import power from grid in watt.                                     |
-| imported-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
-| inverter-air-temperature      | Number:Temperature   | R          | Air temperature at the inverter in °C.                                      |
-| inverter-radiator-temperature | Number:Temperature   | R          | Radiator temperature of the inverter in °C.                                 |
-| bms-pack-temperature          | Number:Temperature   | R          | Temperature in the battery management system (BMS) box in °C.               |
+| Channel                       | Type                       | Read/Write | Description                                                                 |
+|-------------------------------|----------------------------|------------|-----------------------------------------------------------------------------|
+| state                         | String                     | R          | FENECON system state: Ok, Info, Warning or Fault                            |
+| fems-version                  | String                     | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3              |
+| last-update                   | DateTime                   | R          | Last successful update via REST-API from the FENECON system                 |
+| ess-soc                       | Number:Dimensionless       | R          | Battery state of charge in percent                                          |
+| charger-power                 | Number:Power               | R          | Current charger power of energy storage system in watt.                     |
+| discharger-power              | Number:Power               | R          | Current discharger power of energy storage system in watt.                  |
+| emergency-power-mode          | Switch                     | R          | Indicates if there is grid power is off and the emergency power mode is on. |
+| production-active-power       | Number:Power               | R          | Current active power producer load in watt.                                 |
+| production-max-active-power   | Number:Power               | R          | Maximum active production power in watt that was measured.                  |
+| export-to-grid-power          | Number:Power               | R          | Current export power to grid in watt.                                       |
+| exported-to-grid-energy       | Number:Energy              | R          | Total energy exported to the grid in watt per hour.                         |
+| consumption-active-power      | Number:Power               | R          | Current active power consumer load in watt.                                 |
+| consumption-max-active-power  | Number:Power               | R          | Maximum active consumption power in watt that was measured.                 |
+| consumption-active-power-l1   | Number:Power               | R          | Current active power consumer load in watt on phase 1.                      |
+| consumption-active-power-l2   | Number:Power               | R          | Current active power consumer load in watt on phase 2.                      |
+| consumption-active-power-l3   | Number:Power               | R          | Current active power consumer load in watt on phase 3.                      |
+| import-from-grid-power        | Number:Power               | R          | Current import power from grid in watt.                                     |
+| imported-from-grid-energy     | Number:Energy              | R          | Total energy imported from the grid in watt per hour.                       |
+| inverter-air-temperature      | Number:Temperature         | R          | Air temperature at the inverter in °C.                                      |
+| inverter-radiator-temperature | Number:Temperature         | R          | Radiator temperature of the inverter in °C.                                 |
+| bms-pack-temperature          | Number:Temperature         | R          | Temperature in the battery management system (BMS) box in °C.               |
+| batt-tower-voltage            | Number:ElectricPotential   | R          | Battery voltage of the FENECON energy management system (FEMS) in Volt.     |
 
 ## Full Example
 
@@ -74,39 +75,34 @@ Group   GF_UtilityRoom          "Utility room"        <energy>               (GF
 Group   GF_UtilityRoomSolar     "Utility room solar"  <solarplant>           (GF_UtilityRoom) ["Inverter"]
 
 // FENECON items
-String               EssState                       <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:state"}
-String               FemsVersion                    <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:fems-version"}
-DateTime             LastFeneconUpdate              <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:last-update"}
-Number:Dimensionless EssSoc                         <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:ess-soc"}
-Number:Power         ChargerPower                   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger-power"}
-Number:Power         DischargerPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:discharger-power"}
-Switch               EmergencyPowerMode             <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:home-device:local:emergency-power-mode"}
+String                     EssState                       <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:state"}
+String                     FemsVersion                    <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:fems-version"}
+DateTime                   LastFeneconUpdate              <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:last-update"}
 
-Number:Power         ProductionActivePower          <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-active-power"}
-Number:Power         ProductionMaxActivePower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-max-active-power"}
-Number:Power         SellToGridPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:export-to-grid-power"}
-Number:Energy        TotalSellEnergy                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:exported-to-grid-energy"}
+Number:Dimensionless       EssSoc                         <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:ess-soc"}
+Number:Power               ChargerPower                   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger-power"}
+Number:Power               DischargerPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:discharger-power"}
+Switch                     EmergencyPowerMode             <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:home-device:local:emergency-power-mode"}
 
-Number:Power         ConsumptionActivePower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power"}
-Number:Power         ConsumptionMaxActivePower      <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-max-active-power"}
-Number:Power         ConsumptionActivePowerPhase1   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l1"}
-Number:Power         ConsumptionActivePowerPhase2   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l2"}
-Number:Power         ConsumptionActivePowerPhase3   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l3"}
-Number:Power         BuyFromGridPower               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:import-from-grid-power"}
-Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:imported-from-grid-energy"}
-Number:Temperature   InverterAirTemp                <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-air-temperature"}
-Number:Temperature   InverterRadiatorTemp           <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-radiator-temperature"}
-Number:Temperature   BmsBoxTemp                     <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:bms-pack-temperature"}
+Number:Power               ProductionActivePower          <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-active-power"}
+Number:Power               ProductionMaxActivePower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-max-active-power"}
+Number:Power               SellToGridPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:export-to-grid-power"}
+Number:Energy              TotalSellEnergy                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:exported-to-grid-energy"}
 
-// Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
-Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
-Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
+Number:Power               ConsumptionActivePower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power"}
+Number:Power               ConsumptionMaxActivePower      <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-max-active-power"}
+Number:Power               ConsumptionActivePowerPhase1   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l1"}
+Number:Power               ConsumptionActivePowerPhase2   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l2"}
+Number:Power               ConsumptionActivePowerPhase3   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l3"}
 
-// Daily values
-Number:Power         MaxProductionActivePowerOfTheDay   "Solar peak of the day [%.2f %unit%]"         <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Power"]
-Number:Energy        ProductionActivePowerOfTheDay      "Production of the day [%.2f %unit%]"         <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
-Number:Energy        ConsumptionActivePowerOfTheDay     "Consumption of the day [%.2f %unit%]"        <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
-Number:Energy        BuyFromGridPowerOfTheDay           "Grid purchase of the day [%.2f %unit%]"      <energy>       (GF_UtilityRoomSolar)    ["Measurement", "Energy"]
+Number:Power               BuyFromGridPower               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:import-from-grid-power"}
+Number:Energy              TotalBuyEnergy                 <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:imported-from-grid-energy"}
+
+Number:Temperature         InverterAirTemp                <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-air-temperature"}
+Number:Temperature         InverterRadiatorTemp           <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-radiator-temperature"}
+Number:Temperature         BmsBoxTemp                     <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:bms-pack-temperature"}
+
+Number:ElectricPotential   BattTowerVoltage               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"] {channel="fenecon:home-device:local:batt-tower-voltage"}
 ```
 
 ### demo.sitemap

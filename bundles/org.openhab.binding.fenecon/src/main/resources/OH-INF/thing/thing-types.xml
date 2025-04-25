@@ -34,6 +34,7 @@
 			<channel id="inverter-air-temperature" typeId="inverter-air-temperature"/>
 			<channel id="inverter-radiator-temperature" typeId="inverter-radiator-temperature"/>
 			<channel id="bms-pack-temperature" typeId="bms-pack-temperature"/>
+			<channel id="batt-tower-voltage" typeId="batt-tower-voltage"/>
 		</channels>
 
 		<config-description>
@@ -205,6 +206,13 @@
 		<description>Temperature in the battery management system (BMS) box.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="batt-tower-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>FEMS Battery Voltage</label>
+		<description>Battery voltage of the FENECON energy management system (FEMS).</description>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
