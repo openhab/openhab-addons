@@ -411,36 +411,60 @@
 		<item-type>String</item-type>
 		<label>ChannelName</label>
 		<description>Source's Channel Name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcComposerName" advanced="true">
 		<item-type>String</item-type>
 		<label>Composer Name</label>
 		<description>Current song's composer name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcGenre" advanced="true">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Current song's genre</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcArtistName">
 		<item-type>String</item-type>
 		<label>Artist Name</label>
 		<description>Current song's artist name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcAlbumName">
 		<item-type>String</item-type>
 		<label>Album Name</label>
 		<description>Current song's album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcCoverArtUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Cover Art URL</label>
 		<description>Current song's covert art url</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcPlayListName" advanced="true">
@@ -453,6 +477,10 @@
 		<item-type>String</item-type>
 		<label>Song Name</label>
 		<description>Name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="srcRating" advanced="true">

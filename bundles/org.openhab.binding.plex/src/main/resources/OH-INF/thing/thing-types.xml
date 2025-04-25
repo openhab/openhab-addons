@@ -147,7 +147,7 @@
 		<description>The URL of the background art for currently playing media</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

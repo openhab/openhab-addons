@@ -432,18 +432,30 @@
 		<item-type>String</item-type>
 		<label>PVR Channel Title</label>
 		<description>Title of the current PVR channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="showtitle">
 		<item-type>String</item-type>
 		<label>Show Title</label>
 		<description>Title of the current show</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="mediatype">
@@ -452,7 +464,7 @@
 		<description>Media type of the current file</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -460,6 +472,10 @@
 		<item-type>String</item-type>
 		<label>Genres</label>
 		<description>Comma-separated list of genres of the current file</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="thumbnail">
@@ -478,6 +494,10 @@
 		<item-type>String</item-type>
 		<label>Codec</label>
 		<description>Codec of currently playing media</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="currenttime">
@@ -485,7 +505,7 @@
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
@@ -501,7 +521,7 @@
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>

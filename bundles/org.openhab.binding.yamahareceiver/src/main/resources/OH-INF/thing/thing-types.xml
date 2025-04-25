@@ -323,6 +323,10 @@
 		<item-type>String</item-type>
 		<label>Station</label>
 		<description>Current station name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -330,6 +334,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -337,6 +345,10 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -344,6 +356,10 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Track title</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -351,6 +367,10 @@
 		<item-type>String</item-type>
 		<label>Track Picture URL</label>
 		<description>Track picture URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

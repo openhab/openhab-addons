@@ -193,6 +193,10 @@
 		<item-type>String</item-type>
 		<label>Track Id</label>
 		<description>Channel reports track id currently being played.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackHref" advanced="true">
@@ -210,6 +214,10 @@
 		<item-type>String</item-type>
 		<label>Track Type</label>
 		<description>The type of the track currently played track type</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
@@ -244,6 +252,10 @@
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>The track number of currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
@@ -269,6 +281,10 @@
 		<item-type>String</item-type>
 		<label>Album Id</label>
 		<description>The Spotify ID of the album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumHref" advanced="true">
@@ -314,6 +330,10 @@
 		<item-type>String</item-type>
 		<label>Artist Id</label>
 		<description>The Spotify ID for the artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistHref" advanced="true">

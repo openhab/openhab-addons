@@ -78,36 +78,60 @@
 		<item-type>String</item-type>
 		<label>Cover Art URL</label>
 		<description>Cover art URL of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentalbum">
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Album of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentartist">
 		<item-type>String</item-type>
 		<label>Current Artist</label>
 		<description>Artist of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentduration" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Duration</label>
 		<description>Duration in seconds of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentgenre" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Genre</label>
 		<description>Genre of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currenttitle">
 		<item-type>String</item-type>
 		<label>Current Title</label>
 		<description>Title of the track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentuserdata" advanced="true">
@@ -120,6 +144,10 @@
 		<item-type>String</item-type>
 		<label>Current URL</label>
 		<description>URL of the track or radio station currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="input" advanced="true">
@@ -143,6 +171,10 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Set or get the mute state of the speaker</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playstate" advanced="true">
 		<item-type>String</item-type>
@@ -154,6 +186,10 @@
 		<item-type>Switch</item-type>
 		<label>Shuffle Mode</label>
 		<description>Toggle the shuffle mode of the speaker</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="stop" advanced="true">
 		<item-type>Switch</item-type>

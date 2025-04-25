@@ -99,6 +99,10 @@
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -129,6 +133,10 @@
 		<item-type>Image</item-type>
 		<label>Cover Art</label>
 		<description>Cover Art for the currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

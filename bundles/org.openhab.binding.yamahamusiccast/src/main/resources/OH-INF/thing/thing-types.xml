@@ -173,16 +173,28 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="track">
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>Track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="albumArt">
 		<item-type>Image</item-type>
@@ -232,7 +244,7 @@
 		<label>Play Time</label>
 		<description>Play Time</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
@@ -240,5 +252,9 @@
 		<item-type>String</item-type>
 		<label>Total Time</label>
 		<description>Total Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

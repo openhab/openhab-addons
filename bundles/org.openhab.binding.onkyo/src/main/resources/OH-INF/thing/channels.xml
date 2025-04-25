@@ -175,12 +175,20 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="album" advanced="true">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="albumArt" advanced="true">
@@ -193,12 +201,20 @@
 		<item-type>String</item-type>
 		<label>Album Art Url</label>
 		<description>Url to the image of cover art of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="artist" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="menuItem" advanced="true">

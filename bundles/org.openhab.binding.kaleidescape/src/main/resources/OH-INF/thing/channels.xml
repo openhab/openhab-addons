@@ -669,6 +669,10 @@
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>The name of the currently playing track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -676,6 +680,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>The name of the currently playing artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -683,6 +691,10 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>The name of the currently playing album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -690,6 +702,10 @@
 		<item-type>String</item-type>
 		<label>Music Title</label>
 		<description>The raw output from the MUSIC_TITLE api response</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -778,6 +794,10 @@
 		<item-type>String</item-type>
 		<label>Movie Title</label>
 		<description>The title of the selected Movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -785,6 +805,10 @@
 		<item-type>String</item-type>
 		<label>Album Title</label>
 		<description>The title of the selected Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -813,6 +837,10 @@
 		<item-type>String</item-type>
 		<label>Rating</label>
 		<description>The MPAA rating of the selected Movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -820,6 +848,10 @@
 		<item-type>String</item-type>
 		<label>Year</label>
 		<description>The release year of the selected item</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -838,6 +870,10 @@
 		<item-type>String</item-type>
 		<label>Actors</label>
 		<description>A list of actors appearing in the selected Movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -845,6 +881,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>The artist of the selected Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -852,6 +892,10 @@
 		<item-type>String</item-type>
 		<label>Directors</label>
 		<description>A list of directors of the selected Movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -859,6 +903,10 @@
 		<item-type>String</item-type>
 		<label>Genres</label>
 		<description>A list of genres of the selected item</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
