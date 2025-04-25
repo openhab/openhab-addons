@@ -184,7 +184,7 @@
 		<description>Stop playback after playing one media entry from queue</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="uri">
@@ -294,7 +294,7 @@
 		<label>Track Position</label>
 		<description>Now playing track position</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Position</tag>
 		</tags>
 		<state pattern="%d %unit%"/>
@@ -325,7 +325,7 @@
 		<description>Current id of media entry or container, option list to browse hierarchy</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>Channel</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="search">
@@ -341,7 +341,7 @@
 		<description>Playlist for selection</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Channel</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
