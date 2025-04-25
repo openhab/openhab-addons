@@ -44,7 +44,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.validation.ConfigValidationException;
@@ -63,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Handles HomeAssistant MQTT object things. Such an HA Object can have multiple HA Components with different instances
@@ -124,10 +122,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      */
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
             MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-            HomeAssistantPythonBridge python, UnitProvider unitProvider, int subscribeTimeout,
+            Gson gson, HomeAssistantPythonBridge python, UnitProvider unitProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        this.gson = gson;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
@@ -346,8 +344,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     });
                 }
 
-                if (discovered instanceof Update) {
-                    updateComponent = (Update) discovered;
+                if (discovered instanceof Update updateComponent) {
                     updateComponent.setReleaseStateUpdateListener(this::releaseStateUpdated);
                 }
             }
@@ -461,7 +458,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     private ThingTypeUID calculateThingTypeUID(AbstractComponent<?> component) {
         return new ThingTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId()
-                + "_" + component.getChannelConfiguration().getThingId(component.getHaID().objectID));
+                + "_" + component.getConfig().getThingId(component.getHaID().objectID));
     }
 
     @Override
@@ -534,12 +531,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             Iterator<?> objectIdIterator = objectIds.iterator();
             Iterator<?> configIterator = configurations.iterator();
             while (objectIdIterator.hasNext()) {
-                Configuration componentConfiguration = new Configuration();
-                componentConfiguration.put("component", component);
-                componentConfiguration.put("nodeid", nodeid);
-                componentConfiguration.put("objectid", objectIdIterator.next());
-                componentConfiguration.put("config", configIterator.next());
-                result.add(componentConfiguration);
+                Configuration componentContext = new Configuration();
+                componentContext.put("component", component);
+                componentContext.put("nodeid", nodeid);
+                componentContext.put("objectid", objectIdIterator.next());
+                componentContext.put("config", configIterator.next());
+                result.add(componentContext);
             }
             return result;
         } else {

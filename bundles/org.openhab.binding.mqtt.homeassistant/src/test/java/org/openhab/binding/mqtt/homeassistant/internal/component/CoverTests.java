@@ -31,11 +31,11 @@ import org.openhab.core.library.types.UpDownType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class CoverTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "cover/0x0000000000000000_cover_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void testStateOnly() throws InterruptedException {
         // @formatter:off
@@ -90,7 +90,6 @@ public class CoverTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/cover/set/state", "STOP_");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPositionAndState() throws InterruptedException {
         // @formatter:off
@@ -153,7 +152,6 @@ public class CoverTests extends AbstractComponentTests {
         assertPublished("esphome/single-car-gdo/cover/door/position/command", "60");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPositionOnly() throws InterruptedException {
         // @formatter:off
@@ -180,7 +178,7 @@ public class CoverTests extends AbstractComponentTests {
         assertThat(component.getName(), is("Door"));
 
         assertChannel(component, Cover.COVER_CHANNEL_ID, "esphome/single-car-gdo/cover/door/position/state",
-                "esphome/single-car-gdo/cover/door/position/command", "Cover", RollershutterValue.class);
+                "esphome/single-car-gdo/cover/door/position/command", "Door", RollershutterValue.class);
 
         linkAllChannels(component);
 

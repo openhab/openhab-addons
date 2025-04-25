@@ -13,10 +13,12 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.LocationValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
@@ -24,8 +26,7 @@ import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -49,7 +50,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfiguration>
+public class DeviceTracker extends AbstractComponent<DeviceTracker.Configuration>
         implements ChannelStateUpdateListener {
     public static final String HOME_CHANNEL_ID = "home";
     public static final String LOCATION_CHANNEL_ID = "location";
@@ -59,24 +60,41 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
 
     public static final String[] SOURCE_TYPE_OPTIONS = new String[] { "gps", "router", "bluetooth", "bluetooth_le" };
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Binary Sensor");
+    public static class Configuration extends EntityConfiguration {
+        private final String payloadHome, payloadNotHome, payloadReset;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "Device Tracker"); // Technically device trackers don't have a name
+            payloadHome = getString("payload_home");
+            payloadNotHome = getString("payload_not_home");
+            payloadReset = getString("payload_reset");
         }
 
-        @SerializedName("source_type")
-        protected @Nullable String sourceType;
-        @SerializedName("state_topic")
-        protected @Nullable String stateTopic;
-        @SerializedName("payload_home")
-        protected String payloadHome = "home";
-        @SerializedName("payload_not_home")
-        protected String payloadNotHome = "not_home";
-        @SerializedName("payload_reset")
-        protected String payloadReset = "None";
+        @Nullable
+        String getStateTopic() {
+            return getOptionalString("state_topic");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
+
+        String getPayloadHome() {
+            return payloadHome;
+        }
+
+        String getPayloadNotHome() {
+            return payloadNotHome;
+        }
+
+        String getPayloadReset() {
+            return payloadReset;
+        }
+
+        String getSourceType() {
+            return getString("source_type");
+        }
     }
 
     /**
@@ -98,38 +116,33 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
     private final LocationValue locationValue = new LocationValue();
     private final @Nullable ComponentChannel homeChannel, locationChannel, accuracyChannel;
 
-    public DeviceTracker(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
-        this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
+    public DeviceTracker(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
+        this.channelStateUpdateListener = componentContext.getUpdateListener();
 
-        if (channelConfiguration.stateTopic == null && channelConfiguration.getJsonAttributesTopic() == null) {
-            throw new ConfigurationException("Device trackers must define either state_topic or json_attributes_topic");
-        }
         homeValue.update(UnDefType.NULL);
         locationNameValue.update(UnDefType.NULL);
         accuracyValue.update(UnDefType.NULL);
         locationValue.update(UnDefType.NULL);
 
-        if (channelConfiguration.stateTopic != null) {
+        String stateTopic = config.getStateTopic();
+        if (stateTopic != null) {
             homeChannel = buildChannel(HOME_CHANNEL_ID, ComponentChannelType.SWITCH, homeValue, "At Home",
-                    componentConfiguration.getUpdateListener()).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                    componentContext.getUpdateListener()).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
 
             buildChannel(LOCATION_NAME_CHANNEL_ID, ComponentChannelType.STRING, locationNameValue, "Location Name",
-                    this).stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                    this).stateTopic(stateTopic, config.getValueTemplate()).withAutoUpdatePolicy(AutoUpdatePolicy.VETO)
+                    .build();
         } else {
             homeChannel = null;
         }
 
-        String sourceType = channelConfiguration.sourceType;
-        if (sourceType != null) {
-            TextValue sourceTypeValue = new TextValue(SOURCE_TYPE_OPTIONS);
-            sourceTypeValue.update(new StringType(sourceType));
-            buildChannel(SOURCE_TYPE_CHANNEL_ID, ComponentChannelType.STRING, sourceTypeValue, "Source Type", this)
-                    .isAdvanced(true).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
+        TextValue sourceTypeValue = new TextValue(SOURCE_TYPE_OPTIONS);
+        sourceTypeValue.update(new StringType(config.getSourceType()));
+        buildChannel(SOURCE_TYPE_CHANNEL_ID, ComponentChannelType.STRING, sourceTypeValue, "Source Type", this)
+                .isAdvanced(true).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
 
-        if (channelConfiguration.getJsonAttributesTopic() != null) {
+        if (config.getJsonAttributesTopic() != null) {
             locationChannel = buildChannel(LOCATION_CHANNEL_ID, ComponentChannelType.LOCATION, locationValue,
                     "Location", this).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
 
@@ -144,11 +157,10 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
 
     // Override to set ourselves as listener
     protected void addJsonAttributesChannel() {
-        if (channelConfiguration.getJsonAttributesTopic() != null) {
+        String jsonAttributesTopic = config.getJsonAttributesTopic();
+        if (jsonAttributesTopic != null) {
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    this)
-                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
-                            channelConfiguration.getJsonAttributesTemplate())
+                    this).stateTopic(jsonAttributesTopic, config.getJsonAttributesTemplate())
                     .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
         }
     }
@@ -162,15 +174,15 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
             }
 
             State homeState;
-            if (channelConfiguration.payloadHome.equals(stateString)) {
+            if (config.getPayloadHome().equals(stateString)) {
                 homeState = OnOffType.ON;
-            } else if (channelConfiguration.payloadNotHome.equals(stateString)) {
+            } else if (config.getPayloadNotHome().equals(stateString)) {
                 homeState = OnOffType.OFF;
             } else {
                 homeState = UnDefType.UNDEF;
             }
 
-            if (channelConfiguration.payloadReset.equals(stateString)) {
+            if (config.getPayloadReset().equals(stateString)) {
                 state = UnDefType.NULL;
                 locationNameValue.update(state);
                 homeState = UnDefType.NULL;
@@ -195,7 +207,8 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
 
             JSONAttributes jsonAttributes;
             try {
-                jsonAttributes = Objects.requireNonNull(getGson().fromJson(state.toString(), JSONAttributes.class));
+                jsonAttributes = Objects
+                        .requireNonNull(componentContext.getGson().fromJson(state.toString(), JSONAttributes.class));
             } catch (JsonSyntaxException e) {
                 logger.warn("Cannot parse JSON attributes '{}' for '{}'.", state, getHaID());
                 return;
