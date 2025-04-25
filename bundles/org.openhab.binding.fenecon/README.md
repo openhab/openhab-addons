@@ -53,6 +53,7 @@ The FENECON binding currently only provides access to read out the values from t
 | imported-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
 | inverter-air-temperature      | Number:Temperature   | R          | Air temperature at the inverter in °C.                                      |
 | inverter-radiator-temperature | Number:Temperature   | R          | Radiator temperature of the inverter in °C.                                 |
+| bms-pack-temperature          | Number:Temperature   | R          | Temperature in the battery management system (BMS) box in °C.               |
 
 ## Full Example
 
@@ -95,6 +96,7 @@ Number:Power         BuyFromGridPower               <energy>       (GF_UtilityRo
 Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:imported-from-grid-energy"}
 Number:Temperature   InverterAirTemp                <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-air-temperature"}
 Number:Temperature   InverterRadiatorTemp           <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-radiator-temperature"}
+Number:Temperature   BmsBoxTemp                     <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:bms-pack-temperature"}
 
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)

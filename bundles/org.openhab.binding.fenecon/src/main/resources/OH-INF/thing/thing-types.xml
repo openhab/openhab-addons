@@ -33,6 +33,7 @@
 			<channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
 			<channel id="inverter-air-temperature" typeId="inverter-air-temperature"/>
 			<channel id="inverter-radiator-temperature" typeId="inverter-radiator-temperature"/>
+			<channel id="bms-pack-temperature" typeId="bms-pack-temperature"/>
 		</channels>
 
 		<config-description>
@@ -195,6 +196,13 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Radiator Temperature</label>
 		<description>Radiator temperature at the inverter.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="bms-pack-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>BMS Pack Temperature</label>
+		<description>Temperature in the battery management system (BMS) box.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

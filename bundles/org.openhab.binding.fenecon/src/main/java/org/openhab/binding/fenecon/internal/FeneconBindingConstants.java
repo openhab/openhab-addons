@@ -53,6 +53,7 @@ public class FeneconBindingConstants {
     // Group: batteryInverter0/...
     public static final String BATT_INVERTER_AIR_TEMP_ADDRESS = "batteryInverter0/AirTemperature";
     public static final String BATT_INVERTER_RADIATOR_TEMP_ADDRESS = "batteryInverter0/RadiatorTemperature";
+    public static final String BATT_INVERTER_BMS_PACK_TEMP_ADDRESS = "batteryInverter0/BmsPackTemperature";
 
     // Group of all FENECON Addresses
     public static final List<Address> ADDRESSES = List.of(new Address(STATE_ADDRESS), new Address(GRID_MODE_ADDRESS),
@@ -62,7 +63,8 @@ public class FeneconBindingConstants {
             new Address(PRODUCTION_ACTIVE_POWER_ADDRESS), new Address(GRID_ACTIVE_POWER_ADDRESS),
             new Address(GRID_BUY_ACTIVE_ENERGY_ADDRESS), new Address(GRID_SELL_ACTIVE_ENERGY_ADDRESS),
             new Address(ESS_SOC_ADDRESS), new Address(ESS_DISCHARGE_POWER_ADDRESS), new Address(FEMS_VERSION_ADDRESS),
-            new Address(BATT_INVERTER_AIR_TEMP_ADDRESS), new Address(BATT_INVERTER_RADIATOR_TEMP_ADDRESS));
+            new Address(BATT_INVERTER_AIR_TEMP_ADDRESS), new Address(BATT_INVERTER_RADIATOR_TEMP_ADDRESS),
+            new Address(BATT_INVERTER_BMS_PACK_TEMP_ADDRESS));
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
@@ -85,5 +87,5 @@ public class FeneconBindingConstants {
     public static final String FEMS_VERSION_CHANNEL = "fems-version";
     public static final String BATT_INVERTER_AIR_TEMP_CHANNEL = "inverter-air-temperature";
     public static final String BATT_INVERTER_RADIATOR_TEMP_CHANNEL = "inverter-radiator-temperature";
-
+    public static final String BATT_INVERTER_BMS_PACK_TEMP_CHANNEL = "bms-pack-temperature";
 }
