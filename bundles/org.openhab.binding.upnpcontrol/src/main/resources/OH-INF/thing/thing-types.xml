@@ -182,7 +182,7 @@
 		<description>Stop playback after playing one media entry from queue</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="uri">
