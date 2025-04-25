@@ -237,7 +237,7 @@
 		<description>The On/Off state of the domestic water heating</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Heating</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

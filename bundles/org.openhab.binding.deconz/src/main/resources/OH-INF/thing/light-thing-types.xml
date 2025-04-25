@@ -181,7 +181,7 @@
 		<category>Rollershutter</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
@@ -190,10 +190,6 @@
 		<item-type>Number:Time</item-type>
 		<label>On Time</label>
 		<description>Time that the light stays on before switched off automatically (0=forever)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" min="0"/>
 	</channel-type>
 
@@ -220,9 +216,6 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="none">No Alarm</option>
@@ -235,10 +228,6 @@
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

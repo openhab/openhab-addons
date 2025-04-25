@@ -143,47 +143,27 @@
 		<label>Loudness</label>
 		<description>Loudness</description>
 		<category>SoundVolume</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the player</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="repeat">
 		<item-type>Switch</item-type>
 		<label>Repeat</label>
 		<description>Repeat the selection</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
 		<item-type>Switch</item-type>
 		<label>Shuffle</label>
 		<description>Random shuffle the selection</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="onlyplayone">
 		<item-type>Switch</item-type>
 		<label>Only Play One</label>
 		<description>Stop playback after playing one media entry from queue</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="uri">
 		<item-type>String</item-type>
@@ -253,20 +233,12 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Duration</label>
 		<description>Now playing track duration</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="trackposition">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>Now playing track position</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="reltrackposition">
@@ -274,10 +246,6 @@
 		<label>Relative Track Position</label>
 		<description>Track position as percentage of track duration</description>
 		<category>MediaControl</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="upnprenderer">
@@ -289,10 +257,6 @@
 		<item-type>String</item-type>
 		<label>Current Media Id</label>
 		<description>Current id of media entry or container, option list to browse hierarchy</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="search">
 		<item-type>String</item-type>
@@ -300,14 +264,6 @@
 		<description>Search criteria for searching the directory. Search criteria are defined in UPnP search criteria format.
 			Examples: dc:title contains "song", dc:creator contains "SpringSteen", unp:class = "object.item.audioItem",
 			upnp:album contains "Born in"</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-			<tag>Channel</tag>
-			<tag>Channel</tag>
-			<tag>Channel</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="playlistselect">
 		<item-type>String</item-type>

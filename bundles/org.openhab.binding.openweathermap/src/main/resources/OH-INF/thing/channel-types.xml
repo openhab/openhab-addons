@@ -601,7 +601,7 @@
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -648,10 +648,6 @@
 		<label>Apparent Night Temperature</label>
 		<description>Forecasted apparent temperature in the night.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -859,7 +855,7 @@
 		<description>Current air quality index.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>AQI</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f">
 			<options>
@@ -878,7 +874,7 @@
 		<description>Forecasted air quality index.</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>AirQuality</tag>
+			<tag>AQI</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f">
 			<options>
@@ -929,7 +925,7 @@
 		<label>Forecasted Particulate Matter - PM10</label>
 		<description>Forecasted density of particles less than 10 µm in diameter.</description>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -963,7 +959,6 @@
 		<description>Current concentration of nitrogen monoxide.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -974,7 +969,6 @@
 		<description>Forecasted concentration of nitrogen monoxide.</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -985,7 +979,6 @@
 		<description>Current concentration of nitrogen dioxide.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -996,7 +989,6 @@
 		<description>Forecasted concentration of nitrogen dioxide.</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1029,7 +1021,6 @@
 		<description>Current concentration of sulphur dioxide.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>CO2</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1040,7 +1031,6 @@
 		<description>Forecasted concentration of sulphur dioxide.</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>CO2</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1051,7 +1041,6 @@
 		<description>Current concentration of ammonia.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1062,7 +1051,6 @@
 		<description>Forecasted concentration of ammonia.</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1093,9 +1081,6 @@
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Type of the warning, e.g. FROST.</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1111,10 +1096,6 @@
 		<label>Valid From</label>
 		<description>Start Date and Time for which the warning is valid.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -1123,10 +1104,6 @@
 		<label>Valid To</label>
 		<description>End Date and Time for which the warning is valid.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
