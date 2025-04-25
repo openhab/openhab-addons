@@ -34,6 +34,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link MqttThingHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -47,6 +49,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
     private final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
     private final UnitProvider unitProvider;
+    private final Gson gson;
     private final HomeAssistantPythonBridge python;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
@@ -55,12 +58,14 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public MqttThingHandlerFactory(final @Reference MqttChannelTypeProvider typeProvider,
             final @Reference HomeAssistantStateDescriptionProvider stateDescriptionProvider,
-            final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider) {
+            final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider,
+            final @Reference HomeAssistantPythonBridge python) {
         this.typeProvider = typeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.unitProvider = unitProvider;
-        this.python = new HomeAssistantPythonBridge();
+        this.gson = new Gson();
+        this.python = python;
     }
 
     @Override
@@ -79,7 +84,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
 
         if (supportsThingType(thingTypeUID)) {
             return new HomeAssistantThingHandler(thing, this, typeProvider, stateDescriptionProvider,
-                    channelTypeRegistry, python, unitProvider, 10000, 2000);
+                    channelTypeRegistry, gson, python, unitProvider, 10000, 2000);
         }
         return null;
     }
