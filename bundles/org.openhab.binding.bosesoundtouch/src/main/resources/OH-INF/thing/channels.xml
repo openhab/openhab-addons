@@ -57,7 +57,7 @@
 		<label>Album</label>
 		<description>Current playing album name</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -68,7 +68,7 @@
 		<label>Artist</label>
 		<description>Current playing artist name</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -86,7 +86,7 @@
 		<label>Description</label>
 		<description>Description to current playing song</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -97,7 +97,7 @@
 		<label>Genre</label>
 		<description>Genre of current playing song</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -108,7 +108,7 @@
 		<label>Now Playing</label>
 		<description>Visible description shown in display</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -119,8 +119,8 @@
 		<label>Station Location</label>
 		<description>Location of current playing radio station</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Info</tag>
+			<tag>Status</tag>
+			<tag>Channel</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -130,7 +130,7 @@
 		<label>Station Name</label>
 		<description>Name of current playing radio station</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Channel</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -141,7 +141,7 @@
 		<label>Track</label>
 		<description>Track currently playing</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>

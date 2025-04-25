@@ -8,10 +8,6 @@
 		<label>CheckControl Description</label>
 		<tags>
 			<tag>Status</tag>
-			<<<<<<< Updated upstream
-			<tag>Channel</tag>
-			=======
-			>>>>>>> Stashed changes
 		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-details-channel">
