@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,9 @@ import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//un signleton
+/**
+ * @author Alexander Drent - Initial contribution
+ */
 @NonNullByDefault
 public class OnectaSignInClient implements OAuthTokenRefreshListener {
 
@@ -96,6 +98,6 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
     public void onNewAccessToken(String accessToken) {
         this.accessToken = accessToken;
 
-        logger.debug("new access token: " + accessToken);
+        logger.debug("new access token: {}", accessToken);
     }
 }
