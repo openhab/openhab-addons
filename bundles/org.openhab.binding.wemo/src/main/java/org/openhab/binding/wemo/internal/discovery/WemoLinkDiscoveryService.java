@@ -31,13 +31,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wemo.internal.ApiController;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
@@ -54,8 +56,10 @@ import org.xml.sax.InputSource;
  * @author Hans-Jörg Merk - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = WemoLinkDiscoveryService.class)
 @NonNullByDefault
-public class WemoLinkDiscoveryService extends AbstractDiscoveryService implements UpnpIOParticipant {
+public class WemoLinkDiscoveryService extends AbstractThingHandlerDiscoveryService<WemoBridgeHandler>
+        implements UpnpIOParticipant {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
     private static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
@@ -63,33 +67,25 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
     private static final int SCAN_INTERVAL_SECONDS = 120;
 
     private final Logger logger = LoggerFactory.getLogger(WemoLinkDiscoveryService.class);
-    private final WemoBridgeHandler wemoBridgeHandler;
     private final WemoLinkScan scanningRunnable;
     private final UpnpIOService service;
     private final ApiController apiController;
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
-    public WemoLinkDiscoveryService(final WemoBridgeHandler wemoBridgeHandler, final UpnpIOService upnpIOService,
-            final HttpClient httpClient) {
-        super(DISCOVERY_TIMEOUT_SECONDS);
+    public WemoLinkDiscoveryService(final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(WemoBridgeHandler.class, SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
+
         this.service = upnpIOService;
-        this.wemoBridgeHandler = wemoBridgeHandler;
         this.apiController = new ApiController(httpClient);
-
         this.scanningRunnable = new WemoLinkScan();
-        this.activate(null);
-    }
-
-    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES;
     }
 
     @Override
     public void startScan() {
-        logger.trace("Starting WeMoEndDevice discovery on WeMo Link {}", wemoBridgeHandler.getThing().getUID());
+        logger.trace("Starting WeMoEndDevice discovery on WeMo Link {}", thingHandler.getThing().getUID());
         try {
-            String devUDN = "uuid:" + wemoBridgeHandler.getThing().getConfiguration().get(UDN).toString();
+            String devUDN = "uuid:" + thingHandler.getThing().getConfiguration().get(UDN).toString();
             logger.trace("devUDN = '{}'", devUDN);
 
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetEndDevices\"";
@@ -178,7 +174,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                         if (SUPPORTED_THING_TYPES.contains(new ThingTypeUID(BINDING_ID, endDeviceModelID))) {
                             logger.debug("Discovered a WeMo LED Light thing with ID '{}'", endDeviceID);
 
-                            ThingUID bridgeUID = wemoBridgeHandler.getThing().getUID();
+                            ThingUID bridgeUID = thingHandler.getThing().getUID();
                             ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, endDeviceModelID);
 
                             if (thingTypeUID.equals(THING_TYPE_MZ100)) {
@@ -189,7 +185,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                                 properties.put(DEVICE_ID, endDeviceID);
 
                                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                        .withProperties(properties).withBridge(wemoBridgeHandler.getThing().getUID())
+                                        .withProperties(properties).withBridge(thingHandler.getThing().getUID())
                                         .withLabel(endDeviceName).build();
 
                                 thingDiscovered(discoveryResult);
@@ -205,11 +201,11 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
                     }
                 } catch (Exception e) {
-                    logger.warn("Failed to parse endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(), e);
+                    logger.warn("Failed to parse endDevices for bridge '{}'", thingHandler.getThing().getUID(), e);
                 }
             }
         } catch (Exception e) {
-            logger.warn("Failed to get endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(), e);
+            logger.warn("Failed to get endDevices for bridge '{}'", thingHandler.getThing().getUID(), e);
         }
     }
 
@@ -232,7 +228,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
         logger.debug("Stop WeMo device background discovery");
 
         ScheduledFuture<?> job = scanningJob;
-        if (job != null && !job.isCancelled()) {
+        if (job != null) {
             job.cancel(true);
         }
         scanningJob = null;
@@ -240,7 +236,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
     @Override
     public String getUDN() {
-        return (String) this.wemoBridgeHandler.getThing().getConfiguration().get(UDN);
+        return (String) this.thingHandler.getThing().getConfiguration().get(UDN);
     }
 
     @Override
