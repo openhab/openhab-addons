@@ -870,6 +870,10 @@
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -878,6 +882,10 @@
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -886,6 +894,10 @@
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -894,6 +906,10 @@
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -926,6 +942,10 @@
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
