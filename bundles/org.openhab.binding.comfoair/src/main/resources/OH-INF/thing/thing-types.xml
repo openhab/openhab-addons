@@ -456,7 +456,7 @@
 		<description>Filter full</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -902,6 +902,10 @@
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -910,6 +914,10 @@
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -927,7 +935,7 @@
 		<description>Uptime of the filter</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
@@ -1616,9 +1624,6 @@
 		<label>Error Current</label>
 		<description>Current errors</description>
 		<category>Text</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

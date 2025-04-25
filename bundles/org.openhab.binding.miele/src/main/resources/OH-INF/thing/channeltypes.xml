@@ -96,7 +96,6 @@
 		<category>Time</category>
 		<tags>
 			<tag>Calculation</tag>
-            <tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
