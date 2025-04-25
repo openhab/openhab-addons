@@ -32,6 +32,7 @@
 			<channel id="import-from-grid-power" typeId="import-from-grid-power"/>
 			<channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
 			<channel id="inverter-air-temperature" typeId="inverter-air-temperature"/>
+			<channel id="inverter-radiator-temperature" typeId="inverter-radiator-temperature"/>
 		</channels>
 
 		<config-description>
@@ -187,6 +188,13 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Air Temperature</label>
 		<description>Air temperature at the inverter.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="inverter-radiator-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Inverter Radiator Temperature</label>
+		<description>Radiator temperature at the inverter.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
