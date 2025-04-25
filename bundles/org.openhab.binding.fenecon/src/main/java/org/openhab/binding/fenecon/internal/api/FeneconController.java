@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -100,41 +101,59 @@ public class FeneconController {
                     throw new FeneconCommunicationException("Unexpected http status code: " + statusCode);
                 }
             } else {
-                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()).getAsJsonArray());
+                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()));
             }
         } catch (TimeoutException | ExecutionException | UnsupportedOperationException | InterruptedException err) {
             throw new FeneconCommunicationException(
                     "Communication error: " + err.getMessage() + " with FENECON system on channel: " + channel, err);
-        } catch (URISyntaxException | JsonSyntaxException err) {
+        } catch (URISyntaxException | IllegalStateException | JsonSyntaxException err) {
             throw new FeneconCommunicationException("Syntax error: " + err.getMessage() + " on channel: " + channel,
                     err);
         }
     }
 
-    private List<FeneconResponse> createResponseFromJson(JsonArray jsonArray) {
+    private List<FeneconResponse> createResponseFromJson(JsonElement jsonElement) {
+        if (jsonElement.isJsonArray()) {
+            return createResponseFromJsonArray(jsonElement.getAsJsonArray());
+        } else if (jsonElement.isJsonObject()) {
+            return createResponseFromJsonObject(jsonElement.getAsJsonObject());
+        } else {
+            throw new IllegalStateException("Unexpected response format: " + jsonElement);
+        }
+    }
+
+    private List<FeneconResponse> createResponseFromJsonArray(JsonArray jsonArray) {
         // Example response: [{"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
         // 0..100","unit":"%","value":99}]
-
         List<FeneconResponse> result = new ArrayList<>();
-
-        for (JsonElement eachResult : jsonArray) {
-            if (eachResult.isJsonObject()) {
-
-                JsonObject jsonResult = eachResult.getAsJsonObject();
-                if (jsonResult.get("value").isJsonNull()) {
-                    // Example problem response:
-                    // {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
-                    // 0..100","unit":"%","value":null}
-                    continue;
-                }
-
-                String address = jsonResult.get("address").getAsString();
-                String text = jsonResult.get("text").getAsString();
-                String value = jsonResult.get("value").getAsString();
-
-                result.add(new FeneconResponse(address, text, value));
+        for (JsonElement each : jsonArray) {
+            if (each.isJsonObject()) {
+                result.addAll(createResponseFromJsonObject(each.getAsJsonObject()));
             }
         }
         return result;
+    }
+
+    private List<FeneconResponse> createResponseFromJsonObject(JsonObject jsonObject) {
+        // Example response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+        // 0..100","unit":"%","value":99}
+        List<FeneconResponse> result = new ArrayList<>();
+        convertJsonObjectToResponse(jsonObject).ifPresent(result::add);
+        return result;
+    }
+
+    private Optional<FeneconResponse> convertJsonObjectToResponse(JsonObject jsonObject) {
+        if (jsonObject.get("value").isJsonNull()) {
+            // Example problem response:
+            // {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+            // 0..100","unit":"%","value":null}
+            return Optional.empty();
+        }
+
+        String address = jsonObject.get("address").getAsString();
+        String text = jsonObject.get("text").getAsString();
+        String value = jsonObject.get("value").getAsString();
+
+        return Optional.of(new FeneconResponse(address, text, value));
     }
 }
