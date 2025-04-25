@@ -127,12 +127,14 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
-| shellybluht       | Shelly BLU H&T                                         | SBMO      |
+| thing-type        | Model                                                  | Vendor ID               |
+| ----------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton   | Shelly BLU Button 1                                    | SBBT                    |
+| shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
+| shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
+| shellybluht       | Shelly BLU H&T                                         | SBMO                    |
+| shellyblugw       | Shelly BLU Gateway                                     | SNGW-BT01               |
+| shellyblugw3      | Shelly BLU Gateway 3                                   | S3GW-1DBT001            |
 
 ### Special Thing Types
 
@@ -1607,7 +1609,7 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-## Shelly BLU Gateway (thing-type: shellyblugw)
+## Shelly BLU Gateway (thing-type: shellyblugw,  shellyblugw3)
 
 There are no additional channels beside the device group.
 
