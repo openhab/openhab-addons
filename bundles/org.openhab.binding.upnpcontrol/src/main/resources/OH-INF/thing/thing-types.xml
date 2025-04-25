@@ -301,7 +301,8 @@
 			Examples: dc:title contains "song", dc:creator contains "SpringSteen", unp:class = "object.item.audioItem",
 			upnp:album contains "Born in"</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
+			<tag>Channel</tag>
 			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
