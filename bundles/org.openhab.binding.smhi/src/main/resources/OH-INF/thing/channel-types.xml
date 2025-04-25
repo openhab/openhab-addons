@@ -146,7 +146,7 @@
 		<description>Minimum precipitation intensity</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
