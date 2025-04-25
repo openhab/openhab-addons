@@ -34,7 +34,6 @@
 		<description>A digital channel sent from C.M.I. to openHAB</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -50,7 +49,6 @@
 		<description>A digital channel sent from OpenHAB to C.M.I.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Opening</tag>
 		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -68,6 +66,9 @@
 		<item-type>Number</item-type>
 		<label>Analog Input Channel (C.M.I. -> OH)</label>
 		<description>An Analog Channel received from the C.M.I.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -82,7 +83,6 @@
 		<description>A Analog Channel sent to the C.M.I.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Channel</tag>
 		</tags>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -164,7 +164,6 @@
 		<description>An On/Off state read from C.M.I.</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -173,20 +172,25 @@
 		<label>Switch State (Changeable)</label>
 		<description>A modifiable On/Off state read from C.M.I.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Switch</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="schema-numeric-ro">
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>A numeric value read from C.M.I.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 	<channel-type id="schema-state-ro">
 		<item-type>String</item-type>
 		<label>Value</label>
 		<description>A state value read from C.M.I.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="schema-date-time-ro">

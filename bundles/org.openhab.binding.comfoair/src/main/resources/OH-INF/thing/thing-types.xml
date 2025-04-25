@@ -414,7 +414,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Opening</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<description>Current relative speed (%) of incoming fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Status</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -567,8 +567,8 @@
 		<description>Current relative speed (%) of outgoing fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Status</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -578,6 +578,10 @@
 		<label>Fan In (rpm)</label>
 		<description>Current rotational speed of incoming fan</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
@@ -586,6 +590,10 @@
 		<label>Fan Out (rpm)</label>
 		<description>Current rotational speed of outgoing fan</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 

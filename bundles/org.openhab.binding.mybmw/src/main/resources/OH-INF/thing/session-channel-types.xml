@@ -22,10 +22,6 @@
 	<channel-type id="session-issue-channel">
 		<item-type>String</item-type>
 		<label>Issues during Session</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="session-status-channel">
 		<item-type>String</item-type>

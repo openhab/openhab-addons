@@ -233,7 +233,7 @@
 		<label>Battery Degradation</label>
 		<description>Current battery degradation %, based on 13.5kW full capacity</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>

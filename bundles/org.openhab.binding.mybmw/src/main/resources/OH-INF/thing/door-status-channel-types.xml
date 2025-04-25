@@ -37,8 +37,8 @@
 		<item-type>String</item-type>
 		<label>Driver Window</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -46,8 +46,8 @@
 		<item-type>String</item-type>
 		<label>Driver Rear Window</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -55,8 +55,8 @@
 		<item-type>String</item-type>
 		<label>Passenger Window</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -64,14 +64,18 @@
 		<item-type>String</item-type>
 		<label>Passenger Rear Window</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunroof-channel">
 		<item-type>String</item-type>
 		<label>Sunroof</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -8,22 +8,24 @@
 		<label>CheckControl Description</label>
 		<tags>
 			<tag>Status</tag>
+			<<<<<<< Updated upstream
 			<tag>Channel</tag>
+			=======
+			>>>>>>> Stashed changes
 		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-details-channel">
 		<item-type>String</item-type>
 		<label>CheckControl Details</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<tag>Status</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-severity-channel">
 		<item-type>String</item-type>
 		<label>Severity Level</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Level</tag>
 		</tags>
 	</channel-type>

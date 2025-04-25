@@ -56,6 +56,10 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Current playing album name</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -63,6 +67,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Current playing artist name</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -77,6 +85,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description to current playing song</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -84,6 +96,10 @@
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Genre of current playing song</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -91,6 +107,10 @@
 		<item-type>String</item-type>
 		<label>Now Playing</label>
 		<description>Visible description shown in display</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -98,6 +118,10 @@
 		<item-type>String</item-type>
 		<label>Station Location</label>
 		<description>Location of current playing radio station</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -105,6 +129,10 @@
 		<item-type>String</item-type>
 		<label>Station Name</label>
 		<description>Name of current playing radio station</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -112,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>Track currently playing</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -120,7 +152,8 @@
 		<label>Operation Mode</label>
 		<description>Current Operation Mode</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -170,7 +203,7 @@
 		<description>1-6 Preset of Soundtouch, >7 Binding Presets</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<tag>Channel</tag>
 		</tags>
 	</channel-type>
 

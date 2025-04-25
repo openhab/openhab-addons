@@ -351,8 +351,8 @@
 		<label>Air Quality</label>
 		<description>Shows the air quality measured by a WeMo enabled Holmes Air Purifier</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -450,7 +450,7 @@
 		<description>Shows the water level of a WeMo enabled Holmes Humidifier</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

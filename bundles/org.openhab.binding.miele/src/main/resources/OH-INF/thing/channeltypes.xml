@@ -83,7 +83,7 @@
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
@@ -95,7 +95,7 @@
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
@@ -107,7 +107,7 @@
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
@@ -140,20 +140,12 @@
 		<label>Switch</label>
 		<description>Switch the appliance on or off</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the appliance</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -202,7 +194,7 @@
 		<description>Start or stop Super Cooling</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -227,7 +219,7 @@
 		<description>Start or stop Super Freezing</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -265,10 +257,6 @@
 		<item-type>Number</item-type>
 		<label>Ventilation Power</label>
 		<description>Current ventilation power</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

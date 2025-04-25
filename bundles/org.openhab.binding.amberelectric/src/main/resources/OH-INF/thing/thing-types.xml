@@ -57,8 +57,8 @@
 		<description>Current price to import power from the grid</description>
 		<category>Price</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<tag>Forecast</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<tag>Status</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

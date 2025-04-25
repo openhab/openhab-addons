@@ -12,8 +12,8 @@
 		<item-type>String</item-type>
 		<label>Overall Window Status</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -22,7 +22,7 @@
 		<label>Doors Locked</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="next-service-date-channel">

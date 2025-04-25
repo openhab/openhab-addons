@@ -256,7 +256,7 @@
 		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">

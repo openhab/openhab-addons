@@ -22,8 +22,7 @@
 		<label>Charge Sessions</label>
 		<description>Number of charging sessions this month</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<tag>Status</tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

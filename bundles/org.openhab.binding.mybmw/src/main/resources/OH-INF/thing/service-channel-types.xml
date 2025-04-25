@@ -23,10 +23,6 @@
 	<channel-type id="service-mileage-channel">
 		<item-type>Number:Length</item-type>
 		<label>Mileage till Service</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

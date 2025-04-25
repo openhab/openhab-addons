@@ -375,10 +375,6 @@
 		<label>@text/channelButtonLabel</label>
 		<description>@text/channelButtonDescription</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="rollershutter">
@@ -425,7 +421,7 @@
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -570,7 +566,7 @@
 		<description>@text/channelBellButtonDescription</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -590,10 +586,6 @@
 		<label>@text/channelLockLabel</label>
 		<description>@text/channelLockDescription</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
