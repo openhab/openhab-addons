@@ -33,6 +33,7 @@ public class FeneconBindingConstants {
     public static final ThingTypeUID THING_TYPE_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "home-device");
 
     // List of all FENECON Addresses
+    // Group: _sum/...
     public static final String STATE_ADDRESS = "_sum/State";
     public static final String ESS_SOC_ADDRESS = "_sum/EssSoc";
     public static final String CONSUMPTION_ACTIVE_POWER_ADDRESS = "_sum/ConsumptionActivePower";
@@ -47,6 +48,9 @@ public class FeneconBindingConstants {
     public static final String GRID_MODE_ADDRESS = "_sum/GridMode";
     public static final String GRID_SELL_ACTIVE_ENERGY_ADDRESS = "_sum/GridSellActiveEnergy";
     public static final String GRID_BUY_ACTIVE_ENERGY_ADDRESS = "_sum/GridBuyActiveEnergy";
+    // Group: _meta/...
+    public static final String FEMS_VERSION_ADDRESS = "_meta/Version";
+
     // Group of all FENECON Addresses
     public static final List<Address> ADDRESSES = List.of(new Address(STATE_ADDRESS), new Address(GRID_MODE_ADDRESS),
             new Address(CONSUMPTION_ACTIVE_POWER_ADDRESS), new Address(CONSUMPTION_ACTIVE_POWER_PHASE1_ADDRESS),
@@ -54,7 +58,7 @@ public class FeneconBindingConstants {
             new Address(CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS), new Address(PRODUCTION_MAX_ACTIVE_POWER_ADDRESS),
             new Address(PRODUCTION_ACTIVE_POWER_ADDRESS), new Address(GRID_ACTIVE_POWER_ADDRESS),
             new Address(GRID_BUY_ACTIVE_ENERGY_ADDRESS), new Address(GRID_SELL_ACTIVE_ENERGY_ADDRESS),
-            new Address(ESS_SOC_ADDRESS), new Address(ESS_DISCHARGE_POWER_ADDRESS));
+            new Address(ESS_SOC_ADDRESS), new Address(ESS_DISCHARGE_POWER_ADDRESS), new Address(FEMS_VERSION_ADDRESS));
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
@@ -74,4 +78,5 @@ public class FeneconBindingConstants {
     public static final String EXPORTED_TO_GRID_ENERGY_CHANNEL = "exported-to-grid-energy";
     public static final String IMPORTED_FROM_GRID_ENERGY_CHANNEL = "imported-from-grid-energy";
     public static final String LAST_UPDATE_CHANNEL = "last-update";
+    public static final String FEMS_VERSION_CHANNEL = "fems-version";
 }

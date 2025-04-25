@@ -34,6 +34,7 @@ The FENECON binding currently only provides access to read out the values from t
 | Channel                       | Type                 | Read/Write | Description                                                                 |
 |-------------------------------|----------------------|------------|-----------------------------------------------------------------------------|
 | state                         | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
+| fems-version                  | String               | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3              |
 | last-update                   | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
 | ess-soc                       | Number:Dimensionless | R          | Battery state of charge in percent                                          |
 | charger-power                 | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
@@ -71,6 +72,7 @@ Group   GF_UtilityRoomSolar     "Utility room solar"  <solarplant>           (GF
 
 // FENECON items
 String               EssState                       <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:state"}
+String               FemsVersion                    <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:fems-version"}
 DateTime             LastFeneconUpdate              <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:last-update"}
 Number:Dimensionless EssSoc                         <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:ess-soc"}
 Number:Power         ChargerPower                   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger-power"}

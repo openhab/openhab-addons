@@ -171,6 +171,11 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState(FeneconBindingConstants.IMPORTED_FROM_GRID_ENERGY_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.WATT_HOUR));
                 break;
+            case FeneconBindingConstants.FEMS_VERSION_ADDRESS:
+                // { "address": "_meta/Version","type": "STRING", "accessMode": "RO", "text": "", "unit": "", "value":
+                // "2025.2.3"}
+                updateState(FeneconBindingConstants.FEMS_VERSION_CHANNEL, new StringType(response.value()));
+                break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());
                 break;
