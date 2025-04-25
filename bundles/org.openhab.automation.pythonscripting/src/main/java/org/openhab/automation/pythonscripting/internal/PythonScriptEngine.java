@@ -380,11 +380,7 @@ public class PythonScriptEngine
     @Override
     public boolean tryLock() {
         boolean acquired = lock.tryLock();
-        if (acquired) {
-            logger.debug("Lock acquired.");
-        } else {
-            logger.debug("Lock not acquired.");
-        }
+        logger.debug("{}", acquired ? "Lock acquired." : "Lock not acquired.");
         return acquired;
     }
 

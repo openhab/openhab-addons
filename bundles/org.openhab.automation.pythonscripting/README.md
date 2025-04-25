@@ -1,4 +1,4 @@
-# Python 3 Scripting
+# Python Scripting
 
 This add-on provides support for Python 3 that can be used as a scripting language within automation rules.
 It is based on [GraalPy](https://www.graalvm.org/python/) from the [GraalVM project](https://www.graalvm.org/).
@@ -17,7 +17,7 @@ Alternatively, you can create scripts in the `automation/python` configuration d
 ... [INFO ] [ort.loader.AbstractScriptFileWatcher] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
 ```
 
-To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to
+To enable debug logging, use the [console logging](https://openhab.org/docs/administration/logging.html) commands to
 enable debug logging for the automation functionality:
 
 ```text
@@ -79,7 +79,7 @@ Use Python Scripting as script transformation by:
 3. Passing parameters is also possible by using a URL like syntax: `PY3(<scriptname>.py?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
-Simple transformations can aso be given as an inline script: `PY3(|...)`, e.g. `PY3(|"String has " + input.length + "characters")`.
+Simple transformations can also be given as an inline script: `PY3(|...)`, e.g. `PY3(|"String has " + input.length + "characters")`.
 It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ::: tip Note

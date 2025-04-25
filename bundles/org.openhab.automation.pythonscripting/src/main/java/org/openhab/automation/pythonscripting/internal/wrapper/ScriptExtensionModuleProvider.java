@@ -42,9 +42,6 @@ public class ScriptExtensionModuleProvider {
 
     private Map<String, Object> globals = new HashMap<>();
 
-    public ScriptExtensionModuleProvider() {
-    }
-
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier,
             ScriptExtensionAccessor scriptExtensionAccessor) {
         return (name, fromlist) -> {
