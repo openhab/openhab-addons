@@ -76,4 +76,5 @@ public class EmbyBindingConstants {
     public static final String CONTROL_MUTE = "/Command/Mute";
     public static final String CONTROL_UNMUTE = "/Command/Unmute";
     public static final String CONTROL_STOP = "/Playing/Stop";
+    public static final int CONNECTION_CHECK_INTERVAL_MS = 360000;
 }

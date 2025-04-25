@@ -143,8 +143,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                             break;
 
                         case CHANNEL_SENDPLAYCOMMAND:
-                            logger.trace("Sending the following payload: {} for device: {}", command.toString(),
-                                    currentSessionID);
                             handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_SENDPLAY,
                                     command.toString());
                             break;
@@ -160,8 +158,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                             break;
                         case CHANNEL_GENERALCOMMANDWITHARGS:
                             commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            logger.trace("Sending the following command {} for device: {}", commandName,
-                                    currentSessionID);
                             handler.sendCommand(
                                     CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
                                     "Arguments:" + command + "}");

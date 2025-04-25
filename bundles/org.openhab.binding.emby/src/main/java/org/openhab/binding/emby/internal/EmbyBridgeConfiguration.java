@@ -19,21 +19,21 @@ import org.openhab.core.config.core.Configuration;
  * The {@link EmbyBridgeConfiguration} class contains fields mapping thing configuration parameters.
  * 
  * @param api - This is the API key generated from EMBY used for Authorization.
- * @param buffersize - Here you can define a custom size for the websocket buffer size. Default is 10,0000
- * @param ipAddress - This is the ip address of the EMBY Server.
- * @param port - This is the port of the EMBY server.
- * @param refreshInterval - This is the refresh interval in milliseconds that will be sent to the websocket. Default is
- *            10,000
- * @param discovery - If set to false the controller will not add new things from devices to the inbox.
+ * @param bufferSize - Custom size for the websocket buffer. Default is 10,000.
+ * @param ipAddress - IP address of the EMBY Server.
+ * @param port - Port of the EMBY Server. Default is 8096.
+ * @param refreshInterval - Refresh interval in milliseconds. Default is 10,000.
+ * @param discovery - Enable/disable device auto-discovery. Default is true (enabled).
+ * 
  * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
 public class EmbyBridgeConfiguration extends Configuration {
 
     public String api = "";
-    public int bufferSize;
+    public int bufferSize = 10000;         // Default websocket buffer size
     public String ipAddress = "";
-    public int port;
-    public int refreshInterval;
-    public boolean discovery;
+    public int port = 8096;                // Default server port
+    public int refreshInterval = 10000;    // Default refresh interval
+    public boolean discovery = true;       // Discovery enabled by default
 }

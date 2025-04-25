@@ -18,6 +18,7 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.HOST_PARAME
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.REFRESH_PARAMETER;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_BUFFER_SIZE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONNECTION_CHECK_INTERVAL_MS;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private WebSocketClient webSocketClient;
     private @Nullable ScheduledFuture<?> connectionCheckerFuture;
     private @Nullable String callbackIpAddress = null;
-    private @Nullable EmbyClientDiscoveryService clientDiscoverySerivce;
+    private @Nullable EmbyClientDiscoveryService clientDiscoveryService;
     private @Nullable EmbyHTTPUtils httputils;
     private EmbyBridgeConfiguration config;
     private int reconnectionCount;
@@ -79,17 +80,8 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         connection = new EmbyConnection(this, passedWebSocketClient);
     }
 
-    public void sendCommand(String commandURL, String payload) {
-        if (httputils != null) {
-            try {
-                httputils.doPost(commandURL, payload, 2);
-            } catch (EmbyHttpRetryExceeded e) {
-                logger.debug("The number of retry attempts was exceeded", e.getCause());
-            }
-        }
-    }
-
     public void sendCommand(String commandURL) {
+        logger.trace("Sending command without payload: {}", commandURL);
         if (httputils != null) {
             try {
                 httputils.doPost(commandURL, "", 2);
@@ -98,6 +90,18 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             }
         }
     }
+    
+    public void sendCommand(String commandURL, String payload) {
+        logger.trace("Sending command: {} with payload: {}", commandURL, payload);
+        if (httputils != null) {
+            try {
+                httputils.doPost(commandURL, payload, 2);
+            } catch (EmbyHttpRetryExceeded e) {
+                logger.debug("The number of retry attempts was exceeded", e.getCause());
+            }
+        }
+    }
+    
 
     private String getServerAddress() {
         return config.ipAddress + ":" + config.port;
@@ -124,7 +128,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Connection could not be established");
                     }
-                }, 360000, 360000, TimeUnit.MILLISECONDS);
+                }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
@@ -144,9 +148,9 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport) {
-        EmbyClientDiscoveryService discvoeryService = this.clientDiscoverySerivce;
-        if ((discvoeryService != null) && config.discovery) {
-            discvoeryService.addDeviceIDDiscover(playstate);
+        EmbyClientDiscoveryService discoveryService = this.clientDiscoveryService;
+        if ((discoveryService != null) && config.discovery) {
+            discoveryService.addDeviceIDDiscover(playstate);
         }
         this.getThing().getThings().forEach(thing -> {
             EmbyDeviceHandler handler = (EmbyDeviceHandler) thing.getHandler();
@@ -176,7 +180,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     public void registerDeviceFoundListener(EmbyClientDiscoveryService embyClientDiscoverySerice) {
-        this.clientDiscoverySerivce = embyClientDiscoverySerice;
+        this.clientDiscoveryService = embyClientDiscoverySerice;
     }
 
     @Override
@@ -186,61 +190,26 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     private void checkConfiguration() throws ConfigValidationException {
-        Configuration testConfig = this.getConfig();
-        String testApi = (String) testConfig.get(API_KEY);
-        String testIpAddress = (String) testConfig.get(HOST_PARAMETER);
-        Boolean testDiscovery = (Boolean) testConfig.get(DISCOVERY_ENABLE);
-        String testPort = (String) testConfig.get(WS_PORT_PARAMETER);
-        String testBufferSize = (String) testConfig.get(WS_BUFFER_SIZE);
-        String testRefresehInterval = (String) testConfig.get(REFRESH_PARAMETER);
-
-        if (testDiscovery == null) {
-            logger.debug(
-                    "There is no value set for the discovery switch, setting this to True to enable discovery.  If you would like to disable automatic discovery please set this to false.");
-            config.discovery = true;
-        } else {
-            config.discovery = testDiscovery;
-        }
-
-        try {
-            config.bufferSize = Integer.parseInt(testBufferSize);
-        } catch (NumberFormatException e) {
-            logger.debug(
-                    "Please check your configuration of the Retry Count as it is not an Integer. It is configured as: {}, will contintue to configure the binding with the default of 10,0000",
-                    testBufferSize);
-            config.bufferSize = 10000;
-        }
-
-        try {
-            config.refreshInterval = Integer.parseInt(testRefresehInterval);
-        } catch (NumberFormatException e) {
-            logger.debug(
-                    "Please check your configuration of the Refresh Interval as is not an Integer. It is configured as: {}, will contintue to configure the binding with the default of 10,000",
-                    testRefresehInterval);
-            config.refreshInterval = 10000;
-        }
-
-        try {
-            config.port = Integer.parseInt(testPort);
-        } catch (NumberFormatException e) {
-            logger.debug(
-                    "Please check your configuration of the test port parameter as it is not an Integer. It is configured as: {}, will contintue to configure the binding with the default of 8096",
-                    testPort);
-            config.port = 8096;
-        }
-
-        if (testApi == null) {
+        EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
+    
+        if (embyConfig.api == null || embyConfig.api.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "There is no API key configured for this bridge, please add an API key to enable communication");
-        } else if (testIpAddress == null) {
+        }
+    
+        if (embyConfig.ipAddress == null || embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No network address specified, please specify the network address for the EMBY server");
-        } else {
-            config.api = testApi;
-            config.ipAddress = testIpAddress;
-            httputils = new EmbyHTTPUtils(30, testApi, getServerAddress());
+        }
+    
+        this.config = embyConfig;
+    
+        if (httputils == null && config.api != null && !config.api.isEmpty()) {
+            httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
         }
     }
+    
+    
 
     @Override
     public void dispose() {

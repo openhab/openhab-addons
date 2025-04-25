@@ -81,7 +81,6 @@ public class EmbyClientSocket {
             ScheduledExecutorService setScheduler, int setBufferSize, WebSocketClient sharedWebSocketClient) {
         eventHandler = setEventHandler;
         uri = setUri;
-        // client = new WebSocketClient();
         client = sharedWebSocketClient;
         scheduler = setScheduler;
         bufferSize = setBufferSize;
@@ -97,7 +96,7 @@ public class EmbyClientSocket {
      */
     public synchronized void open() throws Exception {
         if (isConnected()) {
-            logger.warn("connect: connection is already open");
+            logger.debug("connect: connection is already open");
             return;
         }
         if (!client.isStarted()) {
@@ -160,8 +159,7 @@ public class EmbyClientSocket {
     public class EmbyWebSocketListener {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            // just log: the real "onConnectionOpened" is fired by open()
-            logger.info("EMBY client socket connected (Jetty callback)");
+            logger.debug("EMBY client socket connected (Jetty callback)");
         }
 
         @OnWebSocketMessage
@@ -191,7 +189,7 @@ public class EmbyClientSocket {
                     try {
                         eventHandler.onConnectionClosed();
                     } catch (Exception e) {
-                        logger.error("Error handling onConnectionClosed(): {}", e.getMessage(), e);
+                        logger.debug("Error handling onConnectionClosed(): {}", e.getMessage(), e);
                     }
                 });
             }
