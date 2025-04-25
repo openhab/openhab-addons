@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
@@ -54,12 +53,12 @@ public class DummyBridge implements Bridge {
     }
 
     @Override
-    public List<@NonNull Channel> getChannels() {
+    public List<Channel> getChannels() {
         return new ArrayList<>();
     }
 
     @Override
-    public List<@NonNull Channel> getChannelsOfGroup(String channelGroupId) {
+    public List<Channel> getChannelsOfGroup(String channelGroupId) {
         return new ArrayList<>();
     }
 
@@ -131,7 +130,7 @@ public class DummyBridge implements Bridge {
     }
 
     @Override
-    public Map<@NonNull String, @NonNull String> getProperties() {
+    public Map<String, String> getProperties() {
         return new HashMap<>();
     }
 
@@ -141,7 +140,7 @@ public class DummyBridge implements Bridge {
     }
 
     @Override
-    public void setProperties(Map<@NonNull String, @NonNull String> properties) {
+    public void setProperties(Map<String, String> properties) {
     }
 
     @Override

@@ -13,7 +13,6 @@
 package org.openhab.binding.onecta.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 

@@ -34,20 +34,14 @@ import org.slf4j.LoggerFactory;
 public class SuccessServlet extends AbstractShowPageServlet {
     private static final long serialVersionUID = 7013060161686096950L;
 
-    public static final String BRIDGE_UID_PARAMETER_NAME = "bridgeUid";
-    public static final String EMAIL_PARAMETER_NAME = "email";
-
     public static final String BRIDGE_CREATION_FAILED_PARAMETER_NAME = "bridgeCreationFailed";
     public static final String BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME = "bridgeReconfigurationFailed";
 
     private static final String ERROR_MESSAGE_TEXT_PLACEHOLDER = "<!-- ERROR MESSAGE TEXT -->";
-    private static final String BRIDGE_UID_PLACEHOLDER = "<!-- BRIDGE UID -->";
-    private static final String EMAIL_PLACEHOLDER = "<!-- EMAIL -->";
     private static final String THINGS_TEMPLATE_CODE_PLACEHOLDER = "<!-- THINGS TEMPLATE CODE -->";
 
     private static final String LOCALE_OPTIONS_PLACEHOLDER = "<!-- LOCALE OPTIONS -->";
 
-    private static final String DEFAULT_LANGUAGE = "en";
     private static final Set<String> SUPPORTED_LANGUAGES = Set.of("da", "nl", "en", "fr", "de", "it", "nb", "es");
 
     private final Logger logger = LoggerFactory.getLogger(SuccessServlet.class);
@@ -56,7 +50,6 @@ public class SuccessServlet extends AbstractShowPageServlet {
      * Creates a new {@link SuccessServlet}.
      *
      * @param resourceLoader Loader for resources.
-     * @param languageProvider Provider for the language to use as default selection.
      */
     public SuccessServlet(ResourceLoader resourceLoader) {
         super(resourceLoader);
