@@ -55,6 +55,7 @@ The FENECON binding currently only provides access to read out the values from t
 | inverter-radiator-temperature | Number:Temperature         | R          | Radiator temperature of the inverter in °C.                                 |
 | bms-pack-temperature          | Number:Temperature         | R          | Temperature in the battery management system (BMS) box in °C.               |
 | batt-tower-voltage            | Number:ElectricPotential   | R          | Battery voltage of the FENECON energy management system (FEMS) in Volt.     |
+| batt-tower-current            | Number:ElectricCurrent     | R          | Battery current of the FENECON energy management system (FEMS) in Ampere.   |
 
 ## Full Example
 
@@ -103,6 +104,7 @@ Number:Temperature         InverterRadiatorTemp           <temperature>  (GF_Uti
 Number:Temperature         BmsBoxTemp                     <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:bms-pack-temperature"}
 
 Number:ElectricPotential   BattTowerVoltage               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"] {channel="fenecon:home-device:local:batt-tower-voltage"}
+Number:ElectricCurrent     BattTowerCurrent               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"] {channel="fenecon:home-device:local:batt-tower-current"}
 ```
 
 ### demo.sitemap
