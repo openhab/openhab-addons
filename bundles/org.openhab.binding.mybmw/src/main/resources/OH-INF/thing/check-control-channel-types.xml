@@ -7,7 +7,7 @@
 		<item-type>String</item-type>
 		<label>CheckControl Description</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Channel</tag>
 		</tags>
 	</channel-type>
