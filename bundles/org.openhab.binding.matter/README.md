@@ -148,9 +148,11 @@ The controller thing must be created manually before devices can be discovered.
 |--------|--------|----------------------------------------|---------|----------|----------|
 | nodeId | number | The matter node ID for this controller | 0       | yes      | no       |
 
+Note: The controller nodeId must not be changed after a controller is created.  
+
 ### Node Thing Configuration
 
-Endpoints are discovered automatically (see [Discovery](#Discovery) for more information) and should not be added manually.
+Nodes are discovered automatically (see [Discovery](#Discovery) for more information) and should not be added manually.
 
 | Name       | Type   | Description                        | Default | Required | Advanced |
 |------------|--------|------------------------------------|---------|----------|----------|
@@ -168,12 +170,27 @@ Endpoints are discovered automatically (see [Discovery](#Discovery) for more inf
 
 ### Node Thing Actions
 
-| Name        Description                         |                                                                                                                                                                                                                                                                           |
+| Name                                            | Description                                                                                                                                                                                                                                                               |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Decommission Matter node from fabric            | This will remove the device from the Matter fabric. If the device is online and reachable this will attempt to remove the credentials from the device first before removing it from the network. Once a device is removed, this Thing will go offline and can be removed. |
 | Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller                                                                                                                                                        |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
+
+
+For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
+
+| Name                                        | Description                                             |
+|---------------------------------------------|---------------------------------------------------------|
+| Thread: Get active operational data set     | Retrieves the active operational dataset from the node  |
+| Thread: Get pending operational data set    | Retrieves the pending operational dataset from the node |
+| Thread: Update active operational data set  | Updates the active operational dataset for the node     |
+| Thread: Update pending operational data set | Updates the pending operational dataset for the node    |
+
+A Thread operational data set is a hex encoded string which contains a Thread border router's configuration.
+Using the same operational data set across multiple Thread border routers allows those routers to form a single network where Thread devices can roam from router to router.
+Some Thread border routers allow a "pending" operational dataset to be configured, this allows routers to coordinate the configuration change with current Thread devices without requiring those devices to be reconfigured (live migration).
+Note that activating a pending operational dataset is manufacturer specific can not be controlled or initiated through the Matter addon.
 
 ## Channels
 
