@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
@@ -21,6 +21,8 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerApiFactory} class is used for creating instances of
@@ -31,9 +33,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Florian Schmidt - Refactoring
  */
 @Component(service = OpenSprinklerApiFactory.class)
+@NonNullByDefault
 public class OpenSprinklerApiFactory {
-
-    private @NonNull HttpClient httpClient;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private HttpClient httpClient;
 
     @Activate
     public OpenSprinklerApiFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -44,13 +47,10 @@ public class OpenSprinklerApiFactory {
      * Factory method used to determine what version of the API is in use at the
      * OpenSprinkler API and return the proper class for control of the device.
      *
-     * @param hostname Hostname or IP address as a String of the OpenSprinkler device.
-     * @param port The port number the OpenSprinkler API is listening on.
-     * @param password Admin password for the OpenSprinkler device.
-     * @param basicUsername Used when basic auth is required
-     * @param basicPassword Used when basic auth is required
+     * @param config Interface settings
      * @return OpenSprinkler HTTP API class for control of the device.
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws GeneralApiException
      */
     public OpenSprinklerApi getHttpApi(OpenSprinklerHttpInterfaceConfig config)
             throws CommunicationApiException, GeneralApiException {
@@ -61,13 +61,19 @@ public class OpenSprinklerApiFactory {
             version = lowestSupportedApi.getFirmwareVersion();
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "Problem fetching the firmware version from the OpenSprinkler: " + exp.getMessage());
         }
-
+        logger.debug("Firmware was reported as {}", version);
         if (version >= 210 && version < 213) {
             return new OpenSprinklerHttpApiV210(this.httpClient, config);
-        } else if (version >= 213) {
+        } else if (version >= 213 && version < 217) {
             return new OpenSprinklerHttpApiV213(this.httpClient, config);
+        } else if (version >= 217 && version < 219) {
+            return new OpenSprinklerHttpApiV217(this.httpClient, config);
+        } else if (version >= 219 && version < 220) {
+            return new OpenSprinklerHttpApiV219(this.httpClient, config);
+        } else if (version >= 220) {
+            return new OpenSprinklerHttpApiV220(this.httpClient, config);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
@@ -77,7 +83,6 @@ public class OpenSprinklerApiFactory {
                         "There was a problem in the HTTP communication with the OpenSprinkler API: "
                                 + exp.getMessage());
             }
-
             return lowestSupportedApi;
         }
     }

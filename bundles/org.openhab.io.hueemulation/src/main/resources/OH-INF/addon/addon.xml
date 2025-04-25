@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="hueemulation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>misc</type>
+	<name>Hue Emulation</name>
+	<description>Exposes openHAB as Hue Devices.</description>
+	<connection>local</connection>
+
+	<service-id>org.openhab.hueemulation</service-id>
+
+	<config-description-ref uri="io:hueemulation"/>
+</addon:addon>

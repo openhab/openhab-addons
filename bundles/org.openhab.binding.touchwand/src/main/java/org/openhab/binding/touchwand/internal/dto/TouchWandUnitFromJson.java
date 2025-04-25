@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TouchWandUnitFromJson {
 
-    private final static Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
 
     public TouchWandUnitFromJson() {
     }
@@ -44,10 +44,6 @@ public class TouchWandUnitFromJson {
         TouchWandUnitData touchWandUnit;
         String type = jsonUnit.get("type").getAsString();
         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
-            type = TYPE_UNKNOWN;
-        }
-
-        if (!jsonUnit.has("currStatus") || (jsonUnit.get("currStatus") == null)) {
             type = TYPE_UNKNOWN;
         }
 
@@ -70,6 +66,12 @@ public class TouchWandUnitFromJson {
                         .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
                 break;
+            case TYPE_BSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandBSensorUnitData.class);
+                break;
+            case TYPE_THERMOSTAT:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandThermostatUnitData.class);
+                break;
             case TYPE_UNKNOWN:
                 touchWandUnit = new TouchWandUnknownTypeUnitData();
                 break;
@@ -85,14 +87,13 @@ public class TouchWandUnitFromJson {
     }
 
     public static TouchWandUnitData parseResponse(String JsonUnit) {
-        final JsonParser jsonParser = new JsonParser();
         TouchWandUnitData myTouchWandUnitData;
         JsonObject unitObj;
         try {
-            unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
+            unitObj = JsonParser.parseString(JsonUnit).getAsJsonObject();
             myTouchWandUnitData = parseResponse(unitObj);
         } catch (JsonParseException | IllegalStateException e) {
-            logger.warn("Could not parse response {}", JsonUnit);
+            LOGGER.warn("Could not parse response {}", JsonUnit);
             myTouchWandUnitData = new TouchWandUnknownTypeUnitData(); // Return unknown type
         }
         return myTouchWandUnitData;

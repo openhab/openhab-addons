@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
@@ -40,25 +41,34 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private static final String STORAGE_PRIVATE_KEY = "privateKey";
     private static final String STORAGE_USER_PREFIX = "user_";
 
-    private final Storage<String> storage;
+    private final Storage<Object> storage;
     private String mac;
     private BigInteger salt;
     private byte[] privateKey;
     private String pin;
     private String setupId;
+    private boolean blockUserDeletion;
 
-    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId)
+    public HomekitAuthInfoImpl(Storage<Object> storage, String pin, String setupId, boolean blockUserDeletion)
             throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
         this.setupId = setupId;
+        this.blockUserDeletion = blockUserDeletion;
         initializeStorage();
     }
 
+    public void setBlockUserDeletion(boolean blockUserDeletion) {
+        this.blockUserDeletion = blockUserDeletion;
+    }
+
     @Override
-    public void createUser(String username, byte[] publicKey) {
-        logger.trace("Create user {}", username);
-        storage.put(createUserKey(username), Base64.getEncoder().encodeToString(publicKey));
+    public void createUser(String username, byte[] publicKey, boolean isAdmin) {
+        logger.trace("create user {}", username);
+        final String userKey = createUserKey(username);
+        final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey);
+        storage.put(userKey, encodedPublicKey);
+        logger.trace("stored user key {} with value {}", userKey, encodedPublicKey);
     }
 
     @Override
@@ -100,7 +110,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public byte[] getUserPublicKey(String username) {
-        final String encodedKey = storage.get(createUserKey(username));
+        final String encodedKey = (String) storage.get(createUserKey(username));
         if (encodedKey != null) {
             return Base64.getDecoder().decode(encodedKey);
         } else {
@@ -110,8 +120,12 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public void removeUser(String username) {
-        logger.trace("Remove user {}", username);
-        storage.remove(createUserKey(username));
+        logger.trace("remove user {}", username);
+        if (!this.blockUserDeletion) {
+            storage.remove(createUserKey(username));
+        } else {
+            logger.debug("deletion of the user was blocked by binding settings");
+        }
     }
 
     @Override
@@ -120,12 +134,38 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         return keys.stream().anyMatch(this::isUserKey);
     }
 
+    @Override
+    public Collection<String> listUsers() {
+        Collection<String> keys = storage.getKeys();
+        // don't forget to strip user_ prefix
+        return keys.stream().filter(this::isUserKey).map(u -> u.substring(5)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean userIsAdmin(String username) {
+        return true;
+    }
+
     public void clear() {
-        logger.trace("Clear all users");
-        for (String key : new HashSet<>(storage.getKeys())) {
-            if (isUserKey(key)) {
-                storage.remove(key);
+        if (!this.blockUserDeletion) {
+            for (String key : new HashSet<>(storage.getKeys())) {
+                if (isUserKey(key)) {
+                    storage.remove(key);
+                }
             }
+            mac = HomekitServer.generateMac();
+            storage.put(STORAGE_MAC, mac);
+            storage.remove(STORAGE_SALT);
+            storage.remove(STORAGE_PRIVATE_KEY);
+            try {
+                initializeStorage();
+                logger.info("All users cleared from HomeKit bridge; re-pairing required.");
+            } catch (InvalidAlgorithmParameterException e) {
+                logger.warn(
+                        "Failed generating new encryption settings for HomeKit bridge; re-pairing required, but will likely fail.");
+            }
+        } else {
+            logger.warn("Deletion of HomeKit users was blocked by addon settings.");
         }
     }
 
@@ -138,12 +178,12 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
-        mac = storage.get(STORAGE_MAC);
+        mac = (String) storage.get(STORAGE_MAC);
         final @Nullable Object saltConfig = storage.get(STORAGE_SALT);
         final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
         if (mac == null) {
             logger.warn(
-                    "Could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
+                    "could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
                     storage.getClass().getName());
             mac = HomekitServer.generateMac();
             storage.put(STORAGE_MAC, mac);

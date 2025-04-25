@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.openhab.binding.pioneeravr.internal.protocol.ParameterizedCommand.ParameterizedCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.SimpleCommand.SimpleCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
@@ -48,11 +49,11 @@ import org.slf4j.LoggerFactory;
  *
  * A class that wraps the communication to Pioneer AVR devices by using Input/Ouptut streams.
  *
- * see {@link http ://www.pioneerelectronics.com/StaticFiles/PUSA/Files/Home%20Custom %20Install/VSX-1120-K-RS232.PDF}
- * for the protocol specs
- *
  * Based on the Onkyo binding by Pauli Anttila and others.
  *
+ * @see <a href="http://www.pioneerelectronics.com/StaticFiles/PUSA/Files/Home%20Custom%20Install/VSX-1120-K-RS232.PDF">
+ *      http://www.pioneerelectronics.com/StaticFiles/PUSA/Files/Home%20Custom%20Install/VSX-1120-K-RS232.PDF</a>
+ *      for the protocol specs
  * @author Antoine Besnard - Initial contribution
  * @author Rainer Ostendorf - Initial contribution
  * @author Leroy Foerster - Listening Mode, Playing Listening Mode
@@ -196,6 +197,11 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
+    public boolean sendMCACCMemoryQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MCACC_MEMORY_QUERY));
+    }
+
+    @Override
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
@@ -235,14 +241,14 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN, zone);
             } else if (command == IncreaseDecreaseType.INCREASE) {
                 commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP, zone);
-            } else if (command instanceof PercentType) {
+            } else if (command instanceof PercentType percentCommand) {
                 String ipControlVolume = VolumeConverter
-                        .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue(), zone);
+                        .convertFromPercentToIpControlVolume(percentCommand.doubleValue(), zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
-            } else if (command instanceof DecimalType) {
-                String ipControlVolume = VolumeConverter
-                        .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue(), zone);
+            } else if (command instanceof DecimalType decimalCommand) {
+                String ipControlVolume = VolumeConverter.convertFromDbToIpControlVolume(decimalCommand.doubleValue(),
+                        zone);
                 commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
                         .setParameter(ipControlVolume);
             } else {
@@ -262,8 +268,8 @@ public abstract class StreamAvrConnection implements AvrConnection {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC, zone);
         } else if (command == IncreaseDecreaseType.DECREASE) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE, zone);
-        } else if (command instanceof StringType) {
-            String inputSourceValue = ((StringType) command).toString();
+        } else if (command instanceof StringType stringCommand) {
+            String inputSourceValue = stringCommand.toString();
             commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET, zone)
                     .setParameter(inputSourceValue);
         } else {
@@ -280,8 +286,8 @@ public abstract class StreamAvrConnection implements AvrConnection {
         if (command == IncreaseDecreaseType.INCREASE) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_CHANGE_CYCLIC,
                     zone);
-        } else if (command instanceof StringType) {
-            String listeningModeValue = ((StringType) command).toString();
+        } else if (command instanceof StringType stringCommand) {
+            String listeningModeValue = stringCommand.toString();
             commandToSend = RequestResponseFactory
                     .getIpControlCommand(ParameterizedCommandType.LISTENING_MODE_SET, zone)
                     .setParameter(listeningModeValue);
@@ -300,6 +306,23 @@ public abstract class StreamAvrConnection implements AvrConnection {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON, zone);
         } else if (command == OnOffType.OFF) {
             commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF, zone);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
+
+        return sendCommand(commandToSend);
+    }
+
+    @Override
+    public boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
+
+        if (command == IncreaseDecreaseType.INCREASE) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MCACC_MEMORY_CHANGE_CYCLIC);
+        } else if (command instanceof StringType stringCommand) {
+            String MCACCMemoryValue = stringCommand.toString();
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.MCACC_MEMORY_SET)
+                    .setParameter(MCACCMemoryValue);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
         }
@@ -329,11 +352,10 @@ public abstract class StreamAvrConnection implements AvrConnection {
          * @throws IOException
          */
         public IpControlInputStreamReader(InputStream inputStream) {
+            super(String.format("OH-binding-%s-%s", PioneerAvrBindingConstants.BINDING_ID, getConnectionName()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             this.stopLatch = new CountDownLatch(1);
-
             this.setDaemon(true);
-            this.setName("IpControlInputStreamReader-" + getConnectionName());
         }
 
         @Override

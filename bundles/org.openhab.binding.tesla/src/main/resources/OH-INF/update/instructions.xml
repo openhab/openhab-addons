@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="tesla:model3">
+		<instruction-set targetVersion="1">
+			<add-channel id="destinationname">
+				<type>tesla:destinationname</type>
+			</add-channel>
+			<add-channel id="destinationlocation">
+				<type>tesla:destinationlocation</type>
+			</add-channel>
+			<add-channel id="distancetoarrival">
+				<type>tesla:distancetoarrival</type>
+			</add-channel>
+			<add-channel id="minutestoarrival">
+				<type>tesla:minutestoarrival</type>
+			</add-channel>
+			<add-channel id="trafficminutesdelay">
+				<type>tesla:trafficminutesdelay</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="softwareupdateavailable" typeId="softwareupdateavailable">
+				<type>tesla:softwareupdateavailable</type>
+			</add-channel>
+			<add-channel id="softwareupdatestatus" typeId="softwareupdatestatus">
+				<type>tesla:softwareupdatestatus</type>
+			</add-channel>
+			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
+				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tesla:models">
+		<instruction-set targetVersion="1">
+			<add-channel id="destinationname">
+				<type>tesla:destinationname</type>
+			</add-channel>
+			<add-channel id="destinationlocation">
+				<type>tesla:destinationlocation</type>
+			</add-channel>
+			<add-channel id="distancetoarrival">
+				<type>tesla:distancetoarrival</type>
+			</add-channel>
+			<add-channel id="minutestoarrival">
+				<type>tesla:minutestoarrival</type>
+			</add-channel>
+			<add-channel id="trafficminutesdelay">
+				<type>tesla:trafficminutesdelay</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="softwareupdateavailable" typeId="softwareupdateavailable">
+				<type>tesla:softwareupdateavailable</type>
+			</add-channel>
+			<add-channel id="softwareupdatestatus" typeId="softwareupdatestatus">
+				<type>tesla:softwareupdatestatus</type>
+			</add-channel>
+			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
+				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tesla:modelx">
+		<instruction-set targetVersion="1">
+			<add-channel id="destinationname">
+				<type>tesla:destinationname</type>
+			</add-channel>
+			<add-channel id="destinationlocation">
+				<type>tesla:destinationlocation</type>
+			</add-channel>
+			<add-channel id="distancetoarrival">
+				<type>tesla:distancetoarrival</type>
+			</add-channel>
+			<add-channel id="minutestoarrival">
+				<type>tesla:minutestoarrival</type>
+			</add-channel>
+			<add-channel id="trafficminutesdelay">
+				<type>tesla:trafficminutesdelay</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="softwareupdateavailable" typeId="softwareupdateavailable">
+				<type>tesla:softwareupdateavailable</type>
+			</add-channel>
+			<add-channel id="softwareupdatestatus" typeId="softwareupdatestatus">
+				<type>tesla:softwareupdatestatus</type>
+			</add-channel>
+			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
+				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tesla:modely">
+		<instruction-set targetVersion="1">
+			<add-channel id="destinationname">
+				<type>tesla:destinationname</type>
+			</add-channel>
+			<add-channel id="destinationlocation">
+				<type>tesla:destinationlocation</type>
+			</add-channel>
+			<add-channel id="distancetoarrival">
+				<type>tesla:distancetoarrival</type>
+			</add-channel>
+			<add-channel id="minutestoarrival">
+				<type>tesla:minutestoarrival</type>
+			</add-channel>
+			<add-channel id="trafficminutesdelay">
+				<type>tesla:trafficminutesdelay</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="softwareupdateavailable" typeId="softwareupdateavailable">
+				<type>tesla:softwareupdateavailable</type>
+			</add-channel>
+			<add-channel id="softwareupdatestatus" typeId="softwareupdatestatus">
+				<type>tesla:softwareupdatestatus</type>
+			</add-channel>
+			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
+				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,14 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,12 +30,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlDiscover;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link NikoHomeControlBridgeHandler} is an abstract class representing a handler to all different interfaces to the
  * Niko Home Control System. {@link NikoHomeControlBridgeHandler1} or {@link NikoHomeControlBridgeHandler2} should be
- * used for the respective
- * version of Niko Home Control.
+ * used for the respective version of Niko Home Control.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -49,16 +56,19 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
-    protected @NonNullByDefault({}) NikoHomeControlBridgeConfig config;
-
     protected @Nullable NikoHomeControlCommunication nhcComm;
 
     private volatile @Nullable ScheduledFuture<?> refreshTimer;
 
-    protected volatile @Nullable NikoHomeControlDiscoveryService nhcDiscovery;
+    protected final NetworkAddressService networkAddressService;
 
-    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge) {
+    protected final TimeZoneProvider timeZoneProvider;
+
+    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
+            TimeZoneProvider timeZoneProvider) {
         super(nikoHomeControlBridge);
+        this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -77,8 +87,14 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.submit(() -> {
             comm.startCommunication();
+
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
+            setupRefreshTimer(refreshInterval);
+
             if (!comm.communicationActive()) {
                 bridgeOffline();
                 return;
@@ -87,23 +103,13 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             updateProperties();
 
             updateStatus(ThingStatus.ONLINE);
-
-            int refreshInterval = config.refresh;
-            setupRefreshTimer(refreshInterval);
-
-            NikoHomeControlDiscoveryService discovery = nhcDiscovery;
-            if (discovery != null) {
-                discovery.discoverDevices();
-            } else {
-                logger.debug("Niko Home Control: cannot discover devices, discovery service not started");
-            }
         });
     }
 
     /**
      * Schedule future communication refresh.
      *
-     * @param interval_config Time before refresh in minutes.
+     * @param refreshInterval Time before refresh in minutes.
      */
     private void setupRefreshTimer(int refreshInterval) {
         ScheduledFuture<?> timer = refreshTimer;
@@ -117,9 +123,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         }
 
         // This timer will restart the bridge connection periodically
-        logger.debug("Niko Home Control: restart bridge connection every {} min", refreshInterval);
+        logger.debug("restart bridge connection every {} min", refreshInterval);
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            logger.debug("Niko Home Control: restart communication at scheduled time");
+            logger.debug("restart communication at scheduled time");
 
             NikoHomeControlCommunication comm = nhcComm;
             if (comm != null) {
@@ -141,7 +147,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      */
     protected void bridgeOffline() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Niko Home Control: error starting bridge connection");
+                "@text/offline.communication-error");
     }
 
     /**
@@ -153,23 +159,17 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     }
 
     @Override
-    public void controllerOffline() {
-        bridgeOffline();
+    public void controllerOffline(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
     }
 
     @Override
     public void controllerOnline() {
         bridgeOnline();
-
-        int refreshInterval = config.refresh;
-        if (refreshTimer == null) {
-            setupRefreshTimer(refreshInterval);
-        }
     }
 
     /**
-     * Update bridge properties with properties returned from Niko Home Control Controller, so they can be made visible
-     * in PaperUI.
+     * Update bridge properties with properties returned from Niko Home Control Controller.
      */
     protected abstract void updateProperties();
 
@@ -183,9 +183,11 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
         NikoHomeControlCommunication comm = nhcComm;
         if (comm != null) {
+            comm.stopAllMeters();
             comm.stopCommunication();
         }
         nhcComm = null;
+        super.dispose();
     }
 
     @Override
@@ -198,12 +200,10 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         }
 
         Configuration configuration = editConfiguration();
-        for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
-            configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
+        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
         }
         updateConfiguration(configuration);
-
-        setConfig();
 
         scheduler.submit(() -> {
             comm.restartCommunication();
@@ -216,30 +216,21 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             updateStatus(ThingStatus.ONLINE);
 
-            int refreshInterval = config.refresh;
+            int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
             setupRefreshTimer(refreshInterval);
         });
     }
 
-    /**
-     * Set discovery service handler to be able to start discovery after bridge initialization.
-     *
-     * @param nhcDiscovery
-     */
-    public void setNhcDiscovery(@Nullable NikoHomeControlDiscoveryService nhcDiscovery) {
-        this.nhcDiscovery = nhcDiscovery;
-    }
-
     @Override
     public void alarmEvent(String alarmText) {
-        logger.debug("Niko Home Control: triggering alarm channel with {}", alarmText);
+        logger.debug("triggering alarm channel with {}", alarmText);
         triggerChannel(CHANNEL_ALARM, alarmText);
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void noticeEvent(String alarmText) {
-        logger.debug("Niko Home Control: triggering notice channel with {}", alarmText);
+        logger.debug("triggering notice channel with {}", alarmText);
         triggerChannel(CHANNEL_NOTICE, alarmText);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -261,20 +252,54 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public @Nullable InetAddress getAddr() {
         InetAddress addr = null;
+        NikoHomeControlBridgeConfig config = getConfig().as(NikoHomeControlBridgeConfig.class);
         try {
             addr = InetAddress.getByName(config.addr);
         } catch (UnknownHostException e) {
-            logger.debug("Niko Home Control: Cannot resolve hostname {} to IP adress", config.addr);
+            logger.debug("Cannot resolve hostname {} to IP adress", config.addr);
         }
         return addr;
     }
 
     @Override
     public int getPort() {
-        return config.port;
+        return getConfig().as(NikoHomeControlBridgeConfig.class).port;
     }
 
-    protected synchronized void setConfig() {
-        config = getConfig().as(NikoHomeControlBridgeConfig.class);
+    @Override
+    public ZoneId getTimeZone() {
+        return timeZoneProvider.getTimeZone();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(NikoHomeControlDiscoveryService.class);
+    }
+
+    public String getControllerId() {
+        String id = thing.getProperties().get(CONFIG_CONTROLLER_ID);
+        if (id != null) {
+            return id;
+        }
+        try {
+            id = "";
+            String broadcastAddr = networkAddressService.getConfiguredBroadcastAddress();
+            if (broadcastAddr != null) {
+                NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
+                InetAddress address = getAddr();
+                if (address != null) {
+                    id = nhcDiscover.getBridgeId(address);
+                    id = id != null ? id : "";
+                }
+            }
+        } catch (IOException e) {
+            id = "";
+        }
+        if (!id.isEmpty()) {
+            thing.setProperty(CONFIG_CONTROLLER_ID, id);
+        } else {
+            logger.warn("failure setting controller ID property");
+        }
+        return id;
     }
 }

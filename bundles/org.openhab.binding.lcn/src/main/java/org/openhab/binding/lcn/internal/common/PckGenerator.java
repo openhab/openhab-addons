@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,8 @@ public final class PckGenerator {
     /**
      * Generates a keep-alive.
      * LCN-PCHK will close the connection if it does not receive any commands from
-     * an open {@link Connection} for a specific period (10 minutes by default).
+     * an open {@link org.openhab.binding.lcn.internal.connection.Connection} for a specific period
+     * (10 minutes by default).
      *
      * @param counter the current ping's id (optional, but "best practice"). Should start with 1
      * @return the PCK command as text
@@ -137,6 +138,21 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command for setting the tunable white mode.
+     *
+     * @param mode 0..2
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String setTunableWhiteMode(int mode) throws LcnException {
+        if (mode < 0 || mode > 2) {
+            throw new LcnException();
+        }
+
+        return String.format("AW%d", mode);
+    }
+
+    /**
      * Generates a dim command for all output-ports.
      *
      * Attention: This command is supported since module firmware version 180501 AND LCN-PCHK 2.61
@@ -162,7 +178,7 @@ public final class PckGenerator {
      * Generates a control command for switching all outputs ON or OFF with a fixed ramp of 0.5s.
      *
      * @param percent 0..100
-     * @returnthe PCK command (without address header) as text
+     * @return the PCK command (without address header) as text
      */
     public static String controlAllOutputs(double percent) {
         return String.format("AH%03d", Math.round(percent));
@@ -333,6 +349,42 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command to control the position of roller shutters on relays.
+     *
+     * @param motorNumber of the roller shutter (0-based)
+     * @param percent of the entire roller shutter height
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String controlShutterPosition(int motorNumber, int percent) throws LcnException {
+        return controlShutter(motorNumber, percent, "JH");
+    }
+
+    /**
+     * Generates a command to control the slat angle of roller shutters on relays.
+     *
+     * @param motorNumber of the roller shutter (0-based)
+     * @param percent of the slat angle
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String controlShutterSlatAngle(int motorNumber, int percent) throws LcnException {
+        return controlShutter(motorNumber, percent, "JW");
+    }
+
+    private static String controlShutter(int motorNumber, int percent, String command) throws LcnException {
+        if (motorNumber < 0 || motorNumber >= 4) {
+            throw new LcnException("Roller shutter (relay) motor number out of range: " + motorNumber);
+        }
+
+        if (percent < 0 || percent > 100) {
+            throw new LcnException("Roller shutter (relay) position/angle out of range (percent): " + percent);
+        }
+
+        return String.format("%s%03d%03d", command, percent, 1 << motorNumber);
+    }
+
+    /**
      * Generates a binary-sensors status request.
      *
      * @return the PCK command (without address header) as text
@@ -347,7 +399,6 @@ public final class PckGenerator {
      * @param number regulator number 0..1
      * @param value the absolute value to set
      * @return the PCK command (without address header) as text
-     * @throws LcnException
      */
     public static String setSetpointAbsolute(int number, int value) {
         int internalValue = value;
@@ -366,13 +417,36 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command to change the regulator mode.
+     *
+     * @param number regulator number 0..1
+     * @param cooling true=cooling, false=heating
+     * @return the PCK command (without address header) as text
+     * @throws LcnException
+     */
+    public static String setRVarMode(int number, boolean cooling) throws LcnException {
+        String regulator;
+        switch (number) {
+            case 0:
+                regulator = "A";
+                break;
+            case 1:
+                regulator = "B";
+                break;
+            default:
+                throw new LcnException();
+        }
+
+        return "RE" + regulator + "T" + (cooling ? "C" : "H");
+    }
+
+    /**
      * Generates a command to change the value of a variable.
      *
      * @param variable the target variable to change
      * @param type the reference-point
      * @param value the native LCN value to add/subtract (can be negative)
      * @return the PCK command (without address header) as text
-     * @throws LcnException if command is not supported
      */
     public static String setVariableRelative(Variable variable, LcnDefs.RelVarRef type, int value) {
         if (variable.getNumber() == 0) {
@@ -438,13 +512,13 @@ public final class PckGenerator {
                 case UNKNOWN:
                     throw new LcnException("Variable unknown");
                 case VARIABLE:
-                    return String.format("MWT%03d", id + 1);
+                    return "MWT" + (id + 1);
                 case REGULATOR:
-                    return String.format("MWS%03d", id + 1);
+                    return "MWS" + (id + 1);
                 case THRESHOLD:
-                    return String.format("SE%03d", id + 1); // Whole register
+                    return "SE" + (id + 1); // Whole register
                 case S0INPUT:
-                    return String.format("MWC%03d", id + 1);
+                    return "MWC" + (id + 1);
             }
             throw new LcnException("Unsupported variable type: " + variable);
         } else {
@@ -749,6 +823,42 @@ public final class PckGenerator {
         data.setCharAt(relayNumber - 1, '1');
         command.append(data);
         return command.toString();
+    }
+
+    /**
+     * Generates a command to set the beeping sound volume.
+     *
+     * @param volume the sound volume
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String setBeepVolume(double volume) throws LcnException {
+        if (volume < 0 || volume > 100) {
+            throw new LcnException();
+        }
+
+        return String.format("PIV%03d", Math.round(volume));
+    }
+
+    /**
+     * Generates a command to let the beeper connected to the LCN module beep.
+     *
+     * @param tonality N=normal, S=special, 1-7 tonalities 1-7.
+     * @param count count number of beeps.
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String beep(String tonality, int count) throws LcnException {
+        LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
+                .filter(t -> t.equals(tonality)) //
+                .findAny() //
+                .orElseThrow(LcnException::new);
+
+        if (count < 0) {
+            throw new LcnException();
+        }
+
+        return String.format("PI%s%d", tonality, Math.min(count, 50));
     }
 
     /**

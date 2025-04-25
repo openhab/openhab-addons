@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -55,10 +57,9 @@ public class PropertyUtils {
         Object value = getPropertyValue(channelUID, instance);
         if (value == null) {
             return UnDefType.UNDEF;
-        } else if (value instanceof State) {
-            return (State) value;
-        } else if (value instanceof Calendar) {
-            Calendar cal = (Calendar) value;
+        } else if (value instanceof State state) {
+            return state;
+        } else if (value instanceof Calendar cal) {
             GregorianCalendar gregorianCal = (GregorianCalendar) DateTimeUtils.applyConfig(cal, config);
             cal.setTimeZone(TimeZone.getTimeZone(zoneId));
             ZonedDateTime zoned = gregorianCal.toZonedDateTime().withFixedOffsetZone();
@@ -77,23 +78,22 @@ public class PropertyUtils {
      * Returns the property value from the object instance, nested properties are possible. If the propertyName is for
      * example rise.start, the methods getRise().getStart() are called.
      */
-    public static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
-        String[] properties = channelUID.getId().split("#");
-        return getPropertyValue(instance, properties, 0);
+    private static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
+        ArrayList<String> properties = new ArrayList<>(List.of(channelUID.getId().split("#")));
+        return getPropertyValue(instance, properties);
     }
 
     /**
      * Iterates through the nested properties and returns the getter value.
      */
     @SuppressWarnings("all")
-    private static @Nullable Object getPropertyValue(Object instance, String[] properties, int nestedIndex)
-            throws Exception {
-        String propertyName = properties[nestedIndex];
+    private static @Nullable Object getPropertyValue(Object instance, List<String> properties) throws Exception {
+        String propertyName = properties.remove(0);
         Method m = instance.getClass().getMethod(toGetterString(propertyName), null);
         Object result = m.invoke(instance, (Object[]) null);
-        if (nestedIndex + 1 < properties.length) {
+        if (!properties.isEmpty()) {
             Objects.requireNonNull(result);
-            return getPropertyValue(result, properties, nestedIndex + 1);
+            return getPropertyValue(result, properties);
         }
         return result;
     }

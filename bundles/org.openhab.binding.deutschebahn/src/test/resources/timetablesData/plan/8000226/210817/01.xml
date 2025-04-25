@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <s id="-1781439465744467581-2108170124-2">
+    <tl f="D" t="p" o="W3" c="WFB" n="95769"/>
+    <ar pt="2108170144" pp="14" l="RE60" ppth="Hannover Hbf"/>
+    <dp pt="2108170145" pp="14" l="RE60" ppth="H&#228;melerwald|V&#246;hrum|Peine|Vechelde|Braunschweig Hbf"/>
+  </s>
+  <s id="-5193176993424262202-2108170047-6">
+    <tl f="S" t="p" o="800244" c="S" n="99098"/>
+    <ar pt="2108170110" pp="13" l="7" ppth="Hannover Hbf|Hannover-Kleefeld|Hannover Karl-Wiechert-Allee|Hannover Anderten-Misburg|Ahlten"/>
+  </s>
+  <s id="5996529048494327209-2108170116-1">
+    <tl t="p" o="R0" c="ENO" n="83541"/>
+    <dp pt="2108170116" pp="3" l="RE30" ppth="Immensen-Arpke|Dollbergen|Dedenhausen|Meinersen|Leiferde(b Gifhorn)|Gifhorn|Calberlah|Fallersleben|Wolfsburg Hbf"/>
+  </s>
+</timetable>

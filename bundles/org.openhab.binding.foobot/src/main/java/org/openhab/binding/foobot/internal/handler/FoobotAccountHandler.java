@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,14 @@ package org.openhab.binding.foobot.internal.handler;
 import static org.openhab.binding.foobot.internal.FoobotBindingConstants.*;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
@@ -77,7 +79,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(FoobotAccountDiscoveryService.class);
+        return Set.of(FoobotAccountDiscoveryService.class);
     }
 
     public List<FoobotDevice> getDeviceList() throws FoobotApiException {
@@ -93,10 +95,12 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
         final FoobotAccountConfiguration accountConfig = getConfigAs(FoobotAccountConfiguration.class);
         final List<String> missingParams = new ArrayList<>();
 
-        if (StringUtils.trimToNull(accountConfig.apiKey) == null) {
+        String apiKey = accountConfig.apiKey;
+        if (apiKey.isBlank()) {
             missingParams.add("'apikey'");
         }
-        if (StringUtils.trimToNull(accountConfig.username) == null) {
+        String username = accountConfig.username;
+        if (username.isBlank()) {
             missingParams.add("'username'");
         }
 
@@ -104,13 +108,13 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
             final boolean oneParam = missingParams.size() == 1;
             final String errorMsg = String.format(
                     "Parameter%s [%s] %s mandatory and must be configured and not be empty", oneParam ? "" : "s",
-                    StringUtils.join(missingParams, ", "), oneParam ? "is" : "are");
+                    String.join(", ", missingParams), oneParam ? "is" : "are");
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             return;
         }
-        username = accountConfig.username;
-        connector.setApiKey(accountConfig.apiKey);
+        this.username = username;
+        connector.setApiKey(apiKey);
         refreshInterval = accountConfig.refreshInterval;
         if (this.refreshInterval < MINIMUM_REFRESH_PERIOD_MINUTES) {
             logger.warn(
@@ -118,8 +122,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                     accountConfig.refreshInterval, MINIMUM_REFRESH_PERIOD_MINUTES, DEFAULT_REFRESH_PERIOD_MINUTES);
             refreshInterval = DEFAULT_REFRESH_PERIOD_MINUTES;
         }
-        logger.debug("Foobot Account bridge starting... user: {}, refreshInterval: {}", accountConfig.username,
-                refreshInterval);
+        logger.debug("Foobot Account bridge starting... user: {}, refreshInterval: {}", username, refreshInterval);
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Wait to get associated devices");
 
@@ -189,12 +192,12 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FoobotDeviceHandler) {
-            final String uuid = ((FoobotDeviceHandler) childHandler).getUuid();
+        if (childHandler instanceof FoobotDeviceHandler handler) {
+            final String uuid = handler.getUuid();
 
             try {
                 getDeviceList().stream().filter(d -> d.getUuid().equals(uuid)).findAny()
-                        .ifPresent(fd -> ((FoobotDeviceHandler) childHandler).handleUpdateProperties(fd));
+                        .ifPresent(fd -> handler.handleUpdateProperties(fd));
             } catch (FoobotApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }

@@ -14,6 +14,7 @@
 
 		<label>RFXCOM RFXSensor</label>
 		<description>A RFXSensor device.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -25,7 +26,7 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id. Example 8</description>
 			</parameter>
 		</config-description>

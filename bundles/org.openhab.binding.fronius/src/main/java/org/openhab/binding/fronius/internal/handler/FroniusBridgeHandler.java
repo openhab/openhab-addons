@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,27 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.io.IOException;
+import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
+
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +43,16 @@ import org.slf4j.LoggerFactory;
  * @author Gerrit Beine - Initial contribution
  * @author Thomas Rokohl - Refactoring to merge the concepts.
  *         Check if host is reachable.
+ * @author Jimmy Tanagra - Refactor the child services registration
+ *         Refactor host online check
  */
+@NonNullByDefault
 public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private static final int DEFAULT_REFRESH_PERIOD = 10;
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     public FroniusBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -52,27 +62,26 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public void registerService(final FroniusBaseThingHandler service) {
-        this.services.add(service);
-    }
-
     @Override
     public void initialize() {
         final FroniusBridgeConfiguration config = getConfigAs(FroniusBridgeConfiguration.class);
 
         boolean validConfig = true;
         String errorMsg = null;
-        if (StringUtils.trimToNull(config.hostname) == null) {
+
+        String hostname = config.hostname;
+        if (hostname == null || hostname.isBlank()) {
             errorMsg = "Parameter 'hostname' is mandatory and must be configured";
             validConfig = false;
         }
+
         if (config.refreshInterval != null && config.refreshInterval <= 0) {
             errorMsg = "Parameter 'refresh' must be at least 1 second";
             validConfig = false;
         }
 
         if (validConfig) {
-            startAutomaticRefresh(config);
+            startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -80,40 +89,73 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            localRefreshJob.cancel(true);
+            refreshJob = null;
         }
-        services.clear();
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+
+        for (FroniusBaseThingHandler service : services) {
+            service.handleBridgeConfigurationUpdate(configurationParameters);
+        }
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FroniusBaseThingHandler handler) {
+            this.services.add(handler);
+            restartAutomaticRefresh();
+        } else {
+            logger.debug("Child handler {} not added because it is not an instance of FroniusBaseThingHandler",
+                    childThing.getUID().getId());
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        this.services.remove((FroniusBaseThingHandler) childHandler);
+    }
+
+    private void restartAutomaticRefresh() {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) { // refreshJob should be null if the config isn't valid
+            localRefreshJob.cancel(false);
+            startAutomaticRefresh();
+        }
     }
 
     /**
      * Start the job refreshing the data
      */
-    private void startAutomaticRefresh(FroniusBridgeConfiguration config) {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+    private void startAutomaticRefresh() {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
+            final FroniusBridgeConfiguration config = getConfigAs(FroniusBridgeConfiguration.class);
             Runnable runnable = () -> {
-                boolean online = false;
                 try {
-                    if (HttpUtil.executeUrl("GET", "http://" + config.hostname, 5000) != null) {
-                        online = true;
+                    checkBridgeOnline(config);
+                    if (getThing().getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
-                } catch (IOException e) {
-                    logger.debug("Connection Error: {}", e.getMessage());
-                }
-
-                if (!online) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "hostname or ip is not reachable");
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
                     for (FroniusBaseThingHandler service : services) {
                         service.refresh(config);
                     }
+                } catch (FroniusCommunicationException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 }
             };
 
             int delay = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, delay, TimeUnit.SECONDS);
         }
+    }
+
+    private void checkBridgeOnline(FroniusBridgeConfiguration config) throws FroniusCommunicationException {
+        FroniusHttpUtil.executeUrl(HttpMethod.GET, "http://" + config.hostname, API_TIMEOUT);
     }
 }

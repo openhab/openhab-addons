@@ -8,6 +8,7 @@
 		<label>Milight Bridge (first Edition)</label>
 		<description>A Milight/Easybulb bridge. This bridge cannot handle newer light bulbs (2016+) of the aforementioned
 			manufacturers.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="host" type="text">
@@ -15,7 +16,7 @@
 				<description>You either need an IP/Hostname or the Bridge ID.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="repeat" type="integer" required="false" min="0" max="5">
+			<parameter name="repeat" type="integer" required="false" min="1" max="5">
 				<label>Repeat Commands</label>
 				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out
 					of bridge radio range and it sometimes helps to send commands multiple times.
@@ -70,6 +71,7 @@
 		<description>RGB bulb with white channel. No saturation control. If the set saturation is below a threshold of 50%,
 			the bulb turns into white mode.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lednightmode" typeId="lednightmode"/>
@@ -97,6 +99,7 @@
 		<label>Cold/warm White Bulb (first Edition)</label>
 		<description>White bulb for the older bridge (up to 2016)</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lednightmode" typeId="lednightmode"/>

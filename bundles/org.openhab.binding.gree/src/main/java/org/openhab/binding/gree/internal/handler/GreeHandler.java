@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.DatagramSocket;
 import java.time.Instant;
 import java.util.List;
@@ -83,7 +84,7 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GreeConfiguration.class);
-        if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
+        if (config.ipAddress.isBlank() || (config.refreshInterval < 0)) {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
@@ -102,17 +103,17 @@ public class GreeHandler extends BaseThingHandler {
     private void initializeThing() {
         String message = "";
         try {
-            if (!clientSocket.isPresent()) {
+            if (clientSocket.isEmpty()) {
                 clientSocket = Optional.of(new DatagramSocket());
                 clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
             }
             // Find the GREE device
-            deviceFinder.scan(clientSocket.get(), config.ipAddress, false);
+            deviceFinder.scan(clientSocket.get(), config.ipAddress, false, config.encryptionType);
             GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
                 device = newDevice;
-                device.bindWithDevice(clientSocket.get());
+                device.bindWithDevice(clientSocket.get(), config.encryptionType);
                 if (device.getIsBound()) {
                     updateStatus(ThingStatus.ONLINE);
                     return;
@@ -137,7 +138,7 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // The thing is updated by the scheduled automatic refresh so do nothing here.
+            initializeThing();
         } else {
             logger.debug("{}: Issue command {} to channe {}", thingId, command, channelUID.getIdWithoutGroup());
             String channelId = channelUID.getIdWithoutGroup();
@@ -223,9 +224,9 @@ public class GreeHandler extends BaseThingHandler {
         int mode = -1;
         String modeStr = "";
         boolean isNumber = false;
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType decimalCommand) {
             // backward compatibility when channel was Number
-            mode = ((DecimalType) command).intValue();
+            mode = decimalCommand.intValue();
         } else if (command instanceof OnOffType) {
             // Switch
             logger.debug("{}: Send Power-{}", thingId, command);
@@ -294,8 +295,8 @@ public class GreeHandler extends BaseThingHandler {
 
     private void handleQuietCommand(DatagramSocket socket, Command command) throws GreeException {
         int mode = -1;
-        if (command instanceof DecimalType) {
-            mode = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            mode = decimalCommand.intValue();
         } else if (command instanceof StringType) {
             switch (command.toString().toLowerCase()) {
                 case QUIET_OFF:
@@ -320,8 +321,8 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             return command == OnOffType.ON ? 1 : 0;
         }
-        if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if ((value == 0) || (value == 1)) {
                 return value;
             }
@@ -330,22 +331,22 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private int getNumber(Command command) {
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.intValue();
         }
         throw new IllegalArgumentException("Invalid Number type");
     }
 
     private QuantityType<?> convertTemp(Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType temperature) {
             // The Number alone doesn't specify the temp unit
             // for this get current setting from the A/C unit
             int unit = device.getIntStatusVal(GREE_PROP_TEMPUNIT);
-            return toQuantityType((DecimalType) command, DIGITS_TEMP,
+            return toQuantityType(temperature, DIGITS_TEMP,
                     unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
         }
-        if (command instanceof QuantityType) {
-            return (QuantityType<?>) command;
+        if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand;
         }
         throw new IllegalArgumentException("Invalud Temp type");
     }
@@ -376,8 +377,9 @@ public class GreeHandler extends BaseThingHandler {
                 }
             } catch (GreeException e) {
                 String subcode = "";
-                if (e.getCause() != null) {
-                    subcode = " (" + e.getCause().getMessage() + ")";
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    subcode = " (" + cause.getMessage() + ")";
                 }
                 String message = messages.get("update.exception", e.getMessageString() + subcode);
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
@@ -403,8 +405,9 @@ public class GreeHandler extends BaseThingHandler {
         };
 
         if (refreshTask == null) {
-            refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
-            logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
+            refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.refreshInterval, TimeUnit.SECONDS);
+            device.setRefreshInterval(config.refreshInterval);
+            logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refreshInterval);
             forceRefresh = true;
         }
     }
@@ -412,7 +415,7 @@ public class GreeHandler extends BaseThingHandler {
     private boolean isMinimumRefreshTimeExceeded() {
         long currentTime = Instant.now().toEpochMilli();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
-        if (!forceRefresh && (timeSinceLastRefresh < config.refresh * 1000)) {
+        if (!forceRefresh && (timeSinceLastRefresh < config.refreshInterval * 1000)) {
             return false;
         }
         lastRefreshTime = currentTime;
@@ -480,7 +483,7 @@ public class GreeHandler extends BaseThingHandler {
 
     private @Nullable State updateOnOff(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return device.getIntStatusVal(valueName) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(device.getIntStatusVal(valueName) == 1);
         }
         return null;
     }
@@ -567,7 +570,7 @@ public class GreeHandler extends BaseThingHandler {
 
     public static QuantityType<?> toQuantityType(Number value, int digits, Unit<?> unit) {
         BigDecimal bd = new BigDecimal(value.doubleValue());
-        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
+        return new QuantityType<>(bd.setScale(digits, RoundingMode.HALF_EVEN), unit);
     }
 
     private void stopRefreshTask() {

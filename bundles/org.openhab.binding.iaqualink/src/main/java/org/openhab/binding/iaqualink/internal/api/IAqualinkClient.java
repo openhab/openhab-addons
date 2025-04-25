@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.iaqualink.internal.api.model.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.model.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.model.Device;
-import org.openhab.binding.iaqualink.internal.api.model.Home;
-import org.openhab.binding.iaqualink.internal.api.model.OneTouch;
-import org.openhab.binding.iaqualink.internal.api.model.SignIn;
+import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
+import org.openhab.binding.iaqualink.internal.api.dto.SignIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ import com.google.gson.JsonPrimitive;
 /**
  * IAqualink HTTP Client
  *
- * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor a iAquaLink
+ * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor an iAquaLink
  * based system.
  *
  * GSON is used to provide custom deserialization on the JSON results. These results
@@ -73,7 +73,8 @@ public class IAqualinkClient {
     private static final String HEADER_ACCEPT_LANGUAGE = "en-us";
     private static final String HEADER_ACCEPT_ENCODING = "br, gzip, deflate";
 
-    private static final String SUPPORT_URL = "https://support.iaqualink.com";
+    private static final String AUTH_URL = "https://prod.zodiac-io.com/users/v1/login";
+    private static final String DEVICES_URL = "https://r-api.iaqualink.net/devices.json";
     private static final String IAQUALINK_BASE_URL = "https://p-api.iaqualink.net/v1/mobile/session.json";
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Home.class, new HomeDeserializer())
@@ -113,8 +114,8 @@ public class IAqualinkClient {
             throws IOException, NotAuthorizedException {
         String signIn = gson.toJson(new SignIn(apiKey, username, password)).toString();
         try {
-            ContentResponse response = httpClient.newRequest(SUPPORT_URL + "/users/sign_in.json")
-                    .method(HttpMethod.POST).content(new StringContentProvider(signIn), "application/json").send();
+            ContentResponse response = httpClient.newRequest(AUTH_URL).method(HttpMethod.POST)
+                    .content(new StringContentProvider(signIn), "application/json").send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new NotAuthorizedException(response.getReason());
             }
@@ -139,7 +140,7 @@ public class IAqualinkClient {
      */
     public Device[] getDevices(@Nullable String apiKey, @Nullable String token, int id)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(UriBuilder.fromUri(SUPPORT_URL + "/devices.json"). //
+        return getAqualinkObject(UriBuilder.fromUri(DEVICES_URL). //
                 queryParam("api_key", apiKey). //
                 queryParam("authentication_token", token). //
                 queryParam("user_id", id).build(), Device[].class);
@@ -176,8 +177,8 @@ public class IAqualinkClient {
     /**
      * Retrieves {@link Auxiliary[]} devices
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @return {@link Auxiliary[]}
      * @throws IOException
      * @throws NotAuthorizedException
@@ -220,10 +221,11 @@ public class IAqualinkClient {
     /**
      * Sends an Auxiliary light command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param command
+     * @param serial
+     * @param sessionID
+     * @param auxID
      * @param lightValue
+     * @param subType
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -240,12 +242,12 @@ public class IAqualinkClient {
     }
 
     /**
-     * Sends a Auxiliary dimmer command
+     * Sends an Auxiliary dimmer command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param auxId
-     * @param lightValue
+     * @param serial
+     * @param sessionID
+     * @param auxID
+     * @param level
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -262,8 +264,8 @@ public class IAqualinkClient {
     /**
      * Sets the Spa Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param spaSetpoint
      * @return
      * @throws IOException
@@ -281,8 +283,8 @@ public class IAqualinkClient {
     /**
      * Sets the Pool Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param poolSetpoint
      * @return
      * @throws IOException
@@ -393,8 +395,11 @@ public class IAqualinkClient {
             if (homeScreen != null) {
                 homeScreen.forEach(element -> {
                     element.getAsJsonObject().entrySet().forEach(entry -> {
-                        home.add(entry.getKey(), entry.getValue());
-                        serializedMap.add(entry.getKey(), entry.getValue());
+                        JsonElement value = entry.getValue();
+                        home.add(entry.getKey(), value);
+                        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+                            serializedMap.add(entry.getKey(), value);
+                        }
                     });
                 });
                 home.add("serialized_map", serializedMap);

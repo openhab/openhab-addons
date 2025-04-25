@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,6 +52,7 @@ import org.openhab.binding.heos.internal.json.payload.Group;
 import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.HeosMediaEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.library.types.OnOffType;
@@ -77,6 +78,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Johannes Einig - Initial contribution
+ * @author Martin van Wingerden - change handling of stop/pause depending on playing item type
  */
 @NonNullByDefault
 public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventListener {
@@ -84,6 +86,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     private static final int HEOS_PORT = 1255;
 
+    private final Set<HeosMediaEventListener> heosMediaEventListeners = new CopyOnWriteArraySet<>();
     private final List<HeosPlayerDiscoveryListener> playerDiscoveryList = new CopyOnWriteArrayList<>();
     private final HeosChannelManager channelManager = new HeosChannelManager(this);
     private final HeosChannelHandlerFactory channelHandlerFactory;
@@ -216,9 +219,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             try {
                 @Nullable
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof HeosThingBaseHandler) {
+                if (handler instanceof HeosThingBaseHandler heosHandler) {
                     Set<String> target = handler instanceof HeosPlayerHandler ? players : groups;
-                    HeosThingBaseHandler heosHandler = (HeosThingBaseHandler) handler;
                     String id = heosHandler.getId();
 
                     if (target.contains(id)) {
@@ -299,12 +301,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         } else if (childHandler instanceof HeosPlayerHandler) {
             String channelIdentifier = "P" + childThing.getUID().getId();
             updateThingChannels(channelManager.removeSingleChannel(channelIdentifier));
-        } else if (childHandler instanceof HeosGroupHandler) {
+        } else if (childHandler instanceof HeosGroupHandler groupHandler) {
             String channelIdentifier = "G" + childThing.getUID().getId();
             updateThingChannels(channelManager.removeSingleChannel(channelIdentifier));
             // removes the handler from the groupMemberMap that handler is no longer called
             // if group is getting online
-            removeGroupHandlerInformation((HeosGroupHandler) childHandler);
+            removeGroupHandlerInformation(groupHandler);
         }
     }
 
@@ -357,13 +359,13 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             String pid = "";
             @Nullable
             ThingHandler handler = childThing.getHandler();
-            if (handler instanceof HeosPlayerHandler) {
+            if (handler instanceof HeosPlayerHandler playerHandler) {
                 channelIdentifier = "P" + childThing.getUID().getId();
-                pid = ((HeosPlayerHandler) handler).getId();
-            } else if (handler instanceof HeosGroupHandler) {
+                pid = playerHandler.getId();
+            } else if (handler instanceof HeosGroupHandler groupHandler) {
                 channelIdentifier = "G" + childThing.getUID().getId();
                 if (groupId == null) {
-                    pid = ((HeosGroupHandler) handler).getId();
+                    pid = groupHandler.getId();
                 } else {
                     pid = groupId;
                 }
@@ -408,7 +410,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public void playerMediaChangeEvent(String pid, Media media) {
-        // do nothing
+        heosMediaEventListeners.forEach(element -> element.playerMediaChangeEvent(pid, media));
     }
 
     @Override
@@ -516,6 +518,10 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(HeosActions.class);
+        return List.of(HeosActions.class);
+    }
+
+    public void registerMediaEventListener(HeosMediaEventListener heosMediaEventListener) {
+        heosMediaEventListeners.add(heosMediaEventListener);
     }
 }

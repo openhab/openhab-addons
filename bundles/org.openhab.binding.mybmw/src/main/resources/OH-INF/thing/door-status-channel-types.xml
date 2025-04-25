@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="driver-front-channel">
+		<item-type>String</item-type>
+		<label>Driver Door</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="driver-rear-channel">
+		<item-type>String</item-type>
+		<label>Driver Door Rear</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-front-channel">
+		<item-type>String</item-type>
+		<label>Passenger Door</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-rear-channel">
+		<item-type>String</item-type>
+		<label>Passenger Door Rear</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hood-channel">
+		<item-type>String</item-type>
+		<label>Hood</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trunk-channel">
+		<item-type>String</item-type>
+		<label>Trunk</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-driver-front-channel">
+		<item-type>String</item-type>
+		<label>Driver Window</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-driver-rear-channel">
+		<item-type>String</item-type>
+		<label>Driver Rear Window</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-passenger-front-channel">
+		<item-type>String</item-type>
+		<label>Passenger Window</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-passenger-rear-channel">
+		<item-type>String</item-type>
+		<label>Passenger Rear Window</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sunroof-channel">
+		<item-type>String</item-type>
+		<label>Sunroof</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

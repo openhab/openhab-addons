@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,6 @@ public class SmartherApiConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SmartherApiConnector.class);
 
-    private final JsonParser parser = new JsonParser();
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler;
 
@@ -114,8 +113,7 @@ public class SmartherApiConnector {
      *
      * @return the raw response returned by the API gateway
      *
-     * @throws {@link SmartherGatewayException}
-     *             if the call failed due to an issue with the API gateway
+     * @throws SmartherGatewayException if the call failed due to an issue with the API gateway
      */
     public ContentResponse request(Function<HttpClient, Request> requester, String subscription, String authorization)
             throws SmartherGatewayException {
@@ -129,8 +127,8 @@ public class SmartherApiConnector {
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
 
-            if (cause instanceof SmartherGatewayException) {
-                throw (SmartherGatewayException) cause;
+            if (cause instanceof SmartherGatewayException gatewayException) {
+                throw gatewayException;
             } else {
                 throw new SmartherGatewayException(e.getMessage(), e);
             }
@@ -305,7 +303,7 @@ public class SmartherApiConnector {
         private String processErrorState(ContentResponse response)
                 throws SmartherTokenExpiredException, SmartherAuthorizationException, SmartherInvalidResponseException {
             try {
-                final JsonElement element = parser.parse(response.getContentAsString());
+                final JsonElement element = JsonParser.parseString(response.getContentAsString());
 
                 if (element.isJsonObject()) {
                     final JsonObject object = element.getAsJsonObject();

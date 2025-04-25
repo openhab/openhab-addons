@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- L530 THING-TYPE (COLOR-LIGHT-BULB) -->
+	<thing-type id="L530">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>L530 Series Color-Bulb</label>
+		<description>Tapo Smart Multicolor Light-Bulb</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="actuator" typeId="colorBulb"/>
+			<channel-group id="effects" typeId="lightEffectL530"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+	<!-- Lightning Effect -->
+	<channel-group-type id="lightEffectL530">
+		<label>Lightning Effect</label>
+		<description>Tapo Lightning Effects</description>
+		<channels>
+			<channel id="fxName" typeId="l530fxList"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- effect name -->
+	<channel-type id="l530fxList">
+		<item-type>String</item-type>
+		<label>Light Effect Theme</label>
+		<description>Name of active lightning effect</description>
+		<state readOnly="false"/>
+		<command>
+			<options>
+				<option value="off">None (No FX)</option>
+				<option value="custom">Custom</option>
+				<option value="L1">Party</option>
+				<option value="L2">Relax</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>

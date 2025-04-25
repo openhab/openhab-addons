@@ -1,0 +1,152 @@
+{
+    "name": "Nanoleaf Light Panels",
+    "serialNo": "S007",
+    "manufacturer": "Nanoleaf",
+    "firmwareVersion": "5.1.0",
+    "hardwareVersion": "1.6-2",
+    "model": "NL22",
+    "cloudHash": {},
+    "discovery": {},
+    "effects": {
+        "effectsList": [
+            "20 Minute Sunset",
+            "Color Burst",
+            "Fireworks",
+            "Flames",
+            "Forest",
+            "Inner Peace",
+            "Jungle",
+            "Meteor Shower",
+            "Nemo",
+            "Northern Lights",
+            "Paint Splatter",
+            "Pulse Pop Beats",
+            "Rhythmic Northern Lights",
+            "Ripple",
+            "Romantic",
+            "Snowfall",
+            "Sound Bar",
+            "Streaking Notes",
+            "Falling Whites"
+        ],
+        "select": "Forest"
+    },
+    "firmwareUpgrade": {},
+    "panelLayout": {
+        "globalOrientation": {
+            "value": 0,
+            "max": 360,
+            "min": 0
+        },
+        "layout": {
+            "numPanels": 9,
+            "sideLength": 150,
+            "positionData": [
+                {
+                    "panelId": 145,
+                    "x": 374,
+                    "y": 43,
+                    "o": 60,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 106,
+                    "x": 374,
+                    "y": 129,
+                    "o": 120,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 175,
+                    "x": 299,
+                    "y": 173,
+                    "o": 180,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 215,
+                    "x": 224,
+                    "y": 129,
+                    "o": 0,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 231,
+                    "x": 149,
+                    "y": 173,
+                    "o": 60,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 59,
+                    "x": 74,
+                    "y": 129,
+                    "o": 0,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 186,
+                    "x": 74,
+                    "y": 43,
+                    "o": 180,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 61,
+                    "x": 149,
+                    "y": 259,
+                    "o": 240,
+                    "shapeType": 0
+                },
+                {
+                    "panelId": 94,
+                    "x": 299,
+                    "y": 259,
+                    "o": 240,
+                    "shapeType": 0
+                }
+            ]
+        }
+    },
+    "rhythm": {
+        "auxAvailable": false,
+        "firmwareVersion": "2.4.3",
+        "hardwareVersion": "2.0",
+        "rhythmActive": false,
+        "rhythmConnected": true,
+        "rhythmId": 123,
+        "rhythmMode": 0,
+        "rhythmPos": {
+            "x": 0.0,
+            "y": 0.0,
+            "o": 240.0
+        }
+    },
+    "schedules": {},
+    "state": {
+        "brightness": {
+            "value": 100,
+            "max": 100,
+            "min": 0
+        },
+        "colorMode": "effect",
+        "ct": {
+            "value": 6500,
+            "max": 6500,
+            "min": 1200
+        },
+        "hue": {
+            "value": 0,
+            "max": 360,
+            "min": 0
+        },
+        "on": {
+            "value": false
+        },
+        "sat": {
+            "value": 0,
+            "max": 100,
+            "min": 0
+        }
+    }
+}

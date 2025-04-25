@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,11 +48,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovery service for Daikin AC units.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  *
  */
-@Component(service = DiscoveryService.class)
+@Component(service = DiscoveryService.class, configurationPid = "discovery.daikin")
 @NonNullByDefault
 public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private static final String UDP_PACKET_CONTENTS = "DAIKIN_UDP/common/basic_info";
@@ -62,28 +61,26 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(DaikinACUnitDiscoveryService.class);
 
     private @Nullable HttpClient httpClient;
-    private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public DaikinACUnitDiscoveryService() {
-        super(Collections.singleton(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
-        scanner = createScanner();
+        super(Set.of(DaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
     }
 
     @Override
     protected void startScan() {
-        scheduler.execute(scanner);
+        scheduler.execute(this::scanner);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Starting background discovery");
+        logger.trace("Starting background discovery");
 
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);
             backgroundFuture = null;
         }
-        backgroundFuture = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(this::scanner, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -96,32 +93,30 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         super.stopBackgroundDiscovery();
     }
 
-    private Runnable createScanner() {
-        return () -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
-            for (InetAddress broadcastAddress : getBroadcastAddresses()) {
-                logger.debug("Starting broadcast for {}", broadcastAddress.toString());
+    private void scanner() {
+        long timestampOfLastScan = getTimestampOfLastScan();
+        for (InetAddress broadcastAddress : getBroadcastAddresses()) {
+            logger.trace("Starting broadcast for {}", broadcastAddress.toString());
 
-                try (DatagramSocket socket = new DatagramSocket()) {
-                    socket.setBroadcast(true);
-                    socket.setReuseAddress(true);
-                    byte[] packetContents = UDP_PACKET_CONTENTS.getBytes(StandardCharsets.UTF_8);
-                    DatagramPacket packet = new DatagramPacket(packetContents, packetContents.length, broadcastAddress,
-                            REMOTE_UDP_PORT);
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.setBroadcast(true);
+                socket.setReuseAddress(true);
+                byte[] packetContents = UDP_PACKET_CONTENTS.getBytes(StandardCharsets.UTF_8);
+                DatagramPacket packet = new DatagramPacket(packetContents, packetContents.length, broadcastAddress,
+                        REMOTE_UDP_PORT);
 
-                    // Send before listening in case the port isn't bound until here.
-                    socket.send(packet);
+                // Send before listening in case the port isn't bound until here.
+                socket.send(packet);
 
-                    // receivePacketAndDiscover will return false if no packet is received after 1 second
-                    while (receivePacketAndDiscover(socket)) {
-                    }
-                } catch (Exception e) {
-                    // Nothing to do here - the host couldn't be found, likely because it doesn't exist
+                // receivePacketAndDiscover will return false if no packet is received after 1 second
+                while (receivePacketAndDiscover(socket)) {
                 }
+            } catch (Exception e) {
+                // Nothing to do here - the host couldn't be found, likely because it doesn't exist
             }
+        }
 
-            removeOlderResults(timestampOfLastScan);
-        };
+        removeOlderResults(timestampOfLastScan);
     }
 
     private boolean receivePacketAndDiscover(DatagramSocket socket) {
@@ -133,12 +128,12 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             String host = incomingPacket.getAddress().toString().substring(1);
             String data = new String(incomingPacket.getData(), 0, incomingPacket.getLength(), "US-ASCII");
-            logger.debug("Received packet from {}: {}", host, data);
+            logger.trace("Received packet from {}: {}", host, data);
 
             Map<String, String> parsedData = InfoParser.parse(data);
             Boolean secure = "1".equals(parsedData.get("en_secure"));
-            String thingId = Optional.ofNullable(parsedData.get("ssid")).orElse(host.replace(".", "_"));
-            String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
+            String thingId = parsedData.getOrDefault("ssid", host.replace(".", "_"));
+            String mac = parsedData.getOrDefault("mac", "");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString()
                     : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 
@@ -165,7 +160,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 }
                 DiscoveryResult result = resultBuilder.build();
 
-                logger.debug("Successfully discovered host {}", host);
+                logger.trace("Successfully discovered host {}", host);
                 thingDiscovered(result);
                 return true;
             }
@@ -176,11 +171,10 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
                         .withRepresentationProperty(DaikinConfiguration.HOST).build();
 
-                logger.debug("Successfully discovered host {}", host);
+                logger.trace("Successfully discovered host {}", host);
                 thingDiscovered(result);
                 return true;
             }
-
         } catch (Exception e) {
             return false;
         }

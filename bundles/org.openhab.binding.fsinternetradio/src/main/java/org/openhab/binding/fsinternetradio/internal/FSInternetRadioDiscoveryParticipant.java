@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.fsinternetradio.internal;
 
 import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -141,7 +140,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_RADIO);
+        return Set.of(THING_TYPE_RADIO);
     }
 
     @Override
@@ -270,12 +269,10 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                     // Some devices report crappy UPnP device description so manufacturer and model are ""
                     // In this case we try to find the match in friendlyName
                     final String uname = friendlyName.toUpperCase();
-                    for (Map.Entry<String, Set<String>> entry : SUPPORTED_RADIO_MODELS.entrySet()) {
-                        for (Set<String> set : SUPPORTED_RADIO_MODELS.values()) {
-                            for (String model : set) {
-                                if ((model != null) && !model.isEmpty() && uname.contains(model)) {
-                                    return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                                }
+                    for (Set<String> set : SUPPORTED_RADIO_MODELS.values()) {
+                        for (String model : set) {
+                            if ((model != null) && !model.isEmpty() && uname.contains(model)) {
+                                return new ThingUID(THING_TYPE_RADIO, serialNumber);
                             }
                         }
                     }

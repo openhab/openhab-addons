@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="smartmeter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Smartmeter Binding</name>
+	<description>
+		The Smartmeter binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL)
+		and D (PUSH).
+	</description>
+	<connection>local</connection>
+
+</addon:addon>

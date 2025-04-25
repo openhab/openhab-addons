@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,12 @@ package org.openhab.binding.lcn.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
+    private static final int FIRMWARE_VERSION_LENGTH = 6;
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
@@ -95,11 +96,11 @@ public class LcnModuleHandler extends BaseThingHandler {
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
-            // Determine serial number of manually added modules
+            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
+            readFirmwareVersionFromProperty().ifPresent(info::setFirmwareVersion);
             requestFirmwareVersionAndSerialNumberIfNotSet();
 
             // create sub handlers
-            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
                 subHandlers.put(type, type.createSubHandler(this, info));
             }
@@ -116,8 +117,8 @@ public class LcnModuleHandler extends BaseThingHandler {
                 Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
-                if (unitObject instanceof String) {
-                    switch ((String) unitObject) {
+                if (unitObject instanceof String stringValue) {
+                    switch (stringValue) {
                         case "power":
                         case "energy":
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
@@ -158,12 +159,26 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @throws LcnException when the handler is not initialized
      */
     protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
-        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
-        if (serialNumber == null || serialNumber.isEmpty()) {
+        if (readFirmwareVersionFromProperty().isEmpty()) {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).requestFirmwareVersion();
             }
+        }
+    }
+
+    private Optional<Integer> readFirmwareVersionFromProperty() {
+        String prop = getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+
+        if (prop == null || prop.length() != FIRMWARE_VERSION_LENGTH) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Integer.parseInt(prop, 16));
+        } catch (NumberFormatException e) {
+            logger.warn("{}: Serial number property invalid", moduleAddress);
+            return Optional.empty();
         }
     }
 
@@ -192,35 +207,33 @@ public class LcnModuleHandler extends BaseThingHandler {
             if (command instanceof RefreshType) {
                 number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
                 subHandler.handleRefresh(channelUid.getIdWithoutGroup());
-            } else if (command instanceof OnOffType) {
-                subHandler.handleCommandOnOff((OnOffType) command, channelGroup, number.get());
-            } else if (command instanceof DimmerOutputCommand) {
-                subHandler.handleCommandDimmerOutput((DimmerOutputCommand) command, number.get());
-            } else if (command instanceof PercentType && number.isPresent()) {
-                subHandler.handleCommandPercent((PercentType) command, channelGroup, number.get());
-            } else if (command instanceof HSBType) {
-                subHandler.handleCommandHsb((HSBType) command, channelUid.getIdWithoutGroup());
-            } else if (command instanceof PercentType) {
-                subHandler.handleCommandPercent((PercentType) command, channelGroup, channelUid.getIdWithoutGroup());
-            } else if (command instanceof StringType) {
-                subHandler.handleCommandString((StringType) command, number.get());
-            } else if (command instanceof DecimalType) {
-                DecimalType decimalType = (DecimalType) command;
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
+            } else if (command instanceof OnOffType onOffCommand) {
+                subHandler.handleCommandOnOff(onOffCommand, channelGroup, number.get());
+            } else if (command instanceof DimmerOutputCommand outputCommand) {
+                subHandler.handleCommandDimmerOutput(outputCommand, number.get());
+            } else if (command instanceof PercentType percentCommand && number.isPresent()) {
+                subHandler.handleCommandPercent(percentCommand, channelGroup, number.get());
+            } else if (command instanceof HSBType hsbCommand) {
+                subHandler.handleCommandHsb(hsbCommand, channelUid.getIdWithoutGroup());
+            } else if (command instanceof PercentType percentCommand) {
+                subHandler.handleCommandPercent(percentCommand, channelGroup, channelUid.getIdWithoutGroup());
+            } else if (command instanceof StringType stringCommand) {
+                subHandler.handleCommandString(stringCommand, number.orElse(0));
+            } else if (command instanceof DecimalType decimalCommand) {
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalCommand.doubleValue());
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof QuantityType) {
-                QuantityType<?> quantityType = (QuantityType<?>) command;
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
+            } else if (command instanceof QuantityType quantityCommand) {
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityCommand);
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof UpDownType) {
+            } else if (command instanceof UpDownType upDownCommand) {
                 Channel channel = thing.getChannel(channelUid);
                 if (channel != null) {
                     Object invertConfig = channel.getConfiguration().get("invertUpDown");
-                    boolean invertUpDown = invertConfig instanceof Boolean && (boolean) invertConfig;
-                    subHandler.handleCommandUpDown((UpDownType) command, channelGroup, number.get(), invertUpDown);
+                    boolean invertUpDown = invertConfig instanceof Boolean bool && bool;
+                    subHandler.handleCommandUpDown(upDownCommand, channelGroup, number.get(), invertUpDown);
                 }
-            } else if (command instanceof StopMoveType) {
-                subHandler.handleCommandStopMove((StopMoveType) command, channelGroup, number.get());
+            } else if (command instanceof StopMoveType stopMoveCommand) {
+                subHandler.handleCommandStopMove(stopMoveCommand, channelGroup, number.get());
             } else {
                 throw new LcnException("Unsupported command type");
             }
@@ -241,11 +254,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @param pck the message without line termination
      */
     public void handleStatusMessage(String pck) {
-        for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
-            if (handler.tryParse(pck)) {
-                break;
-            }
-        }
+        subHandlers.values().forEach(h -> h.tryParse(pck));
 
         metadataSubHandlers.forEach(h -> h.tryParse(pck));
     }
@@ -324,7 +333,12 @@ public class LcnModuleHandler extends BaseThingHandler {
 
         State convertedState = state;
         if (converter != null) {
-            convertedState = converter.onStateUpdateFromHandler(state);
+            try {
+                convertedState = converter.onStateUpdateFromHandler(state);
+            } catch (LcnException e) {
+                logger.warn("{}: {}{}: Value conversion failed: {}", moduleAddress, channelGroup, channelId,
+                        e.getMessage());
+            }
         }
 
         updateState(channelUid, convertedState);
@@ -340,7 +354,16 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Invoked when an trigger for this LCN module should be fired to openHAB.
+     * Updates the LCN module's firmware version property.
+     *
+     * @param firmwareVersion the new firmware version
+     */
+    public void updateFirmwareVersionProperty(String firmwareVersion) {
+        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+    }
+
+    /**
+     * Invoked when a trigger for this LCN module should be fired to openHAB.
      *
      * @param channelGroup the Channel to update
      * @param channelId the ID within the Channel to update
@@ -372,7 +395,7 @@ public class LcnModuleHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LcnModuleActions.class);
+        return Set.of(LcnModuleActions.class);
     }
 
     /**
@@ -384,7 +407,7 @@ public class LcnModuleHandler extends BaseThingHandler {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (connection != null && localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).onAck(LcnBindingConstants.CODE_ACK, connection,
-                        getPckGatewayHandler().getTimeoutMs(), System.nanoTime());
+                        getPckGatewayHandler().getTimeoutMs(), System.currentTimeMillis());
             }
         } catch (LcnException e) {
             logger.warn("Connection or module address not set");

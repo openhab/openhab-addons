@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,10 @@ package org.openhab.binding.shelly.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyProtectedHandler} implements a dummy handler for password protected devices.
@@ -28,21 +26,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyProtectedHandler extends ShellyBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(ShellyProtectedHandler.class);
-
     /**
      * Constructor
      *
      * @param thing The thing passed by the HandlerFactory
+     * @param translationProvider
      * @param bindingConfig configuration of the binding
-     * @param coapServer coap server instance
-     * @param localIP local IP of the openHAB host
-     * @param httpPort port of the openHAB HTTP API
+     * @param thingTable
+     * @param coapService coap server instance
+     * @param httpClient to connect to the openHAB HTTP API
      */
     public ShellyProtectedHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyCoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
+            final Shelly1CoapServer coapService, final HttpClient httpClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapService, httpClient);
     }
 
     @Override

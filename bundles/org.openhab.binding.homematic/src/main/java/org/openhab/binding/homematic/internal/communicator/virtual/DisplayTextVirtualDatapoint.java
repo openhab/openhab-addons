@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -250,7 +249,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                                 HmValueType.INTEGER, 1, false);
                         bd.setMinValue(10);
                         bd.setMaxValue(160);
-                        bd.setStep(10);
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LED, Led.class);
                     }
                     addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_SUBMIT, HmValueType.BOOL, false,
@@ -286,7 +284,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     }
 
     /**
-     * Returns true, if the display is a EP display.
+     * Returns true, if the display is an EP display.
      */
     private boolean isEpDisplay(HmDevice device) {
         return DEVICE_TYPE_EP_STATUS_DISPLAY.equals(device.getType());
@@ -328,9 +326,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             }
 
             for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
-                String line = ObjectUtils.toString(
-                        channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LINE + i).getValue());
-                if (StringUtils.isEmpty(line)) {
+                String line = Objects.toString(
+                        channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LINE + i).getValue(), "");
+                if (line.isEmpty()) {
                     line = " ";
                 }
                 message.add(LINE);
@@ -340,12 +338,12 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                             .getOptionValue();
                     message.add(COLOR);
                     String colorCode = Color.getCode(color);
-                    message.add(StringUtils.isBlank(colorCode) ? Color.WHITE.getCode() : colorCode);
+                    message.add(colorCode == null || colorCode.isBlank() ? Color.WHITE.getCode() : colorCode);
                 }
                 String icon = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_ICON + i)
                         .getOptionValue();
                 String iconCode = Icon.getCode(icon);
-                if (StringUtils.isNotBlank(iconCode)) {
+                if (iconCode != null && !iconCode.isBlank()) {
                     message.add(ICON);
                     message.add(iconCode);
                 }
@@ -374,7 +372,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             message.add(STOP);
 
             gateway.sendDatapoint(channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_SUBMIT),
-                    new HmDatapointConfig(), StringUtils.join(message, ","), null);
+                    new HmDatapointConfig(), String.join(",", message), null);
         }
     }
 

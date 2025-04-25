@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,26 @@
  */
 package org.openhab.binding.nuki.internal;
 
+import java.util.UUID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
 import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
+import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
+import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -39,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Markus Katter - Initial contribution
+ * @author Jan Vybíral - Improved thing id generation
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 @NonNullByDefault
@@ -46,18 +55,19 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NukiHandlerFactory.class);
 
-    private final HttpService httpService;
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
-    private @Nullable String callbackUrl;
-    private @Nullable NukiApiServlet nukiApiServlet;
+    private final ManagedThingProvider managedThingProvider;
+    private NukiApiServlet nukiApiServlet;
 
     @Activate
     public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
-            @Reference NetworkAddressService networkAddressService) {
-        this.httpService = httpService;
+            @Reference NetworkAddressService networkAddressService,
+            @Reference ManagedThingProvider managedThingProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
+        this.nukiApiServlet = new NukiApiServlet(httpService);
+        this.managedThingProvider = managedThingProvider;
     }
 
     @Override
@@ -67,47 +77,41 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.debug("NukiHandlerFactory:createHandler({})", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        boolean readOnly = managedThingProvider.get(thing.getUID()) == null;
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
-            callbackUrl = createCallbackUrl();
+            String callbackUrl = createCallbackUrl(InstanceUUID.get());
             NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
-            if (!nukiBridgeHandler.isInitializable()) {
-                return null;
-            }
-            if (nukiApiServlet == null) {
-                nukiApiServlet = new NukiApiServlet(httpService);
-            }
             nukiApiServlet.add(nukiBridgeHandler);
             return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
-            return new NukiSmartLockHandler(thing);
+            return new NukiSmartLockHandler(thing, readOnly);
+        } else if (NukiBindingConstants.THING_TYPE_OPENER_UIDS.contains(thingTypeUID)) {
+            return new NukiOpenerHandler(thing, readOnly);
         }
-        logger.trace("No valid Handler found for Thing[{}]!", thingTypeUID);
+        logger.warn("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;
+    }
+
+    @Override
+    public void removeThing(ThingUID thingUID) {
+        super.removeThing(thingUID);
     }
 
     @Override
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
-        logger.trace("NukiHandlerFactory:unregisterHandler({})", thing);
-        if (thing.getHandler() instanceof NukiBridgeHandler && nukiApiServlet != null) {
-            nukiApiServlet.remove((NukiBridgeHandler) thing.getHandler());
-            if (nukiApiServlet.countNukiBridgeHandlers() == 0) {
-                nukiApiServlet = null;
-            }
+        ThingHandler handler = thing.getHandler();
+        if (handler instanceof NukiBridgeHandler bridgeHandler) {
+            nukiApiServlet.remove(bridgeHandler);
         }
     }
 
-    private @Nullable String createCallbackUrl() {
-        logger.trace("createCallbackUrl()");
-        if (callbackUrl != null) {
-            return callbackUrl;
-        }
+    private @Nullable String createCallbackUrl(@Nullable String id) {
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
-            logger.warn("No network interface could be found.");
+            logger.warn("No network interface could be found to get callback address");
             return null;
         }
         // we do not use SSL as it can cause certificate validation issues.
@@ -116,7 +120,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, ipAddress + ":" + port);
+        String callbackUrl = NukiLinkBuilder
+                .callbackUri(ipAddress, port, id != null ? id : UUID.randomUUID().toString()).toString();
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }

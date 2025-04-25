@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,15 +19,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link BoseSoundTouchBindinConstantsg} class defines common constants, which are
+ * The {@link BoseSoundTouchBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class BoseSoundTouchBindingConstants {
 
     public static final String BINDING_ID = "bosesoundtouch";

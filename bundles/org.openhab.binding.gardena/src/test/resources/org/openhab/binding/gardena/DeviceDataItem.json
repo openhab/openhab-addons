@@ -1,0 +1,24 @@
+{
+	"id": "0162efc2-0b62-4983-aa1d-d72442008b7c",
+	"type": "DEVICE",
+	"relationships": {
+		"location": {
+			"data": {
+				"id": "d01b4d00-945a-4639-bf5a-f73d2030dfe0",
+				"type": "LOCATION"
+			}
+		},
+		"services": {
+			"data": [
+				{
+					"id": "0162efc2-0b62-4983-aa1d-d72442008b7c",
+					"type": "SENSOR"
+				},
+				{
+					"id": "0162efc2-0b62-4983-aa1d-d72442008b7c",
+					"type": "COMMON"
+				}
+			]
+		}
+	}
+}

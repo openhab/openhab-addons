@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,8 @@ class Utils {
     }
 
     static Thread backgroundThread(Runnable r, String type, @Nullable Thing thing) {
-        String name = "OH-binding-" + LinuxInputBindingConstants.BINDING_ID + "-" + type;
-        if (thing != null) {
-            name += "-" + thing.getUID();
-        }
-        Thread t = new Thread(r, name);
+        String id = thing == null ? LinuxInputBindingConstants.BINDING_ID : thing.getUID().getAsString();
+        Thread t = new Thread(r, "OH-binding-" + id + "-" + type);
         t.setDaemon(true);
         return t;
     }

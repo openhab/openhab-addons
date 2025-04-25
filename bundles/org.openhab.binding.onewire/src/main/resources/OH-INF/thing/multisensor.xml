@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor (T, TC, TH, TL, TV, Generic)</label>
 		<description>A 1-wire multisensor (DS1923/DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:onewire:mstxconfig"/>
 	</thing-type>
 	<thing-type id="bms">
@@ -17,20 +18,19 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor BMS</label>
 		<description>1-wire multisensor (DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
-			<parameter name="id" type="text">
+			<parameter name="id" type="text" required="true">
 				<label>TH(S) Sensor ID</label>
 				<description>Sensor ID of the DS2438 sensor in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1">
+			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh Time</label>
 				<description>Time in seconds after which the thing is refreshed</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
-			<parameter name="temperaturesensor" type="text">
+			<parameter name="temperaturesensor" type="text" required="false">
 				<label>Temperature Sensor</label>
 				<options>
 					<option value="DS2438">internal (DS2438)</option>
@@ -38,7 +38,6 @@
 				</options>
 				<default>DS2438</default>
 				<limitToOptions>true</limitToOptions>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -48,27 +47,25 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor AMS</label>
 		<description>1-wire multisensor (DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
-			<parameter name="id" type="text">
+			<parameter name="id" type="text" required="true">
 				<label>TH(S) Sensor ID</label>
 				<description>Sensor ID of the DS2438 sensor in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1">
+			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh Time for Analog Channels</label>
 				<description>Time in seconds after which the thing is refreshed</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
-			<parameter name="refreshdigital" type="integer" min="1">
+			<parameter name="refreshdigital" type="integer" min="1" required="false">
 				<label>Refresh Time for Digital Channels</label>
 				<description>Time in seconds after which the digital I/Os are refreshed</description>
 				<default>10</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
-			<parameter name="temperaturesensor" type="text">
+			<parameter name="temperaturesensor" type="text" required="false">
 				<label>Temperature Sensor</label>
 				<options>
 					<option value="DS2438">internal (DS2438)</option>
@@ -76,7 +73,6 @@
 				</options>
 				<default>DS2438</default>
 				<limitToOptions>true</limitToOptions>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -86,21 +82,20 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor EDS</label>
 		<description>A 1-wire multisensor (EDS00xx-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<properties>
 			<property name="sensorCount">1</property>
 		</properties>
 		<config-description>
-			<parameter name="id" type="text">
+			<parameter name="id" type="text" required="true">
 				<label>Sensor ID</label>
 				<description>Sensor ID in format: xx.xxxxxxxxxxxx)</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1">
+			<parameter name="refresh" type="integer" min="1" required="false">
 				<label>Refresh Time</label>
 				<description>Time in seconds after which the thing is refreshed</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</thing-type>

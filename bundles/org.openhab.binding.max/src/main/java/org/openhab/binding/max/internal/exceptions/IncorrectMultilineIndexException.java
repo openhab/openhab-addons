@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,9 @@ package org.openhab.binding.max.internal.exceptions;
 
 /**
  * Will be thrown when there is an attempt to put a new message line into the message processor,
- * but the processor is currently processing an other message type.
+ * but the processor is currently processing another message type.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 public class IncorrectMultilineIndexException extends Exception {
 

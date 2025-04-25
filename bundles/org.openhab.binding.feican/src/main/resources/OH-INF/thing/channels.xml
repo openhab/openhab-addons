@@ -11,7 +11,8 @@
 		</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -20,6 +21,10 @@
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from cold (0%) to warm (100%).</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program" advanced="true">

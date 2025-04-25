@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class XmlRpcServer implements RpcServer {
 
     public XmlRpcServer(RpcEventListener listener, HomematicConfig config) {
         this.config = config;
-        this.rpcResponseHander = new RpcResponseHandler<String>(listener) {
+        this.rpcResponseHander = new RpcResponseHandler<>(listener) {
 
             @Override
             protected String getEmptyStringResult() {
@@ -79,7 +79,7 @@ public class XmlRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        InetSocketAddress callbackAddress = new InetSocketAddress(config.getBindAddress(), config.getXmlCallbackPort());
+        InetSocketAddress callbackAddress = new InetSocketAddress(config.getXmlCallbackPort());
         xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
 

@@ -20,15 +20,15 @@ This binding supports one ThingType: `controller`.
 
 The `controller` Thing has the following configuration parameters:
 
-| Parameter                   | Description                                                                                                                  | Required | Default value |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
-| hostname                    | Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used.  | yes      |               |
-| username                    | User name to login to the IHC / ELKO controller.                                                                             | yes      |               |
-| password                    | Password to login to the IHC / ELKO controller.                                                                              | yes      |               |
-| timeout                     | Timeout in milliseconds to communicate to IHC / ELKO controller.                                                             | no       | 5000          |
-| loadProjectFile             | Load project file from controller.                                                                                           | no       | true          |
-| createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                   | no       | true          |
-
+| Parameter                   | Description                                                                                                                                                                                 | Required | Default value |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| hostname                    | Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used.                                                                 | yes      |               |
+| username                    | User name to login to the IHC / ELKO controller.                                                                                                                                            | yes      |               |
+| password                    | Password to login to the IHC / ELKO controller.                                                                                                                                             | yes      |               |
+| timeout                     | Timeout in milliseconds to communicate to IHC / ELKO controller.                                                                                                                            | no       | 5000          |
+| loadProjectFile             | Load project file from controller.                                                                                                                                                          | no       | true          |
+| createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                                                                                  | no       | true          |
+| tlsVersion                  | TLS version used for controller communication. Choose `TLSv1` for older firmware versions and `TLSv1.2` for never versions (since fall 2021). `AUTO` mode try to recognize correct version. | no       | TLSv1         |
 
 ## Channels
 
@@ -74,10 +74,10 @@ Channel parameters:
 There are several ways to find the correct resource id's:
 
 1. Find directly from your IHC / ELKO LS project file (.vis file).
-2. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
-3. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled. 
+1. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
+1. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled.
 
-The binding supports resource id's ***only*** in decimal format.
+The binding supports resource id's _**only**_ in decimal format.
 Hexadecimal values (start with 0x prefix) need to be converted to decimal format.
 Conversion can be done e.g. via Calculator in Windows or Mac.
 
@@ -130,32 +130,31 @@ Supported commands:
 | DOWN        | Rollershutter       |
 | TOGGLE      | Switch              |
 
-All commands but `TOGGLE` are standard openHAB commands. 
-When `TOGGLE` command is specified, profile will toggle switch item state. 
+All commands but `TOGGLE` are standard openHAB commands.
+When `TOGGLE` command is specified, profile will toggle switch item state.
 E.g. if item state has been OFF, profile will send ON command to item.
- 
+
 Example:
 
-```xtend
+```java
 Dimmer test { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushbutton-to-command", short-press-command="TOGGLE", long-press-command="INCREASE", long-press-time=1000, repeat-time=200] }
 ```
 
 Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is detected (button press less than 1000ms) and send INCREASE commands as long button is pressed over 1000ms (200ms interval).
 
-
 ## Examples
 
 ### example.things
 
-```xtend
-ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false ] {
+```java
+ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false, tlsVersion="TLSv1" ] {
     Channels:
         Type switch                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
         Type contact               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]
         Type number                : my_test_number  "My Test Number"          [ resourceId=3988827, direction="ReadOnly" ]
         Type rf-device-low-battery : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
         Type push-button-trigger   : my_test_trigger "My Test Trigger"         [ resourceId=3988827, longPressTime=1000 ]
-        
+
         Type dimmer                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
         Type dimmer                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
 
@@ -168,7 +167,7 @@ ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secr
 
 ### example.items
 
-```xtend
+```java
 Switch test_switch  "Test Switch"    { channel="ihc:controller:elko:my_test_switch" }
 Switch test_contact "Test Contact"   { channel="ihc:controller:elko:my_test_contact" }
 Number test_number  "Test Number"    { channel="ihc:controller:elko:my_test_number" }
@@ -183,17 +182,17 @@ Dimmer dimmer { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushb
 
 ### example.rules
 
-```xtend
+```java
 rule "My test trigger test rule"
 when
-    Channel 'ihc:controller:elko:my_test_trigger' triggered LONG_PRESS 
+    Channel 'ihc:controller:elko:my_test_trigger' triggered LONG_PRESS
 then
     logInfo("Test","Long press detected")
 end
 
 rule "My test trigger test rule 2"
 when
-    Channel 'ihc:controller:elko:my_test_trigger' triggered 
+    Channel 'ihc:controller:elko:my_test_trigger' triggered
 then
     val String e = receivedEvent.toString.split(' ').get(2).toString
     switch e {

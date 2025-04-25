@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +29,8 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkIpAddressService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
+import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DeviceState;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.core.cache.ExpiringCache;
@@ -38,6 +42,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -55,12 +60,14 @@ import org.slf4j.LoggerFactory;
 public class SmartHomeHandler extends BaseThingHandler {
 
     private static final Duration ONE_SECOND = Duration.ofSeconds(1);
+    private static final int CONNECTION_IO_RETRIES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeHandler.class);
 
     private final SmartHomeDevice smartHomeDevice;
     private final TPLinkIpAddressService ipAddressService;
     private final int forceRefreshThreshold;
+    private final TPLinkStateDescriptionProvider stateDescriptionProvider;
 
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
@@ -78,19 +85,31 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param smartHomeDevice Specific Smart Home device handler
      * @param type The device type
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
+     * @param stateDescriptionProvider
      */
-    public SmartHomeHandler(Thing thing, SmartHomeDevice smartHomeDevice, TPLinkSmartHomeThingType type,
-            TPLinkIpAddressService ipAddressService) {
+    public SmartHomeHandler(final Thing thing, final SmartHomeDevice smartHomeDevice,
+            final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService,
+            final TPLinkStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
         this.forceRefreshThreshold = type.getDeviceType() == DeviceType.SWITCH
                 || type.getDeviceType() == DeviceType.DIMMER ? FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS
                         : FORCED_REFRESH_BOUNDERY_SECONDS;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUid, Command command) {
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(TPLinkSmartHomeActions.class);
+    }
+
+    Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public void handleCommand(final ChannelUID channelUid, final Command command) {
         try {
             if (command instanceof RefreshType) {
                 updateChannelState(channelUid, fastCache.getValue());
@@ -100,7 +119,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             } else {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -131,6 +150,10 @@ public class SmartHomeHandler extends BaseThingHandler {
                 ? new ExpiringCache<>(ONE_SECOND, this::forceCacheUpdate)
                 : cache;
         updateStatus(ThingStatus.UNKNOWN);
+        if (smartHomeDevice instanceof BulbDevice bulb) {
+            stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                    bulb.getColorTempMin(), bulb.getColorTempMax());
+        }
         // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.
         if (configuration.refresh > 0) {
             startAutomaticRefresh(configuration);
@@ -143,7 +166,7 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param config configuration to be used by the connection
      * @return new Connection object
      */
-    Connection createConnection(TPLinkSmartHomeConfiguration config) {
+    Connection createConnection(final TPLinkSmartHomeConfiguration config) {
         return new Connection(config.ipAddress);
     }
 
@@ -158,22 +181,34 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     private @Nullable DeviceState refreshCache() {
-        try {
-            updateIpAddress();
-            final DeviceState deviceState = new DeviceState(connection.sendCommand(smartHomeDevice.getUpdateCommand()));
-            updateDeviceId(deviceState.getSysinfo().getDeviceId());
-            smartHomeDevice.refreshedDeviceState(deviceState);
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+        int retry = 1;
+
+        while (true) {
+            try {
+                updateIpAddress();
+                final DeviceState deviceState = new DeviceState(
+                        connection.sendCommand(smartHomeDevice.getUpdateCommand()));
+                updateDeviceId(deviceState.getSysinfo().getDeviceId());
+                smartHomeDevice.refreshedDeviceState(deviceState);
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                return deviceState;
+            } catch (final IOException e) {
+                // If there is a connection problem retry before throwing an exception
+                if (retry < CONNECTION_IO_RETRIES) {
+                    logger.trace("Communication error, retry {}", retry, e);
+                    retry++;
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
+                }
+            } catch (final RuntimeException e) {
+                logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ",
+                        e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
+                return null;
             }
-            return deviceState;
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return null;
-        } catch (RuntimeException e) {
-            logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
-            return null;
         }
     }
 
@@ -187,10 +222,10 @@ public class SmartHomeHandler extends BaseThingHandler {
             // The device id is needed to get the ip address so if not known no need to continue.
             return;
         }
-        String lastKnownIpAddress = ipAddressService.getLastKnownIpAddress(configuration.deviceId);
+        final String lastKnownIpAddress = ipAddressService.getLastKnownIpAddress(configuration.deviceId);
 
         if (lastKnownIpAddress != null && !lastKnownIpAddress.equals(configuration.ipAddress)) {
-            Configuration editConfig = editConfiguration();
+            final Configuration editConfig = editConfiguration();
             editConfig.put(CONFIG_IP, lastKnownIpAddress);
             updateConfiguration(editConfig);
             configuration.ipAddress = lastKnownIpAddress;
@@ -206,9 +241,9 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @throws IllegalArgumentException if the configured device id doesn't match with the id reported by the device
      *             itself.
      */
-    private void updateDeviceId(String actualDeviceId) {
+    private void updateDeviceId(final String actualDeviceId) {
         if (StringUtil.isBlank(configuration.deviceId)) {
-            Configuration editConfig = editConfiguration();
+            final Configuration editConfig = editConfiguration();
             editConfig.put(CONFIG_DEVICE_ID, actualDeviceId);
             updateConfiguration(editConfig);
             configuration.deviceId = actualDeviceId;
@@ -222,7 +257,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     /**
      * Starts the background refresh thread.
      */
-    private void startAutomaticRefresh(TPLinkSmartHomeConfiguration config) {
+    private void startAutomaticRefresh(final TPLinkSmartHomeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, config.refresh, config.refresh,
                     TimeUnit.SECONDS);
@@ -241,11 +276,11 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param deviceState the state object containing the value to set of the channel
      *
      */
-    private void updateChannelState(ChannelUID channelUID, @Nullable DeviceState deviceState) {
+    private void updateChannelState(final ChannelUID channelUID, @Nullable final DeviceState deviceState) {
         if (!isLinked(channelUID)) {
             return;
         }
-        String channelId = channelUID.isInGroup() ? channelUID.getIdWithoutGroup() : channelUID.getId();
+        final String channelId = channelUID.isInGroup() ? channelUID.getIdWithoutGroup() : channelUID.getId();
         final State state;
 
         if (deviceState == null) {

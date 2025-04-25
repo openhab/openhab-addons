@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Connector for communication with the LIRC server
  *
- * @author Andrew Nagle - Initial contributor
+ * @author Andrew Nagle - Initial contribution
  */
 public class LIRCConnector {
 
@@ -166,7 +166,7 @@ public class LIRCConnector {
     public synchronized void sendErrorToListeners(String error) {
         try {
             for (LIRCEventListener listener : listeners) {
-                listener.errorOccured(error);
+                listener.errorOccurred(error);
             }
         } catch (Exception e) {
             logger.error("Error invoking event listener", e);

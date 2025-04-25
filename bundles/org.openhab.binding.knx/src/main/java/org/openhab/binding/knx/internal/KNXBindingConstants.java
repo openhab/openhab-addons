@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,31 @@
  */
 package org.openhab.binding.knx.internal;
 
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collections;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link KNXBinding} class defines common constants, which are
+ * The {@link KNXBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
+
+    // Global config
+    public static final String CONFIG_DISABLE_UOM = "disableUoM";
+    public static boolean disableUoM = false;
 
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
@@ -36,13 +44,16 @@ public class KNXBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // Property IDs
-    public static final String FIRMWARE_TYPE = "firmwaretype";
-    public static final String FIRMWARE_VERSION = "firmwareversion";
-    public static final String FIRMWARE_SUBVERSION = "firmwaresubversion";
-    public static final String MANUFACTURER_NAME = "manfacturername";
-    public static final String MANUFACTURER_SERIAL_NO = "manfacturerserialnumber";
-    public static final String MANUFACTURER_HARDWARE_TYPE = "manfacturerhardwaretype";
-    public static final String MANUFACTURER_FIRMWARE_REVISION = "manfacturerfirmwarerevision";
+    public static final String DEVICE_MASK_VERSION = "deviceMaskVersion";
+    public static final String DEVICE_PROFILE = "deviceProfile";
+    public static final String DEVICE_MEDIUM_TYPE = "deviceMediumType";
+    public static final String FRIENDLY_NAME = "deviceName";
+    public static final String MANUFACTURER_NAME = "manufacturerName";
+    public static final String MANUFACTURER_SERIAL_NO = "manufacturerSerialNumber";
+    public static final String MANUFACTURER_HARDWARE_TYPE = "manufacturerHardwareType";
+    public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerFirmwareRevision";
+    public static final String MANUFACTURER_ORDER_INFO = "manufacturerOrderInfo";
+    public static final String MAX_APDU_LENGTH = "maxApduLength";
 
     // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";
@@ -51,6 +62,14 @@ public class KNXBindingConstants {
     public static final String LOCAL_SOURCE_ADDRESS = "localSourceAddr";
     public static final String PORT_NUMBER = "portNumber";
     public static final String SERIAL_PORT = "serialPort";
+    public static final String USE_CEMI = "useCemi";
+    public static final String KEYRING_FILE = "keyringFile";
+    public static final String KEYRING_PASSWORD = "keyringPassword";
+    public static final String ROUTER_BACKBONE_GROUP_KEY = "routerBackboneGroupKey";
+    public static final String TUNNEL_USER_ID = "tunnelUserId";
+    public static final String TUNNEL_USER_PASSWORD = "tunnelUserPassword";
+    public static final String TUNNEL_DEVICE_AUTHENTICATION = "tunnelDeviceAuthentication";
+    public static final String TUNNEL_SOURCE_ADDRESS = "tunnelSourceAddress";
 
     // The default multicast ip address (see <a
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP
@@ -74,7 +93,11 @@ public class KNXBindingConstants {
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
 
-    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections.unmodifiableSet(Stream.of(CHANNEL_COLOR_CONTROL, //
+    public static final ChannelTypeUID CHANNEL_CONTACT_CONTROL_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_CONTACT_CONTROL);
+
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
+            CHANNEL_COLOR_CONTROL, //
             CHANNEL_CONTACT_CONTROL, //
             CHANNEL_DATETIME_CONTROL, //
             CHANNEL_DIMMER_CONTROL, //
@@ -82,7 +105,7 @@ public class KNXBindingConstants {
             CHANNEL_ROLLERSHUTTER_CONTROL, //
             CHANNEL_STRING_CONTROL, //
             CHANNEL_SWITCH_CONTROL //
-    ).collect(toSet()));
+    );
 
     public static final String CHANNEL_RESET = "reset";
 
@@ -95,4 +118,26 @@ public class KNXBindingConstants {
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
+
+    public static final Map<Integer, String> MANUFACTURER_MAP = readManufacturerMap();
+
+    private static Map<Integer, String> readManufacturerMap() {
+        ClassLoader classLoader = KNXBindingConstants.class.getClassLoader();
+        if (classLoader == null) {
+            return Map.of();
+        }
+
+        try (InputStream is = classLoader.getResourceAsStream("manufacturer.properties")) {
+            if (is == null) {
+                return Map.of();
+            }
+
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties.entrySet().stream()
+                    .collect(Collectors.toMap(e -> Integer.parseInt((String) e.getKey()), e -> (String) e.getValue()));
+        } catch (IOException e) {
+            return Map.of();
+        }
+    }
 }

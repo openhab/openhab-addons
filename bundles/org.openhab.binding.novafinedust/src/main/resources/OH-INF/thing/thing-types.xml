@@ -7,7 +7,7 @@
 	<thing-type id="SDS011">
 		<label>Nova SDS011 Fine Dust Sensor</label>
 		<description>Nova SDS011 Fine Dust Sensor connected via USB</description>
-
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="pm10" typeId="pm10-type"/>
 			<channel id="pm25" typeId="pm25-type"/>
@@ -18,6 +18,7 @@
 				<context>serial-port</context>
 				<label>USB Port</label>
 				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="reporting" type="boolean">
 				<default>true</default>

@@ -16,13 +16,16 @@
 		</parameter>
 		<parameter name="expose" type="text" required="false" multiple="true">
 			<label>Items to Expose</label>
-			<description>List of items that are made accessible to IFTTT and similar services.</description>
+			<description>List of items that are made accessible to IFTTT and similar services. Only supported on private cloud
+				installations.</description>
 			<context>item</context>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="baseURL" type="text" required="false">
 			<label>Base URL</label>
-			<description>Base URL for the openHAB Cloud server</description>
+			<description>Base URL for the openHAB Cloud server.</description>
 			<default>https://myopenhab.org/</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

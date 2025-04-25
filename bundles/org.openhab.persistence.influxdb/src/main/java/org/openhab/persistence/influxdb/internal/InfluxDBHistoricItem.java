@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,13 @@
 package org.openhab.persistence.influxdb.internal;
 
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Java bean used to return items queries results from InfluxDB.
@@ -30,13 +31,13 @@ import org.openhab.core.types.UnDefType;
 public class InfluxDBHistoricItem implements HistoricItem {
 
     private String name = "";
-    private State state = UnDefType.NULL;
-    private ZonedDateTime timestamp;
+    private final State state;
+    private final Instant instant;
 
-    public InfluxDBHistoricItem(String name, State state, ZonedDateTime timestamp) {
+    public InfluxDBHistoricItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -53,21 +54,18 @@ public class InfluxDBHistoricItem implements HistoricItem {
         return state;
     }
 
-    public void setState(State state) {
-        this.state = state;
+    @Override
+    public ZonedDateTime getTimestamp() {
+        return instant.atZone(ZoneId.systemDefault());
     }
 
     @Override
-    public ZonedDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(ZonedDateTime timestamp) {
-        this.timestamp = timestamp;
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return DateFormat.getDateTimeInstance().format(getTimestamp()) + ": " + name + " -> " + state.toString();
     }
 }

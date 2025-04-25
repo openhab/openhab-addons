@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,19 +33,21 @@ public class NhcThermostat2 extends NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat2.class);
 
-    private String model;
-    private String technology;
+    private final String deviceType;
+    private final String deviceTechnology;
+    private final String deviceModel;
 
-    protected NhcThermostat2(String id, String name, String model, String technology, @Nullable String location,
-            NikoHomeControlCommunication nhcComm) {
+    protected NhcThermostat2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
+            @Nullable String location, NikoHomeControlCommunication nhcComm) {
         super(id, name, location, nhcComm);
-        this.model = model;
-        this.technology = technology;
+        this.deviceType = deviceType;
+        this.deviceTechnology = deviceTechnology;
+        this.deviceModel = deviceModel;
     }
 
     @Override
     public void executeMode(int mode) {
-        logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, id);
+        logger.debug("execute thermostat mode {} for {}", mode, id);
 
         String program = THERMOSTATMODES[mode];
         nhcComm.executeThermostat(id, program);
@@ -53,23 +55,29 @@ public class NhcThermostat2 extends NhcThermostat {
 
     @Override
     public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
-                id);
+        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
 
         nhcComm.executeThermostat(id, overrule, overruletime);
     }
 
     /**
-     * @return model as returned from Niko Home Control
+     * @return type as returned from Niko Home Control
      */
-    public String getModel() {
-        return model;
+    public String getDeviceType() {
+        return deviceType;
     }
 
     /**
      * @return technology as returned from Niko Home Control
      */
-    public String getTechnology() {
-        return technology;
+    public String getDeviceTechnology() {
+        return deviceTechnology;
+    }
+
+    /**
+     * @return model as returned from Niko Home Control
+     */
+    public String getDeviceModel() {
+        return deviceModel;
     }
 }

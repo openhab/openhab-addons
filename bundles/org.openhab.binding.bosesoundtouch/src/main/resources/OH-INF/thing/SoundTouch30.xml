@@ -7,6 +7,7 @@
 	<thing-type id="30" extensible="notificationsound">
 		<label>Bose SoundTouch 30</label>
 		<description>Bose SoundTouch 30 Speaker</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>

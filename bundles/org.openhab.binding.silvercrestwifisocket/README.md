@@ -4,9 +4,8 @@ This binding integrates the Silvercrest Wifi Socket SWS-A1 sold by Lidl and the 
 
 ## Supported Things
 
--   Silvercrest Wifi Socket SWS-A1 - [(Owner Manual)](https://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
--   EasyHome Wifi Socket DIS-124 <https://www.aldi-sued.de/de/infos/aldi-sued-a-bis-z/s/serviceportal/ergebnisliste/sis/si/wifi-steckdose/>
-
+- Silvercrest Wifi Socket SWS-A1 - [(Owner Manual)](https://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
+- EasyHome Wifi Socket DIS-124 <https://www.aldi-sued.de/de/infos/aldi-sued-a-bis-z/s/serviceportal/ergebnisliste/sis/si/wifi-steckdose/>
 
 ## Discovery
 
@@ -27,7 +26,7 @@ Supported vendors are either Silvercrest (Lidl) or EasyHome (Aldi).
 Wifi Socket thing parameters:
 
 | Parameter ID   | Parameter Type | Mandatory | Description                                                                   | Default          |
-|----------------|----------------|-----------|-------------------------------------------------------------------------------|------------------|
+| -------------- | -------------- | --------- | ----------------------------------------------------------------------------- | ---------------- |
 | macAddress     | text           | true      | The socket MAC address                                                        |                  |
 | hostAddress    | text           | false     | The socket Host address. The binding is capable to discover the host address. |                  |
 | updateInterval | integer        | false     | Update time interval in seconds to request the status of the socket.          | 60               |
@@ -35,7 +34,7 @@ Wifi Socket thing parameters:
 
 E.g.
 
-```
+```java
 Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor="ALDI_EASYHOME" ]
 ```
 
@@ -44,5 +43,5 @@ Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor=
 The Silvercrest Wifi Socket support the following channel:
 
 | Channel Type ID | Item Type | Description         |
-|-----------------|-----------|---------------------|
+| --------------- | --------- | ------------------- |
 | switch          | Switch    | Wifi Socket Switch. |

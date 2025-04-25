@@ -1,0 +1,73 @@
+{
+    "000124430017": {
+        "ident": {
+            "type": {
+                "key_localized": "Devicetype",
+                10",
+                "swids": [
+                    "4164",
+                    "20380",
+                    "25226"
+                ]
+            },
+            "xkmIdentLabel": {
+                "techType": "EK039W",
+                "releaseVersion": "02.31"
+            }
+        },
+        "state": {
+            "status": {
+                "value_raw": 5,
+                "value_localized": "In use",
+                "key_localized": "State"
+            },
+            "programType": {
+                "value_raw": 0,
+                "value_localized": "",
+                "key_localized": "Programme"
+            },
+            "programPhase": {
+                "value_raw": 4609,
+                "value_localized": "",
+                "key_localized": "Phase"
+            },
+            "remainingTime": [
+                0,
+                0
+            ],
+            "startTime": [
+                0,
+                0
+            ],
+            "targetT
+                    "unit": "Celsius"
+                },
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                }
+            ],
+            "signalInfo": false,
+            "signalFailure": false,
+            "signalDoor": false,
+            "remoteEnable": {
+                "fullRemoteControl": false,
+                "smartGrid": false
+            },
+            "light": 1,
+            "elapsedTime": [],
+            "dryingStep": {
+                "value_raw": null,
+                "value_localized": "",
+                "key_localized": "Drying level"
+            },
+            "ventilationStep": {
+                "value_raw": 2,
+                "value_localized": "2",
+                "key_localized": "Power Level"
+            }
+        }
+    },
+    "$$ref": "#/components/examples/devicesExample"
+}

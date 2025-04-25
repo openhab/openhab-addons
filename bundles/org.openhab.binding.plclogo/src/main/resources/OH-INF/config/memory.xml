@@ -6,22 +6,20 @@
 
 	<config-description uri="thing-type:plclogo:memory">
 		<parameter name="block" type="text"
-			pattern="VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)|VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)|VD(\d|[1-9]\d|[1-7]\d{2}|8[0-3]\d|84[0-7])">
+			pattern="VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)|VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)|VD(\d|[1-9]\d|[1-7]\d{2}|8[0-3]\d|84[0-7])"
+			required="true">
 			<label>LOGO! Memory Address</label>
 			<description>LOGO! memory address</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="force" type="boolean">
+		<parameter name="force" type="boolean" required="false">
 			<label>Force Channel Update</label>
 			<description>Update of the channel be should propagated to openHAB</description>
 			<default>false</default>
-			<required>false</required>
 		</parameter>
-		<parameter name="threshold" type="integer" min="0">
+		<parameter name="threshold" type="integer" min="0" required="false">
 			<label>Smallest Value Change to Sent</label>
 			<description>Smallest value change will be sent to openHAB</description>
 			<default>0</default>
-			<required>false</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

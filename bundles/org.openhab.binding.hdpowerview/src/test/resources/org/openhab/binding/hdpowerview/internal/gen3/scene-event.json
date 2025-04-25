@@ -1,0 +1,17 @@
+{
+  "evt": "scene-activated",
+  "isoDate": "2021-12-06T20:01:11.934Z",
+  "id": 55,
+  "scene": {
+    "id": 234,
+    "name": "T3BlbiBBbGwgT2ZmaWNlIFNoYWRlcwo=",
+    "ptName": "Open All Office Shades",
+    "color": "37",
+    "icon": "669",
+    "networkNumber": 7383,
+    "roomIds": [
+      55,
+      66
+    ]
+  }
+}

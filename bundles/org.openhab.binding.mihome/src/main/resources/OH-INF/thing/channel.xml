@@ -27,9 +27,10 @@
 		<label>Brightness</label>
 		<description>The brightness channel allows to control the brightness of a light. It is also possible to switch the
 			light on and off.</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -49,7 +50,8 @@
 		<description>Control the color of light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -58,6 +60,7 @@
 		<label>Color Temperature</label>
 		<description>Allows to control the color temperature of light.</description>
 		<tags>
+			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state pattern="%d K"/>
@@ -121,7 +124,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<state pattern="%.1f %unit%" readOnly="true">

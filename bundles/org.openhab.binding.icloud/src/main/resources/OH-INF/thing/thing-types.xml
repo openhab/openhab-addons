@@ -18,6 +18,10 @@
 				<label>@text/icloud.account-thing.parameter.password.label</label>
 				<description>@text/icloud.account-thing.parameter.password.description</description>
 			</parameter>
+			<parameter name="code" type="text" required="false">
+				<label>@text/icloud.account-thing.parameter.code.label</label>
+				<description>@text/icloud.account-thing.parameter.code.description</description>
+			</parameter>
 			<parameter name="refreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
 				<label>@text/icloud.account-thing.parameter.refresh.label</label>
 				<description>@text/icloud.account-thing.parameter.refresh.description</description>

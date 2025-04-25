@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -56,15 +55,14 @@ public class StatusService {
         return responses.thenApply(this::getStatus);
     }
 
-    @NotNull
     private StatusDTO getStatus(final List<UdpResponseDTO> singleResponse) {
-        return singleResponse.stream()
+        return Objects.requireNonNull(singleResponse.stream()
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
                 .map(statusRaw -> new StatusDTO(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(),
                         statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
-                .findFirst().orElse(new StatusDTO(false, 503, null, null, null));
+                .findFirst().orElse(new StatusDTO(false, 503, null, null, null)));
     }
 
     private StatusRawDTO deserializeString(String response) {

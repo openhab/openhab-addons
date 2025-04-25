@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.jpa.internal;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +19,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -40,13 +35,19 @@ import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 
 /**
  * JPA based implementation of QueryablePersistenceService.
@@ -55,19 +56,36 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.jpa", configurationPolicy = ConfigurationPolicy.REQUIRE)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.jpa", //
+        property = Constants.SERVICE_PID + "=org.openhab.jpa")
+@ConfigurableService(category = "persistence", label = "JPA Persistence Service", description_uri = JpaPersistenceService.CONFIG_URI)
 public class JpaPersistenceService implements QueryablePersistenceService {
+
+    private static final String SERVICE_ID = "jpa";
+    private static final String SERVICE_LABEL = "JPA";
+    protected static final String CONFIG_URI = "persistence:jpa";
+
     private final Logger logger = LoggerFactory.getLogger(JpaPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
 
-    private @Nullable EntityManagerFactory emf = null;
+    private @Nullable EntityManagerFactory emf;
 
     private @NonNullByDefault({}) JpaConfiguration config;
 
+    private boolean initialized;
+
     @Activate
-    public JpaPersistenceService(final @Reference ItemRegistry itemRegistry) {
+    public JpaPersistenceService(BundleContext context, Map<String, @Nullable Object> properties,
+            final @Reference ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
+        logger.debug("Activating JPA persistence service");
+        try {
+            config = new JpaConfiguration(properties);
+            initialized = true;
+        } catch (IllegalArgumentException e) {
+            logger.warn("{}", e.getMessage());
+        }
     }
 
     /**
@@ -75,17 +93,13 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      *
      * @return EntityManagerFactory
      */
-    protected @Nullable EntityManagerFactory getEntityManagerFactory() {
+    protected EntityManagerFactory getEntityManagerFactory() {
+        EntityManagerFactory emf = this.emf;
         if (emf == null) {
             emf = newEntityManagerFactory();
+            this.emf = emf;
         }
         return emf;
-    }
-
-    @Activate
-    public void activate(BundleContext context, Map<String, Object> properties) {
-        logger.debug("Activating jpa persistence service");
-        config = new JpaConfiguration(properties);
     }
 
     /**
@@ -93,18 +107,18 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      */
     @Deactivate
     public void deactivate() {
-        logger.debug("Deactivating jpa persistence service");
+        logger.debug("Deactivating JPA persistence service");
         closeEntityManagerFactory();
     }
 
     @Override
     public String getId() {
-        return "jpa";
+        return SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "JPA";
+        return SERVICE_LABEL;
     }
 
     @Override
@@ -121,8 +135,8 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        if (!JpaConfiguration.isInitialized) {
-            logger.debug("Trying to create EntityManagerFactory but we don't have configuration yet!");
+        if (!initialized) {
+            logger.debug("Cannot create EntityManagerFactory without a valid configuration!");
             return;
         }
 
@@ -135,7 +149,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             pItem.setValue(newValue);
             logger.debug("Stored new value: {}", newValue);
         } catch (Exception e1) {
-            logger.error("Error on converting state value to string: {}", e1.getMessage());
+            logger.error("Error while converting state value to string: {}", e1.getMessage());
             return;
         }
         pItem.setName(name);
@@ -151,7 +165,13 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             em.getTransaction().commit();
             logger.debug("Persisting item...done");
         } catch (Exception e) {
-            logger.error("Error on persisting item! Rolling back!", e);
+            if (e.getCause() instanceof EntityExistsException) {
+                // there's a UNIQUE constraint in the database, and we tried to write
+                // a duplicate timestamp. Just ignore
+                logger.debug("Failed to persist item {} because of duplicate timestamp", name);
+            } else {
+                logger.error("Error while persisting item! Rolling back!", e);
+            }
             em.getTransaction().rollback();
         } finally {
             em.close();
@@ -162,20 +182,33 @@ public class JpaPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
+        return Set.of();
     }
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         logger.debug("Querying for historic item: {}", filter.getItemName());
 
-        if (!JpaConfiguration.isInitialized) {
-            logger.warn("Trying to create EntityManagerFactory but we don't have configuration yet!");
-            return Collections.emptyList();
+        if (!initialized) {
+            logger.warn("Cannot create EntityManagerFactory without a valid configuration!");
+            return List.of();
         }
 
         String itemName = filter.getItemName();
+        if (itemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
         Item item = getItemFromRegistry(itemName);
+        if (item == null) {
+            logger.debug("Item '{}' does not exist in the item registry", itemName);
+            return List.of();
+        }
 
         String sortOrder;
         if (filter.getOrdering() == Ordering.ASCENDING) {
@@ -207,7 +240,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
 
             logger.debug("Creating query...");
             Query query = em.createQuery(queryString);
-            query.setParameter("itemName", item.getName());
+            query.setParameter("itemName", alias != null ? alias : item.getName());
             if (hasBeginDate) {
                 query.setParameter("beginDate", Date.from(filter.getBeginDate().toInstant()));
             }
@@ -225,19 +258,19 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             logger.debug("Retrieving result list...done");
 
             List<HistoricItem> historicList = JpaHistoricItem.fromResultList(result, item);
-            logger.debug("{}", String.format("Convert to HistoricItem: %d", historicList.size()));
+            logger.debug("Convert to HistoricItem: {}", historicList.size());
 
             em.getTransaction().commit();
 
             return historicList;
         } catch (Exception e) {
-            logger.error("Error on querying database!", e);
+            logger.error("Error while querying database!", e);
             em.getTransaction().rollback();
         } finally {
             em.close();
         }
 
-        return Collections.emptyList();
+        return List.of();
     }
 
     /**
@@ -249,26 +282,26 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         logger.trace("Creating EntityManagerFactory...");
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.jdbc.url", config.dbConnectionUrl);
-        properties.put("javax.persistence.jdbc.driver", config.dbDriverClass);
-        if (config.dbUserName != null) {
-            properties.put("javax.persistence.jdbc.user", config.dbUserName);
+        properties.put("jakarta.persistence.jdbc.url", config.dbConnectionUrl);
+        properties.put("jakarta.persistence.jdbc.driver", config.dbDriverClass);
+        if (!config.dbUserName.isBlank()) {
+            properties.put("jakarta.persistence.jdbc.user", config.dbUserName);
         }
-        if (config.dbPassword != null) {
-            properties.put("javax.persistence.jdbc.password", config.dbPassword);
+        if (!config.dbPassword.isBlank()) {
+            properties.put("jakarta.persistence.jdbc.password", config.dbPassword);
         }
-        if (config.dbUserName != null && config.dbPassword == null) {
-            logger.warn("JPA persistence - it is recommended to use a password to protect data store");
+        if (config.dbUserName.isBlank() && config.dbPassword.isBlank()) {
+            logger.info("It is recommended to use a password to protect the JPA persistence data store");
         }
-        if (config.dbSyncMapping != null && !config.dbSyncMapping.isBlank()) {
-            logger.warn("You are settings openjpa.jdbc.SynchronizeMappings, I hope you know what you're doing!");
+        if (!config.dbSyncMapping.isBlank()) {
+            logger.info("You are setting openjpa.jdbc.SynchronizeMappings, I hope you know what you're doing!");
             properties.put("openjpa.jdbc.SynchronizeMappings", config.dbSyncMapping);
         }
 
-        EntityManagerFactory fac = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
         logger.debug("Creating EntityManagerFactory...done");
 
-        return fac;
+        return factory;
     }
 
     /**
@@ -317,6 +350,6 @@ public class JpaPersistenceService implements QueryablePersistenceService {
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
-        return Collections.emptyList();
+        return List.of();
     }
 }

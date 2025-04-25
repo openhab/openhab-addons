@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,8 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     }
 
     private synchronized void startSpeedTest() {
-        if (speedTestSocket == null) {
+        String url = configuration.getDownloadURL();
+        if (speedTestSocket == null && url != null) {
             logger.debug("Network speedtest started");
             final SpeedTestSocket socket = new SpeedTestSocket(1500);
             speedTestSocket = socket;
@@ -78,7 +79,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             updateState(CHANNEL_TEST_START, new DateTimeType());
             updateState(CHANNEL_TEST_END, UnDefType.NULL);
             updateProgress(new QuantityType<>(0, Units.PERCENT));
-            socket.startDownload(configuration.getDownloadURL());
+            socket.startDownload(url);
         } else {
             logger.info("A speedtest is already in progress, will retry on next refresh");
         }
@@ -109,7 +110,8 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 switch (testReport.getSpeedTestMode()) {
                     case DOWNLOAD:
                         updateState(CHANNEL_RATE_DOWN, quantity);
-                        if (speedTestSocket != null && configuration != null) {
+                        String url = configuration.getUploadURL();
+                        if (speedTestSocket != null && url != null) {
                             speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
                         }
                         break;
@@ -129,7 +131,6 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError) || SpeedTestError.MALFORMED_URI.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
             timeouts--;
             if (timeouts <= 0) {
@@ -139,12 +140,10 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 logger.warn("Speedtest timed out, {} attempts left. Message '{}'", timeouts, errorMessage);
                 stopSpeedTest();
             }
-            return;
         } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else {
             stopSpeedTest();
             logger.warn("Speedtest failed: {}", errorMessage);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,15 +18,16 @@ import java.util.regex.Pattern;
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
 
 /**
- * Converter for converting a line read from a ec3kSerial sketch to a Ec3kReading.
+ * Converter for converting a line read from an ec3kSerial sketch to an Ec3kReading.
  *
  * @author Volker Bier - Initial contribution
  */
 public class Ec3kReadingConverter implements JeeLinkReadingConverter<Ec3kReading> {
-    private static final Pattern LINE_P = Pattern
-            .compile("OK\\s+22\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
-                    + "\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
-                    + "\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
+    private static final Pattern LINE_P = Pattern.compile("""
+            OK\\s+22\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            \\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            \\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\
+            """);
 
     @Override
     public Ec3kReading createReading(String inputLine) {

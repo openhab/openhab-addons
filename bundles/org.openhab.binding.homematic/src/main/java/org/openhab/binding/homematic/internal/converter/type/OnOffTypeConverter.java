@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB OnOffType.
+ * Converts between a Homematic datapoint value and an openHAB OnOffType.
  *
  * @author Gerhard Riegler - Initial contribution
  */
@@ -42,7 +42,7 @@ public class OnOffTypeConverter extends AbstractTypeConverter<OnOffType> {
 
     @Override
     protected OnOffType fromBinding(HmDatapoint dp) throws ConverterException {
-        return (((Boolean) dp.getValue()) == Boolean.FALSE) != isInvert(dp) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(Boolean.FALSE.equals(dp.getValue()) == isInvert(dp));
     }
 
     /**

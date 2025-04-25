@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base :: head"></head>
+
+<body>
+<nav th:replace="base :: topNav"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="base :: sidebarMenu (current='log-requests')"></nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">API Requests</h1>
+            </div>
+
+            <div th:if="${bridgeHandlers.size() == 0}" class="mb-4"><span class="text-muted">No requests</span></div>
+            <div class="mb-4" th:each="bridgeHandler: ${bridgeHandlers}" th:with="thing=${bridgeHandler.getThing()}, queue=${bridgeHandler.getApiClient().getLatestApiRequests()}, status=${bridgeHandler.getThing().getStatus().toString()}, uid=${bridgeHandler.getThing().getUID().getAsString()}">
+                <h2 th:text="${thing.getLabel() + ' (' + uid + ')'}" style="display: inline-block;">Section title</h2>
+                <div class="btn-toolbar float-right">
+                    <button type="button" class="btn btn-sm btn-outline-secondary reload-page mr-2"><span data-feather="refresh-cw"></span></button>
+                    <a th:href="@{/homeconnect/log/requests(export='json',bridgeId=${uid})}" class="btn btn-sm btn-outline-secondary">Export</a>
+                </div>
+
+                <div th:if="${queue.size() == 0}"><span class="text-muted">No requests</span></div>
+                <div th:unless="${queue.size() == 0}" class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th>Request Time</th>
+                            <th class="text-center">Response Code</th>
+                            <th class="text-center">Method</th>
+                            <th>URL</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="entry: ${queue}">
+                            <td th:text="${#temporals.format(entry.time, 'yyyy-MM-dd HH:mm:ss.SSS Z')}">27.04.2020 14:30</td>
+                            <td class="text-center"><span th:if="${entry.response}" class="badge" th:classappend="|${entry.response.code >= 300 && entry.response.code != 404 ? 'badge-danger' : ''} ${entry.response.code >=200 && entry.response.code < 300 ? 'badge-success' : ''} ${entry.response.code == 404 ? 'badge-warning' : ''}|" th:text="${entry.response.code}">200</span></td>
+                            <td class="text-center" th:text="${entry.request.method}">GET</td>
+                            <td th:text="${entry.request.getShortUrl()}">/bla/bla?w92374=34</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-info btn-sm py-0" style="font-size: 0.8em;" th:attr="data-request-id=${entry.id}" data-toggle="modal" data-target="#requestDetailModal">
+                                Details
+                            </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Request detail modal -->
+    <div class="modal fade" id="requestDetailModal" tabindex="-1" role="dialog" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title-badge badge mt-2 mr-1">200</span>
+                    <h5 class="modal-title .text-truncate" id="requestDetailModalLabel">Request Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Request Body</h5>
+                    <pre class="modal-request-body"></pre>
+                    <hr>
+                    <h5>Response Body</h5>
+                    <pre class="modal-response-body"></pre>
+                    <hr>
+                    <h5>Response Header</h5>
+                    <dl class="row modal-response-header"></dl>
+                    <hr>
+                    <h5>Request Header</h5>
+                    <dl class="row modal-request-header"></dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:inline="javascript">
+        var requests = JSON.parse(/*[[${requests}]]*/);
+    </script>
+
+</div>
+
+<!--/*/ <th:block th:include="base :: js">
+    </th:block> /*/-->
+
+</body>
+</html>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeDevice.DriverIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +34,11 @@ import org.slf4j.LoggerFactory;
 public class SmartHomeDeviceStateGroupUpdateCalculator {
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceStateGroupUpdateCalculator.class);
 
-    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS = 10;
-    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE = 600;
-    private static final Integer UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS = 10;
-    private Integer updateIntervalAmazonInSeconds;
-    private Integer updateIntervalSkillsInSeconds;
+    private static final int UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS = 300;
+    private static final int UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE = 10;
+    private static final int UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS = 10;
+    private final int updateIntervalAmazonInSeconds;
+    private final int updateIntervalSkillsInSeconds;
 
     private static class UpdateGroup {
         private final int intervalInSeconds;
@@ -59,20 +58,16 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         this.updateIntervalSkillsInSeconds = updateIntervalSkillsInSeconds;
     }
 
-    private Integer getUpdateIntervalInSeconds(SmartHomeDevice shd) {
+    private Integer getUpdateIntervalInSeconds(JsonSmartHomeDevice shd) {
         Integer updateIntervalInSeconds = shd.updateIntervalInSeconds;
         if (updateIntervalInSeconds != null) {
             return updateIntervalInSeconds;
         }
-        SmartHomeCapability[] capabilities = shd.capabilities;
-        if (capabilities != null) {
-            for (SmartHomeCapability capability : capabilities) {
-                if (capability != null && HandlerAcousticEventSensor.INTERFACE.equals(capability.interfaceName)) {
-                    updateIntervalInSeconds = UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS;
-                    break;
-                }
-            }
+        if (shd.getCapabilities().stream()
+                .anyMatch(capability -> HandlerAcousticEventSensor.INTERFACE.equals(capability.interfaceName))) {
+            updateIntervalInSeconds = UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS;
         }
+
         if (updateIntervalInSeconds == null) {
             String manufacturerName = shd.manufacturerName;
             if (manufacturerName != null && ("openHAB".equalsIgnoreCase(manufacturerName)
@@ -98,11 +93,11 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         return updateIntervalInSeconds;
     }
 
-    public void removeDevicesWithNoUpdate(List<SmartHomeDevice> devices) {
+    public void removeDevicesWithNoUpdate(List<JsonSmartHomeDevice> devices) {
         Date updateTimeStamp = new Date();
         // check if new group is needed
         boolean syncAllGroups = false;
-        for (SmartHomeDevice device : devices) {
+        for (JsonSmartHomeDevice device : devices) {
             int updateIntervalInSeconds = getUpdateIntervalInSeconds(device);
             if (!updateGroups.containsKey(updateIntervalInSeconds)) {
                 UpdateGroup newGroup = new UpdateGroup(updateIntervalInSeconds);
@@ -111,7 +106,7 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
             }
         }
         // check which groups needs an update
-        Set<Integer> groupsToUpdate = new HashSet<Integer>();
+        Set<Integer> groupsToUpdate = new HashSet<>();
         for (UpdateGroup group : updateGroups.values()) {
             long millisecondsSinceLastUpdate = updateTimeStamp.getTime() - group.lastUpdated.getTime();
             if (syncAllGroups || millisecondsSinceLastUpdate >= group.intervalInSeconds * 1000) {

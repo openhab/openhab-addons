@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -35,23 +36,27 @@ import org.slf4j.LoggerFactory;
  * This is a class that implements a Command Tag that may be embedded in an
  * Event Description. Valid Tags must follow one of the following forms..
  *
+ * <pre>
+ * {@code
  * BEGIN:<itemName>:<targetState>
  * BEGIN:<itemName>:<targetState>:<authorizationCode>
  * END:<itemName>:<targetState>
  * END:<itemName>:<targetState>:<authorizationCode>
+ * }
+ * </pre>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class CommandTag {
 
-    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(QuantityType.class,
-            OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class, PlayPauseType.class,
-            RewindFastforwardType.class, StringType.class);
+    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(HSBType.class,
+            DecimalType.class, QuantityType.class, OnOffType.class, OpenClosedType.class, UpDownType.class,
+            PlayPauseType.class, RewindFastforwardType.class, StringType.class);
 
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(CommandTag.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandTag.class);
 
     private String inputLine;
     private CommandTagType tagType;
@@ -145,15 +150,15 @@ public class CommandTag {
 
     public static @Nullable CommandTag createCommandTag(String inputLine) {
         if (inputLine.isEmpty() || !CommandTagType.prefixValid(inputLine)) {
-            logger.trace("Command Tag Trace: \"{}\" => NOT a (valid) Command Tag!", inputLine);
+            LOGGER.trace("Command Tag Trace: \"{}\" => NOT a (valid) Command Tag!", inputLine);
             return null;
         }
         try {
             final CommandTag tag = new CommandTag(inputLine);
-            logger.trace("Command Tag Trace: \"{}\" => Fully valid Command Tag!", inputLine);
+            LOGGER.trace("Command Tag Trace: \"{}\" => Fully valid Command Tag!", inputLine);
             return tag;
         } catch (IllegalArgumentException e) {
-            logger.warn("{}", e.getMessage());
+            LOGGER.warn("{}", e.getMessage());
             return null;
         }
     }

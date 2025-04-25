@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,8 +39,9 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PushoverActionsTest {
 
     private static final String MESSAGE = "My Message";
@@ -46,8 +49,8 @@ public class PushoverActionsTest {
     private static final String URL = "https://www.test.com";
     private static final String URL_TITLE = "Some Link";
     private static final String RECEIPT = "12345";
+    private static final Duration TTL = Duration.ofSeconds(15);
 
-    @NonNullByDefault
     private final ThingActions thingActionsStub = new ThingActions() {
         @Override
         public void setThingHandler(ThingHandler handler) {
@@ -59,9 +62,8 @@ public class PushoverActionsTest {
         }
     };
 
-    private @Mock PushoverAccountHandler mockPushoverAccountHandler;
-
-    private PushoverActions pushoverThingActions;
+    private @NonNullByDefault({}) @Mock PushoverAccountHandler mockPushoverAccountHandler;
+    private @NonNullByDefault({}) PushoverActions pushoverThingActions;
 
     @BeforeEach
     public void setUp() {
@@ -86,16 +88,23 @@ public class PushoverActionsTest {
     }
 
     @Test
-    public void testSendMessageWithoutTitle() {
+    public void testSendMessage() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, null);
+        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE);
         assertThat(sent, is(true));
     }
 
     @Test
-    public void testSendMessage() {
+    public void testSendMessageWithTitle() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
         boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, TITLE);
+        assertThat(sent, is(true));
+    }
+
+    @Test
+    public void testSendMessageWithTitleAndTTL() {
+        pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
+        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, TITLE, TTL);
         assertThat(sent, is(true));
     }
 
@@ -130,6 +139,13 @@ public class PushoverActionsTest {
     public void testSendURLMessage() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
         boolean sent = PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE);
+        assertThat(sent, is(true));
+    }
+
+    @Test
+    public void testSendURLMessageWithTTL() {
+        pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
+        boolean sent = PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE, TTL);
         assertThat(sent, is(true));
     }
 

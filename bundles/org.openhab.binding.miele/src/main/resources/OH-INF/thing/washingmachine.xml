@@ -12,29 +12,42 @@
 
 		<label>Washing Machine</label>
 		<description>This is a Miele@home compatible washing machine</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="program" typeId="program"/>
+			<channel id="rawProgram" typeId="rawProgram"/>
 			<channel id="type" typeId="type"/>
 			<channel id="phase" typeId="phase"/>
+			<channel id="rawPhase" typeId="rawPhase"/>
 			<channel id="start" typeId="start"/>
+			<channel id="end" typeId="end"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="elapsed" typeId="elapsed"/>
 			<channel id="finish" typeId="finish"/>
 			<channel id="door" typeId="door"/>
+			<channel id="info" typeId="info"/>
+			<channel id="failure" typeId="failure"/>
 			<channel id="switch" typeId="switch"/>
-			<channel id="target" typeId="target"/>
+			<channel id="target" typeId="targetTemperature">
+				<label>Temperature</label>
+				<description>Temperature of the selected program (10 °C = cold)</description>
+			</channel>
 			<channel id="spinningspeed" typeId="spinningspeed"/>
+			<channel id="energyConsumption" typeId="energy-consumption"/>
+			<channel id="waterConsumption" typeId="water-consumption"/>
+			<channel id="laundryWeight" typeId="laundry-weight"/>
 		</channels>
 
-		<config-description>
-			<parameter name="uid" type="text">
-				<label>ID</label>
-				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="thingTypeVersion">3</property>
+		</properties>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:miele:appliance"/>
 	</thing-type>
 
 </thing:thing-descriptions>

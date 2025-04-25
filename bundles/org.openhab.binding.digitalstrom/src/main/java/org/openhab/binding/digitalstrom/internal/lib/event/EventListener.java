@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,14 +39,15 @@ import com.google.gson.JsonObject;
  * added {@link EventHandler} about the detected events, if it supports the event-type.<br>
  * You can add {@link EventHandler}'s through the constructors or the methods {@link #addEventHandler(EventHandler)} and
  * {@link #addEventHandlers(List)}.<br>
- * You can also delete a {@link EventHandler} though the method {@link #removeEventHandler(EventHandler)}.<br>
+ * You can also delete an {@link EventHandler} though the method {@link #removeEventHandler(EventHandler)}.<br>
  * If the {@link EventListener} is started, both methods subscribe respectively unsubscribe the event-types of the
  * {@link EventHandler}/s automatically.<br>
  * If you want to dynamically subscribe event-types, e.g. because a configuration has changed and a
  * {@link EventHandler} needs to be informed of another event-type, you can use the methods
  * {@link #addSubscribe(String)} or {@link #addSubscribeEvents(List)} to add more than one event-type. To remove a
  * subscribed event you can use the method {@link #removeSubscribe(String, String)}, you also have to change the return
- * of the {@link EventHandler} methods {@link EventHandler#getSupportetEvents()} and
+ * of the {@link org.openhab.binding.digitalstrom.internal.lib.event.EventHandler} methods
+ * {@link EventHandler#getSupportedEvents()} and
  * {@link EventHandler#supportsEvent(String)}.
  * <br>
  * To start and stop the listening you have to call the methods {@link #start()} and {@link #stop()}.
@@ -106,7 +107,7 @@ public class EventListener {
     }
 
     /**
-     * Creates a new {@link EventListener} without a {@link EventHandler}<br>
+     * Creates a new {@link EventListener} without an {@link EventHandler}<br>
      * <br>
      * To get notified by events you have to call {@link #start()} and {@link #addEventHandler(EventHandler)} or
      * {@link #addEventHandlers(List)}.
@@ -188,7 +189,7 @@ public class EventListener {
     }
 
     /**
-     * Adds a {@link EventHandler}'s and subscribe the supported event-types, if the
+     * Adds an {@link EventHandler}'s and subscribe the supported event-types, if the
      * {@link EventListener} is started and the event-types are not already subscribed.<br>
      * <br>
      * <b>Note:</b><br>
@@ -217,7 +218,7 @@ public class EventListener {
     }
 
     /**
-     * Remove a {@link EventHandler} and unsubscribes the supported event-types, if the
+     * Remove an {@link EventHandler} and unsubscribes the supported event-types, if the
      * {@link EventListener} is started and no other {@link EventHandler} needed the event-types.
      *
      * @param eventHandler to remove
@@ -258,7 +259,7 @@ public class EventListener {
      * Removes a subscribed event and unsubscibe it, if it is not needed by other {@link EventHandler}'s.
      *
      * @param unsubscribeEvent event name to unsubscibe
-     * @param eventHandlerID EventHandler-ID of the EventHandler that unsubscibe a event
+     * @param eventHandlerID EventHandler-ID of the EventHandler that unsubscibe an event
      */
     public void removeSubscribe(String unsubscribeEvent, String eventHandlerID) {
         if (subscribedEvents != null && !subscribedEvents.contains(unsubscribeEvent)) {
@@ -289,7 +290,7 @@ public class EventListener {
     }
 
     /**
-     * Adds a event and subscribed it, if it is not subscribed already.
+     * Adds an event and subscribes it, if it is not subscribed already.
      *
      * @param subscribeEvent event name to subscribe
      */
@@ -304,7 +305,7 @@ public class EventListener {
     }
 
     /**
-     * Adds the events of the {@link List} and subscribe them, if a event is not subscribed already.
+     * Adds the events of the {@link List} and subscribe them, if an event is not subscribed already.
      *
      * @param subscribeEvents event name to subscribe
      */

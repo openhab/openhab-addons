@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,17 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.items.GenericItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LockMechanismAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.lock.LockCurrentStateEnum;
 import io.github.hapjava.characteristics.impl.lock.LockTargetStateEnum;
@@ -40,60 +36,40 @@ import io.github.hapjava.services.impl.LockMechanismService;
  *
  */
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
+    final Map<LockCurrentStateEnum, Object> currentStateMapping;
+    final Map<LockTargetStateEnum, Object> targetStateMapping;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        getServices().add(new LockMechanismService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+
+        currentStateMapping = createMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE, LockCurrentStateEnum.class);
+        targetStateMapping = createMapping(HomekitCharacteristicType.LOCK_TARGET_STATE, LockTargetStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new LockMechanismService(this));
     }
 
     @Override
     public CompletableFuture<LockCurrentStateEnum> getLockCurrentState() {
-        final Optional<GenericItem> item = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class);
-        LockCurrentStateEnum lockState = LockCurrentStateEnum.UNKNOWN;
-        if (item.isPresent()) {
-            final State state = item.get().getState();
-            if (state instanceof DecimalType) {
-                lockState = LockCurrentStateEnum.fromCode(((DecimalType) state).intValue());
-            } else if (state instanceof OnOffType) {
-                lockState = state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
-            }
-        }
-        return CompletableFuture.completedFuture(lockState);
+        return CompletableFuture.completedFuture(getKeyFromMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE,
+                currentStateMapping, LockCurrentStateEnum.UNKNOWN));
     }
 
     @Override
     public CompletableFuture<LockTargetStateEnum> getLockTargetState() {
-        final @Nullable OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
-        if (state != null) {
-            return CompletableFuture.completedFuture(
-                    state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
-        }
-        return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
-        // Apple HAP specification has only SECURED and UNSECURED values for lock target state.
-        // unknown does not supported for target state.
+        return CompletableFuture.completedFuture(getKeyFromMapping(HomekitCharacteristicType.LOCK_TARGET_STATE,
+                targetStateMapping, LockTargetStateEnum.UNSECURED));
     }
 
     @Override
     public CompletableFuture<Void> setLockTargetState(LockTargetStateEnum state) {
-        getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
-            switch (state) {
-                case SECURED:
-                    // Close the door
-                    if (item instanceof SwitchItem) {
-                        item.send(OnOffType.ON);
-                    }
-                    break;
-                case UNSECURED:
-                    // Open the door
-                    if (item instanceof SwitchItem) {
-                        item.send(OnOffType.OFF);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        });
+        HomekitCharacteristicFactory.setValueFromEnum(
+                getCharacteristic(HomekitCharacteristicType.LOCK_TARGET_STATE).get(), state, targetStateMapping);
         return CompletableFuture.completedFuture(null);
     }
 

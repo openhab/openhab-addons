@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="window-values">
+		<label>Detailed Window Status</label>
+		<description>Detailed Status Windows</description>
+		<channels>
+			<channel id="front-left" typeId="front-left-window"/>
+			<channel id="front-right" typeId="front-right-window"/>
+			<channel id="rear-left" typeId="rear-left-window"/>
+			<channel id="rear-right" typeId="rear-right-window"/>
+			<channel id="rear-right-blind" typeId="rear-right-blind"/>
+			<channel id="rear-left-blind" typeId="rear-left-blind"/>
+			<channel id="rear-blind" typeId="rear-blind"/>
+			<channel id="flip-window" typeId="flip-window"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

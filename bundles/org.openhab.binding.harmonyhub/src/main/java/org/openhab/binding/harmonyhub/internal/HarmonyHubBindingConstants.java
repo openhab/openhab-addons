@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link HarmonyHubBinding} class defines common constants, which are
+ * The {@link HarmonyHubBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Dan Cunningham - Initial contribution
@@ -42,7 +42,7 @@ public class HarmonyHubBindingConstants {
     public static final String DEVICE_PROPERTY_ID = "id";
     public static final String DEVICE_PROPERTY_NAME = "name";
 
-    public static final String HUB_PROPERTY_ID = "id";
+    public static final String HUB_PROPERTY_ID = "uuid";
     public static final String HUB_PROPERTY_HOST = "host";
     public static final String HUB_PROPERTY_NAME = "name";
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,12 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -252,7 +255,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
 
         /*
          * Setting the needed boolean variable to false, so we can be sure
-         * that the XML response won't have a OK_200 status
+         * that the XML response won't have an OK_200 status
          */
         ChannelUID modeChannelUID = getChannelUID(radioThing, modeChannelID);
         Item modeTestItem = initializeItem(modeChannelUID, CHANNEL_MODE, acceptedItemType);
@@ -815,13 +818,10 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
 
     private boolean isConfigurationComplete(Configuration config) {
         String ip = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_IP);
-        BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT.toString());
-        String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN.toString());
+        BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT);
+        String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN);
 
-        if (ip == null || port.compareTo(BigDecimal.ZERO) == 0 || StringUtils.isEmpty(pin)) {
-            return false;
-        }
-        return true;
+        return !(ip == null || port.compareTo(BigDecimal.ZERO) == 0 || pin == null || pin.isEmpty());
     }
 
     @SuppressWarnings("null")

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.tesla.internal.throttler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TimeProvider} provides time stamps
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public interface TimeProvider {
-    public static final TimeProvider SYSTEM_PROVIDER = new TimeProvider() {
+    static final TimeProvider SYSTEM_PROVIDER = new TimeProvider() {
         @Override
         public long getCurrentTimeInMillis() {
             return System.currentTimeMillis();
         }
     };
 
-    public long getCurrentTimeInMillis();
+    long getCurrentTimeInMillis();
 }

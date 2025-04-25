@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
 import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.live.dto.LiveDataType;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetDevice;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO;
+import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -44,6 +48,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
     private static final long DEFAULT_TTL = 60 * 60; // 1 Hour
 
@@ -119,7 +124,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
         }
     }
 
-    private ThingUID getThingUID(Bridge bridge, Device device) {
+    private @Nullable ThingUID getThingUID(Bridge bridge, Device device) {
         ThingUID thingUID = null;
         switch (device.getDeviceType()) {
             case SENSOR:
@@ -133,8 +138,16 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                 } else if (device instanceof SwitchableDevice) {
                     thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
                             device.getUUId());
-                } else if (device instanceof TellstickNetDevice) {
-                    if ((((TellstickNetDevice) device).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                } else if (device instanceof TellstickNetDevice netDevice) {
+                    if ((netDevice.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+                        thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
+                                device.getUUId());
+                    } else {
+                        thingUID = new ThingUID(TellstickBindingConstants.SWITCH_THING_TYPE, bridge.getUID(),
+                                device.getUUId());
+                    }
+                } else if (device instanceof TellstickLocalDeviceDTO localDevice) {
+                    if ((localDevice.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
                         thingUID = new ThingUID(TellstickBindingConstants.DIMMER_THING_TYPE, bridge.getUID(),
                                 device.getUUId());
                     } else {
@@ -152,8 +165,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
     private ThingTypeUID findSensorType(Device device) {
         logger.debug("Device: {}", device);
         ThingTypeUID sensorThingId;
-        if (device instanceof TellstickSensor) {
-            TellstickSensor sensor = (TellstickSensor) device;
+        if (device instanceof TellstickSensor sensor) {
             logger.debug("Sensor: {}", device);
             if (sensor.getData(DataType.WINDAVERAGE) != null || sensor.getData(DataType.WINDGUST) != null
                     || sensor.getData(DataType.WINDDIRECTION) != null) {
@@ -163,8 +175,19 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
+        } else if (device instanceof TellstickNetSensor sensor) {
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
+                    || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
+                sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE) || sensor.isSensorOfType(LiveDataType.RAINTOTAL)) {
+                sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
+                sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
+            } else {
+                sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
+            }
         } else {
-            TellstickNetSensor sensor = (TellstickNetSensor) device;
+            TellstickLocalSensorDTO sensor = (TellstickLocalSensorDTO) device;
             if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
                     || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
@@ -182,5 +205,14 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
     public void addBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {
         telldusBridgeHandlers.add(tellstickBridgeHandler);
         tellstickBridgeHandler.registerDeviceStatusListener(this);
+    }
+
+    public void removeBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {
+        telldusBridgeHandlers.remove(tellstickBridgeHandler);
+        tellstickBridgeHandler.unregisterDeviceStatusListener(this);
+    }
+
+    public boolean isOnlyForOneBridgeHandler() {
+        return telldusBridgeHandlers.size() == 1;
     }
 }

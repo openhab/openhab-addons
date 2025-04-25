@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation returns a new HeritableFuture instance that uses
      *           the current instance as a parent. Cancellation of the child will result in
      *           cancellation of the parent.
@@ -67,6 +67,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         return new HeritableFuture<>(this);
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void setParentFuture(Supplier<@Nullable Future<?>> futureSupplier) {
         synchronized (futureLock) {
             var future = futureSupplier.get();
@@ -84,7 +85,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation cancels this future first, then cancels the parent future.
      */
     @Override
@@ -106,7 +107,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
@@ -119,7 +120,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
@@ -132,7 +133,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *
      * {@inheritDoc}
      *
-     * @implSpec
+     * @implNote
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override

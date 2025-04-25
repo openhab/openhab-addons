@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
@@ -92,6 +93,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     }
 
     private String getCloudDiscoveryMode() {
+        final Configuration miioConfig = this.miioConfig;
         if (miioConfig != null) {
             try {
                 Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
@@ -184,21 +186,24 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         if (cloudConnector.isConnected()) {
             List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
             for (CloudDeviceDTO device : dv) {
-                String id = Utils.toHEX(device.getDid());
-                if (cloudDiscoveryMode.contentEquals(SUPPORTED)) {
+                String id = device.getDid();
+                if (SUPPORTED.contentEquals(cloudDiscoveryMode)) {
                     if (MiIoDevices.getType(device.getModel()).getThingType().equals(THING_TYPE_UNSUPPORTED)) {
-                        logger.warn("Discovered from cloud, but ignored because not supported: {} {}", id, device);
+                        logger.debug("Discovered from cloud, but ignored because not supported: {} {}", id, device);
                     }
                 }
-                if (device.getIsOnline()) {
+                if (device.getIsOnline() || ALL.contentEquals(cloudDiscoveryMode)) {
                     logger.debug("Discovered from cloud: {} {}", id, device);
                     cloudDevices.put(id, device.getLocalip());
                     String token = device.getToken();
-                    String label = device.getName() + " " + id + " (" + device.getDid() + ")";
+                    String label = device.getName() + " (" + id + (id.contains(".") ? "" : " / " + Utils.getHexId(id))
+                            + ")";
+                    String model = device.getModel();
                     String country = device.getServer();
                     boolean isOnline = device.getIsOnline();
+                    String parent = device.getParentId();
                     String ip = device.getLocalip();
-                    submitDiscovery(ip, token, id, label, country, isOnline);
+                    submitDiscovery(ip, token, id, label, model, country, isOnline, parent);
                 } else {
                     logger.debug("Discovered from cloud, but ignored because not online: {} {}", id, device);
                 }
@@ -210,9 +215,12 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         logger.trace("Discovery responses from : {}:{}", ip, Utils.getSpacedHex(response));
         Message msg = new Message(response);
         String token = Utils.getHex(msg.getChecksum());
-        String id = Utils.getHex(msg.getDeviceId());
-        String label = "Xiaomi Mi Device " + id + " (" + Utils.fromHEX(id) + ")";
+        String hexId = Utils.getHex(msg.getDeviceId());
+        String id = Utils.fromHEX(hexId);
+        String label = "Xiaomi Mi Device " + " (" + id + (id.contains(".") ? "" : " / " + Utils.getHexId(id)) + ")";
+        String model = "";
         String country = "";
+        String parent = "";
         boolean isOnline = false;
         if (ip.equals(cloudDevices.get(id))) {
             logger.debug("Skipped adding local found {}. Already discovered by cloud.", label);
@@ -224,29 +232,41 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
             if (cloudInfo != null) {
                 logger.debug("Cloud Info: {}", cloudInfo);
                 token = cloudInfo.getToken();
-                label = cloudInfo.getName() + " " + id + " (" + Utils.fromHEX(id) + ")";
+                label = cloudInfo.getName() + " " + id + " (" + Utils.getHexId(id) + ")";
+                model = cloudInfo.getModel();
                 country = cloudInfo.getServer();
                 isOnline = cloudInfo.getIsOnline();
+                parent = cloudInfo.getParentId();
             }
         }
-        submitDiscovery(ip, token, id, label, country, isOnline);
+        submitDiscovery(ip, token, id, label, model, country, isOnline, parent);
     }
 
-    private void submitDiscovery(String ip, String token, String id, String label, String country, boolean isOnline) {
-        ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+    private void submitDiscovery(String ip, String token, String id, String label, String model, String country,
+            boolean isOnline, String parent) {
+        ThingUID uid;
+        ThingTypeUID thingType = MiIoDevices.getType(model).getThingType();
+        if (id.startsWith("lumi.") || THING_TYPE_GATEWAY.equals(thingType) || THING_TYPE_LUMI.equals(thingType)) {
+            uid = new ThingUID(thingType, Utils.getHexId(id).replace(".", "_"));
+        } else {
+            uid = new ThingUID(THING_TYPE_MIIO, Utils.getHexId(id).replace(".", "_"));
+        }
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                 .withProperty(PROPERTY_DID, id);
-        if (IGNORED_TOKENS.contains(token)) {
-            logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Utils.fromHEX(id), ip, uid);
+        if (IGNORED_TOKENS.contains(token) || token.isBlank()) {
+            logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Utils.getHexId(id), ip, uid);
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);
             dr = dr.withRepresentationProperty(PROPERTY_DID).withLabel(label);
         } else {
-            logger.debug("Discovered Mi Device {} ({}) at {} as {} with token {}", id, Utils.fromHEX(id), ip, uid,
+            logger.debug("Discovered Mi Device {} ({}) at {} as {} with token {}", id, Utils.getHexId(id), ip, uid,
                     token);
             dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(PROPERTY_DID)
                     .withLabel(label + " with token");
+        }
+        if (!model.isEmpty()) {
+            dr = dr.withProperty(PROPERTY_MODEL, model);
         }
         if (!country.isEmpty() && isOnline) {
             dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
@@ -320,9 +340,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      * Stops the {@link ReceiverThread} thread
      */
     private synchronized void stopReceiverThreat() {
+        final Thread socketReceiveThread = this.socketReceiveThread;
         if (socketReceiveThread != null) {
             socketReceiveThread.interrupt();
-            socketReceiveThread = null;
+            this.socketReceiveThread = null;
         }
         closeSocket();
     }
@@ -332,6 +353,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      *
      */
     private class ReceiverThread extends Thread {
+
+        public ReceiverThread() {
+            super(String.format("OH-binding-%s-%s", MiIoBindingConstants.BINDING_ID, "Receiver"));
+        }
+
         @Override
         public void run() {
             DatagramSocket socket = getSocket();

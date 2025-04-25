@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,10 @@ package org.openhab.binding.automower.internal.discovery;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_AUTOMOWER;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
@@ -42,7 +42,7 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
     private final AutomowerBridgeHandler bridgeHandler;
 
     public AutomowerDiscoveryService(AutomowerBridgeHandler bridgeHandler) {
-        super(Collections.singleton(THING_TYPE_AUTOMOWER), 10, false);
+        super(Set.of(THING_TYPE_AUTOMOWER), 10, false);
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -62,6 +62,17 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                         mower.getAttributes().getSystem().getSerialNumber());
                 properties.put(AutomowerBindingConstants.AUTOMOWER_MODEL, mower.getAttributes().getSystem().getModel());
                 properties.put(AutomowerBindingConstants.AUTOMOWER_NAME, mower.getAttributes().getSystem().getName());
+
+                properties.put(AutomowerBindingConstants.AUTOMOWER_CAN_CONFIRM_ERROR,
+                        (mower.getAttributes().getCapabilities().canConfirmError() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_HEADLIGHTS,
+                        (mower.getAttributes().getCapabilities().hasHeadlights() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_POSITION,
+                        (mower.getAttributes().getCapabilities().hasPosition() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_STAY_OUT_ZONES,
+                        (mower.getAttributes().getCapabilities().hasStayOutZones() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_WORK_AREAS,
+                        (mower.getAttributes().getCapabilities().hasWorkAreas() ? "yes" : "no"));
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(mowerThingUid)
                         .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)

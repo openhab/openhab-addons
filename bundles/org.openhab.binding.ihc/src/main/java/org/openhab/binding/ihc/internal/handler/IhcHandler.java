@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +50,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.projectfile.ProjectFileUtils;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
@@ -180,6 +181,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         linkedResourceIds.addAll(getAllLinkedChannelsResourceIds());
         logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
 
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                "Initializing communication to the IHC / ELKO controller");
+
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
             controlJob = scheduler.scheduleWithFixedDelay(this::reconnectCheck, 0, 1, TimeUnit.SECONDS);
@@ -201,13 +205,18 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         if (ihc == null) {
-            logger.warn("Connection is not initialized, abort resource value update for channel '{}'!", channelUID);
+            logger.debug("Connection is not initialized, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
         if (ihc.getConnectionState() != ConnectionState.CONNECTED) {
-            logger.warn("Connection to controller is not open, abort resource value update for channel '{}'!",
+            logger.debug("Connection to controller is not open, aborting resource value update for channel '{}'!",
                     channelUID);
+            return;
+        }
+
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Controller is not ONLINE, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
@@ -334,8 +343,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             WSTimeManagerSettings timeSettings = ihc.getTimeSettings();
             logger.debug("Controller time settings: {}", timeSettings);
 
-            ZonedDateTime time = timeSettings.getTimeAndDateInUTC().getAsZonedDateTime(ZoneId.of("Z"))
-                    .withZoneSameInstant(ZoneId.systemDefault());
+            Instant time = timeSettings.getTimeAndDateInUTC().getAsInstant(ZoneId.of("Z"));
+
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
             logger.warn("Controller uptime information fetch failed, reason: {}.", e.getMessage(), e);
@@ -402,8 +411,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private List<IhcEnumValue> getEnumValues(WSResourceValue value) {
-        if (value instanceof WSEnumValue) {
-            return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
+        if (value instanceof WSEnumValue enumValue) {
+            return enumDictionary.getEnumValues(enumValue.definitionTypeID);
         }
         return null;
     }
@@ -534,10 +543,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             setConnectingState(true);
             logger.debug("Connecting to IHC / ELKO LS controller [hostname='{}', username='{}'].", conf.hostname,
                     conf.username);
-            ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout);
+            ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout, conf.tlsVersion);
             ihc.openConnection();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Initializing communication to the IHC / ELKO controller");
             loadProject();
             createChannels();
             updateControllerProperties();
@@ -565,7 +572,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     projectFile = ProjectFileUtils.readFromFile(filePath);
                 } catch (IhcExecption e) {
-                    logger.debug("Error occured when read project file from file '{}', reason {}", filePath,
+                    logger.debug("Error occurred when read project file from file '{}', reason {}", filePath,
                             e.getMessage(), e);
                     loadProject = true;
                 }
@@ -584,7 +591,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     ProjectFileUtils.saveToFile(filePath, data);
                 } catch (IhcExecption e) {
-                    logger.warn("Error occured when trying to write data to file '{}', reason {}", filePath,
+                    logger.warn("Error occurred when trying to write data to file '{}', reason {}", filePath,
                             e.getMessage(), e);
                 }
                 projectFile = ProjectFileUtils.converteBytesToDocument(data);
@@ -664,7 +671,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     @Override
-    public void errorOccured(IhcExecption e) {
+    public void errorOccurred(IhcExecption e) {
         logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage(), e);
         logger.debug("Reconnection request");
         setReconnectRequest(true);
@@ -717,7 +724,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             } catch (ConversionException e) {
                 logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             } catch (RuntimeException e) {
-                logger.warn("Unknown error occured, reason: {}.", e.getMessage(), e);
+                logger.warn("Unknown error occurred, reason: {}.", e.getMessage(), e);
             }
         });
 
@@ -757,8 +764,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void checkPotentialButtonPresses(WSResourceValue value) {
-        if (value instanceof WSBooleanValue) {
-            if (((WSBooleanValue) value).value) {
+        if (value instanceof WSBooleanValue booleanValue) {
+            if (booleanValue.value) {
                 // potential button press
                 lastUpdate.put(value.resourceID, LocalDateTime.now());
                 updateTriggers(value.resourceID, Duration.ZERO);
@@ -852,8 +859,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                 if (params.getChannelTypeId() != null) {
                                     switch (params.getChannelTypeId()) {
                                         case CHANNEL_TYPE_RF_LOW_BATTERY:
-                                            updateState(channelId,
-                                                    dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
+                                            updateState(channelId, OnOffType.from(dev.getBatteryLevel() != 1));
                                             break;
                                         case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
                                             int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
@@ -869,7 +875,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     });
                 });
             } catch (IhcExecption e) {
-                logger.debug("Error occured when fetching RF device information, reason: : {} ", e.getMessage(), e);
+                logger.debug("Error occurred when fetching RF device information, reason: : {} ", e.getMessage(), e);
                 return;
             }
         }
@@ -883,6 +889,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
                 connect();
                 setReconnectRequest(false);
+            } catch (IhcFatalExecption e) {
+                logger.warn("Can't open connection to controller {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                setReconnectRequest(false);
+                return;
             } catch (IhcExecption e) {
                 logger.debug("Can't open connection to controller {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

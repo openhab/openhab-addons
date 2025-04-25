@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,9 @@ package org.openhab.automation.pidcontroller.internal.handler;
 import static org.openhab.automation.pidcontroller.internal.PIDControllerConstants.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +27,6 @@ import org.openhab.core.automation.ModuleHandlerCallback;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseTriggerModuleHandler;
 import org.openhab.core.automation.handler.TriggerHandlerCallback;
-import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -43,9 +38,11 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateChangedEvent;
 import org.openhab.core.items.events.ItemStateEvent;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -61,20 +58,26 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     public static final String MODULE_TYPE_ID = AUTOMATION_NAME + ".trigger";
     private static final Set<String> SUBSCRIBED_EVENT_TYPES = Set.of(ItemStateEvent.TYPE, ItemStateChangedEvent.TYPE);
     private final Logger logger = LoggerFactory.getLogger(PIDControllerTriggerHandler.class);
-    private final ScheduledExecutorService scheduler = Executors
-            .newSingleThreadScheduledExecutor(new NamedThreadFactory("OH-automation-" + AUTOMATION_NAME, true));
     private final ServiceRegistration<?> eventSubscriberRegistration;
     private final PIDController controller;
     private final int loopTimeMs;
-    private @Nullable ScheduledFuture<?> controllerjob;
     private long previousTimeMs = System.currentTimeMillis();
     private Item inputItem;
     private Item setpointItem;
+    private Optional<String> commandTopic;
     private EventFilter eventFilter;
+    private EventPublisher eventPublisher;
+    private @Nullable String pInspector;
+    private @Nullable String iInspector;
+    private @Nullable String dInspector;
+    private @Nullable String eInspector;
+    private ItemRegistry itemRegistry;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
         super(module);
+        this.itemRegistry = itemRegistry;
+        this.eventPublisher = eventPublisher;
 
         Configuration config = module.getConfiguration();
 
@@ -93,32 +96,52 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             throw new IllegalArgumentException("Configured setpoint item not found: " + setpointItemName, e);
         }
 
-        double outputLowerLimit = getDoubleFromConfig(config, CONFIG_OUTPUT_LOWER_LIMIT);
-        double outputUpperLimit = getDoubleFromConfig(config, CONFIG_OUTPUT_UPPER_LIMIT);
+        String commandItemName = (String) config.get(CONFIG_COMMAND_ITEM);
+        if (commandItemName != null) {
+            commandTopic = Optional.of("openhab/items/" + commandItemName + "/statechanged");
+        } else {
+            commandTopic = Optional.empty();
+        }
+
         double kpAdjuster = getDoubleFromConfig(config, CONFIG_KP_GAIN);
         double kiAdjuster = getDoubleFromConfig(config, CONFIG_KI_GAIN);
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
+        double iMinValue = getDoubleFromConfig(config, CONFIG_I_MIN);
+        double iMaxValue = getDoubleFromConfig(config, CONFIG_I_MAX);
+        pInspector = (String) config.get(P_INSPECTOR);
+        iInspector = (String) config.get(I_INSPECTOR);
+        dInspector = (String) config.get(D_INSPECTOR);
+        eInspector = (String) config.get(E_INSPECTOR);
 
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
 
-        controller = new PIDController(outputLowerLimit, outputUpperLimit, kpAdjuster, kiAdjuster, kdAdjuster,
-                kdTimeConstant);
+        double previousIntegralPart = getItemNameValueAsNumberOrZero(itemRegistry, iInspector);
+        double previousDerivativePart = getItemNameValueAsNumberOrZero(itemRegistry, dInspector);
+        double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
+
+        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
+                previousIntegralPart, previousDerivativePart, previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
 
-            return topic.equals("openhab/items/" + inputItemName + "/state")
-                    || topic.equals("openhab/items/" + inputItemName + "/statechanged")
-                    || topic.equals("openhab/items/" + setpointItemName + "/statechanged");
+            return ("openhab/items/" + inputItemName + "/state").equals(topic)
+                    || ("openhab/items/" + inputItemName + "/statechanged").equals(topic)
+                    || ("openhab/items/" + setpointItemName + "/statechanged").equals(topic)
+                    || commandTopic.map(t -> topic.equals(t)).orElse(false);
         };
 
         eventSubscriberRegistration = bundleContext.registerService(EventSubscriber.class.getName(), this, null);
 
         eventPublisher.post(ItemEventFactory.createCommandEvent(inputItemName, RefreshType.REFRESH));
+    }
 
-        controllerjob = scheduler.scheduleWithFixedDelay(this::calculate, 0, loopTimeMs, TimeUnit.MILLISECONDS);
+    @Override
+    public void setCallback(ModuleHandlerCallback callback) {
+        super.setCallback(callback);
+        getCallback().getScheduler().scheduleWithFixedDelay(this::calculate, 0, loopTimeMs, TimeUnit.MILLISECONDS);
     }
 
     private <T> T requireNonNull(T obj, String message) {
@@ -129,7 +152,13 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     }
 
     private double getDoubleFromConfig(Configuration config, String key) {
-        return ((BigDecimal) Objects.requireNonNull(config.get(key), key + " is not set")).doubleValue();
+        Object rawValue = config.get(key);
+
+        if (rawValue == null) {
+            return Double.NaN;
+        }
+
+        return ((BigDecimal) rawValue).doubleValue();
     }
 
     private void calculate() {
@@ -139,49 +168,78 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         try {
             input = getItemValueAsNumber(inputItem);
         } catch (PIDException e) {
-            logger.warn("Input item: {}", e.getMessage());
+            logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
             return;
         }
 
         try {
             setpoint = getItemValueAsNumber(setpointItem);
         } catch (PIDException e) {
-            logger.warn("Setpoint item: {}", e.getMessage());
+            logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
             return;
         }
 
         long now = System.currentTimeMillis();
 
-        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs);
+        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs);
         previousTimeMs = now;
 
-        Map<String, BigDecimal> outputs = new HashMap<>();
+        updateItem(pInspector, output.getProportionalPart());
+        updateItem(iInspector, output.getIntegralPart());
+        updateItem(dInspector, output.getDerivativePart());
+        updateItem(eInspector, output.getError());
 
-        putBigDecimal(outputs, OUTPUT, output.getOutput());
-        putBigDecimal(outputs, P_INSPECTOR, output.getProportionalPart());
-        putBigDecimal(outputs, I_INSPECTOR, output.getIntegralPart());
-        putBigDecimal(outputs, D_INSPECTOR, output.getDerivativePart());
-        putBigDecimal(outputs, E_INSPECTOR, output.getError());
+        getCallback().triggered(module, Map.of(COMMAND, new DecimalType(output.getOutput())));
+    }
 
-        ModuleHandlerCallback localCallback = callback;
-        if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            ((TriggerHandlerCallback) localCallback).triggered(module, outputs);
-        } else {
-            logger.warn("No callback set");
+    private void updateItem(@Nullable String itemName, double value) {
+        if (itemName != null) {
+            try {
+                itemRegistry.getItem(itemName);
+                eventPublisher.post(ItemEventFactory.createStateEvent(itemName,
+                        Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
+            } catch (ItemNotFoundException e) {
+                logger.warn("Item doesn't exist: {}", itemName);
+            }
         }
     }
 
-    private void putBigDecimal(Map<String, BigDecimal> map, String key, double value) {
-        map.put(key, BigDecimal.valueOf(value));
+    private TriggerHandlerCallback getCallback() {
+        ModuleHandlerCallback localCallback = callback;
+        if (localCallback != null && localCallback instanceof TriggerHandlerCallback handlerCallback) {
+            return handlerCallback;
+        }
+
+        throw new IllegalStateException("The module callback is not set");
+    }
+
+    private double getItemNameValueAsNumberOrZero(ItemRegistry itemRegistry, @Nullable String itemName)
+            throws IllegalArgumentException {
+        double value = 0.0;
+
+        if (itemName == null) {
+            return value;
+        }
+
+        try {
+            value = getItemValueAsNumber(itemRegistry.getItem(itemName));
+            logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
+        } catch (ItemNotFoundException e) {
+            throw new IllegalArgumentException("Configured item not found: " + itemName, e);
+        } catch (PIDException e) {
+            logger.warn("Item '{}' value recovery errored: {}", itemName, e.getMessage());
+        }
+
+        return value;
     }
 
     private double getItemValueAsNumber(Item item) throws PIDException {
         State setpointState = item.getState();
 
-        if (setpointState instanceof Number) {
-            double doubleValue = ((Number) setpointState).doubleValue();
+        if (setpointState instanceof Number number) {
+            double doubleValue = number.doubleValue();
 
-            if (Double.isFinite(doubleValue)) {
+            if (Double.isFinite(doubleValue) && !Double.isNaN(doubleValue)) {
                 return doubleValue;
             }
         } else if (setpointState instanceof StringType) {
@@ -191,14 +249,23 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
                 // nothing
             }
         }
-        throw new PIDException(
-                "Item type is not a number: " + setpointState.getClass().getSimpleName() + ": " + setpointState);
+        throw new PIDException("Not a number: " + setpointState.getClass().getSimpleName() + ": " + setpointState);
     }
 
     @Override
     public void receive(Event event) {
-        if (event instanceof ItemStateChangedEvent) {
-            calculate();
+        if (event instanceof ItemStateChangedEvent changedEvent) {
+            if (commandTopic.isPresent() && event.getTopic().equals(commandTopic.get())) {
+                if ("RESET".equals(changedEvent.getItemState().toString())) {
+                    controller.setIntegralResult(0);
+                    controller.setDerivativeResult(0);
+                    eventPublisher.post(ItemEventFactory.createStateEvent(changedEvent.getItemName(), UnDefType.NULL));
+                } else if (changedEvent.getItemState() != UnDefType.NULL) {
+                    logger.warn("Unknown command: {}", changedEvent.getItemState());
+                }
+            } else {
+                calculate();
+            }
         }
     }
 
@@ -215,11 +282,6 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     @Override
     public void dispose() {
         eventSubscriberRegistration.unregister();
-
-        ScheduledFuture<?> localControllerjob = controllerjob;
-        if (localControllerjob != null) {
-            localControllerjob.cancel(true);
-        }
 
         super.dispose();
     }

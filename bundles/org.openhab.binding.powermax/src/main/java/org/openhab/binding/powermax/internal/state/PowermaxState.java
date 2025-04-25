@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,210 +12,166 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class to store the state of the alarm system
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class PowermaxState {
+@NonNullByDefault
+public class PowermaxState extends PowermaxStateContainer {
 
-    private Boolean powerlinkMode;
-    private Boolean downloadMode;
+    private final Logger logger = LoggerFactory.getLogger(PowermaxState.class);
+
+    // For values that are mapped to channels, use a channel name constant from
+    // PowermaxBindingConstants. For values used internally but not mapped to
+    // channels, use a unique name starting with "_".
+
+    public BooleanValue powerlinkMode = new BooleanValue(this, "_powerlink_mode");
+    public BooleanValue downloadMode = new BooleanValue(this, "_download_mode");
+    public BooleanValue ready = new BooleanValue(this, READY);
+    public BooleanValue bypass = new BooleanValue(this, WITH_ZONES_BYPASSED);
+    public BooleanValue alarmActive = new BooleanValue(this, ALARM_ACTIVE);
+    public BooleanValue trouble = new BooleanValue(this, TROUBLE);
+    public BooleanValue alertInMemory = new BooleanValue(this, ALERT_IN_MEMORY);
+    public BooleanValue ringing = new BooleanValue(this, RINGING);
+    public DateTimeValue ringingSince = new DateTimeValue(this, "_ringing_since");
+    public StringValue statusStr = new StringValue(this, SYSTEM_STATUS);
+    public StringValue armMode = new StringValue(this, "_arm_mode");
+    public BooleanValue downloadSetupRequired = new BooleanValue(this, "_download_setup_required");
+    public DateTimeValue lastKeepAlive = new DateTimeValue(this, "_last_keepalive");
+    public DateTimeValue lastMessageTime = new DateTimeValue(this, LAST_MESSAGE_TIME);
+
+    public DynamicValue<Boolean> isArmed = new DynamicValue<>(this, SYSTEM_ARMED, () -> {
+        return isArmed();
+    }, () -> {
+        Boolean isArmed = isArmed();
+        if (isArmed == null) {
+            return UnDefType.NULL;
+        }
+        return OnOffType.from(isArmed);
+    });
+
+    public DynamicValue<String> panelMode = new DynamicValue<>(this, MODE, () -> {
+        return getPanelMode();
+    }, () -> {
+        String mode = getPanelMode();
+        if (mode == null) {
+            return UnDefType.NULL;
+        }
+        return new StringType(mode);
+    });
+
+    public DynamicValue<String> shortArmMode = new DynamicValue<>(this, ARM_MODE, () -> {
+        return getShortArmMode();
+    }, () -> {
+        String mode = getShortArmMode();
+        if (mode == null) {
+            return UnDefType.NULL;
+        }
+        return new StringType(mode);
+    });
+
+    public DynamicValue<String> activeAlerts = new DynamicValue<>(this, ACTIVE_ALERTS, () -> {
+        return getActiveAlerts();
+    }, () -> {
+        return new StringType(getActiveAlerts());
+    });
+
+    public DynamicValue<Boolean> pgmStatus = new DynamicValue<>(this, PGM_STATUS, () -> {
+        return getPGMX10DeviceStatus(0);
+    }, () -> {
+        Boolean status = getPGMX10DeviceStatus(0);
+        if (status == null) {
+            return UnDefType.NULL;
+        }
+        return OnOffType.from(status);
+    });
+
+    private PowermaxPanelSettings panelSettings;
     private PowermaxZoneState[] zones;
     private Boolean[] pgmX10DevicesStatus;
-    private Boolean ready;
-    private Boolean bypass;
-    private Boolean alarmActive;
-    private Boolean trouble;
-    private Boolean alertInMemory;
-    private String statusStr;
-    private String armMode;
-    private Boolean downloadSetupRequired;
-    private Long lastKeepAlive;
-    private byte[] updateSettings;
-    private String panelStatus;
-    private String alarmType;
-    private String troubleType;
-    private String[] eventLog;
+    private byte @Nullable [] updateSettings;
+    private String @Nullable [] eventLog;
     private Map<Integer, Byte> updatedZoneNames;
     private Map<Integer, Integer> updatedZoneInfos;
+    private List<PowermaxActiveAlert> activeAlertList;
+    private List<PowermaxActiveAlert> activeAlertQueue;
+
+    private enum PowermaxAlertAction {
+        ADD,
+        CLEAR,
+        CLEAR_ALL
+    }
+
+    private class PowermaxActiveAlert {
+        public final @Nullable PowermaxAlertAction action;
+        public final int zone;
+        public final int code;
+
+        public PowermaxActiveAlert(@Nullable PowermaxAlertAction action, int zone, int code) {
+            this.action = action;
+            this.zone = zone;
+            this.code = code;
+        }
+    }
 
     /**
      * Constructor (default values)
      */
-    public PowermaxState(PowermaxPanelSettings panelSettings) {
+    public PowermaxState(PowermaxPanelSettings panelSettings, TimeZoneProvider timeZoneProvider) {
+        super(timeZoneProvider);
+        this.panelSettings = panelSettings;
+
         zones = new PowermaxZoneState[panelSettings.getNbZones()];
         for (int i = 0; i < panelSettings.getNbZones(); i++) {
-            zones[i] = new PowermaxZoneState();
+            zones[i] = new PowermaxZoneState(timeZoneProvider);
         }
         pgmX10DevicesStatus = new Boolean[panelSettings.getNbPGMX10Devices()];
         updatedZoneNames = new HashMap<>();
         updatedZoneInfos = new HashMap<>();
+        activeAlertList = new ArrayList<>();
+        activeAlertQueue = new ArrayList<>();
+
+        // Most fields will get populated by the initial download, but we set
+        // the ringing indicator in response to an alarm message. We have no
+        // other way to know if the siren is ringing so we'll initialize it to
+        // false.
+
+        this.ringing.setValue(false);
     }
 
     /**
-     * Get the current mode (standard or Powerlink)
-     *
-     * @return true when the current mode is Powerlink; false when standard
-     */
-    public Boolean isPowerlinkMode() {
-        return powerlinkMode;
-    }
-
-    /**
-     * Set the current mode (standard or Powerlink)
-     *
-     * @param powerlinkMode true for Powerlink or false for standard
-     */
-    public void setPowerlinkMode(Boolean powerlinkMode) {
-        this.powerlinkMode = powerlinkMode;
-    }
-
-    /**
-     * Get whether or not the setup is being downloaded
-     *
-     * @return true when downloading the setup
-     */
-    public Boolean isDownloadMode() {
-        return downloadMode;
-    }
-
-    /**
-     * Set whether or not the setup is being downloaded
-     *
-     * @param downloadMode true when downloading the setup
-     */
-    public void setDownloadMode(Boolean downloadMode) {
-        this.downloadMode = downloadMode;
-    }
-
-    /**
-     * Get whether or not the zone sensor is tripped
+     * Return the PowermaxZoneState object for a given zone. If the zone number is
+     * out of range, returns a dummy PowermaxZoneState object that won't be
+     * persisted. The return value is never null, so it's safe to chain method
+     * calls.
      *
      * @param zone the index of the zone (first zone is index 1)
-     *
-     * @return true when the zone sensor is tripped
+     * @return the zone state object (or a dummy zone state)
      */
-    public Boolean isSensorTripped(int zone) {
-        return ((zone < 1) || (zone > zones.length)) ? null : zones[zone - 1].isTripped();
-    }
-
-    /**
-     * Set whether or not the zone sensor is tripped
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param tripped true if tripped
-     */
-    public void setSensorTripped(int zone, Boolean tripped) {
-        if ((zone >= 1) && (zone <= zones.length)) {
-            this.zones[zone - 1].setTripped(tripped);
-        }
-    }
-
-    /**
-     * Get the timestamp when the zone sensor was last tripped
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     *
-     * @return the timestamp
-     */
-    public Long getSensorLastTripped(int zone) {
-        return ((zone < 1) || (zone > zones.length)) ? null : zones[zone - 1].getLastTripped();
-    }
-
-    /**
-     * Set the timestamp when the zone sensor was last tripped
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param lastTripped the timestamp
-     */
-    public void setSensorLastTripped(int zone, Long lastTripped) {
-        if ((zone >= 1) && (zone <= zones.length)) {
-            this.zones[zone - 1].setLastTripped(lastTripped);
-        }
-    }
-
-    /**
-     * Compare the sensor last trip with a given time
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param refTime the time in ms to compare with
-     *
-     * @return true if the sensor is tripped and last trip is older than the given time
-     */
-    public boolean isLastTripBeforeTime(int zone, long refTime) {
-        return ((zone < 1) || (zone > zones.length)) ? false : zones[zone - 1].isLastTripBeforeTime(refTime);
-    }
-
-    /**
-     * Get whether or not the battery of the zone sensor is low
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     *
-     * @return true when the battery is low
-     */
-    public Boolean isSensorLowBattery(int zone) {
-        return ((zone < 1) || (zone > zones.length)) ? null : zones[zone - 1].isLowBattery();
-    }
-
-    /**
-     * Set whether or not the battery of the zone sensor is low
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param lowBattery true if battery is low
-     */
-    public void setSensorLowBattery(int zone, Boolean lowBattery) {
-        if ((zone >= 1) && (zone <= zones.length)) {
-            this.zones[zone - 1].setLowBattery(lowBattery);
-        }
-    }
-
-    /**
-     * Get whether or not the zone sensor is bypassed
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     *
-     * @return true if bypassed
-     */
-    public Boolean isSensorBypassed(int zone) {
-        return ((zone < 1) || (zone > zones.length)) ? null : zones[zone - 1].isBypassed();
-    }
-
-    /**
-     * Set whether or not the zone sensor is bypassed
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param bypassed true if bypassed
-     */
-    public void setSensorBypassed(int zone, Boolean bypassed) {
-        if ((zone >= 1) && (zone <= zones.length)) {
-            this.zones[zone - 1].setBypassed(bypassed);
-        }
-    }
-
-    /**
-     * Get whether or not the zone sensor is armed
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     *
-     * @return true if armed
-     */
-    public Boolean isSensorArmed(int zone) {
-        return ((zone < 1) || (zone > zones.length)) ? null : zones[zone - 1].isArmed();
-    }
-
-    /**
-     * Set whether or not the zone sensor is armed
-     *
-     * @param zone the index of the zone (first zone is index 1)
-     * @param armed true if armed
-     */
-    public void setSensorArmed(int zone, Boolean armed) {
-        if ((zone >= 1) && (zone <= zones.length)) {
-            this.zones[zone - 1].setArmed(armed);
+    public PowermaxZoneState getZone(int zone) {
+        if ((zone < 1) || (zone > zones.length)) {
+            logger.warn("Received update for invalid zone {}", zone);
+            return new PowermaxZoneState(timeZoneProvider);
+        } else {
+            return zones[zone - 1];
         }
     }
 
@@ -226,7 +182,7 @@ public class PowermaxState {
      *
      * @return the status (true or false)
      */
-    public Boolean getPGMX10DeviceStatus(int device) {
+    public @Nullable Boolean getPGMX10DeviceStatus(int device) {
         return ((device < 0) || (device >= pgmX10DevicesStatus.length)) ? null : pgmX10DevicesStatus[device];
     }
 
@@ -236,172 +192,10 @@ public class PowermaxState {
      * @param device the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
      * @param status true or false
      */
-    public void setPGMX10DeviceStatus(int device, Boolean status) {
+    public void setPGMX10DeviceStatus(int device, @Nullable Boolean status) {
         if ((device >= 0) && (device < pgmX10DevicesStatus.length)) {
             this.pgmX10DevicesStatus[device] = status;
         }
-    }
-
-    /**
-     * Get whether or not the panel is ready
-     *
-     * @return true if ready
-     */
-    public Boolean isReady() {
-        return ready;
-    }
-
-    /**
-     * Set whether or not the panel is ready
-     *
-     * @param ready true if ready
-     */
-    public void setReady(Boolean ready) {
-        this.ready = ready;
-    }
-
-    /**
-     * Get whether or not at least one zone is bypassed
-     *
-     * @return true if at least one zone is bypassed
-     */
-    public Boolean isBypass() {
-        return bypass;
-    }
-
-    /**
-     * Set whether or not at least one zone is bypassed
-     *
-     * @param bypass true if at least one zone is bypassed
-     */
-    public void setBypass(Boolean bypass) {
-        this.bypass = bypass;
-    }
-
-    /**
-     * Get whether or not the alarm is active
-     *
-     * @return true if active
-     */
-    public Boolean isAlarmActive() {
-        return alarmActive;
-    }
-
-    /**
-     * Set whether or not the alarm is active
-     *
-     * @param alarmActive true if the alarm is active
-     */
-    public void setAlarmActive(Boolean alarmActive) {
-        this.alarmActive = alarmActive;
-    }
-
-    /**
-     * Get whether or not the panel is identifying a trouble
-     *
-     * @return true if the panel is identifying a trouble
-     */
-    public Boolean isTrouble() {
-        return trouble;
-    }
-
-    /**
-     * Set whether or not the panel is identifying a trouble
-     *
-     * @param trouble true if trouble is identified
-     */
-    public void setTrouble(Boolean trouble) {
-        this.trouble = trouble;
-    }
-
-    /**
-     * Get whether or not the panel has saved an alert in memory
-     *
-     * @return true if the panel has saved an alert in memory
-     */
-    public Boolean isAlertInMemory() {
-        return alertInMemory;
-    }
-
-    /**
-     * Set whether or not the panel has saved an alert in memory
-     *
-     * @param alertInMemory true if an alert is saved in memory
-     */
-    public void setAlertInMemory(Boolean alertInMemory) {
-        this.alertInMemory = alertInMemory;
-    }
-
-    /**
-     * Get the partition status
-     *
-     * @return the status as a short string
-     */
-    public String getStatusStr() {
-        return statusStr;
-    }
-
-    /**
-     * Set the partition status
-     *
-     * @param statusStr the status as a short string
-     */
-    public void setStatusStr(String statusStr) {
-        this.statusStr = statusStr;
-    }
-
-    /**
-     * Get the arming name
-     *
-     * @return the arming mode
-     */
-    public String getArmMode() {
-        return armMode;
-    }
-
-    /**
-     * Set the arming name
-     *
-     * @param armMode the arming name
-     */
-    public void setArmMode(String armMode) {
-        this.armMode = armMode;
-    }
-
-    /**
-     * Get whether or not the setup downloading is required
-     *
-     * @return true when downloading the setup is required
-     */
-    public Boolean isDownloadSetupRequired() {
-        return downloadSetupRequired;
-    }
-
-    /**
-     * Set whether or not the setup downloading is required
-     *
-     * @param downloadSetupRequired true when downloading setup is required
-     */
-    public void setDownloadSetupRequired(Boolean downloadSetupRequired) {
-        this.downloadSetupRequired = downloadSetupRequired;
-    }
-
-    /**
-     * Get the timestamp of the last received "keep alive" message
-     *
-     * @return the timestamp
-     */
-    public Long getLastKeepAlive() {
-        return lastKeepAlive;
-    }
-
-    /**
-     * Set the timestamp of the last received "keep alive" message
-     *
-     * @param lastKeepAlive the timestamp
-     */
-    public void setLastKeepAlive(Long lastKeepAlive) {
-        this.lastKeepAlive = lastKeepAlive;
     }
 
     /**
@@ -409,7 +203,7 @@ public class PowermaxState {
      *
      * @return the raw buffer as a table of bytes
      */
-    public byte[] getUpdateSettings() {
+    public byte @Nullable [] getUpdateSettings() {
         return updateSettings;
     }
 
@@ -423,66 +217,13 @@ public class PowermaxState {
     }
 
     /**
-     * Get the panel status
-     *
-     * @return the panel status
-     */
-    public String getPanelStatus() {
-        return panelStatus;
-    }
-
-    /**
-     * Set the panel status
-     *
-     * @param panelStatus the status as a short string
-     */
-    public void setPanelStatus(String panelStatus) {
-        this.panelStatus = panelStatus;
-    }
-
-    /**
-     * Get the kind of the current alarm identified by the panel
-     *
-     * @return the kind of the current alarm; null if no alarm
-     */
-    public String getAlarmType() {
-        return alarmType;
-    }
-
-    /**
-     * Set the kind of the current alarm identified by the panel
-     *
-     * @param alarmType the kind of alarm (set it to null if no alarm)
-     */
-    public void setAlarmType(String alarmType) {
-        this.alarmType = alarmType;
-    }
-
-    /**
-     * Get the kind of the current trouble identified by the panel
-     *
-     * @return the kind of the current trouble; null if no trouble
-     */
-    public String getTroubleType() {
-        return troubleType;
-    }
-
-    /**
-     * Set the kind of the current trouble identified by the panel
-     *
-     * @param troubleType the kind of trouble (set it to null if no trouble)
-     */
-    public void setTroubleType(String troubleType) {
-        this.troubleType = troubleType;
-    }
-
-    /**
      * Get the number of entries in the event log
      *
      * @return the number of entries
      */
     public int getEventLogSize() {
-        return (eventLog == null) ? 0 : eventLog.length;
+        String @Nullable [] localEventLog = eventLog;
+        return (localEventLog == null) ? 0 : localEventLog.length;
     }
 
     /**
@@ -501,8 +242,10 @@ public class PowermaxState {
      *
      * @return the entry value (event)
      */
-    public String getEventLog(int index) {
-        return ((index < 1) || (index > getEventLogSize())) ? null : eventLog[index - 1];
+    public @Nullable String getEventLog(int index) {
+        String @Nullable [] localEventLog = eventLog;
+        return ((localEventLog == null) || (index < 1) || (index > getEventLogSize())) ? null
+                : localEventLog[index - 1];
     }
 
     /**
@@ -512,8 +255,9 @@ public class PowermaxState {
      * @param event the entry value (event)
      */
     public void setEventLog(int index, String event) {
-        if ((index >= 1) && (index <= getEventLogSize())) {
-            this.eventLog[index - 1] = event;
+        String @Nullable [] localEventLog = eventLog;
+        if ((localEventLog != null) && (index >= 1) && (index <= getEventLogSize())) {
+            localEventLog[index - 1] = event;
         }
     }
 
@@ -533,18 +277,88 @@ public class PowermaxState {
         this.updatedZoneInfos.put(zoneIdx, zoneInfo);
     }
 
+    // This is an attempt to add persistence to an otherwise (mostly) stateless class.
+    // All of the other values are either present or null, and it's easy to build a
+    // delta state based only on which values are non-null. But these system events
+    // are different because each event can be set by one message and cleared by a
+    // later message. So to preserve the semantics of the state class, we'll keep a
+    // queue of incoming changes, and apply them only when the delta state is resolved.
+
+    public boolean hasActiveAlertsQueued() {
+        return !activeAlertQueue.isEmpty();
+    }
+
+    public String getActiveAlerts() {
+        if (activeAlertList.isEmpty()) {
+            return "None";
+        }
+
+        List<String> alerts = new ArrayList<>();
+
+        activeAlertList.forEach(e -> {
+            String message = PowermaxMessageConstants.getSystemEvent(e.code).toString();
+            String alert = e.zone == 0 ? message
+                    : String.format("%s (%s)", message, panelSettings.getZoneOrUserName(e.zone));
+
+            alerts.add(alert);
+        });
+
+        return String.join(", ", alerts);
+    }
+
+    public void addActiveAlert(int zoneIdx, int code) {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.ADD, zoneIdx, code);
+        activeAlertQueue.add(alert);
+    }
+
+    public void clearActiveAlert(int zoneIdx, int code) {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.CLEAR, zoneIdx, code);
+        activeAlertQueue.add(alert);
+    }
+
+    public void clearAllActiveAlerts() {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.CLEAR_ALL, 0, 0);
+        activeAlertQueue.add(alert);
+    }
+
+    public void resolveActiveAlerts(@Nullable PowermaxState previousState) {
+        copyActiveAlertsFrom(previousState);
+
+        activeAlertQueue.forEach(alert -> {
+            if (alert.action == PowermaxAlertAction.CLEAR_ALL) {
+                activeAlertList.clear();
+            } else {
+                activeAlertList.removeIf(e -> e.zone == alert.zone && e.code == alert.code);
+
+                if (alert.action == PowermaxAlertAction.ADD) {
+                    activeAlertList.add(new PowermaxActiveAlert(null, alert.zone, alert.code));
+                }
+            }
+        });
+    }
+
+    private void copyActiveAlertsFrom(@Nullable PowermaxState state) {
+        activeAlertList = new ArrayList<>();
+
+        if (state != null) {
+            state.activeAlertList.forEach(alert -> {
+                activeAlertList.add(new PowermaxActiveAlert(null, alert.zone, alert.code));
+            });
+        }
+    }
+
     /**
      * Get the panel mode
      *
      * @return either Download or Powerlink or Standard
      */
-    public String getPanelMode() {
+    public @Nullable String getPanelMode() {
         String mode = null;
-        if (Boolean.TRUE.equals(downloadMode)) {
+        if (Boolean.TRUE.equals(downloadMode.getValue())) {
             mode = "Download";
-        } else if (Boolean.TRUE.equals(powerlinkMode)) {
+        } else if (Boolean.TRUE.equals(powerlinkMode.getValue())) {
             mode = "Powerlink";
-        } else if (Boolean.FALSE.equals(powerlinkMode)) {
+        } else if (Boolean.FALSE.equals(powerlinkMode.getValue())) {
             mode = "Standard";
         }
         return mode;
@@ -555,8 +369,8 @@ public class PowermaxState {
      *
      * @return true or false
      */
-    public Boolean isArmed() {
-        return isArmed(getArmMode());
+    public @Nullable Boolean isArmed() {
+        return isArmed(armMode.getValue());
     }
 
     /**
@@ -566,7 +380,7 @@ public class PowermaxState {
      *
      * @return true or false; null if mode is unexpected
      */
-    private static Boolean isArmed(String armMode) {
+    private static @Nullable Boolean isArmed(@Nullable String armMode) {
         Boolean result = null;
         if (armMode != null) {
             try {
@@ -584,8 +398,8 @@ public class PowermaxState {
      *
      * @return the short description
      */
-    public String getShortArmMode() {
-        return getShortArmMode(getArmMode());
+    public @Nullable String getShortArmMode() {
+        return getShortArmMode(armMode.getValue());
     }
 
     /**
@@ -595,7 +409,7 @@ public class PowermaxState {
      *
      * @return the short name or null if mode is unexpected
      */
-    private static String getShortArmMode(String armMode) {
+    private static @Nullable String getShortArmMode(@Nullable String armMode) {
         String result = null;
         if (armMode != null) {
             try {
@@ -614,62 +428,38 @@ public class PowermaxState {
      * @param otherState the other state
      */
     public void keepOnlyDifferencesWith(PowermaxState otherState) {
-        for (int i = 1; i <= zones.length; i++) {
-            if ((isSensorTripped(i) != null) && isSensorTripped(i).equals(otherState.isSensorTripped(i))) {
-                setSensorTripped(i, null);
-            }
-            if ((getSensorLastTripped(i) != null)
-                    && getSensorLastTripped(i).equals(otherState.getSensorLastTripped(i))) {
-                setSensorLastTripped(i, null);
-            }
-            if ((isSensorLowBattery(i) != null) && isSensorLowBattery(i).equals(otherState.isSensorLowBattery(i))) {
-                setSensorLowBattery(i, null);
-            }
-            if ((isSensorBypassed(i) != null) && isSensorBypassed(i).equals(otherState.isSensorBypassed(i))) {
-                setSensorBypassed(i, null);
-            }
-            if ((isSensorArmed(i) != null) && isSensorArmed(i).equals(otherState.isSensorArmed(i))) {
-                setSensorArmed(i, null);
+        for (int zone = 1; zone <= zones.length; zone++) {
+            PowermaxZoneState thisZone = getZone(zone);
+            PowermaxZoneState otherZone = otherState.getZone(zone);
+
+            for (int i = 0; i < thisZone.getValues().size(); i++) {
+                Value<?> thisValue = thisZone.getValues().get(i);
+                Value<?> otherValue = otherZone.getValues().get(i);
+
+                if ((thisValue.getValue() != null) && thisValue.getValue().equals(otherValue.getValue())) {
+                    thisValue.setValue(null);
+                }
             }
         }
+
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if ((getPGMX10DeviceStatus(i) != null)
-                    && getPGMX10DeviceStatus(i).equals(otherState.getPGMX10DeviceStatus(i))) {
+            Boolean status = getPGMX10DeviceStatus(i);
+            if ((status != null) && status.equals(otherState.getPGMX10DeviceStatus(i))) {
                 setPGMX10DeviceStatus(i, null);
             }
         }
-        if ((ready != null) && ready.equals(otherState.isReady())) {
-            ready = null;
+
+        for (int i = 0; i < getValues().size(); i++) {
+            Value<?> thisValue = getValues().get(i);
+            Value<?> otherValue = otherState.getValues().get(i);
+
+            if ((thisValue.getValue() != null) && thisValue.getValue().equals(otherValue.getValue())) {
+                thisValue.setValue(null);
+            }
         }
-        if ((bypass != null) && bypass.equals(otherState.isBypass())) {
-            bypass = null;
-        }
-        if ((alarmActive != null) && alarmActive.equals(otherState.isAlarmActive())) {
-            alarmActive = null;
-        }
-        if ((trouble != null) && trouble.equals(otherState.isTrouble())) {
-            trouble = null;
-        }
-        if ((alertInMemory != null) && alertInMemory.equals(otherState.isAlertInMemory())) {
-            alertInMemory = null;
-        }
-        if ((statusStr != null) && statusStr.equals(otherState.getStatusStr())) {
-            statusStr = null;
-        }
-        if ((armMode != null) && armMode.equals(otherState.getArmMode())) {
-            armMode = null;
-        }
-        if ((lastKeepAlive != null) && lastKeepAlive.equals(otherState.getLastKeepAlive())) {
-            lastKeepAlive = null;
-        }
-        if ((panelStatus != null) && panelStatus.equals(otherState.getPanelStatus())) {
-            panelStatus = null;
-        }
-        if ((alarmType != null) && alarmType.equals(otherState.getAlarmType())) {
-            alarmType = null;
-        }
-        if ((troubleType != null) && troubleType.equals(otherState.getTroubleType())) {
-            troubleType = null;
+
+        if (hasActiveAlertsQueued()) {
+            resolveActiveAlerts(otherState);
         }
     }
 
@@ -680,148 +470,99 @@ public class PowermaxState {
      * @param update the other state to consider for the update
      */
     public void merge(PowermaxState update) {
-        if (update.isPowerlinkMode() != null) {
-            powerlinkMode = update.isPowerlinkMode();
-        }
-        if (update.isDownloadMode() != null) {
-            downloadMode = update.isDownloadMode();
-        }
-        for (int i = 1; i <= zones.length; i++) {
-            if (update.isSensorTripped(i) != null) {
-                setSensorTripped(i, update.isSensorTripped(i));
-            }
-            if (update.getSensorLastTripped(i) != null) {
-                setSensorLastTripped(i, update.getSensorLastTripped(i));
-            }
-            if (update.isSensorLowBattery(i) != null) {
-                setSensorLowBattery(i, update.isSensorLowBattery(i));
-            }
-            if (update.isSensorBypassed(i) != null) {
-                setSensorBypassed(i, update.isSensorBypassed(i));
-            }
-            if (update.isSensorArmed(i) != null) {
-                setSensorArmed(i, update.isSensorArmed(i));
+        for (int zone = 1; zone <= zones.length; zone++) {
+            PowermaxZoneState thisZone = getZone(zone);
+            PowermaxZoneState otherZone = update.getZone(zone);
+
+            for (int i = 0; i < thisZone.getValues().size(); i++) {
+                Value<?> thisValue = thisZone.getValues().get(i);
+                Value<?> otherValue = otherZone.getValues().get(i);
+
+                if (otherValue.getValue() != null) {
+                    thisValue.setValueUnsafe(otherValue.getValue());
+                }
             }
         }
+
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if (update.getPGMX10DeviceStatus(i) != null) {
-                setPGMX10DeviceStatus(i, update.getPGMX10DeviceStatus(i));
+            Boolean status = update.getPGMX10DeviceStatus(i);
+            if (status != null) {
+                setPGMX10DeviceStatus(i, status);
             }
         }
-        if (update.isReady() != null) {
-            ready = update.isReady();
+
+        for (int i = 0; i < getValues().size(); i++) {
+            Value<?> thisValue = getValues().get(i);
+            Value<?> otherValue = update.getValues().get(i);
+
+            if (otherValue.getValue() != null) {
+                thisValue.setValueUnsafe(otherValue.getValue());
+            }
         }
-        if (update.isBypass() != null) {
-            bypass = update.isBypass();
-        }
-        if (update.isAlarmActive() != null) {
-            alarmActive = update.isAlarmActive();
-        }
-        if (update.isTrouble() != null) {
-            trouble = update.isTrouble();
-        }
-        if (update.isAlertInMemory() != null) {
-            alertInMemory = update.isAlertInMemory();
-        }
-        if (update.getStatusStr() != null) {
-            statusStr = update.getStatusStr();
-        }
-        if (update.getArmMode() != null) {
-            armMode = update.getArmMode();
-        }
-        if (update.getLastKeepAlive() != null) {
-            lastKeepAlive = update.getLastKeepAlive();
-        }
-        if (update.getPanelStatus() != null) {
-            panelStatus = update.getPanelStatus();
-        }
-        if (update.getAlarmType() != null) {
-            alarmType = update.getAlarmType();
-        }
-        if (update.getTroubleType() != null) {
-            troubleType = update.getTroubleType();
-        }
+
         if (update.getEventLogSize() > getEventLogSize()) {
             setEventLogSize(update.getEventLogSize());
         }
         for (int i = 1; i <= getEventLogSize(); i++) {
-            if (update.getEventLog(i) != null) {
-                setEventLog(i, update.getEventLog(i));
+            String log = update.getEventLog(i);
+            if (log != null) {
+                setEventLog(i, log);
             }
+        }
+
+        if (update.hasActiveAlertsQueued()) {
+            copyActiveAlertsFrom(update);
         }
     }
 
     @Override
     public String toString() {
-        String str = "";
+        String str = "Bridge state:";
 
-        if (powerlinkMode != null) {
-            str += "\n - powerlink mode = " + (powerlinkMode ? "yes" : "no");
-        }
-        if (downloadMode != null) {
-            str += "\n - download mode = " + (downloadMode ? "yes" : "no");
-        }
-        for (int i = 1; i <= zones.length; i++) {
-            if (isSensorTripped(i) != null) {
-                str += String.format("\n - sensor zone %d %s", i, isSensorTripped(i) ? "tripped" : "untripped");
-            }
-            if (getSensorLastTripped(i) != null) {
-                str += String.format("\n - sensor zone %d last trip %d", i, getSensorLastTripped(i));
-            }
-            if (isSensorLowBattery(i) != null) {
-                str += String.format("\n - sensor zone %d %s", i, isSensorLowBattery(i) ? "low battery" : "battery ok");
-            }
-            if (isSensorBypassed(i) != null) {
-                str += String.format("\n - sensor zone %d %sbypassed", i, isSensorBypassed(i) ? "" : "not ");
-            }
-            if (isSensorArmed(i) != null) {
-                str += String.format("\n - sensor zone %d %s", i, isSensorArmed(i) ? "armed" : "disarmed");
+        for (Value<?> value : getValues()) {
+            if (value.getValue() != null) {
+                String channel = value.getChannel();
+                String vStr = value.getValue().toString();
+                String state = value.getState().toString();
+
+                str += "\n - " + channel + " = " + vStr;
+                if (!vStr.equals(state)) {
+                    str += " (" + state + ")";
+                }
             }
         }
+
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if (getPGMX10DeviceStatus(i) != null) {
+            Boolean status = getPGMX10DeviceStatus(i);
+            if (status != null) {
                 str += String.format("\n - %s status = %s", (i == 0) ? "PGM device" : String.format("X10 device %d", i),
-                        getPGMX10DeviceStatus(i) ? "ON" : "OFF");
+                        status ? "ON" : "OFF");
             }
         }
-        if (ready != null) {
-            str += "\n - ready = " + (ready ? "yes" : "no");
+
+        for (int i = 1; i <= zones.length; i++) {
+            for (Value<?> value : zones[i - 1].getValues()) {
+                if (value.getValue() != null) {
+                    String channel = value.getChannel();
+                    String vStr = value.getValue().toString();
+                    String state = value.getState().toString();
+
+                    str += String.format("\n - sensor zone %d %s = %s", i, channel, vStr);
+                    if (!vStr.equals(state)) {
+                        str += " (" + state + ")";
+                    }
+                }
+            }
         }
-        if (bypass != null) {
-            str += "\n - bypass = " + (bypass ? "yes" : "no");
-        }
-        if (alarmActive != null) {
-            str += "\n - alarm active = " + (alarmActive ? "yes" : "no");
-        }
-        if (trouble != null) {
-            str += "\n - trouble = " + (trouble ? "yes" : "no");
-        }
-        if (alertInMemory != null) {
-            str += "\n - alert in memory = " + (alertInMemory ? "yes" : "no");
-        }
-        if (statusStr != null) {
-            str += "\n - status = " + statusStr;
-        }
-        if (armMode != null) {
-            str += "\n - arm mode = " + armMode;
-        }
-        if (lastKeepAlive != null) {
-            str += "\n - last keep alive = " + lastKeepAlive;
-        }
-        if (panelStatus != null) {
-            str += "\n - panel status = " + panelStatus;
-        }
-        if (alarmType != null) {
-            str += "\n - alarm type = " + alarmType;
-        }
-        if (troubleType != null) {
-            str += "\n - trouble type = " + troubleType;
-        }
+
         for (int i = 1; i <= getEventLogSize(); i++) {
-            if (getEventLog(i) != null) {
-                str += "\n - event log " + i + " = " + getEventLog(i);
+            String log = getEventLog(i);
+            if (log != null) {
+                str += "\n - event log " + i + " = " + log;
             }
         }
+
+        str += "\n - active alarms/alerts = " + getActiveAlerts();
 
         return str;
     }

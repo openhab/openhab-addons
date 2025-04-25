@@ -9,7 +9,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -17,18 +18,12 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Comfort Mode</label>
 		<category>Heating</category>
-		<tags>
-			<tag>TargetTemperature</tag>
-		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="sleepTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Sleep Mode</label>
 		<category>Heating</category>
-		<tags>
-			<tag>TargetTemperature</tag>
-		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="awayTemperature">
@@ -36,9 +31,6 @@
 		<label>Temperature Away Mode</label>
 		<description>Set temperature away mode</description>
 		<category>Heating</category>
-		<tags>
-			<tag>TargetTemperature</tag>
-		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="targetTemperatureHeater">
@@ -46,7 +38,8 @@
 		<label>Target Temperature</label>
 		<category>Heating</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -54,9 +47,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<category>Heating</category>
-		<tags>
-			<tag>TargetTemperature</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="heatingActive">
@@ -121,7 +111,8 @@
 		<label>Target Temperature Vacation</label>
 		<category>Heating</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>

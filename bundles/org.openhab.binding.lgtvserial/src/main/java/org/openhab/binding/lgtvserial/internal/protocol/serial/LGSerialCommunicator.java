@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class LGSerialCommunicator {
         int data;
         int len = 0;
         int offset = 0;
-        while ((data = input.read()) > -1) {
+        while (input.available() > 0 && (data = input.read()) > -1) {
             if (data == 'x') {
                 String result = new String(buffer, offset, len);
                 if (logger.isDebugEnabled()) {
@@ -136,12 +136,12 @@ public class LGSerialCommunicator {
         try {
             input.close();
         } catch (IOException e) {
-            logger.debug("An error occured while closing the serial input stream", e);
+            logger.debug("An error occurred while closing the serial input stream", e);
         }
         try {
             output.close();
         } catch (IOException e) {
-            logger.debug("An error occured while closing the serial output stream", e);
+            logger.debug("An error occurred while closing the serial output stream", e);
         }
         port.close();
         // For some reason, there needs some delay after close so we don't fail to open back the serial device

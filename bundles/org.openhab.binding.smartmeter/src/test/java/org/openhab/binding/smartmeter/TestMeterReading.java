@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -44,6 +44,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class TestMeterReading {
 
     @Test
@@ -54,10 +55,10 @@ public class TestMeterReading {
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(1), period);
+        long executionTime = period.toMillis() * executionCount;
+        Disposable disposable = meter.readValues(executionTime, Executors.newScheduledThreadPool(1), period);
         try {
-            verify(changeListener, after(executionCount * period.toMillis() + period.toMillis() / 2).never())
-                    .errorOccurred(any());
+            verify(changeListener, after(executionTime + period.toMillis() / 2 + 50).never()).errorOccurred(any());
             verify(changeListener, times(executionCount)).valueChanged(any());
         } finally {
             disposable.dispose();
@@ -77,7 +78,7 @@ public class TestMeterReading {
         try {
             verify(changeListener, after(
                     period.toMillis() + 2 * period.toMillis() * ConnectorBase.NUMBER_OF_RETRIES + period.toMillis() / 2)
-                            .times(1)).errorOccurred(any());
+                    .times(1)).errorOccurred(any());
             verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
         } finally {
             disposable.dispose();
@@ -90,7 +91,7 @@ public class TestMeterReading {
         final int timeout = 5000;
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
             try {
-                Thread.sleep(timeout + 2000);
+                Thread.sleep(timeout);
             } catch (InterruptedException e) {
             }
             return new Object();
@@ -98,9 +99,9 @@ public class TestMeterReading {
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(2), period);
+        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
         try {
-            verify(changeListener, after(timeout + 3000).times(1)).errorOccurred(any(TimeoutException.class));
+            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
         } finally {
             disposable.dispose();
         }
@@ -112,19 +113,20 @@ public class TestMeterReading {
         final int timeout = 5000;
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
             try {
-                Thread.sleep(timeout + 2000);
+                Thread.sleep(timeout);
             } catch (InterruptedException e) {
             }
             throw new RuntimeException(new IOException("fucked up"));
         }));
         MeterDevice<Object> meter = getMeterDevice(connector);
+        @SuppressWarnings("unchecked")
         Consumer<Throwable> errorHandler = mock(Consumer.class);
         RxJavaPlugins.setErrorHandler(errorHandler);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(2), period);
+        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
         try {
-            verify(changeListener, after(timeout + 3000).times(1)).errorOccurred(any(TimeoutException.class));
+            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
             verifyNoMoreInteractions(errorHandler);
         } finally {
             disposable.dispose();
@@ -136,18 +138,18 @@ public class TestMeterReading {
     }
 
     MeterDevice<Object> getMeterDevice(ConnectorBase<Object> connector) {
-        return new MeterDevice<Object>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0,
-                ProtocolMode.SML) {
+        return new MeterDevice<>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0, ProtocolMode.SML) {
 
             @Override
-            protected @NonNull IMeterReaderConnector<Object> createConnector(
-                    @NonNull Supplier<@NonNull SerialPortManager> serialPortManagerSupplier, @NonNull String serialPort,
-                    int baudrate, int baudrateChangeDelay, @NonNull ProtocolMode protocolMode) {
+            protected IMeterReaderConnector<Object> createConnector(
+                    Supplier<SerialPortManager> serialPortManagerSupplier, String serialPort, int baudrate,
+                    int baudrateChangeDelay, ProtocolMode protocolMode) {
                 return connector;
             }
 
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected <Q extends @NonNull Quantity<Q>> void populateValueCache(Object smlFile) {
+            protected <Q extends Quantity<Q>> void populateValueCache(Object smlFile) {
                 addObisCache(new MeterValue("123", "333", null));
             }
         };

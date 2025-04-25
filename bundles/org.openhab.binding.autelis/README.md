@@ -1,14 +1,13 @@
 # Autelis Pool Control Binding
 
 Autelis manufactures a network enabled pool interface for many popular pool systems.
-See [the Autelis website](https://www.autelis.com) and the [Autelis Command Protocol](http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference) for more information.
+See [the Autelis website](https://www.autelis.com) and the [Autelis Command Protocol](https://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference) for more information.
 
 This binding supports:
 
-* Jandy and Pentair models
-* Read circuit, auxiliary, temperature, pump, chemistry and system values  
-* Control circuit, auxiliary lighting scenes, and temperature set points
-
+- Jandy and Pentair models
+- Read circuit, auxiliary, temperature, pump, chemistry and system values
+- Control circuit, auxiliary lighting scenes, and temperature set points
 
 ## Auto Discovery
 
@@ -25,13 +24,13 @@ The Autelis binding requires the host, port, username and password
 
 In the thing file, this looks e.g. like
 
-```
+```java
 Thing autelis:pentair:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
 ```
 
 or
 
-```
+```java
 Thing autelis:jandy:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
 ```
 

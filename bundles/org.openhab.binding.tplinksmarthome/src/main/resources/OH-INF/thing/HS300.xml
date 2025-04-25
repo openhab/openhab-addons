@@ -8,7 +8,7 @@
 		<label>HS300</label>
 		<description>TP-Link HS300 Smart Wi-Fi Power Strip</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="group" typeId="switch-group"/>
 			<channel-group id="outlet1" typeId="energy-outlet">
@@ -33,7 +33,7 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:plug"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-plug"/>
 	</thing-type>
 
 </thing:thing-descriptions>

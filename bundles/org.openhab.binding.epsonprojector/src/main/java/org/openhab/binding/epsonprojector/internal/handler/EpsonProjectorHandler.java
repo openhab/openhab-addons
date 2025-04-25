@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.epsonprojector.internal.handler;
 
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -25,6 +26,7 @@ import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandExceptio
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandType;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
+import org.openhab.binding.epsonprojector.internal.EpsonStateDescriptionOptionProvider;
 import org.openhab.binding.epsonprojector.internal.configuration.EpsonProjectorConfiguration;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
 import org.openhab.binding.epsonprojector.internal.enums.Background;
@@ -36,6 +38,7 @@ import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -47,6 +50,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +68,23 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
     private final SerialPortManager serialPortManager;
+    private final EpsonStateDescriptionOptionProvider stateDescriptionProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private Optional<EpsonProjectorDevice> device = Optional.empty();
 
+    private boolean loadSourceList = false;
+    private boolean isSourceListLoaded = false;
     private boolean isPowerOn = false;
+    private int maxVolume = 20;
+    private int curVolumeStep = -1;
     private int pollingInterval = DEFAULT_POLLING_INTERVAL_SEC;
 
-    public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
+    public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager,
+            EpsonStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.serialPortManager = serialPortManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -103,6 +114,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
 
+        loadSourceList = config.loadSourceList;
+        maxVolume = config.maxVolume;
         pollingInterval = config.pollingInterval;
         device.ifPresent(dev -> dev.setScheduler(scheduler));
         updateStatus(ThingStatus.UNKNOWN);
@@ -156,13 +169,16 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             State state = queryDataFromDevice(epsonCommand);
 
             if (state != null) {
-                updateStatus(ThingStatus.ONLINE);
                 if (isLinked(channel.getUID())) {
                     updateState(channel.getUID(), state);
                 }
+                // the first valid response will cause the thing to go ONLINE
+                if (state != UnDefType.UNDEF) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("Unknown channel {}", channel.getUID().getId());
+            logger.warn("Unknown channel {}, exception: {}", channel.getUID().getId(), e.getMessage());
         }
     }
 
@@ -180,10 +196,22 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 return null;
             }
 
+            // When polling for PWR status, also try to get SOURCELIST when enabled until successful
+            if (EpsonProjectorCommandType.POWER == commandType && loadSourceList && !isSourceListLoaded) {
+                final List<StateOption> sourceListOptions = remoteController.getSourceList();
+
+                // If a SOURCELIST was retrieved, load it in the source channel state options
+                if (!sourceListOptions.isEmpty()) {
+                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_TYPE_SOURCE),
+                            sourceListOptions);
+                    isSourceListLoaded = true;
+                }
+            }
+
             switch (commandType) {
                 case AKEYSTONE:
                     Switch autoKeystone = remoteController.getAutoKeystone();
-                    return autoKeystone == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(autoKeystone == Switch.ON);
                 case ASPECT_RATIO:
                     AspectRatio aspectRatio = remoteController.getAspectRatio();
                     return new StringType(aspectRatio.toString());
@@ -216,7 +244,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(fleshColor);
                 case FREEZE:
                     Switch freeze = remoteController.getFreeze();
-                    return freeze == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(freeze == Switch.ON);
                 case GAMMA:
                     Gamma gamma = remoteController.getGamma();
                     return new StringType(gamma.toString());
@@ -228,7 +256,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(hPosition);
                 case HREVERSE:
                     Switch hReverse = remoteController.getHorizontalReverse();
-                    return hReverse == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(hReverse == Switch.ON);
                 case KEY_CODE:
                     break;
                 case LAMP_TIME:
@@ -239,7 +267,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new StringType(luminance.toString());
                 case MUTE:
                     Switch mute = remoteController.getMute();
-                    return mute == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(mute == Switch.ON);
                 case POWER:
                     PowerStatus powerStatus = remoteController.getPowerStatus();
                     if (isLinked(CHANNEL_TYPE_POWERSTATE)) {
@@ -264,14 +292,23 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     int vKeystone = remoteController.getVerticalKeystone();
                     return new DecimalType(vKeystone);
                 case VOLUME:
-                    int volume = remoteController.getVolume();
-                    return new DecimalType(volume);
+                    // Each volume step falls within several percentage values, only change the UI if the polled step is
+                    // different than the step of the current percent. Without this logic the UI would snap back to the
+                    // closest whole % value for that step. e.g., UI set to 51% would snap back to 50% on the next
+                    // polling update.
+                    int volumeStep = remoteController.getVolume(maxVolume);
+                    if (curVolumeStep != volumeStep) {
+                        curVolumeStep = volumeStep;
+                        return new PercentType(
+                                BigDecimal.valueOf(Math.round(curVolumeStep / (double) maxVolume * 100.0)));
+                    }
+                    return null;
                 case VPOSITION:
                     int vPosition = remoteController.getVerticalPosition();
                     return new DecimalType(vPosition);
                 case VREVERSE:
                     Switch vReverse = remoteController.getVerticalReverse();
-                    return vReverse == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(vReverse == Switch.ON);
                 default:
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;
@@ -384,7 +421,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setVerticalKeystone(((DecimalType) command).intValue());
                     break;
                 case VOLUME:
-                    remoteController.setVolume(((DecimalType) command).intValue());
+                    int newVolumeStep = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * maxVolume);
+                    if (curVolumeStep != newVolumeStep) {
+                        curVolumeStep = newVolumeStep;
+                        remoteController.setVolume(curVolumeStep, maxVolume);
+                    }
                     break;
                 case VPOSITION:
                     remoteController.setVerticalPosition(((DecimalType) command).intValue());
@@ -405,13 +446,14 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     }
 
     private void closeConnection() {
-        EpsonProjectorDevice remoteController = device.get();
-        try {
-            logger.debug("Closing connection to device '{}'", this.thing.getUID());
-            remoteController.disconnect();
-            updateStatus(ThingStatus.OFFLINE);
-        } catch (EpsonProjectorException e) {
-            logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+        if (device.isPresent()) {
+            try {
+                logger.debug("Closing connection to device '{}'", this.thing.getUID());
+                device.get().disconnect();
+                updateStatus(ThingStatus.OFFLINE);
+            } catch (EpsonProjectorException e) {
+                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+            }
         }
     }
 }

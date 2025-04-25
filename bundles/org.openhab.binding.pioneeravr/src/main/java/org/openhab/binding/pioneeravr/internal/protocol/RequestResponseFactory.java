@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,16 @@ public final class RequestResponseFactory {
     }
 
     /**
+     * Return a SimpleCommand of the type given in parameter.
+     *
+     * @param command
+     * @return
+     */
+    public static SimpleCommand getIpControlCommand(SimpleCommandType command) {
+        return new SimpleCommand(command);
+    }
+
+    /**
      * Return a ParameterizedCommand of the type given in parameter and for the given zone.
      *
      * @param command
@@ -42,8 +52,18 @@ public final class RequestResponseFactory {
      * @return
      */
     public static SimpleCommand getIpControlCommand(SimpleCommandType command, int zone) {
-        SimpleCommand result = new SimpleCommand(command, zone);
-        return result;
+        return new SimpleCommand(command, zone);
+    }
+
+    /**
+     * Return a ParameterizedCommand of the type given in parameter. The
+     * parameter of the command has to be set before send.
+     *
+     * @param command
+     * @return
+     */
+    public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command) {
+        return new ParameterizedCommand(command);
     }
 
     /**
@@ -55,13 +75,26 @@ public final class RequestResponseFactory {
      * @return
      */
     public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command, int zone) {
-        ParameterizedCommand result = new ParameterizedCommand(command, zone);
+        return new ParameterizedCommand(command, zone);
+    }
+
+    /**
+     * Return a ParameterizedCommand of the type given in parameter. The
+     * parameter of the command is set with the given parameter value.
+     *
+     * @param command
+     * @param parameter
+     * @return
+     */
+    public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command, String parameter) {
+        ParameterizedCommand result = getIpControlCommand(command);
+        result.setParameter(parameter);
         return result;
     }
 
     /**
      * Return a ParameterizedCommand of the type given in parameter. The
-     * parameter of the command is set with the given paramter value.
+     * parameter of the command is set with the given parameter value.
      *
      * @param command
      * @param parameter
@@ -76,7 +109,7 @@ public final class RequestResponseFactory {
     }
 
     /**
-     * Return a IpControlResponse object based on the given response data.
+     * Return an IpControlResponse object based on the given response data.
      *
      * @param responseData
      * @return

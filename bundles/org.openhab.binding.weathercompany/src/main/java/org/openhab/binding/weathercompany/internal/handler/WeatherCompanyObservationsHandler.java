@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -104,7 +103,9 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
      * Build the URL for requesting the PWS current observations
      */
     private @Nullable String buildPwsUrl() {
-        if (StringUtils.isEmpty(getConfigAs(WeatherCompanyObservationsConfig.class).pwsStationId)) {
+        WeatherCompanyObservationsConfig config = getConfigAs(WeatherCompanyObservationsConfig.class);
+        String pwsStationId = config.pwsStationId;
+        if (pwsStationId == null || pwsStationId.isEmpty()) {
             return null;
         }
         String apiKey = getApiKey();
@@ -116,7 +117,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         // Set response type as JSON
         sb.append("&format=json");
         // Set PWS station Id from config
-        sb.append("&stationId=").append(getConfigAs(WeatherCompanyObservationsConfig.class).pwsStationId);
+        sb.append("&stationId=").append(pwsStationId);
         // Set API key from config
         sb.append("&apiKey=").append(apiKey);
         String url = sb.toString();
@@ -144,7 +145,8 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
             updatePwsObservations(pwsObservations);
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing pws observations response object: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing PWS observations");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-parsing-pws-forecast");
             return;
         }
     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for communicating with the music player daemon through a IP connection
+ * Class for communicating with the music player daemon through an IP connection
  *
  * @author Stefan Röllin - Initial contribution
  */
@@ -39,9 +39,7 @@ public class MPDConnection implements MPDResponseListener {
     /**
      * Constructor
      *
-     * @param address the IP address of the music player daemon
-     * @param port the TCP port to be used
-     * @param password the password to connect to the music player daemon
+     * @param listener
      */
     public MPDConnection(MPDEventListener listener) {
         this.listener = listener;

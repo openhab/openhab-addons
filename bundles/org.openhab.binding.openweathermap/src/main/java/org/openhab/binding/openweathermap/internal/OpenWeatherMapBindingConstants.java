@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ public class OpenWeatherMapBindingConstants {
     // Thing
     public static final ThingTypeUID THING_TYPE_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID,
             "weather-and-forecast");
-    public static final ThingTypeUID THING_TYPE_UVINDEX = new ThingTypeUID(BINDING_ID, "uvindex");
+    public static final ThingTypeUID THING_TYPE_AIR_POLLUTION = new ThingTypeUID(BINDING_ID, "air-pollution");
     // One Call API forecast
     public static final ThingTypeUID THING_TYPE_ONECALL_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID, "onecall");
     // One Call API historical data
@@ -45,6 +45,8 @@ public class OpenWeatherMapBindingConstants {
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_LANGUAGE = "language";
     public static final String CONFIG_LOCATION = "location";
+    public static final String CONFIG_HISTORY_DAYS = "historyDay";
+    public static final String CONFIG_API_VERSION = "apiVersion";
 
     // Channel group types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_STATION = new ChannelGroupTypeUID(BINDING_ID, "station");
@@ -52,7 +54,8 @@ public class OpenWeatherMapBindingConstants {
             "hourlyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX = new ChannelGroupTypeUID(BINDING_ID, "uvindex");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_AIR_POLLUTION_FORECAST = new ChannelGroupTypeUID(
+            BINDING_ID, "airPollutionForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_MINUTELY_FORECAST = new ChannelGroupTypeUID(
             BINDING_ID, "oneCallMinutely");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_HOURLY_FORECAST = new ChannelGroupTypeUID(
@@ -61,13 +64,15 @@ public class OpenWeatherMapBindingConstants {
             BINDING_ID, "oneCallDaily");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_CURRENT = new ChannelGroupTypeUID(BINDING_ID,
             "oneCallCurrent");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_ALERTS = new ChannelGroupTypeUID(BINDING_ID,
+            "oneCallAlerts");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
     public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
-    public static final String CHANNEL_GROUP_CURRENT_UVINDEX = "current";
+    public static final String CHANNEL_GROUP_CURRENT_AIR_POLLUTION = "current";
     public static final String CHANNEL_GROUP_ONECALL_CURRENT = "current";
     public static final String CHANNEL_GROUP_ONECALL_HISTORY = "history";
     public static final String CHANNEL_GROUP_ONECALL_TODAY = "forecastToday";
@@ -80,6 +85,9 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_MOONRISE = "moonrise";
+    public static final String CHANNEL_MOONSET = "moonset";
+    public static final String CHANNEL_MOON_PHASE = "moon-phase";
     public static final String CHANNEL_CONDITION = "condition";
     public static final String CHANNEL_CONDITION_ID = "condition-id";
     public static final String CHANNEL_CONDITION_ICON = "icon";
@@ -108,7 +116,21 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_SNOW = "snow";
     public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_UVINDEX = "uvindex";
+    public static final String CHANNEL_AIR_QUALITY_INDEX = "airQualityIndex";
+    public static final String CHANNEL_PARTICULATE_MATTER_2_5 = "particulateMatter2dot5";
+    public static final String CHANNEL_PARTICULATE_MATTER_10 = "particulateMatter10";
+    public static final String CHANNEL_CARBON_MONOXIDE = "carbonMonoxide";
+    public static final String CHANNEL_NITROGEN_MONOXIDE = "nitrogenMonoxide";
+    public static final String CHANNEL_NITROGEN_DIOXIDE = "nitrogenDioxide";
+    public static final String CHANNEL_OZONE = "ozone";
+    public static final String CHANNEL_SULPHUR_DIOXIDE = "sulphurDioxide";
+    public static final String CHANNEL_AMMONIA = "ammonia";
     public static final String CHANNEL_PRECIPITATION = "precipitation";
+    public static final String CHANNEL_ALERT_EVENT = "event";
+    public static final String CHANNEL_ALERT_DESCRIPTION = "description";
+    public static final String CHANNEL_ALERT_ONSET = "onset";
+    public static final String CHANNEL_ALERT_EXPIRES = "expires";
+    public static final String CHANNEL_ALERT_SOURCE = "source";
 
     // List of all configuration
     public static final String CONFIG_FORECAST_DAYS = "forecastDays";

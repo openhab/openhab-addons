@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeter;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConfiguration;
+import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 import org.openhab.core.thing.ChannelUID;
@@ -33,6 +35,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -67,11 +70,16 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private @NonNullByDefault({}) ScheduledFuture<?> meterWatchdog;
 
     /**
+     * The M-bus channel this meter is on, or if the channel is irrelevant is set to unknown channel
+     */
+    private int channel = DSMRMeterConstants.UNKNOWN_CHANNEL;
+
+    /**
      * Creates a new MeterHandler for the given Thing.
      *
      * @param thing {@link Thing} to create the MeterHandler for
      */
-    public DSMRMeterHandler(Thing thing) {
+    public DSMRMeterHandler(final Thing thing) {
         super(thing);
     }
 
@@ -79,7 +87,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
      * DSMR Meter don't support handling commands
      */
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command == RefreshType.REFRESH) {
             updateState();
         }
@@ -97,16 +105,17 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
 
         try {
             meterType = DSMRMeterType.valueOf(getThing().getThingTypeUID().getId().toUpperCase());
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             logger.warn(
                     "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
                     getThing(), getThing().getThingTypeUID().getId().toUpperCase());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.configuration.invalidmetertype");
+                    "@text/addon.dsmr.error.configuration.invalidmetertype");
             return;
         }
-        DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
-        DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
+        final DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
+        channel = meterType.meterKind.isChannelRelevant() ? meterConfig.channel : DSMRMeterConstants.UNKNOWN_CHANNEL;
+        final DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, channel);
         meter = new DSMRMeter(meterDescriptor);
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
                 TimeUnit.SECONDS);
@@ -129,20 +138,18 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private synchronized void updateState() {
         logger.trace("Update state for device: {}", getThing().getThingTypeUID().getId());
         if (!lastReceivedValues.isEmpty()) {
-            for (CosemObject cosemObject : lastReceivedValues) {
-                String channel = cosemObject.getType().name().toLowerCase();
+            for (final CosemObject cosemObject : lastReceivedValues) {
+                for (final Entry<String, ? extends State> entry : cosemObject.getCosemValues().entrySet()) {
+                    final String channel = cosemObject.getType().name().toLowerCase()
+                            /* CosemObject has a specific sub channel if key not empty */
+                            + (entry.getKey().isEmpty() ? "" : "_" + entry.getKey());
 
-                for (Entry<String, ? extends State> entry : cosemObject.getCosemValues().entrySet()) {
-                    if (!entry.getKey().isEmpty()) {
-                        /* CosemObject has a specific sub channel */
-                        channel += "_" + entry.getKey();
-                    }
-                    State newState = entry.getValue();
+                    final State newState = entry.getValue();
                     logger.debug("Updating state for channel {} to value {}", channel, newState);
                     updateState(channel, newState);
                 }
             }
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
+            if (ThingHandlerHelper.isHandlerInitialized(getThing()) && getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
             lastReceivedValues = Collections.emptyList();
@@ -156,18 +163,18 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
      * @param telegram The received telegram
      */
     @Override
-    public void telegramReceived(P1Telegram telegram) {
+    public void telegramReceived(final P1Telegram telegram) {
         lastReceivedValues = Collections.emptyList();
         final DSMRMeter localMeter = meter;
 
         if (localMeter == null) {
             return;
         }
-        List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects());
+        final List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects(), channel);
 
         if (filteredValues.isEmpty()) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
+                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/addon.dsmr.error.thing.nodata");
             }
         } else {
             if (logger.isTraceEnabled()) {
@@ -181,7 +188,12 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     }
 
     @Override
-    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public void onError(final DSMRErrorStatus state, final String message) {
+        // Error is handled in other places.
+    }
+
+    @Override
+    public synchronized void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             // Set status to offline --> Thing will become online after receiving meter values
@@ -204,7 +216,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
      * @param status off line status
      * @param details off line detailed message
      */
-    private void setDeviceOffline(ThingStatusDetail status, @Nullable String details) {
+    private void setDeviceOffline(final ThingStatusDetail status, @Nullable final String details) {
         updateStatus(ThingStatus.OFFLINE, status, details);
         getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL));
     }

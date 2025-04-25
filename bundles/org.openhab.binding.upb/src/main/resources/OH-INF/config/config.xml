@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="upb:device:address">
+	<config-description uri="thing-type:upb:device-address">
 		<parameter name="networkId" type="integer" min="0" max="255" required="false">
 			<label>Network ID</label>
 			<description>The ID of the UPB network that the device belongs to</description>

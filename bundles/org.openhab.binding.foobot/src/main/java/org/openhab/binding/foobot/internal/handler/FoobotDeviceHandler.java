@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,10 @@ package org.openhab.binding.foobot.internal.handler;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
@@ -93,7 +90,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing Foobot handler.");
         uuid = (String) getConfig().get(FoobotBindingConstants.CONFIG_UUID);
 
-        if (StringUtils.trimToNull(uuid) == null) {
+        if (uuid.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'uuid' is mandatory and must be configured");
             return;
@@ -202,8 +199,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         } else {
             final Unit<?> stateUnit = sensor.getUnit(unit);
             if (sensor == FoobotSensor.TIME) {
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault()));
+                return new DateTimeType(Instant.ofEpochSecond(Long.parseLong(value)));
             } else if (stateUnit == null) {
                 return new DecimalType(value);
             } else {

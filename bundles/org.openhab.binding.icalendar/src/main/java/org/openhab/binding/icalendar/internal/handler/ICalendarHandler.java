@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
  * @author Michael Wodniok - Added last_update-channel and additional needed handling of it
+ * @author Michael Wodniok - Changed calculation of Future for refresh of channels
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
@@ -85,8 +86,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             TimeZoneProvider tzProvider) {
         super(bridge);
         this.httpClient = httpClient;
-        calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
-                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
+        final File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), "cache"),
+                "org.openhab.binding.icalendar");
+        if (!cacheFolder.exists()) {
+            logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
+            cacheFolder.mkdirs();
+        }
+        calendarFile = new File(cacheFolder,
+                getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
         updateStatesLastCalledTime = Instant.now();
         this.tzProvider = tzProvider;
@@ -146,7 +153,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final int maxSize = maxSizeBD.intValue();
             try {
                 regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                        currentConfiguration.password, calendarFile, maxSize * 1048576, this);
+                        currentConfiguration.password, calendarFile, maxSize * 1048576, this,
+                        currentConfiguration.userAgent);
             } catch (URISyntaxException e) {
                 throw new ConfigBrokenException(String.format(
                         "The URI '%s' for downloading the calendar contains syntax errors.", currentConfiguration.url));
@@ -260,7 +268,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
+                    logger.debug("Exception occurred while pushing to item!", e);
                 }
             }
         }
@@ -331,6 +339,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             return;
         }
         final Instant now = Instant.now();
+        Instant nextRegularUpdate = null;
         if (currentCalendar.isEventPresent(now)) {
             final Event currentEvent = currentCalendar.getCurrentEvent(now);
             if (currentEvent == null) {
@@ -338,32 +347,33 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                         "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
                 return;
             }
+            nextRegularUpdate = currentEvent.end;
+        }
+
+        final Event nextEvent = currentCalendar.getNextEvent(now);
+        final ICalendarConfiguration currentConfig = this.configuration;
+        if (currentConfig == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Something is broken, the configuration is not available.");
+            return;
+        }
+        if (nextEvent != null) {
+            if (nextRegularUpdate == null || nextEvent.start.isBefore(nextRegularUpdate)) {
+                nextRegularUpdate = nextEvent.start;
+            }
+        }
+
+        if (nextRegularUpdate != null) {
             updateJobFuture = scheduler.schedule(() -> {
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
-            }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-            logger.debug("Scheduled update in {} seconds", currentEvent.end.getEpochSecond() - now.getEpochSecond());
+            }, nextRegularUpdate.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            logger.debug("Scheduled update in {} seconds", nextRegularUpdate.getEpochSecond() - now.getEpochSecond());
         } else {
-            final Event nextEvent = currentCalendar.getNextEvent(now);
-            final ICalendarConfiguration currentConfig = this.configuration;
-            if (currentConfig == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Something is broken, the configuration is not available.");
-                return;
-            }
-            if (nextEvent == null) {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, 1L, TimeUnit.DAYS);
-                logger.debug("Scheduled reschedule in 1 day");
-            } else {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.updateStates();
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-                logger.debug("Scheduled update in {} seconds", nextEvent.start.getEpochSecond() - now.getEpochSecond());
-
-            }
+            updateJobFuture = scheduler.schedule(() -> {
+                ICalendarHandler.this.rescheduleCalendarStateUpdate();
+            }, 1L, TimeUnit.DAYS);
+            logger.debug("Scheduled reschedule in 1 day");
         }
     }
 
@@ -442,10 +452,10 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * @param childHandler the handler to be updated
      */
     private void updateChild(@Nullable ThingHandler childHandler) {
-        if (childHandler instanceof CalendarUpdateListener) {
+        if (childHandler instanceof CalendarUpdateListener updateListener) {
             logger.trace("Notifying {} about fresh calendar.", childHandler.getThing().getUID());
             try {
-                ((CalendarUpdateListener) childHandler).onCalendarUpdated();
+                updateListener.onCalendarUpdated();
             } catch (Exception e) {
                 logger.trace("The update of a child handler failed. Ignoring.", e);
             }

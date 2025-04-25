@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.kodi.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link KodiBinding} class defines common constants, which are used across
+ * The {@link KodiBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Andreas Reinhardt and Christoph Weitkamp - Added channels for thumbnail and fanart
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 @NonNullByDefault
@@ -34,7 +33,7 @@ public class KodiBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KODI = new ThingTypeUID(BINDING_ID, "kodi");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KODI);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KODI);
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
@@ -45,6 +44,8 @@ public class KodiBindingConstants {
     public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
+    public static final String CHANNEL_SCREENSAVER = "screensaver";
+    public static final String CHANNEL_INPUTREQUESTED = "inputrequested";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_STOP = "stop";
@@ -60,6 +61,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUTTEXT = "inputtext";
     public static final String CHANNEL_INPUTACTION = "inputaction";
+    public static final String CHANNEL_INPUTBUTTONEVENT = "inputbuttonevent";
 
     public static final String CHANNEL_SYSTEMCOMMAND = "systemcommand";
 

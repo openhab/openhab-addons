@@ -10,6 +10,8 @@
 		</supported-bridge-type-refs>
 		<label>A Pulseaudio Sink</label>
 		<description>represents a pulseaudio sink</description>
+		<category>Speaker</category>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 
 		<channels>
 			<channel id="volume" typeId="volume"/>
@@ -17,10 +19,48 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 		<config-description>
-			<parameter name="name" type="text">
+			<parameter name="name" type="text" required="true">
 				<label>Name</label>
-				<description>The name of one specific device.</description>
-				<required>true</required>
+				<description>The name of one specific device. You can also use the description.</description>
+			</parameter>
+			<parameter name="activateSimpleProtocolSink" type="boolean" required="false">
+				<label>Create an Audio Sink with simple-protocol-tcp</label>
+				<description>Activation of a corresponding sink in OpenHAB (module-simple-protocol-tcp must be available on the
+					pulseaudio server)</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="additionalFilters" type="text" required="false">
+				<label>Additional Filters</label>
+				<advanced>true</advanced>
+				<description>Additional filters to select the proper device on the pulseaudio server, in case of ambiguity.
+					To be
+					selected, the device should have at least a property value matching this regular expression. You can use
+					multiple
+					regular expressions (separator is ###).</description>
+			</parameter>
+			<parameter name="simpleProtocolIdleModules" type="integer" required="false">
+				<label>Simple Protocol Idle Modules</label>
+				<description>Number of Simple Protocol TCP Socket modules to keep loaded in the server</description>
+				<default>2</default>
+			</parameter>
+			<parameter name="simpleProtocolSOTimeout" type="integer" min="250" max="2000">
+				<label>Simple Protocol SO Timeout</label>
+				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune
+					this option if the socket disconnect frequently.</description>
+				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMinPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Min Port</label>
+				<description>Min port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMaxPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Max Port</label>
+				<description>Max port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>64512</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

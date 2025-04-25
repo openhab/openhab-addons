@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import org.openhab.binding.smartmeter.internal.ObisCode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SmlReaderBinding} class defines common constants, which are
+ * The {@link SmartMeterBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Matthias Steigenberger - Initial contribution
@@ -36,14 +36,18 @@ public class SmartMeterBindingConstants {
     public static final String CONFIGURATION_CONVERSION = "conversionRatio";
     public static final String CONFIGURATION_CHANNEL_NEGATE = "negate";
     public static final String CHANNEL_PROPERTY_OBIS = "obis";
-    public static final String OBIS_PATTERN_CHANNELID = getObisChannelId(ObisCode.OBIS_PATTERN);
+    public static final String OBIS_PATTERN_CHANNELID = getObisChannelIdPattern(ObisCode.OBIS_PATTERN);
     /** Obis format */
     public static final String OBIS_FORMAT_MINIMAL = "%d-%d:%d.%d.%d";
     /** Obis format */
     public static final String OBIS_FORMAT = OBIS_FORMAT_MINIMAL + "*%d";
     public static final String CHANNEL_TYPE_METERREADER_OBIS = "channel-type:" + BINDING_ID + ":obis";
 
+    public static String getObisChannelIdPattern(String obis) {
+        return obis.replace(".", "-").replaceAll(":|\\*", "_");
+    }
+
     public static String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_");
+        return getObisChannelIdPattern(obis).replaceAll("[^\\w-]", "");
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -21,13 +22,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
+import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
@@ -35,8 +37,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Homie 3.x Device. This is also the base class to subscribe to and parse a homie MQTT topic tree.
- * First use {@link #subscribe(AbstractMqttAttributeClass)} to subscribe to the device/nodes/properties tree.
- * If everything has been received and parsed, call {@link #startChannels(MqttBrokerConnection, HomieThingHandler)}
+ * First use {@link #subscribe(MqttBrokerConnection, ScheduledExecutorService, int)}
+ * to subscribe to the device/nodes/properties tree.
+ * If everything has been received and parsed, call
+ * {@link #startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
  * to also subscribe to the property values. Usage:
  *
  * <pre>
@@ -58,6 +62,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
     // The corresponding ThingUID and callback of this device object
     public final ThingUID thingUID;
+    public ThingTypeUID thingTypeUID = MqttBindingConstants.HOMIE300_MQTT_THING;
     private final DeviceCallback callback;
 
     // Unique identifier and topic
@@ -73,10 +78,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * @param attributes The device attributes object
      */
     public Device(ThingUID thingUID, DeviceCallback callback, DeviceAttributes attributes) {
-        this.thingUID = thingUID;
-        this.callback = callback;
-        this.attributes = attributes;
-        this.nodes = new ChildMap<>();
+        this(thingUID, callback, attributes, new ChildMap<>());
     }
 
     /**
@@ -99,7 +101,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * and subscribe to all node attributes. Parse node properties. This will not subscribe
      * to properties though. If subscribing to all necessary topics worked {@link #isInitialized()} will return true.
      *
-     * Call {@link #startChannels(MqttBrokerConnection)} subsequently.
+     * Call {@link #startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)} subsequently.
      *
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
@@ -201,13 +203,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     public void initialize(String baseTopic, String deviceID, List<Channel> channels) {
         this.topic = baseTopic + "/" + deviceID;
         this.deviceID = deviceID;
+        this.thingTypeUID = new ThingTypeUID(MqttBindingConstants.BINDING_ID,
+                MqttBindingConstants.HOMIE300_MQTT_THING.getId() + "_" + UIDUtils.encode(topic));
+
         nodes.clear();
         for (Channel channel : channels) {
-            final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
-            if (!channelConfig.commandTopic.isEmpty() && !channelConfig.retained) {
-                logger.warn("Channel {} in device {} is missing the 'retained' flag. Check your configuration.",
-                        channel.getUID(), deviceID);
-            }
             final String channelGroupId = channel.getUID().getGroupId();
             if (channelGroupId == null) {
                 continue;
@@ -220,9 +220,43 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
                 node.nodeRestoredFromConfig();
                 nodes.put(nodeID, node);
             }
-            // Restores the properties attribute object via the channels configuration.
-            Property property = node.createProperty(propertyID,
-                    channel.getConfiguration().as(PropertyAttributes.class));
+            // Restores the property's attributes object via the channel's config and properties.
+            // (config is only for backwards compatibility before properties were used)
+            var channelConfig = channel.getConfiguration();
+            PropertyAttributes attributes = channelConfig.as(PropertyAttributes.class);
+
+            var channelProperties = channel.getProperties();
+            String channelId = channel.getChannelTypeUID().getId();
+
+            String datatype = channelProperties.get(MqttBindingConstants.CHANNEL_PROPERTY_DATATYPE);
+            if (datatype != null) {
+                attributes.datatype = PropertyAttributes.DataTypeEnum.valueOf(datatype);
+            } else if (channelId.startsWith(MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX)) {
+                attributes.datatype = PropertyAttributes.DataTypeEnum
+                        .valueOf(channelId.substring(MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX.length()) + "_");
+            }
+            String label = channel.getLabel();
+            if (label != null) {
+                attributes.name = label;
+            }
+            String settable = channelProperties.get(MqttBindingConstants.CHANNEL_PROPERTY_SETTABLE);
+            if (settable != null) {
+                attributes.settable = Boolean.valueOf(settable);
+            }
+            String retained = channelProperties.get(MqttBindingConstants.CHANNEL_PROPERTY_RETAINED);
+            if (retained != null) {
+                attributes.retained = Boolean.valueOf(retained);
+            }
+            String unit = channelProperties.get(MqttBindingConstants.CHANNEL_PROPERTY_UNIT);
+            if (unit != null) {
+                attributes.unit = unit;
+            }
+            String format = channelProperties.get(MqttBindingConstants.CHANNEL_PROPERTY_FORMAT);
+            if (format != null) {
+                attributes.format = format;
+            }
+
+            Property property = node.createProperty(propertyID, attributes);
             property.attributesReceived();
 
             node.properties.put(propertyID, property);
@@ -257,7 +291,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * <p>
      * The nodes of a device are determined by the device attribute "$nodes". If that attribute changes,
-     * {@link #attributeChanged(CompletableFuture, String, Object, MqttBrokerConnection, ScheduledExecutorService)} is
+     * {@link #attributeChanged(String, Object, MqttBrokerConnection, ScheduledExecutorService, boolean)} is
      * called. The {@link #nodes} map will be synchronized and this method will be called for every removed node.
      * </p>
      *
@@ -275,8 +309,9 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
     CompletableFuture<@Nullable Void> applyNodes(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return nodes.apply(attributes.nodes, node -> node.subscribe(connection, scheduler, timeout), this::createNode,
-                this::notifyNodeRemoved).exceptionally(e -> {
+        return nodes.apply(Objects.requireNonNull(attributes.nodes),
+                node -> node.subscribe(connection, scheduler, timeout), this::createNode, this::notifyNodeRemoved)
+                .exceptionally(e -> {
                     logger.warn("Could not subscribe", e);
                     return null;
                 });
@@ -311,15 +346,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a list of relative topics
      */
     public List<String> getRetainedTopics() {
-        List<String> topics = new ArrayList<>();
+        List<String> topics = new ArrayList<>(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.deviceID, f.getName())).collect(Collectors.toList()));
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.deviceID, f.getName());
-        }).collect(Collectors.toList()));
-
-        this.nodes.stream().map(n -> n.getRetainedTopics().stream().map(a -> {
-            return String.format("%s/%s", this.deviceID, a);
-        }).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+        this.nodes.stream().map(n -> n.getRetainedTopics().stream().map(a -> String.format("%s/%s", this.deviceID, a))
+                .collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
     }

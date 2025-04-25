@@ -7,7 +7,7 @@
 	<thing-type id="tracker" extensible="regionDistance">
 		<label>Tracker Device</label>
 		<description>Device running tracker application</description>
-
+		<semantic-equipment-tag>Tracker</semantic-equipment-tag>
 		<channels>
 			<channel id="lastLocation" typeId="system.location"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
@@ -31,7 +31,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Accuracy</label>
 		<description>GPS accuracy</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastReport">
 		<item-type>DateTime</item-type>

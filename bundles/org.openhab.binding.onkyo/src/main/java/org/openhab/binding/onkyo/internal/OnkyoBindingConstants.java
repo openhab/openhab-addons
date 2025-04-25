@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OnkyoBinding} class defines common constants, which are
+ * The {@link OnkyoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Paul Frank - Initial contribution
@@ -73,7 +73,9 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_ALBUM_ART = "player#albumArt";
     public static final String CHANNEL_ALBUM_ART_URL = "player#albumArtUrl";
     public static final String CHANNEL_LISTENMODE = "player#listenmode";
+    public static final String CHANNEL_AUDIOINFO = "player#audioinfo";
     public static final String CHANNEL_PLAY_URI = "player#playuri";
+    public static final String CHANNEL_AUDYSSEYEQ = "player#audysseyeq";
 
     public static final String CHANNEL_NET_MENU_TITLE = "netmenu#title";
     public static final String CHANNEL_NET_MENU_CONTROL = "netmenu#control";
@@ -88,6 +90,11 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_NET_MENU7 = "netmenu#item7";
     public static final String CHANNEL_NET_MENU8 = "netmenu#item8";
     public static final String CHANNEL_NET_MENU9 = "netmenu#item9";
+
+    public static final String CHANNEL_AUDIO_IN_INFO = "info#audioIn";
+    public static final String CHANNEL_AUDIO_OUT_INFO = "info#audioOut";
+    public static final String CHANNEL_VIDEO_IN_INFO = "info#videoIn";
+    public static final String CHANNEL_VIDEO_OUT_INFO = "info#videoOut";
 
     // Used for Discovery service
     public static final String MANUFACTURER = "ONKYO";

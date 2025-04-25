@@ -42,24 +42,31 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="channel-type:lifx:effect">
+		<parameter name="effectMorphSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
+			<label>Morph Effect Speed</label>
+			<description>Speed of the morph effect in seconds.</description>
+			<default>3</default>
+		</parameter>
+		<parameter name="effectFlameSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
+			<label>Flame Effect Speed</label>
+			<description>Speed of the flame effect in seconds.</description>
+			<default>4</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:lifx:hevcycle">
+		<parameter name="hevCycleDuration" type="integer" min="0" max="86400" step="1" required="false" unit="m">
+			<label>HEV Cycle Duration</label>
+			<description>HEV cycle duration in seconds. Use empty value for the cycle duration configured in the light.</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:lifx:temperature">
 		<parameter name="powerOnTemperature" type="integer" min="0" max="100" required="false" unit="%">
 			<label>Power On Temperature</label>
 			<description>Color temperature level used when switching on the light. Use empty value to leave color temperature as
 				is.</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="channel-type:lifx:effect">
-		<parameter name="effectMorphSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
-			<label>Morph effect speed</label>
-			<description>Speed of the morph effect in seconds.</description>
-			<default>3</default>
-		</parameter>
-		<parameter name="effectFlameSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
-			<label>Flame effect speed</label>
-			<description>Speed of the flame effect in seconds.</description>
-			<default>4</default>
 		</parameter>
 	</config-description>
 

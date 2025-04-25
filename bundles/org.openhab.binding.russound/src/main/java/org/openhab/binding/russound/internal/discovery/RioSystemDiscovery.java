@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,15 @@
 package org.openhab.binding.russound.internal.discovery;
 
 import java.io.IOException;
-import java.net.Inet6Address;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collections;
+import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.util.SubnetUtils;
 import org.openhab.binding.russound.internal.net.SocketChannelSession;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.WaitingSessionListener;
@@ -37,6 +31,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -67,7 +62,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * 120 seconds (depending on how many network interfaces there are)
      */
     public RioSystemDiscovery() {
-        super(Collections.singleton(RioConstants.BRIDGE_TYPE_RIO), 120);
+        super(Set.of(RioConstants.BRIDGE_TYPE_RIO), 120);
     }
 
     /**
@@ -78,48 +73,14 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        final List<NetworkInterface> interfaces;
-        try {
-            interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        } catch (SocketException e1) {
-            logger.debug("Exception getting network interfaces: {}", e1.getMessage(), e1);
-            return;
-        }
-
-        nbrNetworkInterfacesScanning = interfaces.size();
+        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
+        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
 
-        for (final NetworkInterface networkInterface : interfaces) {
-            try {
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-            } catch (SocketException e) {
-                continue;
-            }
-
-            for (Iterator<InterfaceAddress> it = networkInterface.getInterfaceAddresses().iterator(); it.hasNext();) {
-                final InterfaceAddress interfaceAddress = it.next();
-
-                // don't bother with ipv6 addresses (russound doesn't support)
-                if (interfaceAddress.getAddress() instanceof Inet6Address) {
-                    continue;
-                }
-
-                final String subnetRange = interfaceAddress.getAddress().getHostAddress() + "/"
-                        + interfaceAddress.getNetworkPrefixLength();
-
-                logger.debug("Scanning subnet: {}", subnetRange);
-                final SubnetUtils utils = new SubnetUtils(subnetRange);
-
-                final String[] addresses = utils.getInfo().getAllAddresses();
-
-                for (final String address : addresses) {
-                    executorService.execute(() -> {
-                        scanAddress(address);
-                    });
-                }
-            }
+        for (final InetAddress address : addressesToScan) {
+            executorService.execute(() -> {
+                scanAddress(address.getHostAddress());
+            });
         }
 
         // Finishes the scan and cleans up
@@ -152,7 +113,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * @param ipAddress a possibly null, possibly empty ip address (null/empty addresses will be ignored)
      */
     private void scanAddress(String ipAddress) {
-        if (StringUtils.isEmpty(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
             return;
         }
 
@@ -175,7 +136,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
                 final String type = resp.substring(13, resp.length() - 1);
-                if (!StringUtils.isBlank(type)) {
+                if (!type.isBlank()) {
                     logger.debug("Found a RIO type #{}", type);
                     addResult(ipAddress, type);
                     break;
@@ -202,10 +163,10 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if ipaddress or type is null or empty
      */
     private void addResult(String ipAddress, String type) {
-        if (StringUtils.isEmpty(ipAddress)) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
             throw new IllegalArgumentException("ipAddress cannot be null or empty");
         }
-        if (StringUtils.isEmpty(type)) {
+        if (type == null || type.isEmpty()) {
             throw new IllegalArgumentException("type cannot be null or empty");
         }
 

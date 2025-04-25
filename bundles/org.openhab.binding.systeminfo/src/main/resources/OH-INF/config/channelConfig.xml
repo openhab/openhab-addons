@@ -10,7 +10,7 @@
 		usually need update of the state more often - at several minutes. Low priority channels do not change their state at all,
 		or very often. They do not need regular updates. -->
 
-	<config-description uri="systeminfo:channels:lowpriority">
+	<config-description uri="channel-type:systeminfo:lowpriority">
 
 		<parameter-group name="priorityGroup">
 			<label>String</label>
@@ -30,7 +30,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="systeminfo:channels:mediumpriority">
+	<config-description uri="channel-type:systeminfo:mediumpriority">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -43,7 +43,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="systeminfo:channels:highpriority">
+	<config-description uri="channel-type:systeminfo:highpriority">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -56,7 +56,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="systeminfo:channels:lowpriority_process">
+	<config-description uri="channel-type:systeminfo:lowpriority_process">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -74,7 +74,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="systeminfo:channels:mediumpriority_process">
+	<config-description uri="channel-type:systeminfo:mediumpriority_process">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -92,7 +92,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="systeminfo:channels:highpriority_process">
+	<config-description uri="channel-type:systeminfo:highpriority_process">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>

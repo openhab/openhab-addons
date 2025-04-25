@@ -10,12 +10,14 @@
 		</supported-bridge-type-refs>
 		<label>Somfy AS Roller Shutter</label>
 		<description>Somfy Adjustable Slats Roller Shutter</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rocker" typeId="rocker"></channel>
 			<channel id="control" typeId="control"></channel>
 			<channel id="orientation" typeId="orientation"></channel>
 			<channel id="closure_orientation" typeId="closure_orientation"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

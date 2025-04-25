@@ -4,12 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Oppo Blu-ray disc player Thing -->
+	<!-- Oppo Blu-ray player Thing -->
 	<thing-type id="player">
-		<label>Oppo Blu-ray Disc Player</label>
+		<label>Oppo Blu-ray Player</label>
 		<description>
-			Controls an Oppo Blu-ray Disc Player
+			Controls an Oppo Blu-ray Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -40,21 +41,26 @@
 			<channel id="remote_button" typeId="remote_button"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="model" type="integer" required="true">
 				<label>Player Model</label>
 				<description>Choose Model of Oppo Player</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="83">Oppo BDP-83 or BDP-93/95</option>
-					<option value="103">Oppo BDP-103/103D</option>
-					<option value="105">Oppo BDP-105/105D</option>
-					<option value="203">Oppo UDP-203</option>
-					<option value="205">Oppo UDP-205</option>
+					<option value="83">BDP-83 or BDP-93/95</option>
+					<option value="103">BDP-103/103D</option>
+					<option value="105">BDP-105/105D</option>
+					<option value="203">UDP-203</option>
+					<option value="205">UDP-205</option>
 				</options>
 			</parameter>
 			<parameter name="serialPort" type="text" required="false">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>Serial Port to Use for Connecting to the Oppo Player.</description>
 			</parameter>
@@ -71,7 +77,7 @@
 			</parameter>
 			<parameter name="verboseMode" type="boolean" required="false">
 				<label>Verbose Mode</label>
-				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 30
+				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 10
 					seconds</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -89,6 +95,10 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -115,9 +125,13 @@
 
 	<channel-type id="time_display">
 		<item-type>Number:Time</item-type>
-		<label>Time Display (S)</label>
-		<description>The Playback Time Elapsed/Remaining in Seconds</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<label>Time Display</label>
+		<description>The Playback Time Elapsed/Remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current_title">
@@ -326,9 +340,20 @@
 				<option value="RPT">Repeat</option>
 				<option value="PIP">Picture in Picture</option>
 				<option value="HDM">HDMI Mode</option>
+				<option value="SUH">Subtitle</option>
 				<option value="NFX">Netflix</option>
+				<option value="VDU">Vudu</option>
+				<option value="OPT">Option Menu</option>
+				<option value="M3D">3D Menu</option>
+				<option value="SEH">Picture Adjustment</option>
+				<option value="DRB">Darbee Adjustment</option>
+				<option value="HDR">HDR Menu</option>
 				<option value="INH">Extended OSD</option>
+				<option value="RLH">Resolution Select</option>
+				<option value="AVS">A/V Sync Menu</option>
+				<option value="GPA">Gapless Play</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

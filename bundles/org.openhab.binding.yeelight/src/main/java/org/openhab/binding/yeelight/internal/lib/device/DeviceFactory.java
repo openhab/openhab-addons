@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,19 +34,23 @@ public class DeviceFactory {
         DeviceType type = DeviceType.valueOf(model);
         switch (type) {
             case ceiling:
-            case ceiling3:
                 return new CeilingDevice(id);
             case ceiling1:
+            case ceiling3:
+            case ceil26:
+            case ceiling11:
                 return new CeilingDeviceWithNightDevice(id);
             case ceiling4:
                 return new CeilingDeviceWithAmbientDevice(id);
             case color:
+            case color4:
                 return new WonderDevice(id);
             case mono:
                 return new MonoDevice(id);
             case ct_bulb:
                 return new CtBulbDevice(id);
             case stripe:
+            case strip6:
                 return new PitayaDevice(id);
             case desklamp:
                 return new DesklampDevice(id);

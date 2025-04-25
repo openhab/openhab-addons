@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,17 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.AIR_QUALITY;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.AirQualityAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityEnum;
 import io.github.hapjava.services.impl.AirQualityService;
@@ -34,23 +35,19 @@ import io.github.hapjava.services.impl.AirQualityService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitAirQualitySensorImpl extends AbstractHomekitAccessoryImpl implements AirQualityAccessory {
-    private final Map<AirQualityEnum, String> qualityStateMapping = new EnumMap<AirQualityEnum, String>(
-            AirQualityEnum.class) {
-        {
-            put(AirQualityEnum.UNKNOWN, "UNKNOWN");
-            put(AirQualityEnum.EXCELLENT, "EXCELLENT");
-            put(AirQualityEnum.GOOD, "GOOD");
-            put(AirQualityEnum.FAIR, "FAIR");
-            put(AirQualityEnum.INFERIOR, "INFERIOR");
-            put(AirQualityEnum.POOR, "POOR");
-        }
-    };
+    private final Map<AirQualityEnum, Object> qualityStateMapping;
 
     public HomekitAirQualitySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        updateMapping(AIR_QUALITY, qualityStateMapping);
-        getServices().add(new AirQualityService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        qualityStateMapping = createMapping(AIR_QUALITY, AirQualityEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new AirQualityService(this));
     }
 
     @Override

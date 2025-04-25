@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -72,7 +72,7 @@ import com.google.gson.GsonBuilder;
 public class LxServerHandler extends BaseThingHandler implements LxServerHandlerApi {
 
     private static final String SOCKET_URL = "/ws/rfc6455";
-    private static final String CMD_CFG_API = "jdev/cfg/api";
+    private static final String CMD_CFG_API = "jdev/cfg/apiKey";
 
     private static final Gson GSON;
 
@@ -105,8 +105,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private final Logger logger = LoggerFactory.getLogger(LxServerHandler.class);
     private static AtomicInteger staticDebugId = new AtomicInteger(1);
 
-    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(LxBindingConstants.THING_TYPE_MINISERVER);
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LxBindingConstants.THING_TYPE_MINISERVER);
 
     private QueuedThreadPool jettyThreadPool;
 
@@ -139,6 +138,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("[{}] Handle command: channelUID={}, command={}", debugId, channelUID, command);
         if (command instanceof RefreshType) {
             updateChannelState(channelUID);
             return;
@@ -146,6 +146,8 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         try {
             LxControl control = channels.get(channelUID);
             if (control != null) {
+                logger.debug("[{}] Dispatching command to control UUID={}, name={}", debugId, control.getUuid(),
+                        control.getName());
                 control.handleCommand(channelUID, command);
             } else {
                 logger.error("[{}] Received command {} for unknown control.", debugId, command);
@@ -182,7 +184,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             jettyThreadPool.setDaemon(true);
 
             socket = new LxWebSocket(debugId, this, bindingConfig, host);
-            wsClient = new WebSocketClient();
+            wsClient = new WebSocketClient(new SslContextFactory.Client(true));
             wsClient.setExecutor(jettyThreadPool);
             if (debugId > 1) {
                 reconnectDelay.set(0);
@@ -320,7 +322,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     @Override
     public String getSetting(String name) {
         Object value = getConfig().get(name);
-        return (value instanceof String) ? (String) value : null;
+        return (value instanceof String s) ? s : null;
     }
 
     /*
@@ -478,8 +480,16 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         Map<LxUuid, LxState> perStateUuid = states.get(update.getUuid());
         if (perStateUuid != null) {
             perStateUuid.forEach((controlUuid, state) -> {
+                logger.debug("[{}] State update (UUID={}, value={}) dispatched to control UUID={}, state name={}",
+                        debugId, update.getUuid(), update.getValue(), controlUuid, state.getName());
+
                 state.setStateValue(update.getValue());
             });
+            if (perStateUuid.isEmpty()) {
+                logger.debug("[{}] State update UUID={} has empty controls table", debugId, update.getUuid());
+            }
+        } else {
+            logger.debug("[{}] State update UUID={} has no controls table", debugId, update.getUuid());
         }
     }
 
@@ -553,14 +563,34 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
          * Try to read CfgApi structure from the miniserver. It contains serial number and firmware version. If it can't
          * be read this is not a fatal issue, we will assume most recent version running.
          */
+        boolean httpsCapable = false;
         String message = socket.httpGet(CMD_CFG_API);
         if (message != null) {
             LxResponse resp = socket.getResponse(message);
             if (resp != null) {
-                socket.setFwVersion(GSON.fromJson(resp.getValueAsString(), LxResponse.LxResponseCfgApi.class).version);
+                LxResponse.LxResponseCfgApi apiResp = GSON.fromJson(resp.getValueAsString(),
+                        LxResponse.LxResponseCfgApi.class);
+                if (apiResp != null) {
+                    socket.setFwVersion(apiResp.version);
+                    httpsCapable = apiResp.httpsStatus != null && apiResp.httpsStatus == 1;
+                }
             }
         } else {
             logger.debug("[{}] Http get failed for API config request.", debugId);
+        }
+
+        switch (bindingConfig.webSocketType) {
+            case 0:
+                // keep automatically determined option
+                break;
+            case 1:
+                logger.debug("[{}] Forcing HTTPS websocket connection.", debugId);
+                httpsCapable = true;
+                break;
+            case 2:
+                logger.debug("[{}] Forcing HTTP websocket connection.", debugId);
+                httpsCapable = false;
+                break;
         }
 
         try {
@@ -570,7 +600,14 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             // without this zero timeout, jetty will wait 30 seconds for stopping the client to eventually fail
             // with the timeout it is immediate and all threads end correctly
             jettyThreadPool.setStopTimeout(0);
-            URI target = new URI("ws://" + host.getHostAddress() + ":" + bindingConfig.port + SOCKET_URL);
+            URI target;
+            if (httpsCapable) {
+                target = new URI("wss://" + host.getHostAddress() + ":" + bindingConfig.httpsPort + SOCKET_URL);
+                socket.setHttps(true);
+            } else {
+                target = new URI("ws://" + host.getHostAddress() + ":" + bindingConfig.port + SOCKET_URL);
+                socket.setHttps(false);
+            }
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("remotecontrol");
 
@@ -626,6 +663,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         private Instant lastKeepAlive;
 
         LxServerThread(int id) {
+            super(String.format("OH-binding-%s-%s", LxBindingConstants.BINDING_ID, "Server"));
             debugId = id;
         }
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,17 @@ public class BsbLanApiContentConverterTests {
 
     @Test
     public void parseBsbLanApiParameterQueryResponse() {
-        String content = "{\r\n" + "\"700\": {\r\n" + "\"name\": \"Betriebsart\",\r\n" + "\"value\": \"0\",\r\n"
-                + "\"unit\": \"\",\r\n" + "\"desc\": \"Schutzbetrieb\",\r\n" + "\"dataType\": 1\r\n" + "}\r\n" + "}";
+        String content = """
+                {
+                "700": {
+                "name": "Betriebsart",
+                "value": "0",
+                "unit": "",
+                "desc": "Schutzbetrieb",
+                "dataType": 1
+                }
+                }\
+                """;
 
         BsbLanApiParameterQueryResponseDTO r = BsbLanApiContentConverter.fromJson(content,
                 BsbLanApiParameterQueryResponseDTO.class);
@@ -61,8 +70,7 @@ public class BsbLanApiContentConverterTests {
         String serializedRequest = BsbLanApiContentConverter.toJson(request);
 
         // verify serialized content
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(serializedRequest).getAsJsonObject();
+        JsonObject json = JsonParser.parseString(serializedRequest).getAsJsonObject();
 
         // Although specifying the parameter as int (which would be nicer) also seems to work,
         // we use a String here as this is the way it is noted in the documentation.

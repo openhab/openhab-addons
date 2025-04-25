@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,32 +12,44 @@
  */
 package org.openhab.voice.picotts.internal;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Florian Schmidt - Initial Contribution
  */
-@Component
-public class PicoTTSService implements TTSService {
+@Component(service = TTSService.class)
+@NonNullByDefault
+public class PicoTTSService extends AbstractCachedTTSService {
+
+    @Activate
+    public PicoTTSService(@Reference TTSCache ttsCache) {
+        super(ttsCache);
+    }
+
     private final Set<Voice> voices = Stream
             .of(new PicoTTSVoice("de-DE"), new PicoTTSVoice("en-US"), new PicoTTSVoice("en-GB"),
                     new PicoTTSVoice("es-ES"), new PicoTTSVoice("fr-FR"), new PicoTTSVoice("it-IT"))
             .collect(Collectors.toSet());
 
-    private final Set<AudioFormat> audioFormats = Collections.singleton(
-            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
+    private final Set<AudioFormat> audioFormats = Set
+            .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
 
     @Override
     public Set<Voice> getAvailableVoices() {
@@ -50,18 +62,17 @@ public class PicoTTSService implements TTSService {
     }
 
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-        if (text == null || text.isEmpty()) {
-            throw new TTSException("The passed text can not be null or empty");
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+        if (text.isEmpty()) {
+            throw new TTSException("The passed text can not be empty");
         }
 
         if (!this.voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
 
-        boolean isAudioFormatSupported = this.audioFormats.stream().anyMatch(audioFormat -> {
-            return audioFormat.isCompatible(requestedFormat);
-        });
+        boolean isAudioFormatSupported = this.audioFormats.stream()
+                .anyMatch(audioFormat -> audioFormat.isCompatible(requestedFormat));
 
         if (!isAudioFormatSupported) {
             throw new TTSException("The passed AudioFormat is unsupported");
@@ -80,7 +91,7 @@ public class PicoTTSService implements TTSService {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public String getLabel(@Nullable Locale locale) {
         return "PicoTTS";
     }
 }

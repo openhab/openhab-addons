@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,10 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.StateOption;
 
 import com.google.gson.annotations.Expose;
@@ -26,31 +28,18 @@ import com.google.gson.annotations.Expose;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class ContentItem {
 
-    private String source;
-    private String sourceAccount;
-    private String location;
-    private boolean presetable;
-    private String itemName;
-    private int presetID;
-    private String containerArt;
+    private String source = "";
+    private @Nullable String sourceAccount;
+    private @Nullable String location;
+    private boolean presetable = false;
+    private @Nullable String itemName;
+    private int presetID = 0;
+    private @Nullable String containerArt;
     @Expose
-    private final Map<String, String> additionalAttributes;
-
-    /**
-     * Creates a new instance of this class
-     */
-    public ContentItem() {
-        source = "";
-        sourceAccount = null;
-        location = null;
-        presetable = false;
-        itemName = null;
-        presetID = 0;
-        containerArt = null;
-        additionalAttributes = new HashMap<>();
-    }
+    private final Map<String, String> additionalAttributes = new HashMap<>();
 
     /**
      * Returns true if this ContentItem is defined as Preset
@@ -73,11 +62,13 @@ public class ContentItem {
     public boolean isValid() {
         if (getOperationMode() == OperationModeType.STANDBY) {
             return true;
-        }
-        if (itemName == null || source == null || itemName.isEmpty() || source.isEmpty()) {
-            return false;
         } else {
-            return true;
+            String localItemName = itemName;
+            if (localItemName != null) {
+                return !(localItemName.isEmpty() || source.isEmpty());
+            } else {
+                return false;
+            }
         }
     }
 
@@ -87,25 +78,11 @@ public class ContentItem {
      * @return true if source, sourceAccount, location, itemName, and presetable are equal
      */
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof ContentItem) {
-            ContentItem other = (ContentItem) obj;
-            if (!isEqual(other.source, this.source)) {
-                return false;
-            }
-            if (!isEqual(other.sourceAccount, this.sourceAccount)) {
-                return false;
-            }
-            if (other.presetable != this.presetable) {
-                return false;
-            }
-            if (!isEqual(other.location, this.location)) {
-                return false;
-            }
-            if (!isEqual(other.itemName, this.itemName)) {
-                return false;
-            }
-            return true;
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof ContentItem other) {
+            return Objects.equals(other.source, this.source) || Objects.equals(other.sourceAccount, this.sourceAccount)
+                    || other.presetable == this.presetable || Objects.equals(other.location, this.location)
+                    || Objects.equals(other.itemName, this.itemName);
         }
         return super.equals(obj);
     }
@@ -117,15 +94,18 @@ public class ContentItem {
      */
     public OperationModeType getOperationMode() {
         OperationModeType operationMode = OperationModeType.OTHER;
-        if (source == null || source.equals("")) {
+        if ("".equals(source)) {
             return OperationModeType.OTHER;
         }
         if (source.contains("PRODUCT")) {
-            if (sourceAccount.contains("TV")) {
-                operationMode = OperationModeType.TV;
-            }
-            if (sourceAccount.contains("HDMI")) {
-                operationMode = OperationModeType.HDMI1;
+            String localSourceAccount = sourceAccount;
+            if (localSourceAccount != null) {
+                if (localSourceAccount.contains("TV")) {
+                    operationMode = OperationModeType.TV;
+                }
+                if (localSourceAccount.contains("HDMI")) {
+                    operationMode = OperationModeType.HDMI1;
+                }
             }
             return operationMode;
         }
@@ -173,15 +153,15 @@ public class ContentItem {
         return source;
     }
 
-    public String getSourceAccount() {
+    public @Nullable String getSourceAccount() {
         return sourceAccount;
     }
 
-    public String getLocation() {
+    public @Nullable String getLocation() {
         return location;
     }
 
-    public String getItemName() {
+    public @Nullable String getItemName() {
         return itemName;
     }
 
@@ -193,8 +173,26 @@ public class ContentItem {
         return presetID;
     }
 
-    public String getContainerArt() {
+    public @Nullable String getContainerArt() {
         return containerArt;
+    }
+
+    /**
+     * Simple method to escape XML special characters in String.
+     * There are five XML Special characters which needs to be escaped :
+     * & - &amp;
+     * < - &lt;
+     * > - &gt;
+     * " - &quot;
+     * ' - &apos;
+     */
+    private String escapeXml(String xml) {
+        xml = xml.replace("&", "&amp;");
+        xml = xml.replace("<", "&lt;");
+        xml = xml.replace(">", "&gt;");
+        xml = xml.replace("\"", "&quot;");
+        xml = xml.replace("'", "&apos;");
+        return xml;
     }
 
     /**
@@ -222,19 +220,20 @@ public class ContentItem {
                 break;
             default:
                 StringBuilder sbXml = new StringBuilder("<ContentItem");
-                if (source != null) {
-                    sbXml.append(" source=\"").append(StringEscapeUtils.escapeXml(source)).append("\"");
+
+                sbXml.append(" source=\"").append(escapeXml(source)).append("\"");
+
+                String localLocation = location;
+                if (localLocation != null) {
+                    sbXml.append(" location=\"").append(escapeXml(localLocation)).append("\"");
                 }
-                if (location != null) {
-                    sbXml.append(" location=\"").append(StringEscapeUtils.escapeXml(location)).append("\"");
-                }
-                if (sourceAccount != null) {
-                    sbXml.append(" sourceAccount=\"").append(StringEscapeUtils.escapeXml(sourceAccount)).append("\"");
+                String localSourceAccount = sourceAccount;
+                if (localSourceAccount != null) {
+                    sbXml.append(" sourceAccount=\"").append(escapeXml(localSourceAccount)).append("\"");
                 }
                 sbXml.append(" isPresetable=\"").append(presetable).append("\"");
                 for (Map.Entry<String, String> aae : additionalAttributes.entrySet()) {
-                    sbXml.append(" ").append(aae.getKey()).append("=\"")
-                            .append(StringEscapeUtils.escapeXml(aae.getValue())).append("\"");
+                    sbXml.append(" ").append(aae.getKey()).append("=\"").append(escapeXml(aae.getValue())).append("\"");
                 }
                 sbXml.append(">");
                 if (itemName != null) {
@@ -251,7 +250,7 @@ public class ContentItem {
     }
 
     public StateOption toStateOption() {
-        String stateOptionLabel = String.valueOf(presetID) + ": " + itemName;
+        String stateOptionLabel = presetID + ": " + itemName;
         return new StateOption(String.valueOf(presetID), stateOptionLabel);
     }
 
@@ -263,16 +262,7 @@ public class ContentItem {
         // buffer.append(presetID);
         // return buffer.toString();
         // }
-        return itemName;
-    }
-
-    private boolean isEqual(String s1, String s2) {
-        if (s1 == s2) {
-            return true;
-        }
-        if (s1 == null || s2 == null) {
-            return false;
-        }
-        return s1.equals(s2);
+        String localString = itemName;
+        return (localString != null) ? localString : "";
     }
 }

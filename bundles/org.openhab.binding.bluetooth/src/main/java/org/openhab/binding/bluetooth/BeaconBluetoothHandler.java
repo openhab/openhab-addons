@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Power;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
@@ -193,7 +192,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         if (device != null) {
             BluetoothAdapter adapter = device.getAdapter();
             String location = adapter.getLocation();
-            if (location != null || StringUtils.isBlank(location)) {
+            if (location != null && !location.isBlank()) {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, new StringType(location));
             } else {
                 updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, UnDefType.NULL);
@@ -215,7 +214,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
     }
 
-    private void onActivity() {
+    protected void onActivity() {
         this.lastActivityTime = ZonedDateTime.now();
     }
 
@@ -225,6 +224,11 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
             updateRSSI(rssi);
+        } else {
+            // we received a scan notification from this device so it is online
+            // TODO how can we detect if the underlying bluez stack is still receiving advertising packets when there
+            // are no changes?
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -242,27 +246,12 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         onActivity();
     }
 
     @Override
-    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value) {
         onActivity();
     }
 

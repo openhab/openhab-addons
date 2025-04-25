@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,9 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +55,8 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
     }
 
     static {
-        PERCENT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "A(?<outputId>\\d)(?<percent>\\d+)");
-        NATIVE_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "O(?<outputId>\\d)(?<value>\\d+)");
+        PERCENT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "A(?<outputId>\\d)(?<percent>\\d{3})");
+        NATIVE_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "O(?<outputId>\\d)(?<value>\\d{3})");
     }
 
     @Override
@@ -107,14 +109,15 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
         currentColor = hsbType;
         handler.updateChannel(LcnChannelGroup.OUTPUT, OUTPUT_COLOR, currentColor);
 
-        if (info.getFirmwareVersion() >= LcnBindingConstants.FIRMWARE_2014) {
-            handler.sendPck(PckGenerator.dimAllOutputs(currentColor.getRed().doubleValue(),
-                    currentColor.getGreen().doubleValue(), currentColor.getBlue().doubleValue(), output4.doubleValue(),
-                    COLOR_RAMP_MS));
+        PercentType[] rgb = ColorUtil.hsbToRgbPercent(currentColor);
+
+        if (info.getFirmwareVersion().map(v -> v >= LcnBindingConstants.FIRMWARE_2014).orElse(true)) {
+            handler.sendPck(PckGenerator.dimAllOutputs(rgb[0].doubleValue(), rgb[1].doubleValue(), rgb[2].doubleValue(),
+                    output4.doubleValue(), COLOR_RAMP_MS));
         } else {
-            handler.sendPck(PckGenerator.dimOutput(0, currentColor.getRed().doubleValue(), COLOR_RAMP_MS));
-            handler.sendPck(PckGenerator.dimOutput(1, currentColor.getGreen().doubleValue(), COLOR_RAMP_MS));
-            handler.sendPck(PckGenerator.dimOutput(2, currentColor.getBlue().doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(0, rgb[0].doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(1, rgb[1].doubleValue(), COLOR_RAMP_MS));
+            handler.sendPck(PckGenerator.dimOutput(2, rgb[2].doubleValue(), COLOR_RAMP_MS));
         }
     }
 
@@ -140,6 +143,25 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
         } else {
             handler.sendPck(PckGenerator.dimOutput(number, command.doubleValue(), rampMs));
         }
+    }
+
+    @Override
+    public void handleCommandString(StringType command, int number) throws LcnException {
+        int mode = 0;
+
+        switch (command.toString()) {
+            case "DISABLE":
+                mode = 0;
+                break;
+            case "OUTPUT1":
+                mode = 1;
+                break;
+            case "BOTH":
+                mode = 2;
+                break;
+        }
+
+        handler.sendPck(PckGenerator.setTunableWhiteMode(mode));
     }
 
     @Override

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemensrds.points.BasePoint;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -34,10 +35,10 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +47,9 @@ import com.google.gson.JsonParseException;
 /**
  * The {@link RdsHandler} is the OpenHab Handler for Siemens RDS smart
  * thermostats
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class RdsHandler extends BaseThingHandler {
@@ -229,7 +230,15 @@ public class RdsHandler extends BaseThingHandler {
                     continue;
                 }
 
-                BasePoint point = points.getPointByClass(channel.clazz);
+                BasePoint point;
+                try {
+                    point = points.getPointByClass(channel.clazz);
+                } catch (RdsCloudException e) {
+                    logger.debug("{} \"{}\" not implemented; set state to UNDEF", channel.id, channel.clazz);
+                    updateState(channel.id, UnDefType.UNDEF);
+                    continue;
+                }
+
                 State state = null;
 
                 switch (channel.id) {
@@ -304,16 +313,21 @@ public class RdsHandler extends BaseThingHandler {
                 if (channelId.equals(channel.id)) {
                     switch (channel.id) {
                         case CHA_TARGET_TEMP: {
-                            Command doCommand = command;
-                            if (command instanceof QuantityType<?>) {
+                            double targetTemperature = Double.NaN;
+                            if (command instanceof QuantityType<?> quantityCommand) {
                                 Unit<?> unit = points.getPointByClass(channel.clazz).getUnit();
-                                QuantityType<?> temp = ((QuantityType<?>) command).toUnit(unit);
+                                QuantityType<?> temp = quantityCommand.toUnit(unit);
                                 if (temp != null) {
-                                    doCommand = temp;
+                                    targetTemperature = temp.doubleValue();
                                 }
+                            } else if (command instanceof DecimalType decimalCommand) {
+                                targetTemperature = decimalCommand.doubleValue();
                             }
-                            points.setValue(apiKey, token, channel.clazz, doCommand.format("%s"));
-                            debouncer.initialize(channelId);
+                            if (targetTemperature != Double.NaN) {
+                                points.setValue(apiKey, token, channel.clazz,
+                                        String.format("%.1f", Math.round(targetTemperature * 2) / 2.0));
+                                debouncer.initialize(channelId);
+                            }
                             break;
                         }
                         case CHA_STAT_AUTO_MODE: {
@@ -372,11 +386,9 @@ public class RdsHandler extends BaseThingHandler {
     private RdsCloudHandler getCloudHandler() throws RdsCloudException {
         @Nullable
         Bridge b;
-        @Nullable
-        BridgeHandler h;
 
-        if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof RdsCloudHandler) {
-            return (RdsCloudHandler) h;
+        if ((b = getBridge()) != null && (b.getHandler() instanceof RdsCloudHandler cloudHandler)) {
+            return cloudHandler;
         }
         throw new RdsCloudException("no cloud handler found");
     }

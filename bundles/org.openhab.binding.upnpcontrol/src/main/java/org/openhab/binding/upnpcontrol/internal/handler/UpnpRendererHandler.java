@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,11 @@ package org.openhab.binding.upnpcontrol.internal.handler;
 
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +40,6 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
-import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlRendererConfiguration;
@@ -188,16 +185,16 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (favoriteSelectChannel != null) {
             favoriteSelectChannelUID = favoriteSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + FAVORITE_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", FAVORITE_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
         if (playlistSelectChannel != null) {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + PLAYLIST_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -222,8 +219,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 
@@ -232,8 +229,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
                 getCurrentConnectionInfo();
                 if (!checkForConnectionIds()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No connection Id's set for UPnP device with UDN " + getUDN());
+                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                     return;
                 }
 
@@ -277,7 +274,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific UPnP volume channel", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME);
+                String label = String.format("@text/channel.upnpcontrol.vendorvolume.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendorvolume.description", ITEM_TYPE_VOLUME,
+                        CHANNEL_TYPE_VOLUME);
             }
         }
         if (config.mute && !UPNP_MASTER.equals(audioChannel)) {
@@ -285,7 +284,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific  UPnP mute channel", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE);
+                String label = String.format("@text/channel.upnpcontrol.vendormute.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendormute.description", ITEM_TYPE_MUTE,
+                        CHANNEL_TYPE_MUTE);
             }
         }
         if (config.loudness) {
@@ -293,7 +294,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific  UPnP loudness channel", ITEM_TYPE_LOUDNESS,
+                String label = String.format("@text/channel.upnpcontrol.vendorloudness.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendorloudness.description", ITEM_TYPE_LOUDNESS,
                         CHANNEL_TYPE_LOUDNESS);
             }
         }
@@ -310,11 +312,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (stopping != null) {
                 stopping.complete(false);
             }
-            isStopping = new CompletableFuture<Boolean>(); // set this so we can check if stop confirmation has been
-                                                           // received
+            isStopping = new CompletableFuture<>(); // set this so we can check if stop confirmation has been
+                                                    // received
         }
 
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Stop", inputs);
     }
@@ -350,7 +352,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Pause on UPnP AV Transport.
      */
     protected void pause() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Pause", inputs);
     }
@@ -359,7 +361,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Next on UPnP AV Transport.
      */
     protected void next() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Next", inputs);
     }
@@ -368,7 +370,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Previous on UPnP AV Transport.
      */
     protected void previous() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Previous", inputs);
     }
@@ -411,22 +413,18 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     public void setCurrentURI(String URI, String URIMetaData) {
         String uri = "";
-        try {
-            uri = URLDecoder.decode(URI.trim(), StandardCharsets.UTF_8.name());
-            // Some renderers don't send a URI Last Changed event when the same URI is requested, so don't wait for it
-            // before starting to play
-            if (!uri.equals(nowPlayingUri) && !playingNotification) {
-                CompletableFuture<Boolean> settingURI = isSettingURI;
-                if (settingURI != null) {
-                    settingURI.complete(false);
-                }
-                isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
-                                                                 // setting URI
-            } else {
-                logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
+        uri = URLDecoder.decode(URI.trim(), StandardCharsets.UTF_8);
+        // Some renderers don't send a URI Last Changed event when the same URI is requested, so don't wait for it
+        // before starting to play
+        if (!uri.equals(nowPlayingUri) && !playingNotification) {
+            CompletableFuture<Boolean> settingURI = isSettingURI;
+            if (settingURI != null) {
+                settingURI.complete(false);
             }
-        } catch (UnsupportedEncodingException ignore) {
-            uri = URI;
+            isSettingURI = new CompletableFuture<>(); // set this so we don't start playing when not finished
+                                                      // setting URI
+        } else {
+            logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
         }
 
         Map<String, String> inputs = new HashMap<>();
@@ -454,37 +452,39 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetTransportState on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getTransportState() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetTransportInfo", inputs);
     }
 
     /**
      * Invoke getPositionInfo on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getPositionInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetPositionInfo", inputs);
     }
 
     /**
      * Invoke GetMediaInfo on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getMediaInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "smarthome:audio stream http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3", inputs);
     }
 
     /**
      * Retrieves the current volume known to the control point, gets updated by GENA events or after UPnP Rendering
-     * Control GetVolume call. This method is used to retrieve volume by {@link UpnpAudioSink.getVolume}.
+     * Control GetVolume call. This method is used to retrieve volume with the
+     * {@link org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink#getVolume UpnpAudioSink.getVolume}
+     * method.
      *
      * @return current volume
      */
@@ -494,7 +494,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetVolume on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
@@ -535,7 +535,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
@@ -564,7 +564,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
@@ -661,6 +661,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     break;
                 case SHUFFLE:
                     handleCommandShuffle(channelUID, command);
+                    break;
                 case ONLY_PLAY_ONE:
                     handleCommandOnlyPlayOne(channelUID, command);
                     break;
@@ -694,24 +695,24 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandVolume(Command command, String id) {
         if (command instanceof RefreshType) {
             getVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""));
-        } else if (command instanceof PercentType) {
-            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), (PercentType) command);
+        } else if (command instanceof PercentType percentCommand) {
+            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), percentCommand);
         }
     }
 
     private void handleCommandMute(Command command, String id) {
         if (command instanceof RefreshType) {
             getMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""));
-        } else if (command instanceof OnOffType) {
-            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), onOffCommand);
         }
     }
 
     private void handleCommandLoudness(Command command, String id) {
         if (command instanceof RefreshType) {
             getLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""));
-        } else if (command instanceof OnOffType) {
-            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), onOffCommand);
         }
     }
 
@@ -882,8 +883,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandTrackPosition(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateState(channelUID, new QuantityType<>(trackPosition, Units.SECOND));
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> position = ((QuantityType<?>) command).toUnit(Units.SECOND);
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> position = quantityCommand.toUnit(Units.SECOND);
             if (position != null) {
                 int pos = Integer.min(trackDuration, position.intValue());
                 seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
@@ -895,8 +896,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (command instanceof RefreshType) {
             int relPosition = (trackDuration != 0) ? (trackPosition * 100) / trackDuration : 0;
             updateState(channelUID, new PercentType(relPosition));
-        } else if (command instanceof PercentType) {
-            int pos = ((PercentType) command).intValue() * trackDuration / 100;
+        } else if (command instanceof PercentType percentCommand) {
+            int pos = percentCommand.intValue() * trackDuration / 100;
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
         }
     }
@@ -1110,6 +1111,10 @@ public class UpnpRendererHandler extends UpnpHandler {
             UpnpRenderingControlConfiguration config = renderingControlConfiguration;
 
             long volume = Long.valueOf(value);
+            if (volume < 0) {
+                logger.warn("UPnP device {} received invalid volume value {}", thing.getLabel(), value);
+                return;
+            }
             volume = volume * 100 / config.maxvolume;
 
             String upnpChannel = variable.replace("Volume", "volume").replace("Master", "");
@@ -1124,16 +1129,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void onValueReceivedMute(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
     private void onValueReceivedLoudness(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Loudness", "loudness").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
@@ -1244,18 +1247,14 @@ public class UpnpRendererHandler extends UpnpHandler {
         String uri = "";
         String currentUri = "";
         String nextUri = "";
-        try {
-            if (value != null) {
-                uri = URLDecoder.decode(value.trim(), StandardCharsets.UTF_8.name());
-            }
-            if (current != null) {
-                currentUri = URLDecoder.decode(current.getRes().trim(), StandardCharsets.UTF_8.name());
-            }
-            if (next != null) {
-                nextUri = URLDecoder.decode(next.getRes(), StandardCharsets.UTF_8.name());
-            }
-        } catch (UnsupportedEncodingException ignore) {
-            // If not valid current URI, we assume there is none
+        if (value != null) {
+            uri = URLDecoder.decode(value.trim(), StandardCharsets.UTF_8);
+        }
+        if (current != null) {
+            currentUri = URLDecoder.decode(current.getRes().trim(), StandardCharsets.UTF_8);
+        }
+        if (next != null) {
+            nextUri = URLDecoder.decode(next.getRes(), StandardCharsets.UTF_8);
         }
 
         if (playingNotification && uri.equals(notificationUri)) {
@@ -1635,15 +1634,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             String mediaRes = media.getRes().trim();
             String entryRes = (entry != null) ? entry.getRes().trim() : "";
 
-            try {
-                String mediaUrl = URLDecoder.decode(mediaRes, StandardCharsets.UTF_8.name());
-                String entryUrl = URLDecoder.decode(entryRes, StandardCharsets.UTF_8.name());
-                isCurrent = mediaUrl.equals(entryUrl);
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Renderer {} unsupported encoding for new {} or current {} res URL, trying string compare",
-                        thing.getLabel(), mediaRes, entryRes);
-                isCurrent = mediaRes.equals(entryRes);
-            }
+            String mediaUrl = URLDecoder.decode(mediaRes, StandardCharsets.UTF_8);
+            String entryUrl = URLDecoder.decode(entryRes, StandardCharsets.UTF_8);
+            isCurrent = mediaUrl.equals(entryUrl);
 
             logger.trace("Current queue res: {}", entryRes);
             logger.trace("Updated media res: {}", mediaRes);
@@ -1659,10 +1652,15 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
         if (!(isCurrent
                 && (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")))) {
-            if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
+            if (media.getAlbumArtUri().isBlank() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
-                State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                State albumArt = null;
+                try {
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri().trim());
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
+                }
                 if (albumArt == null) {
                     logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
                     if (!isCurrent) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.discovery;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_BRIDGE);
+        return Set.of(THING_TYPE_BRIDGE);
     }
 
     @Override
@@ -79,7 +78,8 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         String modelName = details.getModelDetails().getModelName();
         String modelManufacturer = details.getManufacturerDetails().getManufacturer();
-        if ("Denon".equals(modelManufacturer) && (modelName.startsWith("HEOS") || modelName.endsWith("H"))) {
+        if ("Denon".equals(modelManufacturer)
+                && (modelName.startsWith("HEOS") || modelName.endsWith("H") || modelName.contains("Home"))) {
             String deviceType = device.getType().getType();
             if (deviceType.startsWith("ACT") || deviceType.startsWith("Aios")) {
                 return new ThingUID(THING_TYPE_BRIDGE, device.getIdentity().getUdn().getIdentifierString());

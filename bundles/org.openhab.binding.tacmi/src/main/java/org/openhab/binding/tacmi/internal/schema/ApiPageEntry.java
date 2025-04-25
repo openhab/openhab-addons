@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tacmi.internal.schema;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,14 +28,15 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ApiPageEntry {
 
-    static enum Type {
+    enum Type {
         READ_ONLY_SWITCH(true),
         READ_ONLY_NUMERIC(true),
         NUMERIC_FORM(false),
         SWITCH_BUTTON(false),
         SWITCH_FORM(false),
         READ_ONLY_STATE(true),
-        STATE_FORM(false);
+        STATE_FORM(false),
+        TIME_PERIOD(false);
 
         public final boolean readOnly;
 
@@ -53,6 +56,11 @@ public class ApiPageEntry {
     public final Channel channel;
 
     /**
+     * Unit for this channel
+     */
+    public final @Nullable Unit<?> unit;
+
+    /**
      * internal address for this channel
      */
     public final @Nullable String address;
@@ -67,10 +75,17 @@ public class ApiPageEntry {
      */
     private State lastState;
 
-    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address,
-            @Nullable ChangerX2Entry changerX2Entry, State lastState) {
+    /**
+     * Timestamp (epoch ms) when last 'outgoing' command was sent.
+     * Required for de-bounce overlapping effects when status-poll's and updates overlap.
+     */
+    private long lastCommandTS;
+
+    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final Unit<?> unit,
+            @Nullable final String address, @Nullable ChangerX2Entry changerX2Entry, State lastState) {
         this.type = type;
         this.channel = channel;
+        this.unit = unit;
         this.address = address;
         this.changerX2Entry = changerX2Entry;
         this.lastState = lastState;
@@ -82,5 +97,13 @@ public class ApiPageEntry {
 
     public State getLastState() {
         return lastState;
+    }
+
+    public long getLastCommandTS() {
+        return lastCommandTS;
+    }
+
+    public void setLastCommandTS(long lastCommandTS) {
+        this.lastCommandTS = lastCommandTS;
     }
 }

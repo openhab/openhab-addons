@@ -1,0 +1,6 @@
+{
+  "command": "sdm.devices.commands.CameraLiveStream.StopRtspStream",
+  "params": {
+    "streamExtensionToken": "CjY5Y3VKaTZwR3o4Y19YbTVfMF..."
+  }
+}

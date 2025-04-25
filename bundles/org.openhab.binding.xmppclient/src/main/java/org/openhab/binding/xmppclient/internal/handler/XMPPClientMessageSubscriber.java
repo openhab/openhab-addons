@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.xmppclient.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Subscriber interface
  * 
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public interface XMPPClientMessageSubscriber {
-    public void processMessage(String from, String payload);
+    void processMessage(String from, String payload);
 
-    public String getName();
+    String getName();
 }

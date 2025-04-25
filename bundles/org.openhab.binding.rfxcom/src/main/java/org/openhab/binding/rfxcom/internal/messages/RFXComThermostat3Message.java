@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,9 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Mess
 import java.util.Arrays;
 import java.util.List;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -39,7 +41,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Sander Biesenbeek - Initial contribution
  * @author Ruud Beukema - Initial contribution (parallel development)
- * @author Martin van Wingerden - Joined contribution of Sander & Ruud
+ * @author Martin van Wingerden - Joined contribution of Sander and Ruud
  */
 public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComThermostat3Message.SubType> {
     public enum SubType implements ByteEnumWrapper {
@@ -152,7 +154,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -202,7 +205,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                 return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 
@@ -230,8 +233,8 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                     command = (type == UpDownType.UP ? Commands.UP : Commands.DOWN);
                 } else if (type == StopMoveType.STOP) {
                     command = Commands.STOP;
-                } else if (type instanceof PercentType) {
-                    command = ((PercentType) type).as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
+                } else if (type instanceof PercentType percentCommand) {
+                    command = percentCommand.as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }

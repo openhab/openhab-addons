@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,13 +19,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -33,8 +32,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.remoteopenhab.internal.RemoteopenhabChannelTypeProvider;
+import org.openhab.binding.remoteopenhab.internal.RemoteopenhabCommandDescriptionOptionProvider;
 import org.openhab.binding.remoteopenhab.internal.RemoteopenhabStateDescriptionOptionProvider;
 import org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabServerConfiguration;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabCommandDescription;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabCommandOption;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabItem;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateDescription;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateOption;
@@ -43,6 +45,8 @@ import org.openhab.binding.remoteopenhab.internal.exceptions.RemoteopenhabExcept
 import org.openhab.binding.remoteopenhab.internal.listener.RemoteopenhabItemsDataListener;
 import org.openhab.binding.remoteopenhab.internal.listener.RemoteopenhabStreamingDataListener;
 import org.openhab.binding.remoteopenhab.internal.rest.RemoteopenhabRestClient;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -55,7 +59,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -71,12 +74,14 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +98,7 @@ import com.google.gson.Gson;
 public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         implements RemoteopenhabStreamingDataListener, RemoteopenhabItemsDataListener {
 
-    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]Z";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
     private static final int MAX_STATE_SIZE_FOR_LOGGING = 50;
@@ -103,6 +108,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private final HttpClient httpClientTrustingCert;
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
 
     private final Object updateThingLock = new Object();
 
@@ -116,12 +125,19 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     public RemoteopenhabBridgeHandler(Bridge bridge, HttpClient httpClient, HttpClient httpClientTrustingCert,
             ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
             RemoteopenhabChannelTypeProvider channelTypeProvider,
-            RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider, final Gson jsonParser) {
+            RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider,
+            RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider, final Gson jsonParser,
+            final TranslationProvider i18nProvider, final LocaleProvider localeProvider) {
         super(bridge);
         this.httpClientTrustingCert = httpClientTrustingCert;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.restClient = new RemoteopenhabRestClient(httpClient, clientBuilder, eventSourceFactory, jsonParser);
+        this.commandDescriptionProvider = commandDescriptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(this.getClass());
+        this.restClient = new RemoteopenhabRestClient(httpClient, clientBuilder, eventSourceFactory, jsonParser,
+                i18nProvider);
     }
 
     @Override
@@ -133,21 +149,13 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         String host = config.host.trim();
         if (host.length() == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Undefined server address setting in the thing configuration");
-            return;
-        }
-        List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
-                .filter(a -> !a.getAddress().isLinkLocalAddress())
-                .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
-        if (localIpAddresses.contains(host)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Do not use the local server as a remote server in the thing configuration");
+                    "@text/offline.config-error-undefined-host");
             return;
         }
         String path = config.restPath.trim();
         if (path.length() == 0 || !path.startsWith("/")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid REST API path setting in the thing configuration");
+                    "@text/offline.config-error-invalid-rest-path");
             return;
         }
         URL url;
@@ -155,18 +163,15 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             url = new URL(config.useHttps ? "https" : "http", host, config.port, path);
         } catch (MalformedURLException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid REST URL built from the settings in the thing configuration");
+                    "@text/offline.config-error-invalid-rest-url");
             return;
         }
 
         String urlStr = url.toString();
-        if (urlStr.endsWith("/")) {
-            urlStr = urlStr.substring(0, urlStr.length() - 1);
-        }
         logger.debug("REST URL = {}", urlStr);
 
         restClient.setRestUrl(urlStr);
-        restClient.setAccessToken(config.token);
+        restClient.setAuthenticationData(config.authenticateAnyway, config.token, config.username, config.password);
         if (config.useHttps && config.trustedCertificate) {
             restClient.setHttpClient(httpClientTrustingCert);
             restClient.setTrustedCertificate(true);
@@ -174,16 +179,16 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.submit(this::checkConnection);
+        scheduler.submit(() -> checkConnection(false));
         if (config.accessibilityInterval > 0) {
-            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval);
+            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval, config.restartIfNoActivity);
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing remote openHAB handler for bridge {}", getThing().getUID());
-        stopStreamingUpdates();
+        stopStreamingUpdates(false);
         stopCheckConnectionJob();
         channelsLastStates.clear();
     }
@@ -195,10 +200,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
 
         try {
-            if (command instanceof RefreshType) {
-                String state = restClient.getRemoteItemState(channelUID.getId());
-                updateChannelState(channelUID.getId(), null, state, false);
-            } else if (isLinked(channelUID)) {
+            if (isLinked(channelUID)) {
                 restClient.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
                 logger.debug("Sending command {} to remote item {} succeeded",
@@ -207,7 +209,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                         channelUID.getId());
             }
         } catch (RemoteopenhabException e) {
-            logger.debug("{}", e.getMessage());
+            logger.debug("Handling command for channel {} failed: {}", channelUID.getId(),
+                    e.getMessage(bundle, i18nProvider));
         }
     }
 
@@ -241,12 +244,18 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     ChannelType channelType = channelTypeProvider.getChannelType(itemType, readOnly, pattern);
                     String label;
                     String description;
+                    String defaultValue;
                     if (channelType == null) {
                         channelTypeUID = channelTypeProvider.buildNewChannelTypeUID(itemType);
                         logger.trace("Create the channel type {} for item type {} ({} and with pattern {})",
                                 channelTypeUID, itemType, readOnly ? "read only" : "read write", pattern);
-                        label = String.format("Remote %s Item", itemType);
-                        description = String.format("An item of type %s from the remote server.", itemType);
+                        defaultValue = String.format("Remote %s Item", itemType);
+                        label = i18nProvider.getText(bundle, "channel-type.label", defaultValue,
+                                localeProvider.getLocale(), itemType);
+                        label = label != null && !label.isBlank() ? label : defaultValue;
+                        description = i18nProvider.getText(bundle, "channel-type.description", defaultValue,
+                                localeProvider.getLocale(), itemType);
+                        description = description != null && !description.isBlank() ? description : defaultValue;
                         StateDescriptionFragmentBuilder stateDescriptionBuilder = StateDescriptionFragmentBuilder
                                 .create().withReadOnly(readOnly);
                         if (!pattern.isEmpty()) {
@@ -263,8 +272,13 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     }
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
                     logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
-                    label = "Item " + item.name;
-                    description = String.format("Item %s from the remote server.", item.name);
+                    defaultValue = String.format("Item %s", item.name);
+                    label = i18nProvider.getText(bundle, "channel.label", defaultValue, localeProvider.getLocale(),
+                            item.name);
+                    label = label != null && !label.isBlank() ? label : defaultValue;
+                    description = i18nProvider.getText(bundle, "channel.description", defaultValue,
+                            localeProvider.getLocale(), item.name);
+                    description = description != null && !description.isBlank() ? description : defaultValue;
                     channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
                             .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
                 }
@@ -275,7 +289,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                     logger.debug(
                             "{} channels defined (with {} different channel types) for the thing {} (from {} items including {} groups)",
                             channels.size(), nbChannelTypesCreated, getThing().getUID(), items.size(), nbGroups);
-                } else if (channels.size() > 0) {
+                } else if (!channels.isEmpty()) {
                     int nbRemoved = 0;
                     for (Channel channel : channels) {
                         if (getThing().getChannel(channel.getUID()) != null) {
@@ -327,34 +341,47 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void setStateOptions(List<RemoteopenhabItem> items) {
+    private void setDynamicOptions(List<RemoteopenhabItem> items) {
         for (RemoteopenhabItem item : items) {
             Channel channel = getThing().getChannel(item.name);
-            RemoteopenhabStateDescription descr = item.stateDescription;
-            List<RemoteopenhabStateOption> options = descr == null ? null : descr.options;
-            if (channel != null && options != null && options.size() > 0) {
-                List<StateOption> stateOptions = new ArrayList<>();
-                for (RemoteopenhabStateOption option : options) {
-                    stateOptions.add(new StateOption(option.value, option.label));
+            if (channel == null) {
+                continue;
+            }
+            RemoteopenhabStateDescription stateDescr = item.stateDescription;
+            List<RemoteopenhabStateOption> stateOptions = stateDescr == null ? null : stateDescr.options;
+            if (stateOptions != null && !stateOptions.isEmpty()) {
+                List<StateOption> options = new ArrayList<>();
+                for (RemoteopenhabStateOption option : stateOptions) {
+                    options.add(new StateOption(option.value, option.label));
                 }
-                stateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
-                logger.trace("{} options set for the channel {}", options.size(), channel.getUID());
+                stateDescriptionProvider.setStateOptions(channel.getUID(), options);
+                logger.trace("{} state options set for the channel {}", options.size(), channel.getUID());
+            }
+            RemoteopenhabCommandDescription commandDescr = item.commandDescription;
+            List<RemoteopenhabCommandOption> commandOptions = commandDescr == null ? null : commandDescr.commandOptions;
+            if (commandOptions != null && !commandOptions.isEmpty()) {
+                List<CommandOption> options = new ArrayList<>();
+                for (RemoteopenhabCommandOption option : commandOptions) {
+                    options.add(new CommandOption(option.command, option.label));
+                }
+                commandDescriptionProvider.setCommandOptions(channel.getUID(), options);
+                logger.trace("{} command options set for the channel {}", options.size(), channel.getUID());
             }
         }
     }
 
-    public void checkConnection() {
+    public void checkConnection(boolean restartSse) {
         logger.debug("Try the root REST API...");
         try {
             restClient.tryApi();
             if (restClient.getRestApiVersion() == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "OH 1.x server not supported by the binding");
+                        "@text/offline.config-error-unsupported-server");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 List<RemoteopenhabItem> items = restClient.getRemoteItems("name,type,groupType,state,stateDescription");
 
                 if (createChannels(items, true)) {
-                    setStateOptions(items);
+                    setDynamicOptions(items);
                     for (RemoteopenhabItem item : items) {
                         updateChannelState(item.name, null, item.state, false);
                     }
@@ -363,31 +390,35 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
                     restartStreamingUpdates();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Dynamic creation of the channels for the remote server items failed");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.error-channels-creation");
                     stopStreamingUpdates();
                 }
+            } else if (restartSse) {
+                logger.debug("The SSE connection is restarted because there was no recent event received");
+                restartStreamingUpdates();
             }
         } catch (RemoteopenhabException e) {
-            logger.debug("{}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("checkConnection for thing {} failed: {}", getThing().getUID(),
+                    e.getMessage(bundle, i18nProvider), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
             stopStreamingUpdates();
         }
     }
 
-    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval) {
+    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval, boolean restartIfNoActivity) {
         ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
         if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
                 long millisSinceLastEvent = System.currentTimeMillis() - restClient.getLastEventTimestamp();
-                if (aliveInterval == 0 || restClient.getLastEventTimestamp() == 0) {
+                if (getThing().getStatus() != ThingStatus.ONLINE || aliveInterval == 0
+                        || restClient.getLastEventTimestamp() == 0) {
                     logger.debug("Time to check server accessibility");
-                    checkConnection();
+                    checkConnection(restartIfNoActivity && aliveInterval != 0);
                 } else if (millisSinceLastEvent > (aliveInterval * 60000)) {
                     logger.debug(
                             "Time to check server accessibility (maybe disconnected from streaming events, millisSinceLastEvent={})",
                             millisSinceLastEvent);
-                    checkConnection();
+                    checkConnection(restartIfNoActivity);
                 } else {
                     logger.debug(
                             "Bypass server accessibility check (receiving streaming events, millisSinceLastEvent={})",
@@ -421,8 +452,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     }
 
     private void stopStreamingUpdates() {
+        stopStreamingUpdates(true);
+    }
+
+    private void stopStreamingUpdates(boolean waitingForCompletion) {
         synchronized (restClient) {
-            restClient.stop();
+            restClient.stop(waitingForCompletion);
             restClient.removeStreamingDataListener(this);
             restClient.removeItemsDataListener(this);
         }
@@ -438,8 +473,16 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
+    public void onDisconnected() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/offline.comm-error-disconnected");
+    }
+
+    @Override
     public void onError(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        logger.debug("onError: {}", message);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/offline.comm-error-receiving-events");
     }
 
     @Override
@@ -465,6 +508,11 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             logger.trace("Updated remote item {} ignored because item type {} is unchanged", newItem.name,
                     newItem.type);
         }
+    }
+
+    @Override
+    public void onItemOptionsUpdatedd(RemoteopenhabItem item) {
+        setDynamicOptions(List.of(item));
     }
 
     private void updateChannelState(String itemName, @Nullable String stateType, String state,
@@ -504,7 +552,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
                 // Item type Number with dimension
                 if (stateType == null || "Quantity".equals(stateType)) {
-                    List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
+                    List<Class<? extends State>> stateTypes = List.of(QuantityType.class);
                     channelState = TypeParser.parseState(stateTypes, state);
                 } else if ("Decimal".equals(stateType)) {
                     channelState = new DecimalType(state);
@@ -525,7 +573,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                         break;
                     case CoreItemFactory.SWITCH:
                         if (checkStateType(itemName, stateType, "OnOff")) {
-                            channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
+                            channelState = OnOffType.from("ON".equals(state));
                         }
                         break;
                     case CoreItemFactory.CONTACT:
@@ -613,6 +661,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(RemoteopenhabDiscoveryService.class);
+        return Set.of(RemoteopenhabDiscoveryService.class);
     }
 }

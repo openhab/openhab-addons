@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="nuki" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Nuki Binding</name>
+	<description>The Nuki Binding allows simple and fast integration of Nuki Smart Locks into openHAB. This binding needs
+		the Nuki Smart Lock(s) to be paired via Bluetooth with a Nuki Bridge to function correctly.</description>
+	<connection>local</connection>
+
+</addon:addon>

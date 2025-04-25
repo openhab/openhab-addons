@@ -12,7 +12,7 @@
 		<label>CBEMM HC/HP</label>
 		<description>Single-phase Electricity meter with HC/HP option - CBEMM (aka "Compteur Bleu Electronique Monophasé
 			Multitarif")</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="isousc" typeId="isouscType"/>
 			<channel id="ptec" typeId="ptecType"/>
@@ -25,7 +25,7 @@
 			<channel id="lastUpdate" typeId="lastUpdateType"/>
 		</channels>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

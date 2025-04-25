@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.sonyprojector.internal.communication.sdcp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
-import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SonyProjectorSdcpSimuConnector.class);
 
-    private SonyProjectorItem lastItem = SonyProjectorItem.POWER;
+    private byte[] lastItemCode = new byte[] { 0x00, 0x00 };
 
     /**
      * Constructor
@@ -44,7 +44,7 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
     }
 
     @Override
-    public synchronized void open() throws SonyProjectorException {
+    public synchronized void open() throws ConnectionException {
         if (!connected) {
             connected = true;
             logger.debug("Simulated SDCP connection opened");
@@ -60,13 +60,13 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
     }
 
     @Override
-    protected byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data) {
-        lastItem = item;
-        return super.buildMessage(item, getCommand, data);
+    protected byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data) {
+        lastItemCode = itemCode;
+        return super.buildMessage(itemCode, getCommand, data);
     }
 
     @Override
-    protected synchronized byte[] readResponse() throws SonyProjectorException {
+    protected synchronized byte[] readResponse() throws CommunicationException {
         byte[] message = new byte[34];
         byte[] communityData = getCommunity().getBytes();
         message[0] = HEADER[0];
@@ -76,8 +76,8 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
         message[4] = communityData[2];
         message[5] = communityData[3];
         message[6] = OK;
-        message[7] = lastItem.getCode()[0];
-        message[8] = lastItem.getCode()[1];
+        message[7] = lastItemCode[0];
+        message[8] = lastItemCode[1];
         message[9] = 2;
         message[10] = 0;
         message[11] = 1;

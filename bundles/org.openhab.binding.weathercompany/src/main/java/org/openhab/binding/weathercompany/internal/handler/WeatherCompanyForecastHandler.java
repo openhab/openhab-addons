@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -120,55 +119,61 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private boolean isValidLocation() {
         boolean validLocation = false;
-        String locationType = getConfigAs(WeatherCompanyForecastConfig.class).locationType;
+        WeatherCompanyForecastConfig config = getConfigAs(WeatherCompanyForecastConfig.class);
+        String locationType = config.locationType;
         if (locationType == null) {
             return validLocation;
         }
         switch (locationType) {
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
-                String postalCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).postalCode);
-                if (postalCode == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
+                String postalCode = config.postalCode;
+                if (postalCode == null || postalCode.isBlank()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-postal-code");
                 } else {
                     locationQueryString = "&postalKey=" + postalCode.replace(" ", "");
                     validLocation = true;
                 }
                 break;
             case CONFIG_LOCATION_TYPE_GEOCODE:
-                String geocode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).geocode);
-                if (geocode == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
+                String geocode = config.geocode;
+                if (geocode == null || geocode.isBlank()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-geocode");
                 } else {
                     locationQueryString = "&geocode=" + geocode.replace(" ", "");
                     validLocation = true;
                 }
                 break;
             case CONFIG_LOCATION_TYPE_IATA_CODE:
-                String iataCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).iataCode);
-                if (iataCode == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
+                String iataCode = config.iataCode;
+                if (iataCode == null || iataCode.isBlank()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-iata-code");
                 } else {
                     locationQueryString = "&iataCode=" + iataCode.replace(" ", "").toUpperCase();
                     validLocation = true;
                 }
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location Type is not set");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-unset-location-type");
                 break;
         }
         return validLocation;
     }
 
     private void setLanguage() {
-        String language = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).language);
-        if (language == null) {
+        WeatherCompanyForecastConfig config = getConfigAs(WeatherCompanyForecastConfig.class);
+        String language = config.language;
+        if (language == null || language.isBlank()) {
             // Nothing in the thing config, so try to get a match from the openHAB locale
             String derivedLanguage = WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale());
             languageQueryString = "&language=" + derivedLanguage;
             logger.debug("Language not set in thing config, using {}", derivedLanguage);
         } else {
             // Use what is set in the thing config
-            languageQueryString = "&language=" + language;
+            languageQueryString = "&language=" + language.trim();
         }
     }
 
@@ -215,7 +220,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             updateDaypartForecast(forecast.daypart);
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daily forecast response object", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing daily forecast");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-parsing-daily-forecast");
             return;
         }
     }
@@ -243,7 +249,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             logger.debug("Handler: Successfully parsed daypart forecast object");
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daypart forecast object: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing daypart forecast");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-parsing-daypart-forecast");
             return;
         }
         logger.debug("There are {} daypart forecast entries", dayparts.length);
@@ -328,7 +335,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private void updateDaypart(int daypartIndex, String dayOrNight, String channelId, State state) {
         int day = daypartIndex / 2;
-        String dON = dayOrNight.equals("D") ? CH_GROUP_FORECAST_DAYPART_DAY : CH_GROUP_FORECAST_DAYPART_NIGHT;
+        String dON = "D".equals(dayOrNight) ? CH_GROUP_FORECAST_DAYPART_DAY : CH_GROUP_FORECAST_DAYPART_NIGHT;
         updateChannel(CH_GROUP_FORECAST_DAY + String.valueOf(day) + dON + "#" + channelId, state);
     }
 

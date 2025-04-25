@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,14 @@ package org.openhab.binding.ihc.internal;
 
 import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.core.config.core.Configuration;
@@ -99,7 +101,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
 
             try {
@@ -120,7 +122,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
         } else {
             LOGGER.warn("Project file data doesn't exist, can't automatically create channels!");
@@ -203,7 +205,7 @@ public class ChannelUtils {
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), group + resourceId);
                 ChannelTypeUID type = new ChannelTypeUID(BINDING_ID, channelType);
                 Configuration configuration = new Configuration();
-                configuration.put(PARAM_RESOURCE_ID, new Integer(resourceId));
+                configuration.put(PARAM_RESOURCE_ID, Integer.valueOf(resourceId));
 
                 Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withConfiguration(configuration)
                         .withLabel(description).withType(type).build();
@@ -213,20 +215,10 @@ public class ChannelUtils {
     }
 
     private static String createDescription(String name1, String name2, String name3, String name4) {
-        String description = "";
-        if (StringUtils.isNotEmpty(name1)) {
-            description = name1;
-        }
-        if (StringUtils.isNotEmpty(name2)) {
-            description += String.format(" - %s", name2);
-        }
-        if (StringUtils.isNotEmpty(name3)) {
-            description += String.format(" - %s", name3);
-        }
-        if (StringUtils.isNotEmpty(name4)) {
-            description += String.format(" - %s", name4);
-        }
-        return description;
+        String description = Stream.of(name1, name2, name3, name4).filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(" - "));
+
+        return new String(description.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
     }
 
     private static void addOrUpdateChannel(Channel newChannel, List<Channel> thingChannels) {

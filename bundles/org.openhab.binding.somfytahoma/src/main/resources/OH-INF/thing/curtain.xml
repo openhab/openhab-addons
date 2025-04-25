@@ -9,9 +9,11 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Curtain</label>
+		<semantic-equipment-tag>Drapes</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

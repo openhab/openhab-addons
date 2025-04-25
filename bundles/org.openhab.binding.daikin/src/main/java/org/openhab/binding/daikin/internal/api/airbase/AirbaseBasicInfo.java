@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.daikin.internal.api.InfoParser;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseBasicInfo {
-    private static final Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
 
     public String mac = "";
     public String ret = "";
@@ -39,14 +38,14 @@ public class AirbaseBasicInfo {
     }
 
     public static AirbaseBasicInfo parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseBasicInfo info = new AirbaseBasicInfo();
-        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
-        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
+        info.mac = responseMap.getOrDefault("mac", "");
+        info.ret = responseMap.getOrDefault("ret", "");
+        info.ssid = responseMap.getOrDefault("ssid", "");
         return info;
     }
 

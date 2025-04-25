@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.volvooncall.internal.dto;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Status} is responsible for storing
- * Door Status informations returned by vehicule status rest answer
+ * Status information returned by vehicle status rest answer
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -38,7 +37,7 @@ public class Status extends VocAnswer {
         LOW,
         @SerializedName("VeryLow")
         VERY_LOW,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public double averageFuelConsumption = UNDEFINED;
@@ -63,36 +62,36 @@ public class Status extends VocAnswer {
     public String serviceWarningStatus = "";
     private @NonNullByDefault({}) List<Object> bulbFailures;
 
-    public Optional<WindowsStatus> getWindows() {
-        return Optional.ofNullable(windows);
+    public @Nullable WindowsStatus getWindows() {
+        return windows;
     }
 
-    public Optional<DoorsStatus> getDoors() {
-        return Optional.ofNullable(doors);
+    public @Nullable DoorsStatus getDoors() {
+        return doors;
     }
 
-    public Optional<TyrePressure> getTyrePressure() {
-        return Optional.ofNullable(tyrePressure);
+    public @Nullable TyrePressure getTyrePressure() {
+        return tyrePressure;
     }
 
-    public Optional<HvBattery> getHvBattery() {
-        return Optional.ofNullable(hvBattery);
+    public @Nullable HvBattery getHvBattery() {
+        return hvBattery;
     }
 
-    public Optional<Heater> getHeater() {
-        return Optional.ofNullable(heater);
+    public @Nullable Heater getHeater() {
+        return heater;
     }
 
-    public Optional<OnOffType> getCarLocked() {
-        return Optional.ofNullable(carLocked);
+    public @Nullable OnOffType getCarLocked() {
+        return carLocked;
     }
 
-    public Optional<OnOffType> getEngineRunning() {
-        return Optional.ofNullable(engineRunning);
+    public @Nullable OnOffType getEngineRunning() {
+        return engineRunning;
     }
 
     public boolean aFailedBulb() {
-        return bulbFailures.size() > 0;
+        return !bulbFailures.isEmpty();
     }
 
     /*

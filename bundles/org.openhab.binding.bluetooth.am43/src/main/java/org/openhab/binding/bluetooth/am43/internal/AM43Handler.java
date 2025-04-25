@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.am43.internal;
 
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +23,6 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.am43.internal.command.AM43Command;
@@ -164,7 +162,7 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 command.setState(AM43Command.State.FAILED);
                 return;
             }
-            if (!resolved) {
+            if (!device.isServicesDiscovered()) {
                 logger.debug("Unable to send command {} to device {}: services not resolved", command,
                         device.getAddress());
                 command.setState(AM43Command.State.FAILED);
@@ -180,9 +178,15 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
             // there is no consequence to calling this as much as we like
             device.enableNotifications(characteristic);
 
-            characteristic.setValue(command.getRequest());
             command.setState(AM43Command.State.ENQUEUED);
-            device.writeCharacteristic(characteristic);
+            device.writeCharacteristic(characteristic, command.getRequest()).whenComplete((v, t) -> {
+                if (t != null) {
+                    logger.debug("Failed to send command {}: {}", command.getClass().getSimpleName(), t.getMessage());
+                    command.setState(AM43Command.State.FAILED);
+                } else {
+                    command.setState(AM43Command.State.SENT);
+                }
+            });
 
             if (!command.awaitStateChange(getAM43Config().commandTimeout, TimeUnit.MILLISECONDS,
                     AM43Command.State.SUCCEEDED, AM43Command.State.FAILED)) {
@@ -197,39 +201,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
     }
 
     @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        super.onCharacteristicWriteComplete(characteristic, status);
-
-        byte[] request = characteristic.getByteValue();
-
-        AM43Command command = currentCommand;
-
-        if (command != null) {
-            if (!Arrays.equals(request, command.getRequest())) {
-                logger.debug("Write completed for unknown command");
-                return;
-            }
-            switch (status) {
-                case SUCCESS:
-                    command.setState(AM43Command.State.SENT);
-                    break;
-                case ERROR:
-                    command.setState(AM43Command.State.FAILED);
-                    break;
-            }
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No command found that matches request {}", HexUtils.bytesToHex(request));
-            }
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
-
-        byte[] response = characteristic.getByteValue();
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] response) {
+        super.onCharacteristicUpdate(characteristic, response);
 
         AM43Command command = currentCommand;
         if (command == null) {
@@ -262,27 +235,28 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         }
         switch (channelUID.getId()) {
             case AM43BindingConstants.CHANNEL_ID_POSITION:
-                if (command instanceof PercentType) {
+                if (command instanceof PercentType percentCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings == null) {
                         logger.warn("Cannot set position before settings have been received.");
                         return;
                     }
                     if (!settings.isTopLimitSet() || !settings.isBottomLimitSet()) {
-                        logger.warn("Cannot set position of blinds. Top or bottom limits have not been set. "
-                                + "Please configure manually.");
+                        logger.warn("""
+                                Cannot set position of blinds. Top or bottom limits have not been set. \
+                                Please configure manually.\
+                                """);
                         return;
                     }
-                    PercentType percent = (PercentType) command;
-                    int value = percent.intValue();
+                    int value = percentCommand.intValue();
                     if (getAM43Config().invertPosition) {
                         value = 100 - value;
                     }
                     submitCommand(new SetPositionCommand(value));
                     return;
                 }
-                if (command instanceof StopMoveType) {
-                    switch ((StopMoveType) command) {
+                if (command instanceof StopMoveType stopMoveCommand) {
+                    switch (stopMoveCommand) {
                         case STOP:
                             submitCommand(new ControlCommand(ControlAction.STOP));
                             return;
@@ -291,8 +265,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                             return;
                     }
                 }
-                if (command instanceof UpDownType) {
-                    switch ((UpDownType) command) {
+                if (command instanceof UpDownType upDownCommand) {
+                    switch (upDownCommand) {
                         case UP:
                             submitCommand(new ControlCommand(ControlAction.OPEN));
                             return;
@@ -303,11 +277,10 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 }
                 return;
             case AM43BindingConstants.CHANNEL_ID_SPEED:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings != null) {
-                        DecimalType speedType = (DecimalType) command;
-                        settings.setSpeed(speedType.intValue());
+                        settings.setSpeed(decimalCommand.intValue());
                         submitCommand(new SetSettingsCommand(settings));
                     } else {
                         logger.warn("Cannot set Speed before setting have been received");

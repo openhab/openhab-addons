@@ -516,8 +516,10 @@
 	<channel-group-type id="f1x45-setting-group-channels">
 		<label>Settings</label>
 		<channels>
+			<channel id="40940" typeId="f1x45-40940"/>
 			<channel id="43005" typeId="f1x45-43005"/>
 			<channel id="44266" typeId="f1x45-44266"/>
+			<channel id="45171" typeId="f1x45-45171"/>
 			<channel id="47004" typeId="f1x45-47004"/>
 			<channel id="47005" typeId="f1x45-47005"/>
 			<channel id="47006" typeId="f1x45-47006"/>

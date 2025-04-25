@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,9 +105,32 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.ON);
             }
 
+            if (content.contains("<humanDetectAlarmState>2</humanDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+            } else if (content.contains("<humanDetectAlarmState>1</humanDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_HUMAN_ALARM);
+            }
+
+            if (content.contains("<crossLineDetectAlarmState>2</crossLineDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            } else if (content.contains("<crossLineDetectAlarmState>1</crossLineDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            }
+
+            if (content.contains("<carDetectAlarmState>2</carDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+            } else if (content.contains("<carDetectAlarmState>1</carDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_CAR_ALARM);
+            }
+
+            if (content.contains("<petDetectAlarmState>2</petDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+            } else if (content.contains("<petDetectAlarmState>1</petDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_ANIMAL_ALARM);
+            }
+
             if (content.contains("</CGI_Result>")) {
                 ctx.close();
-                ipCameraHandler.logger.debug("End of FOSCAM handler reached, so closing the channel to the camera now");
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -212,9 +235,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-        lowPriorityRequests.add("/cgi-bin/CGIProxy.fcgi?cmd=getDevState&usr=" + username + "&pwd=" + password);
-        return lowPriorityRequests;
+    public List<String> getLowPriorityRequests() {
+        return List.of();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -66,12 +65,11 @@ public class SwitchService {
         return responses.thenApply(this::getSwitchResponse);
     }
 
-    @NotNull
     private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
-        return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
+        return Objects.requireNonNull(singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
-                .findFirst().orElse(new SwitchResponseDTO(0, 503));
+                .findFirst().orElse(new SwitchResponseDTO(0, 503)));
     }
 
     private SwitchResponseDTO deserializeString(String response) {

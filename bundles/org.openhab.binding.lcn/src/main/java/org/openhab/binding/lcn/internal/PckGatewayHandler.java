@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.lcn.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,7 +65,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     public synchronized void initialize() {
         PckGatewayConfiguration localConfig = config = getConfigAs(PckGatewayConfiguration.class);
 
-        String errorMessage = "Could not connect to LCN-PCHK/PKE: " + localConfig.getHostname() + ": ";
+        String errorMessage = "Could not connect to LCN-PCHK/VISU: " + localConfig.getHostname() + ": ";
 
         try {
             OutputPortDimMode dimMode;
@@ -114,7 +114,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LcnModuleDiscoveryService.class);
+        return Set.of(LcnModuleDiscoveryService.class);
     }
 
     @Override

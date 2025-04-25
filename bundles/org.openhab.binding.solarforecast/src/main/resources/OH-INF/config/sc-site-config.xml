@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solarforecast:sc-site">
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>API key from your subscription</description>
+		</parameter>
+		<parameter name="timeZone" type="text" required="false">
+			<label>Time Zone</label>
+			<description>Time zone of forecast location</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

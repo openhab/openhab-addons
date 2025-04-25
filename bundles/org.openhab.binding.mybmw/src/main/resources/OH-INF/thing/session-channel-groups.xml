@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="session-values">
+		<label>Electric Charging Sessions</label>
+		<description>Past charging sessions</description>
+		<channels>
+			<channel id="title" typeId="session-title-channel"/>
+			<channel id="subtitle" typeId="session-subtitle-channel"/>
+			<channel id="energy" typeId="session-energy-channel"/>
+			<channel id="issue" typeId="session-issue-channel"/>
+			<channel id="status" typeId="session-status-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

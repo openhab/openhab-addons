@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mikrotik"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="routeros">
+		<label>Mikrotik RouterOS</label>
+		<description>A connection to RouterOS device</description>
+		<channels>
+			<channel id="freeSpace" typeId="freeSpace"/>
+			<channel id="totalSpace" typeId="totalSpace"/>
+			<channel id="usedSpace" typeId="usedSpace"/>
+			<channel id="freeMemory" typeId="freeMemory"/>
+			<channel id="totalMemory" typeId="totalMemory"/>
+			<channel id="usedMemory" typeId="usedMemory"/>
+			<channel id="cpuLoad" typeId="cpuLoad"/>
+			<channel id="upSince" typeId="upSince"/>
+		</channels>
+		<properties>
+			<property name="vendor">Mikrotik</property>
+			<property name="modelId">RouterOS</property>
+			<property name="firmware"/>
+			<property name="serial"/>
+		</properties>
+		<representation-property>name</representation-property>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<description>Hostname or IP address of the RouterOS device</description>
+				<default>192.168.88.1</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" max="65535" min="1" required="false">
+				<label>API Port</label>
+				<description>API Port number of the RouterOS device</description>
+				<default>8728</default>
+			</parameter>
+			<parameter name="login" type="text" required="true">
+				<label>Username</label>
+				<default>admin</default>
+				<description>The username to access the the RouterOS device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The user password to access the RouterOS device</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds to poll the RouterOS device</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="interface">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="routeros"/>
+		</supported-bridge-type-refs>
+		<label>RouterOS Interface</label>
+		<description>A network interface from RouterOS system (ethernet, wifi, vpn, etc.)</description>
+		<channels>
+			<!-- common channels for all interface types -->
+			<channel id="type" typeId="interfaceType"/>
+			<channel id="name" typeId="interfaceName"/>
+			<channel id="comment" typeId="comment"/>
+			<channel id="macAddress" typeId="macAddress"/>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="connected" typeId="connected"/>
+			<channel id="lastLinkDownTime" typeId="lastLinkDownTime"/>
+			<channel id="lastLinkUpTime" typeId="lastLinkUpTime"/>
+			<channel id="linkDowns" typeId="linkDowns"/>
+			<channel id="txRate" typeId="txRate"/>
+			<channel id="rxRate" typeId="rxRate"/>
+			<channel id="txPacketRate" typeId="txPacketRate"/>
+			<channel id="rxPacketRate" typeId="rxPacketRate"/>
+			<channel id="txBytes" typeId="txBytes"/>
+			<channel id="rxBytes" typeId="rxBytes"/>
+			<channel id="txPackets" typeId="txPackets"/>
+			<channel id="rxPackets" typeId="rxPackets"/>
+			<channel id="txDrops" typeId="txDrops"/>
+			<channel id="rxDrops" typeId="rxDrops"/>
+			<channel id="txErrors" typeId="txErrors"/>
+			<channel id="rxErrors" typeId="rxErrors"/>
+			<!-- ethernet interface channels -->
+			<channel id="defaultName" typeId="defaultName"/>
+			<channel id="rate" typeId="ethernetRate"/>
+			<!-- cap interface channels -->
+			<channel id="state" typeId="state"/>
+			<channel id="registeredClients" typeId="registeredClients"/>
+			<channel id="authorizedClients" typeId="authorizedClients"/>
+			<!-- ppp & vpn interface channels -->
+			<channel id="upSince" typeId="upSince"/>
+		</channels>
+		<representation-property>name</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Interface Name</label>
+				<description>RouterOS Interface name (i.e. ether1)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="wifiRegistration">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="routeros"/>
+		</supported-bridge-type-refs>
+		<label>RouterOS Wireless Client</label>
+		<description>A wireless client connected to a RouterOS wireless network (direct or CAPsMAN-managed)</description>
+		<channels>
+			<channel id="macAddress" typeId="macAddress"/>
+			<channel id="comment" typeId="comment"/>
+			<channel id="connected" typeId="connected"/>
+			<channel id="continuous" typeId="continuous"/>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="interface" typeId="interfaceName"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="upSince" typeId="upSince"/>
+			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="txRate" typeId="txRate"/>
+			<channel id="rxRate" typeId="rxRate"/>
+			<channel id="txPacketRate" typeId="txPacketRate"/>
+			<channel id="rxPacketRate" typeId="rxPacketRate"/>
+			<channel id="txBytes" typeId="txBytes"/>
+			<channel id="rxBytes" typeId="rxBytes"/>
+			<channel id="txPackets" typeId="txPackets"/>
+			<channel id="rxPackets" typeId="rxPackets"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description>
+			<parameter name="mac" type="text" required="true">
+				<label>Client MAC</label>
+				<description>WiFi client MAC address</description>
+			</parameter>
+			<parameter name="ssid" type="text" required="false">
+				<label>SSID</label>
+				<description>
+					Constraining SSID for the WiFi client (optional). If client will connect to another SSID,
+					this thing
+					will stay offline until client reconnects to specified SSID.
+				</description>
+			</parameter>
+			<parameter name="considerContinuous" type="integer" required="false">
+				<label>Consider Home Interval</label>
+				<description>The interval in seconds to treat the client as connected permanently</description>
+				<default>180</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="freeSpace" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Space</label>
+		<description>Amount of free storage left on device in bytes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="totalSpace" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Space</label>
+		<description>Amount of total storage available on device in bytes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="usedSpace">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Used Space %</label>
+		<description>Percentage of used device storage space</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="freeMemory" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free RAM</label>
+		<description>Amount of free memory left on device in bytes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="totalMemory" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total RAM</label>
+		<description>Amount of total memory available on device in bytes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="usedMemory">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Used RAM %</label>
+		<description>Percentage of used device memory</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cpuLoad">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CPU Load %</label>
+		<description>CPU load percentage</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+
+
+	<channel-type id="interfaceType" advanced="true">
+		<item-type>String</item-type>
+		<label>Interface Type</label>
+		<description>Network interface type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="interfaceName" advanced="true">
+		<item-type>String</item-type>
+		<label>Interface Name</label>
+		<description>Network interface name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="comment" advanced="true">
+		<item-type>String</item-type>
+		<label>Comment</label>
+		<description>User-defined comment</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="macAddress" advanced="true">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of the client or interface</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>Reflects enabled or disabled state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connected">
+		<item-type>Contact</item-type>
+		<label>Connected</label>
+		<description>Reflects connected or disconnected state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="continuous">
+		<item-type>Contact</item-type>
+		<label>Continuous</label>
+		<description>Connection is considered long-running</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastLinkDownTime">
+		<item-type>DateTime</item-type>
+		<label>Last Link Down</label>
+		<description>Last time when link went down</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastLinkUpTime">
+		<item-type>DateTime</item-type>
+		<label>Last Link Up</label>
+		<description>Last time when link went up</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="linkDowns" advanced="true">
+		<item-type>Number</item-type>
+		<label>Link Downs</label>
+		<description>Amount of link downs</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="txRate">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Transmission Rate</label>
+		<description>Rate of data transmission in megabits per second</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rxRate">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Receiving Rate</label>
+		<description>Rate of data receiving in megabits per second</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="txPacketRate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transmission Packet Rate</label>
+		<description>Rate of data transmission in packets per second</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rxPacketRate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Receiving Packet Rate</label>
+		<description>Rate of data receiving in packets per second</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="txBytes" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Transmitted Bytes</label>
+		<description>Amount of bytes transmitted</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="rxBytes" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Received Bytes</label>
+		<description>Amount of bytes received</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="txPackets" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transmitted Packets</label>
+		<description>Amount of packets transmitted</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rxPackets" advanced="true">
+		<item-type>Number</item-type>
+		<label>Received Packets</label>
+		<description>Amount of packets received</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="txDrops" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transmission Drops</label>
+		<description>Amount of packets dropped during transmission</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rxDrops" advanced="true">
+		<item-type>Number</item-type>
+		<label>Receiving Drops</label>
+		<description>Amount of packets dropped during receiving</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="txErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transmission Errors</label>
+		<description>Amount of errors during transmission</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rxErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Receiving Errors</label>
+		<description>Amount of errors during receiving</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="defaultName" advanced="true">
+		<item-type>String</item-type>
+		<label>Default Name</label>
+		<description>Interface factory name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ethernetRate" advanced="true">
+		<item-type>String</item-type>
+		<label>Link Rate</label>
+		<description>Ethernet link rate</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>WiFi interface state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="registeredClients">
+		<item-type>Number</item-type>
+		<label>Registered Clients</label>
+		<description>Amount of clients registered to WiFi interface</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="authorizedClients">
+		<item-type>Number</item-type>
+		<label>Authorized Clients</label>
+		<description>Amount of clients authorized by WiFi interface</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="upSince">
+		<item-type>DateTime</item-type>
+		<label>Up since</label>
+		<description>Time when thing got up</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Time of when the client was last seen connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ssid">
+		<item-type>String</item-type>
+		<label>WiFi Network</label>
+		<description>Wireless Network (SSID) the wireless client is connected to</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

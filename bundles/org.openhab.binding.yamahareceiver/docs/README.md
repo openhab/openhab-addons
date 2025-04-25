@@ -11,27 +11,32 @@ and a json based protocol for newer receivers.
 The http port 80 on the receiver is used with http POST requests for retrieving and changing the device state. The actual url is http://HOST/YamahaRemoteControl/ctrl.
 
 An example for retrieving data:
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <YAMAHA_AV cmd="GET">
 <ZONE><Basic_Status>GetParam</Basic_Status><ZONE>
 </YAMAHA_AV>
 ```
+
 where ZONE is Main_Zone, Zone_2, Zone_3 or Zone_4.
 
 An example for changing the state of the receiver:
+
 ```xml
 <YAMAHA_AV cmd="PUT">
 <ZONE><Power_Control><Power>On</Power></Power_Control><ZONE>
 </YAMAHA_AV>
 ```
+
 ### XML Structure
-	System	
+
+	System
 		Config
 			Model_Name
-			System_ID	
-			Version	
-			Feature_Existence	
+			System_ID
+			Version
+			Feature_Existence
 				Main_Zone
 				Zone_2
 				Zone_3
@@ -75,7 +80,7 @@ An example for changing the state of the receiver:
 			Destination
 			Freq_Step
 
-	Main Zone	
+	Main Zone
 		Config
 			Feature_Availability
 			Name -> Zone/Scene
@@ -110,7 +115,7 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	Zone2,3	
+	Zone2,3
 		Config
 		Basic_Status
 		Power_Control
@@ -121,7 +126,7 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	Zone4	
+	Zone4
 		Config
 		Basic_Status
 		Power_Control
@@ -130,14 +135,14 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	USB	
+	USB
 		Config
 		Play_Control
 		Play_Info
 		List_Control
 		List_Info
 
-	Tuner	
+	Tuner
 		Config
 		Play_Control
 		Play_Info
@@ -149,14 +154,16 @@ An example for changing the state of the receiver:
 		List_Control
 		List_Info
 
-
 ### XML Descriptor
 
 The AVR provides an XML file that describes features and commands available using this URL:
+
 ```
 http://<Your_Yamaha_ID>/YamahaRemoteControl/desc.xml
 ```
+
 Or this URL:
+
 ```
 http://<Your_Yamaha_ID>/YamahaRemoteControl/UnitDesc.xml
 ```
@@ -164,14 +171,14 @@ http://<Your_Yamaha_ID>/YamahaRemoteControl/UnitDesc.xml
 As Yamaha introduces new models there may be variations between XML structure.
 In an attempt to improve the add-on maintenance and troubleshooting selected model's `desc.xml`' has been collected from community users:
 
-* [HTR-4069](desc_HTR-4069.xml) 
-* [RX-A2000](desc_RX-A2000.xml) 
-* [RX-A3070](desc_RX-A3070.xml) 
-* [RX-S601D](desc_RX-S601D.xml) 
-* [RX-V479](desc_RX-V479.xml) 
-* [RX-V583](desc_RX-V583.xml) 
-* [RX-V675](desc_RX-V675.xml) 
-* [RX-V3900](desc_RX-V3900.xml) 
+- [HTR-4069](desc_HTR-4069.xml)
+- [RX-A2000](desc_RX-A2000.xml)
+- [RX-A3070](desc_RX-A3070.xml)
+- [RX-S601D](desc_RX-S601D.xml)
+- [RX-V479](desc_RX-V479.xml)
+- [RX-V583](desc_RX-V583.xml)
+- [RX-V675](desc_RX-V675.xml)
+- [RX-V3900](desc_RX-V3900.xml)
 
 ### Key differences between models
 

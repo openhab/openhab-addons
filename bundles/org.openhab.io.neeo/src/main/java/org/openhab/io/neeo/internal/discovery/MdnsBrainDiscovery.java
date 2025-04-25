@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,11 +34,10 @@ import java.util.stream.Collectors;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.io.neeo.internal.NeeoApi;
@@ -107,17 +106,17 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
     /** The file we store definitions in */
     private final File file = new File(NeeoConstants.FILENAME_DISCOVEREDBRAINS);
 
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /**
      * Creates the MDNS brain discovery from the given {@link ServiceContext}
      *
      * @param context the non-null service context
      */
-    public MdnsBrainDiscovery(ServiceContext context, ClientBuilder clientBuilder) {
+    public MdnsBrainDiscovery(ServiceContext context, HttpClient httpClient) {
         Objects.requireNonNull(context, "context cannot be null");
         this.context = context;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -142,9 +141,9 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
                     final String[] ipAddresses = gson.fromJson(json, String[].class);
                     if (ipAddresses != null) {
                         logger.debug("Restoring discovery from {}: {}", file.getAbsolutePath(),
-                                StringUtils.join(ipAddresses, ','));
+                                String.join(",", ipAddresses));
                         for (String ipAddress : ipAddresses) {
-                            if (StringUtils.isNotBlank(ipAddress)) {
+                            if (!ipAddress.isBlank()) {
                                 addDiscovered(ipAddress, false);
                             }
                         }
@@ -184,7 +183,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
     @Nullable
     private Entry<String, InetAddress> getNeeoBrainInfo(ServiceInfo info) {
         Objects.requireNonNull(info, "info cannot be null");
-        if (!StringUtils.equals("neeo", info.getApplication())) {
+        if (!"neeo".equals(info.getApplication())) {
             logger.debug("A non-neeo application was found for the NEEO MDNS: {}", info);
             return null;
         }
@@ -254,7 +253,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
         NeeoSystemInfo sysInfo;
         try {
-            sysInfo = NeeoApi.getSystemInfo(brainInfo.getValue().toString(), clientBuilder);
+            sysInfo = NeeoApi.getSystemInfo(brainInfo.getValue().toString(), httpClient);
         } catch (IOException e) {
             // We can get an MDNS notification BEFORE the brain is ready to process.
             // if that happens, we'll get an IOException (usually bad gateway message), schedule another attempt to get
@@ -303,7 +302,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
         try {
             final InetAddress addr = InetAddress.getByName(ipAddress);
-            final NeeoSystemInfo sysInfo = NeeoApi.getSystemInfo(ipAddress, clientBuilder);
+            final NeeoSystemInfo sysInfo = NeeoApi.getSystemInfo(ipAddress, httpClient);
             logger.debug("Manually adding brain ({}) with system information: {}", ipAddress, sysInfo);
 
             systemsLock.lock();
@@ -338,7 +337,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
         systemsLock.lock();
         try {
             final Optional<NeeoSystemInfo> sysInfo = systems.keySet().stream()
-                    .filter(e -> StringUtils.equals(servletUrl, NeeoUtil.getServletUrl(e.getHostname()))).findFirst();
+                    .filter(e -> servletUrl.equals(NeeoUtil.getServletUrl(e.getHostname()))).findFirst();
             if (sysInfo.isPresent()) {
                 systems.remove(sysInfo.get());
                 fireRemoved(sysInfo.get());
@@ -371,7 +370,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
         try {
             NeeoSystemInfo foundInfo = null;
             for (NeeoSystemInfo existingSysInfo : systems.keySet()) {
-                if (StringUtils.equals(existingSysInfo.getHostname(), brainInfo.getKey())) {
+                if (existingSysInfo.getHostname().equals(brainInfo.getKey())) {
                     foundInfo = existingSysInfo;
                     break;
                 }
@@ -398,7 +397,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
             final List<String> ipAddresses = systems.values().stream().map(e -> e.getHostAddress())
                     .collect(Collectors.toList());
 
-            logger.debug("Saving brain's discovered to {}: {}", file.toPath(), StringUtils.join(ipAddresses, ','));
+            logger.debug("Saving brain's discovered to {}: {}", file.toPath(), String.join(",", ipAddresses));
 
             final String json = gson.toJson(ipAddresses);
             final byte[] contents = json.getBytes(StandardCharsets.UTF_8);

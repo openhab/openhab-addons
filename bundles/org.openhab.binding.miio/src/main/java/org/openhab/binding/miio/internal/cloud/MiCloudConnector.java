@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,6 @@ public class MiCloudConnector {
     private static final TimeZone TZ = TimeZone.getDefault();
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("OOOO");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
-    private static final JsonParser PARSER = new JsonParser();
 
     private final String clientId;
 
@@ -132,7 +131,7 @@ public class MiCloudConnector {
     }
 
     private String getApiUrl(String country) {
-        return "https://" + (country.trim().equalsIgnoreCase("cn") ? "" : country.trim().toLowerCase() + ".")
+        return "https://" + ("cn".equalsIgnoreCase(country.trim()) ? "" : country.trim().toLowerCase() + ".")
                 + "api.io.mi.com/app";
     }
 
@@ -150,13 +149,13 @@ public class MiCloudConnector {
 
     public String getMapUrl(String vacuumMap, String country) throws MiCloudException {
         String url = getApiUrl(country) + "/home/getmapfileurl";
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
         String mapResponse = request(url, map);
-        logger.trace("response: {}", mapResponse);
+        logger.trace("Response: {}", mapResponse);
         String errorMsg = "";
         try {
-            JsonElement response = PARSER.parse(mapResponse);
+            JsonElement response = JsonParser.parseString(mapResponse);
             if (response.isJsonObject()) {
                 logger.debug("Received  JSON message {}", response);
                 if (response.getAsJsonObject().has("result")
@@ -181,9 +180,7 @@ public class MiCloudConnector {
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
-        final String response = request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
-        logger.debug("response: {}", response);
-        return response;
+        return request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
     }
 
     public String sendRPCCommand(String device, String country, String command) throws MiCloudException {
@@ -201,16 +198,33 @@ public class MiCloudConnector {
             logger.debug("{}", err);
             throw new MiCloudException(err, e);
         }
-        final String response = request("/home/rpc/" + id, country, command);
-        logger.debug("response: {}", response);
-        return response;
+        return request("/home/rpc/" + id, country, command);
+    }
+
+    public JsonObject getHomeList(String country) {
+        String response = "";
+        try {
+            response = request("/homeroom/gethome", country,
+                    "{\"fg\":false,\"fetch_share\":true,\"fetch_share_dev\":true,\"limit\":300,\"app_ver\":7,\"fetch_cariot\":true}");
+            logger.trace("gethome response: {}", response);
+            final JsonElement resp = JsonParser.parseString(response);
+            if (resp.isJsonObject() && resp.getAsJsonObject().has("result")) {
+                return resp.getAsJsonObject().get("result").getAsJsonObject();
+            }
+        } catch (JsonParseException e) {
+            logger.info("{} error while parsing rooms: '{}'", e.getMessage(), response);
+        } catch (MiCloudException e) {
+            logger.info("{}", e.getMessage());
+            loginFailedCounter++;
+        }
+        return new JsonObject();
     }
 
     public List<CloudDeviceDTO> getDevices(String country) {
         final String response = getDeviceString(country);
         List<CloudDeviceDTO> devicesList = new ArrayList<>();
         try {
-            final JsonElement resp = PARSER.parse(response);
+            final JsonElement resp = JsonParser.parseString(response);
             if (resp.isJsonObject()) {
                 final JsonObject jor = resp.getAsJsonObject();
                 if (jor.has("result")) {
@@ -238,7 +252,7 @@ public class MiCloudConnector {
     public String getDeviceString(String country) {
         String resp;
         try {
-            resp = request("/home/device_list", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
+            resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);
@@ -252,7 +266,7 @@ public class MiCloudConnector {
     }
 
     public String request(String urlPart, String country, String params) throws MiCloudException {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("data", params);
         return request(urlPart, country, map);
     }
@@ -261,7 +275,7 @@ public class MiCloudConnector {
         String url = urlPart.trim();
         url = getApiUrl(country) + (url.startsWith("/app") ? url.substring(4) : url);
         String response = request(url, params);
-        logger.debug("Request to {} server {}. Response: {}", country, urlPart, response);
+        logger.debug("Request to '{}' server '{}'. Response: '{}'", country, urlPart, response);
         return response;
     }
 
@@ -271,7 +285,7 @@ public class MiCloudConnector {
         }
         loginFailedCounterCheck();
         startClient();
-        logger.debug("Send request: {} to {}", params.get("data"), url);
+        logger.debug("Send request to {} with data '{}'", url, params.get("data"));
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
         request.header("x-xiaomi-protocal-flag-cli", "PROTOCAL-HTTP2");
@@ -413,9 +427,10 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 1 content response= {}", content);
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
         try {
-            JsonElement resp = new JsonParser().parse(parseJson(content));
-            if (resp.isJsonObject() && resp.getAsJsonObject().has("_sign")) {
-                String sign = resp.getAsJsonObject().get("_sign").getAsString();
+            JsonElement resp = JsonParser.parseString(parseJson(content));
+            CloudLogin1DTO jsonResp = GSON.fromJson(resp, CloudLogin1DTO.class);
+            final String sign = jsonResp != null ? jsonResp.getSign() : null;
+            if (sign != null && !sign.isBlank()) {
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
                 return sign;
             } else {
@@ -457,7 +472,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login step 2 response = {}", responseStep2);
         logger.trace("Xiaomi login step 2 content = {}", content2);
 
-        JsonElement resp2 = new JsonParser().parse(parseJson(content2));
+        JsonElement resp2 = JsonParser.parseString(parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
         if (jsonResp == null) {
             throw new MiCloudException("Error getting logon details from step 2: " + content2);
@@ -475,6 +490,19 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login passToken = {}", passToken);
         logger.trace("Xiaomi login location = {}", location);
         logger.trace("Xiaomi login code = {}", code);
+        if (0 != jsonResp.getSecurityStatus()) {
+            logger.debug("Xiaomi Cloud Step2 response: {}", parseJson(content2));
+            logger.debug(
+                    """
+                            Xiaomi Login code: {}
+                            SecurityStatus: {}
+                            Pwd code: {}
+                            Location logon URL: {}
+                            In case of login issues check userId/password details are correct.
+                            If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.\
+                            """,
+                    jsonResp.getCode(), jsonResp.getSecurityStatus(), jsonResp.getPwd(), jsonResp.getLocation());
+        }
         if (logger.isTraceEnabled()) {
             dumpCookies(url, false);
         }
@@ -538,7 +566,7 @@ public class MiCloudConnector {
             logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
             if (cookie.getName().contentEquals("serviceToken")) {
                 serviceToken = cookie.getValue();
-                logger.debug("Xiaomi cloud logon succesfull.");
+                logger.debug("Xiaomi cloud logon successful.");
                 logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
             }
         }

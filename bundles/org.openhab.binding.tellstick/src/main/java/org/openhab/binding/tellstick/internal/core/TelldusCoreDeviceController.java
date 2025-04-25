@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,13 @@
 package org.openhab.binding.tellstick.internal.core;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -44,6 +47,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  *
  * @author Jarle Hjortland, Elias Gabrielsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
     private long lastSend = 0;
@@ -54,11 +58,11 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     private Thread workerThread;
     private SortedMap<Device, TelldusCoreSendEvent> messageQue;
 
-    public TelldusCoreDeviceController(long resendInterval) {
+    public TelldusCoreDeviceController(long resendInterval, final String threadName) {
         this.resendInterval = resendInterval;
         messageQue = Collections.synchronizedSortedMap(new TreeMap<>());
         telldusCoreWorker = new TelldusCoreWorker(messageQue);
-        workerThread = new Thread(telldusCoreWorker);
+        workerThread = new Thread(telldusCoreWorker, threadName);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public State calcState(Device dev) {
+    public @Nullable State calcState(Device dev) {
         TellstickDevice device = (TellstickDevice) dev;
         State st = null;
         switch (device.getStatus()) {
@@ -119,7 +123,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
             case JNA.CLibrary.TELLSTICK_DIM:
                 dimValue = new BigDecimal(((TellstickDevice) device).getData());
                 dimValue = dimValue.multiply(new BigDecimal(100));
-                dimValue = dimValue.divide(new BigDecimal(255), 0, BigDecimal.ROUND_HALF_UP);
+                dimValue = dimValue.divide(new BigDecimal(255), 0, RoundingMode.HALF_UP);
                 break;
             default:
                 logger.warn("Could not handle {} for {}", ((TellstickDevice) device).getStatus(), device);
@@ -136,12 +140,12 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
@@ -155,10 +159,10 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
                     turnOn(device);
                 } else if (command == OnOffType.OFF) {
                     turnOff(device);
-                } else if (command instanceof PercentType) {
-                    dim(device, (PercentType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    increaseDecrease(device, ((IncreaseDecreaseType) command));
+                } else if (command instanceof PercentType percentCommand) {
+                    dim(device, percentCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    increaseDecrease(device, increaseDecreaseCommand);
                 }
             } else if (device instanceof SwitchableDevice) {
                 if (command == OnOffType.ON) {
@@ -178,10 +182,12 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     private void increaseDecrease(Device dev, IncreaseDecreaseType increaseDecreaseType) throws TellstickException {
-        String strValue = ((TellstickDevice) dev).getData();
         double value = 0;
-        if (strValue != null) {
-            value = Double.valueOf(strValue);
+        if (dev instanceof TellstickDevice device) {
+            String strValue = device.getData();
+            if (strValue != null) {
+                value = Double.valueOf(strValue);
+            }
         }
         int percent = (int) Math.round((value / 255) * 100);
         if (IncreaseDecreaseType.INCREASE == increaseDecreaseType) {
@@ -197,29 +203,29 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
         double value = command.doubleValue();
 
         // 0 means OFF and 100 means ON
-        if (value == 0 && dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).off();
-        } else if (value == 100 && dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).on();
-        } else if (dev instanceof DimmableDevice) {
+        if (value == 0 && dev instanceof SwitchableDevice device) {
+            device.off();
+        } else if (value == 100 && dev instanceof SwitchableDevice device) {
+            device.on();
+        } else if (dev instanceof DimmableDevice device) {
             long tdVal = Math.round((value / 100) * 255);
-            ((DimmableDevice) dev).dim((int) tdVal);
+            device.dim((int) tdVal);
         } else {
             throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
     private void turnOff(Device dev) throws TellstickException {
-        if (dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).off();
+        if (dev instanceof SwitchableDevice device) {
+            device.off();
         } else {
             throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
     }
 
     private void turnOn(Device dev) throws TellstickException {
-        if (dev instanceof SwitchableDevice) {
-            ((SwitchableDevice) dev).on();
+        if (dev instanceof SwitchableDevice device) {
+            device.on();
         } else {
             throw new TelldusBindingException("Cannot send ON to " + dev);
         }
@@ -240,7 +246,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     /**
      * This class is a worker which execute the commands sent to the TelldusCoreDeviceController.
      * This enables separation between Telldus Core and openHAB for preventing latency on the bus.
-     * The Tellstick have an send pace of 4 Hz which is far slower then the bus itself.
+     * The Tellstick have a send pace of 4 Hz which is far slower then the bus itself.
      *
      * @author Elias Gabrielsson
      *

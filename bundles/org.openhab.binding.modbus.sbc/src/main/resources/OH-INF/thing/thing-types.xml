@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ald1Unidirectional">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>ALD1 Energy Meter (Unid.)</label>
+		<description>Unidirectional one-phase energy meter connected via Modbus.</description>
+
+		<channels>
+			<channel id="total_energy" typeId="total_energy"/>
+			<channel id="partial_energy" typeId="partial_energy"/>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="active_power" typeId="active_power"/>
+			<channel id="reactive_power" typeId="reactive_power"/>
+			<channel id="power_factor" typeId="power_factor"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:modbus-sbc:ald1"/>
+	</thing-type>
+
+	<thing-type id="ald1Bidirectional">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>ALD1 Energy Meter (Bidi.)</label>
+		<description>Bidirectional one-phase energy meter connected via Modbus.</description>
+
+		<channels>
+			<channel id="total_energy" typeId="total_energy"/>
+			<channel id="feeding_back_energy" typeId="feeding_back_energy"/>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="active_power" typeId="active_power"/>
+			<channel id="reactive_power" typeId="reactive_power"/>
+			<channel id="power_factor" typeId="power_factor"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:modbus-sbc:ald1"/>
+	</thing-type>
+
+	<channel-type id="total_energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Total</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="partial_energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Counter Resettable</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="feeding_back_energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Feeding Back</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Effective Voltage</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Effective Current</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="active_power">
+		<item-type>Number:Power</item-type>
+		<label>Effective Active Power</label>
+		<description>Negative numbers mean feeding back</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="reactive_power">
+		<item-type>Number:Power</item-type>
+		<label>Effective Reactive Power</label>
+		<description>Negative numbers mean feeding back</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power_factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

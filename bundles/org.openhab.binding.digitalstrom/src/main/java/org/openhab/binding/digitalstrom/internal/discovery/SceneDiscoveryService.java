@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.digitalstrom.internal.discovery;
 
-import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.GROUP_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.SCENE_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.ZONE_ID;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -35,7 +38,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SceneDiscoveryService} discovers all digitalSTROM-scene of one supported scene-type. The scene-type has to
  * be given to the {@link #SceneDiscoveryService(BridgeHandler, ThingTypeUID)} as
- * {@link ThingTypeUID}. The supported {@link ThingTypeUID} can be found at {@link SceneHandler#SUPPORTED_THING_TYPES}
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at {@link org.openhab.binding.digitalstrom.internal.handler.SceneHandler#SUPPORTED_THING_TYPES}
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -69,7 +73,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         logger.debug("deactivate discovery service for scene type {} remove thing tyspes {}", sceneType,
                 super.getSupportedThingTypes());
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
@@ -109,7 +113,6 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
                             .withBridge(bridgeUID).withLabel(scene.getSceneName()).build();
 
                     thingDiscovered(discoveryResult);
-
                 } else {
                     logger.debug("discovered unsupported scene: name '{}' with id {}", scene.getSceneName(),
                             scene.getID());
@@ -119,9 +122,10 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
     }
 
     private boolean ignoreGroup(Short groupID) {
-        if (FuncNameAndColorGroupEnum.getMode(groupID) != null) {
-            switch (FuncNameAndColorGroupEnum.getMode(groupID)) {
-                case TEMPERATION_CONTROL:
+        ApplicationGroup group = ApplicationGroup.getGroup(groupID);
+        if (group != null) {
+            switch (group) {
+                case TEMPERATURE_CONTROL:
                     return true;
                 default:
                     return false;
@@ -169,8 +173,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
 
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingSceneId = scene.getID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingSceneId);
         } else {
             return null;
         }

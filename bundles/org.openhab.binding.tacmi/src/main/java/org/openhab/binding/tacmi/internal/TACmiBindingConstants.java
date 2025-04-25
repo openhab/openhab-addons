@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,9 @@ public class TACmiBindingConstants {
     public static final ThingTypeUID THING_TYPE_CMI = new ThingTypeUID(BINDING_ID, "cmi");
     public static final ThingTypeUID THING_TYPE_COE_BRIDGE = new ThingTypeUID(BINDING_ID, "coe-bridge");
     public static final ThingTypeUID THING_TYPE_CMI_SCHEMA = new ThingTypeUID(BINDING_ID, "cmiSchema");
+    public static final ThingTypeUID THING_TYPE_CMI_JSON = new ThingTypeUID(BINDING_ID, "cmiJSON");
+
+    public static final String CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS = "channel-type:tacmi:schemaApiDefaults";
 
     public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_IN_UID = new ChannelTypeUID(BINDING_ID,
             "coe-digital-in");
@@ -45,11 +48,13 @@ public class TACmiBindingConstants {
             "schema-switch-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_SWITCH_RW_UID = new ChannelTypeUID(BINDING_ID,
             "schema-switch-rw");
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_DATE_TIME_RO_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-date-time-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID = new ChannelTypeUID(BINDING_ID,
             "schema-numeric-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_STATE_RO_UID = new ChannelTypeUID(BINDING_ID,
             "schema-state-ro");
 
     // Channel specific configuration items
-    public final static String CHANNEL_CONFIG_OUTPUT = "output";
+    public static final String CHANNEL_CONFIG_OUTPUT = "output";
 }

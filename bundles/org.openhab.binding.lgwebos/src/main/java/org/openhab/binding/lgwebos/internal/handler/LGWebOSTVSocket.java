@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,6 +71,7 @@ import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession.LaunchSessionType;
+import org.openhab.binding.lgwebos.internal.handler.core.MediaAppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.Response;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.openhab.binding.lgwebos.internal.handler.core.TextInputStatusInfo;
@@ -88,12 +89,14 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Hyun Kook Khang - Initial contribution
  * @author Sebastian Prehn - Web Socket implementation and adoption for openHAB
+ * @author Jimmy Tanagra - Add media state subscription
  */
 @WebSocket()
 @NonNullByDefault
 public class LGWebOSTVSocket {
 
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
+    private static final String MEDIA_FOREGROUND_APP = "ssap://com.webos.media/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
     // private static final String APP_STATE = "ssap://system.launcher/getAppState";
     private static final String VOLUME = "ssap://audio/getVolume";
@@ -116,6 +119,7 @@ public class LGWebOSTVSocket {
     private final URI destUri;
     private final LGWebOSTVKeyboardInput keyboardInput;
     private final ScheduledExecutorService scheduler;
+    private final Protocol protocol;
 
     public enum State {
         DISCONNECTING,
@@ -123,6 +127,19 @@ public class LGWebOSTVSocket {
         CONNECTING,
         REGISTERING,
         REGISTERED
+    }
+
+    private enum Protocol {
+        WEB_SOCKET("ws", DEFAULT_WS_PORT),
+        WEB_SOCKET_SECURE("wss", DEFAULT_WSS_PORT);
+
+        private Protocol(String name, int port) {
+            this.name = name;
+            this.port = port;
+        }
+
+        public String name;
+        public int port;
     }
 
     private State state = State.DISCONNECTED;
@@ -140,14 +157,15 @@ public class LGWebOSTVSocket {
 
     private @Nullable ScheduledFuture<?> disconnectingJob;
 
-    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port,
+    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, boolean useTLS,
             ScheduledExecutorService scheduler) {
         this.config = config;
         this.client = client;
         this.keyboardInput = new LGWebOSTVKeyboardInput(this);
+        this.protocol = useTLS ? Protocol.WEB_SOCKET_SECURE : Protocol.WEB_SOCKET;
 
         try {
-            this.destUri = new URI("ws://" + host + ":" + port);
+            this.destUri = new URI(protocol.name + "://" + host + ":" + protocol.port);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("IP address or hostname provided is invalid: " + host);
         }
@@ -301,7 +319,7 @@ public class LGWebOSTVSocket {
         payload.addProperty("pairingType", "PROMPT"); // PIN, COMBINED
         payload.add("manifest", manifest);
         packet.add("payload", payload);
-        ResponseListener<JsonObject> dummyListener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> dummyListener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject payload) {
@@ -403,6 +421,10 @@ public class LGWebOSTVSocket {
     @OnWebSocketMessage
     public void onMessage(String message) {
         Response response = GSON.fromJson(message, Response.class);
+        if (response == null) {
+            logger.warn("Received an unexpected null response. Ignoring the response");
+            return;
+        }
         JsonElement payload = response.getPayload();
         JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
         String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
@@ -479,6 +501,7 @@ public class LGWebOSTVSocket {
                 map.put(PROPERTY_DEVICE_OS, jsonPayload.get("deviceOS").getAsString());
                 map.put(PROPERTY_DEVICE_OS_VERSION, jsonPayload.get("deviceOSVersion").getAsString());
                 map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
+                map.put(PROPERTY_DEVICE_ID, jsonPayload.get("deviceUUID").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
                 config.storeProperties(map);
                 sendRegister();
@@ -521,10 +544,8 @@ public class LGWebOSTVSocket {
     }
 
     private Float volumeFromResponse(JsonObject jsonObj) {
-        final String VOLUME_STATUS = "volumeStatus";
-        final String VOLUME = "volume";
-        JsonObject parent = jsonObj.has(VOLUME_STATUS) ? jsonObj.getAsJsonObject(VOLUME_STATUS) : jsonObj;
-        return parent.get(VOLUME).getAsInt() >= 0 ? (float) (parent.get(VOLUME).getAsInt() / 100.0) : Float.NaN;
+        JsonObject parent = jsonObj.has("volumeStatus") ? jsonObj.getAsJsonObject("volumeStatus") : jsonObj;
+        return parent.get("volume").getAsInt() >= 0 ? (float) (parent.get("volume").getAsInt() / 100.0) : Float.NaN;
     }
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
@@ -659,7 +680,7 @@ public class LGWebOSTVSocket {
     public void powerOff(ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system/turnOff";
 
-        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<CommandConfirmation>() {
+        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(CommandConfirmation confirmation) {
@@ -713,6 +734,20 @@ public class LGWebOSTVSocket {
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, null,
                 x -> GSON.fromJson(x, CommandConfirmation.class), listener);
         sendCommand(request);
+    }
+
+    public ServiceSubscription<MediaAppInfo> subscribeMediaState(ResponseListener<MediaAppInfo> listener) {
+        ServiceSubscription<MediaAppInfo> request = new ServiceSubscription<>(MEDIA_FOREGROUND_APP, null,
+                jsonObj -> GSON.fromJson(jsonObj, MediaAppInfo.class), listener);
+        sendCommand(request);
+        return request;
+    }
+
+    public ServiceCommand<MediaAppInfo> getMediaState(ResponseListener<MediaAppInfo> listener) {
+        ServiceCommand<MediaAppInfo> request = new ServiceCommand<>(MEDIA_FOREGROUND_APP, null,
+                jsonObj -> GSON.fromJson(jsonObj, MediaAppInfo.class), listener);
+        sendCommand(request);
+        return request;
     }
 
     // APPS
@@ -835,7 +870,7 @@ public class LGWebOSTVSocket {
     }
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
-        ResponseListener<AppInfo> interceptor = new ResponseListener<AppInfo>() {
+        ResponseListener<AppInfo> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(AppInfo appInfo) {
@@ -913,13 +948,18 @@ public class LGWebOSTVSocket {
 
         String uri = "ssap://com.webos.service.networkinput/getPointerInputSocket";
 
-        ResponseListener<JsonObject> listener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> listener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject jsonObj) {
                 if (jsonObj != null) {
-                    String socketPath = jsonObj.get("socketPath").getAsString().replace("wss:", "ws:").replace(":3001/",
-                            ":3000/");
+                    String socketPath = jsonObj.get("socketPath").getAsString();
+                    if (protocol == Protocol.WEB_SOCKET) {
+                        socketPath = socketPath
+                                .replace(Protocol.WEB_SOCKET_SECURE.name + ":", Protocol.WEB_SOCKET.name + ":")
+                                .replace(":" + Protocol.WEB_SOCKET_SECURE.port + "/",
+                                        ":" + Protocol.WEB_SOCKET.port + "/");
+                    }
                     try {
                         mouseSocket.connect(new URI(socketPath));
                     } catch (URISyntaxException e) {

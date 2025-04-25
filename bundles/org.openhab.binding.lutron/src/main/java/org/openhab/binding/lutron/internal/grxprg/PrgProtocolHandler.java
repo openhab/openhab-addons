@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -283,7 +281,7 @@ class PrgProtocolHandler {
         session.setCallback(callback);
 
         String response = callback.getResponse();
-        if (response.equals("login")) {
+        if ("login".equals(response)) {
             session.sendCommand(username);
         } else {
             return "Protocol violation - wasn't initially a command failure or login prompt: " + response;
@@ -293,7 +291,7 @@ class PrgProtocolHandler {
         response = callback.getResponse();
 
         // Burn the empty response if we got one (
-        if (response.equals("")) {
+        if ("".equals(response)) {
             response = callback.getResponse();
         }
 
@@ -431,7 +429,7 @@ class PrgProtocolHandler {
     }
 
     /**
-     * Converts a hex zone intensity back to a integer - handles shade zones as well
+     * Converts a hex zone intensity back to an integer - handles shade zones as well
      *
      * @param controlUnit the control unit
      * @param zone the zone
@@ -885,8 +883,7 @@ class PrgProtocolHandler {
                 final int yr = Integer.parseInt(m.group(5));
                 c.set(Calendar.YEAR, yr + (yr < 50 ? 1900 : 2000));
 
-                phCallback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK,
-                        new DateTimeType(ZonedDateTime.ofInstant(c.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK, new DateTimeType(c.toInstant()));
             } catch (NumberFormatException e) {
                 logger.error("Invalid time response (can't parse number): '{}'", resp);
             }
@@ -928,7 +925,7 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("m (matcher) cannot be null");
         }
         if (m.groupCount() == 5) {
-            if (m.group(1).equals("255")) {
+            if ("255".equals(m.group(1))) {
                 logger.warn("Sunrise/Sunset needs to be enabled via Liason Software");
                 return;
             }
@@ -936,14 +933,12 @@ class PrgProtocolHandler {
                 final Calendar sunrise = Calendar.getInstance();
                 sunrise.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(1)));
                 sunrise.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
-                phCallback.stateChanged(PrgConstants.CHANNEL_SUNRISE,
-                        new DateTimeType(ZonedDateTime.ofInstant(sunrise.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNRISE, new DateTimeType(sunrise.toInstant()));
 
                 final Calendar sunset = Calendar.getInstance();
                 sunset.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(3)));
                 sunset.set(Calendar.MINUTE, Integer.parseInt(m.group(4)));
-                phCallback.stateChanged(PrgConstants.CHANNEL_SUNSET,
-                        new DateTimeType(ZonedDateTime.ofInstant(sunset.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNSET, new DateTimeType(sunset.toInstant()));
             } catch (NumberFormatException e) {
                 logger.error("Invalid sunrise/sunset response (can't parse number): '{}'", resp);
             }
@@ -995,7 +990,7 @@ class PrgProtocolHandler {
                 final int controlUnit = Integer.parseInt(m.group(1));
                 for (int z = 1; z <= 8; z++) {
                     final String zi = m.group(z + 1);
-                    if (zi.equals("*") || zi.equals(Integer.toString(z - 1))) {
+                    if ("*".equals(zi) || zi.equals(Integer.toString(z - 1))) {
                         continue; // not present
                     }
                     final int zid = convertIntensity(controlUnit, z, zi);
@@ -1033,12 +1028,9 @@ class PrgProtocolHandler {
                 final boolean zoneLock = (q4bits.length() > 2 ? q4bits.charAt(2) : '0') == '1';
                 final boolean sceneLock = (q4bits.length() > 3 ? q4bits.charAt(4) : '0') == '1';
 
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ,
-                        seqMode ? OnOffType.ON : OnOffType.OFF);
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK,
-                        sceneLock ? OnOffType.ON : OnOffType.OFF);
-                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK,
-                        zoneLock ? OnOffType.ON : OnOffType.OFF);
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ, OnOffType.from(seqMode));
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK, OnOffType.from(sceneLock));
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK, OnOffType.from(zoneLock));
             } catch (NumberFormatException e) {
                 logger.error("Invalid controller information response: '{}'", resp);
             }
@@ -1196,10 +1188,10 @@ class PrgProtocolHandler {
          */
         String getResponse() throws Exception {
             final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
-            if (lastResponse instanceof String) {
-                return (String) lastResponse;
-            } else if (lastResponse instanceof Exception) {
-                throw (Exception) lastResponse;
+            if (lastResponse instanceof String str) {
+                return str;
+            } else if (lastResponse instanceof Exception exception) {
+                throw exception;
             } else if (lastResponse == null) {
                 throw new Exception("Didn't receive response in time");
             } else {

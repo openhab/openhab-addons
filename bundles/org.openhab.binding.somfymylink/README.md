@@ -21,38 +21,38 @@ Once the Somfy MyLink bridge is ONLINE you can start a scan that will detect and
 
 ### mylink
 
-| Parameter        | Parameter ID      | Required/Optional | Description |
-|------------------|-------------------|-------------------|-------------|
-| IP or Hostname   | ipAddress         | Required          | Hostname or IP Address of the myLink device |
-| System Id        | systemId          | Required          | The system id configured on the myLink device  |
+| Parameter      | Parameter ID | Required/Optional | Description                                   |
+| -------------- | ------------ | ----------------- | --------------------------------------------- |
+| IP or Hostname | ipAddress    | Required          | Hostname or IP Address of the myLink device   |
+| System Id      | systemId     | Required          | The system id configured on the myLink device |
 
 ### shade
 
-| Parameter        | Parameter ID      | Required/Optional | Description |
-|------------------|-------------------|-------------------|-------------|
-| Target ID        | targetId          | Required          | Address of shade in the Somfy system |
+| Parameter | Parameter ID | Required/Optional | Description                          |
+| --------- | ------------ | ----------------- | ------------------------------------ |
+| Target ID | targetId     | Required          | Address of shade in the Somfy system |
 
 ### scene
 
-| Parameter        | Parameter ID      | Required/Optional | Description |
-|------------------|-------------------|-------------------|-------------|
-| Scene ID         | sceneId           | Required          | Address of scene in the Somfy system |
+| Parameter | Parameter ID | Required/Optional | Description                          |
+| --------- | ------------ | ----------------- | ------------------------------------ |
+| Scene ID  | sceneId      | Required          | Address of scene in the Somfy system |
 
 ## Channels
 
 The following channels are supported by the binding. Note that specific weather station models may support only some or all of these channels.
 
-| Channel ID                      | Item Type               | Description                                                   |
-|---------------------------------|-------------------------|---------------------------------------------------------------|
-| shadeControl                    | Rollershutter           | Device control (UP, DOWN, STOP)                               |
-| scenelist                       | String                  | Comma-separated list of scenes of form sceneId=sceneName      |
-| button                          | Switch                  | Button to trigger a scene or rule                             |
+| Channel ID   | Item Type     | Description                                              |
+| ------------ | ------------- | -------------------------------------------------------- |
+| shadeControl | Rollershutter | Device control (UP, DOWN, STOP)                          |
+| scenelist    | String        | Comma-separated list of scenes of form sceneId=sceneName |
+| button       | Switch        | Button to trigger a scene or rule                        |
 
 ## Example
 
 ### Things
 
-```
+```java
 Bridge somfymylink:mylink:mylink1 "myLink Bridge" @ "Office" [ ipAddress="192.168.1.1", systemId="mysystemidhere" ] {
     Thing shade shade1 "Living Room" [ targetId="CC114A21.1" ]
 }

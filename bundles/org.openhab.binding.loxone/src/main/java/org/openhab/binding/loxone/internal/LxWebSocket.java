@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,6 +78,7 @@ public class LxWebSocket {
 
     private Session session;
     private String fwVersion;
+    private boolean httpsSession = false;
     private ScheduledFuture<?> timeout;
     private LxWsBinaryHeader header;
     private LxWsSecurity security;
@@ -206,7 +207,7 @@ public class LxWebSocket {
     }
 
     @OnWebSocketMessage
-    public void onBinaryMessage(byte data[], int msgOffset, int msgLength) {
+    public void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
         int offset = msgOffset;
         int length = msgLength;
         if (logger.isTraceEnabled()) {
@@ -455,7 +456,18 @@ public class LxWebSocket {
      * @param fwVersion Miniserver firmware version
      */
     void setFwVersion(String fwVersion) {
+        logger.debug("[{}] Firmware version: {}", debugId, fwVersion);
         this.fwVersion = fwVersion;
+    }
+
+    /**
+     * Sets information if session is over HTTPS or HTTP protocol
+     *
+     * @param httpsSession true when HTTPS session
+     */
+    void setHttps(boolean httpsSession) {
+        logger.debug("[{}] HTTPS session: {}", debugId, httpsSession);
+        this.httpsSession = httpsSession;
     }
 
     /**
@@ -536,7 +548,7 @@ public class LxWebSocket {
         try {
             if (session != null) {
                 String encrypted;
-                if (encrypt) {
+                if (encrypt && !httpsSession) {
                     encrypted = security.encrypt(command);
                     logger.debug("[{}] Sending encrypted string: {}", debugId, command);
                     logger.debug("[{}] Encrypted: {}", debugId, encrypted);
@@ -580,7 +592,9 @@ public class LxWebSocket {
         }
         logger.debug("[{}] Response: {}", debugId, message.trim());
         String control = resp.getCommand().trim();
-        control = security.decryptControl(control);
+        if (!httpsSession) {
+            control = security.decryptControl(control);
+        }
         // for some reason the responses to some commands starting with jdev begin with dev, not jdev
         // this seems to be a bug in the Miniserver
         if (control.startsWith("dev/")) {
@@ -617,7 +631,7 @@ public class LxWebSocket {
      * This method sends a request to receive Miniserver configuration.
      */
     private void authenticated() {
-        logger.debug("[{}] Websocket authentication successfull.", debugId);
+        logger.debug("[{}] Websocket authentication successful.", debugId);
         webSocketLock.lock();
         try {
             awaitingConfiguration = true;
@@ -636,6 +650,6 @@ public class LxWebSocket {
      */
     private void responseTimeout() {
         logger.debug("[{}] Miniserver response timeout", debugId);
-        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occured");
+        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occurred");
     }
 }

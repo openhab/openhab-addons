@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a configured connection to one LCN-PCHK.
- * It uses a {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
+ * It uses an {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
  * Included logic:
  * <ul>
  * <li>Reconnection on connection loss
@@ -141,7 +141,7 @@ public class Connection {
             if (modData.containsKey(addr)) {
                 ModInfo modInfo = modData.get(addr);
                 if (modInfo != null) {
-                    modInfo.onAck(code, this, this.settings.getTimeout(), System.nanoTime());
+                    modInfo.onAck(code, this, this.settings.getTimeout(), System.currentTimeMillis());
                 }
             }
         }
@@ -244,13 +244,14 @@ public class Connection {
                                         logger.warn("Data loss while writing to channel: {}", settings.getAddress());
                                     } else {
                                         if (logger.isTraceEnabled()) {
-                                            logger.trace("Sent: {}", new String(data, 0, data.length));
+                                            logger.trace("Sent: {}",
+                                                    new String(data, 0, data.length, LcnDefs.LCN_ENCODING).trim());
                                         }
                                     }
 
                                     writeInProgress = false;
 
-                                    if (sendQueue.size() > 0) {
+                                    if (!sendQueue.isEmpty()) {
                                         /**
                                          * This could lead to stack overflows, since the CompletionHandler may run in
                                          * the same Thread as triggerWriteToSocket() is invoked (see
@@ -313,7 +314,7 @@ public class Connection {
     void queueDirectly(LcnAddr addr, boolean wantsAck, byte[] data) {
         if (!addr.isGroup() && wantsAck) {
             this.updateModuleData((LcnAddrMod) addr).queuePckCommandWithAck(data, this, this.settings.getTimeout(),
-                    System.nanoTime());
+                    System.currentTimeMillis());
         } else {
             this.queueAndSend(new SendDataPck(addr, false, data));
         }
@@ -406,7 +407,7 @@ public class Connection {
     /**
      * Gets the SocketChannel of the Connection.
      *
-     * @returnthe socket channel
+     * @return the socket channel
      */
     @Nullable
     public Channel getSocketChannel() {
@@ -427,7 +428,7 @@ public class Connection {
      */
     public void updateModInfos() {
         synchronized (modData) {
-            modData.values().forEach(i -> i.update(this, settings.getTimeout(), System.nanoTime()));
+            modData.values().forEach(i -> i.update(this, settings.getTimeout(), System.currentTimeMillis()));
         }
     }
 

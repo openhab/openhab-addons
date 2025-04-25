@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,19 +16,20 @@ import static org.eclipse.jdt.annotation.Checks.requireNonNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
-import static org.openhab.binding.hue.internal.config.HueBridgeConfig.HTTP;
-import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.AbstractHueOSGiTestParent;
-import org.openhab.binding.hue.internal.HueBridge;
-import org.openhab.binding.hue.internal.HueConfigStatusMessage;
+import org.openhab.binding.hue.internal.config.HueBridgeConfig;
+import org.openhab.binding.hue.internal.connection.HueBridge;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
@@ -36,6 +37,7 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -49,15 +51,15 @@ import org.openhab.core.thing.ThingUID;
  * @author Michael Grammling - Initial contribution
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  */
+@NonNullByDefault
 public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
     private static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "bridge");
     private static final String TEST_USER_NAME = "eshTestUser";
     private static final String DUMMY_HOST = "1.2.3.4";
 
-    private ThingRegistry thingRegistry;
-
-    private ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) ThingRegistry thingRegistry;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     @BeforeEach
     public void setUp() {
@@ -72,18 +74,19 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void assertThatANewUserIsAddedToConfigIfNotExistingYet() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
         hueBridgeHandler.thingUpdated(bridge);
 
-        injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
-            @Override
-            public String link(String deviceType) throws IOException, ApiException {
-                return TEST_USER_NAME;
-            }
-        });
+        injectBridge(hueBridgeHandler,
+                new HueBridge(mock(HttpClient.class), DUMMY_HOST, 80, HueBridgeConfig.HTTP, scheduler) {
+                    @Override
+                    public String link(String deviceType) throws IOException, ApiException {
+                        return TEST_USER_NAME;
+                    }
+                });
 
         hueBridgeHandler.onNotAuthenticated();
 
@@ -95,17 +98,18 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
         configuration.put(USER_NAME, TEST_USER_NAME);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
         hueBridgeHandler.thingUpdated(bridge);
 
-        injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
-            @Override
-            public void authenticate(String userName) throws IOException, ApiException {
-            }
-        });
+        injectBridge(hueBridgeHandler,
+                new HueBridge(mock(HttpClient.class), DUMMY_HOST, 80, HueBridgeConfig.HTTP, scheduler) {
+                    @Override
+                    public void authenticate(String userName) throws IOException, ApiException {
+                    }
+                });
 
         hueBridgeHandler.onNotAuthenticated();
 
@@ -117,18 +121,19 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
         configuration.put(USER_NAME, "notAuthenticatedUser");
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
         hueBridgeHandler.thingUpdated(bridge);
 
-        injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
-            @Override
-            public void authenticate(String userName) throws IOException, ApiException {
-                throw new UnauthorizedException();
-            }
-        });
+        injectBridge(hueBridgeHandler,
+                new HueBridge(mock(HttpClient.class), DUMMY_HOST, 80, HueBridgeConfig.HTTP, scheduler) {
+                    @Override
+                    public void authenticate(String userName) throws IOException, ApiException {
+                        throw new UnauthorizedException();
+                    }
+                });
 
         hueBridgeHandler.onNotAuthenticated();
 
@@ -141,18 +146,19 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void verifyStatusIfLinkButtonIsNotPressed() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
         hueBridgeHandler.thingUpdated(bridge);
 
-        injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
-            @Override
-            public String link(String deviceType) throws IOException, ApiException {
-                throw new LinkButtonException();
-            }
-        });
+        injectBridge(hueBridgeHandler,
+                new HueBridge(mock(HttpClient.class), DUMMY_HOST, 80, HueBridgeConfig.HTTP, scheduler) {
+                    @Override
+                    public String link(String deviceType) throws IOException, ApiException {
+                        throw new LinkButtonException();
+                    }
+                });
 
         hueBridgeHandler.onNotAuthenticated();
 
@@ -165,18 +171,19 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void verifyStatusIfNewUserCannotBeCreated() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
         hueBridgeHandler.thingUpdated(bridge);
 
-        injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
-            @Override
-            public String link(String deviceType) throws IOException, ApiException {
-                throw new ApiException();
-            }
-        });
+        injectBridge(hueBridgeHandler,
+                new HueBridge(mock(HttpClient.class), DUMMY_HOST, 80, HueBridgeConfig.HTTP, scheduler) {
+                    @Override
+                    public String link(String deviceType) throws IOException, ApiException {
+                        throw new ApiException();
+                    }
+                });
 
         hueBridgeHandler.onNotAuthenticated();
 
@@ -190,7 +197,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void verifyOfflineIsSetWithoutBridgeOfflineStatus() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, DUMMY_HOST);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
@@ -206,14 +213,13 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void assertThatAStatusConfigurationMessageForMissingBridgeIPIsProperlyReturnedIPIsNull() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, null);
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
-
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
 
-        ConfigStatusMessage expected = ConfigStatusMessage.Builder.error(HOST)
-                .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build();
+        ConfigStatusMessage expected = ConfigStatusMessage.Builder.error(HOST).withMessageKeySuffix(IP_ADDRESS_MISSING)
+                .withArguments(HOST).build();
 
         waitForAssert(() -> assertEquals(expected, hueBridgeHandler.getConfigStatus().iterator().next()));
     }
@@ -222,19 +228,19 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
     public void assertThatAStatusConfigurationMessageForMissingBridgeIPIsProperlyReturnedIPIsAnEmptyString() {
         Configuration configuration = new Configuration();
         configuration.put(HOST, "");
-        configuration.put(PROPERTY_SERIAL_NUMBER, "testSerialNumber");
-
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "testSerialNumber");
         Bridge bridge = createBridgeThing(configuration);
 
         HueBridgeHandler hueBridgeHandler = getThingHandler(bridge, HueBridgeHandler.class);
 
-        ConfigStatusMessage expected = ConfigStatusMessage.Builder.error(HOST)
-                .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build();
+        ConfigStatusMessage expected = ConfigStatusMessage.Builder.error(HOST).withMessageKeySuffix(IP_ADDRESS_MISSING)
+                .withArguments(HOST).build();
 
         waitForAssert(() -> assertEquals(expected, hueBridgeHandler.getConfigStatus().iterator().next()));
     }
 
     private Bridge createBridgeThing(Configuration configuration) {
+        configuration.put("useSelfSignedCertificate", false);
         Bridge bridge = (Bridge) thingRegistry.createThingOfType(BRIDGE_THING_TYPE_UID,
                 new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge"), null, "Bridge", configuration);
 

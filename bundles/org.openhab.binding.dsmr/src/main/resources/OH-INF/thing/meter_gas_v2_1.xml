@@ -11,7 +11,7 @@
 
 		<label>Gas Meter (DSMR V2.1)</label>
 		<description>This is a gas meter that complies to the DSMR V2.1 specification.</description>
-
+		<semantic-equipment-tag>GasMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="gmeter_equipment_identifier_v2" typeId="equipmentIdType"/>
 			<channel id="gmeter_24h_delivery_v2" typeId="gasDelivery24HType"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,17 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * to TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Add attributes data
  */
 @NonNullByDefault
 public class SomfyTahomaDevice {
 
-    private String uiClass = "";
-    private String widget = "";
     private String deviceURL = "";
     private String label = "";
     private String oid = "";
     private SomfyTahomaDeviceDefinition definition = new SomfyTahomaDeviceDefinition();
     private List<SomfyTahomaState> states = new ArrayList<>();
+    private List<SomfyTahomaState> attributes = new ArrayList<>();
+    private String placeOID = "";
 
     public String getLabel() {
         return label;
@@ -46,19 +47,23 @@ public class SomfyTahomaDevice {
         return oid;
     }
 
-    public String getUiClass() {
-        return uiClass;
-    }
-
-    public String getWidget() {
-        return widget;
-    }
-
     public SomfyTahomaDeviceDefinition getDefinition() {
         return definition;
     }
 
     public List<SomfyTahomaState> getStates() {
         return states;
+    }
+
+    public List<SomfyTahomaState> getAttributes() {
+        return attributes;
+    }
+
+    public String getPlaceOID() {
+        return placeOID;
+    }
+
+    public void setPlaceOID(String placeOID) {
+        this.placeOID = placeOID;
     }
 }

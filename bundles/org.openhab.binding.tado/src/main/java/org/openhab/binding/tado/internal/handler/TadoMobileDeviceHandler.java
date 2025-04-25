@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.MobileDevice;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -37,15 +39,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(TadoMobileDeviceHandler.class);
 
     private TadoMobileDeviceConfig configuration;
-    private ScheduledFuture<?> refreshTimer;
+    private @Nullable ScheduledFuture<?> refreshTimer;
 
     public TadoMobileDeviceHandler(Thing thing) {
         super(thing);
+        configuration = getConfigAs(TadoMobileDeviceConfig.class);
     }
 
     @Override
@@ -61,7 +65,6 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoMobileDeviceConfig.class);
-
         if (configuration.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
                     + configuration.id + " of home " + getHomeId() + " must be greater than zero");
@@ -105,7 +108,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         try {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
-                    device.getLocation().isAtHome() ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(device.getLocation().isAtHome()));
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }
@@ -135,13 +138,15 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     }
 
     private void scheduleZoneStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer == null || refreshTimer.isCancelled()) {
-            refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
+            this.refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
                     TimeUnit.SECONDS);
         }
     }
 
     private void cancelScheduledStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }

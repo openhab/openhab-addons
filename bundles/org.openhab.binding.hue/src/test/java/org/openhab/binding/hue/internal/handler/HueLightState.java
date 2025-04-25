@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import org.openhab.binding.hue.internal.State.ColorMode;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
 
 /**
  * Builder for the current state of a hue light.
@@ -22,6 +23,7 @@ import org.openhab.binding.hue.internal.State.ColorMode;
  * @author Markus Rathgeb - migrated to plain Java test
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
  */
+@NonNullByDefault
 public class HueLightState {
 
     int brightness = 200;
@@ -33,12 +35,14 @@ public class HueLightState {
     String effect = "none";
     String colorMode = "hs";
     String model = "LCT001";
+    String vendor = "Philips";
 
     public HueLightState() {
     }
 
-    public HueLightState(String model) {
+    public HueLightState(String model, String vendor) {
         this.model = model;
+        this.vendor = vendor;
     }
 
     public HueLightState bri(int brightness) {
@@ -105,6 +109,7 @@ public class HueLightState {
                 "      \"type\": \"Extended color light\"," + //
                 "      \"name\": \"Hue Light 1\"," + //
                 "      \"modelid\": \"" + model + "\"," + //
+                "      \"manufacturername\": \"" + vendor + "\"," + //
                 "      \"swversion\": \"65003148\"," + //
                 "      \"uniqueid\": \"00:17:88:01:00:e1:88:29-0b\"," + //
                 "      \"pointsymbol\": {" + //

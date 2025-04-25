@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +33,7 @@ public class ShellyApiResult {
     public String response = "";
     public int httpCode = -1;
     public String httpReason = "";
+    public String authChallenge = "";
 
     public ShellyApiResult() {
     }
@@ -63,6 +64,10 @@ public class ShellyApiResult {
         return httpCode == OK_200;
     }
 
+    public boolean isNotFound() {
+        return httpCode == NOT_FOUND_404;
+    }
+
     public boolean isHttpAccessUnauthorized() {
         return (httpCode == UNAUTHORIZED_401 || response.contains(SHELLY_APIERR_UNAUTHORIZED));
     }
@@ -87,10 +92,8 @@ public class ShellyApiResult {
             httpReason = contentResponse.getReason();
 
             Request request = contentResponse.getRequest();
-            if (request != null) {
-                url = request.getURI().toString();
-                method = request.getMethod();
-            }
+            url = request.getURI().toString();
+            method = request.getMethod();
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * Creates a new {@link TemperatureControlValues} through the {@link JsonObject} which will be returned by an zone
+     * Creates a new {@link TemperatureControlValues} through the {@link JsonObject} which will be returned by a zone
      * call.<br>
      * Because of zone calls does not include a zoneID or zoneName in the json response, the zoneID and zoneName have to
      * be handed over the constructor.
@@ -80,7 +80,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * @see TemperatureControlStatus#getControlDSUID()
+     * @see org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus#getControlDSUID()
      * @return the controlDSUID
      */
     public String getControlDSUID() {
@@ -88,7 +88,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * @see TemperatureControlStatus#getIsConfigured()
+     * @see org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum#IS_CONFIGURED
      * @return the isConfigured
      */
     public Boolean getIsConfigured() {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.siemensrds.internal;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,7 +36,7 @@ import com.google.gson.JsonParseException;
  * also known as the Climatix IC server account )
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class RdsCloudHandler extends BaseBridgeHandler {
@@ -68,8 +70,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("polling interval={}", config.pollingInterval);
+        }
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -110,7 +113,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
                 }
 
                 String url = URL_TOKEN;
-                String payload = String.format(TOKEN_REQUEST, config.userEmail, config.userPassword);
+                String payload = String.format(TOKEN_REQUEST,
+                        URLEncoder.encode(config.userEmail, StandardCharsets.UTF_8),
+                        URLEncoder.encode(config.userPassword, StandardCharsets.UTF_8));
 
                 logger.debug(LOG_HTTP_COMMAND, HTTP_POST, url.length());
                 logger.debug(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);

@@ -26,7 +26,7 @@ There is no support to discover the available keypads.
 
 ## Prerequisites
 
-For the binding to work the panel has also to be programmed appropriately. 
+For the binding to work the panel has also to be programmed appropriately.
 
 ### Programming locations for the NX-8E control panel
 
@@ -66,8 +66,9 @@ The following table shows the available configuration parameters for each thing.
 |-----------|-----------------------------------------------------------------------------------------------------|
 | bridge    | `serialPort` - Serial port for the bridge - Required                                                |
 |           | `protocol` - Protocol used for the communication (Binary, Ascii) - Required - Default = Binary      |
-|           | `baud` - Baud rate of the bridge - Required - Default = 9600                                        |
+|           | `baudrate` - Baud rate of the bridge - Required - Default = 9600                                    |
 |           | `maxZoneNumber` - Maximum zone number to be added during discovery - Required - Default = 16        |
+|           | `ignoreZoneStatusTransitions` - Ignore Zone Status Transitions - Required - Default = false         |
 | partition | `partitionNumber` - Partition number (1-8) - Required                                               |
 | zone      | `zoneNumber` - Zone number (1-192) - Required                                                       |
 | keypad    | `keypadAddress` - Keypad address (192-255) - Required                                               |
@@ -125,6 +126,9 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | panel_primary_keypad_function_without_pin        | Switch    | Configuration       | Primary Keypad Function without PIN        |
 | panel_secondary_keypad_function                  | Switch    | Configuration       | Secondary Keypad Function                  |
 | panel_zone_bypass_toggle                         | Switch    | Configuration       | Zone Bypass Toggle                         |
+| panel_ac_fail                                    | Switch    | Configuration       | AC fail                                    |
+| panel_ac_power_on                                | Switch    | Configuration       | AC Power on                                |
+| panel_low_battery_memory                         | Switch    | Configuration       | Low Battery Memory                         |
 | partition_bypass_code_required                   | Switch    | Partition Condition | Bypass code required                       |
 | partition_fire_trouble                           | Switch    | Partition Condition | Fire trouble                               |
 | partition_fire                                   | Switch    | Partition Condition | Fire                                       |
@@ -278,8 +282,8 @@ The binding supports the following actions on the respective things.
 
 The following is an example of a things file (caddx.things):
 
-```
-Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baud=38400, maxZoneNumber=18 ] {
+```java
+Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baudrate=38400, maxZoneNumber=18 ] {
     Thing partition partition1 "Groundfloor alarm"        [ partitionNumber=1 ]
     Thing zone      zone1      "Livingroom motion sensor" [ zoneNumber=1 ]
     Thing zone      zone2      "Bedroom motion sensor"    [ zoneNumber=2 ]
@@ -292,7 +296,7 @@ Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", s
 
 The following is an example of an items file (caddx.items):
 
-```
+```java
 Group:Contact:OR(OPEN,CLOSED)  MotionSensors   "Motion Sensors [%s]"   <motion>
 Group:Contact:OR(OPEN,CLOSED)  Windows         "Windows open [%s]"     <window>
 
@@ -309,7 +313,7 @@ Switch    Partition1_EntryGuard "Entry Guard [%s]"      <groundfloor>   { channe
 
 The following is an example of a sitemap file (home.sitemap):
 
-```
+```perl
 sitemap home label="Home" {
     Frame label="Ground floor" {
     Text item=Partition1_Armed
@@ -334,7 +338,7 @@ sitemap home label="Home" {
 
 The following is a rule example with calling of an action on the binding
 
-```
+```java
 rule "Zone Bypass on Chime Off"
 when
     Item caddx_partition_thebridge_partition1_partition_chime_mode_on changed from ON to OFF
@@ -344,7 +348,7 @@ then
         logWarn("actions", "Actions not found, check thing ID for the Zone")
         return
     }
-    
+
     actions.bypass()
 end
 ```

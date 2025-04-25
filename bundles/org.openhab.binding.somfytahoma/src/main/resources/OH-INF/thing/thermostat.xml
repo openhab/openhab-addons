@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Thermostat</label>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="battery_level" typeId="system.battery-level"></channel>
@@ -17,6 +18,7 @@
 			<channel id="derogation_activation" typeId="derogation_activation"></channel>
 			<channel id="derogated_target_temperature" typeId="target_temperature"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

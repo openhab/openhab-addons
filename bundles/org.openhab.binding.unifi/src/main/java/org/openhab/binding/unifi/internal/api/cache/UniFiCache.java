@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,15 @@ package org.openhab.binding.unifi.internal.api.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.dto.HasId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,41 +35,64 @@ import org.slf4j.LoggerFactory;
  * <code>prefix:suffix</code> are searched in the order of their priority.
  *
  * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Moved generic code into this class
  */
-public abstract class UniFiCache<T> {
+@NonNullByDefault
+abstract class UniFiCache<T extends @Nullable HasId> {
+
+    public enum Prefix {
+        DESC,
+        HOSTNAME,
+        ID,
+        IP,
+        MAC,
+        NAME
+    }
 
     private static final String SEPARATOR = ":";
 
-    public static final String PREFIX_ALIAS = "alias";
-
-    public static final String PREFIX_DESC = "desc";
-
-    public static final String PREFIX_HOSTNAME = "hostname";
-
-    public static final String PREFIX_ID = "id";
-
-    public static final String PREFIX_IP = "ip";
-
-    public static final String PREFIX_MAC = "mac";
-
-    public static final String PREFIX_NAME = "name";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    // Map of cid keys to the id.
+    private final Map<String, String> mapToId = new HashMap<>();
+    // Map of id to data object
+    private final Map<String, T> map = new HashMap<>();
+    private final Prefix[] prefixes;
 
-    private Map<String, T> map = new HashMap<>();
-
-    private String[] prefixes;
-
-    protected UniFiCache(String... prefixes) {
+    protected UniFiCache(final Prefix... prefixes) {
         this.prefixes = prefixes;
     }
 
-    public final T get(Object id) {
-        T value = null;
-        for (String prefix : prefixes) {
-            String key = prefix + SEPARATOR + id;
-            if (map.containsKey(key)) {
-                value = map.get(key);
+    public void clear() {
+        map.clear();
+    }
+
+    public final @Nullable T get(final @Nullable String cid) {
+        final @Nullable T value;
+
+        if (cid != null && !cid.isBlank()) {
+            synchronized (this) {
+                final String id = getId(cid);
+
+                if (id == null) {
+                    logger.debug("Could not find an entry in the cache for id: '{}'", cid);
+                    value = null;
+                } else {
+                    value = map.get(id);
+                }
+            }
+        } else {
+            value = null;
+        }
+        return value;
+    }
+
+    public @Nullable String getId(final String cid) {
+        String value = null;
+        for (final Prefix prefix : prefixes) {
+            final String key = key(prefix, cid);
+
+            if (mapToId.containsKey(key)) {
+                value = mapToId.get(key);
                 logger.trace("Cache HIT : '{}' -> {}", key, value);
                 break;
             } else {
@@ -74,23 +102,35 @@ public abstract class UniFiCache<T> {
         return value;
     }
 
-    public final void put(T value) {
-        for (String prefix : prefixes) {
-            String suffix = getSuffix(value, prefix);
-            if (StringUtils.isNotBlank(suffix)) {
-                String key = prefix + SEPARATOR + suffix;
-                map.put(key, value);
+    public final void putAll(final T @Nullable [] values) {
+        if (values != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
+                        Stream.of(values).filter(Objects::nonNull).map(Object::toString)
+                                .collect(Collectors.joining(System.lineSeparator() + " - ")));
             }
+            Stream.of(values).filter(Objects::nonNull).forEach(value -> put(value.getId(), value));
         }
     }
 
-    public final void putAll(UniFiCache<T> cache) {
-        map.putAll(cache.map);
+    public final void put(final String id, final T value) {
+        for (final Prefix prefix : prefixes) {
+            final String suffix = getSuffix(value, prefix);
+
+            if (suffix != null && !suffix.isBlank()) {
+                mapToId.put(key(prefix, suffix), id);
+            }
+        }
+        map.put(id, value);
+    }
+
+    private static String key(final Prefix prefix, final String suffix) {
+        return prefix.name() + SEPARATOR + suffix.replace(":", "").toLowerCase(Locale.ROOT);
     }
 
     public final Collection<T> values() {
         return map.values().stream().distinct().collect(Collectors.toList());
     }
 
-    protected abstract String getSuffix(T value, String prefix);
+    protected abstract @Nullable String getSuffix(T value, Prefix prefix);
 }

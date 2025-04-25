@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.ByteOrder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
@@ -26,9 +27,10 @@ import org.openhab.core.library.types.OnOffType;
 
 /**
  *
- * @author blafois
+ * @author blafois - Initial contribution
  *
  */
+@NonNullByDefault
 public class MadokaMessageTest {
 
     @Test
@@ -42,8 +44,7 @@ public class MadokaMessageTest {
         boolean powered = true;
         MadokaValue mv = new MadokaValue(0x20, 1, new byte[] { 1 });
         byte[][] resp = MadokaMessage.createRequest(new SetPowerstateCommand(OnOffType.ON), mv);
-        assertArrayEquals(
-                new byte[] { 0x00, 0x07, 0x00, 0x40, 0x20, 0x20, 0x01, (byte) (powered == true ? 0x01 : 0x00) },
+        assertArrayEquals(new byte[] { 0x00, 0x07, 0x00, 0x40, 0x20, 0x20, 0x01, (byte) (powered ? 0x01 : 0x00) },
                 resp[0]);
     }
 
@@ -64,11 +65,7 @@ public class MadokaMessageTest {
 
     @Test
     public void testParseOperationHours() {
-        String s = "390001120201004004DC0B00004104F40300004204642300004304000000004404000000004504000000004604000000004704000000004800";
-
         MadokaValue mv = new MadokaValue(0, 4, new byte[] { (byte) 0xF4, 0x03, 0x00, 0x00 });
-        // MadokaValue mv = new MadokaValue(0, 4, new byte[] { 0x00, 0x00, 0x03, (byte) 0xF4 });
-
         Long v = mv.getComputedValue(ByteOrder.LITTLE_ENDIAN);
         assertEquals(1012, v);
     }

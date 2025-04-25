@@ -5,10 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:mihome:device">
-		<parameter name="itemId" type="text">
+		<parameter name="itemId" type="text" required="true">
 			<label>MiHome Device ID</label>
 			<description>The identifier of this MiHome device</description>
-			<required>true</required>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -20,26 +19,29 @@
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="ipAddress" type="text">
+		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of this Xiaomi bridge</description>
-			<required>true</required>
 		</parameter>
 
-		<parameter name="port" type="integer">
+		<parameter name="port" type="integer" required="true">
 			<context>network-address</context>
 			<label>Port</label>
 			<description>Port of the MiHome communication channel</description>
-			<required>true</required>
 			<default>9898</default>
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="key" type="text">
+		<parameter name="interface" type="text" required="false">
+			<label>Interface</label>
+			<description>Interface to bind to for the MiHome communication channel</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="key" type="text" required="false">
 			<label>Developer Key</label>
 			<description>Developer key extracted from Xiaomi's app</description>
-			<required>false</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

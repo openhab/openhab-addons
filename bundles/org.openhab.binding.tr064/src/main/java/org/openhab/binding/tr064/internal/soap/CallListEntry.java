@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,14 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.dto.additions.Call;
 
 /**
- * The {@link CallListEntry} is used for post processing the retrieved call
+ * The {@link CallListEntry} is used for post-processing the retrieved call
  * lists
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class CallListEntry {
-    private static final SimpleDateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("dd.MM.yy hh:mm");
+    private static final SimpleDateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("dd.MM.yy HH:mm");
     public @Nullable String localNumber;
     public @Nullable String remoteNumber;
     public @Nullable Date date;
@@ -37,7 +37,9 @@ public class CallListEntry {
 
     public CallListEntry(Call call) {
         try {
-            date = DATE_FORMAT_PARSER.parse(call.getDate());
+            synchronized (DATE_FORMAT_PARSER) {
+                date = DATE_FORMAT_PARSER.parse(call.getDate());
+            }
         } catch (ParseException e) {
             // ignore parsing error
             date = null;

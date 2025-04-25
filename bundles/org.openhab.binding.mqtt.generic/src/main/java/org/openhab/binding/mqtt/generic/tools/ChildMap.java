@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic.tools;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -65,9 +68,26 @@ public class ChildMap<T> {
     }
 
     /**
+     * Streams the objects in this map in the order of the given keys.
+     * 
+     * Extraneous keys are ignored, and missing keys are included at the end in unspecified order.
+     * 
+     * @param order The keys in the order they should be streamed
+     */
+    public Stream<T> stream(Collection<String> order) {
+        // need to make a copy to avoid editing `map` itself
+        Set<String> missingKeys = new HashSet<>(map.keySet());
+        missingKeys.removeAll(order);
+        Stream<T> result = order.stream().map(k -> map.get(k)).filter(Objects::nonNull).map(Objects::requireNonNull);
+        if (!missingKeys.isEmpty()) {
+            result = Stream.concat(result, missingKeys.stream().map(k -> map.get(k)).map(Objects::requireNonNull));
+        }
+        return result;
+    }
+
+    /**
      * Modifies the map in way that it matches the entries of the given childIDs.
      *
-     * @param future A future that completes as soon as all children have their added-action performed.
      * @param childIDs The list of IDs that should be in the map. Everything else currently in the map will be removed.
      * @param addedAction A function where the newly added child is given as an argument to perform any actions on it.
      *            A future is expected as a return value that completes as soon as said action is performed.
@@ -75,7 +95,7 @@ public class ChildMap<T> {
      *            expected as a
      *            result.
      * @param removedCallback A callback, that is called whenever a child got removed by the
-     *            {@link #apply(CompletableFuture, String[], Function)} method.
+     *            {@link #apply(String[], Function, Function, Consumer)} method.
      * @return Complete successfully if all "addedAction" complete successfully, otherwise complete exceptionally.
      */
     public CompletableFuture<@Nullable Void> apply(String[] childIDs,
@@ -134,5 +154,9 @@ public class ChildMap<T> {
      */
     public void put(String key, T value) {
         map.put(key, value);
+    }
+
+    public Set<String> keySet() {
+        return map.keySet();
     }
 }

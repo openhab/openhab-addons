@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,19 @@ package org.openhab.binding.gardena.internal.model.dto;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.model.dto.api.*;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.DeviceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.Location;
+import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.MowerServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.PowerSocketServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.SensorServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.ValveServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.ValveSetServiceDataItem;
 import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class Device {
     private final Logger logger = LoggerFactory.getLogger(Device.class);
 
-    private transient static final String DEVICE_TYPE_PREFIX = "gardena smart";
+    private static final transient String DEVICE_TYPE_PREFIX = "gardena smart";
     public boolean active = true;
     public String id;
     public String deviceType;
@@ -50,23 +58,8 @@ public class Device {
     public ValveServiceDataItem valveSix;
     public ValveSetServiceDataItem valveSet;
 
-    private Map<String, LocalService> localServices = new HashMap<>();
-
     public Device(String id) {
         this.id = id;
-    }
-
-    /**
-     * Returns the local service or creates one if it does not exist.
-     */
-    public LocalService getLocalService(String key) {
-        LocalService localService = localServices.get(key);
-        if (localService == null) {
-            localService = new LocalService();
-            localServices.put(key, localService);
-            localService.commandDuration = 3600;
-        }
-        return localService;
     }
 
     /**
@@ -74,8 +67,10 @@ public class Device {
      */
     public void evaluateDeviceType() {
         if (deviceType == null) {
-            if (common.attributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
-                String modelType = common.attributes.modelType.value.toLowerCase();
+            CommonService commonServiceAttributes = common.attributes;
+            if (commonServiceAttributes != null
+                    && commonServiceAttributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
+                String modelType = commonServiceAttributes.modelType.value.toLowerCase();
                 modelType = modelType.substring(14);
                 deviceType = modelType.replace(" ", "_");
             } else {
@@ -101,38 +96,37 @@ public class Device {
     public void setDataItem(DataItem<?> dataItem) throws GardenaException {
         if (dataItem instanceof DeviceDataItem) {
             // ignore
-        } else if (dataItem instanceof LocationDataItem) {
-            LocationDataItem locationDataItem = (LocationDataItem) dataItem;
-            if (locationDataItem.attributes != null) {
-                location = locationDataItem.attributes.name;
+        } else if (dataItem instanceof LocationDataItem locationDataItem) {
+            Location locationAttributes = locationDataItem.attributes;
+            if (locationAttributes != null) {
+                location = locationAttributes.name;
             }
-        } else if (dataItem instanceof CommonServiceDataItem) {
-            common = (CommonServiceDataItem) dataItem;
-        } else if (dataItem instanceof MowerServiceDataItem) {
-            mower = (MowerServiceDataItem) dataItem;
-        } else if (dataItem instanceof PowerSocketServiceDataItem) {
-            powerSocket = (PowerSocketServiceDataItem) dataItem;
-        } else if (dataItem instanceof SensorServiceDataItem) {
-            sensor = (SensorServiceDataItem) dataItem;
-        } else if (dataItem instanceof ValveSetServiceDataItem) {
-            valveSet = (ValveSetServiceDataItem) dataItem;
-        } else if (dataItem instanceof ValveServiceDataItem) {
+        } else if (dataItem instanceof CommonServiceDataItem commonServiceItem) {
+            common = commonServiceItem;
+        } else if (dataItem instanceof MowerServiceDataItem mowerServiceItemm) {
+            mower = mowerServiceItemm;
+        } else if (dataItem instanceof PowerSocketServiceDataItem powerSocketItem) {
+            powerSocket = powerSocketItem;
+        } else if (dataItem instanceof SensorServiceDataItem sensorServiceItem) {
+            sensor = sensorServiceItem;
+        } else if (dataItem instanceof ValveSetServiceDataItem valveSetServiceItem) {
+            valveSet = valveSetServiceItem;
+        } else if (dataItem instanceof ValveServiceDataItem valveServiceItem) {
             String valveNumber = StringUtils.substringAfterLast(dataItem.id, ":");
-            if (valveNumber != null
-                    && (valveNumber.equals("") || valveNumber.equals("wc") || valveNumber.equals("0"))) {
-                valve = (ValveServiceDataItem) dataItem;
+            if ("".equals(valveNumber) || "wc".equals(valveNumber) || "0".equals(valveNumber)) {
+                valve = valveServiceItem;
             } else if ("1".equals(valveNumber)) {
-                valveOne = (ValveServiceDataItem) dataItem;
+                valveOne = valveServiceItem;
             } else if ("2".equals(valveNumber)) {
-                valveTwo = (ValveServiceDataItem) dataItem;
+                valveTwo = valveServiceItem;
             } else if ("3".equals(valveNumber)) {
-                valveThree = (ValveServiceDataItem) dataItem;
+                valveThree = valveServiceItem;
             } else if ("4".equals(valveNumber)) {
-                valveFour = (ValveServiceDataItem) dataItem;
+                valveFour = valveServiceItem;
             } else if ("5".equals(valveNumber)) {
-                valveFive = (ValveServiceDataItem) dataItem;
+                valveFive = valveServiceItem;
             } else if ("6".equals(valveNumber)) {
-                valveSix = (ValveServiceDataItem) dataItem;
+                valveSix = valveServiceItem;
             } else {
                 throw new GardenaException("Unknown valveNumber in dataItem with id: " + dataItem.id);
             }
@@ -140,8 +134,12 @@ public class Device {
             throw new GardenaException("Unknown dataItem with id: " + dataItem.id);
         }
 
-        if (common != null && common.attributes != null) {
-            common.attributes.lastUpdate.timestamp = new Date();
+        if (common != null) {
+            CommonService attributes = common.attributes;
+            if (attributes != null) {
+                attributes.lastUpdate.timestamp = new Date();
+            }
+            common.attributes = attributes;
         }
     }
 

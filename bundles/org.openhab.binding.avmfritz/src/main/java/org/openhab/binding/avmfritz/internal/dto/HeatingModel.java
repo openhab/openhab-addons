@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,9 +111,9 @@ public class HeatingModel implements BatteryModel {
             return MODE_OFF;
         } else if (BigDecimal.ONE.equals(getWindowopenactiv())) {
             return MODE_WINDOW_OPEN;
-        } else if (tsoll.compareTo(komfort) == 0) {
+        } else if (komfort != null && komfort.compareTo(tsoll) == 0) {
             return MODE_COMFORT;
-        } else if (tsoll.compareTo(absenk) == 0) {
+        } else if (absenk != null && absenk.compareTo(tsoll) == 0) {
             return MODE_ECO;
         } else if (BigDecimal.ONE.equals(getBoostactive()) || TEMP_FRITZ_MAX.compareTo(tsoll) == 0) {
             return MODE_BOOST;
@@ -222,8 +222,8 @@ public class HeatingModel implements BatteryModel {
 
     /**
      * Converts a celsius value to a FRITZ!Box value.
-     * Valid celsius values: 8 to 28 °C > 16 to 56
-     * 16 <= 8°C, 17 = 8.5°C...... 56 >= 28°C, 254 = ON, 253 = OFF
+     * Valid celsius values: 8 to 28 °C > 16 to 56,
+     * 16 &lt;= 8°C, 17 = 8.5°C...... 56 >= 28°C, 254 = ON, 253 = OFF
      *
      * @param celsiusValue The celsius value to be converted
      * @return The FRITZ!Box value
@@ -240,12 +240,10 @@ public class HeatingModel implements BatteryModel {
     }
 
     /**
-     * Converts a celsius value to a FRITZ!Box value.
-     * Valid celsius values: 8 to 28 °C > 16 to 56
-     * 16 <= 8°C, 17 = 8.5°C...... 56 >= 28°C, 254 = ON, 253 = OFF
+     * Converts a FRITZ!Box value to a celsius value.
      *
-     * @param celsiusValue The celsius value to be converted
-     * @return The FRITZ!Box value
+     * @param fritzValue The FRITZ!Box value to be converted
+     * @return The celsius value
      */
     public static BigDecimal toCelsius(BigDecimal fritzValue) {
         if (fritzValue == null) {

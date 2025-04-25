@@ -1,0 +1,499 @@
+{
+	"deviceMapping": {
+		"id": [
+			"careli.fryer.maf02"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "air-fryer-start-cook",
+							"label": "Air Fryer Start Cook"
+						},
+						{
+							"value": "air-fryer-cancel-cooking",
+							"label": "Air Fryer Cancel Cooking"
+						},
+						{
+							"value": "air-fryer-pause",
+							"label": "Air Fryer Pause"
+						},
+						{
+							"value": "custom-start-custom-cook",
+							"label": "Custom Start Custom Cook"
+						},
+						{
+							"value": "custom-resume-cooking",
+							"label": "Custom Resume Cooking"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-start-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-cancel-cooking"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "UNKNOWN",
+						"parameters": [
+							1,
+							3,
+							4,
+							5,
+							6,
+							7.0
+						],
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-start-custom-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-resume-cooking"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Air Fryer Start Cook\",\"air-fryer-cancel-cooking\"\u003d\"Air Fryer Cancel Cooking\",\"air-fryer-pause\"\u003d\"Air Fryer Pause\",\"custom-start-custom-cook\"\u003d\"Custom Start Custom Cook\",\"custom-resume-cooking\"\u003d\"Custom Resume Cooking\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Fryer - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Shutdown"
+						},
+						{
+							"value": "1",
+							"label": "Standby"
+						},
+						{
+							"value": "2",
+							"label": "Pause"
+						},
+						{
+							"value": "3",
+							"label": "Appointment"
+						},
+						{
+							"value": "4",
+							"label": "Cooking"
+						},
+						{
+							"value": "5",
+							"label": "Preheat "
+						},
+						{
+							"value": "6",
+							"label": "Cooked"
+						},
+						{
+							"value": "7",
+							"label": "Preheat Finish"
+						},
+						{
+							"value": "8",
+							"label": "Preheat Pause"
+						},
+						{
+							"value": "9",
+							"label": "Pause2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Shutdown\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Appointment\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheat \",\"6\"\u003d\"Cooked\",\"7\"\u003d\"Preheat Finish\",\"8\"\u003d\"Preheat Pause\",\"9\"\u003d\"Pause2\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Fryer - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "E1"
+						},
+						{
+							"value": "2",
+							"label": "E2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"E1\",\"2\"\u003d\"E2\"]`"
+			},
+			{
+				"property": "target-time",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Fryer - Target Time",
+				"channel": "target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Fryer - Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Fryer - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "recipe-id",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Custom - Recipe Id",
+				"channel": "recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "work-time",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Custom - Work Time",
+				"channel": "work_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time"
+			},
+			{
+				"property": "work-temp",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Custom - Work Temp",
+				"channel": "work_temp",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "appoint-time",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "Custom - Appoint Time",
+				"channel": "appoint_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "food-quantity",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Custom - Food Quantity",
+				"channel": "food_quantity",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Null"
+						},
+						{
+							"value": "1",
+							"label": "Single"
+						},
+						{
+							"value": "2",
+							"label": "Double"
+						},
+						{
+							"value": "3",
+							"label": "Half"
+						},
+						{
+							"value": "4",
+							"label": "Full"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Single\",\"2\"\u003d\"Double\",\"3\"\u003d\"Half\",\"4\"\u003d\"Full\"]`"
+			},
+			{
+				"property": "preheat-switch",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Custom - Preheat Switch",
+				"channel": "preheat_switch",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Null"
+						},
+						{
+							"value": "1",
+							"label": "Off"
+						},
+						{
+							"value": "2",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
+			},
+			{
+				"property": "appoint-time-left",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Custom - Appoint Time Left",
+				"channel": "appoint_time_left",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "turn-pot",
+				"siid": 3,
+				"piid": 10,
+				"friendlyName": "Custom - Turn Pot",
+				"channel": "turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Switch Off"
+						},
+						{
+							"value": "0",
+							"label": "Not Turn Pot"
+						},
+						{
+							"value": "2",
+							"label": "Turn Pot"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Switch Off\",\"0\"\u003d\"Not Turn Pot\",\"2\"\u003d\"Turn Pot\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

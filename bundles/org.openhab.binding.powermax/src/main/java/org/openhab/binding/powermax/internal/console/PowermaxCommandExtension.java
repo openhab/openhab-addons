@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,15 +14,23 @@ package org.openhab.binding.powermax.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.powermax.internal.PowermaxBindingConstants;
 import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
+import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -31,34 +39,34 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
+public class PowermaxCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String INFO_SETUP = "info_setup";
     private static final String DOWNLOAD_SETUP = "download_setup";
+    private static final String BRIDGE_STATE = "bridge_state";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
+            List.of(INFO_SETUP, DOWNLOAD_SETUP, BRIDGE_STATE), false);
 
-    private ThingRegistry thingRegistry;
+    private final ThingRegistry thingRegistry;
 
-    public PowermaxCommandExtension() {
+    @Activate
+    public PowermaxCommandExtension(final @Reference ThingRegistry thingRegistry) {
         super("powermax", "Interact with the Powermax binding.");
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
     public void execute(String[] args, Console console) {
         if (args.length >= 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             PowermaxBridgeHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof PowermaxBridgeHandler) {
-                    handler = (PowermaxBridgeHandler) thingHandler;
+                if (thingHandler instanceof PowermaxBridgeHandler bridgeHandler) {
+                    handler = bridgeHandler;
                 }
             }
             if (thing == null) {
@@ -81,6 +89,14 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
                         handler.downloadSetup();
                         console.println("Command '" + args[1] + "' handled.");
                         break;
+                    case BRIDGE_STATE:
+                        PowermaxState state = handler.getCurrentState();
+                        if (state != null) {
+                            for (String line : state.toString().split("\n")) {
+                                console.println(line);
+                            }
+                        }
+                        break;
                     default:
                         console.println("Unknown Powermax sub command '" + args[1] + "'");
                         printUsage(console);
@@ -95,15 +111,41 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + INFO_SETUP, "information on setup"),
-                buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup") });
+                buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup"),
+                buildCommandUsage("<bridgeUID> " + BRIDGE_STATE, "show current state") });
     }
 
-    @Reference
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
     }
 
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(t.getThingTypeUID())
+                            || PowermaxBindingConstants.BRIDGE_TYPE_IP.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && (PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(thing.getThingTypeUID())
+                    || PowermaxBindingConstants.BRIDGE_TYPE_IP.equals(thing.getThingTypeUID()))) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

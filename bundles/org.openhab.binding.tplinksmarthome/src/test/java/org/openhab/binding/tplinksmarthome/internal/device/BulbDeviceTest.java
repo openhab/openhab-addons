@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,16 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_BRIGHTNESS;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR_TEMPERATURE;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_ENERGY_POWER;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_OTHER;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_SWITCH;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.LB130;
 
 import java.io.IOException;
@@ -27,6 +34,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -40,8 +49,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
     private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
 
     public BulbDeviceTest() throws IOException {
-        super(new BulbDevice(LB130.thingTypeUID(), COLOR_TEMPERATURE_2_MIN, COLOR_TEMPERATURE_2_MAX),
-                "bulb_get_sysinfo_response_on");
+        super(new BulbDevice(LB130), "bulb_get_sysinfo_response_on");
     }
 
     @BeforeEach
@@ -167,7 +175,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
 
     @Test
     public void testUpdateChannelPower() {
-        assertEquals(new DecimalType(10.8), device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState),
+        assertEquals(new QuantityType<>(10.8, Units.WATT), device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState),
                 "Power values should be set");
     }
 }

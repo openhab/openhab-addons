@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heater" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Heater</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
+		<channels>
+			<channel id="heaterState" typeId="state"/>
+			<channel id="heaterEnable" typeId="enable"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hayward</property>
+			<property name="type"></property>
+			<property name="heaterType"></property>
+			<property name="sharedEquipmentSystemID"></property>
+		</properties>
+		<representation-property>systemID</representation-property>
+	</thing-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Heater State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heating</option>
+				<option value="2">Paused</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="enable">
+		<item-type>Switch</item-type>
+		<label>Heater Enable</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -29,6 +28,7 @@ import java.net.SocketException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -36,8 +36,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants;
 import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.internal.command.CommandGetstate;
 import org.openhab.binding.globalcache.internal.command.CommandGetversion;
@@ -92,9 +92,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
     // IR transaction counter
     private AtomicInteger irCounter;
 
-    // Character set to use for URL encoding & decoding
-    private String CHARSET = "ISO-8859-1";
-
     public GlobalCacheHandler(@NonNull Thing gcDevice, String ipv4Address) {
         super(gcDevice);
         irCounter = new AtomicInteger(1);
@@ -109,8 +106,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
         logger.debug("Initializing thing {}", thingID());
         try {
             ifAddress = InetAddress.getByName(ipv4Address);
+            NetworkInterface netIF = NetworkInterface.getByInetAddress(ifAddress);
             logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
-                    NetworkInterface.getByInetAddress(ifAddress).getName());
+                    netIF != null ? netIF.getName() : "UNKNOWN");
         } catch (SocketException e) {
             logger.error("Handler got Socket exception creating multicast socket: {}", e.getMessage());
             markThingOfflineWithError(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No suitable network interface");
@@ -134,11 +132,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == null) {
-            logger.warn("Command passed to handler for thing {} is null", thingID());
-            return;
-        }
-
         // Don't try to send command if the device is not online
         if (!isOnline()) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command, thingID());
@@ -252,7 +245,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         String mapFile = (String) thing.getConfiguration().get(THING_CONFIG_MAP_FILENAME);
-        if (StringUtils.isEmpty(mapFile)) {
+        if (mapFile == null || mapFile.isEmpty()) {
             logger.warn("MAP file is not defined in configuration of thing {}", thingID());
             return null;
         }
@@ -266,14 +259,13 @@ public class GlobalCacheHandler extends BaseThingHandler {
         String code;
         try {
             code = transformService.transform(mapFile, command.toString());
-
         } catch (TransformationException e) {
             logger.error("Failed to transform {} for thing {} using map file '{}', exception={}", command, thingID(),
                     mapFile, e.getMessage());
             return null;
         }
 
-        if (StringUtils.isEmpty(code)) {
+        if (code == null || code.isEmpty()) {
             logger.warn("No entry for {} in map file '{}' for thing {}", command, mapFile, thingID());
             return null;
         }
@@ -319,7 +311,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             throw new HexCodeConversionException("Hex code is too short");
         }
 
-        if (!hexCodeArray[0].equals("0000")) {
+        if (!"0000".equals(hexCodeArray[0])) {
             throw new HexCodeConversionException("Illegal hex code element 0, should be 0000");
         }
 
@@ -453,15 +445,15 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
 
         private boolean terminate = false;
-        private final String TERMINATE_COMMAND = "terminate";
+        private static final String TERMINATE_COMMAND = "terminate";
 
-        private final int SEND_QUEUE_MAX_DEPTH = 10;
-        private final int SEND_QUEUE_TIMEOUT = 2000;
+        private static final int SEND_QUEUE_MAX_DEPTH = 10;
+        private static final int SEND_QUEUE_TIMEOUT = 2000;
 
         private ConnectionManager connectionManager;
 
         public CommandProcessor() {
-            super("GlobalCache Command Processor");
+            super(String.format("OH-binding-%s-%s", GlobalCacheBindingConstants.BINDING_ID, "CommandProcessor"));
             sendQueue = new LinkedBlockingQueue<>(SEND_QUEUE_MAX_DEPTH);
             logger.debug("Processor for thing {} created request queue, depth={}", thingID(), SEND_QUEUE_MAX_DEPTH);
         }
@@ -543,12 +535,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private void writeCommandToDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} writing command to device", thingID());
-
             if (connectionManager.getCommandOut() == null) {
                 logger.debug("Error writing to device because output stream object is null");
                 return;
             }
-
             byte[] deviceCommand = (requestMessage.getDeviceCommand() + '\r').getBytes();
             connectionManager.getCommandOut().write(deviceCommand);
             connectionManager.getCommandOut().flush();
@@ -559,14 +549,16 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private String readReplyFromDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} reading reply from device", thingID());
-
             if (connectionManager.getCommandIn() == null) {
                 logger.debug("Error reading from device because input stream object is null");
                 return "ERROR: BufferedReader is null!";
             }
-
-            logger.trace("Processor for thing {} reading response from device", thingID());
-            return connectionManager.getCommandIn().readLine().trim();
+            String reply = connectionManager.getCommandIn().readLine();
+            if (reply == null) {
+                logger.debug("Read of reply from device returned null!");
+                return "ERROR: reply is null!";
+            }
+            return reply.trim();
         }
 
         /*
@@ -578,10 +570,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 logger.warn("Can't send serial command; output stream is null!");
                 return;
             }
-
             byte[] deviceCommand;
-            deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), CHARSET).getBytes(CHARSET);
-
+            deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), StandardCharsets.ISO_8859_1)
+                    .getBytes(StandardCharsets.ISO_8859_1);
             logger.debug("Writing decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
             out.write(deviceCommand);
         }
@@ -605,19 +596,19 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private boolean deviceIsConnected;
 
-        private final String COMMAND_NAME = "command";
-        private final String SERIAL1_NAME = "serial-1";
-        private final String SERIAL2_NAME = "serial-2";
+        private static final String COMMAND_NAME = "command";
+        private static final String SERIAL1_NAME = "serial-1";
+        private static final String SERIAL2_NAME = "serial-2";
 
-        private final int COMMAND_PORT = 4998;
-        private final int SERIAL1_PORT = 4999;
-        private final int SERIAL2_PORT = 5000;
+        private static final int COMMAND_PORT = 4998;
+        private static final int SERIAL1_PORT = 4999;
+        private static final int SERIAL2_PORT = 5000;
 
-        private final int SOCKET_CONNECT_TIMEOUT = 1500;
+        private static final int SOCKET_CONNECT_TIMEOUT = 1500;
 
         private ScheduledFuture<?> connectionMonitorJob;
-        private final int CONNECTION_MONITOR_FREQUENCY = 60;
-        private final int CONNECTION_MONITOR_START_DELAY = 15;
+        private static final int CONNECTION_MONITOR_FREQUENCY = 60;
+        private static final int CONNECTION_MONITOR_START_DELAY = 15;
 
         private Runnable connectionMonitorRunnable = () -> {
             logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
@@ -638,7 +629,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private String getIPAddress() {
             String ipAddress = ((GlobalCacheHandler) thing.getHandler()).getIP();
-            if (StringUtils.isEmpty(ipAddress)) {
+            if (ipAddress == null || ipAddress.isEmpty()) {
                 logger.debug("Handler for thing {} could not get IP address from config", thingID());
                 markThingOfflineWithError(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "IP address not set");
             }
@@ -855,10 +846,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private boolean deviceSupportsSerialPort2() {
-            if (thing.getThingTypeUID().equals(THING_TYPE_GC_100_12)) {
-                return true;
-            }
-            return false;
+            return thing.getThingTypeUID().equals(THING_TYPE_GC_100_12);
         }
 
         /*
@@ -912,16 +900,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
             if (Boolean.TRUE.equals(enableTwoWay)) {
                 // Get the end of message delimiter from the config, URL decode it, and convert it to a byte array
                 String endOfMessageString = (String) thing.getConfiguration().get(endOfMessageDelimiterConfig);
-                if (StringUtils.isNotEmpty(endOfMessageString)) {
+                if (endOfMessageString != null && !endOfMessageString.isEmpty()) {
                     logger.debug("End of message is {} for thing {} {}", endOfMessageString, thingID(), serialDevice);
-                    byte[] endOfMessage;
-                    try {
-                        endOfMessage = URLDecoder.decode(endOfMessageString, CHARSET).getBytes(CHARSET);
-                    } catch (UnsupportedEncodingException e) {
-                        logger.info("Unable to decode end of message delimiter {} for thing {} {}", endOfMessageString,
-                                thingID(), serialDevice);
-                        return null;
-                    }
+                    byte[] endOfMessage = URLDecoder.decode(endOfMessageString, StandardCharsets.ISO_8859_1)
+                            .getBytes(StandardCharsets.ISO_8859_1);
 
                     // Start the serial reader using the above end-of-message delimiter
                     SerialPortReader serialPortReader = new SerialPortReader(serialDevice, getSerialIn(serialDevice),
@@ -1005,9 +987,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
                     logger.debug("Rcv data from {} at {}:{}: {}", thingID(), getIP(), serialPort,
                             getAsHexString(buffer));
                     updateFeedbackChannel(buffer);
-                } catch (UnsupportedEncodingException e) {
-                    logger.info("Unsupported encoding exception: {}", e.getMessage(), e);
-                    continue;
                 } catch (IOException e) {
                     logger.debug("Serial Reader got IOException: {}", e.getMessage());
                     break;
@@ -1073,13 +1052,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
             Channel channel = getThing().getChannel(channelId);
             if (channel != null && isLinked(channelId)) {
                 logger.debug("Updating feedback channel for port {}", serialPort);
-                try {
-                    String encodedReply = URLEncoder.encode(new String(buffer, CHARSET), CHARSET);
-                    logger.debug("encodedReply='{}'", encodedReply);
-                    updateState(channel.getUID(), new StringType(encodedReply));
-                } catch (UnsupportedEncodingException e) {
-                    logger.warn("Exception while encoding data read from serial device: {}", e.getMessage());
-                }
+                String encodedReply = URLEncoder.encode(new String(buffer, StandardCharsets.ISO_8859_1),
+                        StandardCharsets.ISO_8859_1);
+                logger.debug("encodedReply='{}'", encodedReply);
+                updateState(channel.getUID(), new StringType(encodedReply));
             }
         }
     }

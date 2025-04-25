@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,8 @@ import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -27,8 +28,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.device.p1telegram.TelegramParser;
 import org.openhab.core.util.HexUtils;
@@ -52,20 +53,18 @@ public class SmartyDecrypter implements TelegramParser {
         READ_SEPARATOR_30,
         READ_FRAME_COUNTER,
         READ_PAYLOAD,
-        READ_GCM_TAG,
-        DONE_READING_TELEGRAM
+        READ_GCM_TAG
     }
 
     private static final byte START_BYTE = (byte) 0xDB;
     private static final byte SEPARATOR_82 = (byte) 0x82;
     private static final byte SEPARATOR_30 = 0x30;
     private static final int ADD_LENGTH = 17;
-    private static final String ADD = "3000112233445566778899AABBCCDDEEFF";
-    private static final byte[] ADD_DECODED = HexUtils.hexToBytes(ADD);
     private static final int IV_BUFFER_LENGTH = 40;
     private static final int GCM_TAG_LENGTH = 12;
     private static final int GCM_BITS = GCM_TAG_LENGTH * Byte.SIZE;
     private static final int MESSAGES_BUFFER_SIZE = 4096;
+    private static final String ADDITIONAL_ADD_PREFIX = "30";
 
     private final Logger logger = LoggerFactory.getLogger(SmartyDecrypter.class);
     private final ByteBuffer iv = ByteBuffer.allocate(IV_BUFFER_LENGTH);
@@ -79,7 +78,8 @@ public class SmartyDecrypter implements TelegramParser {
     private int ivLength;
     private int dataLength;
     private boolean lenientMode;
-    private P1TelegramListener telegramListener;
+    private final P1TelegramListener telegramListener;
+    private final byte[] addKey;
 
     /**
      * Constructor.
@@ -87,12 +87,15 @@ public class SmartyDecrypter implements TelegramParser {
      * @param parser parser of the Cosem messages
      * @param telegramListener
      * @param decryptionKey The key to decrypt the messages
+     * @param additionalKey Additional optional key to decrypt the message
      */
     public SmartyDecrypter(final TelegramParser parser, final P1TelegramListener telegramListener,
-            final String decryptionKey) {
+            final String decryptionKey, final String additionalKey) {
         this.parser = parser;
         this.telegramListener = telegramListener;
         secretKeySpec = decryptionKey.isEmpty() ? null : new SecretKeySpec(HexUtils.hexToBytes(decryptionKey), "AES");
+        addKey = HexUtils.hexToBytes(additionalKey.isBlank() ? DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY_DEFAULT
+                : ((additionalKey.length() == 32 ? (ADDITIONAL_ADD_PREFIX) : "") + additionalKey));
     }
 
     @Override
@@ -109,6 +112,11 @@ public class SmartyDecrypter implements TelegramParser {
     }
 
     private boolean processStateActions(final byte rawInput) {
+        // Safeguard against buffer overrun in case corrupt data is received.
+        if (ivLength == IV_BUFFER_LENGTH) {
+            reset();
+            return false;
+        }
         switch (state) {
             case WAITING_FOR_START_BYTE:
                 if (rawInput == START_BYTE) {
@@ -140,7 +148,7 @@ public class SmartyDecrypter implements TelegramParser {
                 break;
             case READ_PAYLOAD_LENGTH:
                 dataLength <<= 8;
-                dataLength |= rawInput;
+                dataLength |= rawInput & 0xFF;
                 if (currentBytePosition >= changeToNextStateAt) {
                     state = State.READ_SEPARATOR_30;
                     changeToNextStateAt++;
@@ -175,26 +183,23 @@ public class SmartyDecrypter implements TelegramParser {
                 // All input has been read.
                 cipherText.put(rawInput);
                 if (currentBytePosition >= changeToNextStateAt) {
-                    state = State.DONE_READING_TELEGRAM;
+                    state = State.WAITING_FOR_START_BYTE;
+                    return true;
                 }
                 break;
-        }
-        if (state == State.DONE_READING_TELEGRAM) {
-            state = State.WAITING_FOR_START_BYTE;
-            return true;
         }
         return false;
     }
 
     private void processCompleted() {
-        final byte[] plainText = decrypt();
+        try {
+            final byte[] plainText = decrypt();
 
-        reset();
-        if (plainText == null) {
-            telegramListener
-                    .telegramReceived(new P1Telegram(Collections.emptyList(), TelegramState.INVALID_ENCRYPTION_KEY));
-        } else {
-            parser.parse(plainText, plainText.length);
+            if (plainText != null) {
+                parser.parse(plainText, plainText.length);
+            }
+        } finally {
+            reset();
         }
     }
 
@@ -209,12 +214,20 @@ public class SmartyDecrypter implements TelegramParser {
                 final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
                 cipher.init(Cipher.DECRYPT_MODE, secretKeySpec,
                         new GCMParameterSpec(GCM_BITS, iv.array(), 0, ivLength));
-                cipher.updateAAD(ADD_DECODED);
+                cipher.updateAAD(addKey);
                 return cipher.doFinal(cipherText.array(), 0, cipherText.position());
             }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            logger.warn("Decrypting smarty telegram failed: ", e);
+            if (lenientMode || logger.isDebugEnabled()) {
+                // log in lenient mode or when debug is enabled. But log to warn to also work when lenientMode is
+                // enabled.
+                logger.warn("Failed encrypted telegram: {}",
+                        HexUtils.bytesToHex(Arrays.copyOf(cipherText.array(), cipherText.position())));
+                logger.warn("Exception of failed decryption of telegram: ", e);
+            }
+            telegramListener.onError(DSMRErrorStatus.INVALID_DECRYPTION_KEY,
+                    Objects.requireNonNullElse(e.getMessage(), ""));
         }
         return null;
     }

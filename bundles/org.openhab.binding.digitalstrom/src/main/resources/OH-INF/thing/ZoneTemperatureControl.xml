@@ -13,10 +13,9 @@
 
 		<config-description>
 			<!--zone id -->
-			<parameter name="zoneID" type="text">
+			<parameter name="zoneID" type="text" required="true">
 				<label>@text/zoneTemperatureControl_parm_zoneID_label</label>
 				<description>@text/zoneTemperatureControl_parm_zoneID_desc</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

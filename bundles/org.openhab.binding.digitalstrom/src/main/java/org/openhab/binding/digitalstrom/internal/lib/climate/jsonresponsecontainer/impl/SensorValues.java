@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,8 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link SensorValues} acts as container for the digitalSTROM json-method <i>getSensorValues</i>. So the
- * {@link SensorValues} contains all {@link CachedSensorValue}s of a zone.
+ * {@link SensorValues} contains all
+ * {@link org.openhab.binding.digitalstrom.internal.lib.climate.datatypes.CachedSensorValue}s of a zone.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -50,7 +51,7 @@ public class SensorValues extends BaseSensorValues implements ZoneIdentifier {
     }
 
     /**
-     * Creates a new {@link SensorValues} through the {@link JsonObject} which will be returned by an zone call.
+     * Creates a new {@link SensorValues} through the {@link JsonObject} which will be returned by a zone call.
      * Because of zone calls does not include a zoneID or zoneName in the json response, the zoneID and zoneName have to
      * be handed over the constructor.
      *

@@ -53,6 +53,11 @@
 			<description>The latest time of the day for the event or the datetime value (hh:mm).</description>
 			<context>time</context>
 		</parameter>
+		<parameter name="forceEvent" type="boolean">
+			<label>Force Event</label>
+			<description>Force event to occur according to Earliest/Latest, even when the event doesn't exist (null)</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.draytonwiser.internal.handler;
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import java.util.List;
-
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,17 +80,17 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
 
     private State getHotWaterDemandState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
+        return OnOffType.from(!hotWater.isEmpty() && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
     }
 
     private State getManualModeState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
+        return OnOffType.from(!hotWater.isEmpty() && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
     }
 
     private State getSetPointState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
+        return OnOffType.from(!hotWater.isEmpty() && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
     }
 
     private void setManualMode(final boolean manualMode) throws DraytonWiserApiException {
@@ -112,7 +110,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostedState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
 
             if (firstChannel.getOverrideTimeoutUnixTime() != null
@@ -127,15 +125,15 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostRemainingState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
             if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
+                return new QuantityType<>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
             }
         }
-        return new QuantityType<Time>(0, Units.SECOND);
+        return new QuantityType<>(0, Units.SECOND);
     }
 
     static class HotWaterData {

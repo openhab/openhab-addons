@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.xml.sax.InputSource;
  * <p>
  * The implementation of {@link TransformationService} which transforms the input by XPath Expressions.
  *
- * @author Thomas.Eichstaedt-Engelen
+ * @author Thomas.Eichstaedt-Engelen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=XPATH" })
@@ -55,6 +55,12 @@ public class XPathTransformationService implements TransformationService {
 
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            domFactory.setXIncludeAware(false);
+            domFactory.setExpandEntityReferences(false);
             domFactory.setNamespaceAware(true);
             domFactory.setValidating(false);
             DocumentBuilder builder = domFactory.newDocumentBuilder();

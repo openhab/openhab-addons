@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Container class for enums related to Daikin A/C systems
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Tim Waterhouse - Initial contribution
  * @author Lukas Agethen - Add special modes
  *
  */
@@ -28,6 +28,8 @@ public class Enums {
     public enum Mode {
         UNKNOWN(-1),
         AUTO(0),
+        AUTO1(1), // BRP069A81 only accepts mode=1 for AUTO mode. 0 and 7 are rejected.
+        AUTO7(7), // Some adapters may return 7 as auto (heating)
         DEHUMIDIFIER(2),
         COLD(3),
         HEAT(4),
@@ -127,7 +129,6 @@ public class Enums {
         HEAT("heat"),
         OFF("off");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
         private final String value;
 
         HomekitMode(String value) {
@@ -139,7 +140,7 @@ public class Enums {
         }
     }
 
-    public enum SpecialMode {
+    public enum AdvancedMode {
         STREAMER("13"),
         ECO("12"),
         POWERFUL("2"),
@@ -148,7 +149,43 @@ public class Enums {
         OFF(""),
         UNKNOWN("??");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialMode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedMode.class);
+        private final String value;
+
+        AdvancedMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isStreamerActive() {
+            return this.equals(STREAMER) || this.equals(POWERFUL_STREAMER) || this.equals(ECO_STREAMER);
+        }
+
+        public boolean isUndefined() {
+            return this.equals(UNKNOWN);
+        }
+
+        public static AdvancedMode fromValue(String value) {
+            for (AdvancedMode m : AdvancedMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return m;
+                }
+            }
+            LOGGER.debug("Unexpected AdvancedMode value of \"{}\"", value);
+
+            // Default to UNKNOWN
+            return UNKNOWN;
+        }
+    }
+
+    public enum SpecialMode {
+        NORMAL("0"),
+        POWERFUL("1"),
+        ECO("2");
+
         private final String value;
 
         SpecialMode(String value) {
@@ -159,54 +196,55 @@ public class Enums {
             return value;
         }
 
-        public boolean isPowerfulActive() {
-            return this.equals(POWERFUL) || this.equals(POWERFUL_STREAMER);
+        public static SpecialMode fromAdvancedMode(AdvancedMode advMode) {
+            switch (advMode) {
+                case POWERFUL:
+                case POWERFUL_STREAMER:
+                    return SpecialMode.POWERFUL;
+                case ECO:
+                case ECO_STREAMER:
+                    return SpecialMode.ECO;
+            }
+            return NORMAL;
+        }
+    }
+
+    public enum DemandControlMode {
+        OFF("-"),
+        MANUAL("0"),
+        SCHEDULED("1"),
+        AUTO("2");
+
+        private final String value;
+        private static final Logger LOGGER = LoggerFactory.getLogger(DemandControlMode.class);
+
+        DemandControlMode(String value) {
+            this.value = value;
         }
 
-        public boolean isUndefined() {
-            return this.equals(UNKNOWN);
+        public String getValue() {
+            return value;
         }
 
-        public static SpecialMode fromValue(String value) {
-            for (SpecialMode m : SpecialMode.values()) {
+        public static boolean isValidValue(String value) {
+            for (DemandControlMode m : DemandControlMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static DemandControlMode fromValue(String value) {
+            for (DemandControlMode m : DemandControlMode.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected SpecialMode value of \"{}\"", value);
+            LOGGER.debug("Unexpected DemandControlMode value of \"{}\"", value);
 
-            // Default to UNKNOWN
-            return UNKNOWN;
-        }
-    }
-
-    public enum SpecialModeKind {
-        UNKNOWN(-1),
-        STREAMER(0),
-        POWERFUL(1),
-        ECO(2);
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialModeKind.class);
-        private final int value;
-
-        SpecialModeKind(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static SpecialModeKind fromValue(int value) {
-            for (SpecialModeKind m : SpecialModeKind.values()) {
-                if (m.getValue() == value) {
-                    return m;
-                }
-            }
-            LOGGER.debug("Unexpected SpecialModeKind value of \"{}\"", value);
-
-            // Default to UNKNOWN
-            return UNKNOWN;
+            // Default to off
+            return OFF;
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class TiVoHandler extends BaseThingHandler {
         // Handles the commands from the various TiVo channel objects
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
 
-        if (!isInitialized() || !tivoConnection.isPresent()) {
+        if (!isInitialized() || tivoConnection.isEmpty()) {
             logger.debug("handleCommand '{}' device is not initialized yet, command '{}' will be ignored.",
                     getThing().getUID(), channelUID + " " + command);
             return;
@@ -115,13 +115,14 @@ public class TiVoHandler extends BaseThingHandler {
     }
 
     public void setStatusOffline() {
+        lastConnectionStatus = ConnectionStatus.UNKNOWN;
         this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Power on device or check network configuration/connection.");
     }
 
     private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus)
             throws InterruptedException {
-        if (!tivoConnection.isPresent()) {
+        if (tivoConnection.isEmpty()) {
             return;
         }
 
@@ -129,15 +130,14 @@ public class TiVoHandler extends BaseThingHandler {
         TivoStatusData commandResult = null;
         logger.debug("handleCommand '{}' - {} found!", getThing().getUID(), commandKeyword);
         // Re-write command keyword if we are in STANDBY, as only IRCODE TIVO will wake the unit from
-        // standby mode
+        // standby mode, otherwise just execute the commands
         if (deviceStatus.getConnectionStatus() == ConnectionStatus.STANDBY && commandKeyword.contentEquals("TELEPORT")
                 && commandParameter.contentEquals("TIVO")) {
             String command = "IRCODE " + commandParameter;
             logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'", getThing().getUID(),
                     command);
-        }
-        // Execute command
-        if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
+            commandResult = tivoConnection.get().cmdTivoSend(command);
+        } else if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
             commandResult = chChannelChange(commandKeyword, commandParameter);
         } else {
             commandResult = tivoConnection.get().cmdTivoSend(commandKeyword + " " + commandParameter);
@@ -213,8 +213,9 @@ public class TiVoHandler extends BaseThingHandler {
         };
 
         if (tivoConfigData.isKeepConnActive()) {
-            // Run once
-            refreshJob = scheduler.schedule(runnable, INIT_POLLING_DELAY_S, TimeUnit.SECONDS);
+            // Run once every 12 hours to keep the connection from going stale
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, INIT_POLLING_DELAY_S, POLLING_DELAY_12HR_S,
+                    TimeUnit.SECONDS);
             logger.debug("Status collection '{}' will start in '{}' seconds.", getThing().getUID(),
                     INIT_POLLING_DELAY_S);
         } else if (tivoConfigData.doPollChanges()) {
@@ -298,8 +299,7 @@ public class TiVoHandler extends BaseThingHandler {
             }
 
         } catch (NumberFormatException e) {
-            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(),
-                    command.toString());
+            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(), command);
         }
         return tmpStatus;
     }
@@ -307,7 +307,8 @@ public class TiVoHandler extends BaseThingHandler {
     /**
      * {@link updateTivoStatus} populates the items with the status / channel information.
      *
-     * @param tivoStatusData the {@link TivoStatusData}
+     * @param oldStatusData the {@link TivoStatusData}
+     * @param newStatusData the {@link TivoStatusData}
      */
     public void updateTivoStatus(TivoStatusData oldStatusData, TivoStatusData newStatusData) {
         if (newStatusData.getConnectionStatus() != ConnectionStatus.INIT) {
@@ -332,7 +333,7 @@ public class TiVoHandler extends BaseThingHandler {
                                     newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
                         }
                     }
-                    updateState(CHANNEL_TIVO_IS_RECORDING, newStatusData.isRecording() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(CHANNEL_TIVO_IS_RECORDING, OnOffType.from(newStatusData.isRecording()));
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status

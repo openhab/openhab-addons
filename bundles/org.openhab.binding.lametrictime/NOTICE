@@ -14,11 +14,6 @@ https://github.com/openhab/openhab-addons
 
 == Third-party Content
 
-The sources of liblametrictime-java are included in src/3rdparty/java and have been slightly adapted.
-* License: Apache 2.0 License
-* Project: https://github.com/syphr42/liblametrictime-java
-
-
-This binding includes a class from Jersey in the src/3rdparty/java folder.
+This binding includes classes from Jersey in the src/3rdparty/java folder.
 * License: CDDL License
 * Project: https://eclipse-ee4j.github.io/jersey/

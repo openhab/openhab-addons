@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="folderwatcher"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="newfile-channel">
+		<kind>trigger</kind>
+		<label>New File Name(s)</label>
+		<description>A new file name</description>
+		<category>String</category>
+		<event/>
+	</channel-type>
+
+	<thing-type id="ftpfolder">
+		<label>FTP Folder</label>
+		<description>FTP folder to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ftpAddress" type="text" required="true">
+				<label>FTP Server</label>
+				<description>Address of FTP server</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="ftpPort" type="integer" min="1" max="65535">
+				<label>FTP Port</label>
+				<default>21</default>
+				<description>FTP server's port</description>
+			</parameter>
+			<parameter name="secureMode" type="text">
+				<label>FTP Security</label>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="NONE">None</option>
+					<option value="IMPLICIT">TLS/SSL Implicit</option>
+					<option value="EXPLICIT">TLS/SSL Explicit</option>
+				</options>
+				<default>NONE</default>
+				<description>FTP Security settings</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ftpUsername" type="text" required="true">
+				<label>Username</label>
+				<description>User name</description>
+			</parameter>
+			<parameter name="ftpPassword" type="text" required="true">
+				<label>Password</label>
+				<description>FTP server password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="ftpDir" type="text" required="true">
+				<label>Root Directory</label>
+				<description>Root directory to be watched</description>
+			</parameter>
+			<parameter name="listHidden" type="boolean">
+				<label>List Hidden</label>
+				<default>false</default>
+				<description>Allow listing of hidden files</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listRecursiveFtp" type="boolean">
+				<label>List Sub Folders</label>
+				<default>false</default>
+				<description>Allow listing of sub folders</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" min="1" unit="s">
+				<label>Connection Timeout</label>
+				<description>Connection timeout for FTP request, in seconds</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling folder changes, in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="diffHours" type="integer" min="1" unit="h">
+				<label>Timestamp Difference</label>
+				<description>How many hours back to analyze</description>
+				<default>24</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="localfolder">
+		<label>Local Folder</label>
+		<description>Local folder to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="localDir" type="text" required="true">
+				<label>Local Directory</label>
+				<description>Local directory to be watched</description>
+			</parameter>
+			<parameter name="pollIntervalLocal" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling folder changes, in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listHiddenLocal" type="boolean">
+				<label>List Hidden</label>
+				<default>false</default>
+				<description>Allow listing of hidden files</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="listRecursiveLocal" type="boolean">
+				<label>List Sub Folders</label>
+				<default>false</default>
+				<description>Allow listing of sub folders</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="s3bucket">
+		<label>AWS S3 Bucket</label>
+		<description>AWS S3 bucket to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="s3BucketName" type="text" required="true">
+				<label>S3 Bucket Name</label>
+				<description>Name of the S3 bucket to be watched</description>
+			</parameter>
+			<parameter name="s3Path" type="text">
+				<label>S3 Path</label>
+				<description>S3 path (folder) to be monitored</description>
+			</parameter>
+			<parameter name="awsRegion" type="text" required="true">
+				<label>AWS Region</label>
+				<description>AWS region of S3 bucket</description>
+			</parameter>
+			<parameter name="pollIntervalS3" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling S3 bucket changes, in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="s3Anonymous" type="boolean">
+				<label>Anonymous Connection</label>
+				<default>false</default>
+				<description>Connect anonymously (works for public buckets)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="awsKey" type="text">
+				<label>AWS Access Key</label>
+				<description>AWS access key</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="awsSecret" type="text">
+				<label>AWS Secret</label>
+				<description>AWS secret</description>
+				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="azureblob">
+		<label>Azure Blob Storage</label>
+		<description>Azure Blob Storage to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="azureAccountName" type="text" required="true">
+				<label>Azure Account Name</label>
+				<description>Name of the Azure account where the conaner located</description>
+			</parameter>
+			<parameter name="azureContainerName" type="text" required="true">
+				<label>Azure Blob Container Name</label>
+				<description>Name of the Azure container to be watched</description>
+			</parameter>
+			<parameter name="contanerPath" type="text">
+				<label>Container Path</label>
+				<description>Container path (folder) to be monitored</description>
+			</parameter>
+			<parameter name="pollIntervalAzure" type="integer" min="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Interval for polling Azure contaner changes, in seconds</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="azureAnonymous" type="boolean">
+				<label>Anonymous Connection</label>
+				<default>false</default>
+				<description>Connect anonymously (works for public containers)</description>
+			</parameter>
+			<parameter name="azureAccessKey" type="text">
+				<label>Azure Access Key</label>
+				<description>Access Key for Azure storage account</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

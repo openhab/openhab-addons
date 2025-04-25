@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,6 @@ class SpotifyConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyConnector.class);
 
-    private final JsonParser parser = new JsonParser();
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler;
 
@@ -88,8 +87,8 @@ class SpotifyConnector {
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
 
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
+            if (cause instanceof RuntimeException runtimeException) {
+                throw runtimeException;
             } else {
                 throw new SpotifyException(e.getMessage(), e);
             }
@@ -167,7 +166,7 @@ class SpotifyConnector {
         /**
          * Processes the response of the Spotify Web Api call and handles the HTTP status codes. The method returns true
          * if the response indicates a successful and false if the call should be retried. If there were other problems
-         * a Spotify exception is thrown indicating no retry should be done an the user should be informed.
+         * a Spotify exception is thrown indicating no retry should be done and the user should be informed.
          *
          * @param response the response given by the Spotify Web Api
          * @return true if the response indicated a successful call, false if the call should be retried
@@ -234,7 +233,7 @@ class SpotifyConnector {
          */
         private String processErrorState(ContentResponse response) {
             try {
-                final JsonElement element = parser.parse(response.getContentAsString());
+                final JsonElement element = JsonParser.parseString(response.getContentAsString());
 
                 if (element.isJsonObject()) {
                     final JsonObject object = element.getAsJsonObject();

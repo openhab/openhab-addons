@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,6 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.GetPodsDetailsRequest;
 import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
 import org.openhab.binding.sensibo.internal.dto.pods.GetPodsRequest;
-import org.openhab.binding.sensibo.internal.dto.pods.PodDTO;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyReponse;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyRequest;
 import org.openhab.binding.sensibo.internal.dto.settimer.SetTimerReponse;
@@ -82,10 +81,10 @@ import com.google.gson.stream.JsonWriter;
 public class SensiboAccountHandler extends BaseBridgeHandler {
     private static final int MIN_TIME_BETWEEEN_MODEL_UPDATES_MS = 30_000;
     private static final int SECONDS_IN_MINUTE = 60;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     public static String API_ENDPOINT = "https://home.sensibo.com/api";
     private final Logger logger = LoggerFactory.getLogger(SensiboAccountHandler.class);
     private final HttpClient httpClient;
-    private final JsonParser jsonParser = new JsonParser();
     private final RequestLogger requestLogger;
     private final Gson gson;
     private SensiboModel model = new SensiboModel(0);
@@ -184,18 +183,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         final SensiboModel updatedModel = new SensiboModel(System.currentTimeMillis());
 
         final GetPodsRequest getPodsRequest = new GetPodsRequest();
-        final List<PodDTO> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
-                new TypeToken<ArrayList<PodDTO>>() {
+        final List<PodDetailsDTO> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
+                new TypeToken<ArrayList<PodDetailsDTO>>() {
                 }.getType());
 
-        for (final PodDTO pod : pods) {
-            final GetPodsDetailsRequest getPodsDetailsRequest = new GetPodsDetailsRequest(pod.id);
-
-            final PodDetailsDTO podDetails = sendRequest(buildGetPodDetailsRequest(getPodsDetailsRequest),
-                    getPodsDetailsRequest, new TypeToken<PodDetailsDTO>() {
-                    }.getType());
-
-            updatedModel.addPod(new SensiboSky(podDetails));
+        for (final PodDetailsDTO pod : pods) {
+            updatedModel.addPod(new SensiboSky(pod));
         }
 
         return updatedModel;
@@ -207,7 +200,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.OK_200) {
-                final JsonObject o = jsonParser.parse(responseJson).getAsJsonObject();
+                final JsonObject o = JsonParser.parseString(responseJson).getAsJsonObject();
                 final String overallStatus = o.get("status").getAsString();
                 if ("success".equals(overallStatus)) {
                     return gson.fromJson(o.get("result"), responseType);
@@ -276,6 +269,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private Request buildRequest(final AbstractRequest req) {
         Request request = httpClient.newRequest(API_ENDPOINT + req.getRequestUrl()).param("apiKey", config.apiKey)
                 .method(req.getMethod());
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         if (!req.getMethod().contentEquals(HttpMethod.GET.asString())) { // POST, PATCH
             final String reqJson = gson.toJson(req);

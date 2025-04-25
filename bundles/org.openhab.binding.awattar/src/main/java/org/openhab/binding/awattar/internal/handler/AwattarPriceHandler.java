@@ -1,0 +1,186 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.awattar.internal.handler;
+
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.BINDING_ID;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_GROUP_CURRENT;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_GROSS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_GROSS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHour;
+import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.ZonedDateTime;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link AwattarPriceHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Wolfgang Klimt - Initial contribution
+ */
+@NonNullByDefault
+public class AwattarPriceHandler extends BaseThingHandler {
+    private final AwattarTimeProvider timeProvider;
+
+    private static final int THING_REFRESH_INTERVAL = 60;
+    private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
+
+    private @Nullable ScheduledFuture<?> thingRefresher;
+
+    public AwattarPriceHandler(Thing thing, AwattarTimeProvider timeProvider) {
+        super(thing);
+        this.timeProvider = timeProvider;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            refreshChannel(channelUID);
+        } else {
+            logger.debug("Binding {} only supports refresh command", BINDING_ID);
+        }
+    }
+
+    /**
+     * Initialize the binding and start the refresh job.
+     * The refresh job runs once after initialization and afterward every hour.
+     */
+
+    @Override
+    public void initialize() {
+        synchronized (this) {
+            ScheduledFuture<?> localRefresher = thingRefresher;
+            if (localRefresher == null || localRefresher.isCancelled()) {
+                /*
+                 * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
+                 * here
+                 */
+                thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
+                        getMillisToNextMinute(1, timeProvider.getZoneId()), THING_REFRESH_INTERVAL * 1000L,
+                        TimeUnit.MILLISECONDS);
+            }
+        }
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> localRefresher = thingRefresher;
+        if (localRefresher != null) {
+            localRefresher.cancel(true);
+            thingRefresher = null;
+        }
+    }
+
+    public void refreshChannels() {
+        updateStatus(ThingStatus.ONLINE);
+        for (Channel channel : getThing().getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (ChannelKind.STATE.equals(channel.getKind()) && channelUID.isInGroup() && channelUID.getGroupId() != null
+                    && isLinked(channelUID)) {
+                refreshChannel(channel.getUID());
+            }
+        }
+    }
+
+    public void refreshChannel(ChannelUID channelUID) {
+        State state = UnDefType.UNDEF;
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            return;
+        }
+        AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            return;
+        }
+        String group = channelUID.getGroupId();
+        if (group == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.channelgroup.missing");
+            return;
+        }
+
+        ZonedDateTime target;
+
+        if (group.equals(CHANNEL_GROUP_CURRENT)) {
+            target = timeProvider.getZonedDateTimeNow();
+        } else if (group.startsWith("today")) {
+            target = getCalendarForHour(Integer.parseInt(group.substring(5)), timeProvider.getZoneId());
+        } else if (group.startsWith("tomorrow")) {
+            target = getCalendarForHour(Integer.parseInt(group.substring(8)), timeProvider.getZoneId()).plusDays(1);
+        } else {
+            logger.warn("Unsupported channel group {}", group);
+            updateState(channelUID, state);
+            return;
+        }
+
+        AwattarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
+
+        if (price == null) {
+            logger.trace("No price found for hour {}", target);
+            updateState(channelUID, state);
+            return;
+        }
+
+        String channelId = channelUID.getIdWithoutGroup();
+        switch (channelId) {
+            case CHANNEL_MARKET_NET:
+                state = toDecimalType(price.netPrice());
+                break;
+            case CHANNEL_MARKET_GROSS:
+                state = toDecimalType(price.grossPrice());
+                break;
+            case CHANNEL_TOTAL_NET:
+                state = toDecimalType(price.netTotal());
+                break;
+            case CHANNEL_TOTAL_GROSS:
+                state = toDecimalType(price.grossTotal());
+                break;
+            default:
+                logger.warn("Unknown channel id {} for Thing type {}", channelUID, getThing().getThingTypeUID());
+        }
+        updateState(channelUID, state);
+    }
+
+    private DecimalType toDecimalType(Double value) {
+        BigDecimal bd = BigDecimal.valueOf(value);
+        return new DecimalType(bd.setScale(2, RoundingMode.HALF_UP));
+    }
+}

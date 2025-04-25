@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         // Check command classes (only for ThermostatMode)
                         ZWaveDevice zwaveDevice = getZWayBridgeHandler().getZWayApi()
                                 .getZWaveDevice(mConfig.getNodeId());
-                        if (!zwaveDevice.getInstances().get0().getCommandClasses().get64().getName().equals("")) {
+                        if (!"".equals(zwaveDevice.getInstances().get0().getCommandClasses().get64().getName())) {
                             // Load available thermostat modes
                             Map<Integer, String> modes = zwaveDevice.getInstances().get0().getCommandClasses().get64()
                                     .getThermostatModes();
@@ -151,7 +151,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
@@ -211,7 +211,8 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         }
 
         Calendar lastUpdateOfDevice = Calendar.getInstance();
-        lastUpdateOfDevice.setTimeInMillis(new Long(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
+        lastUpdateOfDevice
+                .setTimeInMillis(Long.valueOf(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
 
         if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
             lastUpdate = lastUpdateOfDevice;

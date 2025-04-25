@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,14 +59,14 @@ public class TouchWandShutterHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandShutterSwitchUnitData) {
-            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+        if (unitData instanceof TouchWandShutterSwitchUnitData shutterSwitchUnitData) {
+            int status = shutterSwitchUnitData.getCurrStatus();
             PercentType state = PercentType.ZERO;
             int convertStatus = 100 - status;
             state = new PercentType(convertStatus);
             updateState(CHANNEL_SHUTTER, state);
         } else {
-            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 }

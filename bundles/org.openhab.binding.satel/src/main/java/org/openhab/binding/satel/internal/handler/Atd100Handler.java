@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -39,14 +38,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Atd100Handler} is responsible for handling commands, which are
- * sent to one of the channels of a ATD-100 device.
+ * sent to one of the channels of an ATD-100 device.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
 @NonNullByDefault
 public class Atd100Handler extends WirelessChannelsHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ATD100);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ATD100);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

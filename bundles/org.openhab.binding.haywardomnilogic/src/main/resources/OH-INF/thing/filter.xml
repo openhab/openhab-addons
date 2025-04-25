@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="filter" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Filter</label>
+		<semantic-equipment-tag>WaterFilter</semantic-equipment-tag>
+		<channels>
+			<channel id="filterEnable" typeId="system.power"/>
+			<channel id="filterValvePosition" typeId="valvePosition"/>
+			<channel id="filterSpeedPercent" typeId="filterSpeedPercent"/>
+			<channel id="filterSpeedRpm" typeId="filterSpeedRpm"/>
+			<channel id="filterSpeedSelect" typeId="filterSpeedSelect"/>
+			<channel id="filterState" typeId="filterState"/>
+			<channel id="filterLastSpeed" typeId="filterLastSpeed"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hayward</property>
+			<property name="filterSharedType"></property>
+			<property name="filterType"></property>
+			<property name="primingEnabled"></property>
+			<property name="minFilterPercent"></property>
+			<property name="maxFilterPercent"></property>
+			<property name="minFilterRPM"></property>
+			<property name="maxFilterRPM"></property>
+			<property name="lowFilterSpeed"></property>
+			<property name="mediumFilterSpeed"></property>
+			<property name="highFilterSpeed"></property>
+			<property name="customFilterSpeed"></property>
+			<property name="freezeProtectOverrideInterval"></property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>systemID</representation-property>
+
+	</thing-type>
+
+	<channel-type id="valvePosition">
+		<item-type>String</item-type>
+		<label>Valve Position</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Pool Only</option>
+				<option value="2">Spa Only</option>
+				<option value="3">Spill Over</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filterSpeedPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Filter Speed</label>
+		<description>Filter speed in percentage</description>
+		<state min="0" max="100" step="5" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterSpeedRpm">
+		<item-type unitHint="rpm">Number:Frequency</item-type>
+		<label>Filter Speed</label>
+		<description>Filter speed in rpm</description>
+		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterSpeedSelect">
+		<item-type>String</item-type>
+		<label>Filter Speed States</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="33">Low</option>
+				<option value="66">Medium</option>
+				<option value="100">High</option>
+				<option value="100">Custom</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filterState">
+		<item-type>String</item-type>
+		<label>Filter State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Running</option>
+				<option value="2">Priming</option>
+				<option value="3">Waiting to Turn Off</option>
+				<option value="4">Waiting to Turn Off Manual</option>
+				<option value="5">Heater Extend</option>
+				<option value="6">Heater Cool Down</option>
+				<option value="7">Suspended</option>
+				<option value="8">CSAD Extend</option>
+				<option value="9">Filter Superchlorinate</option>
+				<option value="10">Filter Force Priming</option>
+				<option value="11">Filter Waiting for Pump to Turn Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filterLastSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Last Speed</label>
+		<description>Last filter speed in percentage</description>
+		<state pattern="%d %%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

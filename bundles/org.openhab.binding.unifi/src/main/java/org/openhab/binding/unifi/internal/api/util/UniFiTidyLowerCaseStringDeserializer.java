@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,8 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -28,12 +29,13 @@ import com.google.gson.JsonParseException;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiTidyLowerCaseStringDeserializer implements JsonDeserializer<String> {
 
     @Override
-    public String deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
-        String s = json.getAsJsonPrimitive().getAsString();
-        return StringUtils.lowerCase(StringUtils.strip(s));
+    public @Nullable String deserialize(final JsonElement json, final Type type,
+            final JsonDeserializationContext context) throws JsonParseException {
+        final String s = json.getAsJsonPrimitive().getAsString();
+        return s.trim().toLowerCase();
     }
 }

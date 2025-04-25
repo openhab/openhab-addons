@@ -5,6 +5,29 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported FRITZ! devices and features -->
+	<thing-type id="FRITZ_DECT_500">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 500</label>
+		<description>FRITZ!DECT500 color light.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="color-temperature-abs"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<thing-type id="FRITZ_DECT_400">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
@@ -13,7 +36,7 @@
 
 		<label>FRITZ!DECT 400</label>
 		<description>FRITZ!DECT400 switch.</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="press" typeId="system.button">
 				<label>Button Press</label>
@@ -37,7 +60,7 @@
 
 		<label>FRITZ!DECT 440</label>
 		<description>FRITZ!DECT440 switch.</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="top-left" typeId="button">
 				<label>Top Left Button</label>
@@ -68,13 +91,16 @@
 
 		<label>Comet DECT</label>
 		<description>Comet DECT heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -83,6 +109,46 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="FRITZ_DECT_302">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 302</label>
+		<description>FRITZ!DECT 302 heating thermostat.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+		<channels>
+			<channel id="mode" typeId="mode"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="device_locked" typeId="device_locked"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
+			<channel id="set_temp" typeId="set_temp"/>
+			<channel id="eco_temp" typeId="eco_temp"/>
+			<channel id="comfort_temp" typeId="comfort_temp"/>
+			<channel id="radiator_mode" typeId="radiator_mode"/>
+			<channel id="next_change" typeId="next_change"/>
+			<channel id="next_temp" typeId="next_temp"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -97,13 +163,16 @@
 
 		<label>FRITZ!DECT 301</label>
 		<description>FRITZ!DECT 301 heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -112,6 +181,10 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -126,13 +199,16 @@
 
 		<label>FRITZ!DECT 300</label>
 		<description>FRITZ!DECT 300 heating thermostat.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -141,6 +217,10 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -155,16 +235,26 @@
 
 		<label>FRITZ!DECT 210</label>
 		<description>FRITZ!DECT210 switchable outlet.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electric-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -179,16 +269,26 @@
 
 		<label>FRITZ!DECT 200</label>
 		<description>FRITZ!DECT200 switchable outlet.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electric-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -204,15 +304,25 @@
 		<label>FRITZ!Powerline 546E</label>
 		<description>FRITZ!Powerline 546E with switchable outlet.
 		</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electric-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -245,7 +355,7 @@
 
 		<label>HAN-FUN Contact</label>
 		<description>HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder).</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="contact_state" id="contact_state"/>
 		</channels>
@@ -263,13 +373,93 @@
 
 		<label>HAN-FUN Switch</label>
 		<description>HAN-FUN switch (e.g. SmartHome Wandtaster).</description>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="press" typeId="system.rawbutton">
 				<label>Button Press</label>
 				<description>Triggeres PRESSED when a button was pressed.</description>
 			</channel>
 			<channel typeId="last_change" id="last_change"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_BLINDS">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Blinds</label>
+		<description>HAN-FUN blinds (e.g. RolloTron DECT 1213)</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter"/>
+			<channel id="obstruction_alarm" typeId="obstruction_alarm"/>
+			<channel id="temperature_alarm" typeId="temperature_alarm"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_COLOR_BULB">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Color Light</label>
+		<description>HAN-FUN color light (e.g SmartHome LED-Lampe E27 (farbig)).</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="color-temperature-abs"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+
+	<thing-type id="HAN_FUN_DIMMABLE_BULB">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Dimmable Light</label>
+		<description>HAN-FUN dimmable light (e.g. SmartHome LED-Lampe E27 (warmweiß)).</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_ON_OFF">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN On / Off Device</label>
+		<description>HAN-FUN switchable device (e.g. SmartHome Zwischenstecker innen / SmartHome Zwischenstecker außen)</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="on_off" typeId="system.power"/>
 		</channels>
 
 		<representation-property>ain</representation-property>
@@ -286,12 +476,15 @@
 
 		<label>Heating Group</label>
 		<description>Group for heating thermostats.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="actual_temp" typeId="actual_temp"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -300,6 +493,10 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -314,15 +511,25 @@
 
 		<label>Switch Group</label>
 		<description>Group for switchable outlets and power meters.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electric-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 

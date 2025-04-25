@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
+import javax.ws.rs.HttpMethod;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -44,83 +45,86 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class StatusFileInterpreter {
     private static final String URL_TEMPLATE = "http://%s/globalstatus.xml";
+
     private final Logger logger = LoggerFactory.getLogger(StatusFileInterpreter.class);
-    private final String hostname;
-    private @Nullable Document doc;
+    private final DocumentBuilder builder;
+    private final String url;
     private final Ipx800EventListener listener;
 
-    public static enum StatusEntry {
+    private Optional<Document> doc = Optional.empty();
+
+    public enum StatusEntry {
         VERSION,
-        CONFIG_MAC;
+        CONFIG_MAC
     }
 
     public StatusFileInterpreter(String hostname, Ipx800EventListener listener) {
-        this.hostname = hostname;
+        this.url = String.format(URL_TEMPLATE, hostname);
         this.listener = listener;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        try {
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            logger.warn("Error initializing StatusFileInterpreter :{}", e.getMessage());
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public void read() {
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            String statusPage = HttpUtil.executeUrl("GET", String.format(URL_TEMPLATE, hostname), 5000);
+            String statusPage = HttpUtil.executeUrl(HttpMethod.GET, url, 5000);
             InputStream inputStream = new ByteArrayInputStream(statusPage.getBytes());
             Document document = builder.parse(inputStream);
             document.getDocumentElement().normalize();
-            doc = document;
-            pushDatas();
             inputStream.close();
-        } catch (IOException | SAXException | ParserConfigurationException e) {
+            this.doc = Optional.of(document);
+            pushDatas();
+        } catch (IOException | SAXException e) {
             logger.warn("Unable to read IPX800 status page : {}", e.getMessage());
-            doc = null;
         }
     }
 
     private void pushDatas() {
-        Element root = getRoot();
-        if (root != null) {
-            PortDefinition.asStream().forEach(portDefinition -> {
-                List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName());
+        getRoot().ifPresent(root -> {
+            PortDefinition.AS_SET.forEach(portDefinition -> {
+                List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.nodeName);
                 xmlNodes.forEach(xmlNode -> {
-                    String sPortNum = xmlNode.getNodeName().replace(portDefinition.getNodeName(), "");
+                    String sPortNum = xmlNode.getNodeName().replace(portDefinition.nodeName, "");
                     int portNum = Integer.parseInt(sPortNum) + 1;
                     double value = Double.parseDouble(xmlNode.getTextContent().replace("dn", "1").replace("up", "0"));
-                    listener.dataReceived(String.format("%s%d", portDefinition.getPortName(), portNum), value);
+                    listener.dataReceived("%s%d".formatted(portDefinition.portName, portNum), value);
                 });
             });
-        }
+        });
     }
 
     public String getElement(StatusEntry entry) {
-        Element root = getRoot();
-        if (root != null) {
-            return root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent();
-        } else {
-            return "";
-        }
+        return Objects.requireNonNull(
+                getRoot().map(root -> root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent())
+                        .orElse(""));
     }
 
     private List<Node> getMatchingNodes(NodeList nodeList, String criteria) {
         return IntStream.range(0, nodeList.getLength()).boxed().map(nodeList::item)
-                .filter(node -> node.getNodeName().startsWith(criteria))
-                .sorted(Comparator.comparing(o -> o.getNodeName())).collect(Collectors.toList());
+                .filter(node -> node.getNodeName().startsWith(criteria)).sorted(Comparator.comparing(Node::getNodeName))
+                .toList();
     }
 
     public int getMaxNumberofNodeType(PortDefinition portDefinition) {
-        Element root = getRoot();
-        if (root != null) {
-            List<Node> filteredNodes = getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName());
-            return filteredNodes.size();
-        }
-        return 0;
+        return Objects.requireNonNull(getRoot()
+                .map(root -> getMatchingNodes(root.getChildNodes(), portDefinition.nodeName).size()).orElse(0));
     }
 
-    private @Nullable Element getRoot() {
-        if (doc == null) {
+    private Optional<Element> getRoot() {
+        if (doc.isEmpty()) {
             read();
         }
-        if (doc != null) {
-            return doc.getDocumentElement();
-        }
-        return null;
+        return Optional.ofNullable(doc.map(Document::getDocumentElement).orElse(null));
     }
 }

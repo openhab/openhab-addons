@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,8 @@ package org.openhab.binding.meteoblue.internal.handler;
 
 import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.THING_TYPE_BRIDGE;
 
-import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.meteoblue.internal.MeteoBlueBridgeConfig;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Carman - Initial contribution
  */
 public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(MeteoBlueBridgeHandler.class);
 
     private String apiKey;
@@ -55,7 +53,7 @@ public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
 
         MeteoBlueBridgeConfig config = getConfigAs(MeteoBlueBridgeConfig.class);
         String apiKeyTemp = config.getApiKey();
-        if (StringUtils.isBlank(apiKeyTemp)) {
+        if (apiKeyTemp == null || apiKeyTemp.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Cannot initialize meteoblue bridge. No apiKey provided.");
             return;

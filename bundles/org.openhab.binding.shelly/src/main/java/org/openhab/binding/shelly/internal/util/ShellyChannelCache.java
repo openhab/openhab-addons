@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -33,14 +33,14 @@ import org.slf4j.LoggerFactory;
 public class ShellyChannelCache {
     private final Logger logger = LoggerFactory.getLogger(ShellyChannelCache.class);
 
-    private final ShellyBaseHandler thingHandler;
+    private final ShellyThingInterface thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingName = "";
     private boolean enabled = false;
 
-    public ShellyChannelCache(ShellyBaseHandler thingHandler) {
+    public ShellyChannelCache(ShellyThingInterface thingHandler) {
         this.thingHandler = thingHandler;
-        setThingName(thingHandler.thingName);
+        setThingName(thingHandler.getThingName());
     }
 
     public void setThingName(String thingName) {
@@ -65,7 +65,7 @@ public class ShellyChannelCache {
      * messing up the log with those updates)
      *
      * @param channelId Channel id
-     * @param value Value (State)
+     * @param newValue Value (State)
      * @param forceUpdate true: ignore cached data, force update; false check cache of changed data
      * @return true, if successful
      */
@@ -76,7 +76,7 @@ public class ShellyChannelCache {
                 current = channelData.get(channelId);
             }
             if (!enabled || forceUpdate || (current == null) || !current.equals(newValue)) {
-                if ((current != null) && current.getClass().isEnum() && (current == newValue)) {
+                if ((current != null) && current.getClass().isEnum() && (current.equals(newValue))) {
                     return false; // special case for OnOffType
                 }
                 // For channels that support multiple types (like brightness) a suffix is added
@@ -87,13 +87,11 @@ public class ShellyChannelCache {
                 } else {
                     channelData.replace(channelId, newValue);
                 }
-                logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, newValue,
-                        newValue.getClass());
                 return true;
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingName, channelId, newValue,
-                    newValue.getClass(), ShellyUtils.getMessage(e), e.getClass());
+                    newValue.getClass(), ShellyUtils.getMessage(e), e.getClass(), e);
         }
         return false;
     }
@@ -119,7 +117,8 @@ public class ShellyChannelCache {
     }
 
     public State getValue(String channelId) {
-        return channelData.getOrDefault(channelId, UnDefType.NULL);
+        State st = channelData.get(channelId);
+        return st != null ? st : UnDefType.NULL;
     }
 
     public void resetChannel(String channelId) {

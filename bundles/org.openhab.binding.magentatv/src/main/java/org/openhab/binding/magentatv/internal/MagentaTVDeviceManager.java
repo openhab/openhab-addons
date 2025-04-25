@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class MagentaTVDeviceManager {
 
     public void registerDevice(String udn, String deviceId, String ipAddress, MagentaTVHandler handler) {
         logger.trace("Register new device, UDN={}, deviceId={}, ipAddress={}", udn, deviceId, ipAddress);
-        addNewDevice(udn, deviceId, ipAddress, "", new TreeMap<String, String>(), handler);
+        addNewDevice(udn, deviceId, ipAddress, "", new TreeMap<>(), handler);
     }
 
     private void addNewDevice(String udn, String deviceId, String ipAddress, String macAddress,
@@ -139,7 +139,7 @@ public class MagentaTVDeviceManager {
             MagentaTVDevice dev = deviceList.get(udn.toUpperCase());
             return dev.properties;
         }
-        if (deviceList.size() > 0) {
+        if (!deviceList.isEmpty()) {
             logger.debug("getDiscoveredProperties(): Unknown UDN: {}", udn);
         }
         return null;

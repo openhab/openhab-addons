@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,8 +81,6 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
     private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);
     private ScheduledFuture<?> onlineCheckTask;
 
-    private JsonParser parser = new JsonParser();
-
     private XiaomiBridgeHandler bridgeHandler;
 
     private String itemId;
@@ -148,7 +146,7 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
             }
             logger.debug("Item got update: {}", message);
             try {
-                JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
+                JsonObject data = JsonParser.parseString(message.get("data").getAsString()).getAsJsonObject();
                 parseCommand(command, data);
                 if (THING_TYPE_BASIC.equals(getThing().getThingTypeUID())) {
                     parseDefault(message);
@@ -205,8 +203,8 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
 
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_WRITE_MSG.equals(channelUID.getId())) {
-            if (command instanceof StringType) {
-                getXiaomiBridgeHandler().writeToDevice(itemId, ((StringType) command).toFullString());
+            if (command instanceof StringType str) {
+                getXiaomiBridgeHandler().writeToDevice(itemId, str.toFullString());
             } else {
                 logger.debug("Command \"{}\" has to be of StringType", command);
             }
@@ -248,8 +246,8 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof XiaomiBridgeHandler) {
-                this.bridgeHandler = (XiaomiBridgeHandler) handler;
+            if (handler instanceof XiaomiBridgeHandler xiaomiBridgeHandler) {
+                this.bridgeHandler = xiaomiBridgeHandler;
                 this.bridgeHandler.registerItemListener(this);
             } else {
                 return null;

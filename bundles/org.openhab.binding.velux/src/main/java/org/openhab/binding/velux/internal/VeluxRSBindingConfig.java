@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This represents the configuration of a openHAB item that is binded to a Velux
+ * This represents the configuration of an openHAB item that is binded to a Velux
  * KLF200 Gateway. It contains the following information:
  *
  * <ul>
@@ -49,7 +49,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The ascending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapAscending = new TreeMap<>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapAscending = new TreeMap<>(new Comparator<>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o1.compareTo(o2);
@@ -58,7 +58,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The descending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapDescending = new TreeMap<>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapDescending = new TreeMap<>(new Comparator<>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o2.compareTo(o1);
@@ -137,7 +137,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     }
 
     /**
-     * Returns the next shutter level for an DOWN command w/ adjusting the actual position.
+     * Returns the next shutter level for a DOWN command w/ adjusting the actual position.
      *
      * @return <b>rollershutterLevel</b> of type Integer with next position after DOWN command.
      */

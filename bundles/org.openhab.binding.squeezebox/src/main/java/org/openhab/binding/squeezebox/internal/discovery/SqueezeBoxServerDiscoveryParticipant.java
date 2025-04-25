@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,12 @@ package org.openhab.binding.squeezebox.internal.discovery;
 import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxCommunicationException;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Component
+@NonNullByDefault
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
@@ -51,11 +53,11 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(SQUEEZEBOXSERVER_THING_TYPE);
+        return Set.of(SQUEEZEBOXSERVER_THING_TYPE);
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(3);
@@ -84,8 +86,8 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
 
             String representationPropertyName = "ipAddress";
             properties.put(representationPropertyName, host);
-            properties.put("webport", new Integer(webPort));
-            properties.put("cliPort", new Integer(cliPort));
+            properties.put("webport", Integer.valueOf(webPort));
+            properties.put("cliPort", Integer.valueOf(cliPort));
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withRepresentationProperty(representationPropertyName).withLabel(label).build();
@@ -99,7 +101,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getFriendlyName() != null) {
             if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
                 logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),

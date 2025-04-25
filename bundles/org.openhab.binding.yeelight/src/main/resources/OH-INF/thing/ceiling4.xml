@@ -6,6 +6,7 @@
 	<thing-type id="ceiling4">
 		<label>Yeelight LED Ceiling (v4)</label>
 		<description>Yeelight LED Ceiling with ambient light</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>
@@ -13,6 +14,6 @@
 			<channel id="nightlight" typeId="nightlight"/>
 			<channel id="command" typeId="command"/>
 		</channels>
-		<config-description-ref uri="thing-type:device:base"/>
+		<config-description-ref uri="thing-type:yeelight:device"/>
 	</thing-type>
 </thing:thing-descriptions>

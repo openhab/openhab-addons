@@ -10,9 +10,8 @@
 		<!--
 			# I N S T A L L J D B C P E R S I S T E N C E S E R V I C E
 			#
-			# https://github.com/openhab/openhab/wiki/JDBC-Persistence
-			#
-			# Tested databases/url-prefix: jdbc:derby, jdbc:h2, jdbc:hsqldb, jdbc:mariadb, jdbc:mysql, jdbc:postgresql, jdbc:sqlite
+			# Tested databases/url-prefix: jdbc:derby, jdbc:h2, jdbc:hsqldb, jdbc:mariadb, jdbc:mysql, jdbc:postgresql, jdbc:sqlite,
+			jdbc:oracle
 			#
 			# derby, h2, hsqldb, sqlite can be embedded,
 			# If no database is available it will be created, for example the url 'jdbc:h2:./testH2' creates a new DB in OpenHab Folder.
@@ -26,12 +25,13 @@
 			# Some URL-Examples, 'service' identifies and activates internally the correct jdbc driver.
 			# required database url like 'jdbc:<service>:<host>[:<port>;<attributes>]'
 			# jdbc:url=jdbc:derby:./testDerby;create=true
-			# jdbc:url=jdbc:h2:./testH2
+			# jdbc:url=jdbc:h2:./testH2;NON_KEYWORDS=VALUE
 			# jdbc:url=jdbc:hsqldb:./testHsqlDb
 			# jdbc:url=jdbc:mariadb://192.168.0.1:3306/testMariadb
 			# jdbc:url=jdbc:mysql://192.168.0.1:3306/testMysql
 			# jdbc:url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 			# jdbc:url=jdbc:sqlite:./testSqlite.db
+			# jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
 		-->
 		<parameter name="url" type="text" required="true">
 			<label>Database URL</label>
@@ -40,12 +40,13 @@
 			Parameter 'service' is used as identifier for the selected jdbc driver.
 			URL-Examples:<br>
 			jdbc:derby:./testDerby;create=true<br>
-			jdbc:h2:./testH2<br>
+			jdbc:h2:./testH2;NON_KEYWORDS=VALUE<br>
 			jdbc:hsqldb:./testHsqlDb<br>
 			jdbc:mariadb://192.168.0.1:3306/testMariadb<br>
 			jdbc:mysql://192.168.0.1:3306/testMysql<br>
 			jdbc:postgresql://192.168.0.1:5432/testPostgresql<br>
-			jdbc:sqlite:./testSqlite.db]]></description>
+			jdbc:sqlite:./testSqlite.db<br>
+			jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder]]></description>
 		</parameter>
 
 		<parameter name="user" type="text" required="true">
@@ -71,7 +72,7 @@
 			#sqltype.CONTACT = VARCHAR(6)
 			#sqltype.DATETIME = DATETIME
 			#sqltype.DIMMER = TINYINT
-			#sqltype.LOCATION = VARCHAR(30)
+			#sqltype.LOCATION = VARCHAR(50)
 			#sqltype.NUMBER = DOUBLE
 			#sqltype.ROLLERSHUTTER = TINYINT
 			#sqltype.STRING = VARCHAR(65500)
@@ -103,13 +104,21 @@
 			<label>SqlType DIMMER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for DIMMER <br>(optional, default: "TINYINT").]]></description>
 		</parameter>
+		<parameter name="sqltype.IMAGE" type="text">
+			<label>SqlType IMAGE</label>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for IMAGE <br>(optional, default: "VARCHAR(65500)").]]></description>
+		</parameter>
 		<parameter name="sqltype.LOCATION" type="text">
 			<label>SqlType LOCATION</label>
-			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(30)").]]></description>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(50)").]]></description>
 		</parameter>
 		<parameter name="sqltype.NUMBER" type="text">
 			<label>SqlType NUMBER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for NUMBER <br>(optional, default: "DOUBLE").]]></description>
+		</parameter>
+		<parameter name="sqltype.PLAYER" type="text">
+			<label>SqlType PLAYER</label>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for PLAYER <br>(optional, default: "VARCHAR(20)").]]></description>
 		</parameter>
 		<parameter name="sqltype.ROLLERSHUTTER" type="text">
 			<label>SqlType ROLLERSHUTTER</label>
@@ -126,6 +135,10 @@
 
 		<!--
 			# T A B L E O P E R A T I O N S
+			# Items Manage Table (optional, default: "items")
+			# for Migration from MYSQL-Bundle set to 'Items'.
+			#itemsManageTable=Items
+
 			# Tablename Prefix String (optional, default: "item")
 			# for Migration from MYSQL-Bundle set to 'Item'.
 			#tableNamePrefix=Item
@@ -135,6 +148,11 @@
 			#tableUseRealItemNames=
 			tableUseRealItemNames=true
 
+			# Tablename Prefix generation, using case sensitive item names (optional, default: disabled -> table names are lower cased
+			# with numeric suffix appended).
+			# If true, no suffix is used.
+			#tableCaseSensitiveItemNames=true
+
 			# Tablename Suffix length (optional, default: 4 -> 0001-9999)
 			# for Migration from MYSQL-Bundle set to 0.
 			#tableIdDigitCount=
@@ -143,6 +161,11 @@
 			# USE WITH CARE! Deactivate after Renaming is done!
 			#rebuildTableNames=true
 		-->
+		<parameter name="itemsManageTable" type="text">
+			<label>Items Manage Table</label>
+			<description><![CDATA[Items Manage Table <br>(optional, default: "items"). <br>
+			For migration from MYSQL-Bundle set to 'Items'.]]></description>
+		</parameter>
 		<parameter name="tableNamePrefix" type="text">
 			<label>Tablename Prefix String</label>
 			<description><![CDATA[Tablename prefix string <br>(optional, default: "item"). <br>
@@ -157,6 +180,15 @@
 				<option value="false">Disable</option>
 			</options>
 		</parameter>
+		<parameter name="tableCaseSensitiveItemNames" type="text">
+			<label>Tablename Case Sensitive</label>
+			<description><![CDATA[Enables Tablename generation with case sensitive item names case when "Tablename Realname Generation" is enabled <br>
+			If true, no suffix is used. (optional, default: disabled -> table names are lower cased with numeric suffix appended).]]></description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+		</parameter>
 		<parameter name="tableIdDigitCount" type="text">
 			<label>Tablename Suffix ID Count</label>
 			<description><![CDATA[Tablename Suffix ID Count <br>(optional, default: 4 -> 0001-9999). <br>
@@ -164,7 +196,8 @@
 		</parameter>
 		<parameter name="rebuildTableNames" type="text">
 			<label>Tablename Rebuild</label>
-			<description><![CDATA[Rename existing tables using 'Tablename Realname Generation' and 'Tablename Suffix ID Count', (optional, default: disabled). <br>
+			<description><![CDATA[Rename existing tables using 'Tablename Prefix String', 'Tablename Realname Generation', 'Tablename Case Sensitive' and
+			'Tablename Suffix ID Count'. (optional, default: disabled). <br>
 			USE WITH CARE! Deactivate after renaming is done!]]></description>
 			<options>
 				<option value="true">Enable</option>

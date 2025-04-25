@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link AstroBinding} class defines common constants, which are
+ * The {@link AstroBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Gerhard Riegler - Initial contribution
@@ -32,8 +32,8 @@ public final class AstroBindingConstants {
 
     public static final String BINDING_ID = "astro";
 
-    public static final String SUN = "sun";
-    public static final String MOON = "moon";
+    private static final String SUN = "sun";
+    private static final String MOON = "moon";
     public static final String LOCAL = "local";
 
     // things

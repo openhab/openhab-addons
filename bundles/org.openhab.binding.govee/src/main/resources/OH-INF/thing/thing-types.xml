@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="govee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="govee-light">
+		<label>Govee Light</label>
+		<description>Govee light controllable via LAN API</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color-temperature" typeId="system.color-temperature"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:govee:govee-light"/>
+	</thing-type>
+
+</thing:thing-descriptions>

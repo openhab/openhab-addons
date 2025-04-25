@@ -24,32 +24,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="sensorId" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-			</parameter>
-			<parameter name="on" type="boolean">
-				<label>Sensor Status</label>
-				<description>Enables or disables the sensor.</description>
-			</parameter>
-			<parameter name="ledindication" type="boolean">
-				<label>LED Indication</label>
-				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation
-					(Reset, SW Update, Battery Low).</description>
-			</parameter>
-			<parameter name="tholddark" type="integer" min="0" step="1">
-				<label>Threshold Dark</label>
-				<description>Threshold the user configured to be used in rules to determine insufficient light level (ie below
-					threshold). Default value 16000.</description>
-				<default>16000</default>
-			</parameter>
-			<parameter name="tholdoffset" type="integer" min="1" step="1">
-				<label>Threshold Offset</label>
-				<description>Threshold the user configured to be used in rules to determine sufficient light level (ie above
-					threshold). Specified as relative offset to the “dark” threshold. Shall be >=1. Default value 7000.</description>
-				<default>7000</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:lightlevelsensor"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -10,12 +10,12 @@
 		<label>Generic Powerline Device</label>
 		<description>A generic device in a UPB network</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="dimmer" typeId="system.brightness"/>
 		</channels>
 
-		<config-description-ref uri="upb:device:address"/>
+		<config-description-ref uri="thing-type:upb:device-address"/>
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.bluegiga;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 
 /**
@@ -25,14 +26,16 @@ import org.openhab.binding.bluetooth.BluetoothCharacteristic;
  * @author Connor Petty - Initial contribution
  *
  */
+@NonNullByDefault
 public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
 
-    private boolean notificationEnabled;
+    private boolean notifying;
 
     public BlueGigaBluetoothCharacteristic(int handle) {
         super(null, handle);
     }
 
+    @Override
     public void setProperties(int properties) {
         this.properties = properties;
     }
@@ -45,11 +48,11 @@ public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
         this.uuid = uuid;
     }
 
-    public boolean isNotificationEnabled() {
-        return notificationEnabled;
+    public boolean isNotifying() {
+        return notifying;
     }
 
-    public void setNotificationEnabled(boolean enable) {
-        this.notificationEnabled = enable;
+    public void setNotifying(boolean enable) {
+        this.notifying = enable;
     }
 }

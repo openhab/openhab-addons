@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,28 +12,35 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velbus.internal.VelbusClockAlarm;
+import org.openhab.binding.velbus.internal.VelbusClockAlarmConfiguration;
 import org.openhab.binding.velbus.internal.VelbusPacketInputStream;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
 import org.openhab.binding.velbus.internal.config.VelbusBridgeConfig;
 import org.openhab.binding.velbus.internal.discovery.VelbusThingDiscoveryService;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDatePacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDaylightSavingsStatusPacket;
+import org.openhab.binding.velbus.internal.packets.VelbusSetLocalClockAlarmPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetRealtimeClockPacket;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -49,6 +56,8 @@ import org.slf4j.LoggerFactory;
  * the framework.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add global alarm configuration from bridge (removed from modules), reduces bus flooding
+ *         on alarm value update
  */
 @NonNullByDefault
 public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
@@ -67,6 +76,11 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) VelbusPacketInputStream inputStream;
 
     private boolean listenerStopped;
+
+    private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
+
+    private long lastUpdateAlarm1TimeMillis;
+    private long lastUpdateAlarm2TimeMillis;
 
     public VelbusBridgeHandler(Bridge velbusBridge) {
         super(velbusBridge);
@@ -136,12 +150,96 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
         if (timeUpdateJob != null) {
             timeUpdateJob.cancel(true);
         }
+        this.timeUpdateJob = null;
         disconnect();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // There is nothing to handle in the bridge handler
+        if (isAlarmClockChannel(channelUID)) {
+            byte alarmNumber = determineAlarmNumber(channelUID);
+            VelbusClockAlarm alarmClock = alarmClockConfiguration.getAlarmClock(alarmNumber);
+
+            alarmClock.setLocal(false);
+
+            switch (channelUID.getIdWithoutGroup()) {
+                case CHANNEL_CLOCK_ALARM1_ENABLED:
+                case CHANNEL_CLOCK_ALARM2_ENABLED: {
+                    if (command instanceof OnOffType) {
+                        boolean enabled = command == OnOffType.ON;
+                        alarmClock.setEnabled(enabled);
+                    }
+                    break;
+                }
+                case CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR:
+                case CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupHour = decimalCommand.byteValue();
+                        alarmClock.setWakeupHour(wakeupHour);
+                    }
+                    break;
+                }
+                case CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE:
+                case CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte wakeupMinute = decimalCommand.byteValue();
+                        alarmClock.setWakeupMinute(wakeupMinute);
+                    }
+                    break;
+                }
+                case CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR:
+                case CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeHour = decimalCommand.byteValue();
+                        alarmClock.setBedtimeHour(bedTimeHour);
+                    }
+                    break;
+                }
+                case CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE:
+                case CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        byte bedTimeMinute = decimalCommand.byteValue();
+                        alarmClock.setBedtimeMinute(bedTimeMinute);
+                    }
+                    break;
+                }
+            }
+
+            if (alarmNumber == 1) {
+                lastUpdateAlarm1TimeMillis = System.currentTimeMillis();
+            } else {
+                lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
+            }
+
+            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket((byte) 0x00, alarmNumber,
+                    alarmClock);
+            byte[] packetBytes = packet.getBytes();
+
+            // Schedule the send of the packet to see if there is another update in less than 10 secondes (reduce
+            // flooding of the bus)
+            scheduler.schedule(() -> {
+                sendAlarmPacket(alarmNumber, packetBytes);
+            }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
+        } else {
+            logger.debug("The command '{}' is not supported by this handler.", command.getClass());
+        }
+    }
+
+    public synchronized void sendAlarmPacket(int alarmNumber, byte[] packetBytes) {
+        long timeSinceLastUpdate;
+
+        if (alarmNumber == 1) {
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm1TimeMillis;
+        } else {
+            timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateAlarm2TimeMillis;
+        }
+
+        // If a value of the alarm has been updated, discard this old update
+        if (timeSinceLastUpdate < DELAY_SEND_CLOCK_ALARM_UPDATE) {
+            return;
+        }
+
+        sendPacket(packetBytes);
     }
 
     public synchronized void sendPacket(byte[] packet) {
@@ -264,7 +362,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(VelbusThingDiscoveryService.class);
+        return Set.of(VelbusThingDiscoveryService.class);
     }
 
     public void setDefaultPacketListener(VelbusPacketListener velbusPacketListener) {
@@ -281,5 +379,28 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
 
     public void unregisterRelayStatusListener(byte address) {
         packetListeners.remove(Byte.valueOf(address));
+    }
+
+    protected boolean isAlarmClockChannel(ChannelUID channelUID) {
+        return CHANNEL_GROUP_BRIDGE_CLOCK_ALARM.equals(channelUID.getGroupId());
+    }
+
+    protected byte determineAlarmNumber(ChannelUID channelUID) {
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_CLOCK_ALARM1_ENABLED:
+            case CHANNEL_CLOCK_ALARM1_WAKEUP_HOUR:
+            case CHANNEL_CLOCK_ALARM1_WAKEUP_MINUTE:
+            case CHANNEL_CLOCK_ALARM1_BEDTIME_HOUR:
+            case CHANNEL_CLOCK_ALARM1_BEDTIME_MINUTE:
+                return 1;
+            case CHANNEL_CLOCK_ALARM2_ENABLED:
+            case CHANNEL_CLOCK_ALARM2_WAKEUP_HOUR:
+            case CHANNEL_CLOCK_ALARM2_WAKEUP_MINUTE:
+            case CHANNEL_CLOCK_ALARM2_BEDTIME_HOUR:
+            case CHANNEL_CLOCK_ALARM2_BEDTIME_MINUTE:
+                return 2;
+        }
+
+        throw new IllegalArgumentException("The given channelUID is not an alarm clock channel: " + channelUID);
     }
 }

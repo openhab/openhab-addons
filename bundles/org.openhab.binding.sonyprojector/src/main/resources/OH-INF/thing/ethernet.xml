@@ -8,9 +8,9 @@
 	<thing-type id="ethernetconnection">
 		<label>Sony Ethernet Connection</label>
 		<description>Ethernet connection to the Sony projector using PJ Talk</description>
-
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="input" typeId="input"/>
 			<channel id="calibrationpreset" typeId="calibrationpreset"/>
@@ -40,22 +40,27 @@
 			<channel id="overscan" typeId="overscan"/>
 			<channel id="pictureposition" typeId="pictureposition"/>
 			<channel id="lampusetime" typeId="lampusetime"/>
+			<channel id="ircommand" typeId="ircommand"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host name or IP address of the projector</description>
+				<description>Host name or IP address of the projector.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
-				<description>Communication port. Default is 53484</description>
+				<description>Communication port. Default is 53484.</description>
 				<default>53484</default>
 			</parameter>
 			<parameter name="model" type="text" required="false">
 				<label>Model</label>
-				<description>Projector model to be controlled. Default is AUTO</description>
+				<description>Projector model to be controlled. Default is AUTO.</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="AUTO">Automatic</option>
@@ -96,7 +101,7 @@
 			</parameter>
 			<parameter name="community" type="text" required="false">
 				<label>Community</label>
-				<description>Community of the projector. Length must be 4 characters. Default is SONY</description>
+				<description>Community of the projector. Length must be 4 characters. Default is SONY.</description>
 				<default>SONY</default>
 				<advanced>true</advanced>
 			</parameter>

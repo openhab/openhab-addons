@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.core.library.unit.SIUnits.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.TooManyListenersException;
@@ -28,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.meteostick.internal.MeteostickBindingConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  */
 public class MeteostickBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private final Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 
@@ -223,6 +223,10 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
     private class ReceiveThread extends Thread implements SerialPortEventListener {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
+        public ReceiveThread() {
+            super(String.format("OH-binding-%s-%s", MeteostickBindingConstants.BINDING_ID, "Receiver"));
+        }
+
         @Override
         public void serialEvent(SerialPortEvent arg0) {
             try {
@@ -256,7 +260,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
                     if (rxByte == 13 && rxCnt > 0) {
                         String inputString = new String(rxPacket, 0, rxCnt);
                         logger.debug("MeteoStick received: {}", inputString);
-                        String p[] = inputString.split("\\s+");
+                        String[] p = inputString.split("\\s+");
 
                         switch (p[0]) {
                             case "B": // Barometer

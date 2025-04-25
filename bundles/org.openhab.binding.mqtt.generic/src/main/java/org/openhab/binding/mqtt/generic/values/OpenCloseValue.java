@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,7 +35,7 @@ public class OpenCloseValue extends Value {
      * Creates a contact Open/Close type.
      */
     public OpenCloseValue() {
-        super(CoreItemFactory.CONTACT, Stream.of(OpenClosedType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
         this.openString = OpenClosedType.OPEN.name();
         this.closeString = OpenClosedType.CLOSED.name();
     }
@@ -48,34 +47,34 @@ public class OpenCloseValue extends Value {
      * @param closeValue The OFF value string. This will be compared to MQTT messages.
      */
     public OpenCloseValue(@Nullable String openValue, @Nullable String closeValue) {
-        super(CoreItemFactory.CONTACT, Stream.of(OpenClosedType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
         this.openString = openValue == null ? OpenClosedType.OPEN.name() : openValue;
         this.closeString = closeValue == null ? OpenClosedType.CLOSED.name() : closeValue;
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
-        if (command instanceof OpenClosedType) {
-            state = (OpenClosedType) command;
+    public OpenClosedType parseCommand(Command command) throws IllegalArgumentException {
+        if (command instanceof OpenClosedType openClosed) {
+            return openClosed;
         } else {
             final String updatedValue = command.toString();
             if (openString.equals(updatedValue)) {
-                state = OpenClosedType.OPEN;
+                return OpenClosedType.OPEN;
             } else if (closeString.equals(updatedValue)) {
-                state = OpenClosedType.CLOSED;
+                return OpenClosedType.CLOSED;
             } else {
-                state = OpenClosedType.valueOf(updatedValue);
+                return OpenClosedType.valueOf(updatedValue);
             }
         }
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
             formatPattern = "%s";
         }
 
-        return String.format(formatPattern, state == OpenClosedType.OPEN ? openString : closeString);
+        return String.format(formatPattern, command == OpenClosedType.OPEN ? openString : closeString);
     }
 }

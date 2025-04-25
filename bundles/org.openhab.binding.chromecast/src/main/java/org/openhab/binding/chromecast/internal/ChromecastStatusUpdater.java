@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,9 @@ public class ChromecastStatusUpdater {
     private @Nullable String appSessionId;
     private PercentType volume = PercentType.ZERO;
 
+    // Null is valid value for last duration
+    private @Nullable Double lastDuration = null;
+
     public ChromecastStatusUpdater(Thing thing, ChromecastHandler callback) {
         this.thing = thing;
         this.callback = callback;
@@ -80,6 +83,10 @@ public class ChromecastStatusUpdater {
 
     public PercentType getVolume() {
         return volume;
+    }
+
+    public @Nullable Double getLastDuration() {
+        return lastDuration;
     }
 
     public @Nullable String getAppSessionId() {
@@ -117,7 +124,7 @@ public class ChromecastStatusUpdater {
             name = new StringType(application.name);
             id = new StringType(application.id);
             statusText = new StringType(application.statusText);
-            idling = application.isIdleScreen ? OnOffType.ON : OnOffType.OFF;
+            idling = OnOffType.from(application.isIdleScreen);
         }
 
         callback.updateState(CHANNEL_APP_NAME, name);
@@ -135,7 +142,7 @@ public class ChromecastStatusUpdater {
         this.volume = value;
 
         callback.updateState(CHANNEL_VOLUME, value);
-        callback.updateState(CHANNEL_MUTE, volume.muted ? OnOffType.ON : OnOffType.OFF);
+        callback.updateState(CHANNEL_MUTE, OnOffType.from(volume.muted));
     }
 
     public void updateMediaStatus(final @Nullable MediaStatus mediaStatus) {
@@ -150,30 +157,32 @@ public class ChromecastStatusUpdater {
             return;
         }
 
-        switch (mediaStatus.playerState) {
-            case IDLE:
-                break;
-            case PAUSED:
-                callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            case BUFFERING:
-            case LOADING:
-            case PLAYING:
-                callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
-                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            default:
-                logger.debug("Unknown media status: {}", mediaStatus.playerState);
-                break;
+        if (mediaStatus.playerState != null) {
+            switch (mediaStatus.playerState) {
+                case IDLE:
+                    break;
+                case PAUSED:
+                    callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                    callback.updateState(CHANNEL_STOP, OnOffType.OFF);
+                    break;
+                case BUFFERING:
+                case LOADING:
+                case PLAYING:
+                    callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                    callback.updateState(CHANNEL_STOP, OnOffType.OFF);
+                    break;
+                default:
+                    logger.debug("Unknown media status: {}", mediaStatus.playerState);
+                    break;
+            }
         }
 
         callback.updateState(CHANNEL_CURRENT_TIME, new QuantityType<>(mediaStatus.currentTime, Units.SECOND));
 
         // If we're playing, paused or buffering but don't have any MEDIA information don't null everything out.
         Media media = mediaStatus.media;
-        if (media == null && (mediaStatus.playerState == PLAYING || mediaStatus.playerState == PAUSED
-                || mediaStatus.playerState == BUFFERING)) {
+        if (media == null && (mediaStatus.playerState == null || mediaStatus.playerState == PLAYING
+                || mediaStatus.playerState == PAUSED || mediaStatus.playerState == BUFFERING)) {
             return;
         }
 
@@ -186,6 +195,7 @@ public class ChromecastStatusUpdater {
         if (media != null) {
             metadataType = media.getMetadataType().name();
 
+            lastDuration = media.duration;
             // duration can be null when a new song is about to play.
             if (media.duration != null) {
                 duration = new QuantityType<>(media.duration, Units.SECOND);
@@ -259,11 +269,17 @@ public class ChromecastStatusUpdater {
 
     private @Nullable RawType downloadImage(String url) {
         logger.debug("Trying to download the content of URL '{}'", url);
-        RawType downloadedImage = HttpUtil.downloadImage(url);
-        if (downloadedImage == null) {
-            logger.debug("Failed to download the content of URL '{}'", url);
+        try {
+            RawType downloadedImage = HttpUtil.downloadImage(url);
+            if (downloadedImage == null) {
+                logger.debug("Failed to download the content of URL '{}'", url);
+            }
+            return downloadedImage;
+        } catch (IllegalArgumentException e) {
+            // we catch this exception to avoid confusion errors in the log file
+            // see https://github.com/openhab/openhab-core/issues/2494#issuecomment-970162025
         }
-        return downloadedImage;
+        return null;
     }
 
     private @Nullable RawType downloadImageFromCache(String url) {
@@ -302,8 +318,8 @@ public class ChromecastStatusUpdater {
             state = new DecimalType(((Integer) value).longValue());
         } else if (value instanceof String) {
             state = new StringType(value.toString());
-        } else if (value instanceof ZonedDateTime) {
-            state = new DateTimeType((ZonedDateTime) value);
+        } else if (value instanceof ZonedDateTime datetime) {
+            state = new DateTimeType(datetime);
         } else {
             state = UnDefType.UNDEF;
             logger.warn("Update channel {}: Unsupported value type {}", channelUID, value.getClass().getSimpleName());

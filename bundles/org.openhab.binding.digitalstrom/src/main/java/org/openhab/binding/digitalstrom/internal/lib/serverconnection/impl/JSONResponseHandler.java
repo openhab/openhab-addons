@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link JSONResponseHandler} checks an digitalSTROM-JSON response and can parse it to an {@link JsonObject}.
+ * The {@link JSONResponseHandler} checks a digitalSTROM-JSON response and can parse it to a {@link JsonObject}.
  *
  * @author Alexander Betker - Initial contribution
  * @author Alex Maier - Initial contribution
@@ -61,11 +61,11 @@ public class JSONResponseHandler {
      * @return jsonObject
      */
     public static JsonObject toJsonObject(String jsonResponse) {
-        if (jsonResponse != null && !jsonResponse.trim().equals("")) {
+        if (jsonResponse != null && !"".equals(jsonResponse.trim())) {
             try {
-                return (JsonObject) new JsonParser().parse(jsonResponse);
+                return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {
-                LOGGER.error("An JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
+                LOGGER.error("A JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
             }
         }
         return null;

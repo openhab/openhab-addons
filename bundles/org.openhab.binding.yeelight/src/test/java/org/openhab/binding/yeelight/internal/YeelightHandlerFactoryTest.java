@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,13 +45,13 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 1
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class YeelightHandlerFactoryTest {
 
     private static final List<Object[]> TESTS = Arrays.asList(
             new Object[][] { { "dolphin", YeelightWhiteHandler.class }, { "ct_bulb", YeelightWhiteHandler.class },
                     { "wonder", YeelightColorHandler.class }, { "stripe", YeelightStripeHandler.class },
-                    { "ceiling", YeelightCeilingHandler.class }, { "ceiling3", YeelightCeilingHandler.class },
+                    { "ceiling", YeelightCeilingHandler.class }, { "ceiling3", YeelightCeilingWithNightHandler.class },
                     { "ceiling1", YeelightCeilingWithNightHandler.class }, { "desklamp", YeelightCeilingHandler.class },
                     { "ceiling4", YeelightCeilingWithAmbientHandler.class }, { "unknown", null } });
 

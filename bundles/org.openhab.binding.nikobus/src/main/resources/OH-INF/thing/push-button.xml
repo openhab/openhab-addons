@@ -11,6 +11,7 @@
 
 		<label>Push Button</label>
 		<description>A single push button</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 
 		<channels>
 			<channel id="button" typeId="button"/>
@@ -38,7 +39,7 @@
 		<kind>trigger</kind>
 		<label>Trigger Filter Channel</label>
 		<event/>
-		<config-description-ref uri="push-button:trigger-filter:config"/>
+		<config-description-ref uri="channel-type:nikobus:trigger-filter"/>
 	</channel-type>
 
 	<channel-type id="trigger-button">
@@ -50,7 +51,7 @@
 				<option value="LONG_PRESSED">long pressed</option>
 			</options>
 		</event>
-		<config-description-ref uri="push-button:trigger-button:config"/>
+		<config-description-ref uri="channel-type:nikobus:trigger-button"/>
 	</channel-type>
 
 </thing:thing-descriptions>

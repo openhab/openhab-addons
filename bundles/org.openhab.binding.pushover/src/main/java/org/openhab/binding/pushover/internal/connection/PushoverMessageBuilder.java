@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.pushover.internal.connection;
 
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,10 @@ import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.PathContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
+import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +53,7 @@ public class PushoverMessageBuilder {
     private static final String MESSAGE_KEY_PRIORITY = "priority";
     private static final String MESSAGE_KEY_RETRY = "retry";
     private static final String MESSAGE_KEY_EXPIRE = "expire";
+    private static final String MESSAGE_KEY_TTL = "ttl";
     private static final String MESSAGE_KEY_URL = "url";
     private static final String MESSAGE_KEY_URL_TITLE = "url_title";
     private static final String MESSAGE_KEY_SOUND = "sound";
@@ -55,7 +64,7 @@ public class PushoverMessageBuilder {
     private static final int MAX_MESSAGE_LENGTH = 1024;
     private static final int MAX_TITLE_LENGTH = 250;
     private static final int MAX_DEVICE_LENGTH = 25;
-    private static final List<Integer> VALID_PRIORITY_LIST = Arrays.asList(-2, -1, 0, 1, 2);
+    private static final List<Integer> VALID_PRIORITY_LIST = List.of(-2, -1, 0, 1, 2);
     private static final int DEFAULT_PRIORITY = 0;
     public static final int EMERGENCY_PRIORITY = 2;
     private static final int MIN_RETRY_SECONDS = 30;
@@ -72,27 +81,28 @@ public class PushoverMessageBuilder {
     private int priority = DEFAULT_PRIORITY;
     private int retry = 300;
     private int expire = 3600;
+    private Duration ttl = Duration.ZERO;
     private @Nullable String url;
     private @Nullable String urlTitle;
     private @Nullable String sound;
     private @Nullable String attachment;
-    private String contentType = DEFAULT_CONTENT_TYPE;
+    private @Nullable String contentType;
     private boolean html = false;
     private boolean monospace = false;
 
-    private PushoverMessageBuilder(String apikey, String user) throws PushoverConfigurationException {
+    private PushoverMessageBuilder(String apikey, String user) throws ConfigurationException {
         body.addFieldPart(MESSAGE_KEY_TOKEN, new StringContentProvider(apikey), null);
         body.addFieldPart(MESSAGE_KEY_USER, new StringContentProvider(user), null);
     }
 
     public static PushoverMessageBuilder getInstance(@Nullable String apikey, @Nullable String user)
-            throws PushoverConfigurationException {
-        if (apikey == null || apikey.isEmpty()) {
-            throw new PushoverConfigurationException("@text/offline.conf-error-missing-apikey");
+            throws ConfigurationException {
+        if (apikey == null || apikey.isBlank()) {
+            throw new ConfigurationException(TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY);
         }
 
-        if (user == null || user.isEmpty()) {
-            throw new PushoverConfigurationException("@text/offline.conf-error-missing-user");
+        if (user == null || user.isBlank()) {
+            throw new ConfigurationException(TEXT_OFFLINE_CONF_ERROR_MISSING_USER);
         }
 
         return new PushoverMessageBuilder(apikey, user);
@@ -125,6 +135,11 @@ public class PushoverMessageBuilder {
 
     public PushoverMessageBuilder withExpire(int expire) {
         this.expire = expire;
+        return this;
+    }
+
+    public PushoverMessageBuilder withTTL(Duration ttl) {
+        this.ttl = ttl;
         return this;
     }
 
@@ -163,7 +178,8 @@ public class PushoverMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() {
+    public ContentProvider build() throws CommunicationException {
+        String message = this.message;
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
@@ -172,6 +188,7 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_MESSAGE, new StringContentProvider(message), null);
         }
 
+        String title = this.title;
         if (title != null) {
             if (title.length() > MAX_TITLE_LENGTH) {
                 throw new IllegalArgumentException(String
@@ -180,6 +197,7 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_TITLE, new StringContentProvider(title), null);
         }
 
+        String device = this.device;
         if (device != null) {
             if (device.length() > MAX_DEVICE_LENGTH) {
                 logger.warn("Skip 'device' as it is longer than {} characters. Got: {}.", MAX_DEVICE_LENGTH, device);
@@ -217,6 +235,14 @@ public class PushoverMessageBuilder {
             }
         }
 
+        if (!ttl.isZero()) {
+            if (priority == EMERGENCY_PRIORITY) {
+                logger.warn("TTL value of {} will be ignored for emergency priority.", ttl);
+            }
+            body.addFieldPart(MESSAGE_KEY_TTL, new StringContentProvider(String.valueOf(ttl.getSeconds())), null);
+        }
+
+        String url = this.url;
         if (url != null) {
             if (url.length() > MAX_URL_LENGTH) {
                 throw new IllegalArgumentException(String
@@ -224,6 +250,7 @@ public class PushoverMessageBuilder {
             }
             body.addFieldPart(MESSAGE_KEY_URL, new StringContentProvider(url), null);
 
+            String urlTitle = this.urlTitle;
             if (urlTitle != null) {
                 if (urlTitle.length() > MAX_URL_TITLE_LENGTH) {
                     throw new IllegalArgumentException(
@@ -238,17 +265,32 @@ public class PushoverMessageBuilder {
             body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
         }
 
+        String attachment = this.attachment;
         if (attachment != null) {
-            File file = new File(attachment);
-            if (!file.exists()) {
-                throw new IllegalArgumentException(
-                        String.format("Skip sending the message as file '%s' does not exist.", attachment));
-            }
-            try {
-                body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
-                        new PathContentProvider(contentType, file.toPath()), null);
-            } catch (IOException e) {
-                throw new IllegalArgumentException(String.format("Skip sending the message: %s", e.getMessage()));
+            if (attachment.startsWith("http")) { // support data HTTP(S) scheme
+                RawType rawImage = HttpUtil.downloadImage(attachment, 10000);
+                if (rawImage == null) {
+                    throw new IllegalArgumentException(
+                            String.format("Skip sending the message as content '%s' does not exist.", attachment));
+                }
+                addFilePart(createTempFile(rawImage.getBytes()),
+                        contentType == null ? rawImage.getMimeType() : contentType);
+            } else if (attachment.startsWith("data:")) { // support data URI scheme
+                try {
+                    RawType rawImage = RawType.valueOf(attachment);
+                    addFilePart(createTempFile(rawImage.getBytes()),
+                            contentType == null ? rawImage.getMimeType() : contentType);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(String
+                            .format("Skip sending the message because data URI scheme is invalid: %s", e.getMessage()));
+                }
+            } else {
+                File file = new File(attachment);
+                if (!file.exists()) {
+                    throw new IllegalArgumentException(
+                            String.format("Skip sending the message as file '%s' does not exist.", attachment));
+                }
+                addFilePart(file.toPath(), contentType);
             }
         }
 
@@ -259,5 +301,26 @@ public class PushoverMessageBuilder {
         }
 
         return body;
+    }
+
+    private Path createTempFile(byte[] data) throws CommunicationException {
+        try {
+            Path tmpFile = Files.createTempFile("pushover-", ".tmp");
+            return Files.write(tmpFile, data);
+        } catch (IOException e) {
+            logger.debug("IOException occurred while creating temp file - skip sending the message: {}", e.getMessage(),
+                    e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
+        }
+    }
+
+    private void addFilePart(Path path, @Nullable String contentType) throws CommunicationException {
+        try {
+            body.addFilePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
+                    new PathContentProvider(contentType == null ? DEFAULT_CONTENT_TYPE : contentType, path), null);
+        } catch (IOException e) {
+            logger.debug("IOException occurred while adding content - skip sending the message: {}", e.getMessage(), e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
+        }
     }
 }

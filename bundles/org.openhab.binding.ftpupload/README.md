@@ -18,10 +18,11 @@ Automatic discovery is not supported.
 
 The binding has the following configuration options:
 
-| Parameter   | Name         | Description                                                                                                            | Required | Default value |
-|-------------|--------------|------------------------------------------------------------------------------------------------------------------------|----------|---------------|
-| port        | TCP Port     | TCP port of the FTP server                                                                                             | no       | 2121          |
-| idleTimeout | Idle timeout | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled. | no       | 60            |
+| Parameter    | Name          | Description                                                                                                                                                                                                                                                                                                               | Required | Default value |
+|--------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| port         | TCP Port      | TCP port of the FTP server                                                                                                                                                                                                                                                                                                | no       | 2121          |
+| idleTimeout  | Idle timeout  | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled.                                                                                                                                                                                                    | no       | 60            |
+| passivePorts | Passive Ports | A string of passive ports, can contain a single port (as an integer), multiple ports seperated by commas (e.g. 123,124,125) or ranges of ports, including open ended ranges (e.g. 123-125, 30000-, -1023). Combinations for single ports and ranges is also supported. Empty (default) allows all ports as passive ports. | no       |               |
 
 ## Thing Configuration
 
@@ -31,7 +32,6 @@ The `ftpupload` Thing has the following configuration parameters:
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------|----------|---------------|
 | userName                    | User name to login to the FTP server. User name is used to identify the Thing, so it should be unique per Thing.    | yes      |               |
 | password                    | Password to login to the FTP server.                                                                                | yes      |               |
-
 
 ## Channels
 
@@ -53,7 +53,6 @@ Image channel supports following options:
 |-------------|--------------|--------------------------------------------------------------------------|----------|---------------|
 | filename    | Filename     | Filename to match received files. Supports regular expression patterns.  | yes      | .*            |
 
-
 ### Trigger Channels
 
 | Channel Type ID | Options                | Description                                         |
@@ -63,7 +62,7 @@ Image channel supports following options:
 When an image file is uploaded to FTP server, the binding tries to find the trigger channel whose filename matches the upload image filename.
 If no match is found, no channel is updated.
 The filename parameter supports regular expression patterns.
-See more details in the Things example. 
+See more details in the Things example.
 
 Trigger channels supports following options:
 
@@ -75,7 +74,7 @@ Trigger channels supports following options:
 
 Things:
 
-```
+```java
 Thing ftpupload:imagereceiver:images1 [ userName="test1", password="12345" ] {
 
 Thing ftpupload:imagereceiver:images2 [ userName="test2", password="12345" ] {
@@ -92,29 +91,29 @@ Thing ftpupload:imagereceiver:images2 [ userName="test2", password="12345" ] {
         Trigger String : my_image_trigger2 [
             filename="test.jpg"
         ]
-}    
+}
 ```
 
 Items:
 
-```
+```java
 Image  Image1 { channel="ftpupload:imagereceiver:images1:image" }
 Image  Image2 { channel="ftpupload:imagereceiver:images2:my_image1" }
 ```
 
 Rules:
 
-```
+```java
 rule "example trigger rule 1"
 when
-    Channel 'ftpupload:imagereceiver:images1:image-received' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:images1:image-received' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Image received")
 end
 
 rule "example trigger rule 2"
 when
-    Channel 'ftpupload:imagereceiver:images2:my_image_trigger1' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:images2:my_image_trigger1' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Image received")
 end
@@ -123,7 +122,7 @@ end
 
 Sitemap:
 
-```
+```perl
 Frame label="FTP images" {
     Image item=Image1
     Image item=Image2
@@ -136,22 +135,22 @@ The binding can be used to receive images from network cameras that send images 
 
 Things:
 
-```
+```java
 Thing ftpupload:imagereceiver:garagecamera [ userName="garage", password="12345" ]
 ```
 
 Items:
 
-```
+```java
 Image  Garage_NetworkCamera_Motion_Image { channel="ftpupload:imagereceiver:garagecamera:image" }
 ```
 
 Rules:
 
-```
+```java
 rule "example trigger rule"
 when
-    Channel 'ftpupload:imagereceiver:garagecamera:image-received' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:garagecamera:image-received' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Garage motion detected")
 end
@@ -159,7 +158,7 @@ end
 
 Sitemap:
 
-```
+```perl
 Frame label="Garage network camera" icon="camera" {
     Image item=Garage_NetworkCamera_Motion_Image
 }
@@ -169,13 +168,13 @@ Frame label="Garage network camera" icon="camera" {
 
 For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the Karaf console:
 
-```
+```shell
 log:set DEBUG org.apache.ftpserver
 ```
 
 and set back to default level:
 
-```
+```shell
 log:set DEFAULT org.apache.ftpserver
 ```
 

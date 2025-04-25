@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,13 @@
 package org.openhab.binding.epsonprojector.internal;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +37,7 @@ import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +67,10 @@ public class EpsonProjectorDevice {
             94, 99, 104, 109, 114, 120, 125, 130, 135, 141, 146, 151, 156, 161, 167, 172, 177, 182, 188, 193, 198, 203,
             208, 214, 219, 224, 229, 235, 240, 245, 250 };
 
+    private static final int[] MAP40 = new int[] { 0, 6, 12, 18, 24, 31, 37, 43, 49, 56, 62, 68, 74, 81, 87, 93, 99,
+            106, 112, 118, 124, 131, 137, 143, 149, 156, 162, 168, 174, 181, 187, 193, 199, 206, 212, 218, 224, 231,
+            237, 243, 249 };
+
     private static final int[] MAP20 = new int[] { 0, 12, 24, 36, 48, 60, 73, 85, 97, 109, 121, 134, 146, 158, 170, 182,
             195, 207, 219, 231, 243 };
 
@@ -78,6 +87,7 @@ public class EpsonProjectorDevice {
 
     private static final String ON = "ON";
     private static final String ERR = "ERR";
+    private static final String IMEVENT = "IMEVENT";
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
@@ -118,7 +128,7 @@ public class EpsonProjectorDevice {
         response = response.replace("\r:", "");
         logger.debug("Response: '{}'", response);
 
-        if (ERR.equals(response)) {
+        if (ERR.equals(response) || response.startsWith(IMEVENT)) {
             throw new EpsonProjectorCommandException("Error response received for command: " + query);
         }
 
@@ -173,7 +183,12 @@ public class EpsonProjectorDevice {
             str = subStr[0];
         }
 
-        return Integer.parseInt(str, radix);
+        try {
+            return Integer.parseInt(str, radix);
+        } catch (NumberFormatException nfe) {
+            throw new EpsonProjectorCommandException(
+                    "Unable to parse response '" + str + "' as Integer for command: " + query);
+        }
     }
 
     protected int queryInt(String query, int timeout) throws EpsonProjectorCommandException, EpsonProjectorException {
@@ -206,6 +221,7 @@ public class EpsonProjectorDevice {
     public void disconnect() throws EpsonProjectorException {
         connection.disconnect();
         connected = false;
+        ready = true;
         ScheduledFuture<?> timeoutJob = this.timeoutJob;
         if (timeoutJob != null) {
             timeoutJob.cancel(true);
@@ -521,19 +537,36 @@ public class EpsonProjectorDevice {
     /*
      * Volume
      */
-    public int getVolume() throws EpsonProjectorCommandException, EpsonProjectorException {
-        int vol = queryInt("VOL?");
-        for (int i = 0; i < MAP20.length; i++) {
-            if (vol == MAP20[i]) {
+    public int getVolume(int maxVolume) throws EpsonProjectorCommandException, EpsonProjectorException {
+        int vol = this.queryInt("VOL?");
+        switch (maxVolume) {
+            case 20:
+                return this.getMappingValue(MAP20, vol);
+            case 40:
+                return this.getMappingValue(MAP40, vol);
+        }
+        return 0;
+    }
+
+    private int getMappingValue(int[] map, int value) {
+        for (int i = 0; i < map.length; i++) {
+            if (value == map[i]) {
                 return i;
             }
         }
         return 0;
     }
 
-    public void setVolume(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
-        if (value >= 0 && value <= 20) {
-            sendCommand(String.format("VOL %d", MAP20[value]));
+    public void setVolume(int value, int maxVolume) throws EpsonProjectorCommandException, EpsonProjectorException {
+        if (value >= 0 && value <= maxVolume) {
+            switch (maxVolume) {
+                case 20:
+                    this.sendCommand(String.format("VOL %d", MAP20[value]));
+                    return;
+                case 40:
+                    this.sendCommand(String.format("VOL %d", MAP40[value]));
+                    return;
+            }
         }
     }
 
@@ -621,7 +654,31 @@ public class EpsonProjectorDevice {
      * Error Code Description
      */
     public String getErrorString() throws EpsonProjectorCommandException, EpsonProjectorException {
-        int err = queryInt("ERR?");
+        int err = queryHexInt("ERR?");
         return ErrorMessage.forCode(err);
+    }
+
+    /*
+     * Source List
+     */
+    public List<StateOption> getSourceList() throws EpsonProjectorException {
+        final List<StateOption> sourceListOptions = new ArrayList<>();
+
+        try {
+            // example: 30 HDMI1 A0 HDMI2
+            final String[] sources = queryString("SOURCELIST?").split(" ");
+
+            if (sources.length % 2 != 0) {
+                logger.debug("getSourceList(): {} has odd number of elements!", Arrays.toString(sources));
+            } else if (sources[0].length() != 2) {
+                logger.debug("getSourceList(): {} has invalid first entry", Arrays.toString(sources));
+            } else {
+                IntStream.range(0, sources.length / 2)
+                        .forEach(i -> sourceListOptions.add(new StateOption(sources[i * 2], sources[i * 2 + 1])));
+            }
+        } catch (EpsonProjectorCommandException e) {
+            logger.debug("getSourceList(): {}", e.getMessage());
+        }
+        return sourceListOptions;
     }
 }

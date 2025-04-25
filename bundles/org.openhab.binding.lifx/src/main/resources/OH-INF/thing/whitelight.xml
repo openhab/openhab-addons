@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="abstemperature" typeId="system.color-temperature-abs"/>
 			<channel id="signalstrength" typeId="system.signal-strength"/>
 		</channels>
 		<representation-property>macAddress</representation-property>

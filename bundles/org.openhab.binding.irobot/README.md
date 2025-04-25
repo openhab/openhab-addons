@@ -1,57 +1,69 @@
 # iRobot Binding
 
-This binding provides integration of products by iRobot company (http://www.irobot.com/). It is currently developed to support Roomba 900
-series robotic vacuum cleaner with built-in Wi-Fi module. The binding interfaces to the robot directly without any need for a dedicated MQTT server.
+This binding provides integration of products by iRobot company (<https://www.irobot.com/>). It is currently developed
+to support Roomba vacuum cleaner/mopping robots with built-in Wi-Fi module. The binding interfaces to the robot directly
+without any need for a dedicated MQTT server.
 
 ## Supported Things
 
-- iRobot Roomba robotic vacuum cleaner (https://www.irobot.com/roomba). The binding has been developed and tested with Roomba 930.
-- iRobot Braava has also been reported to (partially) work. Automatic configuration and password retrieval does not work. Add the robot manually as Roomba and use external tools (like Dorita980) in order to retrieve the password.
+- iRobot Roomba robotic vacuum cleaner (<https://www.irobot.com/roomba>).
+- iRobot Braava has also been reported to (partially) work.
+- In general, the channel list is far from complete. There is a lot to do now.
 
 ## Discovery
 
-Roombas on the same network will be discovered automatically, however in order to connect to them a password is needed. The
-password is a machine-generated string, which is unfortunately not exposed by the original iRobot smartphone application, but
-it can be downloaded from the robot itself. If no password is configured, the Thing enters "CONFIGURATION PENDING" state.
-Now you need to perform authorization by pressing and holding the HOME button on your robot until it plays series of tones
-(approximately 2 seconds). The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically
-receive the password and go ONLINE.
+Roombas on the same network will be discovered automatically, however in order to connect to them a password is needed.
+The password is a machine-generated string, which is unfortunately not exposed by the original iRobot smartphone application, but it can be downloaded from the robot itself.
+If no password is configured, the Thing enters "CONFIGURATION PENDING" state.
+Now you need to perform authorization by pressing and holding the HOME/DOCK button on your robot until it plays series of tones (approximately 2 seconds).
+The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically receive the password and go ONLINE.
 
-After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding. It's not
-known, however, whether the password is eternal or can change during factory reset.
+After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding.
+It's not known, however, whether the password is eternal or can change during factory reset.
+If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
+You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password.
+
+**NOTE:** For file-based configuration, storing the password is essential.
+Once the password for the Thing is populated in the Code tab in the UI, you must copy that into the [config files](#irobotthings-example) in order for it to persist.
+Without this, the Roomba will appear to work temporarily.
+However, as soon as the Things file is edited, the password will be lost, and the button will need to be pressed again.
 
 ## Thing Configuration
 
+| Parameter | Type    | Required  | Default  | Description       |
+| --------- | :-----: | :-------: | :------: | ----------------- |
+| ipaddress | String  | Yes       |          | Robot IP address  |
+| blid      | String  | No        |          | Robot ID          |
+| password  | String  | No        |          | Robot Password    |
 
-| Parameter | Meaning                                |
-|-----------|----------------------------------------|
-| ipaddress | IP address (or hostname) of your robot |
-| password  | Password for the robot                 |
+All parameters will be autodiscovered. If using textual configuration, then `ipaddress` shall be specified.
 
 ## Channels
 
-| channel       | type   | description                                        | Read-only |
-|---------------|--------|----------------------------------------------------|-----------|
-| command       | String | Command to execute: clean, spot, dock, pause, stop | N |
-| cycle         | String | Current mission: none, clean, spot                 | Y |
-| phase         | String | Current phase of the mission; see below.           | Y |
-| battery       | Number | Battery charge in percents                         | Y |
-| bin           | String | Bin status: ok, removed, full                      | Y |
-| error         | String | Error code; see below                              | Y |
-| rssi          | Number | Wi-Fi Received Signal Strength indicator in db     | Y |
-| snr           | Number | Wi-Fi Signal to noise ratio                        | Y |
-| sched_mon     | Switch | Scheduled clean enabled for Monday                 | N |
-| sched_tue     | Switch | Scheduled clean enabled for Tuesday                | N |
-| sched_wed     | Switch | Scheduled clean enabled for Wednesday              | N |
-| sched_thu     | Switch | Scheduled clean enabled for Thursday               | N |
-| sched_fri     | Switch | Scheduled clean enabled for Friday                 | N |
-| sched_sat     | Switch | Scheduled clean enabled for Saturday               | N |
-| sched_sun     | Switch | Scheduled clean enabled for Sunday                 | N |
+| channel       | type   | description                                                               | Read-only |
+|---------------|--------|---------------------------------------------------------------------------|-----------|
+| command       | String | Command to execute: clean, spot, dock, pause, stop                        | N |
+| cycle         | String | Current mission: none, clean, spot                                        | Y |
+| phase         | String | Current phase of the mission; see below.                                  | Y |
+| battery       | Number | Battery charge in percents                                                | Y |
+| bin           | String | Bin status: ok, removed, full                                             | Y |
+| error         | String | Error code; see below                                                     | Y |
+| rssi          | Number | Wi-Fi Received Signal Strength indicator in db                            | Y |
+| snr           | Number | Wi-Fi Signal to noise ratio                                               | Y |
+| sched_mon     | Switch | Scheduled clean enabled for Monday                                        | N |
+| sched_tue     | Switch | Scheduled clean enabled for Tuesday                                       | N |
+| sched_wed     | Switch | Scheduled clean enabled for Wednesday                                     | N |
+| sched_thu     | Switch | Scheduled clean enabled for Thursday                                      | N |
+| sched_fri     | Switch | Scheduled clean enabled for Friday                                        | N |
+| sched_sat     | Switch | Scheduled clean enabled for Saturday                                      | N |
+| sched_sun     | Switch | Scheduled clean enabled for Sunday                                        | N |
 | schedule      | Number | Schedule bitmask for use in scripts. 7 bits, bit #0 corresponds to Sunday | N |
-| edge_clean    | Switch | Seek out and clean along walls and furniture legs  | N |
-| always_finish | Switch | Whether to keep cleaning if the bin becomes full   | N |
-| power_boost   | String | Power boost mode: "auto", "performance", "eco"     | N |
-| clean_passes  | String | Number of cleaning passes: "auto", "1", "2"        | N |
+| edge_clean    | Switch | Seek out and clean along walls and furniture legs                         | N |
+| always_finish | Switch | Whether to keep cleaning if the bin becomes full                          | N |
+| power_boost   | String | Power boost mode: "auto", "performance", "eco"                            | N |
+| clean_passes  | String | Number of cleaning passes: "auto", "1", "2"                               | N |
+| map_upload    | Switch | Enable or disable uploading Clean Map(tm) to cloud for notifications      | N |
+| last_command  | String | Json string containing the parameters of the last executed command        | N |
 
 Known phase strings and their meanings:
 
@@ -102,7 +114,7 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 19    | Undocking issue           |
 | 20    | Docking issue             |
 | 21    | Navigation problem        |
-| 22    | Navigation problem        | 
+| 22    | Navigation problem        |
 | 23    | Battery issue             |
 | 24    | Navigation problem        |
 | 25    | Reboot required           |
@@ -137,25 +149,37 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 75    | Navigation problem        |
 | 76    | Hardware problem detected |
 
+## Cleaning specific regions
+
+You can clean one or many specific regions of a given map by sending the following String to the command channel:
+
+```text
+cleanRegions:<pmapId>;[r=]<region_id1>,[r=]<region_id2>,z=<zone_id1>,...;[<user_pmapv_id>]
+```
+
+Some devices support cleaning rooms (aka regions). Additionally, support for cleaning rectangle areas previously defined in the iRobot-App (aka zones) may be available.
+If the type string such as `r=` (region) or `z=` (zone) is omnitted, the type defaults to region.
+
+The easiest way to determine the pmapId, region_ids/zoneids and userPmapvId is to monitor the last_command channel while starting a new mission for the specific region or zone with the iRobot-App.
+
 ## Known Problems / Caveats
 
 1. Sending "pause" command during missions other than "clean" is equivalent to sending "stop"
-2. Switching to "spot" mission is possible only in "stop" state. Attempt to do it otherwise causes error: the command is rejected and error tones are played.
-3. Roomba's built-in MQTT server, used for communication, supports only a single local connection at a time. Bear this in mind when you want to do something that requires local connection from your phone, like reconfiguring the network. Disable openHAB Thing before doing this.
-4. Sometimes during intensive testing Roomba just stopped communicating over the local connection. If this happens, try rebooting it. On my robot it's done by holding "Clean" button for about 10 seconds until all the LEDs come on. Release the button and the reboot tone will be played. It looks like there are some bugs in the firmware.
-
+1. Switching to "spot" mission is possible only in "stop" state. Attempt to do it otherwise causes error: the command is rejected and error tones are played.
+1. Roomba's built-in MQTT server, used for communication, supports only a single local connection at a time. Bear this in mind when you want to do something that requires local connection from your phone, like reconfiguring the network. Disable openHAB Thing before doing this.
+1. Sometimes during intensive testing Roomba just stopped communicating over the local connection. If this happens, try rebooting it. On my robot it's done by holding "Clean" button for about 10 seconds until all the LEDs come on. Release the button and the reboot tone will be played. It looks like there are some bugs in the firmware.
 
 ## Example
 
-irobot.things:
+### `irobot.things` Example
 
-```
-irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
+```java
+Thing irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
 ```
 
-irobot.items:
+### `irobot.items` Example
 
-```
+```java
 String Roomba_Command { channel="irobot:roomba:my_roomba:command" }
 String Roomba_Cycle { channel="irobot:roomba:my_roomba:cycle" }
 String Roomba_Phase { channel="irobot:roomba:my_roomba:phase" }
@@ -164,9 +188,9 @@ String Roomba_Bin { channel="irobot:roomba:my_roomba:bin" }
 String Roomba_Error { channel="irobot:roomba:my_roomba:error" }
 ```
 
-irobot.sitemap:
+### `irobot.sitemap` Example
 
-```
+```perl
 Selection item=Roomba_Command mappings=["clean"="Clean", "spot"="Spot", dock="Dock", pause="Pause", stop="Stop"]
 Text item=Roomba_Cycle label="Current cycle"
 Text item=Roomba_Phase label="Current phase"
@@ -177,8 +201,8 @@ Text item=Roomba_Error label="Error"
 
 ## Credits
 
-This code is a result of development of an abandoned draft by hkunh42 (http://github.com/hkuhn42/openhab2.roomba)
+This code is a result of development of an abandoned draft by hkunh42 (<https://github.com/hkuhn42/openhab2.roomba>)
 and heavily uses the following projects as a reference:
 
-- Roomba980-Python by Nick Waterton (http://github.com/NickWaterton/Roomba980-Python)
-- Dorita980 by Facu ZAK (https://github.com/koalazak/dorita980)
+- Roomba980-Python by Nick Waterton (<https://github.com/NickWaterton/Roomba980-Python>)
+- Dorita980 by Facu ZAK (<https://github.com/koalazak/dorita980>)

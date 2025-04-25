@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 
 /**
  * Test class for {@link DSMRMeter}.
@@ -35,12 +34,19 @@ public class DSMRMeterTest {
      */
     @Test
     public void testFilterMeterValues() {
-        DSMRMeterDescriptor descriptor = new DSMRMeterDescriptor(DSMRMeterType.DEVICE_V5, 0);
-        DSMRMeter meter = new DSMRMeter(descriptor);
+        final List<CosemObject> cosemObjects = TelegramReaderUtil.readTelegram("dsmr_50").getCosemObjects();
 
-        List<CosemObject> filterMeterValues = meter
-                .filterMeterValues(TelegramReaderUtil.readTelegram("dsmr_50", TelegramState.OK).getCosemObjects());
-        assertEquals(DSMRMeterType.DEVICE_V5.requiredCosemObjects.length, filterMeterValues.size(),
-                "Filter should return all required objects");
+        assertMeterValues(cosemObjects, DSMRMeterType.DEVICE_V5, DSMRMeterConstants.UNKNOWN_CHANNEL, 3);
+        assertMeterValues(cosemObjects, DSMRMeterType.ELECTRICITY_V5_0, 0, 29);
+        assertMeterValues(cosemObjects, DSMRMeterType.M3_V5_0, 1, 3);
+    }
+
+    private void assertMeterValues(final List<CosemObject> cosemObjects, final DSMRMeterType type, final int channel,
+            final int expected) {
+        final DSMRMeterDescriptor descriptor = new DSMRMeterDescriptor(type, channel);
+        final DSMRMeter meter = new DSMRMeter(descriptor);
+        final List<CosemObject> filterMeterValues = meter.filterMeterValues(cosemObjects, channel);
+
+        assertEquals(expected, filterMeterValues.size(), "Filter should return all required objects");
     }
 }

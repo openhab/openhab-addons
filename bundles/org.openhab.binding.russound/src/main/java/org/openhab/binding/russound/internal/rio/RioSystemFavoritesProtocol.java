@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,14 @@ package org.openhab.binding.russound.internal.rio;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.models.GsonUtilities;
@@ -196,10 +197,10 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
      * @param controller the controller number between 1 and 6
      * @param zone the zone number between 1 and 8
      * @param favJson the possibly empty, possibly null JSON representation of system favorites
-     * @throws IllegalArgumentException if controller is < 1 or > 6
-     * @throws IllegalArgumentException if zone is < 1 or > 8
+     * @throws IllegalArgumentException if controller is {@literal <} 1 or > 6
+     * @throws IllegalArgumentException if zone is {@literal < 1} or > 8
      */
-    public void setSystemFavorites(int controller, int zone, String favJson) {
+    public void setSystemFavorites(int controller, int zone, @Nullable String favJson) {
         if (controller < 1 || controller > 6) {
             throw new IllegalArgumentException("Controller must be between 1 and 6");
         }
@@ -208,7 +209,7 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
             throw new IllegalArgumentException("Zone must be between 1 and 8");
         }
 
-        if (StringUtils.isEmpty(favJson)) {
+        if (favJson == null || favJson.isEmpty()) {
             return;
         }
 
@@ -242,7 +243,7 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
                         } else {
                             sendCommand("EVENT C[" + controller + "].Z[" + zone + "]!deleteSystemFavorite " + favId);
                         }
-                    } else if (!StringUtils.equals(myFav.getName(), favName)) {
+                    } else if (!Objects.equals(myFav.getName(), favName)) {
                         myFav.setName(favName);
                         sendCommand("SET System.favorite[" + favId + "]." + FAV_NAME + "=\"" + favName + "\"");
                     }
@@ -308,11 +309,11 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
      * Implements {@link SocketSessionListener#responseReceived(String)} to try to process the response from the
      * russound system. This response may be for other protocol handler - so ignore if we don't recognize the response.
      *
-     * @param a possibly null, possibly empty response
+     * @param response a possibly null, possibly empty response
      */
     @Override
-    public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+    public void responseReceived(@Nullable String response) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 

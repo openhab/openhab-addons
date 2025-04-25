@@ -26,7 +26,6 @@ You can also configure the polling interval in seconds by setting "pollingPeriod
 
 ## Channels
 
-
 | Channel Type ID | Item Type | Description                                                              | Read/Write |
 |-----------------|-----------|--------------------------------------------------------------------------|------------|
 | state           | String    | Current state of the HomBot.                                             | R          |
@@ -59,7 +58,7 @@ Example of how to configure a thing.
 
 demo.thing
 
-```
+```java
 Thing lghombot:LGHomBot:mycleanerbot "LGHomBot" @ "Living Room" [ ipAdress="192.168.0.2", pollingPeriod="3", port="6260" ]
 ```
 
@@ -67,7 +66,7 @@ Here are some examples on how to map the channels to items.
 
 demo.items:
 
-```
+```java
 String HomBot_State "State [%s]" <CleaningRobot> { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:state" }
 Number HomBot_Battery "Battery [%d%%]"           { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:battery" }
 Switch HomBot_Clean "Clean"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:clean" }
@@ -85,7 +84,7 @@ Image HomBot_Map                                 { channel="lghombot:LGHomBot:a4
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame label="HomBot" {

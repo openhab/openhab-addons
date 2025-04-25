@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,7 @@ package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.dto.base.Clouds;
-import org.openhab.binding.openweathermap.internal.dto.base.Rain;
-import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 import org.openhab.binding.openweathermap.internal.dto.base.Wind;
 import org.openhab.binding.openweathermap.internal.dto.weather.Main;
@@ -23,7 +22,8 @@ import org.openhab.binding.openweathermap.internal.dto.weather.Main;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link List} from JSON.
+ * Holds the data from the <code>list</code> object of the JSON response of the Hourly forecast API and the 5 day
+ * weather forecast API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -33,8 +33,8 @@ public class List {
     private java.util.List<Weather> weather;
     private Clouds clouds;
     private Wind wind;
-    private @Nullable Rain rain;
-    private @Nullable Snow snow;
+    private @Nullable Precipitation rain;
+    private @Nullable Precipitation snow;
     private Sys sys;
     @SerializedName("dt_txt")
     private String dtTxt;
@@ -43,71 +43,35 @@ public class List {
         return dt;
     }
 
-    public void setDt(Integer dt) {
-        this.dt = dt;
-    }
-
     public Main getMain() {
         return main;
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
     }
 
     public java.util.List<Weather> getWeather() {
         return weather;
     }
 
-    public void setWeather(java.util.List<Weather> weather) {
-        this.weather = weather;
-    }
-
     public Clouds getClouds() {
         return clouds;
-    }
-
-    public void setClouds(Clouds clouds) {
-        this.clouds = clouds;
     }
 
     public Wind getWind() {
         return wind;
     }
 
-    public void setWind(Wind wind) {
-        this.wind = wind;
-    }
-
-    public @Nullable Rain getRain() {
+    public @Nullable Precipitation getRain() {
         return rain;
     }
 
-    public void setRain(Rain rain) {
-        this.rain = rain;
-    }
-
-    public @Nullable Snow getSnow() {
+    public @Nullable Precipitation getSnow() {
         return snow;
-    }
-
-    public void setSnow(Snow snow) {
-        this.snow = snow;
     }
 
     public Sys getSys() {
         return sys;
     }
 
-    public void setSys(Sys sys) {
-        this.sys = sys;
-    }
-
     public String getDtTxt() {
         return dtTxt;
-    }
-
-    public void setDtTxt(String dtTxt) {
-        this.dtTxt = dtTxt;
     }
 }

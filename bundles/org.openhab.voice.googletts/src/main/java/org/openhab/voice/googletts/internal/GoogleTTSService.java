@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,29 +14,39 @@ package org.openhab.voice.googletts.internal;
 
 import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -47,10 +57,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
+@Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "="
+        + SERVICE_PID, service = TTSService.class)
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
-public class GoogleTTSService implements TTSService {
+public class GoogleTTSService extends AbstractCachedTTSService {
     /**
      * Service name
      */
@@ -72,11 +83,6 @@ public class GoogleTTSService implements TTSService {
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
     /**
-     * Cache folder under $userdata
-     */
-    private static final String CACHE_FOLDER_NAME = "cache";
-
-    /**
      * Configuration parameters
      */
     private static final String PARAM_CLIENT_ID = "clientId";
@@ -85,7 +91,6 @@ public class GoogleTTSService implements TTSService {
     private static final String PARAM_PITCH = "pitch";
     private static final String PARAM_SPEAKING_RATE = "speakingRate";
     private static final String PARAM_VOLUME_GAIN_DB = "volumeGainDb";
-    private static final String PARAM_PURGE_CACHE = "purgeCache";
 
     /**
      * Logger.
@@ -112,8 +117,9 @@ public class GoogleTTSService implements TTSService {
     private final GoogleTTSConfig config = new GoogleTTSConfig();
 
     @Activate
-    public GoogleTTSService(final @Reference ConfigurationAdmin configAdmin,
-            final @Reference OAuthFactory oAuthFactory) {
+    public GoogleTTSService(final @Reference ConfigurationAdmin configAdmin, final @Reference OAuthFactory oAuthFactory,
+            @Reference TTSCache ttsCache, Map<String, Object> config) {
+        super(ttsCache);
         this.configAdmin = configAdmin;
         this.oAuthFactory = oAuthFactory;
     }
@@ -123,16 +129,15 @@ public class GoogleTTSService implements TTSService {
      */
     @Activate
     protected void activate(Map<String, Object> config) {
-        // create cache folder
-        File userData = new File(OpenHAB.getUserDataFolder());
-        File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
-        if (!cacheFolder.exists()) {
-            cacheFolder.mkdirs();
-        }
-        logger.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
-
-        apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory, cacheFolder);
+        apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory);
         updateConfig(config);
+    }
+
+    @Deactivate
+    protected void dispose() {
+        apiImpl.dispose();
+        audioFormats = new HashSet<>();
+        allVoices = new HashSet<>();
     }
 
     /**
@@ -224,13 +229,6 @@ public class GoogleTTSService implements TTSService {
                 config.volumeGainDb = Double.parseDouble(param);
             }
 
-            // purgeCache
-            param = newConfig.containsKey(PARAM_PURGE_CACHE) ? newConfig.get(PARAM_PURGE_CACHE).toString() : null;
-            if (param != null) {
-                config.purgeCache = Boolean.parseBoolean(param);
-            }
-            logger.trace("New configuration: {}", config.toString());
-
             if (config.clientId != null && !config.clientId.isEmpty() && config.clientSecret != null
                     && !config.clientSecret.isEmpty()) {
                 apiImpl.setConfig(config);
@@ -301,7 +299,7 @@ public class GoogleTTSService implements TTSService {
      * @throws TTSException in case the service is unavailable or a parameter is invalid.
      */
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
         // Validate known api key
         if (!apiImpl.isInitialized()) {
@@ -330,8 +328,38 @@ public class GoogleTTSService implements TTSService {
         // create the audio byte array for given text, locale, format
         byte[] audio = apiImpl.synthesizeSpeech(trimmedText, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
-            throw new TTSException("Could not read from Google Cloud TTS Service");
+            throw new TTSException("Could not synthesize text via Google Cloud TTS Service");
         }
-        return new ByteArrayAudioStream(audio, requestedFormat);
+
+        // compute the real format returned by google if wave file
+        AudioFormat finalFormat = requestedFormat;
+        if (AudioFormat.CONTAINER_WAVE.equals(requestedFormat.getContainer())) {
+            finalFormat = parseAudioFormat(audio);
+        }
+
+        return new ByteArrayAudioStream(audio, finalFormat);
+    }
+
+    private AudioFormat parseAudioFormat(byte[] audio) throws TTSException {
+        try (InputStream inputStream = new ByteArrayInputStream(audio)) {
+            return AudioWaveUtils.parseWavFormat(inputStream);
+        } catch (IOException e) {
+            throw new TTSException("Cannot parse WAV format", e);
+        }
+    }
+
+    @Override
+    public @NonNull String getCacheKey(@NonNull String text, @NonNull Voice voice,
+            @NonNull AudioFormat requestedFormat) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytesOfMessage = (config.toConfigString() + text + requestedFormat).getBytes(StandardCharsets.UTF_8);
+            String hash = String.format("%032x", new BigInteger(1, md.digest(bytesOfMessage)));
+            return ((GoogleTTSVoice) voice).getTechnicalName() + "_" + hash;
+        } catch (NoSuchAlgorithmException e) {
+            // should not happen
+            logger.warn("Could not create MD5 hash for '{}'", text, e);
+            return "nomd5algorithm";
+        }
     }
 }

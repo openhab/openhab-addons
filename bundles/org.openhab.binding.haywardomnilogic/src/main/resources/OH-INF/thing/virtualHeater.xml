@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="virtualHeater" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Virtual Heater</label>
+
+		<channels>
+			<channel id="virtualHeaterEnable" typeId="system.power"/>
+			<channel id="virtualHeaterCurrentSetpoint" typeId="currentSetpoint"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hayward</property>
+			<property name="sharedType"></property>
+			<property name="minSettableWaterTemp"></property>
+			<property name="maxSettableWaterTemp"></property>
+			<property name="maxWaterTemp"></property>
+		</properties>
+		<representation-property>systemID</representation-property>
+	</thing-type>
+
+	<channel-type id="currentSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Setpoint</label>
+		<category>Temperature</category>
+		<state min="65" max="90" step="1.0" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>

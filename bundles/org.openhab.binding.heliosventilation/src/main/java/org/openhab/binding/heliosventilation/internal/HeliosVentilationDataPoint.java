@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@next HeliosVentilationDataPoint} is a description of a datapoint in the Helios ventilation system.
+ * The {@link HeliosVentilationDataPoint} is a description of a datapoint in the Helios ventilation system.
  *
  * @author Raphael Mack - Initial contribution
  */
@@ -309,6 +309,7 @@ public class HeliosVentilationDataPoint {
      *
      * @param next is the sister datapoint
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void append(HeliosVentilationDataPoint next) {
         HeliosVentilationDataPoint existing = this.next;
         if (this == next) {

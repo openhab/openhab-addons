@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,15 @@ package org.openhab.binding.velux.internal.bridge.slip.io;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is an wrapper around {@link java.io.InputStream} to support socket receive operations.
+ * This is a wrapper around {@link java.io.InputStream} to support socket receive operations.
  *
  * It implements a secondary polling thread to asynchronously read bytes from the socket input stream into a buffer. And
  * it parses the bytes into SLIP messages, which are placed on a message queue. Callers can access the SLIP messages in
@@ -43,113 +44,34 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class DataInputStreamWithTimeout implements Closeable {
 
-    private static final int QUEUE_SIZE = 512;
-    private static final int BUFFER_SIZE = 512;
     private static final int SLEEP_INTERVAL_MSECS = 50;
-
-    // special character that marks the first and last byte of a slip message
-    private static final byte SLIP_MARK = (byte) 0xc0;
+    private static final long MAX_WAIT_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(DataInputStreamWithTimeout.class);
 
     private final Queue<byte[]> slipMessageQueue = new ConcurrentLinkedQueue<>();
+    private final InputStream inputStream;
+    private final VeluxBridgeHandler bridge;
 
-    private InputStream inputStream;
-
-    private @Nullable String pollException = null;
-    private @Nullable Poller pollRunner = null;
-    private ExecutorService executor;
-
-    private class Poller implements Callable<Boolean> {
-
-        private boolean interrupted = false;
-
-        public void interrupt() {
-            interrupted = true;
-        }
-
-        /**
-         * Task that loops to read bytes from {@link InputStream} and build SLIP packets from them. The SLIP packets are
-         * placed in a {@link ConcurrentLinkedQueue}. It loops continuously until 'interrupt()' or 'Thread.interrupt()'
-         * are called when terminates early after the next socket read timeout.
-         */
-        @Override
-        public Boolean call() throws Exception {
-            byte[] buf = new byte[BUFFER_SIZE];
-            byte byt;
-            int i = 0;
-
-            // clean start, no exception, empty queue
-            pollException = null;
-            slipMessageQueue.clear();
-
-            // loop forever or until internally or externally interrupted
-            while ((!interrupted) && (!Thread.interrupted())) {
-                try {
-                    buf[i] = byt = (byte) inputStream.read();
-                    if (byt == SLIP_MARK) {
-                        if (i > 0) {
-                            // the minimal slip message is 7 bytes [MM PP LL CC CC KK MM]
-                            if ((i > 5) && (buf[0] == SLIP_MARK)) {
-                                slipMessageQueue.offer(Arrays.copyOfRange(buf, 0, i + 1));
-                                if (slipMessageQueue.size() > QUEUE_SIZE) {
-                                    logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
-                                    slipMessageQueue.poll();
-                                }
-                            }
-                            i = 0;
-                            buf[0] = SLIP_MARK;
-                            continue;
-                        }
-                    }
-                    if (++i >= BUFFER_SIZE) {
-                        i = 0;
-                    }
-                } catch (SocketTimeoutException e) {
-                    // socket read time outs are OK => keep on polling
-                    continue;
-                } catch (IOException e) {
-                    // any other exception => stop polling
-                    String msg = e.getMessage();
-                    pollException = msg != null ? msg : "Generic IOException";
-                    logger.debug("pollRunner() stopping '{}'", pollException);
-                    break;
-                }
-            }
-
-            // we only get here if shutdown or an error occurs so free ourself so we can be recreated again
-            pollRunner = null;
-            return true;
-        }
-    }
-
-    /**
-     * Check if there was an exception on the polling loop task and if so, throw it back on the caller thread.
-     *
-     * @throws IOException
-     */
-    private void throwIfPollException() throws IOException {
-        if (pollException != null) {
-            logger.debug("passPollException() polling loop exception {}", pollException);
-            throw new IOException(pollException);
-        }
-    }
+    private @Nullable Poller poller;
+    private @Nullable Future<Boolean> future;
+    private @Nullable ExecutorService executor;
 
     /**
      * Creates a {@link DataInputStreamWithTimeout} as a wrapper around the specified underlying {@link InputStream}
      *
-     * @param stream the specified input stream
+     * @param inputStream the specified input stream
      * @param bridge the actual Bridge Thing instance
      */
-    public DataInputStreamWithTimeout(InputStream stream, VeluxBridgeHandler bridge) {
-        inputStream = stream;
-        executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
+    public DataInputStreamWithTimeout(InputStream inputStream, VeluxBridgeHandler bridge) {
+        this.inputStream = inputStream;
+        this.bridge = bridge;
     }
 
     /**
-     * Overridden method of {@link Closeable} interface. Stops the polling thread.
+     * Overridden method of {@link Closeable} interface. Stops the polling task.
      *
-     * @throws IOException
+     * @throws IOException (although actually no exceptions are thrown)
      */
     @Override
     public void close() throws IOException {
@@ -162,7 +84,8 @@ class DataInputStreamWithTimeout implements Closeable {
      *
      * @param timeoutMSecs the timeout period in milliseconds.
      * @return the next SLIP message if there is one on the queue, or any empty byte[] array if not.
-     * @throws IOException
+     * @throws IOException if the poller task has unexpectedly terminated e.g. via an IOException, or if either the
+     *             poller task, or the calling thread have been interrupted
      */
     public synchronized byte[] readSlipMessage(int timeoutMSecs) throws IOException {
         startPolling();
@@ -173,17 +96,22 @@ class DataInputStreamWithTimeout implements Closeable {
                 logger.trace("readSlipMessage() => return slip message");
                 return slip;
             } catch (NoSuchElementException e) {
-                // queue empty, wait and continue
+                // queue empty, fall through and continue
             }
-            throwIfPollException();
             try {
-                Thread.sleep(SLEEP_INTERVAL_MSECS);
-            } catch (InterruptedException e) {
-                logger.debug("readSlipMessage() => thread interrupt");
-                throw new IOException("Thread Interrupted");
+                Future<Boolean> future = this.future;
+                if ((future != null) && future.isDone()) {
+                    future.get(); // throws ExecutionException, InterruptedException
+                    // future terminated without exception, but prematurely, which is itself an exception
+                    throw new IOException("Poller thread terminated prematurely");
+                }
+                Thread.sleep(SLEEP_INTERVAL_MSECS); // throws InterruptedException
+            } catch (ExecutionException | InterruptedException e) {
+                // re-cast other exceptions as IOException
+                throw new IOException(e);
             }
         }
-        logger.debug("readSlipMessage() => no slip message after {}mS => time out", timeoutMSecs);
+        logger.debug("readSlipMessage() => no slip message");
         return new byte[0];
     }
 
@@ -210,11 +138,12 @@ class DataInputStreamWithTimeout implements Closeable {
      * Start the polling task
      */
     private void startPolling() {
-        Poller pollRunner = this.pollRunner;
-        if (pollRunner == null) {
-            logger.trace("startPolling()");
-            pollRunner = this.pollRunner = new Poller();
-            executor.submit(pollRunner);
+        if (future == null) {
+            logger.debug("startPolling() called");
+            slipMessageQueue.clear();
+            poller = new Poller(inputStream, slipMessageQueue);
+            ExecutorService executor = this.executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
+            future = executor.submit(poller);
         }
     }
 
@@ -222,12 +151,31 @@ class DataInputStreamWithTimeout implements Closeable {
      * Stop the polling task
      */
     private void stopPolling() {
-        Poller pollRunner = this.pollRunner;
-        if (pollRunner != null) {
-            logger.trace("stopPolling()");
-            pollRunner.interrupt();
-            this.pollRunner = null;
+        logger.debug("stopPolling() called");
+
+        Poller poller = this.poller;
+        Future<Boolean> future = this.future;
+        ExecutorService executor = this.executor;
+
+        this.poller = null;
+        this.future = null;
+        this.executor = null;
+
+        if (executor != null) {
+            executor.shutdown();
         }
-        executor.shutdown();
+        if (poller != null) {
+            poller.interrupt();
+        }
+        if (future != null) {
+            try {
+                future.get(MAX_WAIT_SECONDS, TimeUnit.SECONDS);
+            } catch (ExecutionException e) {
+                // expected exception due to e.g. IOException on socket close
+            } catch (TimeoutException | InterruptedException e) {
+                // unexpected exception due to e.g. KLF200 'zombie state'
+                logger.warn("stopPolling() exception '{}' => PLEASE REPORT !!", e.getMessage());
+            }
+        }
     }
 }

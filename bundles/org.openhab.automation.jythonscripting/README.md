@@ -1,16 +1,16 @@
 # Jython Scripting
 
-This add-on provides [Jython](https://www.jython.org/) 2.7.2 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
+This add-on provides [Jython](https://www.jython.org/) 2.7 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
 
 The `python.home` system property is set to the path of the add-on.
 
-The `python.path` system property is set to `$OPENHAB_CONF/automation/lib/python`, but any existing `python.path` will be appended to it.
+The `python.path` system property is set to `$OPENHAB_CONF/automation/jython/lib`, but any existing `python.path` will be appended to it.
 
 ## Creating Jython Scripts
 
 When this add-on is installed, you can select Jython as a scripting language when creating a script action within the rule editor of the UI.
 
-Alternatively, you can create scripts in the `automation/jsr223` configuration directory.
+Alternatively, you can create scripts in the `automation/jython` configuration directory.
 If you create an empty file called `test.py`, you will see a log line with information similar to:
 
 ```text
@@ -34,7 +34,7 @@ The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 ```python
 from org.slf4j import LoggerFactory
 
-LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello world!")
+LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello, World!")
 ```
 
 Jython can [import Java classes](https://jython.readthedocs.io/en/latest/ModulesPackages/).
@@ -52,5 +52,5 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 to obtain a named logger and then logs a message like:
 
 ```text
-    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello world!
+    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```

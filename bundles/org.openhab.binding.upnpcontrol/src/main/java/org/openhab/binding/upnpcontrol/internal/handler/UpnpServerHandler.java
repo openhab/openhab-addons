@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -124,24 +123,24 @@ public class UpnpServerHandler extends UpnpHandler {
         if (rendererChannel != null) {
             rendererChannelUID = rendererChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + UPNPRENDERER + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", UPNPRENDERER);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel selectionChannel = thing.getChannel(BROWSE);
         if (selectionChannel != null) {
             currentSelectionChannelUID = selectionChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + BROWSE + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", BROWSE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
         if (playlistSelectChannel != null) {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + PLAYLIST_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -165,8 +164,8 @@ public class UpnpServerHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 
@@ -192,7 +191,7 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link #onValueReceived}
      * method.
      *
      * @param objectID content directory object
@@ -217,7 +216,7 @@ public class UpnpServerHandler extends UpnpHandler {
         }
 
         if (browsed) {
-            isBrowsing = new CompletableFuture<Boolean>();
+            isBrowsing = new CompletableFuture<>();
 
             Map<String, String> inputs = new HashMap<>();
             inputs.put("ObjectID", objectID);
@@ -234,7 +233,7 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link #onValueReceived}
      * method.
      *
      * @param containerID content directory container
@@ -263,7 +262,7 @@ public class UpnpServerHandler extends UpnpHandler {
         }
 
         if (browsed) {
-            isBrowsing = new CompletableFuture<Boolean>();
+            isBrowsing = new CompletableFuture<>();
 
             Map<String, String> inputs = new HashMap<>();
             inputs.put("ContainerID", containerID);
@@ -322,8 +321,8 @@ public class UpnpServerHandler extends UpnpHandler {
     private void handleCommandUpnpRenderer(ChannelUID channelUID, Command command) {
         UpnpRendererHandler renderer = null;
         UpnpRendererHandler previousRenderer = currentRendererHandler;
-        if (command instanceof StringType) {
-            renderer = (upnpRenderers.get(((StringType) command).toString()));
+        if (command instanceof StringType stringCommand) {
+            renderer = (upnpRenderers.get(stringCommand.toString()));
             currentRendererHandler = renderer;
             if (config.filter) {
                 // only refresh title list if filtering by renderer capabilities
@@ -544,7 +543,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Add a renderer to the renderer channel state option list.
-     * This method is called from the {@link UpnpControlHandlerFactory} class when creating a renderer handler.
+     * This method is called from the {@link org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory
+     * UpnpControlHandlerFactory} class when creating a renderer handler.
      *
      * @param key
      */
@@ -561,7 +561,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Remove a renderer from the renderer channel state option list.
-     * This method is called from the {@link UpnpControlHandlerFactory} class when removing a renderer handler.
+     * This method is called from the {@link org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory
+     * UpnpControlHandlerFactory} class when removing a renderer handler.
      *
      * @param key
      */
@@ -686,7 +687,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 updateTitleSelection(removeDuplicates(list));
             }
         } else {
-            updateTitleSelection(new ArrayList<UpnpEntry>());
+            updateTitleSelection(new ArrayList<>());
         }
         browseUp = false;
         if (browsing != null) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,16 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.OccupancySensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.occupancysensor.OccupancyDetectedEnum;
 import io.github.hapjava.services.impl.OccupancySensorService;
@@ -33,19 +34,25 @@ import io.github.hapjava.services.impl.OccupancySensorService;
  * @author Tim Harper - Initial contribution
  */
 public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl implements OccupancySensorAccessory {
-    private final BooleanItemReader occupancySensedReader;
+    private final Map<OccupancyDetectedEnum, Object> mapping;
 
     public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        occupancySensedReader = createBooleanReader(OCCUPANCY_DETECTED_STATE, OnOffType.ON, OpenClosedType.OPEN);
-        getServices().add(new OccupancySensorService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        mapping = createMapping(OCCUPANCY_DETECTED_STATE, OccupancyDetectedEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new OccupancySensorService(this));
     }
 
     @Override
     public CompletableFuture<OccupancyDetectedEnum> getOccupancyDetected() {
         return CompletableFuture.completedFuture(
-                occupancySensedReader.getValue() ? OccupancyDetectedEnum.DETECTED : OccupancyDetectedEnum.NOT_DETECTED);
+                getKeyFromMapping(OCCUPANCY_DETECTED_STATE, mapping, OccupancyDetectedEnum.NOT_DETECTED));
     }
 
     @Override

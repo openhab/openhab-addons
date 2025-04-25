@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,14 +13,12 @@
 package org.openhab.binding.dsmr.internal.device;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorListener;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
 import org.openhab.binding.dsmr.internal.device.p1telegram.TelegramParser;
@@ -40,12 +38,10 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
     private final Logger logger = LoggerFactory.getLogger(DSMRTelegramListener.class);
     private final TelegramParser parser;
 
-    private @NonNullByDefault({}) DSMREventListener dsmrEventListener;
+    private @NonNullByDefault({}) P1TelegramListener p1TelegramListener;
 
     /**
      * Constructor.
-     *
-     * @param eventListener listener to send received errors or messages to
      */
     public DSMRTelegramListener() {
         parser = new P1TelegramParser(this);
@@ -55,30 +51,35 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
      * Constructs {@link DSMRTelegramListener} with a Smarty decryptor to first decrypt incoming messages.
      *
      * @param decryptionKey Smarty decryption key
+     * @param additionalKey Additional optional descryption key
      */
-    public DSMRTelegramListener(String decryptionKey) {
-        parser = new SmartyDecrypter(new P1TelegramParser(this), this, decryptionKey);
+    public DSMRTelegramListener(final String decryptionKey, final String additionalKey) {
+        parser = new SmartyDecrypter(new P1TelegramParser(this), this, decryptionKey, additionalKey);
     }
 
     /**
-     * Set the DSMR event listener.
+     * Set the P1 Telegram listener.
      *
-     * @param eventListener the listener to set
+     * @param p1TelegramListener the listener to set
      */
-    public void setDsmrEventListener(DSMREventListener eventListener) {
-        this.dsmrEventListener = eventListener;
+    public void setP1TelegramListener(final P1TelegramListener p1TelegramListener) {
+        this.p1TelegramListener = p1TelegramListener;
     }
 
+    // Handle calls from the Connector
+
     @Override
-    public void handleData(byte[] data, int length) {
+    public void handleData(final byte[] data, final int length) {
         parser.parse(data, length);
     }
 
     @Override
-    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
-        dsmrEventListener.handleErrorEvent(portEvent);
+    public void handleError(final DSMRErrorStatus portEvent, final String message) {
+        onError(portEvent, message);
         parser.reset();
     }
+
+    // Handle calls from the Parser
 
     /**
      * Handler for cosemObjects received in a P1 telegram
@@ -86,27 +87,28 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
      * @param telegram the received telegram.
      */
     @Override
-    public void telegramReceived(P1Telegram telegram) {
-        final TelegramState telegramState = telegram.getTelegramState();
+    public void telegramReceived(final P1Telegram telegram) {
         final List<CosemObject> cosemObjects = telegram.getCosemObjects();
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Received {} Cosem Objects with state: '{}'", cosemObjects.size(), telegramState);
+            logger.trace("Received {} Cosem Objects", cosemObjects.size());
         }
-        if (telegramState == TelegramState.OK || telegramState == TelegramState.INVALID_ENCRYPTION_KEY) {
-            dsmrEventListener.handleTelegramReceived(telegram);
+        if (cosemObjects.isEmpty()) {
+            onError(DSMRErrorStatus.TELEGRAM_NO_DATA, "");
         } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Telegram received with error state '{}': {}", telegramState,
-                        cosemObjects.stream().map(CosemObject::toString).collect(Collectors.joining(",")));
-            }
+            p1TelegramListener.telegramReceived(telegram);
         }
+    }
+
+    @Override
+    public void onError(final DSMRErrorStatus state, final String message) {
+        p1TelegramListener.onError(state, message);
     }
 
     /**
      * @param lenientMode the lenientMode to set
      */
-    public void setLenientMode(boolean lenientMode) {
+    public void setLenientMode(final boolean lenientMode) {
         parser.setLenientMode(lenientMode);
     }
 }

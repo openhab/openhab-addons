@@ -13,16 +13,11 @@
 		<description>An outlet that could be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch"/>
+			<channel id="switch" typeId="system.power"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="lightId" type="text" required="true">
-				<label>Light ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:plugwithoutfade"/>
 	</thing-type>
 </thing:thing-descriptions>

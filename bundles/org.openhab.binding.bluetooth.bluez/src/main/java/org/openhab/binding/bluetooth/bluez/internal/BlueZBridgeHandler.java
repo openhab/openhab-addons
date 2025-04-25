@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,21 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.bluez.exceptions.BluezFailedException;
+import org.bluez.exceptions.BluezInvalidArgumentsException;
+import org.bluez.exceptions.BluezNotReadyException;
+import org.bluez.exceptions.BluezNotSupportedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.freedesktop.dbus.types.Variant;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterDiscoveringChangedEvent;
@@ -139,6 +147,15 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             return null;
         }
 
+        Map<String, Variant<?>> filter = new HashMap<>();
+        filter.put("DuplicateData", new Variant<>(true));
+        try {
+            localAdapter.setDiscoveryFilter(filter);
+        } catch (BluezInvalidArgumentsException | BluezFailedException | BluezNotSupportedException
+                | BluezNotReadyException e) {
+            throw new DBusExecutionException("failed to set the discovery filter", e);
+        }
+
         // now lets make sure that discovery is turned on
         if (!localAdapter.startDiscovery()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Trying to start discovery");
@@ -159,14 +176,14 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
                 return;
             }
 
-            BluetoothAdapter adapter = prepareAdapter(deviceManager);
-            if (adapter == null) {
+            BluetoothAdapter localAdapter = prepareAdapter(deviceManager);
+            if (localAdapter == null) {
                 // adapter isn't prepared yet
                 return;
             }
 
             // now lets refresh devices
-            List<BluetoothDevice> bluezDevices = deviceManager.getDevices(adapter);
+            List<BluetoothDevice> bluezDevices = deviceManager.getDevices(localAdapter);
             logger.debug("Found {} Bluetooth devices.", bluezDevices.size());
             for (BluetoothDevice bluezDevice : bluezDevices) {
                 if (bluezDevice.getAddress() == null) {
@@ -194,8 +211,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     @Override
     protected BlueZBluetoothDevice createDevice(BluetoothAddress address) {
         logger.debug("createDevice {}", address);
-        BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, address);
-        return device;
+        return new BlueZBluetoothDevice(this, address);
     }
 
     @Override

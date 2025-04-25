@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openhab.binding.lirc.internal.LIRCBindingConstants;
 import org.openhab.binding.lirc.internal.LIRCResponseException;
 import org.openhab.binding.lirc.internal.messages.LIRCButtonEvent;
 import org.openhab.binding.lirc.internal.messages.LIRCResponse;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Stream reader to parse LIRC output into messages
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public class LIRCStreamReader extends Thread {
 
@@ -45,6 +46,7 @@ public class LIRCStreamReader extends Thread {
     private LIRCConnector connector;
 
     public LIRCStreamReader(LIRCConnector connector, InputStream in) {
+        super(String.format("OH-binding-%s-%s", LIRCBindingConstants.BINDING_ID, "StreamReader"));
         this.connector = connector;
         this.in = in;
     }

@@ -23,16 +23,20 @@
 		</channels>
 
 		<config-description>
+			<parameter-group name="change-requests">
+				<label>Change Requests</label>
+			</parameter-group>
+
 			<parameter name="id" type="integer" required="true">
 				<label>Parameter ID</label>
 				<description>Specific parameter identifier</description>
 			</parameter>
-			<parameter name="setId" type="integer" required="false" groupName="Change Requests">
+			<parameter name="setId" type="integer" required="false" groupName="change-requests">
 				<label>Parameter Set-ID</label>
 				<description>Parameter identifier used for change requests. Defaults to the value of Parameter ID</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="setType" type="text" required="false" groupName="Change Requests">
+			<parameter name="setType" type="text" required="false" groupName="change-requests">
 				<label>Message Type</label>
 				<description>Message type used for change requests. Defaults to SET.</description>
 				<default>SET</default>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
-import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Locations;
 import org.openhab.binding.evohome.internal.configuration.EvohomeThingConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -26,8 +27,9 @@ import org.openhab.core.thing.binding.BaseThingHandler;
  *
  * @author Jasper van Zuijlen - Initial contribution
  */
+@NonNullByDefault
 public abstract class BaseEvohomeHandler extends BaseThingHandler {
-    private EvohomeThingConfiguration configuration;
+    private EvohomeThingConfiguration configuration = new EvohomeThingConfiguration();
 
     public BaseEvohomeHandler(Thing thing) {
         super(thing);
@@ -41,14 +43,10 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        configuration = null;
     }
 
     public String getId() {
-        if (configuration != null) {
-            return configuration.id;
-        }
-        return null;
+        return configuration.id;
     }
 
     /**
@@ -65,7 +63,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      *
      * @return The evohome brdige
      */
-    protected EvohomeAccountBridgeHandler getEvohomeBridge() {
+    protected @Nullable EvohomeAccountBridgeHandler getEvohomeBridge() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             return (EvohomeAccountBridgeHandler) bridge.getHandler();
@@ -79,10 +77,10 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      *
      * @return The current evohome configuration
      */
-    protected Locations getEvohomeConfig() {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        if (bridge != null) {
-            return bridge.getEvohomeConfig();
+    protected @Nullable Locations getEvohomeConfig() {
+        EvohomeAccountBridgeHandler bridgeAccountHandler = getEvohomeBridge();
+        if (bridgeAccountHandler != null) {
+            return bridgeAccountHandler.getEvohomeConfig();
         }
 
         return null;
@@ -90,8 +88,6 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
 
     /**
      * Retrieves the evohome configuration from the bridge
-     *
-     * @return The current evohome configuration
      */
     protected void requestUpdate() {
         Bridge bridge = getBridge();
@@ -116,7 +112,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * @param detail The status detail value
      * @param message The message to show with the status
      */
-    protected void updateEvohomeThingStatus(ThingStatus newStatus, ThingStatusDetail detail, String message) {
+    protected void updateEvohomeThingStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
@@ -129,10 +125,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * @param configuration The configuration to check
      */
     private void checkConfig() {
-        if (configuration == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration is missing or corrupted");
-        } else if (StringUtils.isEmpty(configuration.id)) {
+        if (configuration.id.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }

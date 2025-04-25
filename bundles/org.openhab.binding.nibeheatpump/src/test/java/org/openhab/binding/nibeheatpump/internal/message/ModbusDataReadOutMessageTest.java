@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class ModbusDataReadOutMessageTest {
         final String okMessage = "5C0020685001A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000045";
 
         @SuppressWarnings("serial")
-        final ArrayList<ModbusValue> values = new ArrayList<ModbusValue>() {
+        final ArrayList<ModbusValue> values = new ArrayList<>() {
             {
                 add(new ModbusValue(43009, 287));
                 add(new ModbusValue(43008, 100));
@@ -67,7 +67,7 @@ public class ModbusDataReadOutMessageTest {
         final String message = "5C0020685001A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000045";
 
         @SuppressWarnings("serial")
-        final ArrayList<ModbusValue> expectedValues = new ArrayList<ModbusValue>() {
+        final ArrayList<ModbusValue> expectedValues = new ArrayList<>() {
             {
                 add(new ModbusValue(43009, 287));
                 add(new ModbusValue(43008, 100));
@@ -93,11 +93,42 @@ public class ModbusDataReadOutMessageTest {
     }
 
     @Test
+    public void parseHeavilyEscapedModbusDataReadOutMessageTest() throws NibeHeatPumpException {
+        final String message = "5C0020685401A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF00005C5C5C5C5C5C5C5C41";
+
+        @SuppressWarnings("serial")
+        final ArrayList<ModbusValue> expectedValues = new ArrayList<>() {
+            {
+                add(new ModbusValue(43009, 287));
+                add(new ModbusValue(43008, 100));
+                add(new ModbusValue(43005, 976));
+                add(new ModbusValue(40004, 30));
+                add(new ModbusValue(40015, 160));
+                add(new ModbusValue(40016, 120));
+                add(new ModbusValue(40017, 259));
+                add(new ModbusValue(40018, 283));
+                add(new ModbusValue(40071, 276));
+                add(new ModbusValue(40014, 454));
+                add(new ModbusValue(40007, 257));
+                add(new ModbusValue(47381, 65456));
+                add(new ModbusValue(47418, 75));
+                add(new ModbusValue(45001, 0));
+                add(new ModbusValue(40008, 269));
+                add(new ModbusValue(40012, 231));
+                add(new ModbusValue(40011, 0));
+                add(new ModbusValue(23644, 23644));
+            }
+        };
+
+        checkRegisters(message, expectedValues);
+    }
+
+    @Test
     public void specialLen1Test() throws NibeHeatPumpException {
         final String message = "5C00206851449C2500489CFC004C9CF1004E9CC7014D9C0B024F9C2500509C3300519C0B01529C5C5C01569C3100C9AF000001A80C01FDA716FAFAA9070098A91B1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000BE";
 
         @SuppressWarnings("serial")
-        final ArrayList<ModbusValue> expectedValues = new ArrayList<ModbusValue>() {
+        final ArrayList<ModbusValue> expectedValues = new ArrayList<>() {
             {
                 add(new ModbusValue(40004, 37));
                 add(new ModbusValue(40008, 252));
@@ -127,7 +158,7 @@ public class ModbusDataReadOutMessageTest {
         final String message = "5C00206852449C2500489CFE004C9CF2004E9CD4014D9CFB014F9C2500509C3700519C0D01529C5C5C01569C3200C9AF000001A80C01FDA712FAFAA9070098A95C5C1BFFFF0000A0A9D102FFFF00009CA9B412FFFF00007F";
 
         @SuppressWarnings("serial")
-        final ArrayList<ModbusValue> expectedValues = new ArrayList<ModbusValue>() {
+        final ArrayList<ModbusValue> expectedValues = new ArrayList<>() {
             {
                 add(new ModbusValue(40004, 37));
                 add(new ModbusValue(40008, 254));
@@ -157,7 +188,7 @@ public class ModbusDataReadOutMessageTest {
         final String message = "5C00206850449C2600489CF6004C9CF1004E9CD6014D9C0C024F9C4500509C3F00519CF100529C0401569CD500C9AF000001A80C01FDA799FAFAA9020098A91A1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000C5";
 
         @SuppressWarnings("serial")
-        final ArrayList<ModbusValue> expectedValues = new ArrayList<ModbusValue>() {
+        final ArrayList<ModbusValue> expectedValues = new ArrayList<>() {
             {
                 add(new ModbusValue(40004, 38));
                 add(new ModbusValue(40008, 246));

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,7 +147,7 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
         LOGGER.trace("handleCommand(): scene name is {}.", sceneName);
         VeluxScene thisScene2 = thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes
                 .get(new SceneName(sceneName));
-        if (thisScene2 == VeluxScene.UNKNOWN) {
+        if (VeluxScene.UNKNOWN.equals(thisScene2)) {
             LOGGER.warn(
                     "handleCommand(): aborting command as scene with name {} is not registered; please check your KLF scene definitions.",
                     sceneName);

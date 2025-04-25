@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,10 @@ public class SocketChannelSession implements SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketChannelSession.class);
 
     /**
+     * The uid of the calling thing
+     */
+    private final String uid;
+    /**
      * The host/ip address to connect to
      */
     private final String host;
@@ -77,10 +81,11 @@ public class SocketChannelSession implements SocketSession {
     /**
      * Creates the socket session from the given host and port
      *
+     * @param uid the thing uid of the calling thing
      * @param host a non-null, non-empty host/ip address
      * @param port the port number between 1 and 65535
      */
-    public SocketChannelSession(String host, int port) {
+    public SocketChannelSession(String uid, String host, int port) {
         if (host == null || host.trim().length() == 0) {
             throw new IllegalArgumentException("Host cannot be null or empty");
         }
@@ -88,15 +93,13 @@ public class SocketChannelSession implements SocketSession {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 1 and 65535");
         }
+        this.uid = uid;
         this.host = host;
         this.port = port;
     }
 
     @Override
     public void addListener(SocketSessionListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("listener cannot be null");
-        }
         listeners.add(listener);
     }
 
@@ -129,8 +132,12 @@ public class SocketChannelSession implements SocketSession {
         }
 
         socketChannel.set(channel);
-        new Thread(dispatcher).start();
-        new Thread(responseReader).start();
+        Thread dispatcherThread = new Thread(dispatcher, "OH-binding-" + uid + "-dispatcher");
+        dispatcherThread.setDaemon(true);
+        dispatcherThread.start();
+        Thread responseReaderThread = new Thread(responseReader, "OH-binding-" + uid + "-responseReader");
+        responseReaderThread.setDaemon(true);
+        responseReaderThread.start();
     }
 
     @Override
@@ -156,10 +163,6 @@ public class SocketChannelSession implements SocketSession {
 
     @Override
     public synchronized void sendCommand(String command) throws IOException {
-        if (command == null) {
-            throw new IllegalArgumentException("command cannot be null");
-        }
-
         if (!isConnected()) {
             throw new IOException("Cannot send message - disconnected");
         }
@@ -201,7 +204,7 @@ public class SocketChannelSession implements SocketSession {
             if (isRunning.getAndSet(false)) {
                 try {
                     if (!running.await(5, TimeUnit.SECONDS)) {
-                        logger.warn("Waited too long for response reader to finish");
+                        logger.debug("Waited too long for response reader to finish");
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
@@ -309,6 +312,7 @@ public class SocketChannelSession implements SocketSession {
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
          * timeout below)
          */
+        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void stopRunning() {
             if (isRunning.getAndSet(false)) {
                 // only wait if stopRunning didn't get called as part of processing a message
@@ -317,7 +321,7 @@ public class SocketChannelSession implements SocketSession {
                 if (processingThread != null && Thread.currentThread() != processingThread) {
                     try {
                         if (!running.await(5, TimeUnit.SECONDS)) {
-                            logger.warn("Waited too long for dispatcher to finish");
+                            logger.debug("Waited too long for dispatcher to finish");
                         }
                     } catch (InterruptedException e) {
                         // do nothing
@@ -337,7 +341,7 @@ public class SocketChannelSession implements SocketSession {
             while (isRunning.get()) {
                 try {
                     // if no listeners, we don't want to start dispatching yet.
-                    if (listeners.size() == 0) {
+                    if (listeners.isEmpty()) {
                         Thread.sleep(250);
                         continue;
                     }
@@ -345,26 +349,26 @@ public class SocketChannelSession implements SocketSession {
                     final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String) {
+                        if (response instanceof String stringResponse) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
                                 final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                         .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
-                                    listener.responseReceived((String) response);
+                                    listener.responseReceived(stringResponse);
                                 }
                             } catch (Exception e) {
-                                logger.warn("Exception occurred processing the response '{}': ", response, e);
+                                logger.debug("Exception occurred processing the response '{}': ", response, e);
                             }
-                        } else if (response instanceof Exception) {
+                        } else if (response instanceof Exception exceptionResponse) {
                             logger.debug("Dispatching exception: {}", response);
                             final SocketSessionListener[] listeners = SocketChannelSession.this.listeners
                                     .toArray(new SocketSessionListener[0]);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseException((Exception) response);
+                                listener.responseException(exceptionResponse);
                             }
                         } else {
-                            logger.warn("Unknown response class: {}", response);
+                            logger.debug("Unknown response class: {}", response);
                         }
                     }
                 } catch (InterruptedException e) {

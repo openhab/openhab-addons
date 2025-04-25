@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link OpenWeatherMapOneCallConfiguration} is the class used to match the
- * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHandler}s configuration.
+ * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHandler}s
+ * configuration.
  *
  * @author Wolfgang Klimt - Initial contribution
+ * @author Christoph Weitkamp - Added weather alerts
  */
 @NonNullByDefault
 public class OpenWeatherMapOneCallConfiguration extends OpenWeatherMapLocationConfiguration {
     public int forecastMinutes;
     public int forecastHours;
     public int forecastDays;
+    public int numberOfAlerts;
 }

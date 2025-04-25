@@ -1,0 +1,45 @@
+{
+	"sequenceNumber": -1,
+	"type": "ConfigurationChanged",
+	"desc": "/desc/event/ConfigurationChanged",
+	"namespace": "core.RWE",
+	"timestamp": "2019-02-25T19:53:17.1960000Z",
+	"source": "/desc/device/SHC.RWE/1.0",
+	"data": {
+		"devices": [
+			{
+				"id": "0ba965875d37416a935b6552cd6929d9",
+				"manufacturer": "RWE",
+				"version": "2.0",
+				"product": "VariableActuator.RWE",
+				"serialNumber": "0ba965875d37416a935b6552cd6929d9",
+				"type": "VariableActuator",
+				"config": {
+					"name": "Test",
+					"protocolId": "Virtual",
+					"timeOfAcceptance": "2019-02-25T19:53:16.183Z",
+					"timeOfDiscovery": "2019-01-30T01:59:52.451Z"
+				},
+				"capabilities": [
+					"/capability/692d923c583346e2a358db8e32b3c505"
+				]
+			}
+		],
+		"locations": [],
+		"capabilities": [
+			{
+				"id": "692d923c583346e2a358db8e32b3c505",
+				"type": "booleanStateActuator",
+				"device": "/device/0ba965875d37416a935b6552cd6929d9",
+				"config": {
+					"name": "Boolean State Actuator",
+					"activityLogActive": true
+				}
+			}
+		],
+		"interactions": [],
+		"homeSetups": [],
+		"deleted": [],
+		"configVersion": 246
+	}
+}

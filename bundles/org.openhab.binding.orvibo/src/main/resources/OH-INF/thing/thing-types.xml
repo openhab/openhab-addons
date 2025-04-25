@@ -7,6 +7,7 @@
 	<thing-type id="s20">
 		<label>Orvibo S20 Smart Wifi Socket</label>
 		<description>This is an Orvibo S20 Smart Wifi Socket</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 		</channels>
@@ -14,7 +15,6 @@
 			<parameter name="deviceId" type="text" required="true">
 				<label>MAC Address</label>
 				<description>The MAC address identifies a specific S20 Socket.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

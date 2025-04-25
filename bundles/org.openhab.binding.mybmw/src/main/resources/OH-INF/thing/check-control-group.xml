@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="check-control-values">
+		<label>Check Control Messages</label>
+		<description>Shows current active CheckControl messages</description>
+		<channels>
+			<channel id="name" typeId="checkcontrol-name-channel"/>
+			<channel id="details" typeId="checkcontrol-details-channel"/>
+			<channel id="severity" typeId="checkcontrol-severity-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

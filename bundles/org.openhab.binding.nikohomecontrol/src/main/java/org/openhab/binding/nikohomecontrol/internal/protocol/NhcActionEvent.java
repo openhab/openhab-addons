@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,18 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public interface NhcActionEvent {
+public interface NhcActionEvent extends NhcBaseEvent {
 
     /**
      * This method is called when an action event is received from the Niko Home Control controller.
      *
      * @param state
      */
-    public void actionEvent(int state);
-
-    /**
-     * Called to indicate the action has been removed from the Niko Home Control controller.
-     *
-     */
-    public void actionRemoved();
+    void actionEvent(int state);
 }

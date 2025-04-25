@@ -1,13 +1,11 @@
 # E3DC
 
-<img align="right" src="./doc/E3DC_logo.png"/>
-
-Integrates the Home Power Plants from E3/DC GmbH into openHAB. 
+Integrates the Home Power Plants from E3/DC GmbH into openHAB.
 See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
-The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
-E3DC devices are integrated into the Modbus Binding. 
+The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.
+E3DC devices are integrated into the Modbus Binding.
 
-See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup. 
+See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup.
 
 ## Supported Things
 
@@ -18,11 +16,10 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 | E3DC Home Power Plant | e3dc          | Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant    |
 | E3DC Wallbox          | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed     |
 
-
 ## Discovery
 
-There's no discovery. 
-Modbus registers are available for all devices. 
+There's no discovery.
+Modbus registers are available for all devices.
 
 ## Thing Configuration
 
@@ -32,43 +29,42 @@ The needed Things can be found in the **Modbus Binding** and have to be added ma
 
 1. Create _Modbus TCP Bridge_ with matching Settings of your E3DC Device
 
-* IP Address
-* Device ID
-* Port ID
+- IP Address
+- Device ID
+- Port ID
 
-2. Create _E3DC Home Power Plant_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 1000 Milliseconds
+1. Create _E3DC Home Power Plant_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 1000 Milliseconds
 
-3. If you have a Wallbox attached add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge. Configuration requires a Wallbox ID between 0 and 7.
+1. If you have a Wallbox attached add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge. Configuration requires a Wallbox ID between 0 and 7.
 
 Check the [full example Things](#things) for manual setup.
 
-### Modbus TCP Slave 
+### Modbus TCP Slave
 
-| Parameter       | Type    | Description                                                             |           
+| Parameter       | Type    | Description                                                             |
 |-----------------|---------|-------------------------------------------------------------------------|
 | host            | text    | IP Address of your device                                               |
 | port            | integer | TCP Port of your E3DC device Modbus Settings.. Default is 502 |
 | deviceid        | integer | Modbus ID of your E3DC device Modbus Settings. Default is 1           |
 
-### E3DC Home Power Plant 
+### E3DC Home Power Plant
 
 Select as Bridge your previously created Modbus TCP Slave.
-| Parameter       | Type    | Description                                                             |           
+| Parameter       | Type    | Description                                                             |
 |-----------------|---------|-------------------------------------------------------------------------|
 | refresh         | integer | Refresh Rate of E3DC values in Milliseconds                             |
-
 
 ### E3DC Wallbox
 
 Select as Bridge your previously created E3DC Home Power Plant.
 
-| Parameter       | Type    | Description                                                                 |           
+| Parameter       | Type    | Description                                                                 |
 |-----------------|---------|-----------------------------------------------------------------------------|
 | wallboxId       | integer | E3DC supports up to 8 Wallboxes - select a value from 0 to 7                |
 
 ## Channels
 
-The E3DC device offers quite an amount of channels. For clustering 4 Channel Groups are used: 
+The E3DC device offers quite an amount of channels. For clustering 4 Channel Groups are used:
 
 ### Channel Group _Information Block_
 
@@ -82,39 +78,36 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | E3DC Firmware Release | info             | firmware-release    | String | Firmware installed on this particular E3DC Device |
 | E3DC Serial Number    | info             | serial-number       | String | Serial Number of this particular E3DC Device      |
 
-
 ### Channel Group _Power Block_
 
-| Channel Label                 |  Channel Group ID | Channel ID                   | Type                   | Description                  |
-|-------------------------------|-------------------|------------------------------|------------------------|------------------------------|
-| PV Output                     | power             | pv-power-supply              |  Number:Power          | Photovoltaic Power Production    |
-| Battery Discharge             | power             | battery-power-supply         |  Number:Power          | Battery discharges and provides Power    |
-| Battery Charge                | power             | battery-power-consumption    |  Number:Power          | Battery charges and consumes Power    |
-| Household Consumption         | power             | household-power-consumption  |  Number:Power          | Household consuming Power    |
-| Grid Power Consumption        | power             | grid-power-consumption       |  Number:Power          | Grid Power is needed in order to satisfy your overall Power consumption    |
-| Grid Power Supply             | power             | grid-power-supply            |  Number:Power          | More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid    |
-| External Power Supply         | power             | external-power-supply        |  Number:Power          | Power produced by an external device which is attached to your E3DC device    |
-| Wallbox Power Consumption     | power             | wallbox-power-consumption    |  Number:Power          | Power consumption of attached Wallboxes    |
-| Wallbox PV Power Consumption  | power             | wallbox-pv-power-consumption |  Number:Power          | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
-| Autarky                       | power             | autarky-channel              |  Number:Dimensionless  | Your current Autarky Level in Percent   |
-| Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level in Percent  |
-| Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery in Percent       |
-
+| Channel Label                 |  Channel Group ID | Channel ID                   | Type                   | Description                                                                            |
+|-------------------------------|-------------------|------------------------------|------------------------|----------------------------------------------------------------------------------------|
+| PV Output                     | power             | pv-power-supply              |  Number:Power          | Photovoltaic Power Production                                                          |
+| Battery Discharge             | power             | battery-power-supply         |  Number:Power          | Battery discharges and provides Power                                                  |
+| Battery Charge                | power             | battery-power-consumption    |  Number:Power          | Battery charges and consumes Power                                                     |
+| Household Consumption         | power             | household-power-consumption  |  Number:Power          | Household consuming Power                                                              |
+| Grid Power Consumption        | power             | grid-power-consumption       |  Number:Power          | More Photovoltaic Power is produced than needed. Additional Power is consumed by Grid  |
+| Grid Power Supply             | power             | grid-power-supply            |  Number:Power          | Grid Power is needed in order to satisfy your overall Power consumption                |
+| External Power Supply         | power             | external-power-supply        |  Number:Power          | Power produced by an external device which is attached to your E3DC device             |
+| Wallbox Power Consumption     | power             | wallbox-power-consumption    |  Number:Power          | Power consumption of attached Wallboxes                                                |
+| Wallbox PV Power Consumption  | power             | wallbox-pv-power-consumption |  Number:Power          | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes                 |
+| Autarky                       | power             | autarky-channel              |  Number:Dimensionless  | Your current Autarky Level in Percent                                                  |
+| Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level in Percent                            |
+| Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery in Percent                                       |
 
 ### Channel Group _String Details Block_
 
-| Channel Label         | Channel Group ID | Channel ID         | Type                      | Description                  |
-|-----------------------|------------------|--------------------|---------------------------|------------------------------|
-| String 1 Potential    | strings          | string1-dc-voltage |  Number:ElectricPotential | Voltage on String 1           |
-| String 2 Potential    | strings          | string2-dc-voltage |  Number:ElectricPotential | Voltage on String 2           |
-| String 3 Potential    | strings          | string3-dc-voltage |  Number:ElectricPotential | Voltage on String 3           |
-| String 1 Current      | strings          | string1-dc-current |  Number:ElectricCurrent   | Current on String 1       |
-| String 2 Current      | strings          | string2-dc-current |  Number:ElectricCurrent   | Current on String 2       |
-| String 3 Current      | strings          | string3-dc-current |  Number:ElectricCurrent   | Current on String 3       |
+| Channel Label         | Channel Group ID | Channel ID         | Type                      | Description                |
+|-----------------------|------------------|--------------------|---------------------------|----------------------------|
+| String 1 Potential    | strings          | string1-dc-voltage |  Number:ElectricPotential | Voltage on String 1        |
+| String 2 Potential    | strings          | string2-dc-voltage |  Number:ElectricPotential | Voltage on String 2        |
+| String 3 Potential    | strings          | string3-dc-voltage |  Number:ElectricPotential | Voltage on String 3        |
+| String 1 Current      | strings          | string1-dc-current |  Number:ElectricCurrent   | Current on String 1        |
+| String 2 Current      | strings          | string2-dc-current |  Number:ElectricCurrent   | Current on String 2        |
+| String 3 Current      | strings          | string3-dc-current |  Number:ElectricCurrent   | Current on String 3        |
 | String 1 Power        | strings          | string1-dc-output  |  Number:Power             | Power produced by String 1 |
 | String 2 Power        | strings          | string2-dc-output  |  Number:Power             | Power produced by String 2 |
 | String 3 Power        | strings          | string3-dc-output  |  Number:Power             | Power produced by String 3 |
-
 
 ### Channel _EMS Block_
 
@@ -151,22 +144,22 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 
 ## Full Example
 
-Following example provides the full configuration. 
+Following example provides the full configuration.
 If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
 
 ### Things
 
-```
+```java
 Bridge modbus:tcp:device "E3DC Modbus TCP" [ host="192.168.178.56", port=502, id=1 ] {
-	Bridge e3dc powerplant "E3DC Power Plant" [ refresh=2500 ] {
-    	 Thing e3dc-wallbox wallbox0		"E3DC Wallbox"				[ wallboxId=0]
+ Bridge e3dc powerplant "E3DC Power Plant" [ refresh=2500 ] {
+      Thing e3dc-wallbox wallbox0  "E3DC Wallbox"    [ wallboxId=0]
     }
 }
 ```
 
 ### Items
 
-```
+```java
 String    E3DC_ModbusId                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-id" }
 String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-firmware" }
 Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="modbus:e3dc:device:powerplant:info#supported-registers" }
@@ -175,18 +168,18 @@ String    E3DC_ModelName                "E3DC Model"                (e3dc)      
 String    E3DC_Firmware                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#firmware-release" }
 String    E3DC_SerialNumber             "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#serial-number" }
 
-Number:Power    E3DC_PVPower                  "E3DC PV Power"             (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#pv-power-supply" }
-Number:Power    E3DC_BatteryDischarge         "E3DC Battery Discharge"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-power-supply" }
-Number:Power    E3DC_BatteryCharge            "E3DC Battery Charge"       (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-power-consumption" }
-Number:Power    E3DC_Household                "E3DC Household Consumption"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#household-power-consumption" }
-Number:Power    E3DC_GridConsumption          "E3DC Grid Consumption"     (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#grid-power-consumption" }
-Number:Power    E3DC_GridSupply               "E3DC Grid Supply "         (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#grid-power-supply" }
-Number:Power    E3DC_ExternalSupply           "E3DC External Supply"      (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#external-power-supply" }
-Number:Power    E3DC_WallboxConsumption       "E3DC Wallbox Consumption"  (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#wallbox-power-consumption" }
-Number:Power    E3DC_WallboxPVConsumption     "E3DC Wallbox PV Consumption"   (e3dc)  { channel="modbus:e3dc:device:powerplant:power#wallbox-pv-power-consumption" }
-Number:Dimensionless    E3DC_AutarkyLevel             "E3DC Autarky Level"        (e3dc)  { channel="modbus:e3dc:device:powerplant:power#autarky" }
-Number:Dimensionless    E3DC_SelfConsumptionLevel     "E3DC Self Consumption Level"   (e3dc)  { channel="modbus:e3dc:device:powerplant:power#self-consumption" }
-Number:Dimensionless    E3DC_BatterySOC               "E3DC Battery SOC"          (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-soc" }
+Number:Power    E3DC_PVPower                  "E3DC PV Power"              (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#pv-power-supply" }
+Number:Power    E3DC_BatteryDischarge         "E3DC Battery Discharge"     (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-power-supply" }
+Number:Power    E3DC_BatteryCharge            "E3DC Battery Charge"        (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-power-consumption" }
+Number:Power    E3DC_Household                "E3DC Household Consumption" (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#household-power-consumption" }
+Number:Power    E3DC_GridConsumption          "E3DC Power to Grid"         (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#grid-power-consumption" }
+Number:Power    E3DC_GridSupply               "E3DC Power from Grid"       (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#grid-power-supply" }
+Number:Power    E3DC_ExternalSupply           "E3DC External Supply"       (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#external-power-supply" }
+Number:Power    E3DC_WallboxConsumption       "E3DC Wallbox Consumption"   (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#wallbox-power-consumption" }
+Number:Power    E3DC_WallboxPVConsumption     "E3DC Wallbox PV Consumption"         (e3dc)  { channel="modbus:e3dc:device:powerplant:power#wallbox-pv-power-consumption" }
+Number:Dimensionless    E3DC_AutarkyLevel             "E3DC Autarky Level"          (e3dc)  { channel="modbus:e3dc:device:powerplant:power#autarky" }
+Number:Dimensionless    E3DC_SelfConsumptionLevel     "E3DC Self Consumption Level" (e3dc)  { channel="modbus:e3dc:device:powerplant:power#self-consumption" }
+Number:Dimensionless    E3DC_BatterySOC               "E3DC Battery SOC"            (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-soc" }
 
 Switch    E3DC_WB_Available             "E3DC WB available"          (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-available" }
 Switch    E3DC_WB_Sunmode               "E3DC WB Sunmode"            (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-sunmode" }
@@ -224,7 +217,7 @@ Switch    E3DC_EMS_DischargeLockTime            "E3DC EMS Discharge Lock TIme"  
 
 ### Sitemap
 
-```
+```perl
 sitemap E3DC label="E3DC Binding Sitemap" {
   Frame label="Info" {
     Text    item=E3DC_ModbusId                  label="Modbus-ID [%s]"
@@ -235,7 +228,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Text    item=E3DC_Firmware                  label="Firmware [%s]"
     Text    item=E3DC_SerialNumber              label="Serial Number[%s]"
   }
-  
+
     Frame label="Power Producer" {
       Text    item=E3DC_PVPower                 label="PV Power [%d %unit%]"
       Text    item=E3DC_BatteryDischarge        label="Battery Discharge [%d %unit%]"
@@ -254,7 +247,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_SelfConsumptionLevel    label="Self Consumption [%d %%]"
       Text    item=E3DC_BatterySOC              label="SOC [%d %%]"
     }
-  
+
   Frame label="Wallbox" {
     Switch    item=E3DC_WB_Available            label="Available [%s]"
     Switch    item=E3DC_WB_Sunmode              label="Sunmode [%s]"
@@ -270,7 +263,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
     Switch    item=E3DC_WB_1PhaseCharging       label="1-Phase charging [%s]"
   }
-  
+
     Frame label="String 1 Details" {
       Text    item=E3DC_String1V                label="Volt [%d %unit%]"
       Text    item=E3DC_String1A                label="Ampere [%.2f %unit%]"
@@ -286,7 +279,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_String3A                label="Ampere [%.2f %unit%]"
       Text    item=E3DC_String3W                label="Watt [%d %unit%]"
     }
-  
+
   Frame label="EMS" {
     Text      item=E3DC_EMS_Status                      label="Status [%s]"
     Switch    item=E3DC_EMS_BatteryChargingLock         label="Battery Charging Lock [%s]"
@@ -300,18 +293,17 @@ sitemap E3DC label="E3DC Binding Sitemap" {
 }
 ```
 
-
 ## Going further
 
 Setup and configured everything the right way? Congratulations, you've now the recent E3DC values on your table. Don't stop and go ahead!
 
 ### Persistence
 
-You can see in the example item configuration, that I added some items to the "persist". 
-Feel free to choose your own group name but this opens the possibility to store the items in a database. 
+You can see in the example item configuration, that I added some items to the "persist".
+Feel free to choose your own group name but this opens the possibility to store the items in a database.
 See following *.persist file configuration how this can be established.
 
-```
+```text
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -325,33 +317,33 @@ Items {
 }
 ```
 
-### Visualization 
+### Visualization
 
-After the timeline is available in your database you can continue with Visualization. 
+After the timeline is available in your database you can continue with Visualization.
 I like the Grafana approach and I used the [InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
 from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
 
-<img style="float: right;" src="doc/GrafanaPV.png">
+<img align="right" src="./doc/GrafanaPV.png"/>
 
 In the above picture there are two graphs
 
-* The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
-* The bottom graph show the producers & consumers. 
-    * Battery in blue charging during the day, discharging at night
-    * Household consumption in green 
-    * Wallbox consumption in orange
-    * Grid consumption / supply in yellow
+- The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
+- The bottom graph show the producers & consumers.
+  - Battery in blue charging during the day, discharging at night
+  - Household consumption in green
+  - Wallbox consumption in orange
+  - Grid consumption / supply in yellow
 
-### Cross Connections 
+### Cross Connections
 
-With the above setup you have now a great visualization and overview regarding your electric production and consumption. 
-Now use the Power of openHAB and cross connect your data. 
+With the above setup you have now a great visualization and overview regarding your electric production and consumption.
+Now use the Power of openHAB and cross connect your data.
 For example you can use the [OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
-the cloudiness in Percent. 
+the cloudiness in Percent.
 With a modified *.persist file I store the cloudiness forecast also in the database
 
-```
+```text
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -366,8 +358,8 @@ Items {
 }
 ```
 
-Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production. 
+Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production.
 
-<img style="float: right;" src="doc/GrafanaCloudiness.png">
+<img align="right" src="./doc/GrafanaCloudiness.png"/>
 
 I personally would like to have more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"

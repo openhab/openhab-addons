@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeMigrationService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -48,16 +51,24 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
     private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3;
     private static final int EVENT_STREAM_READ_TIMEOUT = 200;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_MODELS,
-            THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_VEHICLE,
+            THING_TYPE_MODELS, THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY);
 
     private final ClientBuilder clientBuilder;
+    private final HttpClientFactory httpClientFactory;
+    private final WebSocketFactory webSocketFactory;
+    private final ThingTypeMigrationService thingTypeMigrationService;
 
     @Activate
-    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder) {
+    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder, @Reference HttpClientFactory httpClientFactory,
+            final @Reference WebSocketFactory webSocketFactory,
+            final @Reference ThingTypeMigrationService thingTypeMigrationService) {
         this.clientBuilder = clientBuilder //
                 .connectTimeout(EVENT_STREAM_CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(EVENT_STREAM_READ_TIMEOUT, TimeUnit.SECONDS);
+        this.httpClientFactory = httpClientFactory;
+        this.webSocketFactory = webSocketFactory;
+        this.thingTypeMigrationService = thingTypeMigrationService;
     }
 
     @Override
@@ -70,9 +81,10 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new TeslaAccountHandler((Bridge) thing, clientBuilder.build());
+            return new TeslaAccountHandler((Bridge) thing, clientBuilder.build(), httpClientFactory,
+                    thingTypeMigrationService);
         } else {
-            return new TeslaVehicleHandler(thing, clientBuilder);
+            return new TeslaVehicleHandler(thing, webSocketFactory);
         }
     }
 }

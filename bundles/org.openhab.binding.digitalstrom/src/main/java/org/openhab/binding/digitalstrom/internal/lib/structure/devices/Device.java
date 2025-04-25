@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,9 @@ import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
@@ -129,18 +130,18 @@ public interface Device extends GeneralDeviceInformation {
 
     /**
      * Returns the current functional color group of this device.
-     * For more informations please have a look at {@link FunctionalColorGroupEnum}.
+     * For more informations please have a look at {@link ApplicationGroup}.
      *
      * @return current functional color group
      */
-    FunctionalColorGroupEnum getFunctionalColorGroup();
+    ApplicationGroup getFunctionalColorGroup();
 
     /**
      * Sets the functional color group of this device.
      *
      * @param fuctionalColorGroup to set
      */
-    void setFunctionalColorGroup(FunctionalColorGroupEnum fuctionalColorGroup);
+    void setFunctionalColorGroup(ApplicationGroup fuctionalColorGroup);
 
     /**
      * Returns the current output mode of this device.
@@ -152,13 +153,15 @@ public interface Device extends GeneralDeviceInformation {
      */
     OutputModeEnum getOutputMode();
 
+    List<OutputChannelEnum> getOutputChannels();
+
     /**
      * Adds an increase command as {@link DeviceStateUpdate} to the list of outstanding commands.
      */
     void increase();
 
     /**
-     * Adds an decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
+     * Adds a decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
      */
     void decrease();
 
@@ -170,7 +173,7 @@ public interface Device extends GeneralDeviceInformation {
     int getSlatPosition();
 
     /**
-     * Adds an set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
+     * Adds a set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
      * outstanding commands.
      *
      * @param slatPosition to set
@@ -200,7 +203,7 @@ public interface Device extends GeneralDeviceInformation {
     short getOutputValue();
 
     /**
-     * Adds an set output value command as {@link DeviceStateUpdate} with the given output value to the list of
+     * Adds a set output value command as {@link DeviceStateUpdate} with the given output value to the list of
      * outstanding commands.
      *
      * @param outputValue to set
@@ -215,9 +218,9 @@ public interface Device extends GeneralDeviceInformation {
     short getMaxOutputValue();
 
     /**
-     * Returns a list with group id's in which the device is part of.
+     * Returns a list with group ids which the device is part of.
      *
-     * @return List of group id's
+     * @return List of group ids
      */
     List<Short> getGroups();
 
@@ -389,14 +392,14 @@ public interface Device extends GeneralDeviceInformation {
     List<Short> getSavedScenes();
 
     /**
-     * Initializes a internal device update as call scene for the given scene number.
+     * Initializes an internal device update as call scene for the given scene number.
      *
      * @param sceneNumber to call
      */
     void internalCallScene(Short sceneNumber);
 
     /**
-     * Initializes a internal device update as undo scene.
+     * Initializes an internal device update as undo scene.
      */
     void internalUndoScene();
 
@@ -422,7 +425,7 @@ public interface Device extends GeneralDeviceInformation {
     short getAnglePosition();
 
     /**
-     * Adds an set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
+     * Adds a set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
      * outstanding commands.
      *
      * @param angle to set
@@ -516,7 +519,7 @@ public interface Device extends GeneralDeviceInformation {
     /**
      * Returns true, if this {@link Device} is a heating device. That means, that the output mode of this {@link Device}
      * is one of the following modes {@link OutputModeEnum#PWM} or {@link OutputModeEnum#SWITCH} and the
-     * {@link FuncNameAndColorGroupEnum} is {@link FuncNameAndColorGroupEnum#HEATING}.
+     * {@link ApplicationGroup} is {@link ApplicationGroup#HEATING}.
      *
      * @return true, if it is a heating device
      */
@@ -742,7 +745,9 @@ public interface Device extends GeneralDeviceInformation {
     boolean hasPowerSensors();
 
     /**
-     * Only needed for {@link DeviceConsumptionSensorJob}'s. To set the internal digitalSTROM sensor value please use
+     * Only needed for
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob}'s.
+     * To set the internal digitalSTROM sensor value please use
      * {@link #setDsSensorValue(SensorEnum, Integer)}.
      *
      * @param sensorType of the sensor
@@ -751,12 +756,14 @@ public interface Device extends GeneralDeviceInformation {
     void setDeviceSensorDsValueBySensorJob(SensorEnum sensorType, Integer value);
 
     /**
-     * Enables the internal sensor echo box for {@link EventNames#DEVICE_SENSOR_VALUE} events.
+     * Enables the internal sensor echo box for
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames#DEVICE_SENSOR_VALUE} events.
      */
     void enableSensorEchoBox();
 
     /**
-     * Disables the internal sensor echo box for {@link EventNames#DEVICE_SENSOR_VALUE} events.
+     * Disables the internal sensor echo box for
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames#DEVICE_SENSOR_VALUE} events.
      */
     void disableSensorEchoBox();
 
@@ -768,8 +775,9 @@ public interface Device extends GeneralDeviceInformation {
     boolean isSensorEchoBoxEnabled();
 
     /**
-     * Sets the {@link DeviceSensorValue} through a {@link EventItem} of the type
-     * {@link EventNames#DEVICE_SENSOR_VALUE}.
+     * Sets the {@link DeviceSensorValue} through an
+     * {@link EventItem} of the type
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames#DEVICE_SENSOR_VALUE}.
      *
      * @param event of the sensor update
      */

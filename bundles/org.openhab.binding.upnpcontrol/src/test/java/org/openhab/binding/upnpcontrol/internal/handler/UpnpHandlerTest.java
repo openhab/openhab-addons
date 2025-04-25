@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings({ "null" })
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class UpnpHandlerTest {
 
@@ -145,9 +145,8 @@ public class UpnpHandlerTest {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
         }).when(executor).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), any(TimeUnit.class));
-        doAnswer(invocation -> {
-            return SCHEDULER.schedule((Runnable) invocation.getArguments()[0], 500, TimeUnit.MILLISECONDS);
-        }).when(executor).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+        doAnswer(invocation -> SCHEDULER.schedule((Runnable) invocation.getArguments()[0], 500, TimeUnit.MILLISECONDS))
+                .when(executor).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
     }
 
     public void tearDown() {

@@ -12,6 +12,7 @@
 			<channel id="transformer-temperature" typeId="transformer-temperature-type"/>
 			<channel id="other-temperature" typeId="other-temperature-type"/>
 			<channel id="status" typeId="status-type"/>
+			<channel id="status-vendor" typeId="status-vendor-type"/>
 		</channels>
 	</channel-group-type>
 

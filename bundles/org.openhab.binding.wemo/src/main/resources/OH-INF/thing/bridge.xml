@@ -8,16 +8,15 @@
 	<bridge-type id="bridge">
 		<label>WeMo Link</label>
 		<description>The Wemo Link represents the Belkin WeMo Link bridge.</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Belkin</property>
 		</properties>
 
 		<config-description>
-			<parameter name="udn" type="text">
+			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Link Device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</bridge-type>

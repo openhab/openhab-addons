@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ public class AirbaseModelInfo {
     public String ret = "";
     public int zonespresent;
     public int commonzone;
-    public int frate_steps; // fan rate steps
+    public int fRateSteps; // fan rate steps
     public EnumSet<AirbaseFeature> features;
 
     private AirbaseModelInfo() {
@@ -43,17 +43,17 @@ public class AirbaseModelInfo {
     }
 
     public static AirbaseModelInfo parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ret = responseMap.getOrDefault("ret", "");
         info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(0);
         info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))
                 .flatMap(value -> InfoParser.parseInt(value)).orElse(0);
-        info.frate_steps = Optional.ofNullable(responseMap.get("frate_steps"))
+        info.fRateSteps = Optional.ofNullable(responseMap.get("frate_steps"))
                 .flatMap(value -> InfoParser.parseInt(value)).orElse(1);
         for (AirbaseFeature f : AirbaseFeature.values()) {
             if ("1".equals(responseMap.get(f.getValue()))) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,10 @@ package org.openhab.binding.draytonwiser.internal.discovery;
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
@@ -45,10 +45,11 @@ import org.slf4j.LoggerFactory;
 public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(DraytonWiserMDNSDiscoveryParticipant.class);
+    private final Pattern findIllegalChars = Pattern.compile("[^A-Za-z0-9_-]");
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_BRIDGE);
+        return Set.of(THING_TYPE_BRIDGE);
     }
 
     @Override
@@ -69,10 +70,11 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
                 if (addresses.length > 0 && addresses[0] != null) {
                     properties.put(PROP_ADDRESS, addresses[0].getHostAddress());
                     properties.put(REFRESH_INTERVAL, DEFAULT_REFRESH_SECONDS);
-                }
 
-                return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(PROP_ADDRESS).withLabel("Heat Hub - " + service.getName()).build();
+                    return DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withRepresentationProperty(PROP_ADDRESS).withLabel("Heat Hub - " + service.getName())
+                            .build();
+                }
             }
         }
         return null;
@@ -83,7 +85,7 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
         if (service.getType() != null && service.getType().equals(getServiceType())
                 && service.getName().contains("WiserHeat")) {
             logger.trace("Discovered a Drayton Wiser Heat Hub thing with name '{}'", service.getName());
-            return new ThingUID(THING_TYPE_BRIDGE, service.getName());
+            return new ThingUID(THING_TYPE_BRIDGE, findIllegalChars.matcher(service.getName()).replaceAll(""));
         }
         return null;
     }

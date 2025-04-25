@@ -1,0 +1,121 @@
+{
+  "temp_unit": "fahrenheit",
+  "pit": {
+    "enabled": true,
+    "timestamp": "2020-05-29T17:00:54-05:00",
+    "setpoint": 110,
+    "current": 77.86,
+    "control_out": 100,
+    "ch": 0,
+    "type": "False",
+    "open_lid": "False"
+  },
+  "pit2": {
+    "enabled": false
+  },
+  "cpu_load": 94.267515923567,
+  "cpu_temp": 93.56,
+  "channel": {
+    "0": {
+      "temp": 78.28,
+      "color": "green",
+      "state": "ok",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal0",
+      "alert": false,
+      "show": true
+    },
+    "1": {
+      "temp": 0,
+      "color": "red",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal1",
+      "alert": false,
+      "show": true
+    },
+    "2": {
+      "temp": 0,
+      "color": "blue",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal2",
+      "alert": false,
+      "show": true
+    },
+    "3": {
+      "temp": 0,
+      "color": "olive",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal3",
+      "alert": false,
+      "show": true
+    },
+    "4": {
+      "temp": 0,
+      "color": "magenta",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal4",
+      "alert": false,
+      "show": true
+    },
+    "5": {
+      "temp": 0,
+      "color": "yellow",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal5",
+      "alert": false,
+      "show": true
+    },
+    "6": {
+      "temp": 0,
+      "color": "violet",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal6",
+      "alert": false,
+      "show": true
+    },
+    "7": {
+      "temp": 0,
+      "color": "purple",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal7",
+      "alert": false,
+      "show": true
+    },
+    "8": {
+      "temp": 0,
+      "color": "dark-violet",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal8 - Maverick 1",
+      "alert": false,
+      "show": true
+    },
+    "9": {
+      "temp": 0,
+      "color": "seagreen",
+      "state": "er",
+      "temp_min": -20,
+      "temp_max": 200,
+      "name": "Kanal9 - Maverick 2",
+      "alert": false,
+      "show": true
+    }
+  },
+  "timestamp": "2020-05-29T16:06:00-05:00"
+}

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,55 +14,62 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.DatagramPacket;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.IllformedLocaleException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.MieleGatewayCommunicationController;
+import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.api.dto.HomeDevice;
+import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
+import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * The {@link MieleBridgeHandler} is responsible for handling commands, which are
@@ -70,562 +77,494 @@ import com.google.gson.JsonParser;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Fixed lifecycle issues
- * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
- */
+ * @author Martin Lepsy - Added protocol information to support WiFi devices and some refactoring for HomeDevice
+ * @author Jacob Laursen - Fixed multicast and protocol support (Zigbee/LAN)
+ **/
+@NonNullByDefault
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_XGW3000);
 
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    protected static final int POLLING_PERIOD = 15; // in seconds
-    protected static final int JSON_RPC_PORT = 2810;
-    protected static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
-    protected static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
-    private boolean lastBridgeConnectionState = false;
-    private boolean currentBridgeConnectionState = false;
+    private static final int POLLING_PERIOD_SECONDS = 15;
+    private static final int JSON_RPC_PORT = 2810;
+    private static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
+    private static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
+    private static final int MULTICAST_TIMEOUT_MILLIS = 100;
+    private static final int MULTICAST_SLEEP_MILLIS = 500;
 
-    protected Random rand = new Random();
-    protected Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
-    protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
-    protected ScheduledFuture<?> pollingJob;
-    protected ExecutorService executor;
-    protected Future<?> eventListenerJob;
+    private boolean lastBridgeConnectionState = false;
 
-    protected List<HomeDevice> previousHomeDevices = new CopyOnWriteArrayList<>();
+    private final HttpClient httpClient;
+    private final Gson gson = new Gson();
+    private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
 
-    protected URL url;
-    protected Map<String, String> headers;
+    private Set<DiscoveryListener> discoveryListeners = ConcurrentHashMap.newKeySet();
+    private Map<String, ApplianceStatusListener> applianceStatusListeners = new ConcurrentHashMap<>();
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ExecutorService executor;
+    private @Nullable Future<?> eventListenerJob;
 
-    // Data structures to de-JSONify whatever Miele appliances are sending us
-    public class HomeDevice {
+    private Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<>();
+    private Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<>();
 
-        private static final String PROTOCOL_LAN = "LAN";
-
-        public String Name;
-        public String Status;
-        public String ParentUID;
-        public String ProtocolAdapterName;
-        public String Vendor;
-        public String UID;
-        public String Type;
-        public JsonArray DeviceClasses;
-        public String Version;
-        public String TimestampAdded;
-        public JsonObject Error;
-        public JsonObject Properties;
-
-        HomeDevice() {
-        }
-
-        public String getId() {
-            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
-        }
-
-        public String getProtocol() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? HDM_LAN : HDM_ZIGBEE;
-        }
-
-        public String getApplianceId() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? StringUtils.right(UID, UID.length() - HDM_LAN.length())
-                    : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
-        }
-    }
-
-    public class DeviceClassObject {
-        public String DeviceClassType;
-        public JsonArray Operations;
-        public String DeviceClass;
-        public JsonArray Properties;
-
-        DeviceClassObject() {
-        }
-    }
-
-    public class DeviceOperation {
-        public String Name;
-        public String Arguments;
-        public JsonObject Metadata;
-
-        DeviceOperation() {
-        }
-    }
-
-    public class DeviceProperty {
-        public String Name;
-        public String Value;
-        public int Polling;
-        public JsonObject Metadata;
-
-        DeviceProperty() {
-        }
-    }
-
-    public class DeviceMetaData {
-        public String Filter;
-        public String description;
-        public String LocalizedID;
-        public String LocalizedValue;
-        public JsonObject MieleEnum;
-        public String access;
-    }
-
-    public MieleBridgeHandler(Bridge bridge) {
+    public MieleBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing the Miele bridge handler.");
+        logger.debug("Initializing handler for bridge {}", getThing().getUID());
 
-        if (getConfig().get(HOST) != null && getConfig().get(INTERFACE) != null) {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()
-                    && IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
-                try {
-                    url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
-                } catch (MalformedURLException e) {
-                    logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
-                    return;
-                }
-
-                // for future usage - no headers to be set for now
-                headers = new HashMap<>();
-
-                onUpdate();
-                updateStatus(ThingStatus.UNKNOWN);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
-                                + "/" + getConfig().get(INTERFACE));
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to the Miele gateway. host IP address or multicast interface are not set.");
+        if (!validateConfig(getConfig())) {
+            return;
         }
+
+        try {
+            gatewayCommunication = new MieleGatewayCommunicationController(httpClient, (String) getConfig().get(HOST));
+        } catch (URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        lastBridgeConnectionState = false;
+        schedulePollingAndEventListener();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(MieleApplianceDiscoveryService.class);
+    }
+
+    private boolean validateConfig(Configuration config) {
+        if (config.get(HOST) == null || ((String) config.get(HOST)).isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip-address-not-set");
+            return false;
+        }
+        if (config.get(INTERFACE) == null || ((String) config.get(INTERFACE)).isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip-multicast-interface-not-set");
+            return false;
+        }
+        if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
+                            + "\"]");
+            return false;
+        }
+        String language = (String) config.get(LANGUAGE);
+        if (language != null && !language.isBlank()) {
+            try {
+                new Locale.Builder().setLanguageTag(language).build();
+            } catch (IllformedLocaleException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.invalid-language [\"" + language + "\"]");
+                return false;
+            }
+        }
+        return true;
     }
 
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
-                try {
-                    if (isReachable((String) getConfig().get(HOST))) {
-                        currentBridgeConnectionState = true;
-                    } else {
-                        currentBridgeConnectionState = false;
-                        lastBridgeConnectionState = false;
-                        onConnectionLost();
+            String host = (String) getConfig().get(HOST);
+            try {
+                List<HomeDevice> homeDevices = getHomeDevices();
+
+                if (!lastBridgeConnectionState) {
+                    logger.debug("Connection to Miele Gateway {} established.", host);
+                    lastBridgeConnectionState = true;
+                }
+                updateStatus(ThingStatus.ONLINE);
+
+                refreshHomeDevices(homeDevices);
+
+                for (Entry<String, ApplianceStatusListener> entry : applianceStatusListeners.entrySet()) {
+                    String applianceId = entry.getKey();
+                    ApplianceStatusListener listener = entry.getValue();
+                    FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(
+                            applianceId);
+                    if (applianceIdentifier == null) {
+                        logger.debug("The appliance with ID '{}' was not found in appliance list from bridge.",
+                                applianceId);
+                        listener.onApplianceRemoved();
+                        continue;
                     }
 
-                    if (!lastBridgeConnectionState && currentBridgeConnectionState) {
-                        logger.debug("Connection to Miele Gateway {} established.", getConfig().get(HOST));
-                        lastBridgeConnectionState = true;
-                        onConnectionResumed();
-                    }
+                    Object[] args = new Object[2];
+                    args[0] = applianceIdentifier.getUid();
+                    args[1] = true;
+                    JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getDeviceClassObjects", args);
 
-                    if (currentBridgeConnectionState) {
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            List<HomeDevice> currentHomeDevices = getHomeDevices();
-                            for (HomeDevice hd : currentHomeDevices) {
-                                boolean isExisting = false;
-                                for (HomeDevice phd : previousHomeDevices) {
-                                    if (phd.UID.equals(hd.UID)) {
-                                        isExisting = true;
-                                        break;
-                                    }
-                                }
-                                if (!isExisting) {
-                                    logger.debug("A new appliance with ID '{}' has been added", hd.UID);
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onApplianceAdded(hd);
-                                    }
-                                }
+                    for (JsonElement obj : result.getAsJsonArray()) {
+                        try {
+                            DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
+
+                            // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
+                            if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
+                                continue;
                             }
 
-                            for (HomeDevice hd : previousHomeDevices) {
-                                boolean isCurrent = false;
-                                for (HomeDevice chd : currentHomeDevices) {
-                                    if (chd.UID.equals(hd.UID)) {
-                                        isCurrent = true;
-                                        break;
-                                    }
-                                }
-                                if (!isCurrent) {
-                                    logger.debug("The appliance with ID '{}' has been removed", hd);
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onApplianceRemoved(hd);
-                                    }
-                                }
-                            }
-
-                            previousHomeDevices = currentHomeDevices;
-
-                            for (Thing appliance : getThing().getThings()) {
-                                if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
-                                            + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
-
-                                    Object[] args = new Object[2];
-                                    args[0] = UID;
-                                    args[1] = true;
-                                    JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
-
-                                    if (result != null) {
-                                        for (JsonElement obj : result.getAsJsonArray()) {
-                                            try {
-                                                DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
-
-                                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                                    listener.onApplianceStateChanged(UID, dco);
-                                                }
-                                            } catch (Exception e) {
-                                                logger.debug("An exception occurred while quering an appliance : '{}'",
-                                                        e.getMessage());
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            listener.onApplianceStateChanged(dco);
+                        } catch (Exception e) {
+                            logger.debug("An exception occurred while querying an appliance : '{}'", e.getMessage());
                         }
                     }
-                } catch (Exception e) {
-                    logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
                 }
-            } else {
-                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
-            }
-        }
-
-        private boolean isReachable(String ipAddress) {
-            try {
-                // note that InetAddress.isReachable is unreliable, see
-                // http://stackoverflow.com/questions/9922543/why-does-inetaddress-isreachable-return-false-when-i-can-ping-the-ip-address
-                // That's why we do an HTTP access instead
-
-                // If there is no connection, this line will fail
-                JsonElement result = invokeRPC("system.listMethods", null);
-                if (result == null) {
-                    logger.debug("{} is not reachable", ipAddress);
-                    return false;
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                String message;
+                if (cause == null) {
+                    message = e.getMessage();
+                    logger.debug("An exception occurred while polling an appliance: '{}'", message);
+                } else {
+                    message = cause.getMessage();
+                    logger.debug("An exception occurred while polling an appliance: '{}' -> '{}'", e.getMessage(),
+                            message);
                 }
-            } catch (Exception e) {
-                return false;
+                if (lastBridgeConnectionState) {
+                    logger.debug("Connection to Miele Gateway {} lost.", host);
+                    lastBridgeConnectionState = false;
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             }
-
-            logger.debug("{} is reachable", ipAddress);
-            return true;
         }
     };
 
-    public List<HomeDevice> getHomeDevices() {
+    private synchronized void refreshHomeDevices(List<HomeDevice> homeDevices) {
+        for (HomeDevice hd : homeDevices) {
+            String key = hd.getApplianceIdentifier().getApplianceId();
+            if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
+                logger.debug("A new appliance with ID '{}' has been added", hd.UID);
+                for (DiscoveryListener listener : discoveryListeners) {
+                    listener.onApplianceAdded(hd);
+                }
+                ApplianceStatusListener listener = applianceStatusListeners
+                        .get(hd.getApplianceIdentifier().getApplianceId());
+                if (listener != null) {
+                    listener.onApplianceAdded(hd);
+                }
+            }
+            cachedHomeDevicesByApplianceId.put(key, hd);
+            cachedHomeDevicesByRemoteUid.put(hd.getRemoteUid(), hd);
+        }
+
+        Set<Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
+        Iterator<Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
+
+        while (iterator.hasNext()) {
+            Entry<String, HomeDevice> cachedEntry = iterator.next();
+            HomeDevice cachedHomeDevice = cachedEntry.getValue();
+            if (!homeDevices.stream().anyMatch(d -> d.UID.equals(cachedHomeDevice.UID))) {
+                logger.debug("The appliance with ID '{}' has been removed", cachedHomeDevice.UID);
+                for (DiscoveryListener listener : discoveryListeners) {
+                    listener.onApplianceRemoved(cachedHomeDevice);
+                }
+                ApplianceStatusListener listener = applianceStatusListeners
+                        .get(cachedHomeDevice.getApplianceIdentifier().getApplianceId());
+                if (listener != null) {
+                    listener.onApplianceRemoved();
+                }
+                cachedHomeDevicesByRemoteUid.remove(cachedHomeDevice.getRemoteUid());
+                iterator.remove();
+            }
+        }
+    }
+
+    public List<HomeDevice> getHomeDevicesEmptyOnFailure() {
+        try {
+            return getHomeDevices();
+        } catch (MieleRpcException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+            } else {
+                logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                        cause.getMessage());
+            }
+            return new ArrayList<>();
+        }
+    }
+
+    private List<HomeDevice> getHomeDevices() throws MieleRpcException {
         List<HomeDevice> devices = new ArrayList<>();
 
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            try {
-                String[] args = new String[1];
-                args[0] = "(type=SuperVision)";
-                JsonElement result = invokeRPC("HDAccess/getHomeDevices", args);
+        if (!isInitialized()) {
+            return devices;
+        }
 
-                for (JsonElement obj : result.getAsJsonArray()) {
-                    HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
-                    devices.add(hd);
-                }
-            } catch (Exception e) {
-                logger.debug("An exception occurred while getting the home devices :'{}'", e.getMessage());
+        String[] args = new String[1];
+        args[0] = "(type=SuperVision)";
+        JsonElement result = gatewayCommunication.invokeRPC("HDAccess/getHomeDevices", args);
+
+        for (JsonElement obj : result.getAsJsonArray()) {
+            HomeDevice hd = gson.fromJson(obj, HomeDevice.class);
+            if (hd != null) {
+                devices.add(hd);
             }
         }
         return devices;
     }
 
+    private @Nullable FullyQualifiedApplianceIdentifier getApplianceIdentifierFromApplianceId(String applianceId) {
+        HomeDevice homeDevice = this.cachedHomeDevicesByApplianceId.get(applianceId);
+        if (homeDevice == null) {
+            return null;
+        }
+
+        return homeDevice.getApplianceIdentifier();
+    }
+
     private Runnable eventListenerRunnable = () -> {
-        if (IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
-            while (true) {
-                // Get the address that we are going to connect to.
-                InetAddress address1 = null;
-                InetAddress address2 = null;
-                try {
-                    address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
-                    address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
-                } catch (UnknownHostException e) {
-                    logger.debug("An exception occurred while setting up the multicast receiver : '{}'",
-                            e.getMessage());
+        String interfaceIpAddress = (String) getConfig().get(INTERFACE);
+        if (!IP_PATTERN.matcher(interfaceIpAddress).matches()) {
+            logger.debug("Invalid IP address for the multicast interface: '{}'", interfaceIpAddress);
+            return;
+        }
+
+        // Get the address that we are going to connect to.
+        InetSocketAddress address1 = null;
+        InetSocketAddress address2 = null;
+        try {
+            address1 = new InetSocketAddress(InetAddress.getByName(JSON_RPC_MULTICAST_IP1), JSON_RPC_PORT);
+            address2 = new InetSocketAddress(InetAddress.getByName(JSON_RPC_MULTICAST_IP2), JSON_RPC_PORT);
+        } catch (UnknownHostException e) {
+            // This can only happen if the hardcoded literal IP addresses are invalid.
+            logger.debug("An exception occurred while setting up the multicast receiver: '{}'", e.getMessage());
+            return;
+        }
+
+        while (!Thread.currentThread().isInterrupted()) {
+            MulticastSocket clientSocket = null;
+            try {
+                clientSocket = new MulticastSocket(JSON_RPC_PORT);
+                clientSocket.setSoTimeout(MULTICAST_TIMEOUT_MILLIS);
+
+                NetworkInterface networkInterface = getMulticastInterface(interfaceIpAddress);
+                if (networkInterface == null) {
+                    logger.warn("Unable to find network interface for address {}", interfaceIpAddress);
+                    return;
                 }
+                clientSocket.setNetworkInterface(networkInterface);
+                clientSocket.joinGroup(address1, null);
+                clientSocket.joinGroup(address2, null);
 
-                byte[] buf = new byte[256];
-                MulticastSocket clientSocket = null;
-
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        clientSocket = new MulticastSocket(JSON_RPC_PORT);
-                        clientSocket.setSoTimeout(100);
+                        byte[] buf = new byte[256];
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                        clientSocket.receive(packet);
 
-                        clientSocket.setInterface(InetAddress.getByName((String) getConfig().get(INTERFACE)));
-                        clientSocket.joinGroup(address1);
-                        clientSocket.joinGroup(address2);
+                        String event = new String(packet.getData(), packet.getOffset(), packet.getLength(),
+                                StandardCharsets.ISO_8859_1);
+                        logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
+                                packet.getPort());
 
-                        while (true) {
-                            try {
-                                buf = new byte[256];
-                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                                clientSocket.receive(packet);
-
-                                String event = new String(packet.getData());
-                                logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
-                                        packet.getPort());
-
-                                DeviceProperty dp = new DeviceProperty();
-                                String uid = null;
-
-                                String[] parts = StringUtils.split(event, "&");
-                                for (String p : parts) {
-                                    String[] subparts = StringUtils.split(p, "=");
-                                    switch (subparts[0]) {
-                                        case "property": {
-                                            dp.Name = subparts[1];
-                                            break;
-                                        }
-                                        case "value": {
-                                            dp.Value = subparts[1];
-                                            break;
-                                        }
-                                        case "id": {
-                                            uid = subparts[1];
-                                            break;
-                                        }
-                                    }
+                        String[] parts = event.split("&");
+                        String id = null, name = null, value = null;
+                        for (String p : parts) {
+                            String[] subparts = p.split("=");
+                            switch (subparts[0]) {
+                                case "property": {
+                                    name = subparts[1];
+                                    break;
                                 }
-
-                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onAppliancePropertyChanged(uid, dp);
+                                case "value": {
+                                    value = subparts[1];
+                                    break;
                                 }
-                            } catch (SocketTimeoutException e) {
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException ex) {
-                                    logger.debug("Eventlistener has been interrupted.");
+                                case "id": {
+                                    id = subparts[1];
                                     break;
                                 }
                             }
                         }
-                    } catch (Exception ex) {
-                        logger.debug("An exception occurred while receiving multicast packets : '{}'", ex.getMessage());
-                    }
 
-                    // restart the cycle with a clean slate
-                    try {
-                        if (clientSocket != null) {
-                            clientSocket.leaveGroup(address1);
-                            clientSocket.leaveGroup(address2);
+                        if (id == null || name == null || value == null) {
+                            continue;
                         }
-                    } catch (IOException e) {
-                        logger.debug("An exception occurred while leaving multicast group : '{}'", e.getMessage());
-                    }
-                    if (clientSocket != null) {
-                        clientSocket.close();
+
+                        // In XGW 3000 firmware 2.03 this was changed from UID (hdm:ZigBee:0123456789abcdef#210)
+                        // to serial number (001234567890)
+                        FullyQualifiedApplianceIdentifier applianceIdentifier;
+                        if (id.startsWith("hdm:")) {
+                            applianceIdentifier = new FullyQualifiedApplianceIdentifier(id);
+                        } else {
+                            HomeDevice device = cachedHomeDevicesByRemoteUid.get(id);
+                            if (device == null) {
+                                logger.debug("Multicast event not handled as id {} is unknown.", id);
+                                continue;
+                            }
+                            applianceIdentifier = device.getApplianceIdentifier();
+                        }
+                        var deviceProperty = new DeviceProperty();
+                        deviceProperty.Name = name;
+                        deviceProperty.Value = value;
+                        ApplianceStatusListener listener = applianceStatusListeners
+                                .get(applianceIdentifier.getApplianceId());
+                        if (listener != null) {
+                            listener.onAppliancePropertyChanged(deviceProperty);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        try {
+                            Thread.sleep(MULTICAST_SLEEP_MILLIS);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            logger.debug("Event listener has been interrupted.");
+                            break;
+                        }
                     }
                 }
+            } catch (IOException e) {
+                logger.debug("An exception occurred while receiving multicast packets: '{}'", e.getMessage());
+            } finally {
+                // restart the cycle with a clean slate
+                try {
+                    if (clientSocket != null) {
+                        clientSocket.leaveGroup(address1, null);
+                        clientSocket.leaveGroup(address2, null);
+                    }
+                } catch (IOException e) {
+                    logger.debug("An exception occurred while leaving multicast group: '{}'", e.getMessage());
+                }
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
             }
-        } else {
-            logger.debug("Invalid IP address for the multicast interface : '{}'", getConfig().get(INTERFACE));
         }
     };
 
-    public JsonElement invokeOperation(String UID, String modelID, String methodName) {
-        return invokeOperation(UID, modelID, methodName, HDM_ZIGBEE);
-    }
+    private @Nullable NetworkInterface getMulticastInterface(String interfaceIpAddress) throws SocketException {
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 
-    public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            Object[] args = new Object[4];
-            args[0] = protocol + UID;
-            args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
-            args[2] = methodName;
-            args[3] = null;
-            return invokeRPC("HDAccess/invokeDCOOperation", args);
-        } else {
-            logger.debug("The Bridge is offline - operations can not be invoked.");
-            return null;
-        }
-    }
-
-    protected JsonElement invokeRPC(String methodName, Object[] args) {
-        int id = rand.nextInt(Integer.MAX_VALUE);
-
-        JsonObject req = new JsonObject();
-        req.addProperty("jsonrpc", "2.0");
-        req.addProperty("id", id);
-        req.addProperty("method", methodName);
-
-        JsonElement result = null;
-
-        JsonArray params = new JsonArray();
-        if (args != null) {
-            for (Object o : args) {
-                params.add(gson.toJsonTree(o));
+        @Nullable
+        NetworkInterface networkInterface;
+        while (networkInterfaces.hasMoreElements()) {
+            networkInterface = networkInterfaces.nextElement();
+            if (networkInterface.isLoopback()) {
+                continue;
             }
-        }
-        req.add("params", params);
-
-        String requestData = req.toString();
-        String responseData = null;
-        try {
-            responseData = post(url, headers, requestData);
-        } catch (Exception e) {
-            logger.debug("An exception occurred while posting data : '{}'", e.getMessage());
-        }
-
-        if (responseData != null) {
-            logger.debug("The request '{}' yields '{}'", requestData, responseData);
-            JsonParser parser = new JsonParser();
-            JsonObject resp = (JsonObject) parser.parse(new StringReader(responseData));
-
-            result = resp.get("result");
-            JsonElement error = resp.get("error");
-
-            if (error != null && !error.isJsonNull()) {
-                if (error.isJsonPrimitive()) {
-                    logger.debug("A remote exception occurred: '{}'", error.getAsString());
-                } else if (error.isJsonObject()) {
-                    JsonObject o = error.getAsJsonObject();
-                    Integer code = (o.has("code") ? o.get("code").getAsInt() : null);
-                    String message = (o.has("message") ? o.get("message").getAsString() : null);
-                    String data = (o.has("data") ? (o.get("data") instanceof JsonObject ? o.get("data").toString()
-                            : o.get("data").getAsString()) : null);
-                    logger.debug("A remote exception occurred: '{}':'{}':'{}'", code, message, data);
-                } else {
-                    logger.debug("An unknown remote exception occurred: '{}'", error.toString());
+            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Found interface address {} -> {}", interfaceAddress.toString(),
+                            interfaceAddress.getAddress().toString());
+                }
+                if (interfaceAddress.getAddress().toString().endsWith("/" + interfaceIpAddress)) {
+                    return networkInterface;
                 }
             }
         }
 
-        return result;
+        return null;
     }
 
-    protected String post(URL url, Map<String, String> headers, String data) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                connection.addRequestProperty(entry.getKey(), entry.getValue());
-            }
+    public JsonElement invokeOperation(String applianceId, String modelID, String methodName) throws MieleRpcException {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            throw new MieleRpcException("Bridge is offline, operations can not be invoked");
         }
 
-        connection.addRequestProperty("Accept-Encoding", "gzip");
-
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.connect();
-
-        OutputStream out = null;
-
-        try {
-            out = connection.getOutputStream();
-
-            out.write(data.getBytes());
-            out.flush();
-
-            int statusCode = connection.getResponseCode();
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                logger.debug("An unexpected status code was returned: '{}'", statusCode);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
+        FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(applianceId);
+        if (applianceIdentifier == null) {
+            throw new MieleRpcException("Appliance with ID" + applianceId
+                    + " was not found in appliance list from gateway - operations can not be invoked");
         }
 
-        String responseEncoding = connection.getHeaderField("Content-Encoding");
-        responseEncoding = (responseEncoding == null ? "" : responseEncoding.trim());
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        InputStream in = connection.getInputStream();
-        try {
-            in = connection.getInputStream();
-            if ("gzip".equalsIgnoreCase(responseEncoding)) {
-                in = new GZIPInputStream(in);
-            }
-            in = new BufferedInputStream(in);
-
-            byte[] buff = new byte[1024];
-            int n;
-            while ((n = in.read(buff)) > 0) {
-                bos.write(buff, 0, n);
-            }
-            bos.flush();
-            bos.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-
-        return bos.toString();
+        return gatewayCommunication.invokeOperation(applianceIdentifier, modelID, methodName);
     }
 
-    private synchronized void onUpdate() {
+    private synchronized void schedulePollingAndEventListener() {
         logger.debug("Scheduling the Miele polling job");
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.trace("Scheduling the Miele polling job period is {}", POLLING_PERIOD);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, POLLING_PERIOD, TimeUnit.SECONDS);
+            logger.trace("Scheduling the Miele polling job period is {}", POLLING_PERIOD_SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, POLLING_PERIOD_SECONDS, TimeUnit.SECONDS);
+            this.pollingJob = pollingJob;
             logger.trace("Scheduling the Miele polling job Job is done ?{}", pollingJob.isDone());
         }
+
         logger.debug("Scheduling the Miele event listener job");
-
+        Future<?> eventListenerJob = this.eventListenerJob;
         if (eventListenerJob == null || eventListenerJob.isCancelled()) {
-            executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("binding-miele"));
-            eventListenerJob = executor.submit(eventListenerRunnable);
+            ExecutorService executor = Executors
+                    .newSingleThreadExecutor(new NamedThreadFactory("binding-" + BINDING_ID));
+            this.executor = executor;
+            this.eventListenerJob = executor.submit(eventListenerRunnable);
         }
     }
 
-    /**
-     * This method is called whenever the connection to the given {@link MieleBridge} is lost.
-     *
-     */
-    public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-    }
+    public boolean registerApplianceStatusListener(String applianceId,
+            ApplianceStatusListener applianceStatusListener) {
+        ApplianceStatusListener existingListener = applianceStatusListeners.get(applianceId);
+        if (existingListener != null) {
+            if (!existingListener.equals(applianceStatusListener)) {
+                logger.warn("Unsupported configuration: appliance with ID '{}' referenced by multiple things",
+                        applianceId);
+            } else {
+                logger.debug("Duplicate listener registration attempted for '{}'", applianceId);
+            }
+            return false;
+        }
+        applianceStatusListeners.put(applianceId, applianceStatusListener);
 
-    /**
-     * This method is called whenever the connection to the given {@link MieleBridge} is resumed.
-     *
-     * @param bridge the hue bridge the connection is resumed to
-     */
-    public void onConnectionResumed() {
-        updateStatus(ThingStatus.ONLINE);
-        for (Thing thing : getThing().getThings()) {
-            MieleApplianceHandler<?> handler = (MieleApplianceHandler<?>) thing.getHandler();
-            if (handler != null) {
-                handler.onBridgeConnectionResumed();
+        HomeDevice cachedHomeDevice = cachedHomeDevicesByApplianceId.get(applianceId);
+        if (cachedHomeDevice != null) {
+            applianceStatusListener.onApplianceAdded(cachedHomeDevice);
+        } else {
+            try {
+                refreshHomeDevices(getHomeDevices());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                            cause.getMessage());
+                }
             }
         }
+
+        return true;
     }
 
-    public boolean registerApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
-        if (applianceStatusListener == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null ApplianceStatusListener.");
-        }
-        boolean result = applianceStatusListeners.add(applianceStatusListener);
-        if (result && isInitialized()) {
-            onUpdate();
+    public boolean unregisterApplianceStatusListener(String applianceId,
+            ApplianceStatusListener applianceStatusListener) {
+        return applianceStatusListeners.remove(applianceId) != null;
+    }
 
-            for (HomeDevice hd : getHomeDevices()) {
-                applianceStatusListener.onApplianceAdded(hd);
+    public boolean registerDiscoveryListener(DiscoveryListener discoveryListener) {
+        if (!discoveryListeners.add(discoveryListener)) {
+            return false;
+        }
+        if (cachedHomeDevicesByApplianceId.isEmpty()) {
+            try {
+                refreshHomeDevices(getHomeDevices());
+            } catch (MieleRpcException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
+                } else {
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}'", e.getMessage(),
+                            cause.getMessage());
+                }
+            }
+        } else {
+            for (Entry<String, HomeDevice> entry : cachedHomeDevicesByApplianceId.entrySet()) {
+                discoveryListener.onApplianceAdded(entry.getValue());
             }
         }
-        return result;
+        return true;
     }
 
-    public boolean unregisterApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
-        boolean result = applianceStatusListeners.remove(applianceStatusListener);
-        if (result && isInitialized()) {
-            onUpdate();
-        }
-        return result;
+    public boolean unregisterDiscoveryListener(DiscoveryListener discoveryListener) {
+        return discoveryListeners.remove(discoveryListener);
     }
 
     @Override
@@ -640,17 +579,20 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
+        Future<?> eventListenerJob = this.eventListenerJob;
         if (eventListenerJob != null) {
             eventListenerJob.cancel(true);
-            eventListenerJob = null;
+            this.eventListenerJob = null;
         }
+        ExecutorService executor = this.executor;
         if (executor != null) {
             executor.shutdownNow();
-            executor = null;
+            this.executor = null;
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,7 +39,6 @@ import com.google.gson.JsonParser;
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
-    private final JsonParser jsonParser = new JsonParser();
     private final KM200Cryption comCryption;
     private final KM200Comm<KM200Device> deviceCommunicator;
 
@@ -58,11 +55,11 @@ public class KM200Device {
     protected String charSet = "";
 
     /* Needed keys for the communication */
-    protected byte[] cryptKeyInit = ArrayUtils.EMPTY_BYTE_ARRAY;
-    protected byte[] cryptKeyPriv = ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected byte[] cryptKeyInit = new byte[0];
+    protected byte[] cryptKeyPriv = new byte[0];
 
     /* Buderus_MD5Salt */
-    protected byte[] md5Salt = ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected byte[] md5Salt = new byte[0];
 
     /* Device services */
     public Map<String, KM200ServiceObject> serviceTreeMap;
@@ -78,13 +75,14 @@ public class KM200Device {
     public KM200Device(HttpClient httpClient) {
         serviceTreeMap = new HashMap<>();
         getBlacklistMap().add("/gateway/firmware");
+        getBlacklistMap().add("/gateway/registrations");
         virtualList = new ArrayList<>();
         comCryption = new KM200Cryption(this);
         deviceCommunicator = new KM200Comm<>(this, httpClient);
     }
 
     public Boolean isConfigured() {
-        return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv.length > 0;
+        return !ip4Address.isBlank() && cryptKeyPriv.length > 0;
     }
 
     public String getIP4Address() {
@@ -284,7 +282,7 @@ public class KM200Device {
             object = serviceTreeMap.get(servicePath[1]);
         }
         for (int i = 2; i < len; i++) {
-            if (object.serviceTreeMap.containsKey(servicePath[i])) {
+            if (object != null && object.serviceTreeMap.containsKey(servicePath[i])) {
                 object = object.serviceTreeMap.get(servicePath[i]);
                 continue;
             } else {
@@ -315,7 +313,7 @@ public class KM200Device {
             }
         }
         for (int i = 2; i < len; i++) {
-            if (object.serviceTreeMap.containsKey(servicePath[i])) {
+            if (object != null && object.serviceTreeMap.containsKey(servicePath[i])) {
                 object = object.serviceTreeMap.get(servicePath[i]);
                 continue;
             } else {
@@ -333,7 +331,8 @@ public class KM200Device {
     public @Nullable JsonObject getServiceNode(String service) {
         String decodedData = null;
         JsonObject nodeRoot = null;
-        byte[] recData = deviceCommunicator.getDataFromService(service.toString());
+        logger.debug("{}: trying to query information.", service);
+        byte[] recData = deviceCommunicator.getDataFromService(service);
         try {
             if (recData == null) {
                 logger.debug("Communication to {} is not possible!", service);
@@ -350,6 +349,7 @@ public class KM200Device {
                 decodedData = "";
                 return nodeRoot;
             } else {
+                logger.debug("{}: trying to decode: {}.", service, recData.toString());
                 decodedData = comCryption.decodeMessage(recData);
                 if (decodedData == null) {
                     logger.warn("Decoding of the KM200 message is not possible!");
@@ -358,10 +358,11 @@ public class KM200Device {
             }
             if (decodedData.length() > 0) {
                 if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
-                    logger.debug("{}: SERVICE NOT AVAILABLE", service);
+                    logger.warn("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
-                    nodeRoot = (JsonObject) jsonParser.parse(decodedData);
+                    logger.debug("{}: trying to parse {}", service, decodedData);
+                    nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {
                 logger.debug("Get empty reply");

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,18 +13,18 @@
 package org.openhab.binding.russound.internal.rio;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 
 /**
  * Defines an implementation of {@link RioHandlerCallback} that will remember the last state
- * for an channelId and suppress the callback if the state hasn't changed
+ * for a channelId and suppress the callback if the state hasn't changed
  *
  * @author Tim Roberts - Initial contribution
  */
@@ -89,19 +89,14 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      */
     @Override
     public void stateChanged(String channelId, State newState) {
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             return;
         }
 
         final State oldState = state.get(channelId);
 
-        // If both null OR the same value (enums), nothing changed
-        if (oldState == newState) {
-            return;
-        }
-
         // If they are equal - nothing changed
-        if (oldState != null && oldState.equals(newState)) {
+        if (Objects.equals(oldState, newState)) {
             return;
         }
 
@@ -117,7 +112,7 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      * @param channelId the channel id to remove state
      */
     public void removeState(String channelId) {
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             return;
         }
         state.remove(channelId);

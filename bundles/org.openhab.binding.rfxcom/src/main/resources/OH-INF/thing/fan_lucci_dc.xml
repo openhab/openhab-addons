@@ -14,22 +14,24 @@
 
 		<label>RFXCOM Fan Device - Lucci Air DC</label>
 		<description>A Lucci Air DC fan device.</description>
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 
 		<channels>
 			<channel id="commandString" typeId="commandString"/>
-			<channel id="fanSpeed" typeId="fanspeedcontrol"/>
+			<channel id="fanSpeedControl" typeId="fanspeedcontrol"/>
+			<channel id="fanSpeed" typeId="fanspeed"/>
 			<channel id="fanLight" typeId="command"/>
 			<channel id="signalLevel" typeId="system.signal-strength"/>
 		</channels>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Unit Id. Example 1000</description>
 			</parameter>
 			<parameter name="subType" type="text">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="LUCCI_AIR_DC">Lucci Air DC</option>
 				</options>

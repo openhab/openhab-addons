@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="accepted">
+		<label>Accepted Call</label>
+		<description>The last accepted phone call</description>
+		<channels>
+			<channel id="number" typeId="number">
+				<label>Calling Number</label>
+				<description>Caller phone number</description>
+			</channel>
+			<channel id="duration" typeId="duration">
+				<label>Incoming Call Duration</label>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Incoming Call Timestamp</label>
+			</channel>
+			<channel id="name" typeId="name">
+				<label>Accepted Caller</label>
+				<description>Caller name</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="missed">
+		<label>Missed Call</label>
+		<description>The last missed phone call</description>
+		<channels>
+			<channel id="number" typeId="number">
+				<label>Missed Calling Number</label>
+				<description>Caller phone number</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Missed Call Timestamp</label>
+			</channel>
+			<channel id="name" typeId="name">
+				<label>Missed Caller</label>
+				<description>Caller name</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="incoming">
+		<label>Incoming Call</label>
+		<description>Currently presented phone call</description>
+		<channels>
+			<channel id="number" typeId="number">
+				<label>Calling Number</label>
+				<description>Caller phone number</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Call Timestamp</label>
+			</channel>
+			<channel id="name" typeId="name">
+				<label>Incoming Caller</label>
+				<description>Caller name</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="outgoing">
+		<label>Outgoing Call</label>
+		<description>The last outgoing phone call</description>
+		<channels>
+			<channel id="number" typeId="number">
+				<label>Called Number</label>
+				<description>Called phone number</description>
+			</channel>
+			<channel id="duration" typeId="duration">
+				<label>Outgoing Call Duration</label>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Outgoing Call Timestamp</label>
+			</channel>
+			<channel id="name" typeId="name">
+				<label>Called Name</label>
+				<description>Name, if known, of the called person</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

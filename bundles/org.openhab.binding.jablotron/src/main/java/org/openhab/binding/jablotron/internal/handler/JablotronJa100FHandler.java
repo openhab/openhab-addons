@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
-import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
+import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
 import java.util.List;
 
@@ -23,11 +22,15 @@ import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
+import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetThermoDevicesResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronSection;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronState;
+import org.openhab.binding.jablotron.internal.model.ja100f.JablotronThermoDevice;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -125,17 +128,27 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
     }
 
     private void createPGChannel(String name, String label) {
+        ChannelTypeUID pgmStatus = new ChannelTypeUID(BINDING_ID, "pgm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label)
-                .build();
+                .withType(pgmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
 
     private void createStateChannel(String name, String label) {
-        ChannelTypeUID alarmStatus = new ChannelTypeUID("jablotron", "ja100f_alarm_state");
+        ChannelTypeUID alarmStatus = new ChannelTypeUID(BINDING_ID, "ja100f_alarm_state");
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label)
+                .withType(alarmStatus).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
+    private void createThermoChannel(String name, String label) {
+        ChannelTypeUID alarmStatus = new ChannelTypeUID(BINDING_ID, "temperature");
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number").withLabel(label)
                 .withType(alarmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
@@ -177,10 +190,16 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
                 updateSectionState(resp.getData().getStates());
             }
 
+            // thermo devices
+            JablotronGetThermoDevicesResponse respThermo = handler.sendGetThermometers(getThing(), alarmName);
+            if (respThermo != null) {
+                createThermoDeviceChannels(respThermo.getData().getThermoDevices());
+                updateThermoState(respThermo.getData().getStates());
+            }
+
             // update events
-            List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-            if (events != null && events.size() > 0) {
-                JablotronHistoryDataEvent event = events.get(0);
+            JablotronHistoryDataEvent event = sendGetEventHistory();
+            if (event != null) {
                 updateLastEvent(event);
             }
             return true;
@@ -213,6 +232,18 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         }
     }
 
+    private void createThermoDeviceChannels(List<JablotronThermoDevice> thermoDevices) {
+        for (JablotronThermoDevice device : thermoDevices) {
+            String id = device.getObjectDeviceId().toLowerCase();
+            logger.trace("object device id: {} with name: {}", id, device.getName());
+            Channel channel = getThing().getChannel(id);
+            if (channel == null) {
+                logger.debug("Creating a new channel: {}", id);
+                createThermoChannel(id, device.getName());
+            }
+        }
+    }
+
     private void updateSectionState(String section, List<JablotronState> states) {
         for (JablotronState state : states) {
             String id = state.getCloudComponentId();
@@ -230,6 +261,14 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         }
     }
 
+    private void updateThermoState(List<JablotronState> states) {
+        for (JablotronState state : states) {
+            logger.debug("updating thermo state: {}", state.getObjectDeviceId());
+            String id = state.getObjectDeviceId();
+            updateSection(id, state);
+        }
+    }
+
     private void updateSection(String id, JablotronState state) {
         logger.debug("component id: {} with state: {}", id, state.getState());
         State newState;
@@ -237,7 +276,9 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         if (id.startsWith("SEC-")) {
             newState = new StringType(state.getState());
         } else if (id.startsWith("PG-")) {
-            newState = "ON".equals(state.getState()) ? OnOffType.ON : OnOffType.OFF;
+            newState = OnOffType.from("ON".equals(state.getState()));
+        } else if (id.startsWith("THM-")) {
+            newState = new QuantityType<>(state.getTemperature(), SIUnits.CELSIUS);
         } else {
             logger.debug("unknown component id: {}", id);
             return;

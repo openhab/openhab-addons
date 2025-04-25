@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         IParadoxCommunicator communicator = ip150BridgeHandler.getCommunicator();
         if (communicator != null && communicator.isOnline()) {
-            ParadoxPanel panel = ParadoxPanel.getInstance();
+            ParadoxPanel panel = ip150BridgeHandler.getPanel();
             discoverPanel(panel.getPanelInformation());
             discoverPartitions(panel.getPartitions());
             discoverZones(panel.getZones());
@@ -89,7 +89,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(PARTITION_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
                     .withLabel("Partition " + label).withProperty(PARTITION_THING_TYPE_ID, thingId)
-                    .withProperty("id", partition.getId()).build();
+                    .withProperty("label", label).withProperty("id", partition.getId()).build();
             logger.debug("Partition DiscoveryResult={}", result);
 
             thingDiscovered(result);
@@ -98,14 +98,14 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverZones(List<Zone> zones) {
         zones.stream().forEach(zone -> {
-            String thingId = zone.getLabel().replaceAll(" ", "_");
+            String thingId = zone.getLabel().replace(" ", "_");
             String label = zone.getLabel();
             ThingUID bridgeUid = ip150BridgeHandler.getThing().getUID();
 
             ThingUID thingUID = new ThingUID(ZONE_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
                     .withLabel("Zone " + label).withProperty(ZONE_THING_TYPE_ID, thingId)
-                    .withProperty("id", zone.getId()).build();
+                    .withProperty("id", zone.getId()).withProperty("label", label).build();
             logger.debug("Zone DiscoveryResult={}", result);
 
             thingDiscovered(result);

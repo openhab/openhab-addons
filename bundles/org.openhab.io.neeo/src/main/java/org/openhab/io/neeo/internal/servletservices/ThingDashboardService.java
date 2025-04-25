@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,16 @@
 package org.openhab.io.neeo.internal.servletservices;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.io.neeo.NeeoService;
@@ -51,6 +52,9 @@ public class ThingDashboardService extends DefaultServletService {
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(ThingDashboardService.class);
+
+    private static final Set<String> STARTERS = Set.of("thingstatus", "getchannel", "getvirtualdevice", "restoredevice",
+            "refreshdevice", "deletedevice", "exportrules", "updatedevice");
 
     /** The gson used for json manipulation */
     private final Gson gson;
@@ -84,14 +88,7 @@ public class ThingDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && (StringUtils.equalsIgnoreCase(paths[0], "thingstatus")
-                || StringUtils.equalsIgnoreCase(paths[0], "getchannel")
-                || StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "restoredevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "refreshdevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "deletedevice")
-                || StringUtils.equalsIgnoreCase(paths[0], "exportrules")
-                || StringUtils.equalsIgnoreCase(paths[0], "updatedevice"));
+        return paths.length >= 1 && STARTERS.contains(paths[0].toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -106,10 +103,10 @@ public class ThingDashboardService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "thingstatus")) {
+            if ("thingstatus".equalsIgnoreCase(paths[0])) {
                 final List<NeeoDevice> devices = context.getDefinitions().getAllDevices();
                 NeeoUtil.write(resp, gson.toJson(devices));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "getchannel")) {
+            } else if ("getchannel".equalsIgnoreCase(paths[0])) {
                 final String itemName = NeeoUtil.decodeURIComponent(req.getParameter("itemname"));
                 final List<NeeoDeviceChannel> channels = context.getDefinitions().getNeeoDeviceChannel(itemName);
                 if (channels == null) {
@@ -117,13 +114,13 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(channels)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")) {
+            } else if ("getvirtualdevice".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
                 final NeeoDevice device = new NeeoDevice(uid, 0, NeeoDeviceType.EXCLUDE, "NEEO Integration",
                         "New Virtual Thing", new ArrayList<>(), null, null, null, null);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
             } else {
-                logger.debug("Unknown get path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown get path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling get: {}", e.getMessage(), e);
@@ -146,7 +143,7 @@ public class ThingDashboardService extends DefaultServletService {
         }
 
         try {
-            if (StringUtils.equalsIgnoreCase(paths[0], "updatedevice")) {
+            if ("updatedevice".equalsIgnoreCase(paths[0])) {
                 final NeeoDevice device = gson.fromJson(req.getReader(), NeeoDevice.class);
                 context.getDefinitions().put(device);
 
@@ -155,8 +152,9 @@ public class ThingDashboardService extends DefaultServletService {
                 }
 
                 NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "restoredevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+            } else if ("restoredevice".equalsIgnoreCase(paths[0])) {
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 context.getDefinitions().remove(uid);
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
@@ -164,21 +162,24 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "refreshdevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+            } else if ("refreshdevice".equalsIgnoreCase(paths[0])) {
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device no longer exists in openHAB!")));
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "deletedevice")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+            } else if ("deletedevice".equalsIgnoreCase(paths[0])) {
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final boolean deleted = context.getDefinitions().remove(uid);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(
                         deleted ? null : "Device " + uid + " was not found (possibly already deleted?)")));
-            } else if (StringUtils.equalsIgnoreCase(paths[0], "exportrules")) {
-                final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
+            } else if ("exportrules".equalsIgnoreCase(paths[0])) {
+                final NeeoThingUID uid = new NeeoThingUID(
+                        new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
                 if (device == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("Device " + uid + " was not found")));
@@ -186,7 +187,7 @@ public class ThingDashboardService extends DefaultServletService {
                     writeExampleRules(resp, device);
                 }
             } else {
-                logger.debug("Unknown post path: {}", StringUtils.join(paths, ','));
+                logger.debug("Unknown post path: {}", String.join(",", paths));
             }
         } catch (JsonParseException | IllegalArgumentException | NullPointerException e) {
             logger.debug("Exception handling post: {}", e.getMessage(), e);
@@ -229,7 +230,7 @@ public class ThingDashboardService extends DefaultServletService {
 
         resp.setContentType("text/plain");
         resp.setHeader("Content-disposition", "attachment; filename=\"" + device.getName() + ".rules\"");
-        IOUtils.write(sb, resp.getOutputStream());
+        resp.getOutputStream().write(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     /**

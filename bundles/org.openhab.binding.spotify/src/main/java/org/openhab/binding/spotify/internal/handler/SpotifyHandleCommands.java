@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,8 +101,8 @@ class SpotifyHandleCommands {
                 commandRun = handleDevicePlay(command, active, deviceId);
                 break;
             case CHANNEL_DEVICESHUFFLE:
-                if (command instanceof OnOffType) {
-                    spotifyApi.setShuffleState(deviceId, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    spotifyApi.setShuffleState(deviceId, onOffCommand);
                     commandRun = true;
                 }
                 break;
@@ -112,9 +112,9 @@ class SpotifyHandleCommands {
                     commandRun = true;
                 }
             case CHANNEL_DEVICEVOLUME:
-                if (command instanceof DecimalType) {
-                    final PercentType volume = command instanceof PercentType ? (PercentType) command
-                            : new PercentType(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    final PercentType volume = command instanceof PercentType percentType ? percentType
+                            : new PercentType(decimalCommand.intValue());
 
                     spotifyApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;
@@ -123,7 +123,7 @@ class SpotifyHandleCommands {
             case CHANNEL_TRACKPLAY:
             case CHANNEL_PLAYLISTS:
                 if (command instanceof StringType) {
-                    spotifyApi.playTrack(deviceId, command.toString());
+                    spotifyApi.playTrack(deviceId, command.toString(), 0, 0);
                     commandRun = true;
                 }
                 break;
@@ -132,7 +132,7 @@ class SpotifyHandleCommands {
                     final String newName = command.toString();
 
                     playlists.stream().filter(pl -> pl.getName().equals(newName)).findFirst()
-                            .ifPresent(pl -> spotifyApi.playTrack(deviceId, pl.getUri()));
+                            .ifPresent(pl -> spotifyApi.playTrack(deviceId, pl.getUri(), 0, 0));
                     commandRun = true;
                 }
                 break;

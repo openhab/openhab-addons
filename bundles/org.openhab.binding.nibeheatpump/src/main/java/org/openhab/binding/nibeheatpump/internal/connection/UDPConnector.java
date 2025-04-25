@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 
+import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.ModbusReadRequestMessage;
@@ -98,7 +99,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
         logger.debug("Sending request: {}", msg.toHexString());
 
-        byte data[] = msg.decodeMessage();
+        byte[] data = msg.decodeMessage();
         int port = -1;
 
         if (msg instanceof ModbusWriteRequestMessage) {
@@ -123,6 +124,10 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
 
     private class Reader extends Thread {
         boolean interrupted = false;
+
+        public Reader() {
+            super(String.format("OH-binding-%s-%s", NibeHeatPumpBindingConstants.BINDING_ID, "UDPReader"));
+        }
 
         @Override
         public void interrupt() {

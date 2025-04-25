@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.magentatv.internal.MagentaTVDeviceManager;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
@@ -88,6 +89,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private final Gson gson;
     protected final MagentaTVNetwork network;
     protected final MagentaTVDeviceManager manager;
+    private final HttpClient httpClient;
     protected MagentaTVControl control = new MagentaTVControl();
 
     private String thingId = "";
@@ -99,13 +101,17 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Constructor, save bindingConfig (services as default for thingConfig)
      *
+     * @param manager
      * @param thing
-     * @param bindingConfig
+     * @param network
+     * @param httpClient
      */
-    public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network) {
+    public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network,
+            HttpClient httpClient) {
         super(thing);
         this.manager = manager;
         this.network = network;
+        this.httpClient = httpClient;
         gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
                 .registerTypeAdapter(OAuthAuthenticateResponse.class, new MRShortProgramInfoInstanceCreator())
@@ -137,6 +143,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private void initializeThing() {
         String errorMessage = "";
         try {
+            config.setFriendlyName(getThing().getLabel().toString());
             if (config.getUDN().isEmpty()) {
                 // get UDN from device name
                 String uid = this.getThing().getUID().getAsString();
@@ -150,7 +157,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 }
                 config.setMacAddress(macAddress);
             }
-            control = new MagentaTVControl(config, network);
+            control = new MagentaTVControl(config, network, httpClient);
             config.updateNetwork(control.getConfig()); // get network parameters from control
 
             // Check for emoty credentials (e.g. missing in .things file)
@@ -185,7 +192,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     /**
-     * This routine is called every time the Thing configuration has been changed (e.g. PaperUI)
+     * This routine is called every time the Thing configuration has been changed
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -218,7 +225,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
 
         try {
-            if (!isOnline() || command.toString().equalsIgnoreCase("PAIR")) {
+            if (!isOnline() || "PAIR".equalsIgnoreCase(command.toString())) {
                 logger.debug("{}: Receiver {} is offline, try to (re-)connect", thingId, deviceName());
                 connectReceiver(); // reconnect to MR, throws an exception if this fails
             }
@@ -268,7 +275,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     }
                     break;
                 case CHANNEL_KEY:
-                    if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver (already done
+                    if ("PAIR".equalsIgnoreCase(command.toString())) { // special key to re-pair receiver (already done
                                                                        // above)
                         logger.debug("{}: PAIRing key received, reconnect receiver {}", thingId, deviceName());
                     } else {
@@ -317,6 +324,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     protected void connectReceiver() throws MagentaTVException {
         if (control.checkDev()) {
             updateThingProperties();
+            control.setThingId(config.getFriendlyName());
             manager.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
             control.subscribeEventChannel();
             control.sendPairingRequest();
@@ -370,8 +378,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Update thing status
      *
-     * @param mode new thing status
-     * @return ON = power on, OFF=power off
+     * @param newStatus new thing status
+     * @param errorMessage
      */
     public void setOnlineStatus(ThingStatus newStatus, String errorMessage) {
         ThingStatus status = this.getThing().getStatus();
@@ -628,7 +636,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     public void updateThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_FRIENDLYNAME, config.getFriendlyName());
         properties.put(PROPERTY_MODEL_NUMBER, config.getModel());
         properties.put(PROPERTY_DESC_URL, config.getDescriptionUrl());

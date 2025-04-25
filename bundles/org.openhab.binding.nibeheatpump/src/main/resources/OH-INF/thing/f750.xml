@@ -6,7 +6,7 @@
 
 	<thing-type id="f750-udp">
 		<label>UDP Connected Nibe F750 Heat Pump</label>
-		<description></description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="f750-sensor-group-channels" id="sensor"/>
@@ -67,7 +67,6 @@
 
 	<thing-type id="f750-serial">
 		<label>Serial Port Connected F750 Heat Pump</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="f750-sensor-group-channels" id="sensor"/>
@@ -127,7 +126,6 @@
 
 	<thing-type id="f750-simulator">
 		<label>Simulator for Nibe F750 Heat Pump</label>
-		<description></description>
 
 		<channel-groups>
 			<channel-group typeId="f750-sensor-group-channels" id="sensor"/>

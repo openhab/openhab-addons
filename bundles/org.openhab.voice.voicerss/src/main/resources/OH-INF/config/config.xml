@@ -8,7 +8,7 @@
 	<config-description uri="voice:voicerss">
 		<parameter name="apiKey" type="text" required="true">
 			<label>VoiceRSS API Key</label>
-			<description>The API Key to get access to http://www.voicerss.org. You need to register with at least a free account
+			<description>The API Key to get access to https://www.voicerss.org. You need to register with at least a free account
 				to get an API key.</description>
 		</parameter>
 	</config-description>

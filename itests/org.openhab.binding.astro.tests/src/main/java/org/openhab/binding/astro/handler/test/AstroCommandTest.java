@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
  * <p>
  * This class tests the commands for the astro thing.
  *
- * @author Petar Valchev - Initial implementation
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
@@ -59,7 +59,7 @@ public class AstroCommandTest {
         Thing thing = mock(Thing.class);
         when(thing.getConfiguration()).thenReturn(thingConfiguration);
         when(thing.getUID()).thenReturn(thingUID);
-        when(thing.getChannel(DEFAULT_TEST_CHANNEL_ID)).thenReturn(channel);
+        when(thing.getChannel(channelUID)).thenReturn(channel);
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +34,7 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -62,7 +66,9 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
     private static void removeDirRecursive(final String dir) throws IOException {
         final Path path = Paths.get(dir);
         if (Files.exists(path)) {
-            Files.walk(path).map(Path::toFile).sorted().forEach(File::delete);
+            try (Stream<Path> stream = Files.walk(path)) {
+                stream.map(Path::toFile).sorted().forEach(File::delete);
+            }
         }
     }
 
@@ -79,12 +85,12 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
 
         persistenceService.store(item);
 
-        assertThat(persistenceService.getItemInfo(), hasItem(hasProperty("name", equalTo(name))));
+        waitForAssert(() -> assertThat(persistenceService.getItemInfo(), hasItem(hasProperty("name", equalTo(name)))));
 
         persistenceService.store(item, alias);
 
-        assertThat(persistenceService.getItemInfo(),
-                hasItems(hasProperty("name", equalTo(name)), hasProperty("name", equalTo(alias))));
+        waitForAssert(() -> assertThat(persistenceService.getItemInfo(),
+                hasItems(hasProperty("name", equalTo(name)), hasProperty("name", equalTo(alias)))));
     }
 
     @Test
@@ -102,8 +108,8 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
 
         persistenceService.store(item);
 
-        assertThat(persistenceService.query(filter),
-                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state)))));
+        waitForAssert(() -> assertThat(persistenceService.query(filter),
+                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state))))));
     }
 
     @Test
@@ -127,7 +133,31 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         persistenceService.store(item, alias);
 
         assertThat(persistenceService.query(filterByName), is(emptyIterable()));
-        assertThat(persistenceService.query(filterByAlias),
-                contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state)))));
+        waitForAssert(() -> assertThat(persistenceService.query(filterByAlias),
+                contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state))))));
+        waitForAssert(() -> assertThat(persistenceService.query(filterByName, alias),
+                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state))))));
+    }
+
+    @Test
+    public void persistedItemShouldFindItem() {
+        String name = "decimal";
+        State state = DecimalType.valueOf("100");
+        State lastState = DecimalType.ZERO;
+        ZonedDateTime lastStateUpdate = ZonedDateTime.now().minusHours(1);
+        ZonedDateTime lastStateChange = ZonedDateTime.now().minusHours(2);
+
+        GenericItem item = new DimmerItem(name);
+        item.setState(state, lastState, lastStateUpdate, lastStateChange);
+
+        assertNull(persistenceService.persistedItem(name, null));
+
+        persistenceService.store(item);
+
+        waitForAssert(() -> assertThat(persistenceService.persistedItem(name, null),
+                allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state)),
+                        hasProperty("lastState", equalTo(lastState)),
+                        hasProperty("timestamp", any(ZonedDateTime.class)),
+                        hasProperty("lastStateChange", any(ZonedDateTime.class)))));
     }
 }

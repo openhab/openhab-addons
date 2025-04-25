@@ -8,11 +8,11 @@
 		<parameter name="host" type="text" required="true">
 			<context>network-address</context>
 			<label>Host</label>
-			<description>Hostname or IP address of the IKEA TRÅDFRI gateway</description>
+			<description>Hostname or IP address of the IKEA TRÅDFRI gateway.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Port for accessing the gateway</description>
+			<description>Port for accessing the gateway.</description>
 			<advanced>true</advanced>
 			<default>5684</default>
 		</parameter>
@@ -24,13 +24,13 @@
 		<parameter name="identity" type="text" required="false">
 			<advanced>true</advanced>
 			<label>Identity</label>
-			<description>Unique identity used for communication with the gateway</description>
+			<description>Unique identity used for communication with the gateway.</description>
 		</parameter>
 		<parameter name="preSharedKey" type="text" required="false">
 			<advanced>true</advanced>
 			<context>password</context>
 			<label>Pre-Shared Security Key</label>
-			<description>Security key obtained during first initialization of the gateway</description>
+			<description>Security key obtained during first initialization of the gateway.</description>
 		</parameter>
 	</config-description>
 

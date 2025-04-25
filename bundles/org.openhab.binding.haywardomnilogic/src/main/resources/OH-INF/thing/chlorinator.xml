@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="chlorinator" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Chlorinator</label>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
+		<channels>
+			<channel id="chlorEnable" typeId="system.power"/>
+			<channel id="chlorOperatingMode" typeId="chlorOperatingMode"/>
+			<channel id="chlorTimedPercent" typeId="timedPercent"/>
+			<channel id="chlorScMode" typeId="scMode"/>
+			<channel id="chlorError" typeId="chlorError"/>
+			<channel id="chlorAlert" typeId="chlorAlert"/>
+			<channel id="chlorAvgSaltLevel" typeId="avgSaltLevel"/>
+			<channel id="chlorInstantSaltLevel" typeId="instantSaltLevel"/>
+			<channel id="chlorStatus" typeId="chlorStatus"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hayward</property>
+			<property name="chlorSharedType"></property>
+			<property name="chlorMode"></property>
+			<property name="cellType"></property>
+			<property name="dispenserType"></property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>systemID</representation-property>
+
+	</thing-type>
+
+	<channel-type id="chlorOperatingMode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Timed Percent</option>
+				<option value="2">ORP Autosense</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timedPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Salt Output (%)</label>
+		<state min="0" max="100" step="1.0" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="scMode">
+		<item-type>String</item-type>
+		<label>scMode</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Super Chlorinating</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="chlorError">
+		<item-type>String</item-type>
+		<label>Chlorinator Error</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="chlorAlert">
+		<item-type>String</item-type>
+		<label>Chlorinator Alert</label>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="avgSaltLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Average Salt Level</label>
+		<state pattern="%,d ppm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="instantSaltLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Instant Salt Level</label>
+		<state pattern="%,d ppm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="chlorStatus">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

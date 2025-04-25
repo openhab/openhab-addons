@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.russound.internal.rio.models;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Simple model of a RIO Preset and it's attributes. Please note this class is used to
@@ -44,7 +44,7 @@ public class RioPreset {
      * "Preset " + id
      *
      * @param id a preset ID between 1 and 36
-     * @throws IllegalArgumentException if id < 1 or > 36
+     * @throws IllegalArgumentException if id {@literal < 1} or > 36
      */
     public RioPreset(int id) {
         this(id, false, "Preset " + id);
@@ -55,22 +55,18 @@ public class RioPreset {
      * "Preset " + id
      *
      * @param id a preset ID between 1 and 36
-     * @param isValid true if the preset is valid, false otherwise
+     * @param valid true if the preset is valid, false otherwise
      * @param name a possibly null, possibly empty preset name
-     * @throws IllegalArgumentException if id < 1 or > 32
+     * @throws IllegalArgumentException if id {@literal < 1} or > 32
      */
-    public RioPreset(int id, boolean valid, String name) {
+    public RioPreset(int id, boolean valid, @Nullable String name) {
         if (id < 1 || id > 36) {
             throw new IllegalArgumentException("Preset ID can only be between 1 and 36");
         }
 
-        if (StringUtils.isEmpty(name)) {
-            name = "Preset " + id;
-        }
-
         this.id = id;
         this.valid.set(valid);
-        this.name.set(name);
+        this.name.set(name == null || name.isEmpty() ? "Preset " + id : name);
     }
 
     /**
@@ -123,8 +119,8 @@ public class RioPreset {
      *
      * @param presetName a possibly null, possibly empty preset name
      */
-    public void setName(String presetName) {
-        name.set(StringUtils.isEmpty(presetName) ? "Preset " + getId() : presetName);
+    public void setName(@Nullable String presetName) {
+        name.set(presetName == null || presetName.isEmpty() ? "Preset " + getId() : presetName);
     }
 
     /**

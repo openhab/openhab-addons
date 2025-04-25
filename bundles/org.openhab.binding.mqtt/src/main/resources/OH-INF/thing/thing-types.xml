@@ -29,6 +29,35 @@
 				<default>false</default>
 			</parameter>
 
+			<parameter name="hostnameValidated" type="boolean">
+				<label>Hostname Validated</label>
+				<description>Validate hostname from certificate against server hostname for secure connection.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="protocol" type="text">
+				<label>Protocol</label>
+				<description>The protocol used for communicating with the broker.</description>
+				<options>
+					<option value="TCP">TCP</option>
+					<option value="WEBSOCKETS">WebSockets</option>
+				</options>
+				<default>TCP</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mqttVersion" type="text">
+				<label>MQTT Version</label>
+				<description>The MQTT version used for communicating with the broker.</description>
+				<options>
+					<option value="V3">Version 3</option>
+					<option value="V5">Version 5</option>
+				</options>
+				<default>V3</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="qos" type="integer">
 				<label>Quality of Service</label>
 				<options>
@@ -94,6 +123,44 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="birthMessage" type="text">
+				<label>Birth Message</label>
+				<description>The message to send to the broker when a connection is established.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="birthTopic" type="text">
+				<label>Birth Topic</label>
+				<description>Defaults to empty and therefore disables the birth message.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="birthRetain" type="boolean">
+				<label>Birth Message Retain</label>
+				<description>True if the birth message should be retained (defaults to true)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownMessage" type="text">
+				<label>Shutdown Message</label>
+				<description>The message to send to the broker before the connection terminates.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownTopic" type="text">
+				<label>Shutdown Topic</label>
+				<description>Defaults to empty and therefore disables the shutdown message.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownRetain" type="boolean">
+				<label>Shutdown Message Retain</label>
+				<description>True if the shutdown message should be retained (defaults to true)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="username" type="text">
 				<label>Username</label>
 				<description>The MQTT username</description>
@@ -134,36 +201,6 @@
 					pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An
 					example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`</description>
 				<advanced>true</advanced>
-			</parameter>
-			<parameter name="enableDiscovery" type="boolean">
-				<label>Enable Discovery</label>
-				<description>If set to true enables this broker for all discovery services.</description>
-				<advanced>true</advanced>
-				<default>true</default>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
-	<bridge-type id="systemBroker" extensible="publishTrigger">
-		<label>System MQTT Broker</label>
-		<description>A system configured and therefore read-only broker connection. Properties are reflecting the
-			configuration and internal connection status.</description>
-
-		<properties>
-			<property name="url"/>
-			<property name="username"/>
-			<property name="password"/>
-			<property name="qos"/>
-			<property name="retain"/>
-			<property name="lastwill"/>
-			<property name="reconnect_time_ms"/>
-			<property name="keep_alive_time_ms"/>
-		</properties>
-
-		<config-description>
-			<parameter name="brokerid" type="text" required="true">
-				<label>Broker ID</label>
-				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
 			</parameter>
 			<parameter name="enableDiscovery" type="boolean">
 				<label>Enable Discovery</label>

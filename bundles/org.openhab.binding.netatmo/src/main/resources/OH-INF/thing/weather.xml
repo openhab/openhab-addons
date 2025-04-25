@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="temperature-extended">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.indoor-temperature"/>
+			<channel id="min-today" typeId="min-temp"/>
+			<channel id="max-today" typeId="max-temp"/>
+			<channel id="min-time" typeId="timestamp-advanced">
+				<label>Today Min Timestamp</label>
+				<description>Moment when temperature was measured at its minimum today.</description>
+			</channel>
+			<channel id="max-time" typeId="timestamp-advanced">
+				<label>Today Max Timestamp</label>
+				<description>Moment when temperature was measured at its maximum today.</description>
+			</channel>
+			<channel id="trend" typeId="trend">
+				<label>Temperature Trend</label>
+			</channel>
+			<channel id="heat-index" typeId="heat-index"/>
+			<channel id="dewpoint" typeId="dewpoint"/>
+			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature-outside">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.outdoor-temperature"/>
+			<channel id="min-today" typeId="min-temp"/>
+			<channel id="max-today" typeId="max-temp"/>
+			<channel id="min-time" typeId="timestamp-advanced">
+				<label>Today Min Timestamp</label>
+				<description>Moment when temperature was measured at its minimum today.</description>
+			</channel>
+			<channel id="max-time" typeId="timestamp-advanced">
+				<label>Today Max Timestamp</label>
+				<description>Moment when temperature was measured at its maximum today.</description>
+			</channel>
+			<channel id="trend" typeId="trend">
+				<label>Temperature Trend</label>
+			</channel>
+			<channel id="heat-index" typeId="heat-index"/>
+			<channel id="dewpoint" typeId="dewpoint"/>
+			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="humidity">
+		<label>Humidity</label>
+		<channels>
+			<channel id="value" typeId="system.atmospheric-humidity"/>
+			<channel id="humidex" typeId="humidex"/>
+			<channel id="humidex-scale" typeId="humidex-scale"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="airquality">
+		<label>Air Quality</label>
+		<channels>
+			<channel id="co2" typeId="co2"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="noise">
+		<label>Noise</label>
+		<channels>
+			<channel id="value" typeId="noise"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pressure-extended">
+		<label>Pressure</label>
+		<channels>
+			<channel id="value" typeId="system.barometric-pressure"/>
+			<channel id="absolute" typeId="absolute-pressure"/>
+			<channel id="trend" typeId="trend">
+				<label>Pressure Trend</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rain">
+		<label>Rain gauge</label>
+		<channels>
+			<channel id="value" typeId="rain-intensity"/>
+			<channel id="sum-1" typeId="rain-quantity">
+				<label>Rain 1h</label>
+				<description>Quantity of water over last hour.</description>
+			</channel>
+			<channel id="sum-24" typeId="rain-quantity">
+				<label>Rain 24h</label>
+				<description>Quantity of water during the current day.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wind">
+		<label>Wind</label>
+		<channels>
+			<channel id="angle" typeId="system.wind-direction"/>
+			<channel id="strength" typeId="system.wind-speed"/>
+			<channel id="max-strength" typeId="max-wind-strength"/>
+			<channel id="max-strength-date" typeId="timestamp-advanced">
+				<label>Date Max Wind Strength</label>
+				<description>Moment when max wind strength was recorded.</description>
+			</channel>
+			<channel id="gust-angle" typeId="gust-angle"/>
+			<channel id="gust-strength" typeId="gust-strength"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

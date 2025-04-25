@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,9 @@ public class Converter {
      *
      * @param state from the Thing
      * @return human readable representational State
+     * @throws LcnException
      */
-    public State onStateUpdateFromHandler(State state) {
+    public State onStateUpdateFromHandler(State state) throws LcnException {
         return state;
     }
 
@@ -48,7 +49,7 @@ public class Converter {
     /**
      * Converts a human readable value into LCN native value.
      *
-     * @param humanReadable value to convert
+     * @param quantityType value to convert
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */

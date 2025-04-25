@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.BaseSensorValues;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.AssignedSensors;
@@ -70,8 +69,8 @@ import com.google.gson.JsonObject;
 /**
  * The {@link DsAPIImpl} is the implementation of the {@link DsAPI}.
  *
- * @author Alexander Betker - initial contributer
- * @author Alex Maier - initial contributer
+ * @author Alexander Betker - Initial contribution
+ * @author Alex Maier - Initial contribution
  * @author Michael Ochel - implements new methods, API updates and change SimpleJSON to GSON, add helper methods and
  *         requests building with constants to {@link SimpleRequestBuilder}
  * @author Matthias Siegele - implements new methods, API updates and change SimpleJSON to GSON, add helper methods and
@@ -134,12 +133,13 @@ public class DsAPIImpl implements DsAPI {
     }
 
     private boolean checkRequiredZone(Integer zoneID, String zoneName) {
-        return zoneID != null && zoneID > -1 || StringUtils.isNotBlank(zoneName);
+        return zoneID != null && zoneID > -1 || (zoneName != null && !zoneName.isBlank());
     }
 
     private boolean checkRequiredDevice(DSID dsid, String dSUID, String name) {
-        return StringUtils.isNotBlank(SimpleRequestBuilder.objectToString(dsid)) || StringUtils.isNotBlank(name)
-                || StringUtils.isNotBlank(dSUID);
+        String objectString = SimpleRequestBuilder.objectToString(dsid);
+        return (objectString != null && !objectString.isBlank()) || (name != null && !name.isBlank())
+                || (dSUID != null && !dSUID.isBlank());
     }
 
     @Override
@@ -281,12 +281,12 @@ public class DsAPIImpl implements DsAPI {
 
     @Override
     public DeviceConfig getDeviceConfig(String token, DSID dSID, String dSUID, String name,
-            DeviceParameterClassEnum class_, Integer index) {
-        if (checkRequiredDevice(dSID, dSUID, name) && class_ != null
+            DeviceParameterClassEnum classEnum, Integer index) {
+        if (checkRequiredDevice(dSID, dSUID, name) && classEnum != null
                 && SimpleRequestBuilder.objectToString(index) != null) {
             String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.DEVICE)
                     .addFunction(FunctionKeys.GET_CONFIG).addDefaultDeviceParameter(token, dSID, dSUID, name)
-                    .addParameter(ParameterKeys.CLASS, class_.getClassIndex().toString())
+                    .addParameter(ParameterKeys.CLASS, classEnum.getClassIndex().toString())
                     .addParameter(ParameterKeys.INDEX, SimpleRequestBuilder.objectToString(index))
                     .buildRequestString());
 
@@ -411,7 +411,7 @@ public class DsAPIImpl implements DsAPI {
     @Override
     public boolean subscribeEvent(String token, String name, Integer subscriptionID, int connectionTimeout,
             int readTimeout) {
-        if (StringUtils.isNotBlank(name) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
+        if ((name != null && !name.isBlank()) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
             String response;
             response = transport.execute(
                     SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.EVENT).addFunction(FunctionKeys.SUBSCRIBE)
@@ -428,7 +428,7 @@ public class DsAPIImpl implements DsAPI {
     @Override
     public boolean unsubscribeEvent(String token, String name, Integer subscriptionID, int connectionTimeout,
             int readTimeout) {
-        if (StringUtils.isNotBlank(name) && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
+        if (name != null && !name.isBlank() && SimpleRequestBuilder.objectToString(subscriptionID) != null) {
             String response;
             response = transport.execute(
                     SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.EVENT).addFunction(FunctionKeys.UNSUBSCRIBE)
@@ -586,7 +586,7 @@ public class DsAPIImpl implements DsAPI {
 
     @Override
     public String loginApplication(String loginToken) {
-        if (StringUtils.isNotBlank(loginToken)) {
+        if (loginToken != null && !loginToken.isBlank()) {
             String response = transport.execute(SimpleRequestBuilder.buildNewRequest(InterfaceKeys.JSON)
                     .addRequestClass(ClassKeys.SYSTEM).addFunction(FunctionKeys.LOGIN_APPLICATION)
                     .addParameter(ParameterKeys.LOGIN_TOKEN, loginToken).buildRequestString());
@@ -931,12 +931,13 @@ public class DsAPIImpl implements DsAPI {
                             .addRequestClass(ClassKeys.ZONE).addFunction(FunctionKeys.SET_TEMEPERATURE_CONTROL_VALUE)
                             .addDefaultZoneParameter(sessionToken, zoneID, zoneName);
                     for (Object[] objAry : controlValues) {
-                        if (objAry.length == 2 && objAry[0] instanceof String && objAry[1] instanceof Integer) {
-                            builder.addParameter((String) objAry[0], SimpleRequestBuilder.objectToString(objAry[1]));
+                        if (objAry.length == 2 && objAry[0] instanceof String stringValue
+                                && objAry[1] instanceof Integer) {
+                            builder.addParameter(stringValue, SimpleRequestBuilder.objectToString(objAry[1]));
                         } else {
                             builder.buildRequestString();
                             throw new IllegalArgumentException(
-                                    "The first field of the object array have to be a String and the second have to be a Integer.");
+                                    "The first field of the object array have to be a String and the second have to be an Integer.");
                         }
                     }
                     String response = transport.execute(builder.buildRequestString());

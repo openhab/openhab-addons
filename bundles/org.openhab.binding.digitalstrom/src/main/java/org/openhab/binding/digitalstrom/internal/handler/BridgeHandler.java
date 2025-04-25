@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConst
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
@@ -96,7 +94,7 @@ public class BridgeHandler extends BaseBridgeHandler
     /**
      * Contains all supported thing types of this handler
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DSS_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DSS_BRIDGE);
 
     private static final long RECONNECT_TRACKER_INTERVAL = 15;
 
@@ -198,9 +196,10 @@ public class BridgeHandler extends BaseBridgeHandler
             if (versions != null) {
                 properties.putAll(versions);
             }
-            if (StringUtils.isBlank(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT))
-                    && StringUtils.isNotBlank(config.getCert())) {
-                properties.put(DigitalSTROMBindingConstants.SERVER_CERT, config.getCert());
+            String certProperty = getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT);
+            String certConfig = config.getCert();
+            if ((certProperty == null || certProperty.isBlank()) && (certConfig != null && !certConfig.isBlank())) {
+                properties.put(DigitalSTROMBindingConstants.SERVER_CERT, certConfig);
             }
             logger.debug("update properties");
             updateProperties(properties);
@@ -235,8 +234,12 @@ public class BridgeHandler extends BaseBridgeHandler
     }
 
     private boolean checkLoginConfig(Config config) {
-        if ((StringUtils.isNotBlank(config.getUserName()) && StringUtils.isNotBlank(config.getPassword()))
-                || StringUtils.isNotBlank(config.getAppToken())) {
+        String userName = config.getUserName();
+        String password = config.getPassword();
+        String appToken = config.getAppToken();
+
+        if (((userName != null && !userName.isBlank()) && (password != null && !password.isBlank()))
+                || (appToken != null && !appToken.isBlank())) {
             return true;
         }
         onConnectionStateChange(CONNECTION_LOST, NO_USER_PASSWORD);
@@ -296,8 +299,9 @@ public class BridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, excText + " have to be a number.");
             return null;
         }
-        if (StringUtils.isNotBlank(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT))) {
-            config.setCert(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT));
+        String servertCert = getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT);
+        if (servertCert != null && !servertCert.isBlank()) {
+            config.setCert(servertCert);
         }
         return config;
     }
@@ -307,8 +311,9 @@ public class BridgeHandler extends BaseBridgeHandler
             this.config = new Config();
         }
         // load and check connection and authorization data
-        if (StringUtils.isNotBlank((String) thingConfig.get(HOST))) {
-            config.setHost(thingConfig.get(HOST).toString());
+        String host = (String) thingConfig.get(HOST);
+        if (host != null && !host.isBlank()) {
+            config.setHost(host);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the digitalSTROM-Server can't established, because the host address is missing. Please set the host address.");
@@ -625,8 +630,10 @@ public class BridgeHandler extends BaseBridgeHandler
             switch (reason) {
                 case WRONG_APP_TOKEN:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "User defined Application-Token is wrong. "
-                                    + "Please set user name and password to generate an Application-Token or set an valid Application-Token.");
+                            """
+                                    User defined Application-Token is wrong. \
+                                    Please set user name and password to generate an Application-Token or set a valid Application-Token.\
+                                    """);
                     stopServices();
                     return;
                 case WRONG_USER_OR_PASSWORD:
@@ -649,10 +656,12 @@ public class BridgeHandler extends BaseBridgeHandler
                         return;
                     }
                 case HOST_NOT_FOUND:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Server not found! Please check these points:\n" + " - Is digitalSTROM-Server turned on?\n"
-                                    + " - Is the host address correct?\n"
-                                    + " - Is the ethernet cable connection established?");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, """
+                            Server not found! Please check these points:
+                             - Is digitalSTROM-Server turned on?
+                             - Is the host address correct?
+                             - Is the ethernet cable connection established?\
+                            """);
                     break;
                 case UNKNOWN_HOST:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

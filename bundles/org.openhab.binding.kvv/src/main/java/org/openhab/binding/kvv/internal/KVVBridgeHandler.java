@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,15 +61,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         this.config = getConfigAs(KVVBridgeConfig.class);
-        if (this.config.apiKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to get bridge configuration");
-            return;
-        }
-
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -84,15 +76,13 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      * @return the latest {@link DepartureResult}.
      */
     public synchronized @Nullable DepartureResult queryKVV(final KVVStopConfig stopConfig) {
-
         // is there an up-to-date value in the cache?
         final DepartureResult cr = this.cache.get(stopConfig.stopId);
         if (cr != null) {
             return cr;
         }
 
-        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stopConfig.stopId + "?key="
-                + config.apiKey + "&maxInfos=" + config.maxTrains;
+        final String url = String.format(KVVBindingConstants.API_FORMAT, stopConfig.stopId, config.maxTrains);
 
         String data;
         try {
@@ -140,7 +130,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
          */
         public Cache() {
             this.updateInterval = KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL;
-            this.cache = new HashMap<String, CacheLine>();
+            this.cache = new HashMap<>();
         }
 
         /*

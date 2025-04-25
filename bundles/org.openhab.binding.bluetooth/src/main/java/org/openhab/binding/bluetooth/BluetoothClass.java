@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents a Bluetooth class, which describes the general characteristics and capabilities of a device.
  *
  * @author Chris Jackson - Initial Contribution
  *
  */
+@NonNullByDefault
 public class BluetoothClass {
     private final int clazz;
 

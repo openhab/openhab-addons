@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.oppo")
 public class OppoDiscoveryService extends AbstractDiscoveryService {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER);
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
 
@@ -138,9 +139,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 service.execute(() -> {
                     try {
                         MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
+                        InetSocketAddress inetSocketAddress = new InetSocketAddress(addr, SDDP_PORT);
                         multiSocket.setSoTimeout(TIMEOUT_MS);
                         multiSocket.setNetworkInterface(netint);
-                        multiSocket.joinGroup(addr);
+                        multiSocket.joinGroup(inetSocketAddress, null);
 
                         while (scanning) {
                             DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
@@ -148,7 +150,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                                 multiSocket.receive(receivePacket);
 
                                 String message = new String(receivePacket.getData(), StandardCharsets.US_ASCII).trim();
-                                if (message != null && message.length() > 0) {
+                                if (message.length() > 0) {
                                     messageReceive(message);
                                 }
                             } catch (SocketTimeoutException e) {
@@ -156,10 +158,13 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                             }
                         }
 
+                        multiSocket.leaveGroup(inetSocketAddress, null);
                         multiSocket.close();
                     } catch (IOException e) {
-                        if (!e.getMessage().contains("No IP addresses bound to interface")) {
-                            logger.debug("OppoDiscoveryService IOException: {}", e.getMessage(), e);
+                        final String message = e.getMessage();
+                        if (message != null && !message.contains("No IP addresses bound to interface")
+                                && !message.contains("Network interface not configured for IPv4")) {
+                            logger.debug("OppoDiscoveryService IOException: {}", message, e);
                         }
                     }
                 });
@@ -271,7 +276,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT_MS} * 5 time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {

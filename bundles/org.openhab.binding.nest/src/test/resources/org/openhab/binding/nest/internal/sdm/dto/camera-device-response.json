@@ -1,0 +1,38 @@
+{
+  "name": "enterprises/project-id/devices/camera-device-id",
+  "type": "sdm.devices.types.CAMERA",
+  "assignee": "enterprises/project-id/structures/structure-id/rooms/camera-room-id",
+  "traits": {
+    "sdm.devices.traits.Info": {
+      "customName": ""
+    },
+    "sdm.devices.traits.CameraLiveStream": {
+      "maxVideoResolution": {
+        "width": 640,
+        "height": 480
+      },
+      "videoCodecs": [
+        "H264"
+      ],
+      "audioCodecs": [
+        "AAC"
+      ]
+    },
+    "sdm.devices.traits.CameraImage": {
+      "maxImageResolution": {
+        "width": 1920,
+        "height": 1200
+      }
+    },
+    "sdm.devices.traits.CameraPerson": {},
+    "sdm.devices.traits.CameraSound": {},
+    "sdm.devices.traits.CameraMotion": {},
+    "sdm.devices.traits.CameraEventImage": {}
+  },
+  "parentRelations": [
+    {
+      "parent": "enterprises/project-id/structures/structure-id/rooms/camera-room-id",
+      "displayName": "Camera Room Name"
+    }
+  ]
+}

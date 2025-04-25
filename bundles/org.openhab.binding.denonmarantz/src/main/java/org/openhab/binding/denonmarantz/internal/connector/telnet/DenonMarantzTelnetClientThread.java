@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeroen Idserda - Initial contribution (1.x Binding)
  * @author Jan-Willem Veldhuis - Refactored for 2.x
  */
+@NonNullByDefault
 public class DenonMarantzTelnetClientThread extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(DenonMarantzTelnetClientThread.class);
@@ -45,13 +48,14 @@ public class DenonMarantzTelnetClientThread extends Thread {
 
     private boolean connected = false;
 
-    private Socket socket;
+    private @Nullable Socket socket;
 
-    private OutputStreamWriter out;
+    private @Nullable OutputStreamWriter out;
 
-    private BufferedReader in;
+    private @Nullable BufferedReader in;
 
     public DenonMarantzTelnetClientThread(DenonMarantzConfiguration config, DenonMarantzTelnetListener listener) {
+        super(String.format("OH-binding-%s-%s", DenonMarantzBindingConstants.BINDING_ID, "TelnetClient"));
         logger.debug("Denon listener created");
         this.config = config;
         this.listener = listener;
@@ -66,7 +70,11 @@ public class DenonMarantzTelnetClientThread extends Thread {
 
             do {
                 try {
-                    String line = in.readLine();
+                    String line = null;
+                    BufferedReader in = this.in;
+                    if (in != null) {
+                        line = in.readLine();
+                    }
                     if (line == null) {
                         logger.debug("No more data read from client. Disconnecting..");
                         listener.telnetClientConnected(false);
@@ -74,18 +82,21 @@ public class DenonMarantzTelnetClientThread extends Thread {
                         break;
                     }
                     logger.trace("Received from {}: {}", config.getHost(), line);
-                    if (!StringUtils.isBlank(line)) {
+                    if (!line.isBlank()) {
                         listener.receivedLine(line);
                     }
                 } catch (SocketTimeoutException e) {
                     logger.trace("Socket timeout");
                     // Disconnects are not always detected unless you write to the socket.
-                    try {
-                        out.write('\r');
-                        out.flush();
-                    } catch (IOException e2) {
-                        logger.debug("Error writing to socket");
-                        connected = false;
+                    OutputStreamWriter out = this.out;
+                    if (out != null) {
+                        try {
+                            out.write('\r');
+                            out.flush();
+                        } catch (IOException e2) {
+                            logger.debug("Error writing to socket");
+                            connected = false;
+                        }
                     }
                 } catch (IOException e) {
                     if (!isInterrupted()) {
@@ -102,6 +113,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
     }
 
     public void sendCommand(String command) {
+        OutputStreamWriter out = this.out;
         if (out != null) {
             try {
                 out.write(command + '\r');
@@ -122,6 +134,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
         disconnect();
         int delay = 0;
 
+        Socket socket = this.socket;
         while (!isInterrupted() && (socket == null || !socket.isConnected())) {
             try {
                 Thread.sleep(delay);
@@ -130,7 +143,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
                 // Use raw socket instead of TelnetClient here because TelnetClient sends an
                 // extra newline char after each write which causes the connection to become
                 // unresponsive.
-                socket = new Socket();
+                socket = this.socket = new Socket();
                 socket.connect(new InetSocketAddress(config.getHost(), config.getTelnetPort()), TIMEOUT);
                 socket.setKeepAlive(true);
                 socket.setSoTimeout(TIMEOUT);
@@ -146,6 +159,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
                 listener.telnetClientConnected(false);
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while connecting to {}", config.getHost(), e);
+                Thread.currentThread().interrupt();
             }
             delay = RECONNECT_DELAY;
         }
@@ -156,6 +170,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
     }
 
     private void disconnect() {
+        Socket socket = this.socket;
         if (socket != null) {
             logger.debug("Disconnecting socket");
             try {
@@ -163,7 +178,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
             } catch (IOException e) {
                 logger.debug("Error while disconnecting telnet client", e);
             } finally {
-                socket = null;
+                this.socket = null;
                 out = null;
                 in = null;
                 listener.telnetClientConnected(false);

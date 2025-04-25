@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,10 +66,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     private final Logger logger = LoggerFactory.getLogger(Powerline546EHandler.class);
 
-    /**
-     * keeps track of the current state for handling of increase/decrease
-     */
-    private @Nullable AVMFritzBaseModel state;
     private @Nullable String identifier;
 
     /**
@@ -128,7 +124,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
             }
-            state = device;
 
             updateProperties(device);
 
@@ -152,7 +147,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             if (state == null) {
                 updateThingChannelState(CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(CHANNEL_OUTLET, SwitchModel.ON.equals(state) ? OnOffType.ON : OnOffType.OFF);
+                updateThingChannelState(CHANNEL_OUTLET, OnOffType.from(SwitchModel.ON.equals(state)));
             }
         }
     }
@@ -193,6 +188,28 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     }
 
     /**
+     * Creates a {@link ChannelTypeUID} from the given channel id.
+     *
+     * @param channelId ID of the channel type UID to be created.
+     * @return the channel type UID
+     */
+    private ChannelTypeUID createChannelTypeUID(String channelId) {
+        final ChannelTypeUID channelTypeUID;
+        switch (channelId) {
+            case CHANNEL_BATTERY:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID();
+                break;
+            case CHANNEL_VOLTAGE:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_ELECTRIC_VOLTAGE.getUID();
+                break;
+            default:
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                break;
+        }
+        return channelTypeUID;
+    }
+
+    /**
      * Creates new channels for the thing.
      *
      * @param channelId ID of the channel to be created.
@@ -200,11 +217,9 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     private void createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            ChannelTypeUID channelTypeUID = CHANNEL_BATTERY.equals(channelId)
-                    ? DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID()
-                    : new ChannelTypeUID(BINDING_ID, channelId);
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+            final ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            final ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
+            final Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }
@@ -230,7 +245,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device).concat("_Solo"));
         String ipAddress = getConfigAs(AVMFritzBoxConfiguration.class).ipAddress;
 
-        if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+        if (POWERLINE546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress
                     : ipAddress.replaceAll(INVALID_PATTERN, "_");
             return new ThingUID(thingTypeUID, thingName);
@@ -272,11 +287,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
                 }
                 break;
             case CHANNEL_OUTLET:
-                fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 if (command instanceof OnOffType) {
-                    if (state != null) {
-                        state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
-                    }
+                    fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 }
                 break;
             default:

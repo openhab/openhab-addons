@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Lighting5 Actuator</label>
 		<description>A Lighting5 device.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>
@@ -26,12 +27,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Remote/switch/unit Id + unit code, separated by dot. Example 10001.1</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="AOKE">Aoke Relay</option>
 					<option value="AVANTEK">Avantek</option>

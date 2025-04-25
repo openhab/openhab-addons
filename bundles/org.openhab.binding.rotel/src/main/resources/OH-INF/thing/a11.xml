@@ -8,6 +8,7 @@
 	<thing-type id="a11">
 		<label>A11 Integrated Amplifier</label>
 		<description>Connection to the Rotel A11 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -17,6 +18,11 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

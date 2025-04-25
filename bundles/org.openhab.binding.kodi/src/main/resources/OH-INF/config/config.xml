@@ -64,7 +64,7 @@
 	</config-description>
 
 	<config-description uri="channel-type:kodi:pvr-channel">
-		<parameter name="group" type="text" required="true">
+		<parameter name="group" type="text">
 			<label>PVR Channel Group</label>
 			<description>The PVR channel group name used to identify the channel id.</description>
 			<default>All channels</default>

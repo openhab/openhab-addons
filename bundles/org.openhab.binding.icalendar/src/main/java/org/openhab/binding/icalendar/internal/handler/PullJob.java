@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,7 @@ class PullJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private final int maxSize;
     private final URI sourceURI;
+    private @Nullable final String userAgent;
 
     /**
      * Constructor of PullJob for creating a single pull of a calendar.
@@ -74,7 +75,7 @@ class PullJob implements Runnable {
      * @param listener The listener that should be fired when update succeed.
      */
     public PullJob(HttpClient httpClient, URI sourceURI, @Nullable String username, @Nullable String password,
-            File destination, int maxSize, CalendarUpdateListener listener) {
+            File destination, int maxSize, CalendarUpdateListener listener, @Nullable String userAgent) {
         this.httpClient = httpClient;
         this.sourceURI = sourceURI;
         if (username != null && password != null) {
@@ -85,11 +86,16 @@ class PullJob implements Runnable {
         this.destination = destination;
         this.listener = listener;
         this.maxSize = maxSize;
+        this.userAgent = userAgent;
     }
 
     @Override
     public void run() {
-        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
+                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
+        if (userAgent != null && !userAgent.isBlank()) {
+            request.agent(userAgent);
+        }
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
@@ -102,22 +108,25 @@ class PullJob implements Runnable {
         try {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         } catch (InterruptedException e1) {
-            logger.warn("Download of calendar was interrupted.");
-            logger.debug("InterruptedException message is: {}", e1.getMessage());
+            logger.warn("Download of calendar was interrupted: {}", e1.getMessage());
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         } catch (TimeoutException e1) {
-            logger.warn("Download of calendar timed out (waited too long for headers).");
-            logger.debug("TimeoutException message is: {}", e1.getMessage());
+            logger.warn("Download of calendar timed out (waited too long for headers): {}", e1.getMessage());
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         } catch (ExecutionException e1) {
-            logger.warn("Download of calendar failed.");
-            logger.debug("ExecutionException message is: {}", e1.getCause().getMessage());
+            String msg = e1.getCause() != null ? e1.getCause().getMessage() : "";
+            logger.warn("Download of calendar failed with ExecutionException: {}", msg);
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         }
 
         if (response.getStatus() != HttpStatus.OK_200) {
             logger.warn("Response status for getting \"{}\" was {} instead of 200. Ignoring it.", sourceURI,
                     response.getStatus());
+            request.abort(new IllegalStateException(
+                    "Got response status " + response.getStatus() + " while requesting " + sourceURI));
             return;
         }
 
@@ -140,7 +149,7 @@ class PullJob implements Runnable {
 
         File tmpTargetFile;
         try {
-            tmpTargetFile = File.createTempFile(TMP_FILE_PREFIX, null);
+            tmpTargetFile = Files.createTempFile(TMP_FILE_PREFIX, null).toFile();
         } catch (IOException e) {
             logger.warn("Not able to create temporary file for downloading iCal. Error message is: {}", e.getMessage());
             return;

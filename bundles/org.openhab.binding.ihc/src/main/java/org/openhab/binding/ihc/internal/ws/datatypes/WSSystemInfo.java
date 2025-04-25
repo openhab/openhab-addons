@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class WSSystemInfo {
     /**
      * Sets the RealTimeClock value for this WSSystemInfo.
      *
-     * @param RealTimeClock
+     * @param realtimeclock
      */
     public void setRealTimeClock(ZonedDateTime realtimeclock) {
         this.realtimeclock = realtimeclock;
@@ -108,7 +108,7 @@ public class WSSystemInfo {
     /**
      * Sets the SerialNumber value for this WSSystemInfo.
      *
-     * @param SerialNumber
+     * @param serialNumber
      */
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
@@ -325,7 +325,7 @@ public class WSSystemInfo {
 
             return this;
         } catch (IOException | XPathExpressionException | NumberFormatException | DateTimeParseException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 

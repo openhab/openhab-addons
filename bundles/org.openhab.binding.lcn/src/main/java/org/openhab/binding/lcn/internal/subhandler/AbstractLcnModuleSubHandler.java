@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.regex.Matcher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -118,22 +117,19 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      * message.
      *
      * @param pck the message to process
-     * @return true, if the message could be processed successfully
      */
-    public boolean tryParse(String pck) {
-        Optional<Matcher> firstSuccessfulMatcher = getPckStatusMessagePatterns().stream().map(p -> p.matcher(pck))
-                .filter(Matcher::matches).filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId")))
-                .findAny();
-
-        firstSuccessfulMatcher.ifPresent(matcher -> {
-            try {
-                handleStatusMessage(matcher);
-            } catch (LcnException e) {
-                logger.warn("Parse error: {}", e.getMessage());
-            }
-        });
-
-        return firstSuccessfulMatcher.isPresent();
+    public void tryParse(String pck) {
+        getPckStatusMessagePatterns().stream() //
+                .map(p -> p.matcher(pck)) //
+                .filter(Matcher::matches) //
+                .filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId"))) //
+                .forEach(matcher -> {
+                    try {
+                        handleStatusMessage(matcher);
+                    } catch (LcnException e) {
+                        logger.warn("Parse error: {}", e.getMessage());
+                    }
+                });
     }
 
     /**

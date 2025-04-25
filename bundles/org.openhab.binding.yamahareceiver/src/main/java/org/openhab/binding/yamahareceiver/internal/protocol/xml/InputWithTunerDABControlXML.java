@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithTunerBandControl;
@@ -37,12 +36,13 @@ import org.w3c.dom.Node;
  *
  * Note that yamaha maintains separate presets for each band.
  *
- * The XML nodes <DAB><Play_Control><Band>FM</Band></Play_Control></DAB> are used.
+ * The XML nodes {@code <DAB><Play_Control><Band>FM</Band></Play_Control></DAB>} are used.
  *
  * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
  * instead.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution, [yamaha] Tuner band selection and preset feature for dual band models
+ *         (RX-S601D)
  */
 public class InputWithTunerDABControlXML extends AbstractInputControlXML
         implements InputWithTunerBandControl, InputWithPresetControl {
@@ -65,7 +65,7 @@ public class InputWithTunerDABControlXML extends AbstractInputControlXML
     private DabBandState bandState;
 
     /**
-     * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
+     * Create an InputWithPlayControl object for altering menu positions and requesting current menu information as well
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID - TUNER is going to be used here.
@@ -172,7 +172,7 @@ public class InputWithTunerDABControlXML extends AbstractInputControlXML
         // store last state of band
         bandState = msgForBand;
 
-        if (StringUtils.isEmpty(msgForBand.band)) {
+        if (msgForBand.band.isEmpty()) {
             logger.warn("Band is unknown for input {}, therefore preset and playback information will not be available",
                     inputID);
         } else {

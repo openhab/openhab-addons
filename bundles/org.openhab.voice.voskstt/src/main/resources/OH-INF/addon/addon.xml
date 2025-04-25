@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="voskstt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>voice</type>
+	<name>Vosk Speech-to-Text</name>
+	<description>Vosk STT Service uses vosk-api to perform offline speech-to-text in openHAB.</description>
+	<connection>none</connection>
+
+	<service-id>org.openhab.voice.voskstt</service-id>
+
+	<config-description-ref uri="voice:voskstt"/>
+
+</addon:addon>

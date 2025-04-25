@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="front-left-lock">
+		<item-type>Switch</item-type>
+		<label>Door Lock Front Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-right-lock">
+		<item-type>Switch</item-type>
+		<label>Door Lock Front Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-left-lock">
+		<item-type>Switch</item-type>
+		<label>Door Lock Rear Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-right-lock">
+		<item-type>Switch</item-type>
+		<label>Door Lock Rear Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="deck-lid-lock">
+		<item-type>Switch</item-type>
+		<label>Deck Lid Lock</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="gas-flap-lock">
+		<item-type>Switch</item-type>
+		<label>Flap Lock</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -81,8 +80,7 @@ public class NeeoItemValueConverter {
         final String format = channel.getValue();
 
         // HSBType must be done before the others since it inherits from DecimalType
-        if (state instanceof HSBType) {
-            final HSBType hsb = (HSBType) state;
+        if (state instanceof HSBType hsb) {
             switch (channel.getSubType()) {
                 case HUE:
                     return new NeeoItemValue(hsb.getHue().toBigDecimal());
@@ -107,8 +105,8 @@ public class NeeoItemValueConverter {
                 convertedState = UnDefType.UNDEF;
                 break;
             case SLIDER:
-                if (state instanceof PercentType) {
-                    convertedState = new DecimalType(((PercentType) state).toBigDecimal());
+                if (state instanceof PercentType type) {
+                    convertedState = new DecimalType(type.toBigDecimal());
                 } else {
                     convertedState = state.as(DecimalType.class);
                 }
@@ -137,9 +135,9 @@ public class NeeoItemValueConverter {
         } else if (convertedState instanceof UpDownType) {
             return new NeeoItemValue(convertedState == UpDownType.UP);
 
-        } else if (convertedState instanceof DecimalType) {
-            if (StringUtils.isEmpty(format) || channel.getType() == NeeoCapabilityType.SLIDER) {
-                return new NeeoItemValue(((DecimalType) convertedState).toBigDecimal());
+        } else if (convertedState instanceof DecimalType type) {
+            if (format == null || format.isEmpty() || channel.getType() == NeeoCapabilityType.SLIDER) {
+                return new NeeoItemValue(type.toBigDecimal());
             }
         } else if (convertedState instanceof UnDefType) {
             return new NeeoItemValue("-");
@@ -150,7 +148,7 @@ public class NeeoItemValueConverter {
         // Formatting must use the actual state (not converted state) to avoid
         // issues where a decimal converted to string or otherwise
         String itemValue;
-        if (format != null && StringUtils.isNotEmpty(format)) {
+        if (format != null && !format.isEmpty()) {
             if (state instanceof UnDefType) {
                 itemValue = formatUndefined(format);
             } else if (state instanceof Type) {
@@ -184,7 +182,7 @@ public class NeeoItemValueConverter {
     }
 
     /**
-     * Takes the given <code>formatPattern</code> and replaces it with a analog
+     * Takes the given <code>formatPattern</code> and replaces it with an analog
      * String-based pattern to replace all value Occurrences with a dash ("-").
      *
      * @param formatPattern the original pattern which will be replaces by a
@@ -230,7 +228,7 @@ public class NeeoItemValueConverter {
         Objects.requireNonNull(item, "item cannot be null");
         Objects.requireNonNull(eventType, "eventType cannot be null");
 
-        if (actionValue == null || StringUtils.isEmpty(actionValue)) {
+        if (actionValue == null || actionValue.isEmpty()) {
             return null;
         }
 
@@ -251,7 +249,7 @@ public class NeeoItemValueConverter {
                     default:
                         break;
                 }
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 // do nothing - let it go to the other cases
             }
         }
@@ -265,9 +263,9 @@ public class NeeoItemValueConverter {
                 }
                 break;
             case "switch":
-                if (StringUtils.equalsIgnoreCase("true", actionValue)) {
+                if ("true".equalsIgnoreCase(actionValue)) {
                     return OnOffType.ON;
-                } else if (StringUtils.equalsIgnoreCase("false", actionValue)) {
+                } else if ("false".equalsIgnoreCase(actionValue)) {
                     return OnOffType.OFF;
                 }
                 break;

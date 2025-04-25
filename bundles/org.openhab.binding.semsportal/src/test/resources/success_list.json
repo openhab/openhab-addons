@@ -1,0 +1,73 @@
+{ 
+  "hasError": false, 
+  "code": 0, 
+  "msg": "Success", 
+  "data": [ 
+    { 
+      "powerstation_id": "000000-0000000-0000000-00000", 
+      "stationname": "place", 
+      "first_letter": "", 
+      "adcode": "11111111111111", 
+      "location": "", 
+      "status": -1, 
+      "pac": 0.0, 
+      "capacity": 4.5, 
+      "eday": 13.1, 
+      "emonth": 195.0, 
+      "eday_income": 604.318, 
+      "etotal": 2746.9, 
+      "powerstation_type": "residential", 
+      "pre_org_id": null, 
+      "org_id": null, 
+      "longitude": "16", 
+      "latitude": "23", 
+      "pac_kw": 2746.9, 
+      "to_hour": 2.911111111111111, 
+      "weather": { 
+        "HeWeather6": [ 
+          { 
+            "basic": { 
+              "cid": "XXXXXXXX", 
+              "location": "Location", 
+              "parent_city": "City", 
+              "admin_area": "Area", 
+              "cnty": "Country", 
+              "lat": "16", 
+              "lon": "23", 
+              "tz": "+1.00" 
+            }, 
+            "update": { 
+              "loc": "2019-08-12 23:57", 
+              "utc": "2019-08-12 22:57" 
+            }, 
+            "status": "ok", 
+            "now": { 
+              "cloud": "100", 
+              "cond_code": "300", 
+              "cond_txt": "Shower Rain", 
+              "fl": "14", 
+              "hum": "100", 
+              "pcpn": "0.3", 
+              "pres": "1014", 
+              "tmp": "14", 
+              "vis": "16", 
+              "wind_deg": "90", 
+              "wind_dir": "E", 
+              "wind_sc": "1", 
+              "wind_spd": "4" 
+            } 
+          } 
+        ] 
+      }, 
+      "currency": "EUR", 
+      "yield_rate": 0.22, 
+      "is_stored": false 
+    } 
+  ], 
+  "components": { 
+    "para": null, 
+    "langVer": 40, 
+    "timeSpan": 0, 
+    "api": "http://eu.semsportal.com:82/api/PowerStationMonitor/QueryPowerStationMonitorForApp" 
+  } 
+}

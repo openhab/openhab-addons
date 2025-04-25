@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
@@ -35,7 +34,7 @@ import org.w3c.dom.Node;
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
  * other inputs are using the same way of playback control.
  * <p>
- * The XML nodes <Play_Info> and <Play_Control> are used.
+ * The XML nodes {@code <Play_Info>} and {@code <Play_Control>} are used.
  * <p>
  * Example:
  * <p>
@@ -46,7 +45,7 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link PlayInfoState} and
  * {@link PresetInfoState} instead.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Spotify support, refactoring
  */
 public class InputWithPlayControlXML extends AbstractInputControlXML implements InputWithPlayControl {
@@ -61,7 +60,7 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     protected String skipBackwardValue = "Skip Rev";
 
     /**
-     * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
+     * Create an InputWithPlayControl object for altering menu positions and requesting current menu information as well
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID like USB or NET_RADIO.
@@ -103,7 +102,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
      * Start the playback of the content which is usually selected by the means of the Navigation control class or
      * which has been stopped by stop().
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void play() throws IOException, ReceivedMessageParseException {
@@ -113,7 +113,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Stop the currently playing content. Use start() to start again.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void stop() throws IOException, ReceivedMessageParseException {
@@ -123,7 +124,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Pause the currently playing content. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void pause() throws IOException, ReceivedMessageParseException {
@@ -133,7 +135,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Skip forward. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void skipFF() throws IOException, ReceivedMessageParseException {
@@ -147,7 +150,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Skip reverse. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void skipREV() throws IOException, ReceivedMessageParseException {
@@ -161,7 +165,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Next track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void nextTrack() throws IOException, ReceivedMessageParseException {
@@ -171,7 +176,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Previous track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void previousTrack() throws IOException, ReceivedMessageParseException {
@@ -193,7 +199,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     /**
      * Updates the playback information
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     @Override
     public void update() throws IOException, ReceivedMessageParseException {
@@ -244,8 +251,7 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
 
         // Spotify and NET RADIO input supports song cover image (at least on RX-S601D)
         String songImageUrl = getNodeContentOrEmpty(node, "Play_Info/Album_ART/URL");
-        msg.songImageUrl = StringUtils.isNotEmpty(songImageUrl)
-                ? String.format("http://%s%s", con.getHost(), songImageUrl)
+        msg.songImageUrl = !songImageUrl.isEmpty() ? String.format("http://%s%s", con.getHost(), songImageUrl)
                 : bridgeConfig.getAlbumUrl();
 
         logger.trace("Playback: {}, Station: {}, Artist: {}, Album: {}, Song: {}, SongImageUrl: {}", msg.playbackMode,

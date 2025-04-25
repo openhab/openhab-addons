@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.net.NetworkInterface;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.magentatv.internal.MagentaTVBindingConstants;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,11 @@ public class MagentaTVPoweroffListener extends Thread {
     protected final MulticastSocket socket;
     protected @Nullable NetworkInterface networkInterface;
     protected byte[] buf = new byte[256];
+    private boolean started = false;
 
     public MagentaTVPoweroffListener(MagentaTVHandlerFactory handlerFactory,
             @Nullable NetworkInterface networkInterface) throws IOException {
-        setName("OH-Binding-magentatv-upnp-listener");
+        super(String.format("OH-binding-%s-%s", MagentaTVBindingConstants.BINDING_ID, "PoweroffListener"));
         setDaemon(true);
 
         this.handlerFactory = handlerFactory;
@@ -61,6 +63,7 @@ public class MagentaTVPoweroffListener extends Thread {
     public void start() {
         if (!isStarted()) {
             logger.debug("Listening to SSDP shutdown messages");
+            started = true;
             super.start();
         }
     }
@@ -112,18 +115,19 @@ public class MagentaTVPoweroffListener extends Thread {
     }
 
     public boolean isStarted() {
-        return socket.isBound();
+        return started;
     }
 
     /**
      * Make sure the socket gets closed
      */
     public void close() {
-        if (isStarted()) {
+        if (started) { // if (isStarted()) {
             logger.debug("No longer listening to SSDP messages");
             if (!socket.isClosed()) {
                 socket.close();
             }
+            started = false;
         }
     }
 

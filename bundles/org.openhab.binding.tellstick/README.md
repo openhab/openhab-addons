@@ -8,35 +8,36 @@ All of these 433 MHz devices is one-way, so some versions of the Tellstick monit
 
 The latest versions have also implemented Z-Wave as transmission protocol which open up for more robust transmission due two-ways communication.
 
-<p align="center">
-<img src="doc/tellstick_duo.jpg" alt="Tellstick Duo with device" width="300px"/>
-</p>
+![](doc/tellstick_duo.jpg)
+
+![](doc/znet.jpeg)
 
 ## Supported Things
 
 This binding supports the following thing types:
 
-*   *Dimmable Device* - Usually for controlling lamps.  `dimmer`
-*   *Switchable Device* - On/Off only could be lamps or other electronic equipment. `switch`
-*   *Sensors* - Temperature- and humidity-sensors. `sensor`
+- _Dimmable Device_ - Usually for controlling lamps.  `dimmer`
+- _Switchable Device_ - On/Off only could be lamps or other electronic equipment. `switch`
+- _Sensors_ - Temperature- and humidity-sensors. `sensor`
 
 Additionally the binding have two types of bridge things which correspond to available API types:
 
-*   *Telldus Core Bridge* - Oldest API, used by USB devices. `telldus-core`
-*   *Telldus Live Bridge* - Telldus Cloud service, all devices with online access. `telldus-live`
+- _Telldus Core Bridge_ - Oldest API, used by USB devices. `telldus-core`
+- _Telldus Live Bridge_ - Telldus Cloud service, all devices with online access. `telldus-live`
+- _Telldus Local Bridge_ - Telldus Local API, Tellstick Net v2/Tellstick ZNet Lite v1/v2. `telldus-local`
 
+### Switchbased sensors workaround
 
-***Switchbased sensors workaround***
-
-*   Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
+- Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
 
 ## Discovery
 
-Devices which is added to *Telldus Core* and *Telldus Live* can be discovered by openHAB.
+Devices which is added to _Telldus Core_, _Telldus Live_ and _Telldus Local_ can be discovered by openHAB.
 
-When you add this binding it will try to discover the *Telldus Core Bridge*.
+When you add this binding it will try to discover the _Telldus Core Bridge_.
 If it is installed correct its devices will show up.
-If you want to use the *Telldus Live* its bridge, *Telldus Live bridge* need to be added manually.
+
+If you want to use the _Telldus Live_ or _Telldus Local_, their bridges, _Telldus Live bridge_ or _Tellstick Local_, needs to be added manually.
 
 ## Binding Configuration
 
@@ -45,7 +46,7 @@ The binding itself requires no configuration.
 ## Thing Configuration
 
 Only the bridges require manual configuration.
-It is preferable that devices and sensors are discovered automatically; let the discovery initially configure them. 
+It is preferable that devices and sensors are discovered automatically; let the discovery initially configure them.
 
 ### Dimmers & switches
 
@@ -54,13 +55,12 @@ Use the option `repeat` for that. Default resend count is 2.
 
 ### Bridges
 
-Depending on your tellstick device type there is different ways of using this binding.
-The binding implements two different API:
-**1)** *Telldus Core* which is a local only interface supported by USB based device. <br>
-**2)** *Telldus Live* which is a REST based cloud service maintained by Telldus. <br>
-
-> Not implemented yet but supported by some new devices, contributions are welcome. [API documention.](https://api.telldus.net/localapi/api.html) <br>
-> **3)** *Local Rest API* is a local API which would work similar to Telldus Live but local.
+Depending on your Tellstick device type there is different ways of using this binding.
+The binding implements three different APIs:
+**1)** _Telldus Core_ which is a local only interface supported by USB based device. <br>
+**2)** _Telldus Live_ which is a REST based cloud service maintained by Telldus.
+**3)** _Telldus Local_ which is a REST based local service maintained by Telldus.
+<br>
 
 Depending on your Tellstick model, different bridge-types are available:
 
@@ -68,7 +68,7 @@ Depending on your Tellstick model, different bridge-types are available:
 |-------------------------|:------------:|:------------:|:--------------:|:-----------------------------:|
 | Tellstick Basic         |       X      |       X      |                |               X               |
 | Tellstick Duo           |       X      |       X      |                |               X               |
-| Tellstick Net v.1       |              |       X      |                |                               |
+| Tellstick Net v.1       |              |       X      |                |               X               |
 | Tellstick Net v.2       |              |       X      |        X       |                               |
 | Tellstick ZNet Lite v.1 |              |       X      |        X       |               X               |
 | Tellstick ZNet Lite v.2 |              |       X      |        X       |                               |
@@ -77,38 +77,69 @@ Depending on your Tellstick model, different bridge-types are available:
 
 > To enable communication between openHAB and tellstick-core service (Telldus center) they must use same architecture, eg. 32-bit or 64-bit. The supplied version from Telldus is compiled against 32-bit architecture. Therefore, it is better to use 32-bit java for openHAB. To check which version of Java is currently in use, run: `java -d32 -version`
 >
-> *For changing architecture in Linux check out: `dpkg --add-architecture`* 
+> _For changing architecture in Linux check out: `dpkg --add-architecture`_
 
 The telldus-core bridge uses a library on the local computer which is a `.dll` file for Windows and a `.so` file for Linux. The default one is usually correct.
 
-```
+```java
 Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200,libraryPath="C:/Program Files/Telldus/;C:/Program Files (x86)/Telldus/"]
 ```
 
 Optional:
 
--   **libraryPath:** The path to tellduscore.dll/so semicolon seperated list of folders.
--   **resendInterval:** The interval between each transmission of command in ms, default 100ms.
+- **libraryPath:** The path to tellduscore.dll/so semicolon seperated list of folders.
+- **resendInterval:** The interval between each transmission of command in ms, default 100ms.
 
 #### Telldus Live Bridge
 
 To configure Telldus Live you have request OAuth tokens from Telldus.
-Goto this page <https://api.telldus.com/keys/index> and request your keys and update the config.
+Goto this page <https://pa-api.telldus.com/keys/index> and request your keys and update the config.
 
-```
+```java
 Bridge tellstick:telldus-live:2 "Tellstick ZWave" [publicKey="XXX", privateKey="YYYY", token= "ZZZZ", tokenSecret="UUUU"]
 ```
 
 Required:
 
--   **privateKey:** Private key
--   **publicKey:** Public key
--   **token:** Token
--   **tokenSecret:** Token secret
+- **privateKey:** Private key
+- **publicKey:** Public key
+- **token:** Token
+- **tokenSecret:** Token secret
 
 Optional:
 
--   **refreshInterval:** How often we should contact *Telldus Live* to check for updates (in ms)
+- **refreshInterval:** How often we should contact _Telldus Live_ to check for updates (in ms)
+
+#### Telldus Local Bridge
+
+To configure Telldus Local you need to know the local IP address of your Tellstick device and also request an access token.
+
+Goto this page:
+<https://tellstick-server.readthedocs.io/en/latest/api/authentication.html>
+and follow steps 1), 2) and 3) to generate an access token.
+
+In step 2) when you authenticate the application in your favorite browser, choose the options '1 year' and 'Auto renew access'.
+
+Copy the 'token' returned in Step 3) and use that as accessToken in the local bridge config.
+
+```text
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImF1ZCI6IkV4YW1wbGUgYXBwIiwiZXhwIjoxNDUyOTUxNTYyfQ.eyJyZW5ldyI6dHJ1ZSwidHRsIjo4NjQwMH0.HeqoFM6-K5IuQa08Zr9HM9V2TKGRI9VxXlgdsutP7sg"
+```
+
+```java
+Bridge tellstick:telldus-local:3 "Tellstick Local ZWave" [ipAddress="x.y.z.w" , accesToken= "XYZ...W"]
+```
+
+**NOTE**: This binding does not automatically update the the token, even if 'Auto renew access' is chosen in step 2) above. This has to be done manually at least once a year, as described in the 'Refreshing a token' section in the above page.
+
+Required:
+
+- **ipAddress:** Local IP address of your Tellstick device
+- **accessToken:** Access Token
+
+Optional:
+
+- **refreshInterval:** How often we should contact _Telldus Local_ to check for updates (in ms)
 
 ## Channels
 
@@ -158,26 +189,26 @@ To achieve that we will create a proxy item which is updated by a rule.
 
 First create another proxy item for every sensor:
 
-```
-Switch front_door_sensor	"Front door"  <door>  {channel="tellstick:switch:1:7:state"}
-Contact front_door_proxy	"Front door"  <door>
+```java
+Switch front_door_sensor    "Front door"  <door>  {channel="tellstick:switch:1:7:state"}
+Contact front_door_proxy    "Front door"  <door>
 ```
 
 Then create a rule which updates the proxy item:
 
-```
+```java
 rule "proxy_front_door_on"
 when
-	Item front_door_sensor changed to ON
+    Item front_door_sensor changed to ON
 then
-	front_door_proxy.postUpdate(OPEN);		
+    front_door_proxy.postUpdate(OPEN);
 end
 
 rule "proxy_front_door_off"
 when
-	Item front_door_sensor changed to OFF
+    Item front_door_sensor changed to OFF
 then
-	front_door_proxy.postUpdate(CLOSED);		
+    front_door_proxy.postUpdate(CLOSED);
 end
 ```
 
@@ -185,20 +216,23 @@ end
 
 ### tellstick.things
 
-```
+```java
 Bridge tellstick:telldus-core:1 "Tellstick Duo" [resendInterval=200] {
-	dimmer BedroomCeilingLamp1 [protocol="arctech",model="selflearning-dimmer",name="BedroomCeilingLamp1",deviceId="8"]
+    dimmer BedroomCeilingLamp1 [protocol="arctech",model="selflearning-dimmer",name="BedroomCeilingLamp1",deviceId="8"]
     switch LivingTV [protocol="arctech",name="LivingTV",deviceId="5"]
     sensor OutsideSensor1 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:125",deviceId="125_temperaturehumidity_fineoffset"]
 }
 Bridge tellstick:telldus-live:2 "Tellstick ZWave" [refreshInterval=10000, publicKey="XXXXXXXX", privateKey="YYYYYY", token= "ZZZZZZZZ", tokenSecret="UUUUUUUUUU"] {
-	sensor OutsideSensor2 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:120",deviceId="120_temperaturehumidity_fineoffset"]
+    sensor OutsideSensor2 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:120",deviceId="120_temperaturehumidity_fineoffset"]
+}
+Bridge tellstick:telldus-local:3 "Tellstick Local ZWave" [ipAddress="192.168.50.17" , accesToken= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImF1ZCI6IkV4YW1wbGUgYXBwIiwiZXhwIjoxNDUyOTUxNTYyfQ.eyJyZW5ldyI6dHJ1ZSwidHRsIjo4NjQwMH0.HeqoFM6-K5IuQa08Zr9HM9V2TKGRI9VxXlgdsutP7sg"] {
+    sensor OutsideSensor3 [protocol="fineoffset",model="temperaturehumidity",name="temperaturehumidity:120",deviceId="120_temperaturehumidity_fineoffset"]
 }
 ```
 
 ### tellstick.items
 
-```
+```java
 Number OutsideSensor1_Temperture <temperature> { channel="tellstick:sensor:tellstickgateway:OutsideSensor1:temperature"}
 Number OutsideSensor1_Humidity <humidity> { channel="tellstick:sensor:tellstickgateway:OutsideSensor1:humidity"}
 

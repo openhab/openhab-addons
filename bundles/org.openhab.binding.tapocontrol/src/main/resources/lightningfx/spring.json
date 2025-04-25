@@ -1,0 +1,64 @@
+ {
+  "id": "TapoStrip_1nL6GqZ5soOxj71YDJOlZL",
+  "name": "Spring",
+  "brightness": 100,
+  "display_colors": [
+    [
+      0,
+      30,
+      100
+    ],
+    [
+      130,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [
+    90,
+    100
+  ],
+  "backgrounds": [
+    [
+      130,
+      100,
+      40
+    ]
+  ],
+  "custom": 0,
+  "direction": null,
+  "duration": 600,
+  "expansion_strategy": 1,
+  "fadeoff": 1000,
+  "hue_range": [
+    0,
+    90
+  ],
+  "init_states": [
+    [
+      80,
+      30,
+      100
+    ]
+  ],
+  "random_seed": 20,
+  "repeat_times": null,
+  "saturation_range": [
+    30,
+    100
+  ],
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": null,
+  "spread": null,
+  "transition": 0,
+  "transition_range": [
+    2000,
+    6000
+  ],
+  "type": "random"
+}

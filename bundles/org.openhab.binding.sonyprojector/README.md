@@ -2,9 +2,9 @@
 
 This binding can be used to conrol Sony Projectors through:
 
-* an Ethernet connection using PJ Talk
-* or a (direct) serial connection
-* or a serial over IP connection
+- an Ethernet connection using PJ Talk
+- or a (direct) serial connection
+- or a serial over IP connection
 
 For serial connection, you have to use a D-Sub 9 Pin cross (reverse) cable also called null modem.
 For this cable, you will need a female connector on openHAB server side and a male connector on projector side (projector connector is female).
@@ -18,84 +18,84 @@ In such a case, setup a serial over IP connection thing type in openHAB.
 
 Here is the list of supported Sony projectors based on Sony protocol manuals:
 
-* VPL-HW15
-* VPL-HW20
-* VPL-HW30ES
-* VPL-HW35ES
-* VPL-HW40ES
-* VPL-HW50ES
-* VPL-HW55ES
-* VPL-HW58ES
-* VPL-HW60
-* VPL-HW65
-* VPL-HW68
-* VPL-VW40
-* VPL-VW50
-* VPL-VW60
-* VPL-VW70
-* VPL-VW85
-* VPL-VW95ES
-* VPL-VW100
-* VPL-VW315
-* VPL-VW320
-* VPL-VW328
-* VPL-VW365
-* VPL-VW515
-* VPL-VW520
-* VPL-VW528
-* VPL-VW665
-* VPL-VW1000ES
-* VPL-VW1100ES
+- VPL-HW15
+- VPL-HW20
+- VPL-HW30ES
+- VPL-HW35ES
+- VPL-HW40ES
+- VPL-HW50ES
+- VPL-HW55ES
+- VPL-HW58ES
+- VPL-HW60
+- VPL-HW65
+- VPL-HW68
+- VPL-VW40
+- VPL-VW50
+- VPL-VW60
+- VPL-VW70
+- VPL-VW85
+- VPL-VW95ES
+- VPL-VW100
+- VPL-VW315
+- VPL-VW320
+- VPL-VW328
+- VPL-VW365
+- VPL-VW515
+- VPL-VW520
+- VPL-VW528
+- VPL-VW665
+- VPL-VW1000ES
+- VPL-VW1100ES
 
 Here is the list of supported Sony projectors but not sure due to assumptions done based on Sony user manuals and protocol manuals of other similar models (because Sony protocol manuals unfortunately not available for these models):
 
-* VPL-HW10
-* VPL-HW45ES
-* VPL-VW80
-* VPL-VW90ES
-* VPL-VW200
-* VPL-VW260ES
-* VPL-VW270ES
-* VPL-VW285ES
-* VPL-VW295ES
-* VPL-VW300ES
-* VPL-VW350ES
-* VPL-VW385ES
-* VPL-VW500ES
-* VPL-VW550ES (= VW675)
-* VPL-VW570ES
-* VPL-VW600ES
-* VPL-VW675ES
-* VPL-VW695ES
-* VPL-VW760ES
-* VPL-VW870ES
-* VPL-VW885ES
-* VPL-VW995ES
+- VPL-HW10
+- VPL-HW45ES
+- VPL-VW80
+- VPL-VW90ES
+- VPL-VW200
+- VPL-VW260ES
+- VPL-VW270ES
+- VPL-VW285ES
+- VPL-VW295ES
+- VPL-VW300ES
+- VPL-VW350ES
+- VPL-VW385ES
+- VPL-VW500ES
+- VPL-VW550ES (= VW675)
+- VPL-VW570ES
+- VPL-VW600ES
+- VPL-VW675ES
+- VPL-VW695ES
+- VPL-VW760ES
+- VPL-VW870ES
+- VPL-VW885ES
+- VPL-VW995ES
 
 Control of other (HW or VW) models could work with the binding by selecting one of the supported models but without any guarantee.
 Here is a list of potential candidates:
 
-* VPL-VW10HT
-* VPL-VW11HT
-* VPL-VW12HT
-* VPL-VW360ES
-* VPL-VW685ES
-* VPL-VW5000ES
- 
+- VPL-VW10HT
+- VPL-VW11HT
+- VPL-VW12HT
+- VPL-VW360ES
+- VPL-VW685ES
+- VPL-VW5000ES
+
 ## Supported Things
 
 This binding supports the following thing types:
 
 | Thing Type             | Description                                             |
-|------------------------|---------------------------------------------------------|
+| ---------------------- | ------------------------------------------------------- |
 | ethernetconnection     | Ethernet connection to the Sony projector using PJ Talk |
 | serialconnection       | Serial connection to the Sony projector                 |
 | serialoveripconnection | Serial over IP connection to the Sony projector         |
 
 ## Discovery
 
-Discovery is not supported at the moment.
-You have to add all things manually.
+If the projector is connected via Ethernet and the 'Start SDDP Service' option is present and enabled in the projector Advanced Settings->Service page, the Thing using Ethernet connection and PJ Talk will be discovered automatically.
+Serial or Serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
@@ -108,46 +108,46 @@ All settings are through thing configuration parameters.
 
 The Ethernet connection thing requires the following configuration parameters:
 
-| Parameter Label | Parameter ID | Description                                                              | Required | Default | Accepted values |
-|-----------------|--------------|--------------------------------------------------------------------------|----------|---------|-----------------|
-| Address         | host         | Host name or IP address of the projector                                 | true     |         |                 |
-| Port            | port         | Communication port. Default is 53484                                     | false    | 53484   |                 |
+| Parameter Label | Parameter ID | Description                                                              | Required | Default | Accepted values                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------- | ------------ | ------------------------------------------------------------------------ | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Address         | host         | Host name or IP address of the projector                                 | true     |         |                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Port            | port         | Communication port. Default is 53484                                     | false    | 53484   |                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Model           | model        | Projector model to be controlled. Default is AUTO                        | false    | AUTO    | AUTO, VPL-HW60, VPL-HW65, VPL-HW68, VPL-VW100, VPL-VW200, VPL-VW260ES, VPL-VW270ES, VPL-VW285ES, VPL-VW295ES, VPL-VW300ES, VPL-VW315, VPL-VW320, VPL-VW328, VPL-VW350ES, VPL-VW365, VPL-VW385ES, VPL-VW500ES, VPL-VW515, VPL-VW520, VPL-VW528, VPL-VW550ES, VPL-VW570ES, VPL-VW600ES, VPL-VW665, VPL-VW675ES, VPL-VW695ES, VPL-VW760ES, VPL-VW870ES, VPL-VW885ES, VPL-VW995ES, VPL-VW1000ES, VPL-VW1100ES |
-| Community       | community    | Community of the projector. Length must be 4 characters. Default is SONY | false    | SONY    |                 |
+| Community       | community    | Community of the projector. Length must be 4 characters. Default is SONY | false    | SONY    |                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 Some notes:
 
-* Take care to enable PJ Talk on your projector.
+- Take care to enable PJ Talk on your projector.
 
 ### Serial connection
 
 The serial connection thing requires the following configuration parameters:
 
-| Parameter Label | Parameter ID | Description                                        | Required | Default   | Accepted values |
-|-----------------|--------------|----------------------------------------------------|----------|-----------|-----------------|
-| Serial Port     | port         | Serial port to use for connecting to the projector | true     |           |                 |
+| Parameter Label | Parameter ID | Description                                        | Required | Default   | Accepted values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------- | ------------ | -------------------------------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Serial Port     | port         | Serial port to use for connecting to the projector | true     |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Model           | model        | Projector model to be controlled                   | true     | VPL-VW528 | VPL-HW10, VPL-HW15, VPL-HW20, VPL-HW30ES, VPL-HW35ES, VPL-HW40ES, VPL-HW45ES, VPL-HW50ES, VPL-HW55ES, VPL-HW58ES, VPL-HW60, VPL-HW65, VPL-HW68, VPL-VW40, VPL-VW50, VPL-VW60, VPL-VW70, VPL-VW80, VPL-VW85, VPL-VW90ES, VPL-VW95ES, VPL-VW100, VPL-VW200, VPL-VW260ES, VPL-VW270ES, VPL-VW285ES, VPL-VW295ES, VPL-VW300ES, VPL-VW315, VPL-VW320, VPL-VW328, VPL-VW350ES, VPL-VW365, VPL-VW385ES, VPL-VW500ES, VPL-VW515, VPL-VW520, VPL-VW528, VPL-VW550ES, VPL-VW570ES, VPL-VW600ES, VPL-VW665, VPL-VW675ES, VPL-VW695ES, VPL-VW760ES, VPL-VW870ES, VPL-VW885ES, VPL-VW995ES, VPL-VW1000ES, VPL-VW1100ES |
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the SonyProjector binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. SonyProjector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- On Linux, you may get an error stating the serial port cannot be opened when the SonyProjector binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. SonyProjector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ### Serial over IP connection
 
 The serial over IP connection thing requires the following configuration parameters:
 
-| Parameter Label | Parameter ID | Description                                                       | Required | Default   | Accepted values |
-|-----------------|--------------|-------------------------------------------------------------------|----------|-----------|-----------------|
-| Address         | host         | Host name or IP address of the machine connected to the projector | true     |           |                 |
-| Port            | port         | Communication port                                                | true     |           |                 |
+| Parameter Label | Parameter ID | Description                                                       | Required | Default   | Accepted values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------- | ------------ | ----------------------------------------------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Address         | host         | Host name or IP address of the machine connected to the projector | true     |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Port            | port         | Communication port                                                | true     |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Model           | model        | Projector model to be controlled                                  | true     | VPL-VW528 | VPL-HW10, VPL-HW15, VPL-HW20, VPL-HW30ES, VPL-HW35ES, VPL-HW40ES, VPL-HW45ES, VPL-HW50ES, VPL-HW55ES, VPL-HW58ES, VPL-HW60, VPL-HW65, VPL-HW68, VPL-VW40, VPL-VW50, VPL-VW60, VPL-VW70, VPL-VW80, VPL-VW85, VPL-VW90ES, VPL-VW95ES, VPL-VW100, VPL-VW200, VPL-VW260ES, VPL-VW270ES, VPL-VW285ES, VPL-VW295ES, VPL-VW300ES, VPL-VW315, VPL-VW320, VPL-VW328, VPL-VW350ES, VPL-VW365, VPL-VW385ES, VPL-VW500ES, VPL-VW515, VPL-VW520, VPL-VW528, VPL-VW550ES, VPL-VW570ES, VPL-VW600ES, VPL-VW665, VPL-VW675ES, VPL-VW695ES, VPL-VW760ES, VPL-VW870ES, VPL-VW885ES, VPL-VW995ES, VPL-VW1000ES, VPL-VW1100ES |
 
 Some notes:
 
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 3333 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+- Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 3333 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
-```
+```text
 3333:raw:0:/dev/ttyUSB0:38400 8DATABITS EVEN 1STOPBIT
 ```
 
@@ -156,7 +156,7 @@ Some notes:
 The following channels are available:
 
 | Channel ID        | Label                    | Item Type | Access Mode | Description                                                             | Possible values (depends on model)                                                                                                                 |
-|-------------------|--------------------------|-----------|-------------|-------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | ------------------------ | --------- | ----------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | power             | Power                    | Switch    | RW          | Power ON/OFF the projector                                              | ON, OFF                                                                                                                                            |
 | powerstate        | Power State              | String    | R           | Current detailed power state of the projector                           |                                                                                                                                                    |
 | input             | Video Input              | String    | RW          | Select the equipment from which to display images                       | Video, SVideo, InputA, Component, HDMI, HDMI1, HDMI2, DVI                                                                                          |
@@ -187,12 +187,134 @@ The following channels are available:
 | overscan          | Overscan                 | Switch    | RW          | Hide or not the edges of the picture                                    | ON, OFF                                                                                                                                            |
 | pictureposition   | Picture Position         | String    | RW          | Adjust the picture position                                             | 185, 235, Custom1, Custom2, Custom3, Position1, Position2, Position3, Position4, Position5                                                         |
 | lampusetime       | Lamp Use Time            | Number    | R           | Indicate how long the lamp has been turned on                           |                                                                                                                                                    |
+| ircommand         | IR Command               | String    | W           | Send an infrared remote command                                         |                                                                                                                                                    |
+
+Here is the list of infrared remote commands you can use, some of them will work only on particular models.
+
+| Command             | Description               |
+| ------------------- | ------------------------- |
+| POWER               | Power On/Off              |
+| POWER_ON            | Power On                  |
+| POWER_OFF           | Power Off                 |
+| INPUT               | Video Input               |
+| INPUT_DVI           | DVI                       |
+| INPUT_HDMI          | HDMI                      |
+| INPUT_HDMI1         | HDMI 1                    |
+| INPUT_HDMI2         | HDMI 2                    |
+| INPUT_COMPONENT     | Component                 |
+| INPUT_SVIDEO        | S-Video                   |
+| INPUT_VIDEO         | Video                     |
+| INPUT_INPUTA        | Input A                   |
+| CALIBRATION_PRESET  | Calibration preset        |
+| PRESET_REFERENCE    | Reference                 |
+| PRESET_TV           | TV                        |
+| PRESET_PHOTO        | Photo                     |
+| PRESET_GAME         | Game                      |
+| PRESET_DYNAMIC      | Dynamic                   |
+| PRESET_STANDARD     | Standard                  |
+| PRESET_CINEMA       | Cinema                    |
+| PRESET_CINEMA1      | Cinema 1                  |
+| PRESET_CINEMA2      | Cinema 2                  |
+| PRESET_CINEMA3      | Cinema 3                  |
+| PRESET_DIGITAL      | Cinema Digital            |
+| PRESET_FILM1        | Cinema Film 1             |
+| PRESET_FILM2        | Cinema Film 2             |
+| PRESET_BRTCINE      | Bright Cinema             |
+| PRESET_BRTTV        | Bright TV                 |
+| PRESET_USER         | User                      |
+| PRESET_USER1        | User 1                    |
+| PRESET_USER2        | User 2                    |
+| PRESET_USER3        | User 3                    |
+| CONTRAST_UP         | Contrast +                |
+| CONTRAST_DOWN       | Contrast -                |
+| BRIGHTNESS_UP       | Brightness +              |
+| BRIGHTNESS_DOWN     | Brightness -              |
+| COLOR_UP            | Color +                   |
+| COLOR_DOWN          | Color -                   |
+| HUE_UP              | Hue +                     |
+| HUE_DOWN            | Hue -                     |
+| SHARPNESS_UP        | Sharpness +               |
+| SHARPNESS_DOWN      | Sharpness -               |
+| CONTRAST_ENHANCER   | Contrast Enhancer         |
+| COLOR_TEMP          | Color Temperature         |
+| GAMMA_CORRECTION    | Gamma Correction          |
+| COLOR_SPACE         | Color Space               |
+| PICTURE_MUTING      | Picture Muting            |
+| REAL_COLOR          | Real Color Processing     |
+| REALITY_CREATION    | Reality Creation          |
+| FILM_PROJECTION     | Film Projection           |
+| MOTION_ENHANCER     | Motion Enhancer           |
+| IRIS_MODE           | Iris Mode                 |
+| ASPECT              | Aspect Ratio              |
+| ASPECT_NORMAL       | Normal                    |
+| ASPECT_FULL         | Full                      |
+| ASPECT_FULL1        | Full 1                    |
+| ASPECT_FULL2        | Full 2                    |
+| ASPECT_ZOOM         | Zoom                      |
+| ASPECT_WIDEZOOM     | Wide Zoom                 |
+| ASPECT_VSTRETCH     | V Stretch                 |
+| ASPECT_STRETCH      | Stretch                   |
+| ASPECT_SQUEEZE      | Squeeze                   |
+| ASPECT_185          | 1.85:1 Zoom               |
+| ASPECT_235          | 2.35:1 Zoom               |
+| ASPECT_ANAMORPHIC   | Anamorphic                |
+| ASPECT_SUBTITLE     | Subtitle                  |
+| PICTURE_POS_185     | Picture Position 1.85:1   |
+| PICTURE_POS_235     | Picture Position 2.35:1   |
+| PICTURE_POS_CUSTOM1 | Picture Position Custom 1 |
+| PICTURE_POS_CUSTOM2 | Picture Position Custom 2 |
+| PICTURE_POS_CUSTOM3 | Picture Position Custom 3 |
+| MENU                | Menu                      |
+| UP                  | Cursor UP                 |
+| DOWN                | Cursor DOWN               |
+| LEFT                | Cursor LEFT               |
+| RIGHT               | Cursor RIGHT              |
+| ENTER               | Enter                     |
+| RESET               | Reset                     |
+| MEMORY              | Memory                    |
+| STATUS_ON           | Status On                 |
+| STATUS_OFF          | Status Off                |
+| ADJUST_PICTURE      | Adjust Picture            |
+| COLOR_CORRECTION    | Color Correction          |
+| PITCH               | Screen Pitch              |
+| SHIFT               | Screen Shift              |
+| APA                 | APA                       |
+| DOT_PHASE           | Dot Phase                 |
+| V_KEYSTONE          | V Keystone                |
+| V_KEYSTONE_UP       | V Keystone +              |
+| V_KEYSTONE_DOWN     | V Keystone -              |
+| LENS_CONTROL        | Lens Control              |
+| LENS_SHIFT          | Lens Shift                |
+| LENS_SHIFT_LEFT     | Lens Shift LEFT           |
+| LENS_SHIFT_RIGHT    | Lens Shift RIGHT          |
+| LENS_SHIFT_UP       | Lens Shift UP             |
+| LENS_SHIFT_DOWN     | Lens Shift DOWN           |
+| LENS_ZOOM           | Lens Zoom                 |
+| LENS_ZOOM_LARGE     | Lens Zoom Large           |
+| LENS_ZOOM_SMALL     | Lens Zoom Small           |
+| LENS_FOCUS          | Lens Focus                |
+| LENS_FOCUS_FAR      | Lens Focus Far            |
+| LENS_FOCUS_NEAR     | Lens Focus Near           |
+| LENS_POSITION       | Lens Position             |
+| MODE_3D             | 3D                        |
+| OPTIONS             | Options                   |
+| EXIT                | Exit                      |
+| SYNC_MENU           | Sync Menu                 |
+| PLAY                | Play                      |
+| STOP                | Stop                      |
+| PAUSE               | Pause                     |
+| FAST_REWIND(        | Fast Rewind               |
+| FAST_FORWARD        | Fast Forward              |
+| PREVIOUS            | Previous                  |
+| NEXT                | Next                      |
+
+In case you know an infrared remote command not listed in this list and you know its hexadecimal code, you can send the hexadecimal value directly; it must be 4 characters started with either 17, 19 or 1B.
 
 ## Full Example
 
 example.things:
 
-```
+```java
 Thing sonyprojector:ethernetconnection:proj "Projector" [ host="192.168.0.200" ]
 Thing sonyprojector:ethernetconnection:proj2 "Projector" [ host="192.168.0.205", port=53484, model="VPL-VW365", community="SONY" ]
 Thing sonyprojector:serialconnection:proj3 "Projector" [ port="/dev/ttyUSB0", model="VPL-HW55ES" ]
@@ -201,7 +323,7 @@ Thing sonyprojector:serialoveripconnection:proj4 "Projector" [ host="192.168.0.2
 
 example.items:
 
-```
+```java
 Switch proj_power "Power" { channel = "sonyprojector:ethernetconnection:proj:power" }
 String proj_powerstate "Power State [%s]" { channel = "sonyprojector:ethernetconnection:proj:powerstate" }
 String proj_input "Video Input [%s]" { channel = "sonyprojector:ethernetconnection:proj:input" }
@@ -298,7 +420,7 @@ Number proj4_lampusetime "Lamp Use Time [%d]" { channel = "sonyprojector:serialo
 
 example.sitemap:
 
-```
+```perl
     Frame label="Projector" {
         Switch item=proj_power
         Text item=proj_powerstate

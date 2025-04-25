@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Thermostatic Valve</label>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channels>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="battery_level" typeId="system.battery-level"></channel>
@@ -18,6 +19,7 @@
 			<channel id="open_closed_valve" typeId="open_closed_valve"></channel>
 			<channel id="operating_mode" typeId="operating_mode"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

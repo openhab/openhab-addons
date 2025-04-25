@@ -8,51 +8,18 @@
 		<label>Pushbullet Bot</label>
 		<description>Bot to send messages with.</description>
 
-		<channels>
-			<channel id="recipient" typeId="recipient-channel"/>
-			<channel id="title" typeId="title-channel"/>
-			<channel id="message" typeId="message-channel"/>
-		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
-			<parameter name="name" type="text" required="false">
-				<label>Name</label>
-				<description>Explicit Name of Bot, if wanted</description>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="token" type="text" required="true">
-				<label>Token</label>
-				<description>Token as obtained from the server</description>
-			</parameter>
-
-			<parameter name="apiUrlBase" type="text" required="true">
-				<label>API Server</label>
-				<description>The Pushbullet API Server to use, for local testing</description>
-				<default>https://api.pushbullet.com/v2</default>
-				<advanced>true</advanced>
+				<label>Access Token</label>
+				<description>Access token obtained from the account settings page.</description>
 			</parameter>
 
 		</config-description>
 
 	</thing-type>
-
-	<channel-type id="recipient-channel">
-		<item-type>String</item-type>
-		<label>Recipient</label>
-		<description>Mail address or Channel Name</description>
-	</channel-type>
-
-	<channel-type id="title-channel">
-		<item-type>String</item-type>
-		<label>Title</label>
-		<description>Title of the message</description>
-	</channel-type>
-
-	<channel-type id="message-channel">
-		<item-type>String</item-type>
-		<label>Message</label>
-		<description>The text that is to be sent</description>
-	</channel-type>
 
 </thing:thing-descriptions>

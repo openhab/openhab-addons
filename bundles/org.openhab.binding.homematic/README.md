@@ -10,21 +10,34 @@ The CCU has to be configured to have "XML-RPC" set to "Full Access" or "Restrict
 Also the "Remote Homematic-Script API" has to be set to "Full Access" or "Restricted access".
 When the option "Restricted access" is used, some ports have to be added to the "Port opening" list.
 
-```
+```text
 2000;
 2001;
 2010;
+8181;
 8701;
 9292;
 ```
 
 Also the IP of the device running openHAB has to be set to the list of "IP addresses for restricted access".
 
-Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled as the binding does not support the configuration of `username` and `password`for the XML-RPC API.
+Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled if the option 'useAuthentication' is not set.
+This option may be enabled if the option 'useAuthentication' is set and BIN-RPC is not used.
+In this case, a user and password must be created.
+This can be done under `Home page > Settings > Control panel` with the menu `User management`.
+This can be done under `Home page > Settings > Control Panel` in the `User Management` menu.
+The new user should have the following configuration:
 
-If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
+- User name - button for login: No
+- Permission level: User
+- Expert mode not visible: Yes
+- Automatically confirm the device message: Yes
 
-```
+The user and password must then be entered in the 'Username' and 'Password' settings.
+
+If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception or a authentication error
+
+```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
 ```
 
@@ -128,28 +141,13 @@ Network address of the Homematic gateway
 Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
 
 - **callbackHost**
-Callback network address of the system runtime, default is auto-discovery
-
-- **bindAddress**
-The address the XML-/BINRPC server binds to, default is value of "callbackHost"
-
-- **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
-Callback port of the binding's server, default is 9125 and counts up for each additional bridge
+Callback network address of the system runtime, default is auto-discovery. This value must not contain any white spaces.
 
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
 
 - **binCallbackPort**
 Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
-
-- **aliveInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
-
-- **reconnectInterval** (DEPRECATED, not necessary anymore)
-The interval in seconds to force a reconnect to the Homematic gateway, disables "aliveInterval"! (0 = disabled, default = disabled).
-If you have no sensors which sends messages in regular intervals and/or you have low communication, the "aliveInterval" may restart the connection to the Homematic gateway to often.
-The "reconnectInterval" disables the "aliveInterval" and reconnects after a fixed period of time.
-Think in hours when configuring (one hour = 3600)
 
 - **timeout**
 The timeout in seconds for connections to a Homematic gateway (default = 15)
@@ -172,16 +170,37 @@ The port number of the HMIP server (default = 2010)
 - **cuxdPort**
 The port number of the CUxD daemon (default = 8701)
 
+- **groupPort**
+The port number of the Group daemon (default = 9292)
+
+- **callbackRegTimeout**
+Maximum time in seconds for callback registration in the Homematic gateway (default = 120s).
+For a CCU2, the value may need to be increased to 180s.
+
 - **installModeDuration**
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
 - **unpairOnDeletion**
-If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.  
+If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.<br>
 **Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
 - **factoryResetOnDeletion**
 If set to true, devices are automatically factory reset when their corresponding things are removed.
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
+
+- **bufferSize**
+  If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
+  In this case, e.g. the discovery fails.
+  With this setting the buffer size can be adjusted. The value is specified in kB.
+
+- **useAuthentication**
+Username and password are send to the gateway to authenticate the access to the gateway.
+
+- **userName**
+Username for Authentication to the gateway.
+
+- **password**
+Password for Authentication to the gateway.
 
 The syntax for a bridge is:
 
@@ -193,21 +212,21 @@ homematic:bridge:NAME
 - **bridge** the type, fixed
 - **name** the name of the bridge
 
-### Example
+### Bridge Configuration Example
 
-**Minimum configuration**
+#### Minimum configuration
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="..."]
 ```
 
-**With callback settings**
+#### With callback settings
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="...", callbackHost="...", callbackPort=... ]
 ```
 
-**Multiple bridges**
+#### Multiple bridges
 
 ```java
 Bridge homematic:bridge:lxccu [ gatewayAddress="..."]
@@ -216,7 +235,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 ## Thing Configuration
 
-Things are all discovered automatically, you can handle them in PaperUI.
+Things are all discovered automatically.
 
 If you really like to manually configure a thing:
 
@@ -231,13 +250,6 @@ The first parameter after Thing is the device type, the second the serial number
 If you are using Homegear, you have to add the prefix `HG-` for each type.
 The `HG-` prefix is only needed for Things, not for Items or channel configs.
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
-
-```java
-  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
-```
-
-As additional parameters you can define a name and a location for each thing.
-The `Name` will be used to identify the thing in the Paper UI lists, the `Location` will be used in the Control section of PaperUI to sort the things.
 
 ```java
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
@@ -303,10 +315,12 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
-The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
 
-**Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
-Address: fixed GWE00000000
+The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
+Example: bridgeId=**ccu** -> type=GATEWAY-EXTRAS-**CCU**
+
+The address of the virtual device must be the default value `GWE00000000`.
+Usage of a custom ID is not supported.
 
 ### RELOAD_ALL_FROM_GATEWAY
 
@@ -358,16 +372,17 @@ A virtual datapoint (String) to simulate a key press, available on all channels 
 
 Available values:
 
-- `SHORT_PRESS`: triggered on a short key press
-- `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
-- `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
+- `SHORT_PRESSED`: triggered on a short key press
+- `LONG_PRESSED`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
+- `LONG_REPEATED`: triggered on long key press repetition, that is, in `LONG_PRESS_TIME` intervals as long as key is held
+- `LONG_RELEASED`: triggered when a key is released after being long pressed
 
 **Example:** to capture a short key press on the 19 button remote control in a rule
 
 ```javascript
 rule "example trigger rule"
 when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESSED
 then
     ...
 end
@@ -381,10 +396,10 @@ The remote control display is limited to five characters, a longer text is trunc
 
 You have several additional options to control the display.
 
-- BEEP *(TONE1, TONE2, TONE3)* - let the remote control beep
-- BACKLIGHT *(BACKLIGHT_ON, BLINK_SLOW, BLINK_FAST)* - control the display backlight
-- UNIT *(PERCENT, WATT, CELSIUS, FAHRENHEIT)* - display one of these units
-- SYMBOL *(BULB, SWITCH, WINDOW, DOOR, BLIND, SCENE, PHONE, BELL, CLOCK, ARROW_UP, ARROW_DOWN)* - display symbols, multiple symbols possible
+- BEEP _(TONE1, TONE2, TONE3)_ - let the remote control beep
+- BACKLIGHT _(BACKLIGHT_ON, BLINK_SLOW, BLINK_FAST)_ - control the display backlight
+- UNIT _(PERCENT, WATT, CELSIUS, FAHRENHEIT)_ - display one of these units
+- SYMBOL _(BULB, SWITCH, WINDOW, DOOR, BLIND, SCENE, PHONE, BELL, CLOCK, ARROW_UP, ARROW_DOWN)_ - display symbols, multiple symbols possible
 
 You can combine any option, they must be separated by a comma.
 If you specify more than one option for BEEP, BACKLIGHT and UNIT, only the first one is taken into account and all others are ignored. For SYMBOL you can specify multiple options.
@@ -433,11 +448,11 @@ Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices t
 
 **Note:** The HM-Dis-EP-WM55 has only a black and white display and therefore does not support datapoints for colored lines. In addition, only lines 1-3 can be set.
 
-#### Example ####
+#### Button Example
 
 Display text at line 1,3 and 5 when the bottom button on the display is pressed
 
-**Items**
+##### Items
 
 ```java
 String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_1" }
@@ -456,7 +471,7 @@ Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123
 Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_SUBMIT" }
 ```
 
-**Rule**
+##### Rule
 
 ```javascript
 rule "Display Test"
@@ -480,6 +495,7 @@ end
 ```
 
 **Available icons:**
+
 - NONE
 - OFF
 - ON
@@ -495,6 +511,7 @@ end
 - SIGNAL_RED
 
 **Available colors (only HM-Dis-WM55):**
+
 - NONE(=WHITE)
 - WHITE
 - RED
@@ -510,6 +527,7 @@ The HmIP-WRCD display lines can be set via a combined parameter:
 ```java
 String Display_CombinedParam "Combined Parameter" {channel="homematic:HmIP-WRCD:ccu:123456:3#COMBINED_PARAMETER"}
 ```
+
 #### Set Display Lines
 
 The combined parameter can be used in a rule file like this:
@@ -525,17 +543,18 @@ openhab:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=
 ```
 
 **Key translation:**
-- DDBC: Background color of this line. (*WHITE*, *BLACK*)
-- DDTC: Text color of this line. (*WHITE*, *BLACK*)
+
+- DDBC: Background color of this line. (_WHITE_, _BLACK_)
+- DDTC: Text color of this line. (_WHITE_, _BLACK_)
 - DDI: Icon to be shown after text. (see icon listing below)
-- DDA: Alignment of this line. (*LEFT*, *CENTER*, *RIGHT*)
+- DDA: Alignment of this line. (_LEFT_, _CENTER_, _RIGHT_)
 - DDS: Text of this line. (String, but see special character listing below)
-- DDID: Line number. (*1-5*)
-- DDC: Commit, should be set in the last line, otherwise leave unset. (*true*)
+- DDID: Line number. (_1-5_)
+- DDC: Commit, should be set in the last line, otherwise leave unset. (_true_)
 
 Each line can be updated separately without changing the other lines.
 
-Multiple lines can be updated within one command, use comma to separate each line. 
+Multiple lines can be updated within one command, use comma to separate each line.
 Here an example for a rule file:
 
 ```java
@@ -543,6 +562,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=24,DDA=LEFT,DDS=Wi
 ```
 
 **Special Characters:**
+
 - [ -> Ä
 - \# -> Ö
 - $ -> Ü
@@ -559,6 +579,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=24,DDA=LEFT,DDS=Wi
 - @ -> Arrow Down Right
 
 **Icons:**
+
 - 0 - No Icon
 - 1 - Light off
 - 2 - Light on
@@ -599,17 +620,21 @@ The display can also make short beep alarms:
 ```java
 Display_CombinedParam.sendCommand("{R=0,IN=10,ANS=0}")
 ```
-Note, that a commit (`DDC`) is not necessary for sounds. 
+
+Note, that a commit (`DDC`) is not necessary for sounds.
 
 As with line configuration, this can be combined with other line updates, separated with a comma.
 
-**Key translations**
-- R: Repetitions (*0 to 15*, 15=infinite)
-- IN: Interval (*5 to 80* in steps of five)
-- ANS: Beep sound (*-1 to 7*, see beep table)
+##### Key translations
 
-**Beep Sounds**
+- R: Repetitions (_0 to 15_, 15=infinite)
+- IN: Interval (_5 to 80_ in steps of five)
+- ANS: Beep sound (_-1 to 7_, see beep table)
+
+##### Beep Sounds
+
 This is the official mapping for the beep sounds
+
 - -1 - No Sound
 - 0 - Empty Battery
 - 1 - Alarm Off
@@ -622,7 +647,7 @@ This is the official mapping for the beep sounds
 
 ## Troubleshooting
 
-**SHORT & LONG_PRESS events of push buttons do not occur on the event bus**
+### SHORT & LONG_PRESS events of push buttons do not occur on the event bus
 
 It seems buttons like the HM-PB-2-WM55 do just send these kind of events to the CCU if they are mentioned in a CCU program.
 A simple workaround to make them send these events is, to create a program (rule inside the CCU) that does just have a "When" part and no "Then" part, in this "When" part each channel needs to be mentioned at least once.
@@ -630,13 +655,13 @@ As the HM-PB-2-WM55 for instance has two channels, it is enough to mention the S
 The LONG_PRESS events will work automatically as they are part of the same channels.
 After the creation of this program, the button device will receive configuration data from the CCU which have to be accepted by pressing the config-button at the back of the device.
 
-**INSTALL_TEST**
+### INSTALL_TEST
 
 If a button is still not working and you do not see any PRESS_LONG / SHORT in your log file (log level DEBUG), it could be because of enabled security.
 Try to disable security of your buttons in the HomeMatic Web GUI and try again.
 If you can't disable security try to use key INSTALL_TEST which gets updated to ON for each key press
 
-**-1 Failure**
+### -1 Failure
 
 A device may return this failure while fetching the datapoint values.
 I have tested pretty much but I did not find the reason.
@@ -647,12 +672,12 @@ Fetching values is only done at startup or if you trigger a REFRESH.
 I hope this will be fixed in one of the next CCU firmwares.
 With [Homegear](https://www.homegear.eu) everything works as expected.
 
-**No variables and scripts in GATEWAY-EXTRAS**
+### No variables and scripts in GATEWAY-EXTRAS
 
 The gateway autodetection of the binding can not clearly identify the gateway and falls back to the default implementation.
 Use the ```gatewayType=ccu``` config to force the binding to use the CCU implementation.
 
-**Variables out of sync**
+### Variables out of sync
 
 The CCU only sends an event if a datapoint of a device has changed.
 There is (currently) no way to receive an event automatically when a variable has changed.
@@ -667,14 +692,60 @@ openhab:send Var_1 REFRESH
 
 In scripts:
 
+:::: tabs
+
+::: tab DSL
+
+```java
+Var_1.sendCommand(REFRESH)
+```
+
+:::
+
+::: tab JavaScript
+
 ```javascript
 import org.openhab.core.types.RefreshType
 ...
 Var_1.sendCommand(RefreshType.REFRESH)
 ```
 
+:::
+
+::: tab JRuby
+
+```ruby
+Var_1.refresh
+```
+
+:::
+
+::::
+
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
 You have to delete the thing, start a scan and add it again.
+
+**`openhab.log` contains an exception with message: `Buffering capacity 2097152 exceeded` resp. discovery detects no devices**
+
+In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
+The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
+
+### Rollershutters are inverted
+
+openHAB and the CCU are using different values for the same state of a rollershutter.
+Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
+
+|         | Open | Closed |
+| ------- | ---- | ------ |
+| openHAB | 0%   | 100%   |
+| CCU     | 100% | 0%     |
+
+### The binding does not receive any status changes from the Homematic gateway
+
+First of all, make sure that none of the ports needed to receive status changes from the gateway are blocked by firewall settings.
+
+If the computer running openHAB has more than one IP address, a wrong one may have been set as receiver for status changes.
+In this case change the setting for `callbackHost` to the correct address.
 
 ### Debugging and Tracing
 
@@ -703,3 +774,9 @@ stop org.openhab.binding.homematic
 log:set TRACE org.openhab.binding.homematic
 start org.openhab.binding.homematic
 ```
+
+### Running in Docker
+
+First of all you need to map the `XML-RPC` and `BIN-RPC` Callback Ports to the outside world.
+They must not be mapped to a different port number.
+Next make sure that you set the `Callback Network Address` to the IP where the homematic can reach the exposed ports.

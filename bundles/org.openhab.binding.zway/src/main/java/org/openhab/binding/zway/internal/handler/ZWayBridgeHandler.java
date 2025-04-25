@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.zway.internal.config.ZWayBridgeConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -100,7 +99,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             // suppressed. Otherwise, the task will only terminate via cancellation or
             // termination of the executor.
             try {
-                // Authenticate - thing status update with a error message
+                // Authenticate - thing status update with an error message
                 if (mZWayApi.getLogin() != null) {
                     // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");
@@ -242,7 +241,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         // Set thing status to a valid status
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
@@ -311,7 +310,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             updateProperties(properties);
 
             // Update channels
-            if (zwaveController.getData().getSecureInclusion().getValue().equals("true")) {
+            if ("true".equals(zwaveController.getData().getSecureInclusion().getValue())) {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.ON);
             } else {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.OFF);
@@ -387,39 +386,29 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
          ****************************************/
 
         // Z-Way IP address
-        if (StringUtils.trimToNull(config.getZWayIpAddress()) == null) {
+        String zWayIpAddress = config.getZWayIpAddress();
+        if (zWayIpAddress.isBlank()) {
             config.setZWayIpAddress("localhost"); // default value
         }
 
-        // Z-Way Port
-        if (config.getZWayPort() == null) {
-            config.setZWayPort(8083);
-        }
-
         // Z-Way Protocol
-        if (StringUtils.trimToNull(config.getZWayProtocol()) == null) {
+        String zWayProtocol = config.getZWayProtocol();
+        if (zWayProtocol.isBlank()) {
             config.setZWayProtocol("http");
         }
 
         // Z-Way Password
-        if (StringUtils.trimToNull(config.getZWayPassword()) == null) {
+        String zWayPassword = config.getZWayPassword();
+        if (zWayPassword == null || zWayPassword.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way password is missing. Please set a Z-Way password.");
             return null;
         }
 
         // Z-Way Username
-        if (StringUtils.trimToNull(config.getZWayUsername()) == null) {
+        String zWayUsername = config.getZWayUsername();
+        if (zWayUsername.isBlank()) {
             config.setZWayUsername("admin"); // default value
-        }
-
-        /***********************************
-         ****** General configuration ******
-         **********************************/
-
-        // Polling interval
-        if (config.getPollingInterval() == null) {
-            config.setPollingInterval(3600);
         }
 
         return config;

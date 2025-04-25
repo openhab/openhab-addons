@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-	<config-description uri="thing-type:kostalplenticorepikoiq_config">
+	<config-description uri="thing-type:kostalinverter:plenticorepikoiq">
 		<parameter name="url" type="text" required="true">
 			<context>network-address</context>
 			<label>IP Address / Hostname</label>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,17 +27,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.GetHostFirmwareRequest;
+import org.openhab.binding.lifx.internal.dto.GetVersionRequest;
+import org.openhab.binding.lifx.internal.dto.GetWifiFirmwareRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.StateHostFirmwareResponse;
+import org.openhab.binding.lifx.internal.dto.StateVersionResponse;
+import org.openhab.binding.lifx.internal.dto.StateWifiFirmwareResponse;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.listener.LifxPropertiesUpdateListener;
-import org.openhab.binding.lifx.internal.protocol.GetHostFirmwareRequest;
-import org.openhab.binding.lifx.internal.protocol.GetVersionRequest;
-import org.openhab.binding.lifx.internal.protocol.GetWifiFirmwareRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.Product;
-import org.openhab.binding.lifx.internal.protocol.StateHostFirmwareResponse;
-import org.openhab.binding.lifx.internal.protocol.StateVersionResponse;
-import org.openhab.binding.lifx.internal.protocol.StateWifiFirmwareResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LifxLightPropertiesUpdater} updates the light properties when a light goes online. When packets get lost
  * the requests are resent when the {@code UPDATE_INTERVAL} elapses.
  *
- * @author Wouter Born - Update light properties when online
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightPropertiesUpdater {
@@ -149,15 +148,15 @@ public class LifxLightPropertiesUpdater {
             return;
         }
 
-        if (packet instanceof StateVersionResponse) {
-            long productId = ((StateVersionResponse) packet).getProduct();
+        if (packet instanceof StateVersionResponse response) {
+            long productId = response.getProduct();
             properties.put(LifxBindingConstants.PROPERTY_PRODUCT_ID, Long.toString(productId));
 
-            long productVersion = ((StateVersionResponse) packet).getVersion();
+            long productVersion = response.getVersion();
             properties.put(LifxBindingConstants.PROPERTY_PRODUCT_VERSION, Long.toString(productVersion));
 
             try {
-                Product product = Product.getProductFromProductID(productId);
+                LifxProduct product = LifxProduct.getProductFromProductID(productId);
                 properties.put(LifxBindingConstants.PROPERTY_PRODUCT_NAME, product.getName());
                 properties.put(LifxBindingConstants.PROPERTY_VENDOR_ID, Long.toString(product.getVendor().getID()));
                 properties.put(LifxBindingConstants.PROPERTY_VENDOR_NAME, product.getVendor().getName());
@@ -166,12 +165,12 @@ public class LifxLightPropertiesUpdater {
             }
 
             receivedPacketTypes.add(packet.getPacketType());
-        } else if (packet instanceof StateHostFirmwareResponse) {
-            String hostVersion = ((StateHostFirmwareResponse) packet).getVersion().toString();
+        } else if (packet instanceof StateHostFirmwareResponse response) {
+            String hostVersion = response.getVersion().toString();
             properties.put(LifxBindingConstants.PROPERTY_HOST_VERSION, hostVersion);
             receivedPacketTypes.add(packet.getPacketType());
-        } else if (packet instanceof StateWifiFirmwareResponse) {
-            String wifiVersion = ((StateWifiFirmwareResponse) packet).getVersion().toString();
+        } else if (packet instanceof StateWifiFirmwareResponse response) {
+            String wifiVersion = response.getVersion().toString();
             properties.put(LifxBindingConstants.PROPERTY_WIFI_VERSION, wifiVersion);
             receivedPacketTypes.add(packet.getPacketType());
         }

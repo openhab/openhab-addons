@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,14 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.OutletAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.OutletService;
 
@@ -35,11 +35,17 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     private final BooleanItemReader onReader;
 
     public HomekitOutletImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
-        onReader = createBooleanReader(HomekitCharacteristicType.ON_STATE, OnOffType.ON, OpenClosedType.OPEN);
-        getServices().add(new OutletService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS);
+        onReader = createBooleanReader(HomekitCharacteristicType.ON_STATE);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new OutletService(this));
     }
 
     @Override

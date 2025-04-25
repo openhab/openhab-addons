@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = MaxDevicesActions.class)
 @ThingActionsScope(name = "max-devices")
 @NonNullByDefault
 public class MaxDevicesActions implements ThingActions {
@@ -38,8 +41,8 @@ public class MaxDevicesActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MaxDevicesHandler) {
-            this.handler = (MaxDevicesHandler) handler;
+        if (handler instanceof MaxDevicesHandler devicesHandler) {
+            this.handler = devicesHandler;
         }
     }
 
@@ -49,7 +52,7 @@ public class MaxDevicesActions implements ThingActions {
     }
 
     @RuleAction(label = "delete the device from the Cube", description = "Deletes the device from the MAX! Cube. Device will need to be included again!")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean deleteFromCube() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean deleteFromCube() {
         MaxDevicesHandler actionsHandler = handler;
         if (actionsHandler == null) {
             logger.info("MaxDevicesActions: Action service ThingHandler is null!");

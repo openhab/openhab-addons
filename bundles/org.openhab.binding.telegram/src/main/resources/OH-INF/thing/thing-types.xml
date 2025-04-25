@@ -16,6 +16,10 @@
 			<channel id="lastMessageUsername" typeId="lastMessageUsername"/>
 			<channel id="chatId" typeId="chatId"/>
 			<channel id="replyId" typeId="replyId"/>
+			<channel id="messageEvent" typeId="messageEvent"/>
+			<channel id="messageRawEvent" typeId="messageRawEvent"/>
+			<channel id="callbackEvent" typeId="callbackEvent"/>
+			<channel id="callbackRawEvent" typeId="callbackRawEvent"/>
 		</channels>
 
 		<config-description>
@@ -112,6 +116,66 @@
 		<description>Contains the id of the reply which was passed to sendTelegram() as replyId. This id can be used to have
 			an unambiguous assignment of the user reply to the message which was sent by the bot.</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageEvent" advanced="true">
+		<kind>trigger</kind>
+		<label>Message Received</label>
+		<description>
+			<![CDATA[
+			Message encoded as JSON.<br />
+			Event payload could contain the following, but `null` values will not be present:
+			<ul>
+				<li>Long `message_id` - Unique message ID in this chat</li>
+				<li>String `from` - First and/or last name of sender</li>
+				<li>Long `chat_id` - Unique chat ID</li>
+				<li>String `text` - Message text</li>
+				<li>String `animation_url` - URL to download animation from</li>
+				<li>String `audio_url` - URL to download audio from</li>
+				<li>String `document_url` - URL to download file from</li>
+				<li>Array `photo_url` - Array of URLs to download photos from</li>
+				<li>String `sticker_url` - URL to download sticker from</li>
+				<li>String `video_url` - URL to download video from</li>
+				<li>String `video_note_url` - URL to download video note from</li>
+				<li>String `voice_url` - URL to download voice clip from</li>
+			</ul>
+			]]>
+		</description>
+		<event></event>
+	</channel-type>
+
+	<channel-type id="messageRawEvent" advanced="true">
+		<kind>trigger</kind>
+		<label>Raw Message Received</label>
+		<description>Raw Message from the Telegram library as JSON.</description>
+		<event></event>
+	</channel-type>
+
+	<channel-type id="callbackEvent" advanced="true">
+		<kind>trigger</kind>
+		<label>Query Callback Received</label>
+		<description>
+			<![CDATA[
+			Callback Query response encoded as JSON.<br />
+			Event payload could contain the following, but `null` values will not be present:
+			<ul>
+				<li>Long `message_id` - Unique message ID of the original Query message</li>
+				<li>String `from` - First and/or last name of sender</li>
+				<li>Long `chat_id` - Unique chat ID</li>
+				<li>String `callback_id` - Unique callback ID to send receipt confirmation to</li>
+				<li>String `reply_id` - Plain text name of original Query</li>
+				<li>String `text` - Selected response text from options give in original Query</li>
+			</ul>
+			]]>
+		</description>
+		<event></event>
+	</channel-type>
+
+	<channel-type id="callbackRawEvent" advanced="true">
+		<kind>trigger</kind>
+		<label>Raw Callback Query Received</label>
+		<description>Raw Callback Query response from the Telegram library encoded as JSON.</description>
+		<event></event>
 	</channel-type>
 
 </thing:thing-descriptions>

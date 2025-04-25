@@ -8,17 +8,15 @@
 		<description>The KVV bridge connects to the KVV API.</description>
 
 		<config-description>
-			<parameter name="maxTrains" type="integer" required="true" min="0" max="127">
+			<parameter name="maxTrains" type="integer" min="1" max="127">
 				<label>Maximum Trains Listed</label>
 				<description>Maximum number of trains listed.</description>
+				<default>1</default>
 			</parameter>
-			<parameter name="updateInterval" type="integer" required="true" min="1">
+			<parameter name="updateInterval" type="integer" min="1">
 				<label>Update Interval</label>
 				<description>Update interval in seconds.</description>
-			</parameter>
-			<parameter name="apiKey" type="text" required="true">
-				<label>API key</label>
-				<description>API key of the KVV API</description>
+				<default>10</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

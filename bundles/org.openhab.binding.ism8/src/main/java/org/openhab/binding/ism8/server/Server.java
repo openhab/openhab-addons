@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ism8Server} is responsible for listening to the Ism8 information
+ * The {@link Server} is responsible for listening to the Ism8 information
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
@@ -85,6 +85,7 @@ public class Server extends Thread {
      * Starts the server
      *
      */
+    @Override
     public void run() {
         this.startRetries = 0;
         while (!this.isInterrupted()) {
@@ -132,7 +133,7 @@ public class Server extends Thread {
 
         IDataPoint dp = DataPointFactory.createDataPoint(id, knxType, description);
         if (dp != null) {
-            this.dataPoints.put(new Integer(id), dp);
+            this.dataPoints.put(Integer.valueOf(id), dp);
         }
     }
 
@@ -156,6 +157,7 @@ public class Server extends Thread {
             ServerSocket serverSock = this.serverSocket;
             if (serverSock != null) {
                 serverSock.close();
+                this.serverSocket = null;
             }
 
             Socket clientSocket = this.client;
@@ -165,6 +167,8 @@ public class Server extends Thread {
             }
         } catch (IOException e) {
             logger.debug("Error stopping Communication. {}", e.getMessage());
+            this.serverSocket = null;
+            this.client = null;
         }
     }
 
@@ -237,7 +241,7 @@ public class Server extends Thread {
     }
 
     private ArrayList<byte[]> getPackages(byte[] data) {
-        ArrayList<byte[]> result = new ArrayList<byte[]>();
+        ArrayList<byte[]> result = new ArrayList<>();
         if (data.length >= 0) {
             ByteBuffer list = ByteBuffer.allocate(data.length);
             list.put(data);

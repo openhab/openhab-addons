@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,16 +25,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public enum Channel {
 
     // Main Channels
-
     CHANNEL_CURRENT_TIME("current_time", ChannelGroup.MAIN, DanfossAirUnit::getCurrentTime),
     CHANNEL_MODE("mode", ChannelGroup.MAIN, DanfossAirUnit::getMode, DanfossAirUnit::setMode),
-    CHANNEL_MANUAL_FAN_SPEED("manual_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getManualFanSpeed,
-            DanfossAirUnit::setManualFanSpeed),
+    CHANNEL_MANUAL_FAN_STEP("manual_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getManualFanStep,
+            DanfossAirUnit::setManualFanStep),
     CHANNEL_EXTRACT_FAN_SPEED("extract_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getExtractFanSpeed),
     CHANNEL_SUPPLY_FAN_SPEED("supply_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getSupplyFanSpeed),
     CHANNEL_EXTRACT_FAN_STEP("extract_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getExtractFanStep),
     CHANNEL_SUPPLY_FAN_STEP("supply_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getSupplyFanStep),
-
     CHANNEL_BOOST("boost", ChannelGroup.MAIN, DanfossAirUnit::getBoost, DanfossAirUnit::setBoost),
     CHANNEL_NIGHT_COOLING("night_cooling", ChannelGroup.MAIN, DanfossAirUnit::getNightCooling,
             DanfossAirUnit::setNightCooling),
@@ -48,15 +46,22 @@ public enum Channel {
     // Humidity Channel
     CHANNEL_HUMIDITY("humidity", ChannelGroup.HUMIDITY, DanfossAirUnit::getHumidity),
 
-    // recuperator channels
+    // Recuperator channels
     CHANNEL_BYPASS("bypass", ChannelGroup.RECUPERATOR, DanfossAirUnit::getBypass, DanfossAirUnit::setBypass),
+    CHANNEL_DEFROST("defrost", ChannelGroup.RECUPERATOR, DanfossAirUnit::getDefrostStatus),
     CHANNEL_SUPPLY_TEMP("supply_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getSupplyTemperature),
     CHANNEL_EXTRACT_TEMP("extract_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getExtractTemperature),
     CHANNEL_EXHAUST_TEMP("exhaust_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getExhaustTemperature),
 
-    // service channels
+    // Service channels
     CHANNEL_BATTERY_LIFE("battery_life", ChannelGroup.SERVICE, DanfossAirUnit::getBatteryLife),
-    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife);
+    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife),
+    CHANNEL_FILTER_PERIOD("filter_period", ChannelGroup.SERVICE, DanfossAirUnit::getFilterPeriod,
+            DanfossAirUnit::setFilterPeriod),
+
+    // Operation channels
+    CHANNEL_POWER_CYCLES("power_cycles", ChannelGroup.OPERATION, DanfossAirUnit::getPowerCycles),
+    CHANNEL_OPERATING_HOURS("operating_hours", ChannelGroup.OPERATION, DanfossAirUnit::getOperationTime);
 
     private final String channelName;
     private final ChannelGroup group;
@@ -64,7 +69,7 @@ public enum Channel {
     @Nullable
     private final DanfossAirUnitWriteAccessor writeAccessor;
 
-    static Channel getByName(String name) {
+    public static Channel getByName(String name) {
         for (Channel channel : values()) {
             if (channel.getChannelName().equals(name)) {
                 return channel;

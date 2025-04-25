@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.connector.PowermaxConnector;
 import org.openhab.binding.powermax.internal.connector.PowermaxSerialConnector;
 import org.openhab.binding.powermax.internal.connector.PowermaxTcpConnector;
@@ -33,6 +35,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEvent;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEventListener;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
@@ -44,13 +47,13 @@ import org.slf4j.LoggerFactory;
  *
  * Visonic does not provide a specification of the RS232 protocol and, thus,
  * the binding uses the available protocol specification given at the ​domoticaforum
- * http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581
+ * <a href="http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581">
+ * http://www.domoticaforum.eu/viewtopic.php?f=68&amp;t=6581</a>
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxCommManager implements PowermaxMessageEventListener {
-
-    private final Logger logger = LoggerFactory.getLogger(PowermaxCommManager.class);
 
     private static final int DEFAULT_TCP_PORT = 80;
     private static final int TCP_CONNECTION_TIMEOUT = 5000;
@@ -58,36 +61,40 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     private static final int WAITING_DELAY_FOR_RESPONSE = 750;
     private static final long DELAY_BETWEEN_SETUP_DOWNLOADS = TimeUnit.SECONDS.toMillis(45);
 
+    private final Logger logger = LoggerFactory.getLogger(PowermaxCommManager.class);
+
     private final ScheduledExecutorService scheduler;
 
+    private final TimeZoneProvider timeZoneProvider;
+
     /** The object to store the current settings of the Powermax alarm system */
-    private PowermaxPanelSettings panelSettings;
+    private final PowermaxPanelSettings panelSettings;
 
     /** Panel type used when in standard mode */
-    private PowermaxPanelType panelType;
+    private final PowermaxPanelType panelType;
 
-    private boolean forceStandardMode;
-    private boolean autoSyncTime;
+    private final boolean forceStandardMode;
+    private final boolean autoSyncTime;
 
-    private List<PowermaxStateEventListener> listeners = new ArrayList<>();
+    private final List<PowermaxStateEventListener> listeners = new ArrayList<>();
 
     /** The serial or TCP connecter used to communicate with the Powermax alarm system */
-    private PowermaxConnector connector;
+    private final PowermaxConnector connector;
 
     /** The last message sent to the the Powermax alarm system */
-    private PowermaxBaseMessage lastSendMsg;
+    private @Nullable PowermaxBaseMessage lastSendMsg;
 
     /** The message queue of messages to be sent to the the Powermax alarm system */
     private ConcurrentLinkedQueue<PowermaxBaseMessage> msgQueue = new ConcurrentLinkedQueue<>();
 
     /** The time in milliseconds the last download of the panel setup was requested */
-    private Long lastTimeDownloadRequested;
+    private long lastTimeDownloadRequested;
 
     /** The boolean indicating if the download of the panel setup is in progress or not */
     private boolean downloadRunning;
 
     /** The time in milliseconds used to set time and date */
-    private Long syncTimeCheck;
+    private long syncTimeCheck;
 
     /**
      * Constructor for Serial Connection
@@ -100,46 +107,39 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName) {
+            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName,
+            TimeZoneProvider timeZoneProvider) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
+        this.timeZoneProvider = timeZoneProvider;
         this.panelSettings = new PowermaxPanelSettings(panelType);
         this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
-        String serialPort = (sPort != null && !sPort.trim().isEmpty()) ? sPort.trim() : null;
-        if (serialPort != null) {
-            connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE,
-                    threadName + "-reader");
-        } else {
-            connector = null;
-        }
+        this.connector = new PowermaxSerialConnector(serialPortManager, sPort.trim(), DEFAULT_BAUD_RATE,
+                threadName + "-reader");
     }
 
     /**
      * Constructor for TCP connection
      *
      * @param ip the IP address
-     * @param port TCP port number; default port is used if value <= 0
+     * @param port TCP port number; default port is used if value {@code <= 0}
      * @param panelType the panel type to be used when in standard mode
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
-     * @param serialPortManager
      * @param threadName the prefix name of threads to be created
+     * @param timeZoneProvider
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, String threadName) {
+            boolean autoSyncTime, String threadName, TimeZoneProvider timeZoneProvider) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
+        this.timeZoneProvider = timeZoneProvider;
         this.panelSettings = new PowermaxPanelSettings(panelType);
         this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
-        String ipAddress = (ip != null && !ip.trim().isEmpty()) ? ip.trim() : null;
-        int tcpPort = (port > 0) ? port : DEFAULT_TCP_PORT;
-        if (ipAddress != null) {
-            connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT, threadName + "-reader");
-        } else {
-            connector = null;
-        }
+        this.connector = new PowermaxTcpConnector(ip.trim(), port > 0 ? port : DEFAULT_TCP_PORT, TCP_CONNECTION_TIMEOUT,
+                threadName + "-reader");
     }
 
     /**
@@ -149,9 +149,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      */
     public synchronized void addEventListener(PowermaxStateEventListener listener) {
         listeners.add(listener);
-        if (connector != null) {
-            connector.addEventListener(this);
-        }
+        connector.addEventListener(this);
     }
 
     /**
@@ -160,24 +158,17 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param listener the listener to be removed
      */
     public synchronized void removeEventListener(PowermaxStateEventListener listener) {
-        if (connector != null) {
-            connector.removeEventListener(this);
-        }
+        connector.removeEventListener(this);
         listeners.remove(listener);
     }
 
     /**
      * Connect to the Powermax alarm system
-     *
-     * @return true if connected or false if not
      */
-    public boolean open() {
-        if (connector != null) {
-            connector.open();
-        }
+    public void open() throws Exception {
+        connector.open();
         lastSendMsg = null;
         msgQueue = new ConcurrentLinkedQueue<>();
-        return isConnected();
     }
 
     /**
@@ -186,10 +177,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @return true if connected or false if not
      */
     public boolean close() {
-        if (connector != null) {
-            connector.close();
-        }
-        lastTimeDownloadRequested = null;
+        connector.close();
+        lastTimeDownloadRequested = 0;
         downloadRunning = false;
         return isConnected();
     }
@@ -198,7 +187,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @return true if connected to the Powermax alarm system or false if not
      */
     public boolean isConnected() {
-        return (connector != null) && connector.isConnected();
+        return connector.isConnected();
     }
 
     /**
@@ -211,25 +200,25 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Process and store all the panel settings from the raw buffers
      *
-     * @param PowerlinkMode true if in Powerlink mode or false if in standard mode
+     * @param powerlinkMode true if in Powerlink mode or false if in standard mode
      *
      * @return true if no problem encountered to get all the settings; false if not
      */
     public boolean processPanelSettings(boolean powerlinkMode) {
-        return panelSettings.process(powerlinkMode, panelType, powerlinkMode ? syncTimeCheck : null);
+        return panelSettings.process(powerlinkMode, panelType, powerlinkMode ? syncTimeCheck : 0);
     }
 
     /**
      * @return a new instance of PowermaxState
      */
     public PowermaxState createNewState() {
-        return new PowermaxState(panelSettings);
+        return new PowermaxState(panelSettings, timeZoneProvider);
     }
 
     /**
      * @return the last message sent to the Powermax alarm system
      */
-    public synchronized PowermaxBaseMessage getLastSendMsg() {
+    public synchronized @Nullable PowermaxBaseMessage getLastSendMsg() {
         return lastSendMsg;
     }
 
@@ -250,28 +239,38 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         }
 
         PowermaxState updateState = message.handleMessage(this);
-        if (updateState != null) {
-            if (updateState.getUpdateSettings() != null) {
-                panelSettings.updateRawSettings(updateState.getUpdateSettings());
-            }
-            if (!updateState.getUpdatedZoneNames().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
-                    panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
-                }
-            }
-            if (!updateState.getUpdatedZoneInfos().isEmpty()) {
-                for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
-                    panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
-                }
-            }
 
-            PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+        if (updateState == null) {
+            updateState = createNewState();
+        }
 
-            // send message to event listeners
-            for (int i = 0; i < listeners.size(); i++) {
-                listeners.get(i).onNewStateEvent(newEvent);
+        updateState.lastMessageTime.setValue(System.currentTimeMillis());
+
+        byte[] buffer = updateState.getUpdateSettings();
+        if (buffer != null) {
+            panelSettings.updateRawSettings(buffer);
+        }
+        if (!updateState.getUpdatedZoneNames().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
+                panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
             }
         }
+        if (!updateState.getUpdatedZoneInfos().isEmpty()) {
+            for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
+                panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
+            }
+        }
+
+        PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+
+        // send message to event listeners
+        listeners.forEach(listener -> listener.onNewStateEvent(newEvent));
+    }
+
+    @Override
+    public void onCommunicationFailure(String message) {
+        close();
+        listeners.forEach(listener -> listener.onCommunicationFailure(message));
     }
 
     /**
@@ -336,7 +335,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         boolean done = false;
         if (!armMode.isAllowedCommand()) {
             logger.debug("Powermax alarm binding: requested arm mode {} rejected", armMode.getShortName());
-        } else if ((pinCode == null) || (pinCode.length() != 4)) {
+        } else if (pinCode.length() != 4) {
             logger.debug("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
                     armMode.getShortName());
         } else {
@@ -363,7 +362,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if the message was sent or false if not
      */
-    public boolean sendPGMX10(Command action, Byte device) {
+    public boolean sendPGMX10(Command action, @Nullable Byte device) {
         logger.debug("sendPGMX10(): action = {}, device = {}", action, device);
 
         boolean done = false;
@@ -405,7 +404,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         boolean done = false;
 
-        if ((pinCode == null) || (pinCode.length() != 4)) {
+        if (pinCode.length() != 4) {
             logger.debug("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
         } else if ((zone < 1) || (zone > panelSettings.getNbZones())) {
             logger.debug("Powermax alarm binding: invalid zone number: {}", zone);
@@ -470,10 +469,10 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
             } else {
                 logger.info(
                         "Powermax alarm binding: time not synchronized; please correct the date/time of your openHAB server");
-                syncTimeCheck = null;
+                syncTimeCheck = 0;
             }
         } else {
-            syncTimeCheck = null;
+            syncTimeCheck = 0;
         }
         return done;
     }
@@ -490,7 +489,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         boolean done = false;
 
-        if ((pinCode == null) || (pinCode.length() != 4)) {
+        if (pinCode.length() != 4) {
             logger.debug("Powermax alarm binding: requested event log rejected due to invalid PIN code");
         } else {
             try {
@@ -530,7 +529,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
     public void retryDownloadSetup(int remainingAttempts) {
         long now = System.currentTimeMillis();
-        if ((remainingAttempts > 0) && !isDownloadRunning() && ((lastTimeDownloadRequested == null)
+        if ((remainingAttempts > 0) && !isDownloadRunning() && ((lastTimeDownloadRequested == 0)
                 || ((now - lastTimeDownloadRequested) >= DELAY_BETWEEN_SETUP_DOWNLOADS))) {
             // We wait at least 45 seconds before each retry to download the panel setup
             logger.debug("Powermax alarm binding: try again downloading setup");
@@ -556,14 +555,14 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     }
 
     /**
-     * @return the time in milliseconds the last download of the panel setup was requested or null if not yet requested
+     * @return the time in milliseconds the last download of the panel setup was requested or 0 if not yet requested
      */
-    public Long getLastTimeDownloadRequested() {
+    public long getLastTimeDownloadRequested() {
         return lastTimeDownloadRequested;
     }
 
     /**
-     * Send a ENROLL message
+     * Send an ENROLL message
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
@@ -594,7 +593,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         return sendMessage(new PowermaxBaseMessage(msgType), false, waitTime);
     }
 
-    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
+    private synchronized boolean sendMessage(@Nullable PowermaxBaseMessage msg, boolean immediate, int waitTime) {
         return sendMessage(msg, immediate, waitTime, false);
     }
 
@@ -608,7 +607,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
-    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime,
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private synchronized boolean sendMessage(@Nullable PowermaxBaseMessage msg, boolean immediate, int waitTime,
             boolean doNotLog) {
         if ((waitTime > 0) && (msg != null)) {
             logger.debug("sendMessage(): delay ({} s) sending message (type {})", waitTime, msg.getSendType());

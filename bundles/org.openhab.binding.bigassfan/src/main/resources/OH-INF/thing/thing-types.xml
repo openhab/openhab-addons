@@ -8,6 +8,7 @@
 	<thing-type id="fan">
 		<label>BigAssFan</label>
 		<description>Big Ass Fan</description>
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 
 		<channels>
 			<!-- Channels related to fan functions -->
@@ -174,7 +175,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Light Brightness</label>
 		<description>The brightness level of the fan's light</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 	<channel-type id="light-auto">
 		<item-type>Switch</item-type>

@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -17,26 +17,27 @@
   <name>openHAB Add-ons :: Integration Tests</name>
 
   <modules>
+    <module>org.openhab.automation.groovyscripting.tests</module>
+    <module>org.openhab.automation.jsscriptingnashorn.tests</module>
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
+    <module>org.openhab.binding.mielecloud.tests</module>
     <module>org.openhab.binding.modbus.tests</module>
-    <!-- MQTT tests need to be refactored to not use the embedded broker bundle anymore
-      <module>org.openhab.binding.mqtt.homeassistant.tests</module>
-      <module>org.openhab.binding.mqtt.homie.tests</module>
-    -->
-    <module>org.openhab.binding.nest.tests</module>
+    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
+    <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>
     <module>org.openhab.binding.tradfri.tests</module>
-    <module>org.openhab.binding.wemo.tests</module>
     <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
 
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+    <org.osgi.service.http.port>9090</org.osgi.service.http.port>
   </properties>
 
   <dependencies>
@@ -79,7 +80,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>unpack-eea</id>
@@ -177,6 +178,24 @@
                 <bndrun>itest.bndrun</bndrun>
               </bndruns>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>reserve-network-port</id>
+                <goals>
+                  <goal>reserve-network-port</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <portNames>
+                    <portName>org.osgi.service.http.port</portName>
+                  </portNames>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

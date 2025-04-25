@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.caddx.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Used to map thing types from the binding string to a ENUM value.
+ * Used to map thing types from the binding string to an ENUM value.
  *
  * @author Georgios Moutsos - Initial contribution
  */
@@ -24,5 +24,5 @@ public enum CaddxThingType {
     PANEL,
     PARTITION,
     ZONE,
-    KEYPAD;
+    KEYPAD
 }

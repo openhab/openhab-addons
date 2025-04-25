@@ -7,12 +7,13 @@
 	<thing-type id="ac_unit">
 		<label>Daikin AC Unit</label>
 		<description>Daikin AC Unit</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
 			<channel id="settemp" typeId="acunit-settemp"/>
-			<channel id="indoortemp" typeId="acunit-indoortemp"/>
-			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="indoortemp" typeId="system.indoor-temperature"/>
+			<channel id="outdoortemp" typeId="system.outdoor-temperature"/>
 			<channel id="humidity" typeId="acunit-humidity"/>
 			<channel id="mode" typeId="acunit-mode"/>
 			<channel id="homekitmode" typeId="acunit-homekitmode"/>
@@ -20,7 +21,10 @@
 			<channel id="fandir" typeId="acunit-fandir"/>
 			<channel id="cmpfrequency" typeId="acunit-cmpfrequency"></channel>
 			<channel id="specialmode" typeId="acunit-specialmode"></channel>
-			<channel id="specialmode-powerful" typeId="acunit-specialmode-powerful"></channel>
+			<channel id="streamer" typeId="acunit-streamer"></channel>
+			<channel id="energyheatingtoday" typeId="acunit-energyheatingtoday"/>
+			<channel id="energyheatingthisweek" typeId="acunit-energyheatingthisweek"/>
+			<channel id="energyheatinglastweek" typeId="acunit-energyheatinglastweek"/>
 			<channel id="energyheatingcurrentyear-1" typeId="acunit-energyheatingcurrentyear-1"></channel>
 			<channel id="energyheatingcurrentyear-2" typeId="acunit-energyheatingcurrentyear-2"></channel>
 			<channel id="energyheatingcurrentyear-3" typeId="acunit-energyheatingcurrentyear-3"></channel>
@@ -33,6 +37,9 @@
 			<channel id="energyheatingcurrentyear-10" typeId="acunit-energyheatingcurrentyear-10"></channel>
 			<channel id="energyheatingcurrentyear-11" typeId="acunit-energyheatingcurrentyear-11"></channel>
 			<channel id="energyheatingcurrentyear-12" typeId="acunit-energyheatingcurrentyear-12"></channel>
+			<channel id="energycoolingtoday" typeId="acunit-energycoolingtoday"/>
+			<channel id="energycoolingthisweek" typeId="acunit-energycoolingthisweek"/>
+			<channel id="energycoolinglastweek" typeId="acunit-energycoolinglastweek"/>
 			<channel id="energycoolingcurrentyear-1" typeId="acunit-energycoolingcurrentyear-1"></channel>
 			<channel id="energycoolingcurrentyear-2" typeId="acunit-energycoolingcurrentyear-2"></channel>
 			<channel id="energycoolingcurrentyear-3" typeId="acunit-energycoolingcurrentyear-3"></channel>
@@ -45,8 +52,14 @@
 			<channel id="energycoolingcurrentyear-10" typeId="acunit-energycoolingcurrentyear-10"></channel>
 			<channel id="energycoolingcurrentyear-11" typeId="acunit-energycoolingcurrentyear-11"></channel>
 			<channel id="energycoolingcurrentyear-12" typeId="acunit-energycoolingcurrentyear-12"></channel>
+			<channel id="demandcontrolmode" typeId="acunit-demandcontrolmode"></channel>
+			<channel id="demandcontrolmaxpower" typeId="acunit-demandcontrolmaxpower"></channel>
+			<channel id="demandcontrolschedule" typeId="acunit-demandcontrolschedule"></channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config"/>
 	</thing-type>
@@ -54,12 +67,13 @@
 	<thing-type id="airbase_ac_unit">
 		<label>Daikin Airbase AC Unit</label>
 		<description>Daikin Airbase AC Unit</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
 			<channel id="settemp" typeId="acunit-settemp"/>
-			<channel id="indoortemp" typeId="acunit-indoortemp"/>
-			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="indoortemp" typeId="system.indoor-temperature"/>
+			<channel id="outdoortemp" typeId="system.outdoor-temperature"/>
 			<channel id="mode" typeId="acunit-mode"/>
 			<channel id="homekitmode" typeId="acunit-homekitmode"/>
 			<channel id="airbasefanspeed" typeId="airbase-acunit-fan"/>
@@ -73,6 +87,9 @@
 			<channel id="zone8" typeId="airbase-acunit-zone8"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config"/>
 	</thing-type>
@@ -81,6 +98,12 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power for the AC unit</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
@@ -88,29 +111,19 @@
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
-	</channel-type>
-
-	<channel-type id="acunit-indoortemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Indoor Temperature</label>
-		<description>The indoor temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
-	</channel-type>
-
-	<channel-type id="acunit-outdoortemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
-		<description>The outdoor temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Indoor Humidity</label>
 		<description>The indoor humidity as measured by the A/C unit</description>
+		<category>Humidity</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -118,6 +131,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -127,6 +144,7 @@
 				<option value="FAN">fan</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-homekitmode">
@@ -141,12 +159,17 @@
 				<option value="off">Off</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-fan">
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -158,6 +181,7 @@
 				<option value="LEVEL_5">level 5</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-fandir">
@@ -172,6 +196,7 @@
 				<option value="VERTICAL_AND_HORIZONTAL">vertical and horizontal</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-cmpfrequency" advanced="true">
@@ -180,218 +205,370 @@
 		<description>Current compressor frequency</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
+
 	<channel-type id="acunit-specialmode" advanced="true">
 		<item-type>String</item-type>
 		<label>Special Mode</label>
-		<description>Current special mode</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state>
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="ECO">ECO</option>
+				<option value="POWERFUL">Powerful</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="acunit-specialmode-powerful" advanced="true">
+
+	<channel-type id="acunit-streamer" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Powerful Mode</label>
-		<description>Powerful mode switch</description>
+		<label>Streamer</label>
+		<description>Streamer Mode</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+
+	<channel-type id="acunit-energyheatingtoday" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Today</label>
+		<description>The energy usage for heating today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating This Week</label>
+		<description>The energy usage for heating this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Last Week</label>
+		<description>The energy usage for heating last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingtoday" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today</label>
+		<description>The energy usage for cooling today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling This Week</label>
+		<description>The energy usage for cooling this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Last Week</label>
+		<description>The energy usage for cooling last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
 	<channel-type id="acunit-energyheatingcurrentyear-1" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year January</label>
 		<description>The energy usage for heating this year January</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-2" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year February</label>
 		<description>The energy usage for heating this year February</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 	<channel-type id="acunit-energyheatingcurrentyear-3" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year March</label>
 		<description>The energy usage for heating this year March</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 	<channel-type id="acunit-energyheatingcurrentyear-4" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year April</label>
 		<description>The energy usage for heating this year April</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-5" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year May</label>
 		<description>The energy usage for heating this year May</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-6" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year June</label>
 		<description>The energy usage for heating this year June</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-7" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year July</label>
 		<description>The energy usage for heating this year July</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-8" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year August</label>
 		<description>The energy usage for heating this year August</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-9" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year September</label>
 		<description>The energy usage for heating this year September</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-10" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year October</label>
 		<description>The energy usage for heating this year October</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-11" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year November</label>
 		<description>The energy usage for heating this year November</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energyheatingcurrentyear-12" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Heating Current Year December</label>
 		<description>The energy usage for heating this year December</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-1" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year January</label>
 		<description>The energy usage for cooling this year January</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-2" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year February</label>
 		<description>The energy usage for cooling this year February</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 	<channel-type id="acunit-energycoolingcurrentyear-3" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year March</label>
 		<description>The energy usage for cooling this year March</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 	<channel-type id="acunit-energycoolingcurrentyear-4" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year April</label>
 		<description>The energy usage for cooling this year April</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-5" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year May</label>
 		<description>The energy usage for cooling this year May</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-6" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year June</label>
 		<description>The energy usage for cooling this year June</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-7" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year July</label>
 		<description>The energy usage for cooling this year July</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-8" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year August</label>
 		<description>The energy usage for cooling this year August</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-9" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year September</label>
 		<description>The energy usage for cooling this year September</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-10" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year October</label>
 		<description>The energy usage for cooling this year October</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-11" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year November</label>
 		<description>The energy usage for cooling this year November</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energycoolingcurrentyear-12" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling Current Year December</label>
 		<description>The energy usage for cooling this year December</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-demandcontrolmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Demand Control Mode</label>
+		<description>The demand control mode</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="AUTO">Auto</option>
+				<option value="SCHEDULED">Scheduled</option>
+				<option value="MANUAL">Manual</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolmaxpower" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Demand Control Max Power</label>
+		<description>The maximum power for demand control in percent. Allowed range is between 40% and 100% in increments of
+			5%.</description>
+		<state pattern="%d %%" min="40" max="100" step="5"></state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolschedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Demand Control Schedule</label>
+		<description>The demand control schedule in JSON format.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-fan">
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone1">
 		<item-type>Switch</item-type>
 		<label>Zone 1</label>
 		<description>Zone 1 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone2">
 		<item-type>Switch</item-type>
 		<label>Zone 2</label>
 		<description>Zone 2 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone3">
 		<item-type>Switch</item-type>
 		<label>Zone 3</label>
 		<description>Zone 3 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone4">
 		<item-type>Switch</item-type>
 		<label>Zone 4</label>
 		<description>Zone 4 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone5">
 		<item-type>Switch</item-type>
 		<label>Zone 5</label>
 		<description>Zone 5 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone6">
 		<item-type>Switch</item-type>
 		<label>Zone 6</label>
 		<description>Zone 6 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone7">
 		<item-type>Switch</item-type>
 		<label>Zone 7</label>
 		<description>Zone 7 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone8">
 		<item-type>Switch</item-type>
 		<label>Zone 8</label>
 		<description>Zone 8 for the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

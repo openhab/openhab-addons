@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.pulseaudio.internal.cli;
 
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.MODULE_SIMPLE_PROTOCOL_TCP_NAME;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.PulseaudioClient;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.Module;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
@@ -34,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
@@ -79,9 +86,20 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Module module = new Module(id, properties.get("name"));
-                if (properties.containsKey("argument")) {
-                    module.setArgument(properties.get("argument"));
+                Module module;
+                if (MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(properties.get("name"))) {
+                    String arguments = properties.get("argument");
+                    Optional<String> portString = arguments != null ? extractArgumentFromLine("port", arguments)
+                            : Optional.empty();
+                    if (portString.isEmpty()) {
+                        LOGGER.warn("Unable to parse module-simple-protocol-tcp module {} info it will not work", id);
+                        module = new Module(id, properties.get("name"), properties.get("argument"));
+                    } else {
+                        int port = Integer.parseInt(portString.get());
+                        module = new SimpleProtocolTCPModule(id, properties.get("name"), port, arguments);
+                    }
+                } else {
+                    module = new Module(id, properties.get("name"), properties.get("argument"));
                 }
                 modules.add(module);
             }
@@ -125,7 +143,7 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Sink sink = new Sink(id, properties.get("name"),
+                Sink sink = new Sink(id, properties.get("name"), properties.get("device.description"), properties,
                         client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
@@ -135,14 +153,15 @@ public class Parser {
                     }
                 }
                 if (properties.containsKey("muted")) {
-                    sink.setMuted(properties.get("muted").equalsIgnoreCase("yes"));
+                    sink.setMuted("yes".equalsIgnoreCase(properties.get("muted")));
                 }
                 if (properties.containsKey("volume")) {
                     sink.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
                 }
                 if (properties.containsKey("combine.slaves")) {
                     // this is a combined sink, the combined sink object should be
-                    for (String sinkName : properties.get("combine.slaves").replace("\"", "").split(",")) {
+                    String sinkNames = properties.get("combine.slaves");
+                    for (String sinkName : sinkNames.replace("\"", "").split(",")) {
                         sink.addCombinedSinkName(sinkName);
                     }
                     combinedSinks.add(sink);
@@ -178,7 +197,7 @@ public class Parser {
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
-                // sometime the line feed is missing here
+                // some times the line feed is missing here
                 Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
@@ -194,7 +213,8 @@ public class Parser {
             if (properties.containsKey("sink")) {
                 String name = properties.containsKey("media.name") ? properties.get("media.name")
                         : properties.get("sink");
-                SinkInput item = new SinkInput(id, name, client.getModule(getNumberValue(properties.get("module"))));
+                SinkInput item = new SinkInput(id, name, properties.get("application.name"), properties,
+                        client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
@@ -203,7 +223,7 @@ public class Parser {
                     }
                 }
                 if (properties.containsKey("muted")) {
-                    item.setMuted(properties.get("muted").equalsIgnoreCase("yes"));
+                    item.setMuted("yes".equalsIgnoreCase(properties.get("muted")));
                 }
                 if (properties.containsKey("volume")) {
                     item.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
@@ -238,7 +258,7 @@ public class Parser {
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
-                // sometime the line feed is missing here
+                // some times the line feed is missing here
                 Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
@@ -252,7 +272,7 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Source source = new Source(id, properties.get("name"),
+                Source source = new Source(id, properties.get("name"), properties.get("device.description"), properties,
                         client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
@@ -262,13 +282,13 @@ public class Parser {
                     }
                 }
                 if (properties.containsKey("muted")) {
-                    source.setMuted(properties.get("muted").equalsIgnoreCase("yes"));
+                    source.setMuted("yes".equalsIgnoreCase(properties.get("muted")));
                 }
                 if (properties.containsKey("volume")) {
                     source.setVolume(parseVolume(properties.get("volume")));
                 }
-                String monitorOf = properties.get("monitor_of");
-                if (monitorOf != null) {
+                if (properties.containsKey("monitor_of")) {
+                    String monitorOf = properties.get("monitor_of");
                     source.setMonitorOf(client.getSink(Integer.valueOf(monitorOf)));
                 }
                 sources.add(source);
@@ -312,8 +332,8 @@ public class Parser {
                 }
             }
             if (properties.containsKey("source")) {
-                SourceOutput item = new SourceOutput(id, properties.get("source"),
-                        client.getModule(getNumberValue(properties.get("module"))));
+                SourceOutput item = new SourceOutput(id, properties.get("source"), properties.get("application.name"),
+                        properties, client.getModule(getNumberValue(properties.get("module"))));
                 if (properties.containsKey("state")) {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
@@ -322,7 +342,7 @@ public class Parser {
                     }
                 }
                 if (properties.containsKey("muted")) {
-                    item.setMuted(properties.get("muted").equalsIgnoreCase("yes"));
+                    item.setMuted("yes".equalsIgnoreCase(properties.get("muted")));
                 }
                 if (properties.containsKey("volume")) {
                     item.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
@@ -336,6 +356,22 @@ public class Parser {
         return items;
     }
 
+    public static Optional<String> extractArgumentFromLine(String argumentWanted, @Nullable String argumentLine) {
+        String argument = null;
+        if (argumentLine != null) {
+            int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
+            if (startPortIndex != -1) {
+                startPortIndex = startPortIndex + argumentWanted.length() + 1;
+                int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
+                if (endPortIndex == -1) {
+                    endPortIndex = argumentLine.length();
+                }
+                argument = argumentLine.substring(startPortIndex, endPortIndex);
+            }
+        }
+        return Optional.ofNullable(argument);
+    }
+
     /**
      * converts the volume value given by the pulseaudio server
      * to a percentage value. The pulseaudio server sends 2 values for left and right channel volume
@@ -347,7 +383,7 @@ public class Parser {
     private static int parseVolume(String vol) {
         int volumeTotal = 0;
         int nChannels = 0;
-        for (String channel : vol.split(", ")) {
+        for (String channel : vol.split(",")) {
             Matcher matcher = VOLUME_PATTERN.matcher(channel.trim());
             if (matcher.find()) {
                 volumeTotal += Integer.valueOf(matcher.group(3));
@@ -370,7 +406,7 @@ public class Parser {
      * @param raw
      * @return
      */
-    private static int getNumberValue(String raw) {
+    private static int getNumberValue(@Nullable String raw) {
         int id = -1;
         if (raw == null) {
             return 0;

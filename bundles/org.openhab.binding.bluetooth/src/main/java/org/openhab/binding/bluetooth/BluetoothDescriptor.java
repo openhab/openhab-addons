@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link BluetoothDescriptor} class defines the Bluetooth descriptor.
  * <p>
@@ -26,12 +29,13 @@ import java.util.UUID;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - added constructor and fixed setValue method
  */
+@NonNullByDefault
 public class BluetoothDescriptor {
 
     protected final BluetoothCharacteristic characteristic;
     protected final UUID uuid;
+
     protected final int handle;
-    protected byte[] value;
 
     /**
      * The main constructor
@@ -81,25 +85,7 @@ public class BluetoothDescriptor {
         return handle;
     }
 
-    /**
-     * Returns the stored value for this descriptor. It doesn't read remote data.
-     *
-     * @return the value of the descriptor
-     */
-    public byte[] getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the stored value for this descriptor. It doesn't update remote data.
-     *
-     * @param value the value for this descriptor instance
-     */
-    public void setValue(byte[] value) {
-        this.value = value;
-    }
-
-    public GattDescriptor getDescriptor() {
+    public @Nullable GattDescriptor getDescriptor() {
         return GattDescriptor.getDescriptor(uuid);
     }
 
@@ -117,7 +103,7 @@ public class BluetoothDescriptor {
         NUMBER_OF_DIGITALS(0x2909),
         TRIGGER_SETTING(0x290A);
 
-        private static Map<UUID, GattDescriptor> uuidToServiceMapping;
+        private static @Nullable Map<UUID, GattDescriptor> uuidToServiceMapping;
 
         private final UUID uuid;
 
@@ -125,18 +111,16 @@ public class BluetoothDescriptor {
             this.uuid = BluetoothBindingConstants.createBluetoothUUID(key);
         }
 
-        private static void initMapping() {
-            uuidToServiceMapping = new HashMap<>();
-            for (GattDescriptor s : values()) {
-                uuidToServiceMapping.put(s.uuid, s);
+        public static @Nullable GattDescriptor getDescriptor(UUID uuid) {
+            Map<UUID, GattDescriptor> localServiceMapping = uuidToServiceMapping;
+            if (localServiceMapping == null) {
+                localServiceMapping = new HashMap<>();
+                for (GattDescriptor s : values()) {
+                    localServiceMapping.put(s.uuid, s);
+                }
+                uuidToServiceMapping = localServiceMapping;
             }
-        }
-
-        public static GattDescriptor getDescriptor(UUID uuid) {
-            if (uuidToServiceMapping == null) {
-                initMapping();
-            }
-            return uuidToServiceMapping.get(uuid);
+            return localServiceMapping.get(uuid);
         }
 
         /**

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -48,18 +49,16 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     private final Gson gson = new GsonBuilder().create();
 
-    NetworkAddressService networkAddressService;
-
-    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService) {
-        super(nikoHomeControlBridge);
-        this.networkAddressService = networkAddressService;
+    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
+            TimeZoneProvider timeZoneProvider) {
+        super(nikoHomeControlBridge, networkAddressService, timeZoneProvider);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Niko Home Control: initializing NHC II bridge handler");
+        logger.debug("initializing NHC II bridge handler");
 
-        setConfig();
+        scheduler.submit(() -> getControllerId());
 
         Date expiryDate = getTokenExpiryDate();
         if (expiryDate == null) {
@@ -70,14 +69,14 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 // This behavior would allow the same logic to be used (with profile UUID) as before token validation
                 // was introduced.
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Niko Home Control: token is empty");
+                        "@text/offline.configuration-error.tokenEmpty");
                 return;
             }
         } else {
             Date now = new Date();
             if (expiryDate.before(now)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Niko Home Control: hobby api token has expired");
+                        "@text/offline.configuration-error.tokenExpired");
                 return;
             }
         }
@@ -91,14 +90,14 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         } catch (CertificateException e) {
             // this should not happen unless there is a programming error
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: not able to set SSL context");
+                    "@text/offline.communication-error");
             return;
         }
     }
 
     @Override
     protected void updateProperties() {
-        Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
 
         NikoHomeControlCommunication2 comm = (NikoHomeControlCommunication2) nhcComm;
         if (comm != null) {
@@ -161,15 +160,14 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getProfile() {
-        return ((NikoHomeControlBridgeConfig2) config).profile;
+        return getConfig().as(NikoHomeControlBridgeConfig2.class).profile;
     }
 
     @Override
     public String getToken() {
-        String token = ((NikoHomeControlBridgeConfig2) config).password;
-        if ((token == null) || token.isEmpty()) {
-            logger.debug("Niko Home Control: no JWT token set.");
-            return "";
+        String token = getConfig().as(NikoHomeControlBridgeConfig2.class).password;
+        if (token.isEmpty()) {
+            logger.debug("no JWT token set.");
         }
         return token;
     }
@@ -192,10 +190,10 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             try {
                 jwtToken = gson.fromJson(tokenPayload, NhcJwtToken2.class);
             } catch (JsonSyntaxException e) {
-                logger.debug("Niko Home Control: unexpected token payload {}", tokenPayload);
+                logger.debug("unexpected token payload {}", tokenPayload);
             } catch (NoSuchElementException ignore) {
                 // Ignore if exp not present in response, this should not happen in token payload response
-                logger.trace("Niko Home Control: no expiry date found in payload {}", tokenPayload);
+                logger.trace("no expiry date found in payload {}", tokenPayload);
             }
         }
 
@@ -206,20 +204,20 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 long epoch = Long.parseLong(expiryEpoch) * 1000; // convert to milliseconds
                 expiryDate = new Date(epoch);
             } catch (NumberFormatException e) {
-                logger.debug("Niko Home Control: token expiry not valid {}", jwtToken.exp);
+                logger.debug("token expiry not valid {}", jwtToken.exp);
                 return null;
             }
 
             Date now = new Date();
             if (expiryDate.before(now)) {
-                logger.warn("Niko Home Control: hobby API token expired, was valid until {}",
+                logger.warn("hobby API token expired, was valid until {}",
                         DateFormat.getDateInstance().format(expiryDate));
             } else {
                 Calendar c = Calendar.getInstance();
                 c.setTime(expiryDate);
                 c.add(Calendar.DATE, -14);
                 if (c.getTime().before(now)) {
-                    logger.info("Niko Home Control: hobby API token will expire in less than 14 days, valid until {}",
+                    logger.info("hobby API token will expire in less than 14 days, valid until {}",
                             DateFormat.getDateInstance().format(expiryDate));
                 }
             }
@@ -227,10 +225,5 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         }
 
         return null;
-    }
-
-    @Override
-    protected synchronized void setConfig() {
-        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
     }
 }

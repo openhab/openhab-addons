@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.satel.internal.config.IntRSConfig.PORT;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.config.IntRSConfig;
 import org.openhab.binding.satel.internal.protocol.IntRSModule;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IntRSBridgeHandler extends SatelBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_INTRS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_INTRS);
 
     private final Logger logger = LoggerFactory.getLogger(IntRSBridgeHandler.class);
 
@@ -59,7 +59,7 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         final IntRSConfig config = getConfigAs(IntRSConfig.class);
         final String port = config.getPort();
-        if (port != null && StringUtils.isNotBlank(port)) {
+        if (!port.isBlank()) {
             SatelModule satelModule = new IntRSModule(port, serialPortManager, config.getTimeout(),
                     config.hasExtCommandsSupport());
             super.initialize(satelModule);
@@ -76,9 +76,9 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether a serial port is provided
-        if (StringUtils.isBlank(port)) {
-            configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(PORT)
-                    .withMessageKeySuffix("portEmpty").withArguments(PORT).build());
+        if (port.isBlank()) {
+            configStatusMessages = List.of(ConfigStatusMessage.Builder.error(PORT).withMessageKeySuffix("portEmpty")
+                    .withArguments(PORT).build());
         } else {
             configStatusMessages = Collections.emptyList();
         }

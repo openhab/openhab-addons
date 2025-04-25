@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.automower.internal.bridge;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -49,12 +48,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     private static final String HUSQVARNA_API_TOKEN_URL = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private final OAuthFactory oAuthFactory;
 
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
     private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
@@ -85,7 +84,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             stopAutomowerBridgePolling(currentBridge);
             bridge = null;
         }
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            this.oAuthService = null;
+        }
     }
 
     @Override
@@ -93,31 +96,34 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         AutomowerBridgeConfiguration bridgeConfiguration = getConfigAs(AutomowerBridgeConfiguration.class);
 
         final String appKey = bridgeConfiguration.getAppKey();
-        final String userName = bridgeConfiguration.getUserName();
-        final String password = bridgeConfiguration.getPassword();
+        final String appSecret = bridgeConfiguration.getAppSecret();
         final Integer pollingIntervalS = bridgeConfiguration.getPollingInterval();
 
         if (appKey == null || appKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
-        } else if (userName == null || userName.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
-        } else if (password == null || password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
+        } else if (appSecret == null || appSecret.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-secret");
         } else if (pollingIntervalS != null && pollingIntervalS < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), HUSQVARNA_API_TOKEN_URL,
-                    null, appKey, null, null, null);
+            OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                    HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
+            this.oAuthService = oAuthService;
 
             if (bridge == null) {
-                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, userName, password,
-                        httpClient, scheduler);
+                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
                 bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private void startAutomowerBridgePolling(AutomowerBridge bridge, @Nullable Integer pollingIntervalS) {

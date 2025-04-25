@@ -1,66 +1,68 @@
-# Paradox Alarm System binding
+# Paradox Alarm System Binding
 
 This binding is intended to provide basic support for Paradox Alarm system.
 
 With the power of openHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
-Examples: 
+Examples:
 
-* All partitions are armed, therefore there is no one at home. 
-* Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
+- All partitions are armed, therefore there is no one at home.
+- Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
 
 ## Supported Paradox panels/systems
 
 Currently binding supports the following panels: EVO192, EVO48(not tested), EVO96(not tested)
 
-## Supported things
+## Supported Things
 
-| Thing      | Thing Type | Description                                                    |
-|------------|------------|----------------------------------------------------------------|
-| ip150      | Bridge     | The bridge is used to communicate with IP150 ethernet module attached to Paradox security system.|
-| panel      | Thing      | This is representation of Paradox panel. Has the general information about the main panel module, i.e. serial number, firmware/hardware/software versions, panel type, etc...|
-| partition  | Thing      | The partition is grouped aggregation of multiple zones. It's also referred in Paradox Babyware as "Area". |
-| zone       | Thing      | Paradox zone. Can be anything - magnetic, motion or any other opened/closed sensor. State channel is contact, "low battery" and "is tampered" channels are switch, label is String |
+| Thing     | Thing Type | Description                                                                                                                                                                        |
+|-----------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ip150     | Bridge     | The bridge is used to communicate with IP150 ethernet module attached to Paradox security system.                                                                                  |
+| panel     | Thing      | This is representation of Paradox panel. Has the general information about the main panel module, i.e. serial number, firmware/hardware/software versions, panel type, etc...      |
+| partition | Thing      | The partition is grouped aggregation of multiple zones. It's also referred in Paradox Babyware as "Area".                                                                          |
+| zone      | Thing      | Paradox zone. Can be anything - magnetic, motion or any other opened/closed sensor. State channel is contact, "low battery" and "is tampered" channels are switch, label is String |
 
 ## Things configuration
 
-### IP150 bridge parameters
+### IP150 Bridge Parameters
 
-| Parameter         | Description                            |
-|-------------------|----------------------------------------|
-| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from paradox system. Optional parameter. Default 5 seconds.|
-| ip150Password     | The password to your IP150 (not your panel PIN). Mandatory parameter.  |
-| pcPassword        | The panel programming code 3012 setting. Optional parameter. Default value is 0000.|
-| ipAddress         | IP address or hostname of your IP150. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.  |
-| port              | The port used for data communication. Optional parameter. Default value is 10000.|
+| Parameter         | Description                                                                                                                             |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from paradox system. Optional parameter. Default 5 seconds.    |
+| ip150Password     | The password to your IP150 (not your panel PIN). Mandatory parameter.                                                                   |
+| pcPassword        | The panel programming code 3012 setting. Optional parameter. Default value is 0000.                                                     |
+| ipAddress         | IP address or hostname of your IP150. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                           |
+| port              | The port used for data communication. Optional parameter. Default value is 10000.                                                       |
 | panelType         | If parameter is passed, auto-discovery of panel type will be skipped. Provide string - EVO48, EVO96, EVO192, etc... Optional parameter. |
-| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout. Optional parameter. Default value is 30 seconds.|
-| maxPartitions     | Sets maximum partitions to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter. |
-| maxZones          | Sets maximum zones to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter.|
-| encrypt           | Sets if encryption has to be used. Optional parameter. Default value is false |
+| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout. Optional parameter. Default value is 30 seconds.  |
+| maxPartitions     | Sets maximum partitions to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter.      |
+| maxZones          | Sets maximum zones to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter.           |
+| encrypt           | Sets if encryption has to be used. Optional parameter. Default value is false                                                           |
 
-### IP150 bridge channels
+### IP150 Bridge Channels
 
 | Channel             | Description                                    |
 |---------------------|------------------------------------------------|
 |communicationCommand | Possible values [LOGOUT, LOGIN, RESET]         |
 |communicationState   | Shows the communication status to Paradox. Different from Bridge status. Bridge may be online and able to receive commands but communication may be offline due to various reasons. Possible values [Offline, Online] |
 
-#### Communication command channel allowed values
+#### Communication Command Values
+
 | Value  | Description                                                                        |
 |--------|------------------------------------------------------------------------------------|
 | LOGOUT | Logs out and disconnects from Paradox alarm system                                 |
 | LOGIN  | Creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.|
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.| 
+| RESET  | Does logout and then login with recreation of communicator objects inside the code.|
 
-### Entities (zones, partitions) configuration parameters:
+### Entities (zones, partitions) Configuration
 
 | Value             | Description                                                                        |
 |-------------------|------------------------------------------------------------------------------------|
 | id                | The numeric ID of the zone/partition                                               |
 | disarmEnabled     | Optional boolean flag. Valid for partitions. When set to true the command DISARM will be allowed for the partition where the flag is enabled. CAUTION: Enabling DISARM command can be dangerous. If attacker can gain access to your openHAB (via API or UI), this command can be used to disarm your armed partition (area) |
 
-### Panel channels:
+### Panel Channels
+
 | Channel                  | Type                       | Description                                                                               |
 |--------------------------|----------------------------|-------------------------------------------------------------------------------------------|
 | state                    | String                     | Overall panel state                                                                       |
@@ -69,12 +71,13 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | batteryVoltage           | Number:ElectricPotential   | Battery Voltage                                                                           |
 | panelTime                | DateTime                   | Panel internal time (Timezone is set to default zone of the Java virtual machine)         |
 
-### Partition channels:
+### Partition Channels
 
 | Channel                  | Type    | Description                                                                                   |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------|
 | partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  |State of partition (armed, disarmed, in alarm)                                                 |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
+| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values)             |
 | additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
 | readyToArm               | Switch  | Partition is Ready to arm                                                                     |
 | inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
@@ -93,14 +96,32 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | allZonesClosed           | Contact | All zones in partition are currently closed                                                   |
 | command                  | String  | Command to be send to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP) |
 
-### Zone channels:
+### Partition Detailed State Values
 
-| Channel         | Type    | Description                                                                    |
-|-----------------|---------|--------------------------------------------------------------------------------|
-| zoneLabel       | String  | Label of zone inside Paradox configuration                                     |
-| openedState     | Contact | Zone opened / closed                                                           |
-| tamperedState   | Switch  | Zone is tampered / not tampered                                                |
-## Example things configuration
+| Overall state value      | Detailed state value (depending on the sub-state)                                            |
+|--------------------------|----------------------------------------------------------------------------------------------|
+| InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
+| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
+| Disarmed                 | Disarmed                                                                                     |
+
+### Zone Channels
+
+| Channel                            | Type    | Description                                                                    |
+|------------------------------------|---------|--------------------------------------------------------------------------------|
+| zoneLabel                          | String  | Label of zone inside Paradox configuration                                     |
+| openedState                        | Contact | Zone opened / closed                                                           |
+| tamperedState                      | Switch  | Zone is tampered                                                               |
+| supervisionTrouble                 | Switch  | Zone is in supervision trouble                                                 |
+| inTxDelay                          | Switch  | Zone is in txDelay                                                             |
+| shutdown                           | Switch  | Zone is shutdown                                                               |
+| bypassed                           | Switch  | Zone is bypassed                                                               |
+| hasActivatedIntellizoneDelay       | Switch  | Zone is has an activated Intellizone delay                                     |
+| hasActivatedEntryDelay             | Switch  | Zone is has an activated entry delay                                           |
+| presentlyInAlarm                   | Switch  | Zone is currently in alarm                                                     |
+| generatedAlarm                     | Switch  | Zone has generated an alarm                                                    |
+| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS)                                |
+
+## Example Things Configuration
 
 ```java
    Bridge paradoxalarm:ip150:ip150 [refresh=5, panelType="EVO192", ip150Password="********", pcPassword="0000", ipAddress=XXX.XXX.XXX.XXX", port=10000, reconnectWaitTime=10, maxPartitions=4, maxZones=50, encrypt=true ] {
@@ -119,7 +140,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 }
 ```
 
-## Example items configuration
+## Example Items Configuration
 
 ```java
 //Groups
@@ -148,7 +169,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     Contact CorridorFl1_MUC_state "Corridor Fl1 window: [%s]" (Floor1MUC) { channel = "paradoxalarm:zone:ip150:MagneticSensorWindow1:opened" }
 ```
 
-## Example sitemap configuration
+## Example Sitemap Configuration
 
 ```java
     Text label="Security" icon="lock" {
@@ -157,10 +178,10 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
             Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
         }
         Frame label="Panel" {
-				Text item=paradoxTime
-				Text item=paradoxAcVoltage
-				Text item=paradoxDcVoltage
-				Text item=paradoxBatteryVoltage
+            Text item=paradoxTime
+            Text item=paradoxAcVoltage
+            Text item=paradoxDcVoltage
+            Text item=paradoxBatteryVoltage
         }
         Frame label="Partitions" {
             Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]
@@ -174,11 +195,13 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
         }
     }
 ```
+
 ## Acknowledgements
+
 This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective GitHub repositories for their development that helped in creating this binding:
 
-João Paulo Barraca - https://github.com/ParadoxAlarmInterface/pai
+João Paulo Barraca - <https://github.com/ParadoxAlarmInterface/pai>
 
 Jean Henning - repository not available
 
-Tertuish - https://github.com/Tertiush/ParadoxIP150v2 / https://github.com/Tertiush/ParadoxIP150
+Tertuish - <https://github.com/Tertiush/ParadoxIP150v2> / <https://github.com/Tertiush/ParadoxIP150>

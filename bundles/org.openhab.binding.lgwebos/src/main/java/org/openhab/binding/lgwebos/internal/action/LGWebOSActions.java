@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
@@ -30,7 +31,6 @@ import javax.imageio.ImageIO;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
-import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
@@ -42,6 +42,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,7 @@ import com.google.gson.JsonParser;
  * @author Sebastian Prehn - Initial contribution
  * @author Laurent Garnier - new method invokeMethodOf + interface ILGWebOSActions
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LGWebOSActions.class)
 @ThingActionsScope(name = "lgwebos")
 @NonNullByDefault
 public class LGWebOSActions implements ThingActions {
@@ -82,16 +85,9 @@ public class LGWebOSActions implements ThingActions {
         return lgWebOSHandler;
     }
 
-    private enum Button {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        BACK,
+    private enum Key {
         DELETE,
-        ENTER,
-        HOME,
-        OK
+        ENTER
     }
 
     @RuleAction(label = "@text/actionShowToastLabel", description = "@text/actionShowToastDesc")
@@ -101,15 +97,15 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
-    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
+    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconDesc")
     public void showToast(
             @ActionInput(name = "icon", label = "@text/actionShowToastInputIconLabel", description = "@text/actionShowToastInputIconDesc") String icon,
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
-            throws IOException {
-        BufferedImage bi = ImageIO.read(new URL(icon));
+            throws IOException, URISyntaxException {
+        BufferedImage bi = ImageIO.read(new URI(icon).toURL());
         try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os)) {
             ImageIO.write(bi, "png", b64);
-            String string = os.toString(StandardCharsets.UTF_8.name());
+            String string = os.toString(StandardCharsets.UTF_8);
             getConnectedSocket().ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
         }
     }
@@ -123,7 +119,7 @@ public class LGWebOSActions implements ThingActions {
     private List<AppInfo> getAppInfos() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
 
-        if (!this.getConnectedSocket().isPresent()) {
+        if (this.getConnectedSocket().isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -154,8 +150,7 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
         try {
-            JsonParser parser = new JsonParser();
-            JsonObject payload = (JsonObject) parser.parse(params);
+            JsonObject payload = (JsonObject) JsonParser.parseString(params);
 
             Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
             if (appInfo.isPresent()) {
@@ -165,7 +160,6 @@ public class LGWebOSActions implements ThingActions {
                 logger.warn("Device with ThingID {} does not support any app with id: {}.",
                         getLGWebOSHandler().getThing().getUID(), appId);
             }
-
         } catch (JsonParseException ex) {
             logger.warn("Parameters value ({}) is not in a valid JSON format. {}", params, ex.getMessage());
             return;
@@ -184,40 +178,29 @@ public class LGWebOSActions implements ThingActions {
 
     @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
     public void sendButton(
-            @ActionInput(name = "text", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
+            @ActionInput(name = "button", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
+        if ("OK".equals(button)) {
+            getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
+        } else {
+            getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(button)));
+        }
+    }
+
+    @RuleAction(label = "@text/actionSendKeyboardLabel", description = "@text/actionSendKeyboardDesc")
+    public void sendKeyboard(
+            @ActionInput(name = "key", label = "@text/actionSendKeyboardInputKeyLabel", description = "@text/actionSendKeyboardInputKeyDesc") String key) {
         try {
-            switch (Button.valueOf(button)) {
-                case UP:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.UP)));
-                    break;
-                case DOWN:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.DOWN)));
-                    break;
-                case LEFT:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.LEFT)));
-                    break;
-                case RIGHT:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.RIGHT)));
-                    break;
-                case BACK:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.BACK)));
-                    break;
+            switch (Key.valueOf(key)) {
                 case DELETE:
                     getConnectedSocket().ifPresent(control -> control.sendDelete());
                     break;
                 case ENTER:
                     getConnectedSocket().ifPresent(control -> control.sendEnter());
                     break;
-                case HOME:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button("HOME")));
-                    break;
-                case OK:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
-                    break;
             }
         } catch (IllegalArgumentException ex) {
-            logger.warn("{} is not a valid value for button - available are: {}", button,
-                    Stream.of(Button.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
+            logger.warn("{} is not a valid value for key - available are: {}", key,
+                    Stream.of(Key.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
         }
     }
 
@@ -229,12 +212,6 @@ public class LGWebOSActions implements ThingActions {
     @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
     public void decreaseChannel() {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
-    }
-
-    @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
-    public void sendRCButton(
-            @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
-        getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(rcButton)));
     }
 
     private Optional<LGWebOSTVSocket> getConnectedSocket() {
@@ -250,7 +227,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private ResponseListener<TextInputStatusInfo> createTextInputStatusListener() {
-        return new ResponseListener<TextInputStatusInfo>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {
@@ -265,7 +242,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private <O> ResponseListener<O> createResponseListener() {
-        return new ResponseListener<O>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {
@@ -285,7 +262,8 @@ public class LGWebOSActions implements ThingActions {
         ((LGWebOSActions) actions).showToast(text);
     }
 
-    public static void showToast(ThingActions actions, String icon, String text) throws IOException {
+    public static void showToast(ThingActions actions, String icon, String text)
+            throws IOException, URISyntaxException {
         ((LGWebOSActions) actions).showToast(icon, text);
     }
 
@@ -309,15 +287,15 @@ public class LGWebOSActions implements ThingActions {
         ((LGWebOSActions) actions).sendButton(button);
     }
 
+    public static void sendKeyboard(ThingActions actions, String key) {
+        ((LGWebOSActions) actions).sendKeyboard(key);
+    }
+
     public static void increaseChannel(ThingActions actions) {
         ((LGWebOSActions) actions).increaseChannel();
     }
 
     public static void decreaseChannel(ThingActions actions) {
         ((LGWebOSActions) actions).decreaseChannel();
-    }
-
-    public static void sendRCButton(ThingActions actions, String rcButton) {
-        ((LGWebOSActions) actions).sendRCButton(rcButton);
     }
 }

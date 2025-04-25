@@ -11,6 +11,7 @@
 
 		<label>Daikin BRC1H Thermostat</label>
 		<description>A Daikin Madoka BRC1H Thermostat (BLE)</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="onOffStatus" typeId="brc1h_onOffStatus"/>

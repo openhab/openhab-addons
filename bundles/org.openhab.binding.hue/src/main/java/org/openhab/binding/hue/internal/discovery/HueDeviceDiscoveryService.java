@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,8 @@ package org.openhab.binding.hue.internal.discovery;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +25,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.FullHueObject;
-import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullHueObject;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
@@ -40,21 +39,23 @@ import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HueBridgeServiceTracker} tracks for hue lights, sensors and groups which are connected
- * to a paired hue bridge. The default search time for hue is 60 seconds.
+ * The {@link HueDeviceDiscoveryService} tracks for Hue lights, sensors and groups which are connected
+ * to a paired Hue Bridge. The default search time for Hue is 60 seconds.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Andre Fuechsel - changed search timeout, changed discovery result creation to support generic thing types;
@@ -66,17 +67,16 @@ import org.slf4j.LoggerFactory;
  * @author Meng Yiqi - Added support for CLIP sensor
  * @author Laurent Garnier - Added support for groups
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = HueDeviceDiscoveryService.class)
 @NonNullByDefault
-public class HueDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
+public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<HueBridgeHandler> {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
                     GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
                     TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
                     ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
-            .flatMap(i -> i).collect(Collectors.toSet()));
+            .flatMap(i -> i).collect(Collectors.toUnmodifiableSet());
 
     // @formatter:off
     private static final Map<String, String> TYPE_TO_ZIGBEE_ID_MAP = Map.ofEntries(
@@ -101,41 +101,34 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(HueDeviceDiscoveryService.class);
 
-    private @Nullable HueBridgeHandler hueBridgeHandler;
     private @Nullable ThingUID bridgeUID;
 
     public HueDeviceDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(HueBridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
+    }
+
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HueBridgeHandler) {
-            hueBridgeHandler = (HueBridgeHandler) handler;
-            bridgeUID = handler.getThing().getUID();
-        }
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.registerDiscoveryListener(this);
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return hueBridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        final HueBridgeHandler handler = hueBridgeHandler;
-        if (handler != null) {
-            handler.registerDiscoveryListener(this);
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime(), bridgeUID);
-        final HueBridgeHandler handler = hueBridgeHandler;
-        if (handler != null) {
-            handler.unregisterDiscoveryListener();
-        }
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli(), bridgeUID);
+        thingHandler.unregisterDiscoveryListener();
     }
 
     @Override
@@ -145,32 +138,26 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void startScan() {
-        final HueBridgeHandler handler = hueBridgeHandler;
-        if (handler != null) {
-            List<FullLight> lights = handler.getFullLights();
-            for (FullLight l : lights) {
-                addLightDiscovery(l);
-            }
-            List<FullSensor> sensors = handler.getFullSensors();
-            for (FullSensor s : sensors) {
-                addSensorDiscovery(s);
-            }
-            List<FullGroup> groups = handler.getFullGroups();
-            for (FullGroup g : groups) {
-                addGroupDiscovery(g);
-            }
-            // search for unpaired lights
-            handler.startSearch();
+        List<FullLight> lights = thingHandler.getFullLights();
+        for (FullLight l : lights) {
+            addLightDiscovery(l);
         }
+        List<FullSensor> sensors = thingHandler.getFullSensors();
+        for (FullSensor s : sensors) {
+            addSensorDiscovery(s);
+        }
+        List<FullGroup> groups = thingHandler.getFullGroups();
+        for (FullGroup g : groups) {
+            addGroupDiscovery(g);
+        }
+        // search for unpaired lights
+        thingHandler.startSearch();
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        final HueBridgeHandler handler = hueBridgeHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan(), handler.getThing().getUID());
-        }
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     public void addLightDiscovery(FullLight light) {
@@ -275,8 +262,14 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
             Map<String, Object> properties = new HashMap<>();
             properties.put(GROUP_ID, group.getId());
 
-            String name = String.format("%s (%s)", "0".equals(group.getId()) ? "All lights" : group.getName(),
-                    group.getType());
+            String name;
+            if ("0".equals(group.getId())) {
+                name = "@text/discovery.group.all-lights.label";
+            } else if ("Room".equals(group.getType())) {
+                name = group.getName();
+            } else {
+                name = String.format("%s (%s)", group.getName(), group.getType());
+            }
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GROUP)
                     .withProperties(properties).withBridge(localBridgeUID).withRepresentationProperty(GROUP_ID)
                     .withLabel(name).build();

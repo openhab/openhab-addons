@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,15 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSID} represents the digitalSTROM-Device identifier.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
+ * @author Alexander Friese - simplified constructor
  */
 public class DSID {
 
-    private String dsid;
-    private final String DEFAULT_DSID = "3504175fe000000000000001";
-    private final String PRE = "3504175fe0000000";
+    private final String dsid;
+    private static final String DEFAULT_DSID = "3504175fe000000000000001";
+    private static final String PRE = "3504175fe0000000";
+    private static final String ALL = "ALL";
 
     /**
      * Creates a new {@link DSID}.
@@ -29,17 +31,13 @@ public class DSID {
      * @param dsid to create
      */
     public DSID(String dsid) {
-        this.dsid = dsid;
-        if (dsid != null && !dsid.trim().equals("")) {
-            if (dsid.trim().length() == 24) {
-                this.dsid = dsid;
-            } else if (dsid.trim().length() == 8) {
-                this.dsid = this.PRE + dsid;
-            } else if (dsid.trim().toUpperCase().equals("ALL")) {
-                this.dsid = "ALL";
-            } else {
-                this.dsid = DEFAULT_DSID;
-            }
+        var trimmedDsid = dsid != null ? dsid.trim() : "";
+        if (trimmedDsid.length() == 24) {
+            this.dsid = trimmedDsid;
+        } else if (trimmedDsid.length() == 8) {
+            this.dsid = PRE + trimmedDsid;
+        } else if (trimmedDsid.toUpperCase().equals(ALL)) {
+            this.dsid = ALL;
         } else {
             this.dsid = DEFAULT_DSID;
         }
@@ -56,8 +54,8 @@ public class DSID {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DSID) {
-            return ((DSID) obj).getValue().equals(this.getValue());
+        if (obj instanceof DSID id) {
+            return id.getValue().equals(this.getValue());
         }
         return false;
     }

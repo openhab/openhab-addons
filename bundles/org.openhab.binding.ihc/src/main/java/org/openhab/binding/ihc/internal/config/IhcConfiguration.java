@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.ihc.internal.config;
 
 /**
- * Configuration class for {@link IhcBinding} binding.
+ * Configuration class for IhcBinding binding.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -24,11 +24,12 @@ public class IhcConfiguration {
     public int timeout;
     public boolean loadProjectFile;
     public boolean createChannelsAutomatically;
+    public String tlsVersion;
 
     @Override
     public String toString() {
         return "[" + "hostname=" + hostname + ", username=" + username + ", password=******" + ", timeout=" + timeout
                 + ", loadProjectFile=" + loadProjectFile + ", createChannelsAutomatically="
-                + createChannelsAutomatically + "]";
+                + createChannelsAutomatically + ", tlsVersion=" + tlsVersion + "]";
     }
 }

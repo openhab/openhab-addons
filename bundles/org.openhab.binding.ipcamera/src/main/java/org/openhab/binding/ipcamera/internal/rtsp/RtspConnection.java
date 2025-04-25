@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 /**
  * The {@link RtspConnection} is a WIP and not currently used, but will talk directly to RTSP and collect information
  * about the camera and streams.
- *
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -154,7 +153,7 @@ public class RtspConnection {
                         if (future.isDone() && future.isSuccess()) {
                             Channel ch = future.channel();
                             ch.writeAndFlush(request);
-                        } else { // an error occured
+                        } else { // an error occurred
                             logger.debug("Could not reach cameras rtsp on port 554.");
                         }
                     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.client.ClientBuilder;
-
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -54,18 +53,18 @@ public class NeeoDeviceKeys {
     /** The brain's url */
     private final String brainUrl;
 
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /**
      * Creates the object from the context and brainUrl
      *
      * @param brainUrl the non-empty brain url
      */
-    NeeoDeviceKeys(String brainUrl, ClientBuilder clientBuilder) {
+    NeeoDeviceKeys(String brainUrl, HttpClient httpClient) {
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
 
         this.brainUrl = brainUrl;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -74,7 +73,7 @@ public class NeeoDeviceKeys {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void refresh() throws IOException {
-        try (HttpRequest request = new HttpRequest(clientBuilder)) {
+        try (HttpRequest request = new HttpRequest(httpClient)) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
             final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
@@ -83,8 +82,7 @@ public class NeeoDeviceKeys {
 
             uidToKey.clear();
 
-            final JsonParser parser = new JsonParser();
-            final JsonObject root = parser.parse(resp.getContent()).getAsJsonObject();
+            final JsonObject root = JsonParser.parseString(resp.getContent()).getAsJsonObject();
             for (Map.Entry<String, JsonElement> room : root.getAsJsonObject("rooms").entrySet()) {
                 final JsonObject roomObj = (JsonObject) room.getValue();
                 for (Map.Entry<String, JsonElement> dev : roomObj.getAsJsonObject("devices").entrySet()) {
@@ -178,7 +176,7 @@ public class NeeoDeviceKeys {
             sb.append("[");
             sb.append(entry.getKey());
             sb.append("=");
-            sb.append(StringUtils.join(entries.toArray()));
+            sb.append(entries.stream().map(Object::toString).collect(Collectors.joining()));
             sb.append("]");
         }
 

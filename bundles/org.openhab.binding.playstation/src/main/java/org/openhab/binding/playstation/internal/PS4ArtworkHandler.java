@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,8 @@ public class PS4ArtworkHandler {
     }
 
     /**
-     * Builds a artwork request string for the specified TitleId, also takes into account if the language should be from
-     * the specified locale or just "en".
+     * Builds an artwork request string for the specified TitleId, also takes into account if the language should be
+     * from the specified locale or just "en".
      *
      * @param locale The country and language to use for the store look up.
      * @param titleId The Title ID of the Application/game.
@@ -90,8 +90,8 @@ public class PS4ArtworkHandler {
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
      * PlayStation store
      *
-     * @param titleid Title ID of application.
-     * @param size Size (width & height) of art work in pixels , max 1024.
+     * @param titleId Title ID of application.
+     * @param size Size (width and height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
@@ -103,8 +103,8 @@ public class PS4ArtworkHandler {
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
      * PlayStation store
      *
-     * @param titleid Title ID of application.
-     * @param size Size (width & height) of art work in pixels , max 1024.
+     * @param titleId Title ID of application.
+     * @param size Size (width and height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @param forceRefetch When true, tries to re-fetch art work from PlayStation store, sometimes the art work is
      *            updated along with the game.

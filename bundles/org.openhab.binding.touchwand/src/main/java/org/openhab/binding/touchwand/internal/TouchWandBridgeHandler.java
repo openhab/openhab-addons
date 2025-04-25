@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.touchwand.internal;
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,9 +44,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
-    private int statusRefreshRateSec;
     private boolean addSecondaryUnits;
     private @Nullable TouchWandWebSockets touchWandWebSockets;
     private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
@@ -73,7 +71,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
         host = config.ipAddress;
         port = config.port;
-        statusRefreshRateSec = config.statusrefresh;
         addSecondaryUnits = config.addSecondaryUnits;
 
         isRunning = true;
@@ -87,7 +84,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
                 updateStatus(ThingStatus.ONLINE);
                 synchronized (this) {
                     if (isRunning) {
-                        TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host,
+                        TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host, port,
                                 scheduler);
                         localSockets.registerListener(this);
                         localSockets.connect();
@@ -106,10 +103,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     public boolean isAddSecondaryControllerUnits() {
         return addSecondaryUnits;
-    }
-
-    public int getStatusRefreshTime() {
-        return statusRefreshRateSec;
     }
 
     @Override
@@ -144,6 +137,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TouchWandUnitDiscoveryService.class);
+        return Set.of(TouchWandUnitDiscoveryService.class);
     }
 }

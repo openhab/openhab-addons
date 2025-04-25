@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,16 +88,20 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case ceiling1:
+            case ceil26:
+            case ceiling11:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING1, device.getDeviceId());
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
             case color:
+            case color4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_WONDER, device.getDeviceId());
             case mono:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DOLPHIN, device.getDeviceId());
             case ct_bulb:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
+            case strip6:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             case desklamp:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DESKLAMP, device.getDeviceId());
@@ -111,18 +115,22 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling:
                 return YeelightBindingConstants.THING_TYPE_CEILING;
             case ceiling1:
+            case ceil26:
+            case ceiling11:
                 return YeelightBindingConstants.THING_TYPE_CEILING1;
             case ceiling3:
                 return YeelightBindingConstants.THING_TYPE_CEILING3;
             case ceiling4:
                 return YeelightBindingConstants.THING_TYPE_CEILING4;
             case color:
+            case color4:
                 return YeelightBindingConstants.THING_TYPE_WONDER;
             case mono:
                 return YeelightBindingConstants.THING_TYPE_DOLPHIN;
             case ct_bulb:
                 return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
+            case strip6:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             case desklamp:
                 return YeelightBindingConstants.THING_TYPE_DESKLAMP;

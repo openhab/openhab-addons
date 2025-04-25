@@ -1,0 +1,58 @@
+ {
+  "id": "TapoStrip_4HVKmMc6vEzjm36jXaGwMs",
+  "name": "Flicker",
+  "brightness": 100,
+  "display_colors": [
+    [
+      30,
+      81,
+      100
+    ],
+    [
+      40,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [
+    50,
+    100
+  ],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": null,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": [
+    30,
+    40
+  ],
+  "init_states": [
+    [
+      30,
+      81,
+      80
+    ]
+  ],
+  "random_seed": null,
+  "repeat_times": null,
+  "saturation_range": [
+    100,
+    100
+  ],
+  "segment_length": null,
+  "segments": [
+    1
+  ],
+  "sequence": null,
+  "spread": null,
+  "transition": 0,
+  "transition_range": [
+    375,
+    500
+  ],
+  "type": "random"
+}

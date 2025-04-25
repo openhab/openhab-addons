@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,13 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -43,7 +43,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<VerisureClimatesDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMOKEDETECTOR);
         SUPPORTED_THING_TYPES.add(THING_TYPE_WATERDETECTOR);
@@ -68,35 +68,52 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
 
     private void updateClimateDeviceState(VerisureClimatesDTO climateJSON) {
         getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                 .forEach(channelUID -> {
                     State state = getValue(channelUID.getId(), climateJSON);
                     updateState(channelUID, state);
                 });
-        String timeStamp = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp();
-        if (timeStamp != null) {
-            updateTimeStamp(timeStamp);
+        List<Climate> climateList = climateJSON.getData().getInstallation().getClimates();
+        if (climateList != null && !climateList.isEmpty()) {
+            String timeStamp = climateList.get(0).getTemperatureTimestamp();
+            if (timeStamp != null) {
+                updateTimeStamp(timeStamp);
+            }
         }
+
         updateInstallationChannels(climateJSON);
     }
 
     public State getValue(String channelId, VerisureClimatesDTO climateJSON) {
+        List<Climate> climateList = climateJSON.getData().getInstallation().getClimates();
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();
-                return new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                if (climateList != null && !climateList.isEmpty()) {
+                    double temperature = climateList.get(0).getTemperatureValue();
+                    return new QuantityType<>(temperature, SIUnits.CELSIUS);
+                }
             case CHANNEL_HUMIDITY:
-                if (climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled()) {
-                    double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
-                    return new QuantityType<Dimensionless>(humidity, Units.PERCENT);
+                if (climateList != null && !climateList.isEmpty() && climateList.get(0).isHumidityEnabled()) {
+                    double humidity = climateList.get(0).getHumidityValue();
+                    return new QuantityType<>(humidity, Units.PERCENT);
                 }
             case CHANNEL_HUMIDITY_ENABLED:
-                boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0)
-                        .isHumidityEnabled();
-                return OnOffType.from(humidityEnabled);
+                if (climateList != null && !climateList.isEmpty()) {
+                    boolean humidityEnabled = climateList.get(0).isHumidityEnabled();
+                    return OnOffType.from(humidityEnabled);
+                }
             case CHANNEL_LOCATION:
                 String location = climateJSON.getLocation();
                 return location != null ? new StringType(location) : UnDefType.NULL;
+            case CHANNEL_BATTERY_STATUS:
+                VerisureBatteryStatusDTO batteryStatus = climateJSON.getBatteryStatus();
+                if (batteryStatus != null) {
+                    String status = batteryStatus.getStatus();
+                    if ("CRITICAL".equals(status)) {
+                        return OnOffType.from(true);
+                    }
+                }
+                return OnOffType.from(false);
         }
         return UnDefType.UNDEF;
     }

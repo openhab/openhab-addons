@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -257,14 +257,13 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
                     break;
             }
         } catch (TimeoutException e) {
-            errorMsg = "TimeoutException: Call to Weather Company API timed out";
+            errorMsg = "@text/offline.comm-error-timeout";
         } catch (ExecutionException e) {
             errorMsg = String.format("ExecutionException: %s", e.getMessage());
         } catch (InterruptedException e) {
             errorMsg = String.format("InterruptedException: %s", e.getMessage());
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-        logger.debug("{}", errorMsg);
         return null;
     }
 
@@ -274,8 +273,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
     protected DateTimeType getLocalDateTimeType(long epochSeconds) {
         Instant instant = Instant.ofEpochSecond(epochSeconds);
         ZonedDateTime localDateTime = instant.atZone(getZoneId());
-        DateTimeType dateTimeType = new DateTimeType(localDateTime);
-        return dateTimeType;
+        return new DateTimeType(localDateTime);
     }
 
     /*

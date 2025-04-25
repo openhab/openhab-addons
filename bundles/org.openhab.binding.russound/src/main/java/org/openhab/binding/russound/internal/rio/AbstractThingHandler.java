@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
     /**
      * Get's the {@link AbstractRioProtocol} handler. May be null if none currently exists
      *
-     * @return a {@link AbstractRioProtocol} handler or null if none exists
+     * @return an {@link AbstractRioProtocol} handler or null if none exists
      */
     protected E getProtocolHandler() {
         return protocolHandler;
@@ -109,15 +109,15 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
     }
 
     /**
-     * Overrides the base method to remove any state linked to the {@lin ChannelUID} from the
+     * Overrides the base method to remove any state linked to the {@link ChannelUID} from the
      * {@link StatefulHandlerCallback}
      */
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         // Remove any state when unlinking (that way if it is relinked - we get it)
         final RioHandlerCallback callback = getProtocolHandler().getCallback();
-        if (callback instanceof StatefulHandlerCallback) {
-            ((StatefulHandlerCallback) callback).removeState(channelUID.getId());
+        if (callback instanceof StatefulHandlerCallback handlerCallback) {
+            handlerCallback.removeState(channelUID.getId());
         }
         super.channelUnlinked(channelUID);
     }

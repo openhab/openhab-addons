@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,6 @@ public interface FreeboxDataListener {
      * @param lanHosts the LAN data received from the Freebox server.
      * @param airPlayDevices the list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, @Nullable List<FreeboxLanHost> lanHosts,
+    void onDataFetched(ThingUID bridge, @Nullable List<FreeboxLanHost> lanHosts,
             @Nullable List<FreeboxAirMediaReceiver> airPlayDevices);
 }

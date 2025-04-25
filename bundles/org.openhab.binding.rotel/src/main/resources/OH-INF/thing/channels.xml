@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="mainZoneType1">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -18,12 +18,13 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType2">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -33,12 +34,13 @@
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType3">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -49,12 +51,13 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType4">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -66,12 +69,13 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType5">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -82,12 +86,31 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType6">
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="recordSource" typeId="recordSource"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone2type1">
-		<label>Zone 2</label>
-		<description>The controls of the zone 2</description>
+		<label>@text/channel-group.zone2.label</label>
+		<description>@text/channel-group.zone2.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -97,8 +120,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone2type2">
-		<label>Zone 2</label>
-		<description>The controls of the zone 2</description>
+		<label>@text/channel-group.zone2.label</label>
+		<description>@text/channel-group.zone2.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -107,8 +130,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone3">
-		<label>Zone 3</label>
-		<description>The controls of the zone 3</description>
+		<label>@text/channel-group.zone3.label</label>
+		<description>@text/channel-group.zone3.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -118,13 +141,36 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone4">
-		<label>Zone 4</label>
-		<description>The controls of the zone 4</description>
+		<label>@text/channel-group.zone4.label</label>
+		<description>@text/channel-group.zone4.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="allZones">
+		<label>@text/channel-group.allZones.label</label>
+		<description>@text/channel-group.allZones.description</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>@text/channel-group.zone.label</label>
+		<description>@text/channel-group.zone.description</description>
+		<channels>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="frequency" typeId="frequency"/>
 		</channels>
 	</channel-group-type>
 
@@ -151,6 +197,10 @@
 		<label>Volume</label>
 		<description>Increase or decrease the volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -178,6 +228,26 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="random" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Random Mode</label>
+		<description>The current random mode</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="repeat" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>The current repeat mode</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="TRACK">Track</option>
+				<option value="DISC">Disc</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Frequency</label>
@@ -197,4 +267,41 @@
 		<description>The backlight brightness level (in %) of the device front panel</description>
 	</channel-type>
 
+	<channel-type id="tcbypass" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Tone Control Bypass</label>
+		<description>The user's bass-/treble-settings are bypassed</description>
+	</channel-type>
+
+	<channel-type id="balance" advanced="true">
+		<item-type>Number</item-type>
+		<label>Balance Adjustment</label>
+		<description>Adjust the speakers left-right balance</description>
+	</channel-type>
+
+	<channel-type id="speakera" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Speaker-A Adjustment</label>
+		<description>Turn on/off the speaker group A</description>
+	</channel-type>
+
+	<channel-type id="speakerb" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Speaker-B Adjustment</label>
+		<description>Turn on/off the speaker group B</description>
+	</channel-type>
+
+	<channel-type id="otherCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Other Command</label>
+		<description>Choose the command to send to the device</description>
+	</channel-type>
+
+	<channel-type id="radioPreset">
+		<item-type>Number</item-type>
+		<label>Radio Preset</label>
+		<description>Select a radio preset</description>
+		<state pattern="%d" readOnly="false" min="1" max="30"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 </thing:thing-descriptions>

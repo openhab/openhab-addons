@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -191,14 +190,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void initDevice() {
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN);
+
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
                 pollingJob = upnpScheduler.scheduleWithFixedDelay(this::initJob, 0, config.refresh, TimeUnit.SECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No UDN configured for " + thing.getLabel());
+            String msg = String.format("@text/offline.no-udn [ \"%s\" ]", thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -227,13 +228,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Method called when a the remote device represented by the thing for this handler is added to the jupnp
-     * {@link RegistryListener} or is updated. Configuration info can be retrieved from the {@link RemoteDevice}.
+     * {@link org.jupnp.registry.RegistryListener RegistryListener} or is updated. Configuration info can be retrieved
+     * from the {@link RemoteDevice}.
      *
      * @param device
      */
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
-    };
+    }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
@@ -291,7 +293,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke PrepareForConnection on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param remoteProtocolInfo
      * @param peerConnectionManager
@@ -314,11 +316,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isConnectionIdSet = new CompletableFuture<Boolean>();
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isConnectionIdSet = new CompletableFuture<>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
-        HashMap<String, String> inputs = new HashMap<String, String>();
+        HashMap<String, String> inputs = new HashMap<>();
         inputs.put("RemoteProtocolInfo", remoteProtocolInfo);
         inputs.put("PeerConnectionManager", peerConnectionManager);
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
@@ -331,14 +333,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * Invoke ConnectionComplete on UPnP Connection Manager.
      */
     protected void connectionComplete() {
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "ConnectionComplete", inputs);
     }
 
     /**
      * Invoke GetCurrentConnectionIDs on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getCurrentConnectionIDs() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -348,7 +350,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetCurrentConnectionInfo on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getCurrentConnectionInfo() {
         CompletableFuture<Boolean> settingAVTransport = isAvTransportIdSet;
@@ -361,18 +363,18 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
         // ConnectionID will default to 0 if not set through prepareForConnection method
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "GetCurrentConnectionInfo", inputs);
     }
 
     /**
      * Invoke GetFeatureList on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getFeatureList() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -382,7 +384,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetProtocolInfo on UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getProtocolInfo() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -396,8 +398,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                 service);
         if (!succeeded) {
             upnpSubscribed = false;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not subscribe to service " + service + "for" + thing.getLabel());
+            String msg = String.format("@text/offline.subscription-failed [ \"%1$s\", \"%2$s\" ]", service,
+                    thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 
@@ -407,16 +410,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (status) {
             initJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication lost with " + thing.getLabel());
+            String msg = String.format("@text/offline.communication-lost [ \"%s\" ]", thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 
     /**
-     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService.invokeAction}. It schedules and
-     * submits the call and calls {@link onValueReceived} upon completion. All state updates or other actions depending
-     * on the results should be triggered from {@link onValueReceived} because the class fields with results will be
-     * filled asynchronously.
+     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService#invokeAction invokeAction}. It
+     * schedules and submits the call and calls {@link #onValueReceived} upon completion. All state updates or other
+     * actions depending on the results should be triggered from {@link #onValueReceived} because the class fields with
+     * results will be filled asynchronously.
      *
      * @param serviceId
      * @param actionId

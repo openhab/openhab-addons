@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class EiscpProtocol {
     private static final Logger LOGGER = LoggerFactory.getLogger(EiscpProtocol.class);
 
     /**
-     * Wraps a command in a eISCP data message (data characters).
+     * Wraps a command in an eISCP data message (data characters).
      *
      * @param msg
      *            eISCP command.
@@ -137,7 +137,7 @@ public class EiscpProtocol {
             // version
             final byte versionChar = stream.readByte();
             if (versionChar != 1) {
-                throw new EiscpException("Unsupported version " + String.valueOf(versionChar));
+                throw new EiscpException("Unsupported version " + versionChar);
             }
 
             // skip 3 reserved bytes

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link PushoverConfigOptionProvider} class contains fields mapping thing configuration parameters.
@@ -37,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ConfigOptionProvider.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = { PushoverConfigOptionProvider.class, ConfigOptionProvider.class })
 public class PushoverConfigOptionProvider implements ConfigOptionProvider, ThingHandlerService {
 
     private @Nullable PushoverAccountHandler accountHandler;
@@ -45,9 +46,10 @@ public class PushoverConfigOptionProvider implements ConfigOptionProvider, Thing
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if (accountHandler != null && PUSHOVER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
+        PushoverAccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null && PUSHOVER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
                 && CONFIG_SOUND.equals(param)) {
-            List<Sound> sounds = accountHandler.getSounds();
+            List<Sound> sounds = localAccountHandler.getSounds();
             if (!sounds.isEmpty()) {
                 return sounds.stream().map(Sound::getAsParameterOption)
                         .sorted(Comparator.comparing(ParameterOption::getLabel))

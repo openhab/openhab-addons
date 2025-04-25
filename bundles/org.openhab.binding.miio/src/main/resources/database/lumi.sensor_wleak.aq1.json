@@ -1,0 +1,40 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.sensor_wleak.aq1"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 5,
+		"channels": [
+			{
+				"property": "leak",
+				"friendlyName": "Leaking",
+				"channel": "leak",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "log",
+				"friendlyName": "Device Log",
+				"channel": "log",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "/v2/user/getuserdevicedatatab [{\"limit\":10,\"timestamp\": $timestamp$,\"did\":\"$deviceId$\",\"type\":\"prop\",\"key\":\"device_log\"}]",
+				"transformation": "deviceDataTab",
+				"actions": [],
+				"category": "setting",
+				"tags": [
+					"Point"
+				],
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data"
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": false
+	}
+}

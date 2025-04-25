@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="freeboxos:player">
+
+		<instruction-set targetVersion="1">
+			<remove-channel id="uptime" groupIds="sysinfo"/>
+			<remove-channel id="ip-address" groupIds="sysinfo"/>
+			<remove-channel id="box-event" groupIds="sysinfo"/>
+		</instruction-set>
+
+	</thing-type>
+
+	<thing-type uid="freeboxos:active-player">
+
+		<instruction-set targetVersion="1">
+			<remove-channel id="ip-address" groupIds="sysinfo"/>
+			<update-channel id="box-event" groupIds="sysinfo">
+				<type>freeboxos:box-event</type>
+				<label>Player Event</label>
+				<description>Triggers when an event related to the Freebox player has been detected</description>
+			</update-channel>
+		</instruction-set>
+
+	</thing-type>
+
+	<thing-type uid="freeboxos:delta">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="sfp-present" groupIds="ftth">
+				<type>freeboxos:sfp-present</type>
+			</add-channel>
+			<add-channel id="sfp-alim-ok" groupIds="ftth">
+				<type>freeboxos:sfp-alim-ok</type>
+			</add-channel>
+			<add-channel id="sfp-has-power" groupIds="ftth">
+				<type>freeboxos:sfp-has-power</type>
+			</add-channel>
+			<add-channel id="sfp-has-signal" groupIds="ftth">
+				<type>freeboxos:sfp-has-signal</type>
+			</add-channel>
+			<add-channel id="link" groupIds="ftth">
+				<type>freeboxos:link</type>
+			</add-channel>
+			<add-channel id="sfp-pwr-tx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>TX Power</label>
+				<description>SFP Power in transmission</description>
+			</add-channel>
+			<add-channel id="sfp-pwr-rx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>RX Power</label>
+				<description>SFP Power in reception</description>
+			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+	<thing-type uid="freeboxos:revolution">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="sfp-present" groupIds="ftth">
+				<type>freeboxos:sfp-present</type>
+			</add-channel>
+			<add-channel id="sfp-alim-ok" groupIds="ftth">
+				<type>freeboxos:sfp-alim-ok</type>
+			</add-channel>
+			<add-channel id="sfp-has-power" groupIds="ftth">
+				<type>freeboxos:sfp-has-power</type>
+			</add-channel>
+			<add-channel id="sfp-has-signal" groupIds="ftth">
+				<type>freeboxos:sfp-has-signal</type>
+			</add-channel>
+			<add-channel id="link" groupIds="ftth">
+				<type>freeboxos:link</type>
+			</add-channel>
+			<add-channel id="sfp-pwr-tx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>TX Power</label>
+				<description>SFP Power in transmission</description>
+			</add-channel>
+			<add-channel id="sfp-pwr-rx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>RX Power</label>
+				<description>SFP Power in reception</description>
+			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+</update:update-descriptions>

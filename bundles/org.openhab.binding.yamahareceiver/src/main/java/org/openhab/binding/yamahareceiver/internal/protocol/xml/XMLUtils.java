@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class XMLUtils {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
 
     // We need a lot of xml parsing. Create a document builder beforehand.
-    static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    static final DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
 
     static Node getNode(Node parent, String[] nodePath, int offset) {
         if (parent == null) {
@@ -173,7 +173,13 @@ public class XMLUtils {
                 : "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
 
         try {
-            return XMLUtils.dbf.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            DBF.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            DBF.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            DBF.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            DBF.setXIncludeAware(false);
+            DBF.setExpandEntityReferences(false);
+            return DBF.newDocumentBuilder().parse(new InputSource(new StringReader(response)));
         } catch (SAXException | ParserConfigurationException e) {
             throw new ReceivedMessageParseException(e);
         }
@@ -181,7 +187,9 @@ public class XMLUtils {
 
     /**
      * Wraps the XML message with the zone tags. Example with zone=Main_Zone:
-     * <Main_Zone>message</Main_Zone>.
+     * {@code
+     * <Main_Zone>message</Main_Zone>
+     * }.
      *
      * @param message XML message
      * @return

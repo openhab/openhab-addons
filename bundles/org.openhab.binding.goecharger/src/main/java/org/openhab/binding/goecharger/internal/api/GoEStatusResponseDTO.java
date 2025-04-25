@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,51 +15,37 @@ package org.openhab.binding.goecharger.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEStatusResponse} class represents a json response from the
+ * The {@link GoEStatusResponseDTO} class represents a json response from the
  * charger.
  *
  * @author Samuel Brucksch - Initial contribution
+ * @author Reinhard Plaim - move some properties to base DTO
  */
-public class GoEStatusResponseDTO {
+public class GoEStatusResponseDTO extends GoEStatusResponseBaseDTO {
     @SerializedName("version")
     public String version;
-
-    @SerializedName("car")
-    public Integer pwmSignal;
-
-    @SerializedName("ast")
-    public Integer accessConfiguration;
-
-    @SerializedName("amp")
-    public Integer maxCurrent;
-
-    @SerializedName("nrg")
-    public Integer[] energy;
-
-    @SerializedName("err")
-    public Integer errorCode;
-
-    @SerializedName("alw")
-    public Integer allowCharging;
-
-    @SerializedName("cbl")
-    public Integer cableEncoding;
 
     @SerializedName("pha")
     public Integer phases;
 
+    @SerializedName("ast")
+    public Integer accessConfiguration;
+
+    @SerializedName("alw")
+    public Integer allowCharging;
+
     @SerializedName("tmp")
     public Integer temperature;
-
-    @SerializedName("dws")
-    public Long sessionChargeConsumption;
 
     @SerializedName("dwo")
     public Integer sessionChargeConsumptionLimit;
 
-    @SerializedName("eto")
-    public Long totalChargeConsumption;
+    @SerializedName("dws")
+    public Long sessionChargeConsumption;
 
-    @SerializedName("fwv")
-    public String firmware;
+    @SerializedName("amx")
+    public Integer maxCurrentTemporary;
+
+    @SerializedName("nrg")
+    public Integer[] energy;
 }

@@ -6,6 +6,7 @@
 	<bridge-type id="webservice">
 		<label>Tankerkönig Webservice</label>
 		<description>The Tankerkönig Webservice can handle 1 to 10 gas stations.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="holiday" typeId="holiday"/>
 		</channels>
@@ -15,9 +16,9 @@
 				<label>API-Key</label>
 				<description>API-Key. Necessary registration on the Tankerkönig website.</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="10" unit="min">
+			<parameter name="refresh" type="integer" min="5" unit="min">
 				<label>Refresh Time</label>
-				<description>Sets the refresh time. Minimum is 10 minutes.</description>
+				<description>Sets the refresh time. Minimum is 5 minutes.</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="modeOpeningTime" type="boolean">

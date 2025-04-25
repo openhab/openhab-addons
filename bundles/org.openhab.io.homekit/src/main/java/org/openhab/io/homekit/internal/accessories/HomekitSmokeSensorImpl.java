@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,16 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SMOKE_DETECTED_STATE;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmokeSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.smokesensor.SmokeDetectedStateEnum;
 import io.github.hapjava.services.impl.SmokeSensorService;
@@ -33,19 +34,25 @@ import io.github.hapjava.services.impl.SmokeSensorService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl implements SmokeSensorAccessory {
-    private final BooleanItemReader smokeDetectedReader;
+    private final Map<SmokeDetectedStateEnum, Object> mapping;
 
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        smokeDetectedReader = createBooleanReader(SMOKE_DETECTED_STATE, OnOffType.ON, OpenClosedType.OPEN);
-        this.getServices().add(new SmokeSensorService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        mapping = createMapping(SMOKE_DETECTED_STATE, SmokeDetectedStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SmokeSensorService(this));
     }
 
     @Override
     public CompletableFuture<SmokeDetectedStateEnum> getSmokeDetectedState() {
-        return CompletableFuture.completedFuture(
-                smokeDetectedReader.getValue() ? SmokeDetectedStateEnum.DETECTED : SmokeDetectedStateEnum.NOT_DETECTED);
+        return CompletableFuture
+                .completedFuture(getKeyFromMapping(SMOKE_DETECTED_STATE, mapping, SmokeDetectedStateEnum.NOT_DETECTED));
     }
 
     @Override

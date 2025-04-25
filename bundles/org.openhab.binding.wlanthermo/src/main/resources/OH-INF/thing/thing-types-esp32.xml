@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wlanthermo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="esp32">
+		<label>WlanThermo Mini V2, Nano V3, Link V1</label>
+		<description><![CDATA[ WlanThermo device with <b>ESP32 processor</b>, such as Mini V2 (ESP32), Nano V3, Link V1 ]]></description>
+
+		<channel-groups>
+			<channel-group id="system" typeId="cg_system_esp32"/>
+			<channel-group id="channel1" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 1</label>
+				<description>This group contains all channels for temperature probe 1</description>
+			</channel-group>
+			<channel-group id="channel2" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 2</label>
+				<description>This group contains all channels for temperature probe 2</description>
+			</channel-group>
+			<channel-group id="channel3" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 3</label>
+				<description>This group contains all channels for temperature probe 3</description>
+			</channel-group>
+			<channel-group id="channel4" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 4</label>
+				<description>This group contains all channels for temperature probe 4</description>
+			</channel-group>
+			<channel-group id="channel5" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 5</label>
+				<description>This group contains all channels for temperature probe 5</description>
+			</channel-group>
+			<channel-group id="channel6" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 6</label>
+				<description>This group contains all channels for temperature probe 6</description>
+			</channel-group>
+			<channel-group id="channel7" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 7</label>
+				<description>This group contains all channels for temperature probe 7</description>
+			</channel-group>
+			<channel-group id="channel8" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 8</label>
+				<description>This group contains all channels for temperature probe 8</description>
+			</channel-group>
+			<channel-group id="channel9" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 9</label>
+				<description>This group contains all channels for temperature probe 9</description>
+			</channel-group>
+			<channel-group id="channel10" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 10</label>
+				<description>This group contains all channels for temperature probe 10</description>
+			</channel-group>
+			<channel-group id="channel11" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 11</label>
+				<description>This group contains all channels for temperature probe 11</description>
+			</channel-group>
+			<channel-group id="channel12" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 12</label>
+				<description>This group contains all channels for temperature probe 12</description>
+			</channel-group>
+			<channel-group id="channel13" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 13</label>
+				<description>This group contains all channels for temperature probe 13</description>
+			</channel-group>
+			<channel-group id="channel14" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 14</label>
+				<description>This group contains all channels for temperature probe 14</description>
+			</channel-group>
+			<channel-group id="channel15" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 15</label>
+				<description>This group contains all channels for temperature probe 15</description>
+			</channel-group>
+			<channel-group id="channel16" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 16</label>
+				<description>This group contains all channels for temperature probe 16</description>
+			</channel-group>
+			<channel-group id="channel17" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 17</label>
+				<description>This group contains all channels for temperature probe 17</description>
+			</channel-group>
+			<channel-group id="channel18" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 18</label>
+				<description>This group contains all channels for temperature probe 18</description>
+			</channel-group>
+			<channel-group id="channel19" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 19</label>
+				<description>This group contains all channels for temperature probe 19</description>
+			</channel-group>
+			<channel-group id="channel20" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 20</label>
+				<description>This group contains all channels for temperature probe 20</description>
+			</channel-group>
+			<channel-group id="channel21" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 21</label>
+				<description>This group contains all channels for temperature probe 21</description>
+			</channel-group>
+			<channel-group id="channel22" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 22</label>
+				<description>This group contains all channels for temperature probe 22</description>
+			</channel-group>
+			<channel-group id="channel23" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 23</label>
+				<description>This group contains all channels for temperature probe 23</description>
+			</channel-group>
+			<channel-group id="channel24" typeId="cg_temperature_esp32">
+				<label>Temperature Probe 24</label>
+				<description>This group contains all channels for temperature probe 24</description>
+			</channel-group>
+			<channel-group id="pit1" typeId="cg_pitmaster_esp32">
+				<label>Pitmaster 1</label>
+				<description>This group contains all channels for pitmaster channel 1</description>
+			</channel-group>
+			<channel-group id="pit2" typeId="cg_pitmaster_esp32">
+				<label>Pitmaster 2</label>
+				<description>This group contains all channels for pitmaster channel 2</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="model">Model</property>
+			<property name="serial">Serial Number</property>
+			<property name="esp32_bt_enabled">Bluetooth available</property>
+			<property name="esp32_pm_enabled">Pitmaster available</property>
+			<property name="esp32_temp_channels">Temperature channels</property>
+			<property name="esp32_pm_channels">Pitmaster channels</property>
+		</properties>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the WlanThermo Nano.</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Optional, only required for write access. Default: 'admin'</description>
+				<default>admin</default>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Optional, only required for write access. Default: 'admin'</description>
+				<default>admin</default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s" required="true">
+				<label>Polling Interval</label>
+				<description>Seconds between fetching values from the WlanThermo Nano.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

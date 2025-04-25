@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:irobot:thing">
+		<parameter name="ipaddress" type="text">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>Network address of the robot</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="blid" type="text">
+			<label>Robot ID</label>
+			<description>ID of the robot</description>
+		</parameter>
+		<parameter name="password" type="text">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password of the robot</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

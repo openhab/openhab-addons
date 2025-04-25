@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.listener.SceneStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneTypes;
@@ -71,7 +70,7 @@ public class InternalScene {
             this.zoneID = zoneID;
         }
         this.internalSceneID = this.zoneID + "-" + this.groupID + "-" + this.sceneID;
-        if (StringUtils.isBlank(sceneName)) {
+        if (sceneName == null || sceneName.isBlank()) {
             this.sceneName = this.internalSceneID;
         } else {
             this.sceneName = sceneName;
@@ -123,7 +122,7 @@ public class InternalScene {
     }
 
     /**
-     * Will be called by a device, if an undo call of an other scene activated this scene.
+     * Will be called by a device, if an undo call of another scene activated this scene.
      */
     public void activateSceneByDevice() {
         logger.debug("activate scene by device: {}", this.getSceneName());
@@ -135,7 +134,7 @@ public class InternalScene {
     }
 
     /**
-     * Will be called by a device, if an call of an other scene deactivated this scene.
+     * Will be called by a device, if a call of another scene deactivated this scene.
      */
     public void deactivateSceneByDevice() {
         logger.debug("deactivate scene by device: {}", this.getSceneName());

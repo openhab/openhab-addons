@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,16 +21,31 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
+import org.openhab.binding.danfossairunit.internal.FixedTimeZoneProvider;
+import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +62,17 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
     private static final int BROADCAST_PORT = 30045;
     private static final byte[] DISCOVER_SEND = { 0x0c, 0x00, 0x30, 0x00, 0x11, 0x00, 0x12, 0x00, 0x13 };
     private static final byte[] DISCOVER_RECEIVE = { 0x0d, 0x00, 0x07, 0x00, 0x02, 0x02, 0x00 };
+    private static final int TIMEOUT_IN_SECONDS = 15;
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitDiscoveryService.class);
 
-    public DanfossAirUnitDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 15, true);
+    @Activate
+    public DanfossAirUnitDiscoveryService(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_IN_SECONDS, true);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -75,9 +96,9 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Try to discover all Danfoss Air CCM devices");
 
         try (DatagramSocket socket = new DatagramSocket()) {
-
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
+                @Nullable
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue;
@@ -91,7 +112,6 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
                     sendBroadcastToDiscoverThing(socket, interfaceAddress.getBroadcast());
                 }
             }
-
         } catch (IOException e) {
             logger.debug("No Danfoss Air CCM device found. Diagnostic: {}", e.getMessage());
         }
@@ -99,7 +119,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
 
     private void sendBroadcastToDiscoverThing(DatagramSocket socket, InetAddress broadcastAddress) throws IOException {
         socket.setBroadcast(true);
-        socket.setSoTimeout(500);
+        socket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
         // send discover
         byte[] sendBuffer = DISCOVER_SEND;
         DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, broadcastAddress, BROADCAST_PORT);
@@ -107,7 +127,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Discover message sent");
 
         // wait for responses
-        while (true) {
+        while (!Thread.interrupted()) {
             byte[] receiveBuffer = new byte[7];
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             try {
@@ -120,20 +140,40 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
             if (Arrays.equals(data, DISCOVER_RECEIVE)) {
                 logger.debug("Discover received correct response");
 
-                String host = receivePacket.getAddress().getHostName();
-                Map<String, Object> properties = new HashMap<>();
-                properties.put("host", host);
+                InetAddress address = receivePacket.getAddress();
+                String host = address.getHostName();
+                String serialNumber = getSerialNumber(address);
+
+                if (serialNumber == null) {
+                    logger.debug("Unable to get serial number from Danfoss Air Unit CCM '{}'", host);
+                    continue;
+                }
+
+                Map<String, Object> properties = new HashMap<>(2);
+                properties.put(PARAMETER_HOST, host);
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
 
                 logger.debug("Adding a new Danfoss Air Unit CCM '{}' to inbox", host);
 
-                ThingUID uid = new ThingUID(THING_TYPE_AIRUNIT, String.valueOf(receivePacket.getAddress().hashCode()));
-
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty("host")
-                        .withProperties(properties).withLabel("Danfoss HRV").build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIRUNIT, serialNumber))
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withProperties(properties)
+                        .withLabel("@text/discovery.danfossairunit.label").build();
                 thingDiscovered(result);
 
                 logger.debug("Thing discovered '{}'", result);
             }
+        }
+    }
+
+    private @Nullable String getSerialNumber(InetAddress address) {
+        var controller = new DanfossAirUnitCommunicationController(address, SOCKET_TIMEOUT_MILLISECONDS);
+        var unit = new DanfossAirUnit(controller, FixedTimeZoneProvider.of(ZoneId.of("UTC")));
+        try {
+            return unit.getUnitSerialNumber();
+        } catch (IOException | UnexpectedResponseValueException e) {
+            return null;
+        } finally {
+            controller.disconnect();
         }
     }
 }

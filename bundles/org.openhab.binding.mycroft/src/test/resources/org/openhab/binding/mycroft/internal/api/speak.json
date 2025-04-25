@@ -1,0 +1,1 @@
+{"type": "speak", "data": {"utterance": "coucou", "expect_response": false, "meta": {"skill": "SpeakSkill"}, "is_error": false}, "context": {"client_name": "mycroft_cli", "source": ["skills"], "destination": "debug_cli"}}

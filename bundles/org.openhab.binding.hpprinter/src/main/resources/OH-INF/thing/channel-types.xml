@@ -7,6 +7,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ink Level</label>
 		<description>Shows the amount of Ink/Toner remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%f %%"/>
 	</channel-type>
 
@@ -14,6 +18,9 @@
 		<item-type>Number</item-type>
 		<label>Totals</label>
 		<description>Amount of pages.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -21,6 +28,9 @@
 		<item-type>Number</item-type>
 		<label>Totals</label>
 		<description>Amount of pages.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -28,6 +38,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Marking Used</label>
 		<description>Shows the amount of Ink/Toner used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%f mL"/>
 	</channel-type>
 
@@ -35,7 +49,23 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Printer Status</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ready">Idle</option>
+				<option value="processing">Printing</option>
+				<option value="scanProcessing">Scanning</option>
+				<option value="inPowerSave">Power Save</option>
+				<option value="initializing">Initializing</option>
+				<option value="closeDoorOrCover">Door/Cover</option>
+				<option value="inkSystemInitializing">Loading Ink</option>
+				<option value="shuttingDown">Shutting Down</option>
+				<option value="replaceCartridgeOut">Cartridge Depleted</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="readonlyswitch" advanced="true">

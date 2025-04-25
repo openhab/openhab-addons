@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.mqtt.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
@@ -27,8 +27,11 @@ import org.openhab.binding.mqtt.internal.action.MQTTActions;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -37,8 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This base implementation handles connection changes of the {@link MqttBrokerConnection}
- * and puts the Thing on or offline. It also handles adding/removing notifications of the
- * {@link MqttService} and provides a basic dispose() implementation.
+ * and puts the Thing on or offline. It also provides a basic dispose() implementation.
  *
  * @author David Graeff - Initial contribution
  */
@@ -59,7 +61,7 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MQTTActions.class);
+        return Set.of(MQTTActions.class);
     }
 
     /**
@@ -110,8 +112,6 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
         }).thenAccept(v -> {
             if (!v) {
                 connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
-            } else {
-                connectionStateChanged(MqttConnectionState.CONNECTED, null);
             }
         });
         connectionFuture.complete(connection);
@@ -226,28 +226,27 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      * @param topic the topic (as specified during registration)
      */
     public final void unregisterDiscoveryListener(MQTTTopicDiscoveryParticipant listener, String topic) {
-        Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics.compute(topic,
-                (k, v) -> {
-                    if (v == null) {
-                        logger.warn(
-                                "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered at all. Check discovery logic!",
-                                listener, topic, thing.getUID());
-                        return null;
-                    }
-                    v.compute(listener, (l, w) -> {
-                        if (w == null) {
-                            logger.warn(
-                                    "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered for listener. Check discovery logic!",
-                                    listener, topic, thing.getUID());
-                        } else {
-                            w.stop();
-                            logger.trace("Unsubscribed {} from discovery topic {} on broker {}", listener, topic,
-                                    thing.getUID());
-                        }
-                        return null;
-                    });
-                    return v.isEmpty() ? null : v;
-                });
+        discoveryTopics.compute(topic, (k, v) -> {
+            if (v == null) {
+                logger.warn(
+                        "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered at all. Check discovery logic!",
+                        listener, topic, thing.getUID());
+                return null;
+            }
+            v.compute(listener, (l, w) -> {
+                if (w == null) {
+                    logger.warn(
+                            "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered for listener. Check discovery logic!",
+                            listener, topic, thing.getUID());
+                } else {
+                    w.stop();
+                    logger.trace("Unsubscribed {} from discovery topic {} on broker {}", listener, topic,
+                            thing.getUID());
+                }
+                return null;
+            });
+            return v.isEmpty() ? null : v;
+        });
     }
 
     /**

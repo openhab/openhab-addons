@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:rustpotterks">
+		<parameter-group name="wakewordDetector">
+			<label>Wakeword Detector</label>
+			<description>Wakeword detection options.</description>
+		</parameter-group>
+		<parameter-group name="filters">
+			<label>Audio Filters</label>
+			<description>Optional audio filter options.</description>
+		</parameter-group>
+		<parameter name="threshold" type="decimal" min="0" max="1" step="0.001" groupName="wakewordDetector">
+			<label>Threshold</label>
+			<description>Configures the detector threshold, is the min score (in range 0. to 1.) to trigger the detection.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="averagedThreshold" type="decimal" min="0" max="1" step="0.001" groupName="wakewordDetector">
+			<label>Averaged Threshold</label>
+			<description>Configures the detector averaged threshold. If set to 0 this functionality is disabled.</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="scoreMode" type="text" groupName="wakewordDetector">
+			<label>Score Mode</label>
+			<description>Indicates how to calculate the final score. Not affect to wakeword models.</description>
+			<default>max</default>
+			<advanced>true</advanced>
+			<options>
+				<option value="average">Average</option>
+				<option value="max">Max</option>
+				<option value="median">Median</option>
+				<option value="p25">P25</option>
+				<option value="p50">P50</option>
+				<option value="p75">P75</option>
+				<option value="p80">P80</option>
+				<option value="p90">P90</option>
+				<option value="p95">P95</option>
+			</options>
+		</parameter>
+		<parameter name="vadMode" type="text" groupName="wakewordDetector">
+			<label>VAD Mode</label>
+			<description>Enables a basic vad detector to discard some execution.</description>
+			<advanced>true</advanced>
+			<options>
+				<option value="off">Off</option>
+				<option value="easy">Easy</option>
+				<option value="medium">Medium</option>
+				<option value="hard">Hard</option>
+			</options>
+			<default>off</default>
+		</parameter>
+		<parameter name="minScores" type="integer" groupName="wakewordDetector">
+			<label>Min Scores</label>
+			<description>Minimum number of positive scores to consider a partial detection as a detection.</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="eager" type="boolean" groupName="wakewordDetector">
+			<label>Eager</label>
+			<description>Emit detection on min partial scores.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="scoreRef" type="decimal" min="0" max="1" groupName="wakewordDetector">
+			<label>Score Ref</label>
+			<description>Value used to calculate the score as a percent in range 0 - 1.</description>
+			<default>0.22</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="bandSize" type="integer" groupName="wakewordDetector">
+			<label>Band Size</label>
+			<description>Configures the band-size for the comparator used to match the wakeword refs. Not affect to wakeword
+				models.</description>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="record" type="boolean" groupName="wakewordDetector">
+			<label>Record on Partial Detections</label>
+			<description>Create wav record on the first partial detections and any other one that surpasses its score.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="gainNormalizer" type="boolean" groupName="filters">
+			<label>Gain Normalizer</label>
+			<description> Enables an audio filter that intent to approximate the volume of the stream to a reference level (RMS
+				of the samples is used as volume measure).</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="minGain" type="decimal" min="0.1" max="1" step="0.1" groupName="filters">
+			<label>Min Gain</label>
+			<description>Min gain applied by the gain normalizer filter.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="maxGain" type="decimal" min="0.1" max="1" step="0.1" groupName="filters">
+			<label>Max Gain</label>
+			<description>Max gain applied by the gain normalizer filter.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="gainRef" type="decimal" min="0" max="1" step="0.0001" groupName="filters">
+			<label>Gain Ref</label>
+			<description>Set the RMS reference used by the gain-normalizer to calculate the gain applied. If unset an estimation
+				of the wakeword level is used.</description>
+		</parameter>
+		<parameter name="bandPass" type="boolean" groupName="filters">
+			<label>Band Pass</label>
+			<description>Enables an audio filter that attenuates frequencies outside the low cutoff and high cutoff range.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="lowCutoff" type="decimal" min="0" groupName="filters">
+			<label>Low Cutoff</label>
+			<description>Low cutoff for the band-pass filter.</description>
+			<default>80</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="highCutoff" type="decimal" min="0" groupName="filters">
+			<label>High Cutoff</label>
+			<description>High cutoff for the band-pass filter.</description>
+			<default>400</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

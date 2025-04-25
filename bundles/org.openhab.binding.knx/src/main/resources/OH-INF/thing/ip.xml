@@ -8,14 +8,22 @@
 		<label>KNX/IP Gateway</label>
 		<description>This is a KNX IP interface or router</description>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
-			<parameter name="type" type="text">
+			<parameter-group name="knxsecure">
+				<label>KNX secure</label>
+				<description>Settings for KNX secure. Optional. Requires KNX secure features to be active in KNX installation.</description>
+			</parameter-group>
+			<parameter name="type" type="text" required="true">
 				<label>IP Connection Type</label>
-				<description>The ip connection type for connecting to the KNX bus. Could be either TUNNEL or ROUTER</description>
-				<required>true</required>
+				<description>The IP connection type for connecting to the KNX bus. Could be either TUNNEL, ROUTER, SECURETUNNEL, or
+					SECUREROUTER</description>
 				<options>
 					<option value="TUNNEL">Tunnel</option>
 					<option value="ROUTER">Router</option>
+					<option value="SECURETUNNEL">Secure tunnel (experimental, use advanced options to configure)</option>
+					<option value="SECUREROUTER">Secure router (experimental, use advanced options to configure)</option>
 				</options>
 			</parameter>
 			<parameter name="ipAddress" type="text">
@@ -23,9 +31,8 @@
 				<description>Network address of the KNX/IP gateway</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="portNumber" type="integer">
+			<parameter name="portNumber" type="integer" required="false"> <!-- Only required in TUNNEL mode -->
 				<description>Port number of the KNX/IP gateway</description>
-				<required>false</required> <!-- Only required in TUNNEL mode -->
 				<label>Port</label>
 				<default>3671</default>
 			</parameter>
@@ -36,7 +43,7 @@
 			</parameter>
 			<parameter name="localSourceAddr" type="text">
 				<label>Local Device Address</label>
-				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this KNX/IP gateway
+				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this openHAB Thing
 					within the KNX bus</description>
 				<default>0.0.0</default>
 			</parameter>
@@ -65,6 +72,63 @@
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
+			</parameter>
+			<parameter name="keyringFile" type="text" groupName="knxsecure">
+				<label>Keyring file</label>
+				<description>Keyring file exported from ETS and placed in openHAB config/misc folder, e.g.
+					knx.knxkeys. This file is
+					mandatory to decode secure group addresses. It can provide settings
+					and credentials for IP Secure if not configured
+					separately.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keyringPassword" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Keyring password</label>
+				<description>Keyring file password (set during export from ETS).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="routerBackboneKey" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Router backbone key</label>
+				<description>Backbone key for secure router mode. 16 bytes
+					in hex notation. Can also be found
+					in ETS security report.
+					Optional, can be read from
+					keyring file if it is configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelSourceAddress" type="text" groupName="knxsecure">
+				<label>Tunnel source address</label>
+				<description>Physical KNX address of tunnel in secure mode. Optional, only used in combination
+					with keyring file to
+					uniquely identify a tunnel. If given, openHAB will try to read user id, user
+					password and device authentication from
+					keyring.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelUserId" type="text" groupName="knxsecure">
+				<label>Tunnel user id</label>
+				<description>Tunnel user id for secure tunnel mode. Optional, can be read from
+					keyring file if tunnelSourceAddr is
+					configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelUserPassword" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Tunnel user password</label>
+				<description>Tunnel user key for secure tunnel mode. Optional, can be read from
+					keyring file if tunnelSourceAddr is
+					configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelDeviceAuthentication" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Tunnel device authentication</label>
+				<description>Tunnel device authentication for secure tunnel mode. Optional, can be read from
+					keyring file if
+					tunnelSourceAddr is configured.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

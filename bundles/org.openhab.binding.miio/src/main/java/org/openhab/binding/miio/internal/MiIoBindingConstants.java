@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,15 +36,18 @@ public final class MiIoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "generic");
     public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
+    public static final ThingTypeUID THING_TYPE_LUMI = new ThingTypeUID(BINDING_ID, "lumi");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY,
+                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
+            Stream.of(THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -58,6 +61,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
     public static final String CHANNEL_STATE = "status#state";
     public static final String CHANNEL_STATE_ID = "status#state_id";
+    public static final String CHANNEL_DOCK_STATE = "status#dock_state";
+    public static final String CHANNEL_DOCK_STATE_ID = "status#dock_state_id";
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
@@ -65,6 +70,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
+    public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
 
     public static final String CHANNEL_SSID = "network#ssid";
@@ -90,12 +96,16 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
     public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
 
+    public static final String CHANNEL_MOP_TOTALDRYTIME = "status#mop_drying_time";
+
     public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last_clean_start_time";
     public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last_clean_end_time";
     public static final String CHANNEL_HISTORY_AREA = "cleaning#last_clean_area";
     public static final String CHANNEL_HISTORY_DURATION = "cleaning#last_clean_duration";
     public static final String CHANNEL_HISTORY_ERROR = "cleaning#last_clean_error";
     public static final String CHANNEL_HISTORY_FINISH = "cleaning#last_clean_finish";
+    public static final String CHANNEL_HISTORY_FINISHREASON = "cleaning#last_clean_finish_reason";
+    public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last_clean_dustcollection_status";
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
@@ -122,4 +132,8 @@ public final class MiIoBindingConstants {
             + File.separator + BINDING_ID;
     public static final String BINDING_USERDATA_PATH = OpenHAB.getUserDataFolder() + File.separator
             + MiIoBindingConstants.BINDING_ID;
+
+    public static final String I18N_THING_PREFIX = "thing.";
+    public static final String I18N_CHANNEL_PREFIX = "ch.";
+    public static final String I18N_OPTION_PREFIX = "option.";
 }

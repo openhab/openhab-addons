@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.MqttBindingConstants;
 import org.openhab.core.thing.ThingUID;
 
@@ -20,26 +21,24 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class MqttThingID {
     /**
      * Convert the url (tcp://122.123.111.123:1883) to a version without colons, dots or slashes
      * for creating a ThingUID with that string (tcp_122_123_111_123_1883).
      */
     public static String getThingID(String host, int port) {
-        return host.replace('.', '_').replace("://", "_") + "_" + String.valueOf(port);
+        return host.replace('.', '_').replace("://", "_") + "_" + port;
     }
 
     /**
      * Creates a normal broker thing with an url that will be converted to a thing ID.
      *
-     * @param url The broker connection url
+     * @param host The broker connection (host name)
+     * @param port The port
      * @return Returns a ThingUID
      */
     public static ThingUID getThingUID(String host, int port) {
         return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_BROKER, getThingID(host, port));
-    }
-
-    public static ThingUID getTextualThingUID(String host, int port) {
-        return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, getThingID(host, port));
     }
 }

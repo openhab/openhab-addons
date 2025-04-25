@@ -8,6 +8,7 @@
 	<thing-type id="audiogroup">
 		<label>Chromecast Audio Group</label>
 		<description>A Google Chromecast Audio Group device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
@@ -58,6 +59,7 @@
 	<thing-type id="audio">
 		<label>Chromecast Audio</label>
 		<description>A Google Chromecast Audio device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
@@ -108,6 +110,7 @@
 	<thing-type id="chromecast">
 		<label>Chromecast</label>
 		<description>A Google Chromecast streaming device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
@@ -244,7 +247,8 @@
 		<item-type>DateTime</item-type>
 		<label>Broadcast Date</label>
 		<description>The broadcast date of the currently playing media</description>
-		<state readOnly="true"/>
+		<category>Calendar</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
 	<channel-type id="composer" advanced="true">
@@ -258,7 +262,8 @@
 		<item-type>DateTime</item-type>
 		<label>Creation Date</label>
 		<description>The creation date of the currently playing media</description>
-		<state readOnly="true"/>
+		<category>Calendar</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
 	<channel-type id="discNumber" advanced="true">
@@ -300,7 +305,8 @@
 		<item-type>DateTime</item-type>
 		<label>Release Date</label>
 		<description>The release date of the currently playing media</description>
-		<state readOnly="true"/>
+		<category>Calendar</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
 	<channel-type id="seasonNumber" advanced="true">

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.internal.MeterValue;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the Negate Bit property for a specific meter value.
@@ -31,7 +32,7 @@ public class NegateHandler {
      * Gets whether negation should be applied for the given <code>negateProperty</code> and the {@link MeterValue}
      * provided by the <code>getObisValueFunction</code>
      *
-     * @param negateProperty The negate property (in form <OBIS>:<POSITION>:<BIT_SET>)
+     * @param negateProperty The negate property (in form {@code <OBIS>:<POSITION>:<BIT_SET>})
      * @param getObisValueFunction The function to get the {@link MeterValue} from an OBIS code.
      * @return whether to negate or not.
      */
@@ -64,7 +65,14 @@ public class NegateHandler {
      * @return Whether the given bit is set or not
      */
     public static boolean isNegateSet(String value, int negatePosition) {
-        long longValue = Long.parseLong(value);
+        long longValue = 0;
+        try {
+            longValue = (long) Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            LoggerFactory.getLogger(NegateHandler.class)
+                    .warn("Failed to parse value: {} when determining isNegateSet, assuming false", value);
+            return false;
+        }
         return (longValue & (1L << negatePosition)) != 0;
     }
 }

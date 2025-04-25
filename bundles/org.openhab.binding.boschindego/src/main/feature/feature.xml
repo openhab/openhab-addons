@@ -4,10 +4,6 @@
 
 	<feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab.tp-jackson</feature>
-		<bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
-		<bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
-		<bundle dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.boschindego/${project.version}</bundle>
 	</feature>
 </features>

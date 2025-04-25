@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import java.awt.Color;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -70,6 +71,23 @@ public class ActionConditions {
     }
 
     /**
+     * Convert HSV value to RGB+Brightness
+     *
+     * @param value
+     * @return RGB value + brightness as first byte
+     */
+    private static @Nullable JsonElement hsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
+        if (command instanceof HSBType) {
+            HSBType hsb = (HSBType) command;
+            Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360, hsb.getSaturation().floatValue() / 100,
+                    hsb.getBrightness().floatValue() / 100);
+            return new JsonPrimitive((hsb.getBrightness().byteValue() << 24) + (color.getRed() << 16)
+                    + (color.getGreen() << 8) + color.getBlue());
+        }
+        return null;
+    }
+
+    /**
      * Check if the value is a valid brightness between 1-100 which can be send to brightness channel.
      * If not returns a null
      *
@@ -101,7 +119,7 @@ public class ActionConditions {
      * @return
      */
     private static @Nullable JsonElement hsbOnly(@Nullable Command command, @Nullable JsonElement value) {
-        if (command != null && command instanceof HSBType) {
+        if (command instanceof HSBType) {
             return value;
         }
         return null;
@@ -152,6 +170,8 @@ public class ActionConditions {
                 return firmwareCheck(condition, deviceVariables, value);
             case "BRIGHTNESSEXISTING":
                 return brightnessExists(value);
+            case "HSVTOBRGB":
+                return hsvToBRGB(command, value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
             case "HSBONLY":

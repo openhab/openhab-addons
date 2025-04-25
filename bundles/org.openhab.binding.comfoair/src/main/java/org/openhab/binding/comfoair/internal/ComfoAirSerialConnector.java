@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class ComfoAirSerialConnector {
     /**
      * Open serial port.
      *
-     * @throws PortInUseException, UnsupportedCommOperationException, IOException
+     * @throws ComfoAirSerialException
      */
     public void open() throws ComfoAirSerialException {
         logger.debug("open(): Opening ComfoAir connection");
@@ -79,9 +79,19 @@ public class ComfoAirSerialConnector {
                 SerialPort serialPort = portIdentifier.open(this.getClass().getName(), 3000);
                 serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-                serialPort.enableReceiveThreshold(1);
-                serialPort.enableReceiveTimeout(1000);
                 serialPort.notifyOnDataAvailable(true);
+
+                try {
+                    serialPort.enableReceiveThreshold(1);
+                } catch (UnsupportedCommOperationException e) {
+                    logger.debug("Enable receive threshold is unsupported");
+                }
+                try {
+                    serialPort.enableReceiveTimeout(1000);
+                } catch (UnsupportedCommOperationException e) {
+                    logger.debug("Enable receive timeout is unsupported");
+                }
+
                 this.serialPort = serialPort;
 
                 inputStream = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
@@ -511,7 +521,9 @@ public class ComfoAirSerialConnector {
 
                     if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
                         System.arraycopy(preRequestData, 0, newRequestData, 0, 6);
-                        System.arraycopy(preRequestData, 10, newRequestData, 6, newRequestData.length - 6);
+                        if (preRequestData.length > 10) {
+                            System.arraycopy(preRequestData, 10, newRequestData, 6, newRequestData.length - 6);
+                        }
                         newRequestData[dataPosition] = requestValue;
                     } else {
                         return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;

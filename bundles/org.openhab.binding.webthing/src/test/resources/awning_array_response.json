@@ -1,0 +1,394 @@
+[
+  {
+    "id":"urn:dev:ops:anwing-TB6612FNG",
+    "title":"Awning lane1",
+    "@context":"https://iot.mozilla.org/schemas",
+    "properties":{
+      "target_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane1 target position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "description":"awning lane1 target position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/0/properties/target_position"
+          }
+        ]
+      },
+      "current_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane1 current position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "readOnly":true,
+        "description":"awning lane1 current position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/0/properties/current_position"
+          }
+        ]
+      },
+      "retracting":{
+        "@type":"BooleanProperty",
+        "title":"lane1 is retracting",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane1 is retracting",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/0/properties/retracting"
+          }
+        ]
+      },
+      "extending":{
+        "@type":"BooleanProperty",
+        "title":"lane1 is extending",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane1 is extending",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/0/properties/extending"
+          }
+        ]
+      }
+    },
+    "actions":{
+
+    },
+    "events":{
+
+    },
+    "links":[
+      {
+        "rel":"properties",
+        "href":"/0/properties"
+      },
+      {
+        "rel":"actions",
+        "href":"/0/actions"
+      },
+      {
+        "rel":"events",
+        "href":"/0/events"
+      },
+      {
+        "rel":"alternate",
+        "href":"ws://192.168.4.12:9040/0"
+      }
+    ],
+    "description":"A web connected patio awnings controller on Raspberry Pi",
+    "@type":[
+      "MultiLevelSensor"
+    ],
+    "href":"/0",
+    "base":"http://192.168.4.12:9040/0",
+    "securityDefinitions":{
+      "nosec_sc":{
+        "scheme":"nosec"
+      }
+    },
+    "security":"nosec_sc"
+  },
+  {
+    "id":"urn:dev:ops:anwing-TB6612FNG",
+    "title":"Awning lane2",
+    "@context":"https://iot.mozilla.org/schemas",
+    "properties":{
+      "target_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane2 target position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "description":"awning lane2 target position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/1/properties/target_position"
+          }
+        ]
+      },
+      "current_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane2 current position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "readOnly":true,
+        "description":"awning lane2 current position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/1/properties/current_position"
+          }
+        ]
+      },
+      "retracting":{
+        "@type":"BooleanProperty",
+        "title":"lane2 is retracting",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane2 is retracting",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/1/properties/retracting"
+          }
+        ]
+      },
+      "extending":{
+        "@type":"BooleanProperty",
+        "title":"lane2 is extending",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane2 is extending",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/1/properties/extending"
+          }
+        ]
+      }
+    },
+    "actions":{
+
+    },
+    "events":{
+
+    },
+    "links":[
+      {
+        "rel":"properties",
+        "href":"/1/properties"
+      },
+      {
+        "rel":"actions",
+        "href":"/1/actions"
+      },
+      {
+        "rel":"events",
+        "href":"/1/events"
+      },
+      {
+        "rel":"alternate",
+        "href":"ws://192.168.4.12:9040/1"
+      }
+    ],
+    "description":"A web connected patio awnings controller on Raspberry Pi",
+    "@type":[
+      "MultiLevelSensor"
+    ],
+    "href":"/1",
+    "base":"http://192.168.4.12:9040/1",
+    "securityDefinitions":{
+      "nosec_sc":{
+        "scheme":"nosec"
+      }
+    },
+    "security":"nosec_sc"
+  },
+  {
+    "id":"urn:dev:ops:anwing-TB6612FNG",
+    "title":"Awning lane3",
+    "@context":"https://iot.mozilla.org/schemas",
+    "properties":{
+      "target_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane3 target position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "description":"awning lane3 target position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/2/properties/target_position"
+          }
+        ]
+      },
+      "current_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane3 current position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "readOnly":true,
+        "description":"awning lane3 current position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/2/properties/current_position"
+          }
+        ]
+      },
+      "retracting":{
+        "@type":"BooleanProperty",
+        "title":"lane3 is retracting",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane3 is retracting",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/2/properties/retracting"
+          }
+        ]
+      },
+      "extending":{
+        "@type":"BooleanProperty",
+        "title":"lane3 is extending",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane3 is extending",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/2/properties/extending"
+          }
+        ]
+      }
+    },
+    "actions":{
+
+    },
+    "events":{
+
+    },
+    "links":[
+      {
+        "rel":"properties",
+        "href":"/2/properties"
+      },
+      {
+        "rel":"actions",
+        "href":"/2/actions"
+      },
+      {
+        "rel":"events",
+        "href":"/2/events"
+      },
+      {
+        "rel":"alternate",
+        "href":"ws://192.168.4.12:9040/2"
+      }
+    ],
+    "description":"A web connected patio awnings controller on Raspberry Pi",
+    "@type":[
+      "MultiLevelSensor"
+    ],
+    "href":"/2",
+    "base":"http://192.168.4.12:9040/2",
+    "securityDefinitions":{
+      "nosec_sc":{
+        "scheme":"nosec"
+      }
+    },
+    "security":"nosec_sc"
+  },
+  {
+    "id":"urn:dev:ops:anwing-TB6612FNG",
+    "title":"Awning lane4",
+    "@context":"https://iot.mozilla.org/schemas",
+    "properties":{
+      "target_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane4 target position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "description":"awning lane4 target position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/3/properties/target_position"
+          }
+        ]
+      },
+      "current_position":{
+        "@type":"LevelProperty",
+        "title":"awning lane4 current position",
+        "type":"integer",
+        "minimum":0,
+        "maximum":100,
+        "readOnly":true,
+        "description":"awning lane4 current position",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/3/properties/current_position"
+          }
+        ]
+      },
+      "retracting":{
+        "@type":"BooleanProperty",
+        "title":"lane4 is retracting",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane4 is retracting",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/3/properties/retracting"
+          }
+        ]
+      },
+      "extending":{
+        "@type":"BooleanProperty",
+        "title":"lane4 is extending",
+        "type":"boolean",
+        "readOnly":true,
+        "description":"lane4 is extending",
+        "links":[
+          {
+            "rel":"property",
+            "href":"/3/properties/extending"
+          }
+        ]
+      }
+    },
+    "actions":{
+
+    },
+    "events":{
+
+    },
+    "links":[
+      {
+        "rel":"properties",
+        "href":"/3/properties"
+      },
+      {
+        "rel":"actions",
+        "href":"/3/actions"
+      },
+      {
+        "rel":"events",
+        "href":"/3/events"
+      },
+      {
+        "rel":"alternate",
+        "href":"ws://192.168.4.12:9040/3"
+      }
+    ],
+    "description":"A web connected patio awnings controller on Raspberry Pi",
+    "@type":[
+      "MultiLevelSensor"
+    ],
+    "href":"/3",
+    "base":"http://192.168.4.12:9040/3",
+    "securityDefinitions":{
+      "nosec_sc":{
+        "scheme":"nosec"
+      }
+    },
+    "security":"nosec_sc"
+  }
+]

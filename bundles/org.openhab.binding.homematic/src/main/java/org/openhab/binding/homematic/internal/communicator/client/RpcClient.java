@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -34,6 +40,7 @@ import org.openhab.binding.homematic.internal.communicator.parser.HomegearLoadDe
 import org.openhab.binding.homematic.internal.communicator.parser.ListBidcosInterfacesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.RssiInfoParser;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -41,6 +48,7 @@ import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmRssiInfo;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +61,17 @@ public abstract class RpcClient<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 3;
     protected static final int RESP_BUFFER_SIZE = 8192;
+    private static final int INITIAL_CALLBACK_REG_DELAY = 20; // 20 s before first attempt
+    private static final int CALLBACK_REG_DELAY = 10; // 10 s between two attempts
 
     protected HomematicConfig config;
+    private String thisUID = UUID.randomUUID().toString();
+    private ScheduledFuture<?> future = null;
+    private int attempt;
 
     public RpcClient(HomematicConfig config) {
         this.config = config;
     }
-
-    /**
-     * Disposes the client.
-     */
-    public abstract void dispose();
 
     /**
      * Returns a RpcRequest for this client.
@@ -83,14 +91,49 @@ public abstract class RpcClient<T> {
     /**
      * Register a callback for the specified interface where the Homematic gateway can send its events.
      */
-    public void init(HmInterface hmInterface, String clientId) throws IOException {
+    public void init(HmInterface hmInterface) throws IOException {
+        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
-        request.addArg(clientId);
+        request.addArg(thisUID);
         if (config.getGatewayInfo().isHomegear()) {
-            request.addArg(new Integer(0x22));
+            request.addArg(Integer.valueOf(0x22));
         }
-        sendMessage(config.getRpcPort(hmInterface), request);
+        logger.debug("Register callback for interface {}", hmInterface.getName());
+        try {
+            attempt = 1;
+            sendMessage(config.getRpcPort(hmInterface), request); // first attempt without delay
+        } catch (IOException e) {
+            future = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
+                try {
+                    sendMessage(config.getRpcPort(hmInterface), request);
+                    future.cancel(true);
+                } catch (IOException ex) {
+                    // Ignore, retry
+                }
+            }, INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY, TimeUnit.SECONDS);
+            try {
+                future.get(config.getCallbackRegTimeout(), TimeUnit.SECONDS);
+            } catch (CancellationException e1) {
+                logger.debug("Callback for interface {} successfully registered", hmInterface.getName());
+            } catch (InterruptedException | ExecutionException e1) {
+                throw new IOException("Callback reg. thread interrupted", e1);
+            } catch (TimeoutException e1) {
+                logger.error("Callback registration for interface {} timed out", hmInterface.getName());
+                throw new IOException("Unable to reconnect in time");
+            }
+            future = null;
+        }
+    }
+
+    /**
+     * Disposes the client.
+     */
+    public void dispose() {
+        if (future != null) {
+            future.cancel(true);
+        }
     }
 
     /**
@@ -233,7 +276,7 @@ public abstract class RpcClient<T> {
 
         try {
             ddParser = getDeviceDescription(HmInterface.RF);
-            isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
+            isHomegear = "Homegear".equalsIgnoreCase(ddParser.getType());
         } catch (IOException ex) {
             // can't load gateway infos via RF interface
             ddParser = new GetDeviceDescriptionParser();
@@ -247,21 +290,23 @@ public abstract class RpcClient<T> {
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();
         gatewayInfo.setAddress(biParser.getGatewayAddress());
+        String gwType = biParser.getType();
         if (isHomegear) {
             gatewayInfo.setId(HmGatewayInfo.ID_HOMEGEAR);
             gatewayInfo.setType(ddParser.getType());
             gatewayInfo.setFirmware(ddParser.getFirmware());
-        } else if ((StringUtils.startsWithIgnoreCase(biParser.getType(), "CCU")
-                || StringUtils.startsWithIgnoreCase(biParser.getType(), "HMIP_CCU")
-                || StringUtils.startsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
+        } else if ((MiscUtils.strStartsWithIgnoreCase(gwType, "CCU")
+                || MiscUtils.strStartsWithIgnoreCase(gwType, "HMIP_CCU")
+                || MiscUtils.strStartsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
                 && !config.isNoCCUType()) {
             gatewayInfo.setId(HmGatewayInfo.ID_CCU);
-            String type = StringUtils.isBlank(biParser.getType()) ? "CCU" : biParser.getType();
+            String type = gwType.isBlank() ? "CCU" : gwType;
             gatewayInfo.setType(type);
-            gatewayInfo.setFirmware(ddParser.getFirmware() != null ? ddParser.getFirmware() : biParser.getFirmware());
+            gatewayInfo
+                    .setFirmware(!ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware());
         } else {
             gatewayInfo.setId(HmGatewayInfo.ID_DEFAULT);
-            gatewayInfo.setType(biParser.getType());
+            gatewayInfo.setType(gwType);
             gatewayInfo.setFirmware(biParser.getFirmware());
         }
 

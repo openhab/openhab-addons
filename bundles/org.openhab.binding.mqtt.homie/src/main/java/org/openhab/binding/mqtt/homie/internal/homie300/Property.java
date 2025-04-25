@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,22 +14,26 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
+import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -37,16 +41,22 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
+import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,9 +76,11 @@ public class Property implements AttributeChanged {
     // Runtime state
     protected @Nullable ChannelState channelState;
     public final ChannelUID channelUID;
-    public final ChannelTypeUID channelTypeUID;
-    private ChannelType type;
-    private Channel channel;
+    public ChannelTypeUID channelTypeUID;
+    private @Nullable ChannelType channelType = null;
+    private @Nullable ChannelDefinition channelDefinition = null;
+    private @Nullable StateDescription stateDescription = null;
+    private @Nullable CommandDescription commandDescription = null;
     private final String topic;
     private final DeviceCallback callback;
     protected boolean initialized = false;
@@ -88,14 +100,15 @@ public class Property implements AttributeChanged {
         this.parentNode = node;
         this.propertyID = propertyID;
         channelUID = new ChannelUID(node.uid(), UIDUtils.encode(propertyID));
-        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, UIDUtils.encode(this.topic));
-        type = ChannelTypeBuilder.trigger(channelTypeUID, "dummy").build(); // Dummy value
-        channel = ChannelBuilder.create(channelUID, "dummy").build();// Dummy value
+        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
+                MqttBindingConstants.CHANNEL_TYPE_HOMIE_STRING);
     }
 
     /**
      * Subscribe to property attributes. This will not subscribe
-     * to the property value though. Call {@link Device#startChannels(MqttBrokerConnection)} to do that.
+     * to the property value though. Call
+     * {@link Device#startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
+     * to do that.
      *
      * @return Returns a future that completes as soon as all attribute values have been received or requests have timed
      *         out.
@@ -125,60 +138,25 @@ public class Property implements AttributeChanged {
      * ChannelState are determined.
      */
     public void attributesReceived() {
-        createChannelFromAttribute();
+        createChannelTypeFromAttributes();
         callback.propertyAddedOrChanged(this);
     }
 
-    /**
-     * Creates the ChannelType of the Homie property.
-     *
-     * @param attributes Attributes of the property.
-     * @param channelState ChannelState of the property.
-     *
-     * @return Returns the ChannelType to be used to build the Channel.
-     */
-    private ChannelType createChannelType(PropertyAttributes attributes, ChannelState channelState) {
-        // Retained property -> State channel
-        if (attributes.retained) {
-            return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
-                    .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescriptionFragment(
-                            channelState.getCache().createStateDescription(!attributes.settable).build())
-                    .build();
-        } else {
-            // Non-retained and settable property -> State channel
-            if (attributes.settable) {
-                return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                        .withCommandDescription(channelState.getCache().createCommandDescription().build())
-                        .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-            }
-            // Non-retained and non settable property -> Trigger channel
-            if (attributes.datatype.equals(DataTypeEnum.enum_)) {
-                if (attributes.format.contains("PRESSED") && attributes.format.contains("RELEASED")) {
-                    return DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON;
-                } else if (attributes.format.contains("SHORT_PRESSED") && attributes.format.contains("LONG_PRESSED")
-                        && attributes.format.contains("DOUBLE_PRESSED")) {
-                    return DefaultSystemChannelTypeProvider.SYSTEM_BUTTON;
-                } else if (attributes.format.contains("DIR1_PRESSED") && attributes.format.contains("DIR1_RELEASED")
-                        && attributes.format.contains("DIR2_PRESSED") && attributes.format.contains("DIR2_RELEASED")) {
-                    return DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER;
-                }
-            }
-            return ChannelTypeBuilder.trigger(channelTypeUID, attributes.name)
-                    .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL)).build();
-        }
-    }
-
-    public void createChannelFromAttribute() {
+    private void createChannelTypeFromAttributes() {
         final String commandTopic = topic + "/set";
         final String stateTopic = topic;
 
         Value value;
         Boolean isDecimal = null;
 
-        if (attributes.name == "") {
+        if (attributes.name.isEmpty()) {
             attributes.name = propertyID;
+        }
+
+        Unit<?> unit = UnitUtils.parseUnit(attributes.unit);
+        String dimension = null;
+        if (unit != null) {
+            dimension = UnitUtils.getDimensionName(unit);
         }
 
         switch (attributes.datatype) {
@@ -186,9 +164,9 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                if (attributes.format.equals("hsv")) {
+                if ("hsv".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.HSB, null, null, 100);
-                } else if (attributes.format.equals("rgb")) {
+                } else if ("rgb".equals(attributes.format)) {
                     value = new ColorValue(ColorMode.RGB, null, null, 100);
                 } else {
                     logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
@@ -197,13 +175,13 @@ public class Property implements AttributeChanged {
                 }
                 break;
             case enum_:
-                String enumValues[] = attributes.format.split(",");
+                String[] enumValues = attributes.format.split(",");
                 value = new TextValue(enumValues);
                 break;
             case float_:
             case integer_:
                 isDecimal = attributes.datatype == DataTypeEnum.float_;
-                String s[] = attributes.format.split("\\:");
+                String[] s = attributes.format.split("\\:");
                 BigDecimal min = s.length == 2 ? convertFromString(s[0]) : null;
                 BigDecimal max = s.length == 2 ? convertFromString(s[1]) : null;
                 BigDecimal step = (min != null && max != null)
@@ -213,10 +191,13 @@ public class Property implements AttributeChanged {
                     step = new BigDecimal(1);
                 }
                 if (attributes.unit.contains("%") && attributes.settable) {
-                    value = new PercentageValue(min, max, step, null, null);
+                    value = new PercentageValue(min, max, step, null, null, null);
                 } else {
-                    value = new NumberValue(min, max, step, attributes.unit);
+                    value = new NumberValue(min, max, step, unit);
                 }
+                break;
+            case datetime_:
+                value = new DateTimeValue();
                 break;
             case string_:
             case unknown:
@@ -239,12 +220,88 @@ public class Property implements AttributeChanged {
         final ChannelState channelState = new ChannelState(b.build(), channelUID, value, callback);
         this.channelState = channelState;
 
-        final ChannelType type = createChannelType(attributes, channelState);
-        this.type = type;
+        Map<String, String> channelProperties = new HashMap<>();
 
-        this.channel = ChannelBuilder.create(channelUID, type.getItemType()).withType(type.getUID())
-                .withKind(type.getKind()).withLabel(attributes.name)
-                .withConfiguration(new Configuration(attributes.asMap())).build();
+        if (attributes.settable) {
+            channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_SETTABLE,
+                    Boolean.toString(attributes.settable));
+        }
+        if (!attributes.retained) {
+            channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_RETAINED,
+                    Boolean.toString(attributes.retained));
+        }
+
+        if (!attributes.format.isEmpty()) {
+            channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_FORMAT, attributes.format);
+        }
+
+        this.channelType = null;
+        if (!attributes.retained && !attributes.settable) {
+            channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_DATATYPE, attributes.datatype.toString());
+            if (attributes.datatype.equals(DataTypeEnum.enum_)) {
+                if (attributes.format.contains(CommonTriggerEvents.PRESSED)
+                        && attributes.format.contains(CommonTriggerEvents.RELEASED)) {
+                    this.channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_RAWBUTTON;
+                } else if (attributes.format.contains(CommonTriggerEvents.SHORT_PRESSED)
+                        && attributes.format.contains(CommonTriggerEvents.LONG_PRESSED)
+                        && attributes.format.contains(CommonTriggerEvents.DOUBLE_PRESSED)) {
+                    this.channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_BUTTON;
+                } else if (attributes.format.contains(CommonTriggerEvents.DIR1_PRESSED)
+                        && attributes.format.contains(CommonTriggerEvents.DIR1_RELEASED)
+                        && attributes.format.contains(CommonTriggerEvents.DIR2_PRESSED)
+                        && attributes.format.contains(CommonTriggerEvents.DIR2_RELEASED)) {
+                    this.channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_RAWROCKER;
+                } else {
+                    this.channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_TRIGGER;
+                }
+            } else {
+                this.channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_TRIGGER;
+            }
+        } else {
+            if (!attributes.unit.isEmpty()) {
+                channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_UNIT, attributes.unit);
+            }
+
+            String channelTypeId;
+
+            if (attributes.datatype.equals(DataTypeEnum.unknown)) {
+                channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_STRING;
+            } else if (dimension != null) {
+                channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + "number-"
+                        + UIDUtils.encode(unit.toString().toLowerCase());
+                channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_DATATYPE, attributes.datatype.toString());
+            } else {
+                channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + attributes.datatype.toString();
+                channelTypeId = channelTypeId.substring(0, channelTypeId.length() - 1);
+            }
+            this.channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, channelTypeId);
+            if (dimension != null) {
+                this.channelType = ChannelTypeBuilder
+                        .state(channelTypeUID, dimension + " Value (" + unit.toString() + ")", "Number:" + dimension)
+                        .withUnitHint(unit.toString()).build();
+            }
+
+            if (attributes.retained) {
+                this.commandDescription = null;
+                this.stateDescription = channelState.getCache().createStateDescription(!attributes.settable).build()
+                        .toStateDescription();
+            } else if (attributes.settable) {
+                this.commandDescription = channelState.getCache().createCommandDescription().build();
+                this.stateDescription = null;
+            } else {
+                this.commandDescription = null;
+                this.stateDescription = null;
+            }
+        }
+
+        var builder = new ChannelDefinitionBuilder(UIDUtils.encode(propertyID), channelTypeUID)
+                .withLabel(attributes.name).withProperties(channelProperties);
+
+        if (attributes.settable && !attributes.retained) {
+            builder.withAutoUpdatePolicy(AutoUpdatePolicy.VETO);
+        }
+
+        this.channelDefinition = builder.build();
     }
 
     /**
@@ -260,13 +317,63 @@ public class Property implements AttributeChanged {
         return attributes.unsubscribe();
     }
 
+    public ChannelUID getChannelUID() {
+        return channelUID;
+    }
+
     /**
-     * @return Returns the channelState. You should have called
-     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     * @return Returns the channelState.
+     * 
+     *         You should have called
+     *         {@link Property#subscribe(MqttBrokerConnection, ScheduledExecutorService, int)}
      *         and waited for the future to complete before calling this Getter.
      */
     public @Nullable ChannelState getChannelState() {
         return channelState;
+    }
+
+    /**
+     * @return Returns the channelType, if a dynamic one is necessary.
+     *
+     *         You should have called
+     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         and waited for the future to complete before calling this Getter.
+     */
+    public @Nullable ChannelType getChannelType() {
+        return channelType;
+    }
+
+    /**
+     * @return Returns the ChannelDefinition.
+     * 
+     *         You should have called
+     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         and waited for the future to complete before calling this Getter.
+     */
+    public @Nullable ChannelDefinition getChannelDefinition() {
+        return channelDefinition;
+    }
+
+    /**
+     * @return Returns the StateDescription.
+     *
+     *         You should have called
+     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         and waited for the future to complete before calling this Getter.
+     */
+    public @Nullable StateDescription getStateDescription() {
+        return stateDescription;
+    }
+
+    /**
+     * @return Returns the CommandDescription.
+     *
+     *         You should have called
+     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         and waited for the future to complete before calling this Getter.
+     */
+    public @Nullable CommandDescription getCommandDescription() {
+        return commandDescription;
     }
 
     /**
@@ -275,7 +382,6 @@ public class Property implements AttributeChanged {
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
      * @param timeout A timeout in milliseconds. Can be 0 to disable the timeout and let the future return earlier.
-     * @param channelStateUpdateListener An update listener
      * @return A future that completes with true if the subscribing worked and false and/or exceptionally otherwise.
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
@@ -286,25 +392,21 @@ public class Property implements AttributeChanged {
             f.completeExceptionally(new IllegalStateException("Attributes not yet received!"));
             return f;
         }
-        // Make sure we set the callback again which might have been nulled during an stop
+        // Make sure we set the callback again which might have been nulled during a stop
         channelState.setChannelStateUpdateListener(this.callback);
         return channelState.start(connection, scheduler, timeout);
     }
 
     /**
-     * @return Returns the channel type of this property.
-     *         The type is a dummy only if {@link #channelState} has not been set yet.
+     * @return Create a channel for this property.
      */
-    public ChannelType getType() {
-        return type;
-    }
+    public Channel getChannel(ChannelTypeRegistry channelTypeRegistry) {
+        ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
 
-    /**
-     * @return Returns the channel of this property.
-     *         The channel is a dummy only if {@link #channelState} has not been set yet.
-     */
-    public Channel getChannel() {
-        return channel;
+        return ChannelBuilder.create(channelUID, channelType.getItemType()).withType(channelTypeUID)
+                .withKind(channelType.getKind()).withLabel(Objects.requireNonNull(channelDefinition.getLabel()))
+                .withProperties(channelDefinition.getProperties())
+                .withAutoUpdatePolicy(channelDefinition.getAutoUpdatePolicy()).build();
     }
 
     @Override
@@ -333,9 +435,8 @@ public class Property implements AttributeChanged {
     public List<String> getRetainedTopics() {
         List<String> topics = new ArrayList<>();
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
-            return String.format("%s/$%s", this.propertyID, f.getName());
-        }).collect(Collectors.toList()));
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields())
+                .map(f -> String.format("%s/$%s", this.propertyID, f.getName())).collect(Collectors.toList()));
 
         // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
         // is public, is a boolean variable and has a default value (true)

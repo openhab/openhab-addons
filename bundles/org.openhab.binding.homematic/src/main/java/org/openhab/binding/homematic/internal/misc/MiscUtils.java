@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class MiscUtils {
-    private static final Logger logger = LoggerFactory.getLogger(MiscUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MiscUtils.class);
 
     /**
-     * Replaces invalid characters of the text to fit into a openHAB UID.
+     * Replaces invalid characters of the text to fit into an openHAB UID.
      */
     public static String validateCharacters(String text, String textType, String replaceChar) {
         if (text == null) {
@@ -32,7 +32,7 @@ public class MiscUtils {
         }
         String cleanedText = text.replaceAll("[^A-Za-z0-9_-]", replaceChar);
         if (!text.equals(cleanedText)) {
-            logger.info("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
+            LOGGER.info("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
         }
         return cleanedText;
     }
@@ -41,13 +41,71 @@ public class MiscUtils {
      * Returns true, if the value is not null and true.
      */
     public static boolean isTrueValue(Object value) {
-        return value != null && value == Boolean.TRUE;
+        return Boolean.TRUE.equals(value);
     }
 
     /**
      * Returns true, if the value is not null and false.
      */
     public static boolean isFalseValue(Object value) {
-        return value != null && value == Boolean.FALSE;
+        return Boolean.FALSE.equals(value);
+    }
+
+    /**
+     * Returns true, if str starts with search. Check is done case-insensitive.
+     */
+    public static boolean strStartsWithIgnoreCase(String str, String search) {
+        if (str == null || search == null || search.length() > str.length()) {
+            return false;
+        }
+        return str.substring(0, search.length()).equalsIgnoreCase(search);
+    }
+
+    /**
+     * Returns true if address is a device
+     */
+    public static boolean isDevice(String address) {
+        return isDevice(address, false);
+    }
+
+    /**
+     * Returns true if address is a device. If allowBidCos ist true then addresses starting with "BidCos" classified as
+     * devices, too.
+     */
+    public static boolean isDevice(String address, boolean allowBidCos) {
+        if (address == null) {
+            return false;
+        }
+        if (address.contains(":")) {
+            return false;
+        }
+        if (allowBidCos && strStartsWithIgnoreCase(address.trim(), "BidCos")) {
+            return true;
+        }
+        return !strStartsWithIgnoreCase(address.trim(), "BidCos");
+    }
+
+    /**
+     * Changes all characters after whitespace to upper-case and all other character to lower case.
+     */
+    public static String capitalize(String value) {
+        if (value == null) {
+            return null;
+        }
+        char[] chars = value.toCharArray();
+        boolean capitalizeNextChar = true;
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isWhitespace(chars[i])) {
+                capitalizeNextChar = true;
+            } else {
+                if (capitalizeNextChar) {
+                    chars[i] = Character.toTitleCase(chars[i]);
+                    capitalizeNextChar = false;
+                } else {
+                    chars[i] = Character.toLowerCase(chars[i]);
+                }
+            }
+        }
+        return new String(chars);
     }
 }

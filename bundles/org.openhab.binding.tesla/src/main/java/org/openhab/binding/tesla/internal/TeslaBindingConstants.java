@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,15 +28,24 @@ public class TeslaBindingConstants {
     public static final String API_NAME = "Tesla Client API";
     public static final String API_VERSION = "api/1/";
     public static final String PATH_COMMAND = "command/{cmd}";
-    public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
+    public static final String PATH_DATA_REQUEST = "vehicle_data";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
-    public static final String URI_ACCESS_TOKEN = "oauth/token";
-    public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
-    public static final String URI_OWNERS = "https://owner-api.teslamotors.com/";
+    public static final String PATH_ACCESS_TOKEN = "oauth/token";
+    public static final String URI_EVENT = "wss://streaming.vn.teslamotors.com/streaming/";
+    public static final String URI_OWNERS = "https://owner-api.teslamotors.com";
     public static final String VALETPIN = "valetpin";
     public static final String VEHICLES = "vehicles";
+    public static final String PRODUCTS = "products";
     public static final String VIN = "vin";
+
+    // SSO URI constants
+    public static final String SSO_SCOPES = "openid email offline_access";
+    public static final String URI_SSO = "https://auth.tesla.com/oauth2/v3";
+    public static final String PATH_AUTHORIZE = "authorize";
+    public static final String PATH_TOKEN = "token";
+    public static final String URI_CALLBACK = "https://auth.tesla.com/void/callback";
+    public static final String CLIENT_ID = "ownerapi";
 
     // Tesla REST API commands
     public static final String COMMAND_ACTUATE_TRUNK = "actuate_trunk";
@@ -52,27 +61,22 @@ public class TeslaBindingConstants {
     public static final String COMMAND_HONK_HORN = "honk_horn";
     public static final String COMMAND_OPEN_CHARGE_PORT = "charge_port_door_open";
     public static final String COMMAND_RESET_VALET_PIN = "reset_valet_pin";
+    public static final String COMMAND_SET_CHARGING_AMPS = "set_charging_amps";
     public static final String COMMAND_SET_CHARGE_LIMIT = "set_charge_limit";
+    public static final String COMMAND_SET_SENTRY_MODE = "set_sentry_mode";
     public static final String COMMAND_SET_TEMP = "set_temps";
     public static final String COMMAND_SET_VALET_MODE = "set_valet_mode";
+    public static final String COMMAND_STEERING_WHEEL_HEATER = "remote_steering_wheel_heater_request";
     public static final String COMMAND_SUN_ROOF = "sun_roof_control";
     public static final String COMMAND_THROTTLE = "commandthrottle";
     public static final String COMMAND_WAKE_UP = "wake_up";
     public static final String DATA_THROTTLE = "datathrottle";
 
-    // Tesla REST API vehicle states
-    public static final String CHARGE_STATE = "charge_state";
-    public static final String CLIMATE_STATE = "climate_state";
-    public static final String DRIVE_STATE = "drive_state";
-    public static final String GUI_STATE = "gui_settings";
-    public static final String MOBILE_ENABLED_STATE = "mobile_enabled";
-    public static final String VEHICLE_STATE = "vehicle_state";
-    public static final String VEHICLE_CONFIG = "vehicle_config";
-
     public static final String BINDING_ID = "tesla";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
     public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
     public static final ThingTypeUID THING_TYPE_MODEL3 = new ThingTypeUID(BINDING_ID, "model3");
     public static final ThingTypeUID THING_TYPE_MODELX = new ThingTypeUID(BINDING_ID, "modelx");
@@ -96,11 +100,16 @@ public class TeslaBindingConstants {
 
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_COMBINED_TEMP = "combinedtemp";
+    public static final String CHANNEL_EVENTSTAMP = "eventstamp";
+
+    public static final String CHANNEL_SOFTWARE_UPDATE_AVAILABLE = "softwareupdateavailable";
 
     // thing configurations
     public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";
+    public static final String CONFIG_ALLOWWAKEUPFORCOMMANDS = "allowWakeupForCommands";
     public static final String CONFIG_ENABLEEVENTS = "enableEvents";
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
-    public static final String CONFIG_USERNAME = "username";
-    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_INACTIVITY = "inactivity";
+    public static final String CONFIG_USEDRIVESTATE = "useDriveState";
+    public static final String CONFIG_USEDADVANCEDSTATES = "useAdvancedStatesForPolling";
 }

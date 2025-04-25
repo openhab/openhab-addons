@@ -8,7 +8,7 @@
 		<label>LB200</label>
 		<description>TP-Link LB200 Smart Wi-Fi LED Bulb with Dimmable Light</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="power" typeId="power"/>
@@ -17,6 +17,6 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:bulb"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-bulb"/>
 	</thing-type>
 </thing:thing-descriptions>

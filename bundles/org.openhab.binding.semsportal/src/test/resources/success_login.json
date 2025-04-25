@@ -1,0 +1,21 @@
+{
+  "hasError": false,
+  "code": 0,
+  "msg": "Success",
+  "data": {
+    "uid": "0000000-0000-0000-00000000",
+    "timestamp": 1612644477008,
+    "token": "12345678",
+    "client": "ios",
+    "version": "v2.1.0",
+    "language": "en"
+  },
+  "components": {
+    "para": null,
+    "langVer": 97,
+    "timeSpan": 0,
+    "api": "http://eu.semsportal.com:82/api/Auth/GetTokenV2",
+    "msgSocketAdr": "https://eu-xxzx.semsportal.com"
+  },
+  "api": "https://eu.semsportal.com/api/"
+}

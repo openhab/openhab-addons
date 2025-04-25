@@ -6,7 +6,7 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<!-- yellow/black Device -->
-	<config-description uri="binding:digitalstrom:deviceWithPowerSensors">
+	<config-description uri="thing-type:digitalstrom:deviceWithPowerSensors">
 		<parameter-group name="devInfo">
 			<label>@text/device_param_group_info_label</label>
 			<description>@text/device_param_group_info_desc</description>
@@ -15,7 +15,7 @@
 			<label>@text/device_param_group_sensor_label</label>
 			<description>@text/device_param_group_sensor_desc</description>
 		</parameter-group>
-		<parameter name="activePowerRefreshPriority" type="text" groupName='sensorSetup'>
+		<parameter name="activePowerRefreshPriority" type="text" groupName='sensorSetup' required="false">
 			<label>@text/device_param_active_power_label</label>
 			<description>@text/device_param_active_power_desc</description>
 			<options>
@@ -25,9 +25,8 @@
 				<option value="low">@text/DS_SENSOR_OPTION2</option>
 			</options>
 			<default>never</default>
-			<required>false</required>
 		</parameter>
-		<parameter name="electricMeterRefreshPriority" type="text" groupName='sensorSetup'>
+		<parameter name="electricMeterRefreshPriority" type="text" groupName='sensorSetup' required="false">
 			<label>@text/device_param_electric_meter_label</label>
 			<description>@text/device_param_electric_meter_desc</description>
 			<options>
@@ -37,9 +36,8 @@
 				<option value="low">@text/DS_SENSOR_OPTION2</option>
 			</options>
 			<default>never</default>
-			<required>false</required>
 		</parameter>
-		<parameter name="outputCurrentRefreshPriority" type="text" groupName='sensorSetup'>
+		<parameter name="outputCurrentRefreshPriority" type="text" groupName='sensorSetup' required="false">
 			<label>@text/device_param_output_current_label</label>
 			<description>@text/device_param_output_current_desc</description>
 			<options>
@@ -49,21 +47,18 @@
 				<option value="low">@text/DS_SENSOR_OPTION2</option>
 			</options>
 			<default>never</default>
-			<required>false</required>
 		</parameter>
 		<!--deviceID -->
-		<parameter name="dSID" type="text" readOnly="true" groupName="devInfo">
+		<parameter name="dSID" type="text" readOnly="true" groupName="devInfo" required="true">
 			<label>@text/device_param_dsid_label</label>
 			<description>@text/device_param_dsid_desc</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 	<!-- gray Device -->
-	<config-description uri="binding:digitalstrom:deviceWithoutPowerSensors">
-		<parameter name="dSID" type="text" readOnly="true">
+	<config-description uri="thing-type:digitalstrom:deviceWithoutPowerSensors">
+		<parameter name="dSID" type="text" readOnly="true" required="true">
 			<label>@text/device_param_dsid_label</label>
 			<description>@text/device_param_dsid_desc</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

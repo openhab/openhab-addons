@@ -13,24 +13,15 @@
 		<description>A dimmable light with changeable colors and tunable color temperature.</description>
 
 		<channels>
-			<channel id="color" typeId="color"/>
-			<channel id="color_temperature" typeId="color_temperature"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 			<channel id="alert" typeId="alert"/>
 			<channel id="effect" typeId="effect"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="lightId" type="text" required="true">
-				<label>Light ID</label>
-				<description>The light identifier identifies one certain hue light.</description>
-			</parameter>
-			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
-				<label>Fade Time</label>
-				<description>Fade time in milliseconds for changing values</description>
-				<default>400</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:light"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,41 +12,20 @@
  */
 package org.openhab.binding.openweathermap.internal.dto.onecall;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
- * Settings:
- * Annotation Style: GSON
- * Use primitive types
- * Use double numbers
- * allow additional properties
+ * Holds the data from the <code>minutely</code> object of the JSON response of the One Call APIs.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 public class Minutely {
-
-    @SerializedName("dt")
-    @Expose
     private int dt;
-    @SerializedName("precipitation")
-    @Expose
     private double precipitation;
 
     public int getDt() {
         return dt;
     }
 
-    public void setDt(int dt) {
-        this.dt = dt;
-    }
-
     public double getPrecipitation() {
         return precipitation;
-    }
-
-    public void setPrecipitation(double precipitation) {
-        this.precipitation = precipitation;
     }
 }

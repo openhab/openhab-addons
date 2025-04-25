@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -62,8 +62,7 @@ public class MiIoCrypto {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
-            byte[] encrypted = cipher.doFinal(cipherText);
-            return encrypted;
+            return cipher.doFinal(cipherText);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);
@@ -80,8 +79,7 @@ public class MiIoCrypto {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, keySpec, vector);
-            byte[] crypted = cipher.doFinal(cipherText);
-            return (crypted);
+            return cipher.doFinal(cipherText);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);
@@ -99,11 +97,7 @@ public class MiIoCrypto {
             SecretKeySpec keySpec = new SecretKeySpec(new byte[16], "AES");
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
             byte[] decrypted = cipher.doFinal(cipherText);
-            try {
-                return new String(decrypted, "UTF-8").trim();
-            } catch (UnsupportedEncodingException e) {
-                return new String(decrypted).trim();
-            }
+            return new String(decrypted, StandardCharsets.UTF_8).trim();
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);

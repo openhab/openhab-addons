@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecobee.internal.config.EcobeeSensorConfiguration;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorCapabilityDTO;
@@ -37,6 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +50,16 @@ import org.slf4j.LoggerFactory;
 public class EcobeeSensorThingHandler extends BaseThingHandler {
 
     public static final String CAPABILITY_ADC = "adc";
+    public static final String CAPABILITY_AIR_PRESSURE = "airPressure";
+    public static final String CAPABILITY_AIR_QUALITY = "airQuality";
+    public static final String CAPABILITY_AIR_QUALITY_ACCURACY = "airQualityAccuracy";
     public static final String CAPABILITY_CO2 = "co2";
+    public static final String CAPABILITY_CO2_PPM = "co2PPM";
     public static final String CAPABILITY_DRY_CONTACT = "dryContact";
     public static final String CAPABILITY_HUMIDITY = "humidity";
     public static final String CAPABILITY_OCCUPANCY = "occupancy";
     public static final String CAPABILITY_TEMPERATURE = "temperature";
+    public static final String CAPABILITY_VOC_PPM = "vocPPM";
     public static final String CAPABILITY_UNKNOWN = "unknown";
 
     private final Logger logger = LoggerFactory.getLogger(EcobeeSensorThingHandler.class);
@@ -121,7 +126,7 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
             ThingBuilder thingBuilder;
             thingBuilder = editThing();
             channel = ChannelBuilder.create(uid, getAcceptedItemType(capability.type))
-                    .withLabel("Sensor " + WordUtils.capitalize(capability.type))
+                    .withLabel("Sensor " + StringUtils.capitalizeByWhitespace(capability.type))
                     .withType(getChannelTypeUID(capability.type)).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());
@@ -144,9 +149,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 acceptedItemType = "Switch";
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 acceptedItemType = "String";
                 break;
@@ -167,9 +177,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 channelTypeUID = CHANNELTYPEUID_OCCUPANCY;
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 channelTypeUID = CHANNELTYPEUID_GENERIC;
                 break;
@@ -198,9 +213,14 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
                 state = EcobeeUtils.undefOrOnOff("true".equals(value));
                 break;
             case CAPABILITY_ADC:
+            case CAPABILITY_AIR_PRESSURE:
+            case CAPABILITY_AIR_QUALITY:
+            case CAPABILITY_AIR_QUALITY_ACCURACY:
             case CAPABILITY_CO2:
+            case CAPABILITY_CO2_PPM:
             case CAPABILITY_DRY_CONTACT:
             case CAPABILITY_UNKNOWN:
+            case CAPABILITY_VOC_PPM:
             default:
                 state = EcobeeUtils.undefOrString(value);
                 break;

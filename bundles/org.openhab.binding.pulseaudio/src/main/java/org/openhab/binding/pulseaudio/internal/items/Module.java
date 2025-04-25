@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,27 +12,29 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * In order to add a {@link Sink} to the pulseaudio server you have to
  * load a corresponding module. Current Module objects are needed to
  * be able to remove sinks from the pulseaudio server.
  *
  * @author Tobias Bräutigam - Initial contribution
+ * @author Miguel Álvarez Díez - Make arguments final
  */
+@NonNullByDefault
 public class Module extends AbstractDeviceConfig {
 
-    private String argument;
+    private final @Nullable String argument;
 
-    public Module(int id, String name) {
+    public Module(int id, String name, @Nullable String argument) {
         super(id, name);
-    }
-
-    public String getArgument() {
-        return argument;
-    }
-
-    public void setArgument(String argument) {
         this.argument = argument;
+    }
+
+    public @Nullable String getArgument() {
+        return argument;
     }
 
     @Override

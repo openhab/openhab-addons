@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,8 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.math.BigDecimal;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +22,12 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -47,82 +48,74 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Jörg Merk - Initial contribution;
  */
-
-public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+@NonNullByDefault
+public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoCrockpotHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CROCKPOT);
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
-    private final Map<String, Boolean> subscriptionState = new HashMap<>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CROCKPOT);
+
+    private final Object jobLock = new Object();
+
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
-    private UpnpIOService service;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    private ScheduledFuture<?> refreshJob;
-
-    private final Runnable refreshRunnable = () -> {
-        updateWemoState();
-        if (!isUpnpDeviceRegistered()) {
-            logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-        } else {
-            onSubscription();
-        }
-    };
-
-    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemohttpCaller) {
-        super(thing);
-
-        this.wemoHttpCaller = wemohttpCaller;
+    public WemoCrockpotHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
-
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
     }
 
     @Override
     public void initialize() {
+        super.initialize();
         Configuration configuration = getConfig();
 
-        if (configuration.get("udn") != null) {
-            logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get("udn"));
-            service.registerParticipant(this);
-            onSubscription();
-            onUpdate();
-            updateStatus(ThingStatus.ONLINE);
+        if (configuration.get(UDN) != null) {
+            logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get(UDN));
+            addSubscription(BASICEVENT);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
+                    TimeUnit.SECONDS);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
-            logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/config-status.error.missing-udn");
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("WeMoCrockpotHandler disposed.");
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
+        this.pollingJob = null;
+        super.dispose();
+    }
 
-        removeSubscription();
-
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+    private void poll() {
+        synchronized (jobLock) {
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
+            }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
         String mode = "0";
         String time = null;
 
         if (command instanceof RefreshType) {
             updateWemoState();
-        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_COOK_MODE.equals(channelUID.getId())) {
             String commandString = command.toString();
             switch (commandString) {
                 case "OFF":
@@ -141,91 +134,36 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             }
             try {
                 String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-                String content = "<?xml version=\"1.0\"?>"
-                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                        + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
+                String content = """
+                        <?xml version="1.0"?>\
+                        <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                        <s:Body>\
+                        <u:SetCrockpotState xmlns:u="urn:Belkin:service:basicevent:1">\
+                        <mode>\
+                        """
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                String wemoURL = getWemoURL("basicevent");
-
-                if (wemoURL != null) {
-                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                }
-            } catch (RuntimeException e) {
-                logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+                probeAndExecuteCall(BASICACTION, soapHeader, content);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (MissingHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+            } catch (WemoException e) {
+                logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
-        logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service, succeeded ? "succeeded" : "failed");
-        subscriptionState.put(service, succeeded);
-    }
-
-    @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
-                this.getThing().getUID());
+                getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
-        this.stateMap.put(variable, value);
-    }
-
-    private synchronized void onSubscription() {
-        if (service.isRegistered(this)) {
-            logger.debug("Checking WeMo GENA subscription for '{}'", this);
-
-            String subscription = "basicevent1";
-
-            if ((subscriptionState.get(subscription) == null) || !subscriptionState.get(subscription).booleanValue()) {
-                logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), subscription);
-                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
-                subscriptionState.put(subscription, true);
-            }
-
-        } else {
-            logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                    this);
+        if (variable != null && value != null) {
+            this.stateMap.put(variable, value);
         }
-    }
-
-    private synchronized void removeSubscription() {
-        logger.debug("Removing WeMo GENA subscription for '{}'", this);
-
-        if (service.isRegistered(this)) {
-            String subscription = "basicevent1";
-
-            if ((subscriptionState.get(subscription) != null) && subscriptionState.get(subscription).booleanValue()) {
-                logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                service.removeSubscription(this, subscription);
-            }
-
-            subscriptionState.remove(subscription);
-            service.unregisterParticipant(this);
-        }
-    }
-
-    private synchronized void onUpdate() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL_SECONDS;
-            Object refreshConfig = config.get("refresh");
-            refreshInterval = refreshConfig == null ? DEFAULT_REFRESH_INTERVAL_SECONDS
-                    : ((BigDecimal) refreshConfig).intValue();
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
-        }
-    }
-
-    private boolean isUpnpDeviceRegistered() {
-        return service.isRegistered(this);
-    }
-
-    @Override
-    public String getUDN() {
-        return (String) this.getThing().getConfiguration().get(UDN);
     }
 
     /**
@@ -234,73 +172,47 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
      *
      */
     protected void updateWemoState() {
-        String action = "GetCrockpotState";
-        String actionService = "basicevent";
-
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
+        String actionService = BASICEVENT;
         try {
-            String wemoURL = getWemoURL(actionService);
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    String mode = StringUtils.substringBetween(wemoCallResponse, "<mode>", "</mode>");
-                    String time = StringUtils.substringBetween(wemoCallResponse, "<time>", "</time>");
-                    String coockedTime = StringUtils.substringBetween(wemoCallResponse, "<coockedTime>",
-                            "</coockedTime>");
+            String action = "GetCrockpotState";
+            String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+            String content = createStateRequestContent(action, actionService);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
+            String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
+            String time = substringBetween(wemoCallResponse, "<time>", "</time>");
+            String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
 
-                    if (mode != null && time != null && coockedTime != null) {
-                        State newMode = new StringType(mode);
-                        State newCoockedTime = DecimalType.valueOf(coockedTime);
-                        switch (mode) {
-                            case "0":
-                                newMode = new StringType("OFF");
-                                break;
-                            case "50":
-                                newMode = new StringType("WARM");
-                                State warmTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_WARMCOOKTIME, warmTime);
-                                break;
-                            case "51":
-                                newMode = new StringType("LOW");
-                                State lowTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_LOWCOOKTIME, lowTime);
-                                break;
-                            case "52":
-                                newMode = new StringType("HIGH");
-                                State highTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_HIGHCOOKTIME, highTime);
-                                break;
-                        }
-                        updateState(CHANNEL_COOKMODE, newMode);
-                        updateState(CHANNEL_COOKEDTIME, newCoockedTime);
-                    }
-                }
+            State newMode = new StringType(mode);
+            State newCoockedTime = DecimalType.valueOf(coockedTime);
+            switch (mode) {
+                case "0":
+                    newMode = new StringType("OFF");
+                    break;
+                case "50":
+                    newMode = new StringType("WARM");
+                    State warmTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_WARM_COOK_TIME, warmTime);
+                    break;
+                case "51":
+                    newMode = new StringType("LOW");
+                    State lowTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_LOW_COOK_TIME, lowTime);
+                    break;
+                case "52":
+                    newMode = new StringType("HIGH");
+                    State highTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_HIGHCOOKTIME, highTime);
+                    break;
             }
-        } catch (RuntimeException e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
+            updateState(CHANNEL_COOK_MODE, newMode);
+            updateState(CHANNEL_COOKED_TIME, newCoockedTime);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
+            logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    public String getWemoURL(String actionService) {
-        URL descriptorURL = service.getDescriptorURL(this);
-        String wemoURL = null;
-        if (descriptorURL != null) {
-            String deviceURL = StringUtils.substringBefore(descriptorURL.toString(), "/setup.xml");
-            wemoURL = deviceURL + "/upnp/control/" + actionService + "1";
-            return wemoURL;
-        }
-        return null;
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
     }
 }

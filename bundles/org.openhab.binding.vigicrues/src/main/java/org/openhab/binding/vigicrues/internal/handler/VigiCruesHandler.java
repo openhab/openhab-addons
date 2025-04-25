@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.vigicrues.internal.StationConfiguration;
 import org.openhab.binding.vigicrues.internal.api.ApiHandler;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
+import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse.StationData;
 import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
@@ -129,17 +130,22 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         try {
             HubEauResponse stationDetails = apiHandler.discoverStations(config.id);
-            stationDetails.stations.stream().findFirst().ifPresent(station -> {
-                PointType stationLocation = new PointType(
-                        String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
-                properties.put(LOCATION, stationLocation.toString());
-                PointType serverLocation = locationProvider.getLocation();
-                if (serverLocation != null) {
-                    DecimalType distance = serverLocation.distanceFrom(stationLocation);
-                    properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
-                }
-                properties.put(RIVER, station.libelleCoursEau);
-            });
+            List<StationData> stations = stationDetails.stations;
+            if (stations != null && !stations.isEmpty()) {
+                stationDetails.stations.stream().findFirst().ifPresent(station -> {
+                    PointType stationLocation = new PointType(
+                            String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
+                    properties.put(LOCATION, stationLocation.toString());
+                    PointType serverLocation = locationProvider.getLocation();
+                    if (serverLocation != null) {
+                        DecimalType distance = serverLocation.distanceFrom(stationLocation);
+                        properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
+                    }
+                    properties.put(RIVER, station.libelleCoursEau);
+                });
+            } else {
+                throw new VigiCruesException("No stations provided");
+            }
         } catch (VigiCruesException e) {
             logger.info("Unable to retrieve station location details {} : {}", config.id, e.getMessage());
         }
@@ -162,21 +168,21 @@ public class VigiCruesHandler extends BaseThingHandler {
             }
         } catch (VigiCruesException e) {
             logger.info("Historical flooding data are not available {} : {}", config.id, e.getMessage());
-            channels.removeIf(channel -> (channel.getUID().getId().contains(RELATIVE_PREFIX)));
+            channels.removeIf(channel -> channel.getUID().getId().contains(RELATIVE_PREFIX));
         }
 
         if (!properties.containsKey(TRONCON)) {
-            channels.removeIf(channel -> (channel.getUID().getId().contains(ALERT)));
-            channels.removeIf(channel -> (channel.getUID().getId().contains(COMMENT)));
+            channels.removeIf(channel -> channel.getUID().getId().contains(ALERT));
+            channels.removeIf(channel -> channel.getUID().getId().contains(COMMENT));
         }
 
         try {
             OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
-                if (field.getHeight().isEmpty()) {
+                if (field.getHeight() == -1) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
                 }
-                if (field.getFlow().isEmpty()) {
+                if (field.getFlow() == -1) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
                 }
             });
@@ -194,11 +200,11 @@ public class VigiCruesHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing the VigiCrues handler.");
 
-        ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> localJob = refreshJob;
+        if (localJob != null) {
+            localJob.cancel(true);
         }
-        this.refreshJob = null;
+        refreshJob = null;
     }
 
     @Override
@@ -213,17 +219,21 @@ public class VigiCruesHandler extends BaseThingHandler {
         try {
             OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
-                field.getHeight().ifPresent(height -> {
+                double height = field.getHeight();
+                if (height != -1) {
                     updateQuantity(HEIGHT, height, SIUnits.METRE);
                     updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
-                });
-                field.getFlow().ifPresent(flow -> {
+                }
+
+                double flow = field.getFlow();
+                if (flow != -1) {
                     updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
                     updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
-                });
+                }
+
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             });
-            String currentPortion = this.portion;
+            String currentPortion = portion;
             if (currentPortion != null) {
                 InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
                 updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
@@ -243,7 +253,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     }
 
     private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
-        if (reference.size() > 0) {
+        if (!reference.isEmpty()) {
             double percent = value / reference.get(0).doubleValue() * 100;
             updateQuantity(channelId, percent, Units.PERCENT);
         }
@@ -255,13 +265,13 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
+    private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
             updateState(channelId, new DateTimeType(zonedDateTime));
         }
     }
 
-    public void updateAlert(String channelId, int value) {
+    private void updateAlert(String channelId, int value) {
         String channelIcon = channelId + "-icon";
         if (isLinked(channelId)) {
             updateState(channelId, new DecimalType(value));
@@ -272,11 +282,14 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    public byte @Nullable [] getResource(String iconPath) {
-        try (InputStream stream = VigiCruesHandler.class.getClassLoader().getResourceAsStream(iconPath)) {
-            return stream.readAllBytes();
-        } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+    private byte @Nullable [] getResource(String iconPath) {
+        ClassLoader classLoader = VigiCruesHandler.class.getClassLoader();
+        if (classLoader != null) {
+            try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
+                return stream != null ? stream.readAllBytes() : null;
+            } catch (IOException e) {
+                logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+            }
         }
         return null;
     }

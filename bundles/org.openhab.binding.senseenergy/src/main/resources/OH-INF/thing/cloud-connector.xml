@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="senseenergy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloud-connector">
+		<label>Sense Energy Cloud Connector</label>
+		<description>The Sense Home cloud connector establishes connection to the Sense cloud API and services.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>Email</label>
+				<context>text</context>
+				<description>Sense account email address</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>Sense account password</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,5 +21,5 @@ import com.google.gson.annotations.SerializedName;
  */
 public class GetIndependentDevicesByHomeResponse extends AbstractResponse {
     @SerializedName("deviceInfo")
-    public DeviceDTO devices[] = new DeviceDTO[0];
+    public DeviceDTO[] devices = new DeviceDTO[0];
 }

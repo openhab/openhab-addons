@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -84,9 +83,10 @@ public class KM200Cryption {
         try {
             /* Check whether the length of the decryptData is NOT multiplies of 16 */
             if ((decodedB64.length & 0xF) != 0) {
+                logger.debug("Length of message is {}.", decodedB64.length);
                 /* Return the data */
                 retString = new String(decodedB64, remoteDevice.getCharSet());
-                logger.debug("Did NOT decrypt message");
+                logger.debug("Did NOT decrypt message, returning {}.", retString);
                 return retString;
             }
             // --- create cipher
@@ -96,7 +96,7 @@ public class KM200Cryption {
             byte[] decryptedDataWOZP = removeZeroPadding(decryptedData);
             return (new String(decryptedDataWOZP, remoteDevice.getCharSet()));
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding", e);
+            logger.warn("Exception on encoding ({})", e.getMessage());
             return null;
         }
     }
@@ -120,7 +120,7 @@ public class KM200Cryption {
                 logger.debug("Base64encoding not possible: {}", e.getMessage());
             }
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding", e);
+            logger.warn("Exception on encoding ({})", e.getMessage());
         }
         return null;
     }
@@ -131,8 +131,8 @@ public class KM200Cryption {
      * @author Markus Eckhardt
      */
     public void recreateKeys() {
-        if (StringUtils.isNotBlank(remoteDevice.getGatewayPassword())
-                && StringUtils.isNotBlank(remoteDevice.getPrivatePassword()) && remoteDevice.getMD5Salt().length > 0) {
+        if (!remoteDevice.getGatewayPassword().isBlank() && !remoteDevice.getPrivatePassword().isBlank()
+                && remoteDevice.getMD5Salt().length > 0) {
             byte[] md5K1 = null;
             byte[] md5K2Init = null;
             byte[] md5K2Private = null;

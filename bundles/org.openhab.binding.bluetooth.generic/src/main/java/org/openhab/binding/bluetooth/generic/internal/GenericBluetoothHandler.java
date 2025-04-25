@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,9 +27,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
+import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.openhab.bluetooth.gattparser.BluetoothGattParser;
+import org.openhab.bluetooth.gattparser.BluetoothGattParserFactory;
+import org.openhab.bluetooth.gattparser.FieldHolder;
+import org.openhab.bluetooth.gattparser.GattRequest;
+import org.openhab.bluetooth.gattparser.GattResponse;
+import org.openhab.bluetooth.gattparser.spec.Characteristic;
+import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -45,19 +53,13 @@ import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
-import org.sputnikdev.bluetooth.gattparser.FieldHolder;
-import org.sputnikdev.bluetooth.gattparser.GattRequest;
-import org.sputnikdev.bluetooth.gattparser.GattResponse;
-import org.sputnikdev.bluetooth.gattparser.spec.Characteristic;
-import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
  * This is a handler for generic connected bluetooth devices that dynamically generates
  * channels based off of a bluetooth device's GATT characteristics.
  *
  * @author Connor Petty - Initial contribution
+ * @author Peter Rosenberg - Use notifications, add support for ServiceData
  *
  */
 @NonNullByDefault
@@ -68,6 +70,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     private final Map<ChannelUID, CharacteristicHandler> channelHandlers = new ConcurrentHashMap<>();
     private final BluetoothGattParser gattParser = BluetoothGattParserFactory.getDefault();
     private final CharacteristicChannelTypeProvider channelTypeProvider;
+    private final Map<CharacteristicHandler, List<ChannelUID>> handlerToChannels = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> readCharacteristicJob = null;
 
@@ -83,13 +86,15 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         GenericBindingConfiguration config = getConfigAs(GenericBindingConfiguration.class);
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
-                if (resolved) {
-                    for (CharacteristicHandler charHandler : charHandlers.values()) {
-                        if (charHandler.canRead()) {
+                if (device.isServicesDiscovered()) {
+                    handlerToChannels.forEach((charHandler, channelUids) -> {
+                        // Only read the value manually if notification is not on.
+                        // Also read it the first time before we activate notifications below.
+                        if (!device.isNotifying(charHandler.characteristic) && charHandler.canRead()) {
                             device.readCharacteristic(charHandler.characteristic);
                             try {
                                 // TODO the ideal solution would be to use locks/conditions and timeouts
-                                // between this code and `onCharacteristicReadComplete` but
+                                // Kbetween this code and `onCharacteristicReadComplete` but
                                 // that would overcomplicate the code a bit and I plan
                                 // on implementing a better more generalized solution later
                                 Thread.sleep(50);
@@ -97,7 +102,20 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                                 return;
                             }
                         }
-                    }
+                        if (charHandler.characteristic.canNotify()) {
+                            // Enabled/Disable notifications dependent on if the channel is linked.
+                            // TODO check why isLinked() is true for not linked channels
+                            if (channelUids.stream().anyMatch(this::isLinked)) {
+                                if (!device.isNotifying(charHandler.characteristic)) {
+                                    device.enableNotifications(charHandler.characteristic);
+                                }
+                            } else {
+                                if (device.isNotifying(charHandler.characteristic)) {
+                                    device.disableNotifications(charHandler.characteristic);
+                                }
+                            }
+                        }
+                    });
                 } else {
                     // if we are connected and still haven't been able to resolve the services, try disconnecting and
                     // then connecting again
@@ -117,15 +135,14 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         charHandlers.clear();
         channelHandlers.clear();
+        handlerToChannels.clear();
     }
 
     @Override
     public void onServicesDiscovered() {
-        if (!resolved) {
-            resolved = true;
-            logger.trace("Service discovery completed for '{}'", address);
-            updateThingChannels();
-        }
+        super.onServicesDiscovered();
+        logger.trace("Service discovery completed for '{}'", address);
+        updateThingChannels();
     }
 
     @Override
@@ -139,19 +156,74 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        super.onCharacteristicReadComplete(characteristic, status);
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            byte[] data = characteristic.getByteValue();
-            getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
-        }
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+        super.onCharacteristicUpdate(characteristic, value);
+        getCharacteristicHandler(characteristic).handleCharacteristicUpdate(value);
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
-        byte[] data = characteristic.getByteValue();
-        getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
+    public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
+        super.onScanRecordReceived(scanNotification);
+
+        handleServiceData(scanNotification);
+    }
+
+    /**
+     * Service data is specified in the "Core Specification Supplement"
+     * https://www.bluetooth.com/specifications/specs/
+     * 1.11 SERVICE DATA
+     * <p>
+     * Broadcast configuration to configure what to advertise in service data
+     * is specified in "Core Specification 5.3"
+     * https://www.bluetooth.com/specifications/specs/
+     * Part G: GENERIC ATTRIBUTE PROFILE (GATT): 2.7 CONFIGURED BROADCAST
+     *
+     * This method extracts ServiceData, finds the Service and the Characteristic it belongs
+     * to and notifies a value change.
+     *
+     * @param scanNotification to get serviceData from
+     */
+    private void handleServiceData(BluetoothScanNotification scanNotification) {
+        Map<String, byte[]> serviceData = scanNotification.getServiceData();
+        if (serviceData != null) {
+            for (String uuidStr : serviceData.keySet()) {
+                @Nullable
+                BluetoothService service = device.getServices(UUID.fromString(uuidStr));
+                if (service == null) {
+                    logger.warn("Service with UUID {} not found on {}, ignored.", uuidStr,
+                            scanNotification.getAddress());
+                } else {
+                    // The ServiceData contains the UUID of the Service but no identifier of the
+                    // Characteristic the data belongs to.
+                    // Check which Characteristic within this service has the `Broadcast` property set
+                    // and select this one as the Characteristic to assign the data to.
+                    List<BluetoothCharacteristic> broadcastCharacteristics = service.getCharacteristics().stream()
+                            .filter((characteristic) -> characteristic
+                                    .hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_BROADCAST))
+                            .collect(Collectors.toUnmodifiableList());
+
+                    if (broadcastCharacteristics.isEmpty()) {
+                        logger.info(
+                                "No Characteristic of service with UUID {} on {} has the broadcast property set, ignored.",
+                                uuidStr, scanNotification.getAddress());
+                    } else if (broadcastCharacteristics.size() > 1) {
+                        logger.warn(
+                                "Multiple Characteristics of service with UUID {} on {} have the broadcast property set what is not supported, ignored.",
+                                uuidStr, scanNotification.getAddress());
+                    } else {
+                        BluetoothCharacteristic broadcastCharacteristic = broadcastCharacteristics.get(0);
+
+                        byte[] value = serviceData.get(uuidStr);
+                        if (value != null) {
+                            onCharacteristicUpdate(broadcastCharacteristic, value);
+                        } else {
+                            logger.warn("Service Data for Service with UUID {} on {} is null, ignored.", uuidStr,
+                                    scanNotification.getAddress());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void updateThingChannels() {
@@ -161,9 +233,11 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     logger.trace("{} processing characteristic {}", address, characteristic.getUuid());
                     CharacteristicHandler handler = getCharacteristicHandler(characteristic);
                     List<Channel> chans = handler.buildChannels();
-                    for (Channel channel : chans) {
-                        channelHandlers.put(channel.getUID(), handler);
+                    List<ChannelUID> chanUids = chans.stream().map(Channel::getUID).collect(Collectors.toList());
+                    for (ChannelUID channel : chanUids) {
+                        channelHandlers.put(channel, handler);
                     }
+                    handlerToChannels.put(handler, chanUids);
                     return chans.stream();
                 })//
                 .collect(Collectors.toList());
@@ -187,13 +261,28 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         return Objects.requireNonNull(charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new));
     }
 
-    private boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        return device.readCharacteristic(characteristic);
+    private void readCharacteristic(BluetoothCharacteristic characteristic) {
+        readCharacteristic(characteristic.getService().getUuid(), characteristic.getUuid()).whenComplete((data, th) -> {
+            if (th != null) {
+                logger.warn("Could not read data from characteristic {} of device {}: {}", characteristic.getUuid(),
+                        address, th.getMessage());
+                return;
+            }
+            if (data != null) {
+                getCharacteristicHandler(characteristic).handleCharacteristicUpdate(data);
+            }
+        });
     }
 
-    private boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] data) {
-        characteristic.setValue(data);
-        return device.writeCharacteristic(characteristic);
+    private void writeCharacteristic(BluetoothCharacteristic characteristic, byte[] data) {
+        writeCharacteristic(characteristic.getService().getUuid(), characteristic.getUuid(), data, false)
+                .whenComplete((r, th) -> {
+                    if (th != null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Could not write data to characteristic " + characteristic.getUuid() + ": "
+                                        + th.getMessage());
+                    }
+                });
     }
 
     private class CharacteristicHandler {
@@ -209,7 +298,6 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         }
 
         public void handleCommand(ChannelUID channelUID, Command command) {
-
             // Handle REFRESH
             if (command == RefreshType.REFRESH) {
                 if (canRead()) {
@@ -233,10 +321,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     } else if (state instanceof StringType) {
                         // unknown characteristic
                         byte[] data = HexUtils.hexToBytes(state.toString());
-                        if (!writeCharacteristic(characteristic, data)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Could not write data to characteristic: " + characteristicUUID);
-                        }
+                        writeCharacteristic(characteristic, data);
                     }
                 } catch (RuntimeException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -255,10 +340,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     BluetoothChannelUtils.updateHolder(gattParser, request, fieldName, state);
                     byte[] data = gattParser.serialize(request);
 
-                    if (!writeCharacteristic(characteristic, data)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not write data to characteristic: " + characteristicUUID);
-                    }
+                    writeCharacteristic(characteristic, data);
                 } catch (NumberFormatException ex) {
                     logger.warn("Could not parse characteristic value: {} : {}", characteristicUUID, state, ex);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -341,8 +423,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
             if (gattParser.isKnownCharacteristic(charUUID)) {
                 return gattParser.isValidForRead(charUUID);
             }
-            // TODO: need to evaluate this from characteristic properties, but such properties aren't support yet
-            return true;
+            return characteristic.canRead();
         }
 
         public boolean canWrite() {
@@ -350,8 +431,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
             if (gattParser.isKnownCharacteristic(charUUID)) {
                 return gattParser.isValidForWrite(charUUID);
             }
-            // TODO: need to evaluate this from characteristic properties, but such properties aren't support yet
-            return true;
+            return characteristic.canWrite();
         }
 
         private boolean isAdvanced() {

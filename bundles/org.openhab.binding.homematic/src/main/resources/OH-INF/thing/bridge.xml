@@ -37,11 +37,6 @@
 				<label>Callback Network Address</label>
 				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
-			<parameter name="bindAddress" type="text">
-				<context>network-address</context>
-				<label>Bind Address</label>
-				<description>The address the XML-/BINRPC server binds to, default is callbackHost</description>
-			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
 				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with
@@ -100,6 +95,12 @@
 				<advanced>true</advanced>
 				<default>9292</default>
 			</parameter>
+			<parameter name="callbackRegTimeout" type="integer" min="30">
+				<label>Callback Reg. Timeout</label>
+				<description>Maximum time in seconds for callback registration in the Homematic gateway.</description>
+				<advanced>true</advanced>
+				<default>120</default>
+			</parameter>
 			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
 				<label>Install Mode Duration</label>
 				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
@@ -120,7 +121,29 @@
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
-
+			<parameter name="bufferSize" type="integer" min="0">
+				<label>Buffer Size</label>
+				<description>Size of the response buffer retrieved from the gateway (default 2048 kB)</description>
+				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useAuthentication" type="boolean">
+				<label>Use authentication</label>
+				<description>Use authentication to access the gateway. If set to true, username and password is required.</description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>User name</label>
+				<description>User name for accessing the gateway if authenticaton is required.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for accessing the gateway if authenticaton is required.</description>
+				<advanced>true</advanced>
+				<context>password</context>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

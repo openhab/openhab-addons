@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Supplies sequence numbers for packets in the range [0, 255].
  *
- * @author Wouter Born - Make selector logic reusable between discovery and handlers
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxSequenceNumberSupplier implements Supplier<Integer> {
@@ -30,8 +30,6 @@ public class LifxSequenceNumberSupplier implements Supplier<Integer> {
 
     @Override
     public Integer get() {
-        return sequenceNumber.getAndUpdate((value) -> {
-            return (value + 1) % SEQUENCE_NUMBER_DIVISOR;
-        });
+        return sequenceNumber.getAndUpdate((value) -> (value + 1) % SEQUENCE_NUMBER_DIVISOR);
     }
 }

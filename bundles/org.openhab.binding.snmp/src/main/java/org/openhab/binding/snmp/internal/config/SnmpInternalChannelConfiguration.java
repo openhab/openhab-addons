@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.snmp.internal.config;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.snmp.internal.SnmpChannelMode;
-import org.openhab.binding.snmp.internal.SnmpDatatype;
+import org.openhab.binding.snmp.internal.types.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.types.SnmpDatatype;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.snmp4j.smi.OID;
@@ -37,10 +39,12 @@ public class SnmpInternalChannelConfiguration {
     public final @Nullable Variable onValue;
     public final @Nullable Variable offValue;
     public final State exceptionValue;
+    public final @Nullable Unit<?> unit;
     public final boolean doNotLogException;
 
     public SnmpInternalChannelConfiguration(ChannelUID channelUID, OID oid, SnmpChannelMode mode, SnmpDatatype datatype,
-            @Nullable Variable onValue, @Nullable Variable offValue, State exceptionValue, boolean doNotLogException) {
+            @Nullable Variable onValue, @Nullable Variable offValue, State exceptionValue, @Nullable Unit<?> unit,
+            boolean doNotLogException) {
         this.channelUID = channelUID;
         this.oid = oid;
         this.mode = mode;
@@ -48,6 +52,7 @@ public class SnmpInternalChannelConfiguration {
         this.onValue = onValue;
         this.offValue = offValue;
         this.exceptionValue = exceptionValue;
+        this.unit = unit;
         this.doNotLogException = doNotLogException;
     }
 }

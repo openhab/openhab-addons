@@ -12,6 +12,7 @@
 
 		<label>BTicino Smarther Chronothermostat</label>
 		<description>This thing represents a BTicino Smarther chronothermostat module.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="measures" typeId="module-measures"/>
@@ -87,7 +88,7 @@
 	</channel-type>
 
 	<channel-type id="measures-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Indoor humidity as measured by the sensor</description>
 		<category>Humidity</category>

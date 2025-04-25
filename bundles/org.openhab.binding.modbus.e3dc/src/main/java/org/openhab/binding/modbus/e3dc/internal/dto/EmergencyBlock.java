@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class EmergencyBlock implements Data {
             EP_POSSIBLE, EP_SWITCH };
 
     /**
-     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 & 15
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 &amp; 15
      *
      * @param bArray - Modbus Registers as bytes from 40084 to 40085
      */
@@ -67,7 +67,7 @@ public class EmergencyBlock implements Data {
         BitSet bs = BitSet.valueOf(emsStatusBytes);
         batteryChargingLocked = OnOffType.from(bs.get(EMS_CHARGING_LOCK_BIT));
         batteryDischargingLocked = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
-        epPossible = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
+        epPossible = OnOffType.from(bs.get(EMS_AVAILABLE_BIT));
         weatherPredictedCharging = OnOffType.from(bs.get(EMS_WEATHER_CHARGING_BIT));
         regulationStatus = OnOffType.from(bs.get(EMS_REGULATION_BIT));
         chargeLockTime = OnOffType.from(bs.get(EMS_CHARGE_LOCKTIME_BIT));

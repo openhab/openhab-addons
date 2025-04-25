@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,16 @@
 package org.openhab.binding.radiothermostat.internal.discovery;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -50,14 +50,13 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link RadioThermostatDiscoveryService} is responsible for discovery of
  * RadioThermostats on the local network
- * 
+ *
  * @author William Welliver - Initial contribution
  * @author Dan Cunningham - Refactoring and Improvements
  * @author Bill Forsyth - Modified for the RadioThermostat's peculiar discovery mode
  * @author Michael Lobstein - Cleanup for RadioThermostat
- * 
+ *
  */
-
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.radiothermostat")
 public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
@@ -65,6 +64,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private static final String RADIOTHERMOSTAT_DISCOVERY_MESSAGE = "TYPE: WM-DISCOVER\r\nVERSION: 1.0\r\n\r\nservices:com.marvell.wm.system*\r\n\r\n";
 
     private static final String SSDP_MATCH = "WM-NOTIFY";
+    private static final String MULTICAST_GROUP = "239.255.255.250";
+    private static final int MULTICAST_PORT = 1900;
     private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
 
     private @Nullable ScheduledFuture<?> scheduledFuture = null;
@@ -81,11 +82,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scheduledFuture != null && !scheduledFuture.isCancelled()) {
+        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
+        if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
         }
     }
 
@@ -118,12 +120,9 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
      * @throws UnknownHostException
      * @throws IOException
      * @throws SocketException
-     * @throws UnsupportedEncodingException
      */
-    private void sendDiscoveryBroacast(NetworkInterface ni)
-            throws UnknownHostException, SocketException, UnsupportedEncodingException {
-        InetAddress m = InetAddress.getByName("239.255.255.250");
-        final int port = 1900;
+    private void sendDiscoveryBroacast(NetworkInterface ni) throws UnknownHostException, SocketException {
+        InetAddress m = InetAddress.getByName(MULTICAST_GROUP);
         logger.debug("Sending discovery broadcast");
         try {
             Enumeration<InetAddress> addrs = ni.getInetAddresses();
@@ -146,14 +145,17 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             // this seems to be okay on linux systems, but osx apparently prefers ipv6, so this
             // prevents responses from being received unless the ipv4 stack is given preference.
             MulticastSocket socket = new MulticastSocket(null);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getByName(MULTICAST_GROUP),
+                    MULTICAST_PORT);
+
             socket.setSoTimeout(5000);
             socket.setReuseAddress(true);
-            // socket.setBroadcast(true);
             socket.setNetworkInterface(ni);
-            socket.joinGroup(m);
+            socket.joinGroup(inetSocketAddress, null);
             logger.debug("Joined UPnP Multicast group on Interface: {}", ni.getName());
-            byte[] requestMessage = RADIOTHERMOSTAT_DISCOVERY_MESSAGE.getBytes("UTF-8");
-            DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
+            byte[] requestMessage = RADIOTHERMOSTAT_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);
+            DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m,
+                    MULTICAST_PORT);
             socket.send(datagramPacket);
             try {
                 // Try to ensure that joinGroup has taken effect. Without this delay, the query
@@ -181,7 +183,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                             "Timed out waiting for multicast response. Presumably all devices have already responded.");
                 }
             } finally {
-                socket.leaveGroup(m);
+                socket.leaveGroup(inetSocketAddress, null);
                 socket.close();
             }
         } catch (IOException | InterruptedException e) {
@@ -194,12 +196,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
      * Scans all messages that arrive on the socket and scans them for the
      * search keywords. The search is not case sensitive.
      *
-     * @param socket
-     *            The socket where the answers arrive.
-     * @param keywords
-     *            The keywords to be searched for.
-     * @return
-     * @throws IOException
+     * @param response
      */
 
     protected void parseResponse(String response) {
@@ -223,8 +220,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             if ("location".equals(key)) {
                 try {
                     url = value;
-                    ip = new URL(value).getHost();
-                } catch (MalformedURLException e) {
+                    ip = new URI(value).getHost();
+                } catch (URISyntaxException e) {
                     logger.debug("Malfored URL {}", e.getMessage());
                 }
             }
@@ -245,7 +242,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         try {
             // Run the HTTP request and get the JSON response from the thermostat
             sysinfo = HttpUtil.executeUrl("GET", url, 20000);
-            content = new JsonParser().parse(sysinfo).getAsJsonObject();
+            content = JsonParser.parseString(sysinfo).getAsJsonObject();
             uuid = content.get("uuid").getAsString();
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get system info from thermostat {} {}", ip, e.getMessage());
@@ -254,7 +251,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         try {
             String nameinfo = HttpUtil.executeUrl("GET", url + "name", 20000);
-            content = new JsonParser().parse(nameinfo).getAsJsonObject();
+            content = JsonParser.parseString(nameinfo).getAsJsonObject();
             name = content.get("name").getAsString();
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Cannot get name from thermostat {} {}", ip, e.getMessage());
@@ -273,12 +270,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Got discovered device.");
 
-        String label = String.format("RadioThermostat (%s)", name);
+        String label = String.format("Radio Thermostat (%s)", name);
         result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
                 .withRepresentationProperty(RadioThermostatBindingConstants.PROPERTY_IP)
                 .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip)
                 .withProperty(RadioThermostatBindingConstants.PROPERTY_ISCT80, isCT80).build();
-        logger.debug("New RadioThermostat discovered with ID=<{}>", uuid);
+        logger.debug("New Radio Thermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
 }

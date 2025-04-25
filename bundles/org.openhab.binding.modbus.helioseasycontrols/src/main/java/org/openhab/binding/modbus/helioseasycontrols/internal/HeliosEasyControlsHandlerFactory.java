@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.helioseasycontrols.internal;
 
 import static org.openhab.binding.modbus.helioseasycontrols.internal.HeliosEasyControlsBindingConstants.THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,7 +23,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HeliosEasyControlsHandlerFactory} is responsible for creating things and thing
@@ -36,8 +38,16 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.helioseasycontrols", service = ThingHandlerFactory.class)
 public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS);
+    private final HeliosEasyControlsTranslationProvider translationProvider;
+
+    @Activate
+    public HeliosEasyControlsHandlerFactory(@Reference HeliosEasyControlsTranslationProvider translationProvider,
+            ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.translationProvider = translationProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +58,7 @@ public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS.equals(thingTypeUID)) {
-            return new HeliosEasyControlsHandler(thing);
+            return new HeliosEasyControlsHandler(thing, this.translationProvider);
         }
         return null;
     }

@@ -8,7 +8,7 @@
 	<bridge-type id="fritzbox">
 		<label>FRITZ!Box</label>
 		<description>A FRITZ!Box router.</description>
-
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 		<channels>
 			<channel id="incoming_call" typeId="incoming_call"/>
 			<channel id="outgoing_call" typeId="outgoing_call"/>
@@ -16,6 +16,8 @@
 			<channel id="call_state" typeId="call_state"/>
 			<channel id="apply_template" typeId="apply_template"/>
 		</channels>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="bridge-type:avmfritz:fritzbox"/>
 	</bridge-type>
@@ -29,10 +31,22 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="apply_template" typeId="apply_template"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electric-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline"/>
 	</bridge-type>

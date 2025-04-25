@@ -17,16 +17,14 @@
 
 		<config-description>
 			<!--zone id -->
-			<parameter name="zoneID" type="text">
+			<parameter name="zoneID" type="text" required="false">
 				<label>@text/param_scene_zone_id_label</label>
 				<description>@text/param_scene_zone_id_desc</description>
-				<required>false</required>
 			</parameter>
 			<!--scene id -->
-			<parameter name="sceneID" type="text">
+			<parameter name="sceneID" type="text" required="false">
 				<label>@text/param_scene_id_label</label>
 				<description>@text/param_scene_id_desc</description>
-				<required>false</required>
 				<options>
 					<option value="DEEP_OFF">@text/deep_off</option>
 					<option value="STANDBY">@text/standby</option>

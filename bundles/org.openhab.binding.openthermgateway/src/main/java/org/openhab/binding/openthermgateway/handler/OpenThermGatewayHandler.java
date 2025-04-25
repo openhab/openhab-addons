@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,34 +12,32 @@
  */
 package org.openhab.binding.openthermgateway.handler;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
-import org.openhab.binding.openthermgateway.internal.DataItem;
+import org.openhab.binding.openthermgateway.internal.ConnectionState;
 import org.openhab.binding.openthermgateway.internal.DataItemGroup;
 import org.openhab.binding.openthermgateway.internal.GatewayCommand;
 import org.openhab.binding.openthermgateway.internal.GatewayCommandCode;
 import org.openhab.binding.openthermgateway.internal.Message;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewayBindingConstants;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConfiguration;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConnector;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewaySocketConnector;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,36 +49,39 @@ import org.slf4j.LoggerFactory;
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThermGatewayCallback {
+public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenThermGatewayCallback {
+    private static final String PROPERTY_GATEWAY_ID_NAME = "gatewayId";
+    private static final String PROPERTY_GATEWAY_ID_TAG = "PR: A=";
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
-    private @Nullable OpenThermGatewayConfiguration config;
-
+    private @Nullable OpenThermGatewayConfiguration configuration;
     private @Nullable OpenThermGatewayConnector connector;
+    private @Nullable ScheduledFuture<?> reconnectTask;
 
-    private boolean connecting = false;
+    private @Nullable ConnectionState state;
+    private boolean autoReconnect = true;
+    private boolean disposing = false;
 
-    private boolean explicitDisconnect = false;
-
-    public OpenThermGatewayHandler(Thing thing) {
-        super(thing);
+    public OpenThermGatewayHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
+        logger.debug("Initializing OpenThermGateway handler for uid {}", getThing().getUID());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
+        configuration = getConfigAs(OpenThermGatewayConfiguration.class);
+        logger.debug("Using configuration: {}", configuration);
 
-        config = getConfigAs(OpenThermGatewayConfiguration.class);
-
+        disposing = false;
+        updateStatus(ThingStatus.UNKNOWN);
         connect();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received channel: {}, command: {}", channelUID, command);
+        logger.debug("Received command {} for channel {}", command, channelUID);
 
         if (!(command instanceof RefreshType)) {
             String channel = channelUID.getId();
@@ -88,12 +89,11 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
             GatewayCommand gatewayCommand = null;
 
-            if (command instanceof OnOffType) {
-                OnOffType onOff = (OnOffType) command;
-                gatewayCommand = GatewayCommand.parse(code, onOff == OnOffType.ON ? "1" : "0");
+            if (command instanceof OnOffType onOffCommand) {
+                gatewayCommand = GatewayCommand.parse(code, onOffCommand == OnOffType.ON ? "1" : "0");
             }
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> quantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+            if (command instanceof QuantityType<?> quantityCommand) {
+                QuantityType<?> quantityType = quantityCommand.toUnit(SIUnits.CELSIUS);
 
                 if (quantityType != null) {
                     double value = quantityType.doubleValue();
@@ -105,185 +105,194 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }
 
-            if (checkConnection()) {
-                @Nullable
-                OpenThermGatewayConnector conn = connector;
+            sendCommand(gatewayCommand);
 
-                if (conn != null) {
-                    conn.sendCommand(gatewayCommand);
-
-                    if (code == GatewayCommandCode.ControlSetpoint) {
-                        if (gatewayCommand.getMessage().equals("0.0")) {
-                            updateState(
-                                    OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
-                                    UnDefType.UNDEF);
-                        }
-                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
-                                OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
-                    }
+            if (GatewayCommandCode.CONTROLSETPOINT.equals(code)) {
+                if ("0.0".equals(gatewayCommand.getMessage())) {
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
+                            UnDefType.UNDEF);
                 }
+                updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
+                        OnOffType.from(!"0.0".equals(gatewayCommand.getMessage())));
+            } else if (GatewayCommandCode.CONTROLSETPOINT2.equals(code)) {
+                if ("0.0".equals(gatewayCommand.getMessage())) {
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
+                            UnDefType.UNDEF);
+                }
+                updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
+                        OnOffType.from(!"0.0".equals(gatewayCommand.getMessage())));
             }
         }
     }
 
-    @Override
-    public void connecting() {
-        connecting = true;
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting");
-    }
-
-    @Override
-    public void connected() {
-        connecting = false;
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-    public void disconnected() {
+    public void sendCommand(GatewayCommand gatewayCommand) {
         @Nullable
         OpenThermGatewayConnector conn = connector;
 
-        @Nullable
-        OpenThermGatewayConfiguration conf = config;
-
-        connecting = false;
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
-
-        // retry connection if disconnect is not explicitly requested
-        if (conf != null && !explicitDisconnect && conf.connectionRetryInterval > 0) {
-            scheduler.schedule(() -> {
-                if (conn != null && !connecting && !conn.isConnected()) {
-                    connect();
-                }
-            }, conf.connectionRetryInterval, TimeUnit.SECONDS);
+        if (conn != null && conn.isConnected()) {
+            conn.sendCommand(gatewayCommand);
+        } else {
+            logger.debug("Unable to send command {}: connector not connected", gatewayCommand.toFullString());
         }
     }
 
     @Override
     public void receiveMessage(Message message) {
-        if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
-            DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
+        scheduler.submit(() -> receiveMessageTask(message));
+    }
 
-            for (DataItem dataItem : dataItems) {
-                String channelId = dataItem.getSubject();
+    private void receiveMessageTask(Message message) {
+        int msgId = message.getID();
 
-                if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)
-                        || (dataItem.getFilteredCode() != null && dataItem.getFilteredCode() != message.getCode())) {
-                    continue;
-                }
+        if (!DataItemGroup.DATAITEMGROUPS.containsKey(msgId)) {
+            logger.debug("Unsupported message id {}", msgId);
+            return;
+        }
 
-                State state = null;
+        for (Thing thing : getThing().getThings()) {
+            BaseDeviceHandler handler = (BaseDeviceHandler) thing.getHandler();
 
-                switch (dataItem.getDataType()) {
-                    case FLAGS:
-                        state = OnOffType.from(message.getBit(dataItem.getByteType(), dataItem.getBitPos()));
-                        break;
-                    case UINT8:
-                    case UINT16:
-                        state = new DecimalType(message.getUInt(dataItem.getByteType()));
-                        break;
-                    case INT8:
-                    case INT16:
-                        state = new DecimalType(message.getInt(dataItem.getByteType()));
-                        break;
-                    case FLOAT:
-                        float value = message.getFloat();
-                        @Nullable
-                        Unit<?> unit = dataItem.getUnit();
-                        state = (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
-                        break;
-                    case DOWTOD:
-                        break;
-                }
-
-                if (state != null) {
-                    logger.debug("Received update for channel '{}': {}", channelId, state);
-                    updateState(channelId, state);
-                }
+            if (handler != null) {
+                handler.receiveMessage(message);
             }
         }
     }
 
     @Override
+    public void connectionStateChanged(ConnectionState state) {
+        scheduler.submit(() -> connectionStateChangedTask(state));
+    }
+
+    private void connectionStateChangedTask(ConnectionState state) {
+        if (this.state != state) {
+            this.state = state;
+
+            switch (state) {
+                case CONNECTED:
+                    updateStatus(ThingStatus.ONLINE);
+                    cancelAutoReconnect();
+                    break;
+                case DISCONNECTED:
+                    if (!disposing) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        autoReconnect();
+                    }
+                default:
+            }
+        }
+    }
+
+    @Override
+    public void receiveAcknowledgement(String message) {
+        scheduler.submit(() -> receiveAcknowledgementTask(message));
+    }
+
+    private void receiveAcknowledgementTask(String message) {
+        if (message.startsWith(PROPERTY_GATEWAY_ID_TAG)) {
+            getThing().setProperty(PROPERTY_GATEWAY_ID_NAME,
+                    message.substring(PROPERTY_GATEWAY_ID_TAG.length()).strip());
+        }
+    }
+
+    @Override
     public void handleRemoval() {
-        logger.debug("Removing OpenTherm Gateway handler");
+        logger.debug("Removing OpenThermGateway handler");
         disconnect();
         super.handleRemoval();
     }
 
     @Override
     public void dispose() {
+        logger.debug("Disposing OpenThermGateway handler");
+        disposing = true;
         disconnect();
         super.dispose();
     }
 
-    private boolean checkConnection() {
+    private void connect() {
         @Nullable
-        OpenThermGatewayConnector conn = connector;
+        OpenThermGatewayConfiguration config = configuration;
 
-        if (conn != null && conn.isConnected()) {
-            return true;
+        if (this.state == ConnectionState.CONNECTING) {
+            logger.debug("OpenThermGateway connector is already connecting");
+            return;
         }
 
-        return connect();
-    }
-
-    private boolean connect() {
-        @Nullable
-        OpenThermGatewayConfiguration conf = config;
-
+        // Make sure everything is cleaned up before creating a new connection
         disconnect();
 
-        if (conf != null) {
-            logger.debug("Starting OpenTherm Gateway connector");
+        if (config != null) {
+            connectionStateChanged(ConnectionState.INITIALIZING);
 
-            explicitDisconnect = false;
+            logger.debug("Starting OpenThermGateway connector");
 
-            connector = new OpenThermGatewaySocketConnector(this, conf.ipaddress, conf.port);
+            autoReconnect = true;
 
-            Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
-            thread.setDaemon(true);
-            thread.start();
+            OpenThermGatewayConnector conn = connector = new OpenThermGatewaySocketConnector(this, config);
+            conn.start();
 
-            logger.debug("OpenTherm Gateway connector started");
-
-            return true;
+            logger.debug("OpenThermGateway connector started");
         }
-
-        return false;
     }
 
     private void disconnect() {
+        updateStatus(ThingStatus.OFFLINE);
+
+        autoReconnect = false;
+
+        cancelAutoReconnect();
+
         @Nullable
         OpenThermGatewayConnector conn = connector;
-
         if (conn != null) {
-            if (conn.isConnected()) {
-                logger.debug("Stopping OpenTherm Gateway connector");
+            conn.stop();
+            connector = null;
+        }
+    }
 
-                explicitDisconnect = true;
-                conn.stop();
+    private void autoReconnect() {
+        @Nullable
+        OpenThermGatewayConfiguration config = configuration;
+
+        if (autoReconnect && config != null && config.connectionRetryInterval > 0) {
+            logger.debug("Scheduling to auto reconnect in {} seconds", config.connectionRetryInterval);
+            reconnectTask = scheduler.schedule(this::connect, config.connectionRetryInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelAutoReconnect() {
+        ScheduledFuture<?> localReconnectTask = reconnectTask;
+
+        if (localReconnectTask != null) {
+            if (!localReconnectTask.isDone()) {
+                logger.debug("Cancelling auto reconnect task");
+                localReconnectTask.cancel(true);
             }
 
-            connector = null;
+            reconnectTask = null;
         }
     }
 
     private @Nullable String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
         switch (channel) {
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
-                return GatewayCommandCode.TemperatureTemporary;
+                return GatewayCommandCode.TEMPERATURETEMPORARY;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
-                return GatewayCommandCode.TemperatureConstant;
+                return GatewayCommandCode.TEMPERATURECONSTANT;
             case OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE:
-                return GatewayCommandCode.TemperatureOutside;
+                return GatewayCommandCode.TEMPERATUREOUTSIDE;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
-                return GatewayCommandCode.SetpointWater;
+                return GatewayCommandCode.SETPOINTWATER;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT:
-                return GatewayCommandCode.ControlSetpoint;
+                return GatewayCommandCode.CONTROLSETPOINT;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
-                return GatewayCommandCode.CentralHeating;
+                return GatewayCommandCode.CENTRALHEATING;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
+                return GatewayCommandCode.CONTROLSETPOINT2;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
+                return GatewayCommandCode.CENTRALHEATING2;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_VENTILATION_SETPOINT:
+                return GatewayCommandCode.VENTILATIONSETPOINT;
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return null;
             default:

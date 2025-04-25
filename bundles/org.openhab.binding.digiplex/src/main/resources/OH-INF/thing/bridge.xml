@@ -17,7 +17,6 @@
 			<parameter-group name="port">
 				<context>communication</context>
 				<label>Port Configuration</label>
-				<description></description>
 			</parameter-group>
 
 			<parameter name="port" type="text" required="true" groupName="port">
@@ -30,7 +29,6 @@
 
 			<parameter name="baudrate" type="integer" required="true" groupName="port">
 				<label>Baud Rate</label>
-				<context>serial-port</context>
 				<description>Set the serial port baud rate</description>
 				<default>2400</default>
 				<limitToOptions>true</limitToOptions>

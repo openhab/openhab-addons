@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,14 +16,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
-import org.openhab.persistence.jdbc.utils.MovingAverage;
-import org.openhab.persistence.jdbc.utils.StringUtilsExt;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.persistence.jdbc.internal.db.JdbcBaseDAO;
+import org.openhab.persistence.jdbc.internal.utils.MovingAverage;
+import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,20 +35,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcConfiguration {
     private final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
 
     private static final Pattern EXTRACT_CONFIG_PATTERN = Pattern.compile("^(.*?)\\.([0-9.a-zA-Z]+)$");
-    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.db.Jdbc";
+    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.internal.db.Jdbc";
 
     private Map<Object, Object> configuration;
 
-    private JdbcBaseDAO dBDAO = null;
-    private String dbName = null;
+    private @NonNullByDefault({}) JdbcBaseDAO dBDAO;
+    private @Nullable String dbName;
     boolean dbConnected = false;
     boolean driverAvailable = false;
 
-    private String serviceName;
+    private @Nullable String serviceName;
     private String name = "jdbc";
     public final boolean valid;
 
@@ -54,6 +58,8 @@ public class JdbcConfiguration {
     // private String password;
     private int numberDecimalcount = 3;
     private boolean tableUseRealItemNames = false;
+    private boolean tableCaseSensitiveItemNames = false;
+    private String itemsManageTable = "items";
     private String tableNamePrefix = "item";
     private int tableIdDigitCount = 4;
     private boolean rebuildTableNames = false;
@@ -70,12 +76,11 @@ public class JdbcConfiguration {
 
     public JdbcConfiguration(Map<Object, Object> configuration) {
         logger.debug("JDBC::JdbcConfiguration");
-        valid = updateConfig(configuration);
+        this.configuration = configuration;
+        valid = updateConfig();
     }
 
-    private boolean updateConfig(Map<Object, Object> config) {
-        configuration = config;
-
+    private boolean updateConfig() {
         logger.debug("JDBC::updateConfig: configuration size = {}", configuration.size());
 
         String user = (String) configuration.get("user");
@@ -121,8 +126,9 @@ public class JdbcConfiguration {
         logger.debug("JDBC::updateConfig: url={}", url);
 
         // set database type and database type class
-        setDBDAOClass(parsedURL.getProperty("dbShortcut")); // derby, h2, hsqldb, mariadb, mysql, postgresql,
-                                                            // sqlite
+        setDBDAOClass(Objects.requireNonNull(parsedURL.getProperty("dbShortcut"))); // derby, h2, hsqldb, mariadb,
+                                                                                    // mysql, postgresql, sqlite,
+                                                                                    // timescaledb, oracle
         // set user
         if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
@@ -143,6 +149,12 @@ public class JdbcConfiguration {
             logger.debug("JDBC::updateConfig: errReconnectThreshold={}", errReconnectThreshold);
         }
 
+        String mt = (String) configuration.get("itemsManageTable");
+        if (mt != null && !mt.isBlank()) {
+            itemsManageTable = mt;
+            logger.debug("JDBC::updateConfig: itemsManageTable={}", itemsManageTable);
+        }
+
         String np = (String) configuration.get("tableNamePrefix");
         if (np != null && !np.isBlank()) {
             tableNamePrefix = np;
@@ -159,6 +171,12 @@ public class JdbcConfiguration {
         if (rn != null && !rn.isBlank()) {
             tableUseRealItemNames = "true".equals(rn) ? Boolean.parseBoolean(rn) : false;
             logger.debug("JDBC::updateConfig: tableUseRealItemNames={}", tableUseRealItemNames);
+        }
+
+        String lc = (String) configuration.get("tableCaseSensitiveItemNames");
+        if (lc != null && !lc.isBlank()) {
+            tableCaseSensitiveItemNames = Boolean.parseBoolean(lc);
+            logger.debug("JDBC::updateConfig: tableCaseSensitiveItemNames={}", tableCaseSensitiveItemNames);
         }
 
         String td = (String) configuration.get("tableIdDigitCount");
@@ -213,12 +231,13 @@ public class JdbcConfiguration {
         String dn = dBDAO.databaseProps.getProperty("driverClassName");
         if (dn == null) {
             dn = dBDAO.databaseProps.getProperty("dataSourceClassName");
+            dBDAO.databaseProps.setProperty("dataSource.url", url);
         } else {
             dBDAO.databaseProps.setProperty("jdbcUrl", url);
         }
 
         // test if JDBC driver bundle is available
-        testJDBCDriver(dn);
+        testJDBCDriver(Objects.requireNonNull(dn));
 
         logger.debug("JDBC::updateConfig: configuration complete. service={}", getName());
 
@@ -226,15 +245,17 @@ public class JdbcConfiguration {
     }
 
     private void setDBDAOClass(String sn) {
-        serviceName = "none";
+        String serviceName;
 
         // set database type
-        if (sn == null || sn.isBlank() || sn.length() < 2) {
+        if (sn.isBlank() || sn.length() < 2) {
             logger.error(
                     "JDBC::updateConfig: Required database url like 'jdbc:<service>:<host>[:<port>;<attributes>]' - please configure the jdbc:url parameter in openhab.cfg");
+            serviceName = "none";
         } else {
             serviceName = sn;
         }
+        this.serviceName = serviceName;
         logger.debug("JDBC::updateConfig: found serviceName = '{}'", serviceName);
 
         // set class for database type
@@ -268,7 +289,7 @@ public class JdbcConfiguration {
             }
             matcher.reset();
             matcher.find();
-            if (!matcher.group(1).equals("sqltype")) {
+            if (!"sqltype".equals(matcher.group(1))) {
                 continue;
             }
             String itemType = matcher.group(2);
@@ -277,7 +298,9 @@ public class JdbcConfiguration {
             }
             String value = (String) configuration.get(key);
             logger.debug("JDBC::updateConfig: set sqlTypes: itemType={} value={}", itemType, value);
-            dBDAO.sqlTypes.put(itemType, value);
+            if (value != null) {
+                dBDAO.sqlTypes.put(itemType, value);
+            }
         }
     }
 
@@ -294,27 +317,41 @@ public class JdbcConfiguration {
             String warn = ""
                     + "\n\n\t!!!\n\tTo avoid this error, place an appropriate JDBC driver file for serviceName '{}' in addons directory.\n"
                     + "\tCopy missing JDBC-Driver-jar to your openHab/addons Folder.\n\t!!!\n" + "\tDOWNLOAD: \n";
-            if (serviceName.equals("derby")) {
-                warn += "\tDerby:     version >= 10.11.1.1 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
-            } else if (serviceName.equals("h2")) {
-                warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
-            } else if (serviceName.equals("hsqldb")) {
-                warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
-            } else if (serviceName.equals("mariadb")) {
-                warn += "\tMariaDB:   version >= 1.2.0 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
-            } else if (serviceName.equals("mysql")) {
-                warn += "\tMySQL:     version >= 5.1.36 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
-            } else if (serviceName.equals("postgresql")) {
-                warn += "\tPostgreSQL:version >= 9.4.1208 from           https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
-            } else if (serviceName.equals("sqlite")) {
-                warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+            String serviceName = this.serviceName;
+            if (serviceName != null) {
+                switch (serviceName) {
+                    case "derby":
+                        warn += "\tDerby:     version >= 10.14.2.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
+                        break;
+                    case "h2":
+                        warn += "\tH2:        version >= 2.2.224 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        break;
+                    case "hsqldb":
+                        warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
+                        break;
+                    case "mariadb":
+                        warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        break;
+                    case "mysql":
+                        warn += "\tMySQL:     version >= 9.2.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        break;
+                    case "postgresql":
+                        warn += "\tPostgreSQL:version >= 42.4.4 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        break;
+                    case "sqlite":
+                        warn += "\tSQLite:    version >= 3.42.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        break;
+                    case "oracle":
+                        warn += "\tOracle:    version >= 23.5.0.0 from           https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11\n";
+                        break;
+                }
             }
             logger.warn(warn, serviceName);
         }
     }
 
     public Properties getHikariConfiguration() {
-        return dBDAO.databaseProps;
+        return dBDAO.getConnectionProperties();
     }
 
     public String getName() {
@@ -322,8 +359,12 @@ public class JdbcConfiguration {
         return name;
     }
 
-    public String getServiceName() {
+    public @Nullable String getServiceName() {
         return serviceName;
+    }
+
+    public String getItemsManageTable() {
+        return itemsManageTable;
     }
 
     public String getTableNamePrefix() {
@@ -346,6 +387,19 @@ public class JdbcConfiguration {
         return tableUseRealItemNames;
     }
 
+    public boolean getTableCaseSensitiveItemNames() {
+        return tableCaseSensitiveItemNames;
+    }
+
+    /**
+     * Checks if real item names (without number suffix) is enabled.
+     *
+     * @return true if both tableUseRealItemNames and tableCaseSensitiveItemNames are enabled.
+     */
+    public boolean getTableUseRealCaseSensitiveItemNames() {
+        return tableUseRealItemNames && tableCaseSensitiveItemNames;
+    }
+
     public int getTableIdDigitCount() {
         return tableIdDigitCount;
     }
@@ -354,7 +408,7 @@ public class JdbcConfiguration {
         return dBDAO;
     }
 
-    public String getDbName() {
+    public @Nullable String getDbName() {
         return dbName;
     }
 

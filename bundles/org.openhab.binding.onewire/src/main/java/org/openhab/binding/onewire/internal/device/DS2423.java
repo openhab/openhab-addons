@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DS2423} class defines an DS2423 device
+ * The {@link DS2423} class defines a DS2423 device
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -52,7 +52,7 @@ public class DS2423 extends AbstractOwDevice {
             List<State> states = bridgeHandler.readDecimalTypeArray(sensorId, counterParameter);
 
             if (states.size() != 2) {
-                throw new OwException("Expected exactly two values, got " + String.valueOf(states.size()));
+                throw new OwException("Expected exactly two values, got " + states.size());
             } else {
                 callback.postUpdate(CHANNEL_COUNTER + "0", states.get(0));
                 callback.postUpdate(CHANNEL_COUNTER + "1", states.get(1));

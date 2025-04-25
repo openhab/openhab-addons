@@ -81,7 +81,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"2\"\u003d\"Cool\",\"3\"\u003d\"Dry\",\"4\"\u003d\"Fan\",\"5\"\u003d\"Heat\"]"
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Cool\",\"3\"\u003d\"Dry\",\"4\"\u003d\"Fan\",\"5\"\u003d\"Heat\"]`"
 			},
 			{
 				"property": "target-temperature",
@@ -94,7 +94,6 @@
 				"stateDescription": {
 					"minimum": 16,
 					"maximum": 31,
-					"step": 0.0,
 					"pattern": "%.1f %unit%"
 				},
 				"refresh": true,
@@ -241,7 +240,7 @@
 					"Control",
 					"Level"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\",\"5\"\u003d\"Level5\",\"6\"\u003d\"Level6\",\"7\"\u003d\"Level7\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\",\"5\"\u003d\"Level5\",\"6\"\u003d\"Level6\",\"7\"\u003d\"Level7\"]`"
 			},
 			{
 				"property": "vertical-swing",
@@ -351,13 +350,12 @@
 				"piid": 3,
 				"friendlyName": "Electricity - Count",
 				"channel": "elec-count",
-				"channelType": "miot_uint16",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -405,7 +403,7 @@
 				"piid": 5,
 				"friendlyName": "Maintenance - Running Duration",
 				"channel": "running-duration",
-				"type": "Number:Duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,

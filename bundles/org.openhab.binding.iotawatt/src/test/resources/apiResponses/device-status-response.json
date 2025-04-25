@@ -1,0 +1,106 @@
+{
+  "stats": {
+    "cyclerate": 771.9443,
+    "chanrate": 32.45549,
+    "starttime": 1708508856,
+    "currenttime": 1710326560,
+    "runseconds": 1817704,
+    "stack": 24472,
+    "version": "02_08_03",
+    "frequency": 49.97682,
+    "lowbat": false
+  },
+  "inputs": [
+    {
+      "channel": 0,
+      "Vrms": 254.2972,
+      "Hz": 50.02768,
+      "phase": 0.92
+    },
+    {
+      "channel": 1,
+      "Watts": 1.42,
+      "Pf": 0,
+      "phase": 2.2,
+      "lastphase": 1.28
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Input_1_amps",
+      "units": "Amps",
+      "value": 0.106694
+    },
+    {
+      "name": "Input_1_hz",
+      "units": "Hz",
+      "value": 49.96615
+    },
+    {
+      "name": "Input_1_pf",
+      "units": "PF",
+      "value": 0
+    },
+    {
+      "name": "Input_1_va",
+      "units": "VA",
+      "value": 26.28139
+    },
+    {
+      "name": "Input_1_var",
+      "units": "VAR",
+      "value": 26.28139
+    },
+    {
+      "name": "Input_1_varh",
+      "units": "VARh",
+      "value": 26.28139
+    },
+    {
+      "name": "Input_1_volts",
+      "units": "Volts",
+      "value": 246.3257
+    },
+    {
+      "name": "Input_1_watts",
+      "units": "Watts",
+      "value": 0
+    }
+  ],
+  "influx1": {
+    "state": "not running"
+  },
+  "influx2": {
+    "state": "not running"
+  },
+  "emoncms": {
+    "state": "not running"
+  },
+  "pvoutput": {
+    "state": "not running"
+  },
+  "datalogs": [
+    {
+      "id": "Current",
+      "firstkey": 1707199250,
+      "lastkey": 1710326560,
+      "size": 152183040,
+      "interval": 5
+    },
+    {
+      "id": "History",
+      "firstkey": 1707199260,
+      "lastkey": 1710326520,
+      "size": 12699648,
+      "interval": 60
+    }
+  ],
+  "wifi": {
+    "connecttime": 1707993027,
+    "SSID": "mywifi",
+    "IP": "192.168.1.2",
+    "channel": 6,
+    "RSSI": -60,
+    "mac": "AA:BB:CC:DD:EE:AA"
+  }
+}

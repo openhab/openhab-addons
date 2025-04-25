@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,21 +26,31 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class PortData {
     private double value = -1;
-    private ZonedDateTime timestamp = ZonedDateTime.now();
+    private Instant timestamp = Instant.now();
     private @Nullable ScheduledFuture<?> pulsing;
+    private @Nullable ScheduledFuture<?> pulseCanceler;
 
     public void cancelPulsing() {
-        if (pulsing != null) {
-            pulsing.cancel(true);
+        if (pulsing instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulsing = null;
         }
-        pulsing = null;
+        cancelCanceler();
     }
 
-    public void destroy() {
+    public void cancelCanceler() {
+        if (pulseCanceler instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulseCanceler = null;
+        }
+    }
+
+    public void dispose() {
         cancelPulsing();
+        cancelCanceler();
     }
 
-    public void setData(double value, ZonedDateTime timestamp) {
+    public void setData(double value, Instant timestamp) {
         this.value = value;
         this.timestamp = timestamp;
     }
@@ -49,15 +59,20 @@ public class PortData {
         return value;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
     public void setPulsing(ScheduledFuture<?> pulsing) {
+        cancelPulsing();
         this.pulsing = pulsing;
     }
 
-    public boolean isInitializing() {
-        return value == -1;
+    public boolean isInitialized() {
+        return value != -1;
+    }
+
+    public void setPulseCanceler(ScheduledFuture<?> pulseCanceler) {
+        this.pulseCanceler = pulseCanceler;
     }
 }

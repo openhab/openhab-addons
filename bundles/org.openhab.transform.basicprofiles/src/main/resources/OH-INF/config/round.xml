@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:round">
+		<parameter name="scale" type="integer" min="-16" max="16" step="1" required="true">
+			<label>Scale</label>
+			<description>Scale to indicate the resulting number of decimal places.</description>
+		</parameter>
+		<parameter name="mode" type="text">
+			<label>Rounding Mode</label>
+			<description>Rounding mode to be used (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN").
+			</description>
+			<default>HALF_UP</default>
+			<options>
+				<option value="UP">UP</option>
+				<option value="DOWN">DOWN</option>
+				<option value="CEILING">CEILING</option>
+				<option value="FLOOR">FLOOR</option>
+				<option value="HALF_UP">HALF_UP</option>
+				<option value="HALF_DOWN">HALF_DOWN</option>
+			</options>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

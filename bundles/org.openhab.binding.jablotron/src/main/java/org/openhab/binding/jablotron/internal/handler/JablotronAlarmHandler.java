@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +24,22 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jablotron.internal.config.JablotronDeviceConfig;
-import org.openhab.binding.jablotron.internal.model.*;
+import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDiscoveredService;
+import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
+import org.openhab.binding.jablotron.internal.model.JablotronService;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceData;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetail;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -61,7 +71,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     protected @Nullable ScheduledFuture<?> future = null;
 
     protected @Nullable ExpiringCache<JablotronDataUpdateResponse> dataCache;
-    protected ExpiringCache<List<JablotronHistoryDataEvent>> eventCache;
+    protected ExpiringCache<JablotronHistoryDataEvent> eventCache;
 
     public JablotronAlarmHandler(Thing thing, String alarmName) {
         super(thing);
@@ -175,20 +185,19 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
             logger.debug("Error during alarm status update: {}", dataUpdate.getErrorMessage());
         }
 
-        List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-        if (events != null && events.size() > 0) {
-            JablotronHistoryDataEvent event = events.get(0);
+        JablotronHistoryDataEvent event = sendGetEventHistory();
+        if (event != null) {
             updateLastEvent(event);
         }
 
         return true;
     }
 
-    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory() {
+    protected @Nullable JablotronHistoryDataEvent sendGetEventHistory() {
         return sendGetEventHistory(alarmName);
     }
 
-    private @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(String alarm) {
+    private @Nullable JablotronHistoryDataEvent sendGetEventHistory(String alarm) {
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             return handler.sendGetEventHistory(getThing(), alarm);
@@ -197,7 +206,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateLastEvent(JablotronHistoryDataEvent event) {
-        updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(getZonedDateTime(event.getDate())));
+        updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(event.getDate())));
         updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
         updateState(CHANNEL_LAST_EVENT_CLASS, new StringType(event.getIconType()));
         updateState(CHANNEL_LAST_EVENT_INVOKER, new StringType(event.getInvokerName()));
@@ -209,12 +218,11 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateEventChannel(String channel) {
-        List<JablotronHistoryDataEvent> events = eventCache.getValue();
-        if (events != null && events.size() > 0) {
-            JablotronHistoryDataEvent event = events.get(0);
+        JablotronHistoryDataEvent event = eventCache.getValue();
+        if (event != null) {
             switch (channel) {
                 case CHANNEL_LAST_EVENT_TIME:
-                    updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(getZonedDateTime(event.getDate())));
+                    updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(event.getDate())));
                     break;
                 case CHANNEL_LAST_EVENT:
                     updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
@@ -230,11 +238,6 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
                     break;
             }
         }
-    }
-
-    public ZonedDateTime getZonedDateTime(String date) {
-        return ZonedDateTime.parse(date.substring(0, 22) + ":" + date.substring(22, 24),
-                DateTimeFormatter.ISO_DATE_TIME);
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(String section, String key, String status, String code) {

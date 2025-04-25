@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,13 @@ import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -38,7 +41,7 @@ import org.openhab.core.types.UnDefType;
  * RFXCOM data class for lighting5 message.
  *
  * @author Paul Hampson, Neil Renaud - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  * @author Martin van Wingerden - added support for IT and some other subtypes
  */
 public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighting5Message.SubType> {
@@ -216,7 +219,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
         return pt.toBigDecimal().multiply(BigDecimal.valueOf(31))
-                .divide(PercentType.HUNDRED.toBigDecimal(), 0, BigDecimal.ROUND_UP).intValue();
+                .divide(PercentType.HUNDRED.toBigDecimal(), 0, RoundingMode.UP).intValue();
     }
 
     /**
@@ -229,11 +232,12 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         value = Math.min(value, 31);
 
         return new PercentType(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(31), 0, BigDecimal.ROUND_UP).intValue());
+                .divide(BigDecimal.valueOf(31), 0, RoundingMode.UP).intValue());
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_MOOD:
                 switch (command) {
@@ -291,7 +295,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 
@@ -333,9 +337,9 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     dimmingLevel = 0;
 
-                } else if (type instanceof PercentType) {
+                } else if (type instanceof PercentType percentCommand) {
                     command = Commands.SET_LEVEL;
-                    dimmingLevel = (byte) getDimLevelFromPercentType((PercentType) type);
+                    dimmingLevel = (byte) getDimLevelFromPercentType(percentCommand);
 
                     if (dimmingLevel == 0) {
                         command = Commands.OFF;

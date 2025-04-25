@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.wled.internal;
 
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -86,28 +85,26 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         if (!name.contains("wled")) {
             return null;
         }
-        String address[] = service.getURLs();
+        String[] address = service.getURLs();
         if ((address == null) || address.length < 1) {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;
         }
         String response = sendGetRequest(address[0], "/json");
-        // LinkedList<String> segmentIndexList = WLedHelper.listOfResults(response, "{\"id\":", ",");
-        // How to create multiple things from the returned list of segments?
         String label = WLedHelper.getValue(response, "\"name\":\"", "\"");
         if (label.isEmpty()) {
             label = "WLED @ " + address[0];
         }
         String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
-        String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
-        ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
-        ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
-        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                .withProperty(CONFIG_SEGMENT_INDEX, -1).withLabel(label).withProperties(properties)
-                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+        if (!macAddress.isBlank()) {
+            String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
+            ThingUID thingUID = new ThingUID(THING_TYPE_JSON, macAddress);
+            Map<String, Object> properties = Map.of(Thing.PROPERTY_MAC_ADDRESS, macAddress,
+                    Thing.PROPERTY_FIRMWARE_VERSION, firmware, CONFIG_ADDRESS, address[0]);
+            return DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperties(properties)
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+        }
+        return null;
     }
 
     @Override

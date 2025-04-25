@@ -6,12 +6,14 @@
 		<feature>openhab-runtime-base</feature>
 
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-experimental/4.3.3</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.3.3</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.3.3</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/0.6.3</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/0.6.3</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/0.6.3</bundle>
 		<bundle dependency="true">mvn:org.minidns/minidns-core/0.3.3</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.69</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.3.3</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-sasl-javax/4.3.3</bundle>
 		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.lutron.internal.handler;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -95,8 +93,8 @@ public class TimeclockHandler extends LutronHandler {
         logger.debug("Handling timeclock command {} on channel {}", command, channelID);
 
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
-            if (command instanceof DecimalType) {
-                Integer mode = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer mode = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_CLOCKMODE, mode, null);
             } else if (command instanceof RefreshType) {
                 queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);
@@ -104,8 +102,8 @@ public class TimeclockHandler extends LutronHandler {
                 logger.debug("Invalid command type for clockmode channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_EXECEVENT, index, null);
             } else {
                 logger.debug("Invalid command type for execevent channnel");
@@ -123,15 +121,15 @@ public class TimeclockHandler extends LutronHandler {
                 logger.debug("Invalid command type for sunset channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_SETEVENT, index, true);
             } else {
                 logger.debug("Invalid command type for enableevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_DISABLEEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_SETEVENT, index, false);
             } else {
                 logger.debug("Invalid command type for disableevent channnel");
@@ -176,15 +174,13 @@ public class TimeclockHandler extends LutronHandler {
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNRISE.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
-                    updateState(CHANNEL_SUNRISE,
-                            new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
+                    updateState(CHANNEL_SUNRISE, new DateTimeType(calendar.toInstant()));
                 }
 
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNSET.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
-                    updateState(CHANNEL_SUNSET,
-                            new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
+                    updateState(CHANNEL_SUNSET, new DateTimeType(calendar.toInstant()));
                 }
 
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_EXECEVENT.toString().equals(parameters[0])) {

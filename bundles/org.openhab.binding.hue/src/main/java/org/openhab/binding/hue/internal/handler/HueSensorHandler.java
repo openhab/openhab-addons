@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.openhab.binding.hue.internal.FullSensor.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.api.dto.clip1.FullSensor.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.time.LocalDateTime;
@@ -27,9 +27,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
-import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -72,7 +72,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     @Override
     public void initialize() {
-        logger.debug("Initializing hue sensor handler.");
+        logger.debug("Initializing Hue sensor handler.");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
@@ -118,7 +118,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 properties.put(PROPERTY_MODEL_ID, modelId);
             }
             properties.put(PROPERTY_VENDOR, fullSensor.getManufacturerName());
-            properties.put(PRODUCT_NAME, fullSensor.getProductName());
+            properties.put(PROPERTY_PRODUCT_NAME, fullSensor.getProductName());
             String uniqueID = fullSensor.getUniqueID();
             if (uniqueID != null) {
                 properties.put(UNIQUE_ID, uniqueID);
@@ -167,13 +167,13 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     protected void handleCommand(String channel, Command command) {
         HueClient bridgeHandler = getHueClient();
         if (bridgeHandler == null) {
-            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            logger.warn("Hue Bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
         final FullSensor sensor = lastFullSensor;
         if (sensor == null) {
-            logger.debug("hue sensor not known on bridge. Cannot handle command.");
+            logger.debug("Hue sensor not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-wrong-sensor-id");
             return;
@@ -206,13 +206,13 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (!configUpdate.isEmpty()) {
             HueClient hueBridge = getHueClient();
             if (hueBridge == null) {
-                logger.warn("hue bridge handler not found. Cannot handle configuration update without bridge.");
+                logger.warn("Hue Bridge handler not found. Cannot handle configuration update without bridge.");
                 return;
             }
 
             final FullSensor sensor = lastFullSensor;
             if (sensor == null) {
-                logger.debug("hue sensor not known on bridge. Cannot handle configuration update.");
+                logger.debug("Hue sensor not known on bridge. Cannot handle configuration update.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-wrong-sensor-id");
                 return;
@@ -279,7 +279,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (flag != null) {
             try {
                 boolean value = Boolean.parseBoolean(String.valueOf(flag));
-                updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_FLAG, OnOffType.from(value));
             } catch (DateTimeParseException e) {
                 // do nothing
             }
@@ -289,7 +289,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (battery != null) {
             DecimalType batteryLevel = DecimalType.valueOf(String.valueOf(battery));
             updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
-            updateState(CHANNEL_BATTERY_LOW, batteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_BATTERY_LOW, OnOffType.from(batteryLevel.intValue() <= 10));
         }
 
         if (!configInitializedSuccessfully) {
@@ -320,7 +320,6 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
      * Handles the sensor change. Implementation should also update sensor-specific configuration that changed since the
      * last update.
      *
-     * @param bridge the bridge
      * @param sensor the sensor
      * @param config the configuration in which to update the config states of the sensor
      */

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  * @author Mark Hilbush - Added event to update favorites list
  */
+@NonNullByDefault
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
 
@@ -105,12 +108,12 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
         }
         logger.trace("Mode is {} for player {}", mode, mac);
 
-        if (mode.equals("play")) {
+        if ("play".equals(mode)) {
             this.started.set(true);
-        } else if (this.started.get() && mode.equals("stop")) {
+        } else if (this.started.get() && "stop".equals(mode)) {
             this.stopped.set(true);
         }
-        if (mode.equals("pause")) {
+        if ("pause".equals(mode)) {
             this.paused.set(true);
         }
     }
@@ -202,6 +205,26 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     @Override
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+    }
+
+    @Override
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
+    }
+
+    @Override
     public void remoteTitleChangeEvent(String mac, String title) {
     }
 
@@ -218,6 +241,10 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     @Override
-    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+    public void buttonsChangeEvent(String mac, @Nullable String likeCommand, @Nullable String unlikeCommand) {
+    }
+
+    @Override
+    public void connectedStateChangeEvent(String mac, boolean connected) {
     }
 }

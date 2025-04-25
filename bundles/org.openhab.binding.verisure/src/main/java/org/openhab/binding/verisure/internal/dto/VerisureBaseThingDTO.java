@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -216,6 +216,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return result;
         }
 
+        @SuppressWarnings("PMD.SimplifyBooleanReturns")
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {
@@ -264,7 +265,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return broadband;
         }
 
-        public List<Climate> getClimates() {
+        public @Nullable List<Climate> getClimates() {
             return climates;
         }
 
@@ -272,7 +273,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             this.climates = climates;
         }
 
-        public List<DoorWindow> getDoorWindows() {
+        public @Nullable List<DoorWindow> getDoorWindows() {
             return doorWindows;
         }
 
@@ -284,11 +285,11 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return eventLog;
         }
 
-        public List<CommunicationState> getCommunicationState() {
+        public @Nullable List<CommunicationState> getCommunicationState() {
             return communicationState;
         }
 
-        public List<Mouse> getMice() {
+        public @Nullable List<Mouse> getMice() {
             return mice;
         }
 
@@ -296,7 +297,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             this.mice = mice;
         }
 
-        public List<Doorlock> getDoorlocks() {
+        public @Nullable List<Doorlock> getDoorlocks() {
             return doorlocks;
         }
 
@@ -304,7 +305,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             this.doorlocks = doorlocks;
         }
 
-        public List<Smartplug> getSmartplugs() {
+        public @Nullable List<Smartplug> getSmartplugs() {
             return smartplugs;
         }
 
@@ -312,7 +313,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             this.smartplugs = smartplugs;
         }
 
-        public List<UserTracking> getUserTrackings() {
+        public @Nullable List<UserTracking> getUserTrackings() {
             return userTrackings;
         }
 
@@ -343,6 +344,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return result;
         }
 
+        @SuppressWarnings("PMD.SimplifyBooleanReturns")
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {

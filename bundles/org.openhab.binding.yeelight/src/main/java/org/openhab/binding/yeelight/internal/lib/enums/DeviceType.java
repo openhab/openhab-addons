@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,12 +19,17 @@ package org.openhab.binding.yeelight.internal.lib.enums;
  */
 public enum DeviceType {
     mono,
+    mono4,
     ct_bulb,
     color,
+    color4,
     ceiling,
     ceiling1,
     ceiling3,
     ceiling4,
+    ceil26,
+    ceiling11,
     stripe,
+    strip6,
     desklamp
 }

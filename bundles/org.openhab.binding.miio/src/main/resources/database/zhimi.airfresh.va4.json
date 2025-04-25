@@ -1,0 +1,268 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airfresh.va2",
+			"zhimi.airfresh.va4"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "ptc_state",
+				"friendlyName": "Heater",
+				"channel": "heater",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_ptc_state",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "interval",
+							"label": "Interval"
+						},
+						{
+							"value": "silent",
+							"label": "Night"
+						},
+						{
+							"value": "low",
+							"label": "1"
+						},
+						{
+							"value": "middle",
+							"label": "2"
+						},
+						{
+							"value": "strong",
+							"label": "3"
+						},
+						{
+							"value": "auto",
+							"label": "Auto"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"interval\"\u003d\"Interval\",\"silent\"\u003d\"Night\",\"low\"\u003d\"1\",\"middle\"\u003d\"2\",\"strong\"\u003d\"3\",\"auto\"\u003d\"Auto\"]`"
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "co2",
+				"friendlyName": "CO2",
+				"channel": "co2",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "co2",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childLock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "Air Quality Index",
+				"channel": "aqi",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "average_aqi",
+				"friendlyName": "Average Air Quality Index",
+				"channel": "averageaqi",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "f1_hour_used",
+				"friendlyName": "Filter Hours used",
+				"channel": "filterhours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "time"
+			},
+			{
+				"property": "motor1_speed",
+				"friendlyName": "Motor Speed",
+				"channel": "motorspeed",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f rpm",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "led_level",
+				"friendlyName": "Led - Brightness",
+				"channel": "led_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "High"
+						},
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Idle"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_led_level",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"High\",\"1\"\u003d\"Low\",\"2\"\u003d\"Idle\"]`"
+			},
+			{
+				"property": "temp_dec",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			}
+		]
+	}
+}

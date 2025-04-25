@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.ecobee.internal.handler;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -59,7 +59,7 @@ public final class EcobeeUtils {
      * Set the state to the passed value. If value is null, set the state to UNDEF
      */
     public static State undefOrOnOff(@Nullable Boolean value) {
-        return value == null ? UnDefType.UNDEF : (value.booleanValue() ? OnOffType.ON : OnOffType.OFF);
+        return value == null ? UnDefType.UNDEF : OnOffType.from(value);
     }
 
     public static State undefOrString(@Nullable String value) {
@@ -68,6 +68,10 @@ public final class EcobeeUtils {
 
     public static State undefOrDecimal(@Nullable Number value) {
         return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.doubleValue());
+    }
+
+    public static State undefOrLong(@Nullable Number value) {
+        return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.longValue());
     }
 
     public static State undefOrQuantity(@Nullable Number value, Unit<?> unit) {
@@ -83,9 +87,12 @@ public final class EcobeeUtils {
         return value == null ? UnDefType.UNDEF : new PointType(value);
     }
 
-    public static State undefOrDate(@Nullable Date date, TimeZoneProvider timeZoneProvider) {
-        return date == null ? UnDefType.UNDEF
-                : new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), timeZoneProvider.getTimeZone()));
+    public static State undefOrDate(@Nullable Instant instant, TimeZoneProvider timeZoneProvider) {
+        return instant == null ? UnDefType.UNDEF : new DateTimeType(instant);
+    }
+
+    public static State undefOrDate(@Nullable LocalDateTime ldt, TimeZoneProvider timeZoneProvider) {
+        return ldt == null ? UnDefType.UNDEF : new DateTimeType(ldt.atZone(timeZoneProvider.getTimeZone()));
     }
 
     private static boolean isUnknown(Number value) {
@@ -101,7 +108,7 @@ public final class EcobeeUtils {
             QuantityType<Temperature> convertedTemp = ((QuantityType<Temperature>) value)
                     .toUnit(ImperialUnits.FAHRENHEIT);
             if (convertedTemp != null) {
-                return Integer.valueOf(convertedTemp.intValue() * 10);
+                return Integer.valueOf((int) (convertedTemp.doubleValue() * 10));
             }
         }
         throw new IllegalArgumentException("temperature is not a QuantityType");

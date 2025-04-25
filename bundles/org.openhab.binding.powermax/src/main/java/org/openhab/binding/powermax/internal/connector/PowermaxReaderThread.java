@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
 import org.openhab.binding.powermax.internal.message.PowermaxReceiveType;
 import org.openhab.core.util.HexUtils;
@@ -27,19 +28,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxReaderThread extends Thread {
-
-    private final Logger logger = LoggerFactory.getLogger(PowermaxReaderThread.class);
 
     private static final int READ_BUFFER_SIZE = 20;
     private static final int MAX_MSG_SIZE = 0xC0;
 
-    private PowermaxConnector connector;
+    private final Logger logger = LoggerFactory.getLogger(PowermaxReaderThread.class);
+
+    private final PowermaxConnector connector;
 
     /**
      * Constructor
      *
-     * @param in the input stream
      * @param connector the object that should handle the received message
      * @param threadName the name of the thread
      */
@@ -50,7 +51,7 @@ public class PowermaxReaderThread extends Thread {
 
     @Override
     public void run() {
-        logger.debug("Data listener started");
+        logger.info("Data listener started");
 
         byte[] readDataBuffer = new byte[READ_BUFFER_SIZE];
         byte[] dataBuffer = new byte[MAX_MSG_SIZE];
@@ -129,9 +130,14 @@ public class PowermaxReaderThread extends Thread {
             logger.debug("Interrupted via InterruptedIOException");
         } catch (IOException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
+            connector.handleCommunicationFailure(e.getMessage());
+        } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+            logger.debug("Error reading or processing message: {}", msg, e);
+            connector.handleCommunicationFailure(msg);
         }
 
-        logger.debug("Data listener stopped");
+        logger.info("Data listener stopped");
     }
 
     /**
@@ -143,6 +149,11 @@ public class PowermaxReaderThread extends Thread {
      * @return true if the CRC is valid or false if not
      */
     private boolean checkCRC(byte[] data, int len) {
+        // Messages of type 0xF1 are always sent with a bad CRC (possible panel bug?)
+        if (len == 9 && (data[1] & 0xFF) == 0xF1) {
+            return true;
+        }
+
         byte checksum = PowermaxCommManager.computeCRC(data, len);
         byte expected = data[len - 2];
         if (checksum != expected) {

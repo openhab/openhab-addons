@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -42,10 +41,11 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.enturno.internal.EnturNoConfiguration;
 import org.openhab.binding.enturno.internal.EnturNoHandler;
-import org.openhab.binding.enturno.internal.model.EnturJsonData;
-import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
-import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
-import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
+import org.openhab.binding.enturno.internal.dto.EnturJsonData;
+import org.openhab.binding.enturno.internal.dto.estimated.EstimatedCalls;
+import org.openhab.binding.enturno.internal.dto.simplified.DisplayData;
+import org.openhab.binding.enturno.internal.dto.stopplace.StopPlace;
+import org.openhab.binding.enturno.internal.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,6 @@ public class EnturNoConnection {
     private final EnturNoHandler handler;
     private final HttpClient httpClient;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson gson = new Gson();
 
     public EnturNoConnection(EnturNoHandler handler, HttpClient httpClient) {
@@ -96,9 +95,9 @@ public class EnturNoConnection {
      */
     public synchronized List<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId, @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
-        if (StringUtils.isBlank(stopPlaceId)) {
+        if (stopPlaceId == null || stopPlaceId.isBlank()) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");
-        } else if (lineCode == null || StringUtils.isBlank(lineCode)) {
+        } else if (lineCode == null || lineCode.isBlank()) {
             throw new EnturConfigurationException("Line code cannot be empty or null");
         }
 
@@ -115,8 +114,9 @@ public class EnturNoConnection {
 
     private Map<String, String> getRequestParams(EnturNoConfiguration config) {
         Map<String, String> params = new HashMap<>();
-        params.put(PARAM_STOPID, StringUtils.trimToEmpty(config.getStopPlaceId()));
-        params.put(PARAM_START_DATE_TIME, StringUtils.trimToEmpty(LocalDateTime.now(ZoneId.of(TIME_ZONE)).toString()));
+        String stopPlaceId = config.getStopPlaceId();
+        params.put(PARAM_STOPID, stopPlaceId == null ? "" : stopPlaceId.trim());
+        params.put(PARAM_START_DATE_TIME, LocalDateTime.now(ZoneId.of(TIME_ZONE)).toString());
 
         return params;
     }
@@ -141,7 +141,7 @@ public class EnturNoConnection {
 
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            String errorMessage = StringUtils.EMPTY;
+            String errorMessage = "";
             logger.trace("Entur response: status = {}, content = '{}'", httpStatus, content);
             switch (httpStatus) {
                 case OK_200:
@@ -160,14 +160,18 @@ public class EnturNoConnection {
             String errorMessage = e.getLocalizedMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
             throw new EnturCommunicationException(errorMessage, e);
-        } catch (InterruptedException | TimeoutException | IOException e) {
+        } catch (TimeoutException | IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new EnturCommunicationException(e.getLocalizedMessage(), e);
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new EnturCommunicationException(e.getLocalizedMessage(), e);
         }
     }
 
     private String getErrorMessage(String response) {
-        JsonObject jsonResponse = parser.parse(response).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         if (jsonResponse.has(PROPERTY_MESSAGE)) {
             return jsonResponse.get(PROPERTY_MESSAGE).getAsString();
         }
@@ -185,14 +189,12 @@ public class EnturNoConnection {
     }
 
     private List<DisplayData> processData(StopPlace stopPlace, String lineCode) {
-        Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream()
-                .filter(call -> StringUtils.equalsIgnoreCase(
-                        StringUtils.trimToEmpty(call.serviceJourney.journeyPattern.line.publicCode),
-                        StringUtils.trimToEmpty(lineCode)))
+        Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream().filter(
+                call -> call.serviceJourney.journeyPattern.line.publicCode.strip().equalsIgnoreCase(lineCode.strip()))
                 .collect(groupingBy(call -> call.quay.id));
 
         List<DisplayData> processedData = new ArrayList<>();
-        if (departures.keySet().size() > 0) {
+        if (!departures.keySet().isEmpty()) {
             DisplayData processedData01 = getDisplayData(stopPlace, departures, 0);
             processedData.add(processedData01);
         }
@@ -210,8 +212,8 @@ public class EnturNoConnection {
         List<String> keys = new ArrayList<>(departures.keySet());
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
-        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime).map(this::getIsoDateTime)
-                .collect(Collectors.toList());
+        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime)
+                .map(DateUtil::getIsoDateTime).collect(Collectors.toList());
 
         List<String> estimatedFlags = quayCalls.stream().map(es -> es.realtime).collect(Collectors.toList());
 
@@ -228,14 +230,5 @@ public class EnturNoConnection {
         processedData.stopName = stopPlace.name;
         processedData.transportMode = stopPlace.transportMode;
         return processedData;
-    }
-
-    private String getIsoDateTime(String dateTimeWithoutColonInZone) {
-        String dateTime = StringUtils.substringBeforeLast(dateTimeWithoutColonInZone, "+");
-        String offset = StringUtils.substringAfterLast(dateTimeWithoutColonInZone, "+");
-
-        StringBuilder builder = new StringBuilder();
-        return builder.append(dateTime).append("+").append(StringUtils.substring(offset, 0, 2)).append(":00")
-                .toString();
     }
 }

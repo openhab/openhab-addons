@@ -20,7 +20,7 @@
 			<channel id="exclusion" typeId="exclusion"/>
 		</channels>
 
-		<config-description-ref uri="binding:zway:zwayServer"/>
+		<config-description-ref uri="bridge-type:zway:zwayServer"/>
 
 	</bridge-type>
 </thing:thing-descriptions>

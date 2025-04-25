@@ -1,0 +1,11 @@
+{
+    "000124430017": {
+        "state": {
+            "spinningSpeed": {
+                "value_raw" : 1600,
+                "value_localized" : 1600,
+                "unit" : "U/min"
+            }
+        }
+    }
+}

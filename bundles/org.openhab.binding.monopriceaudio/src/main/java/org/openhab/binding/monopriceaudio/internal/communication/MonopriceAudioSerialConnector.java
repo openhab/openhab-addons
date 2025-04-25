@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,11 +51,14 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
      * @param uid the thing uid string
+     * @param amp the AmplifierModel being used
      */
-    public MonopriceAudioSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
+    public MonopriceAudioSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid,
+            AmplifierModel amp) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.uid = uid;
+        super.amp = amp;
     }
 
     @Override

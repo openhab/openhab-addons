@@ -1,0 +1,28 @@
+{
+  "receivedMessages": [
+    {
+      "ackId": "AID1",
+      "message": {
+        "data": "ZGF0YTE=",
+        "messageId": "1000000000000001",
+        "publishTime": "2021-01-01T01:00:00.000Z"
+      }
+    },
+    {
+      "ackId": "AID2",
+      "message": {
+        "data": "ZGF0YTI=",
+        "messageId": "2000000000000002",
+        "publishTime": "2021-02-02T02:00:00.000Z"
+      }
+    },
+    {
+      "ackId": "AID3",
+      "message": {
+        "data": "ZGF0YTM=",
+        "messageId": "3000000000000003",
+        "publishTime": "2021-03-03T03:00:00.000Z"
+      }
+    }
+  ]
+}

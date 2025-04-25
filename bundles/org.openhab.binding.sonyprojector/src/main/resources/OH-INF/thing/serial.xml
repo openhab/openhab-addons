@@ -8,9 +8,9 @@
 	<thing-type id="serialconnection">
 		<label>Sony Serial Connection</label>
 		<description>Serial connection to the Sony projector</description>
-
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="input" typeId="input"/>
 			<channel id="calibrationpreset" typeId="calibrationpreset"/>
@@ -40,18 +40,23 @@
 			<channel id="overscan" typeId="overscan"/>
 			<channel id="pictureposition" typeId="pictureposition"/>
 			<channel id="lampusetime" typeId="lampusetime"/>
+			<channel id="ircommand" typeId="ircommand"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
-				<description>Serial port to use for connecting to the projector</description>
+				<description>Serial port to use for connecting to the projector.</description>
 			</parameter>
 			<parameter name="model" type="text" required="true">
 				<label>Model</label>
-				<description>Projector model to be controlled</description>
+				<description>Projector model to be controlled.</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="VPL-HW10">VPL-HW10</option>

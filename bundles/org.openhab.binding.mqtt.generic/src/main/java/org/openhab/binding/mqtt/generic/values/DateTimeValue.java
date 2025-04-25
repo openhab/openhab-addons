@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,7 +23,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 
 /**
  * Implements a datetime value.
@@ -32,27 +33,31 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class DateTimeValue extends Value {
     public DateTimeValue() {
-        super(CoreItemFactory.DATETIME, Stream.of(DateTimeType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.DATETIME, List.of(DateTimeType.class, StringType.class));
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
-        if (command instanceof DateTimeType) {
-            state = ((DateTimeType) command);
+    public DateTimeType parseCommand(Command command) throws IllegalArgumentException {
+        if (command instanceof DateTimeType dateTimeCommand) {
+            return dateTimeCommand;
         } else {
-            state = DateTimeType.valueOf(command.toString());
+            return DateTimeType.valueOf(command.toString());
         }
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
-        if (state == UnDefType.UNDEF) {
-            return "";
-        }
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+        ZonedDateTime zonedDateTime = ((DateTimeType) command).getZonedDateTime(ZoneId.systemDefault());
         String formatPattern = pattern;
         if (formatPattern == null || "%s".contentEquals(formatPattern)) {
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) state).getZonedDateTime());
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(zonedDateTime);
         }
-        return String.format(formatPattern, ((DateTimeType) state).getZonedDateTime());
+        return String.format(formatPattern, zonedDateTime);
+    }
+
+    @Override
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        return StateDescriptionFragmentBuilder.create().withReadOnly(readOnly)
+                .withPattern("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS");
     }
 }

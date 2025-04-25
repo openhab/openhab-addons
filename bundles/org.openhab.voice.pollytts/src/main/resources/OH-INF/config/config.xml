@@ -52,13 +52,6 @@
 			</options>
 			<default>default</default>
 		</parameter>
-
-		<parameter name="cacheExpiration" type="text">
-			<label>Cache Expiration</label>
-			<description>Determines the age in days when unused cached files are purged.
-				Use 0 to disable this functionality.</description>
-			<default>0</default>
-		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

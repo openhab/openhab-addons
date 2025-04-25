@@ -8,6 +8,7 @@
 	<thing-type id="ventilation">
 		<label>HeliosVentilation (KWL)</label>
 		<description>A domestic ventilation system (KWL) from Helios.</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channels>
 			<channel id="outsideTemp" typeId="outside_temperature"/>
@@ -41,6 +42,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>RS485 Interface Serial Port</label>
 				<description>The serial port name for the RS485 interfaces. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or
 					/dev/ttyUSB0 for Linux.</description>

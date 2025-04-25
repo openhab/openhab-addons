@@ -7,17 +7,35 @@
 	<thing-type id="mystromplug">
 		<label>myStrom Smart Plug</label>
 		<description>Controls the myStrom smart plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="power" typeId="power-channel"/>
+			<channel id="energy-consumed-since-last-call" typeId="energy-consumed-since-last-call-channel"/>
 			<channel id="temperature" typeId="temperature-channel"/>
 		</channels>
+
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>mac</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom plug.</description>
+				<description>The hostname or IP address of the myStrom plug.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -26,16 +44,129 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
+			</parameter>
 		</config-description>
 
+	</thing-type>
+
+	<thing-type id="mystrombulb">
+		<label>myStrom Bulb</label>
+		<description>Controls the myStrom bulb</description>
+
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="ramp" typeId="ramp-channel"/>
+			<channel id="mode" typeId="mode-channel"/>
+		</channels>
+
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname or IP address of the myStrom bulb.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1" required="true">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="mystrompir">
+
+		<label>myStrom Motion Sensor</label>
+		<channels>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="temperature" typeId="system.indoor-temperature"></channel>
+			<channel id="light" typeId="system.brightness"></channel>
+		</channels>
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The hostname or IP address of the myStrom sensor.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
+			</parameter>
+			<parameter name="backoffTime" type="integer" unit="s" min="1">
+				<default>10</default>
+				<label>Backoff Time</label>
+				<description>Specifies the minimum frequency between successive motion detections in seconds.</description>
+			</parameter>
+			<parameter name="ledEnable" type="boolean">
+				<default>true</default>
+				<label>LED Enabled</label>
+				<description>Enables the status LED on the device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
-		<state readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="energy-consumed-since-last-call-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Consumption</label>
+		<description>Energy consumed since last API call</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="temperature-channel">
 		<item-type>Number:Temperature</item-type>
@@ -43,4 +174,25 @@
 		<description>The current temperature at the plug</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="ramp-channel">
+		<item-type>Number:Time</item-type>
+		<label>Ramp</label>
+		<description>Transition time from the light’s current state to the new state.</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="mode-channel">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The color mode we want the Bulb to set to</description>
+		<command>
+			<options>
+				<option value="rgb">RGB</option>
+				<option value="hsv">HSB (HSV)</option>
+				<option value="mono">MONO</option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>

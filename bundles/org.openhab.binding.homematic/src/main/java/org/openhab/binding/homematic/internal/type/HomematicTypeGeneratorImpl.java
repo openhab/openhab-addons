@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,16 +23,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.type.MetadataUtils.OptionsBuilder;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
@@ -170,8 +168,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
                     ChannelGroupType groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
-                        String groupLabel = String.format("%s",
-                                WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
+                        String groupLabel = String.format("%s", channel.getType() == null ? null
+                                : MiscUtils.capitalize(channel.getType().replace("_", " ")));
                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                 .withChannelDefinitions(channelDefinitions).build();
                         channelGroupTypeProvider.addChannelGroupType(groupType);
@@ -191,11 +189,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         for (String deviceType : firmwaresByType.keySet()) {
             Set<String> firmwares = firmwaresByType.get(deviceType);
             if (firmwares.size() > 1) {
-                logger.info(
-                        "Multiple firmware versions for device type '{}' found ({}). "
-                                + "Make sure, all devices of the same type have the same firmware version, "
-                                + "otherwise you MAY have channel and/or datapoint errors in the logfile",
-                        deviceType, StringUtils.join(firmwares, ", "));
+                logger.info("""
+                        Multiple firmware versions for device type '{}' found ({}). \
+                        Make sure, all devices of the same type have the same firmware version, \
+                        otherwise you MAY have channel and/or datapoint errors in the logfile\
+                        """, deviceType, String.join(", ", firmwares));
             }
         }
     }
@@ -204,7 +202,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Adds the firmware version for validation.
      */
     private void addFirmware(HmDevice device) {
-        if (!StringUtils.equals(device.getFirmware(), "?") && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
+        if (!"?".equals(device.getFirmware()) && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
                 && !DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) {
             Set<String> firmwares = firmwaresByType.get(device.getType());
             if (firmwares == null) {
@@ -237,7 +235,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
         for (ChannelGroupType groupType : groupTypes) {
-            String id = StringUtils.substringAfterLast(groupType.getUID().getId(), "_");
+            int usPos = groupType.getUID().getId().lastIndexOf("_");
+            String id = usPos == -1 ? groupType.getUID().getId() : groupType.getUID().getId().substring(usPos + 1);
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
@@ -250,7 +249,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     /**
      * Creates the ChannelType for the given datapoint.
      */
-    private ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
+    public static ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT) || dp.getName().equals(DATAPOINT_NAME_LOWBAT_IP)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
@@ -260,64 +259,43 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_BUTTON;
         } else {
             String itemType = MetadataUtils.getItemType(dp);
-            String category = MetadataUtils.getCategory(dp, itemType);
-            String label = MetadataUtils.getLabel(dp);
-            String description = MetadataUtils.getDatapointDescription(dp);
+            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create()
+                    .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
 
-            List<StateOption> options = null;
-            if (dp.isEnumType()) {
-                options = MetadataUtils.generateOptions(dp, new OptionsBuilder<StateOption>() {
-                    @Override
-                    public StateOption createOption(String value, String description) {
-                        return new StateOption(value, description);
-                    }
-                });
-            }
-
-            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
             if (dp.isNumberType()) {
-                BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
-                BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
-                if (ITEM_TYPE_DIMMER.equals(itemType)
-                        && (max.compareTo(new BigDecimal("1.0")) == 0 || max.compareTo(new BigDecimal("1.01")) == 0)) {
-                    // For dimmers with a max value of 1.01 or 1.0 the values must be corrected
+                final BigDecimal min, max;
+                if (ITEM_TYPE_DIMMER.equals(itemType) || ITEM_TYPE_ROLLERSHUTTER.equals(itemType)) {
+                    // those types use PercentTypeConverter, so set up min and max as percent values
                     min = MetadataUtils.createBigDecimal(0);
                     max = MetadataUtils.createBigDecimal(100);
-                    step = MetadataUtils.createBigDecimal(1);
                 } else {
-                    if (step == null) {
-                        step = MetadataUtils
-                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L));
-                    }
+                    min = MetadataUtils.createBigDecimal(dp.getMinValue());
+                    max = MetadataUtils.createBigDecimal(dp.getMaxValue());
                 }
-                stateFragment.withMinimum(min).withMaximum(max).withStep(step)
-                        .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
-            } else {
-                stateFragment.withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
-            }
-            if (options != null) {
-                stateFragment.withOptions(options);
+                stateFragment.withMinimum(min).withMaximum(max);
+            } else if (dp.isEnumType()) {
+                List<StateOption> options = MetadataUtils.generateOptions(dp,
+                        (value, description) -> new StateOption(value, description));
+                if (options != null) {
+                    stateFragment.withOptions(options);
+                }
             }
 
-            ChannelTypeBuilder channelTypeBuilder;
-            EventDescription eventDescription = null;
+            String label = MetadataUtils.getLabel(dp);
+            final ChannelTypeBuilder channelTypeBuilder;
             if (dp.isTrigger()) {
-                eventDescription = new EventDescription(
-                        MetadataUtils.generateOptions(dp, new OptionsBuilder<EventOption>() {
-                            @Override
-                            public EventOption createOption(String value, String description) {
-                                return new EventOption(value, description);
-                            }
-                        }));
+                EventDescription eventDescription = new EventDescription(
+                        MetadataUtils.generateOptions(dp, (value, description) -> new EventOption(value, description)));
                 channelTypeBuilder = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withEventDescription(eventDescription);
             } else {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                         .withStateDescriptionFragment(stateFragment.build());
             }
-            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
-                    .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
+            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp))
+                    .withDescription(MetadataUtils.getDatapointDescription(dp))
+                    .withCategory(MetadataUtils.getCategory(dp, itemType))
+                    .withConfigDescriptionURI(configDescriptionUriChannel).build();
         }
         return channelType;
     }
@@ -333,30 +311,55 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
+                    String defaultValueString = Objects.toString(dp.getDefaultValue(), "");
                     ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
 
                     builder.withLabel(MetadataUtils.getLabel(dp));
-                    builder.withDefault(ObjectUtils.toString(dp.getDefaultValue()));
+                    builder.withDefault(defaultValueString);
                     builder.withDescription(MetadataUtils.getDatapointDescription(dp));
-
                     if (dp.isEnumType()) {
                         builder.withLimitToOptions(dp.isEnumType());
                         List<ParameterOption> options = MetadataUtils.generateOptions(dp,
-                                new OptionsBuilder<ParameterOption>() {
-                                    @Override
-                                    public ParameterOption createOption(String value, String description) {
-                                        return new ParameterOption(value, description);
-                                    }
-                                });
+                                (value, description) -> new ParameterOption(value, description));
                         builder.withOptions(options);
+                        if (dp.isEnumType()) {
+                            logger.trace("Checking if default option {} is valid",
+                                    Objects.toString(dp.getDefaultValue(), ""));
+                            boolean needsChange = options.stream()
+                                    .noneMatch(opt -> opt.getValue().equals(defaultValueString));
+                            if (needsChange) {
+                                String defStr = Objects.toString(dp.getDefaultValue(), "0");
+                                int offset = defStr != null ? Integer.valueOf(defStr) : 0;
+                                if (offset >= 0 && offset < options.size()) {
+                                    ParameterOption defaultOption = options.get(offset);
+                                    logger.trace("Changing default option to {} (offset {})", defaultOption, offset);
+                                    builder.withDefault(defaultOption.getValue());
+                                } else if (!options.isEmpty()) {
+                                    ParameterOption defaultOption = options.get(0);
+                                    logger.trace("Changing default option to {} (first value)", defaultOption);
+                                    builder.withDefault(defaultOption.getValue());
+                                }
+                            }
+                        }
                     }
 
                     if (dp.isNumberType()) {
-                        builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
-                        builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(MetadataUtils
-                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L)));
+                        Number defaultValue = (Number) dp.getDefaultValue();
+                        Number maxValue = dp.getMaxValue();
+                        Number minValue = dp.getMinValue();
+                        if (defaultValue != null) {
+                            // some datapoints can have a default value that is greater than the maximum value
+                            if (maxValue != null && defaultValue.doubleValue() > maxValue.doubleValue()) {
+                                maxValue = defaultValue;
+                            }
+                            // ... and there are also default values less than the minimum value
+                            if (minValue != null && defaultValue.doubleValue() < minValue.doubleValue()) {
+                                minValue = defaultValue;
+                            }
+                        }
+                        builder.withMinimum(MetadataUtils.createBigDecimal(minValue));
+                        builder.withMaximum(MetadataUtils.createBigDecimal(maxValue));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
@@ -383,6 +386,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Returns true, if the given datapoint can be ignored for metadata generation.
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
-        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
+        for (String testValue : IGNORE_DATAPOINT_NAMES) {
+            if (dp.getName().contains(testValue)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

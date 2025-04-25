@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.common.Disposable;
 import org.openhab.core.voice.Voice;
 
 /**
@@ -29,14 +33,16 @@ import org.openhab.core.voice.Voice;
  *
  * @author Florian Schmidt - Initial Contribution
  */
-class PicoTTSAudioStream extends FixedLengthAudioStream {
+@NonNullByDefault
+class PicoTTSAudioStream extends FixedLengthAudioStream implements Disposable {
+
     private final Voice voice;
     private final String text;
     private final AudioFormat audioFormat;
     private final InputStream inputStream;
 
     private long length;
-    private File file;
+    private @Nullable File file;
 
     public PicoTTSAudioStream(String text, Voice voice, AudioFormat audioFormat) throws AudioException {
         this.text = text;
@@ -57,7 +63,8 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
-            file = new File(outputFile);
+            File file = new File(outputFile);
+            this.file = file;
             this.length = file.length();
             return getFileInputStream(file);
         } catch (IOException e) {
@@ -68,9 +75,6 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
     }
 
     private InputStream getFileInputStream(File file) throws AudioException {
-        if (file == null) {
-            throw new IllegalArgumentException("file must not be null");
-        }
         if (file.exists()) {
             try {
                 return new FileInputStream(file);
@@ -89,7 +93,7 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
      */
     private String generateOutputFilename() throws AudioException {
         try {
-            File tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            File tempFile = Files.createTempFile(Integer.toString(text.hashCode()), ".wav").toFile();
             tempFile.deleteOnExit();
             return tempFile.getAbsolutePath();
         } catch (IOException e) {
@@ -119,10 +123,25 @@ class PicoTTSAudioStream extends FixedLengthAudioStream {
 
     @Override
     public InputStream getClonedStream() throws AudioException {
+        File file = this.file;
         if (file != null) {
             return getFileInputStream(file);
         } else {
             throw new AudioException("No temporary audio file available.");
+        }
+    }
+
+    @Override
+    public void dispose() throws IOException {
+        File localFile = file;
+        if (localFile != null && localFile.exists()) {
+            try {
+                if (!localFile.delete()) {
+                    throw new IOException("Failed to delete the file " + localFile.getAbsolutePath());
+                }
+            } catch (SecurityException e) {
+                throw new IOException("Failed to delete the file " + localFile.getAbsolutePath(), e);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB PercentType.
+ * Converts between a Homematic datapoint value and an openHAB PercentType.
  *
  * @author Gerhard Riegler - Initial contribution
  */
@@ -71,9 +71,9 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
         Double number = (type.doubleValue() / 100) * maxValue;
 
         if (MetadataUtils.isRollerShutter(dp)) {
-            if (type == PercentType.HUNDRED) { // means DOWN
+            if (PercentType.HUNDRED.equals(type)) { // means DOWN
                 return dp.getMinValue().doubleValue();
-            } else if (type == PercentType.ZERO) { // means UP
+            } else if (PercentType.ZERO.equals(type)) { // means UP
                 return maxValue;
             }
             return maxValue - number;

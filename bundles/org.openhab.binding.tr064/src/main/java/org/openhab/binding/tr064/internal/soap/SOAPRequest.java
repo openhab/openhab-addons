@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,17 +42,21 @@ public class SOAPRequest {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-
+        }
         SOAPRequest that = (SOAPRequest) o;
 
-        if (!service.equals(that.service))
+        if (!service.equals(that.service)) {
             return false;
-        if (!soapAction.equals(that.soapAction))
+        }
+        if (!soapAction.equals(that.soapAction)) {
             return false;
+        }
+
         return arguments.equals(that.arguments);
     }
 

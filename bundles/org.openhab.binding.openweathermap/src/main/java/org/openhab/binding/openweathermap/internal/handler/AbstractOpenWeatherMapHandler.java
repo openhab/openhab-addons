@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,23 +15,18 @@ package org.openhab.binding.openweathermap.internal.handler;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapLocationConfiguration;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -69,29 +64,24 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX,
-                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY).collect(Collectors.toSet()));
-
-    private final TimeZoneProvider timeZoneProvider;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_AND_FORECAST,
+            THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY);
 
     // keeps track of the parsed location
     protected @Nullable PointType location;
 
-    public AbstractOpenWeatherMapHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public AbstractOpenWeatherMapHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void initialize() {
         OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
 
-        boolean configValid = true;
         if (config.location == null || config.location.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
-            configValid = false;
+            return;
         }
 
         try {
@@ -100,13 +90,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
             logger.warn("Error parsing 'location' parameter: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-parsing-location");
-            location = null;
-            configValid = false;
+            return;
         }
 
-        if (configValid) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -140,10 +127,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (OpenWeatherMapCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } catch (OpenWeatherMapConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+        } catch (CommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
+        } catch (ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         }
     }
 
@@ -152,11 +139,11 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
      *
      * @param connection {@link OpenWeatherMapConnection} instance
      * @return true, if the request for the OpenWeatherMap data was successful
-     * @throws OpenWeatherMapCommunicationException if there is a problem retrieving the data
-     * @throws OpenWeatherMapConfigurationException if there is a configuration error
+     * @throws CommunicationException if there is a problem retrieving the data
+     * @throws ConfigurationException if there is a configuration error
      */
     protected abstract boolean requestData(OpenWeatherMapConnection connection)
-            throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException;
+            throws CommunicationException, ConfigurationException;
 
     /**
      * Updates all channels of this handler from the latest OpenWeatherMap data retrieved.
@@ -179,9 +166,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     protected abstract void updateChannel(ChannelUID channelUID);
 
     protected State getDateTimeTypeState(@Nullable Integer value) {
-        return (value == null) ? UnDefType.UNDEF
-                : new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value.longValue()),
-                        timeZoneProvider.getTimeZone()));
+        return (value == null) ? UnDefType.UNDEF : new DateTimeType(Instant.ofEpochSecond(value.longValue()));
     }
 
     protected State getDecimalTypeState(@Nullable Double value) {

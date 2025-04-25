@@ -3,27 +3,32 @@ Thanks for contributing to the openHAB project!
 Please describe the goal and effect of your PR here.
 Pay attention to the below notes and to *the guidelines* for this repository.
 Feel free to delete any comment sections in the template (starting with "<!--").
--->
 
-<!-- TITLE -->
+ATTENTION: Don't use "git merge" when working with your pull request branch!
+This can clutter your Git history and make your PR unusable.
+Use "git rebase" instead. See this forum post for further details:
+https://community.openhab.org/t/rebase-your-code-or-how-to-fix-your-git-history-before-requesting-a-pull/129358
 
-<!--
-Please provide a PR summary in the *Title* above, according to the following schema:
-- If related to one specific add-on: Mention the add-on shortname in square brackets
-  e.g. "[exec]", "[netatmo]" or "[tesla]"
-- If the PR is work in progress: Add "[WIP]"
-- Give a short meaningful description in imperative mood
-  e.g. "Add support for device XYZ" or "Fix wrongly handled exception"
-  for a new add-on/binding: "Initial contribution"
-Examples:
-- "[homematic] Improve communication with weak signal devices"
-- "[timemachine][WIP] Initial contribution"
-- "Update contribution guidelines on new signing rules"
--->
+All PRs should be created using the "main" branch as base.
+Important bugfixes are cherry-picked by maintainers to the patch release branch after a PR has been merged.
 
-<!-- DESCRIPTION -->
+Add one or more appropriate labels to make your PR show up in the release notes.
+E.g. enhancement, bug, documentation, new binding
+This can only be done by yourself if you already contributed to this repo.
 
-<!--
+If your PR's code is not backward compatible with previous releases (which
+should be avoided), add a message to the release notes by filing another PR:
+https://github.com/openhab/openhab-distro/blob/main/distributions/openhab/src/main/resources/bin/update.lst
+
+# Title
+
+Provide a short summary in the *Title* above. It will show up in the release notes.
+For example:
+- [homematic] Improve communication with weak signal devices
+- [timemachine][WIP] Initial contribution
+
+# Description
+
 Please give a few sentences describing the overall goals of the pull request.
 Give enough details to make the improvement and changes of the PR understandable
 to both developers and tech-savy users.
@@ -41,21 +46,18 @@ Please keep the following in mind:
   https://www.openhab.org/docs/developer/bindings/#include-the-binding-in-the-build
 - Did you sign-off your work:
   https://www.openhab.org/docs/developer/contributing.html#sign-your-work
--->
 
-<!-- TESTING -->
+# Testing
 
-<!--
-Your Pull Request will automatically be built and available under the following folder:
-https://openhab.jfrog.io/openhab/libs-pullrequest-local/org/openhab/
+Your pull request will automatically be built and available under the following folder:
+https://openhab.jfrog.io/ui/native/libs-pullrequest-local/org/openhab/addons/bundles/
 
-It is a good practice to add a URL to your built JAR in this Pull Request description,
+It is a good practice to add a URL to your built JAR in this pull request description,
 so it is easier for the community to test your Add-on.
-If your Pull Request contains a new binding, it will likely take some time
+If your pull request contains a new binding, it will likely take some time
 before it is reviewed and processed by maintainers.
-That said, consider submitting your Add-on in the Eclipse IoT Marketplace
-See this thread for more info:
-https://community.openhab.org/t/24491
+That said, consider submitting your Add-on in the Marketplace:
+https://community.openhab.org/c/marketplace/69
 
 Don't forget to submit a thread about your Add-on in the openHAB community:
 https://community.openhab.org/c/add-ons 

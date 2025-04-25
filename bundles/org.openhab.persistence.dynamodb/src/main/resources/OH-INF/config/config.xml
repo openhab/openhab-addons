@@ -12,8 +12,16 @@
 			#
 			# The following parameters are used to configure Amazon DynamoDB Persistence.
 			#
-			# Further details at https://docs.openhab.org/addons/persistence/dynamodb/readme.html
+			# Further details at https://www.openhab.org/addons/persistence/dynamodb/
 			#
+
+			# PID SETTING
+			#
+			# When configuring the persistence using file (instead UI),
+			# make sure the first line in the configuration file is the
+			# pid definition (remove the comment prefix #)
+
+			#pid:pid:org.openhab.dynamodb
 
 			#
 			# CONNECTION SETTINGS (follow OPTION 1 or OPTION 2)
@@ -26,9 +34,14 @@
 
 			# OPTION 2 (using profilesConfigFile and profile)
 			# where profilesConfigFile points to AWS credentials file
+			# Please note that the user that runs openHAB must have approriate read rights to the credential file.
+			# See below for an example how the credentials file should look like
 			#profilesConfigFile=/etc/openhab2/aws_creds
 			#profile=fooprofile
 			#region=eu-west-1
+
+			# UNCOMMENT THE BELOW ALWAYS (otherwise legacy table schema with 'tablePrefix' is used)
+			#table=openhab
 
 			# Credentials file example:
 			#
@@ -36,10 +49,14 @@
 			# aws_access_key_id=AKIAIOSFODNN7EXAMPLE
 			# aws_secret_access_key=3+AAAAABBBbbbCCCCCCdddddd+7mnbIOLH
 
-
 			#
 			# ADVANCED CONFIGURATION (OPTIONAL)
 			#
+
+			# Expire time for data in days (relative to stored timestamp).
+			# Data older than this is removed automatically using DynamoDB Time to Live (TTL)
+			# feature.
+			#expireDays=
 
 			# read capacity for the created tables
 			#readCapacityUnits=1
@@ -47,29 +64,28 @@
 			# write capacity for the created tables
 			#writeCapacityUnits=1
 
-			# table prefix used in the name of created tables
+			# LEGACY SCHEMA: table prefix used in the name of created tables
 			#tablePrefix=openhab-
+
 		-->
 
 		<parameter name="region" type="text" required="true">
 			<label>AWS region ID</label>
-			<description><![CDATA[AWS region ID as described in Step 2 in Setting up Amazon account.<br />
+			<description><![CDATA[AWS region ID<br />
 			The region needs to match the region of the AWS user that will access Amazon DynamoDB.<br />
 			For example, eu-west-1.]]></description>
 		</parameter>
 
 		<parameter name="accessKey" type="text" required="false">
 			<label>AWS access key</label>
-			<description><![CDATA[AWS access key of the AWS user that will access Amazon DynamoDB.
-			<br />
+			<description><![CDATA[AWS access key<br />
 			Give either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 		<parameter name="secretKey" type="text" required="false">
 			<label>AWS secret key</label>
-			<description><![CDATA[AWS secret key of the AWS user that will access Amazon DynamoDB.
-			<br />
+			<description><![CDATA[AWS secret key<br />
 			Give either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
@@ -78,39 +94,54 @@
 		<parameter name="profilesConfigFile" type="text" required="false">
 			<label>AWS credentials file</label>
 			<description><![CDATA[Path to the AWS credentials file. <br />
-			For example, /etc/openhab2/aws_creds.
-			Please note that the user that runs openHAB must have approriate read rights to the credential file.
-			<br />
+			For example, /etc/openhab/aws_creds. Please note that the user that runs openHAB must have approriate read rights to the credential file. <br />
 			Give either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 		<parameter name="profile" type="text" required="false">
 			<label>Profile name</label>
-			<description><![CDATA[Name of the profile to use in AWS credentials file
-			<br />
+			<description><![CDATA[Profile name in AWS credentials file. <br />
 			Give either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
-
+		<parameter name="table" type="text" required="false">
+			<label>Table</label>
+			<description><![CDATA[Table name. <br />
+			Specify this parameter over Table Prefix to use the new optimized table format.]]></description>
+			<default>openhab</default> <!-- set by default, preferring new schema format -->
+		</parameter>
 
 		<parameter name="readCapacityUnits" type="integer" required="false" min="1">
-			<description>Read capacity for the created tables. Default is 1.</description>
-			<label>Read capacity</label>
+			<description><![CDATA[Provisioned read capacity.<br />
+			Default is 1.]]></description>
+			<label>Read Capacity</label>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="writeCapacityUnits" type="integer" required="false" min="1">
-			<label>Write capacity</label>
-			<description>Write capacity for the created tables. Default is 1.</description>
+			<label>Write Capacity</label>
+			<description><![CDATA[Provisioned write capacity.<br />
+			Default is 1.]]></description>
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="tablePrefix" type="text" required="false">
-			<label>Table prefix</label>
-			<description>Table prefix used in the name of created tables. Default is openhab-</description>
+		<parameter name="expireDays" type="integer" required="false" min="1">
+			<label>Data Expiry, in Days</label>
+			<description><![CDATA[Expire time for data.<br />
+			Data older than this is automatically removed by DynamoDB Time to Live (TTL) feature. Use empty value to disable data expiration.
+			]]></description>
 			<advanced>true</advanced>
+			<default></default> <!-- empty by default, giving preference to new table schema -->
+		</parameter>
+
+		<parameter name="tablePrefix" type="text" required="false">
+			<label>Table Prefix</label>
+			<description><![CDATA[Legacy: Table prefix used in the name of created tables. <br />
+			Default is "openhab-"]]></description>
+			<advanced>true</advanced>
+			<default></default> <!-- empty by default, giving preference to new table schema -->
 		</parameter>
 
 	</config-description>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.rio.AbstractRioHandlerCallback;
 import org.openhab.binding.russound.internal.rio.AbstractThingHandler;
@@ -84,7 +83,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
     @Override
     public String getName() {
         final String name = sourceName.get();
-        return StringUtils.isEmpty(name) ? ("Source " + getId()) : name;
+        return name == null || name.isEmpty() ? "Source " + getId() : name;
     }
 
     /**
@@ -199,7 +198,8 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
 
     /**
      * Initializes the bridge. Confirms the configuration is valid and that our parent bridge is a
-     * {@link RioSystemHandler}. Once validated, a {@link RioSystemProtocol} is set via
+     * {@link RioSystemHandler}. Once validated, a
+     * {@link org.openhab.binding.russound.internal.rio.system.RioSystemProtocol} is set via
      * {@link #setProtocolHandler(RioSystemProtocol)} and the bridge comes online.
      */
     @Override

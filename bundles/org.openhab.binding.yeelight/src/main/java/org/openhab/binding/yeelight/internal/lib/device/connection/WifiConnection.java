@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceMethod;
@@ -120,7 +121,7 @@ public class WifiConnection implements ConnectionBase {
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 mSocket = null;
             }
-        });
+        }, "OH-binding-" + YeelightBindingConstants.BINDING_ID + "-WifiConnection");
         mConnectThread.start();
         return false;
     }
@@ -128,6 +129,20 @@ public class WifiConnection implements ConnectionBase {
     @Override
     public boolean disconnect() {
         mDevice.setAutoConnect(false);
-        return false;
+        mCmdRun = false;
+        try {
+            if (mConnectThread != null) {
+                mConnectThread.interrupt();
+            }
+            if (mSocket != null) {
+                mSocket.close();
+            }
+        } catch (Exception e) {
+            logger.debug("Exception while terminating connection", e);
+        } finally {
+            mSocket = null;
+            mDevice.setConnectionState(ConnectState.DISCONNECTED);
+        }
+        return true;
     }
 }

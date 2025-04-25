@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.xmppclient.internal.handler;
 
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value has been
- * received.
+ * Subscribes to a chat and calls
+ * {@link org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler#triggerChannel(ChannelUID, String)} if a
+ * value has been received.
  *
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
     private final XMPPClient connection;
     private final PublishTriggerChannelConfig config;

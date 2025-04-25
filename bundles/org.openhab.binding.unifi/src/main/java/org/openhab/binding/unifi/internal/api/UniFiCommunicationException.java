@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UniFiCommunicationException} signals there was a problem communicating with the controller.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiCommunicationException extends UniFiException {
 
-    private static final long serialVersionUID = -7261308872245069364L;
+    private static final long serialVersionUID = 1L;
 
-    public UniFiCommunicationException(Throwable cause) {
+    public UniFiCommunicationException(final String message) {
+        super(message);
+    }
+
+    public UniFiCommunicationException(final Throwable cause) {
         super(cause);
     }
 }

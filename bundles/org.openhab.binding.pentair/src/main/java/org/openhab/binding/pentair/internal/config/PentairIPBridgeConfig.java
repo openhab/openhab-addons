@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration parameters for IP Bridge
+ * The {@link PentairIPBridgeConfig } class contains the parameters for IP Bridge
  *
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairIPBridgeConfig {
-    /** IP address of destination */
-    public String address;
-    /** Port of destination */
-    public Integer port;
-
-    /** ID to use when sending commands on the Pentair RS485 bus. */
-    public Integer id;
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("address", address).append("port", port).append("id", id).toString();
-    }
+    public String address = "";
+    public int port = 10000;
 }

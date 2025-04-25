@@ -10,7 +10,7 @@
 
 		<label>MAX! HeatingThermostat</label>
 		<description>This is a MAX! HeatingThermostat</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="valve" typeId="valve"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -109,7 +109,7 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<!-- Trigger reset action from habmin menu -->
+			<!-- Trigger reset action -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be
@@ -231,7 +231,7 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<!-- Trigger reset action from habmin menu -->
+			<!-- Trigger reset action -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be
@@ -297,7 +297,7 @@
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
-			<!-- Trigger reset action from habmin menu -->
+			<!-- Trigger reset action -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be
@@ -402,7 +402,7 @@
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
-			<!-- Trigger reset action from habmin menu -->
+			<!-- Trigger reset action -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be
@@ -430,9 +430,6 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
-		<tags>
-			<tag>heating</tag>
-		</tags>
 		<state pattern="%s" readOnly="false">
 			<options>
 				<option value="AUTOMATIC">AUTOMATIC</option>
@@ -449,7 +446,8 @@
 		<description>Current measured room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>heating</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -460,7 +458,8 @@
 		<description>Thermostat Setpoint temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>heating</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="4.5" max="30.5" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,11 @@ package org.openhab.binding.russound.internal.rio.zone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.internal.rio.AbstractRioProtocol;
@@ -529,7 +529,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      * @return a non-null {@link Runnable} that should be run after the call
      */
     Runnable setZoneFavorites(String favJson) {
-        if (StringUtils.isEmpty(favJson)) {
+        if (favJson.isEmpty()) {
             return () -> {
             };
         }
@@ -550,7 +550,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                     final boolean favValid = fav.isValid();
                     final String favName = fav.getName();
 
-                    if (!StringUtils.equals(myFav.getName(), favName) || myFav.isValid() != favValid) {
+                    if (!Objects.equals(myFav.getName(), favName) || myFav.isValid() != favValid) {
                         myFav.setName(favName);
                         myFav.setValid(favValid);
                         if (favValid) {
@@ -638,7 +638,7 @@ class RioZoneProtocol extends AbstractRioProtocol
     }
 
     /**
-     * Sends a EVENT instruction to the zone
+     * Sends an EVENT instruction to the zone
      *
      * @param event a non-null, non-empty string to send
      * @throws IllegalArgumentException if event is null or empty
@@ -748,8 +748,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_LOUDNESS:
-                        stateChanged(RioConstants.CHANNEL_ZONELOUDNESS,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONELOUDNESS, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_TURNONVOLUME:
@@ -770,16 +769,14 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_STATUS:
-                        stateChanged(RioConstants.CHANNEL_ZONESTATUS,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONESTATUS, OnOffType.from("ON".equals(value)));
                         break;
                     case ZONE_MUTE:
-                        stateChanged(RioConstants.CHANNEL_ZONEMUTE, "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEMUTE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_SHAREDSOURCE:
-                        stateChanged(RioConstants.CHANNEL_ZONESHAREDSOURCE,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONESHAREDSOURCE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_LASTERROR:
@@ -787,7 +784,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_PAGE:
-                        stateChanged(RioConstants.CHANNEL_ZONEPAGE, "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEPAGE, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_SLEEPTIMEREMAINING:
@@ -800,8 +797,7 @@ class RioZoneProtocol extends AbstractRioProtocol
                         break;
 
                     case ZONE_ENABLED:
-                        stateChanged(RioConstants.CHANNEL_ZONEENABLED,
-                                "ON".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                        stateChanged(RioConstants.CHANNEL_ZONEENABLED, OnOffType.from("ON".equals(value)));
                         break;
 
                     case ZONE_VOLUME:
@@ -923,7 +919,7 @@ class RioZoneProtocol extends AbstractRioProtocol
      */
     @Override
     public void responseReceived(String response) {
-        if (StringUtils.isEmpty(response)) {
+        if (response == null || response.isEmpty()) {
             return;
         }
 

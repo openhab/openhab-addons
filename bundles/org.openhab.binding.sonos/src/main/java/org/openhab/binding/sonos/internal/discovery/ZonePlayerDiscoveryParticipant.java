@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,44 +80,34 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("SONOS")) {
-                String modelName = getModelName(device);
-                switch (modelName) {
-                    case "ZP80":
-                        modelName = "CONNECT";
-                        break;
-                    case "ZP100":
-                        modelName = "CONNECTAMP";
-                        break;
-                    case "One SL":
-                        modelName = "OneSL";
-                        break;
-                    default:
-                        break;
-                }
-                ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
-                if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
-                    // Try with the model name all in uppercase
-                    thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName.toUpperCase());
-                    // In case a new "unknown" Sonos player is discovered a generic ThingTypeUID will be used
-                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
-                        thingUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                String id = SonosXMLParser
+                        .buildThingTypeIdFromModelName(device.getDetails().getModelDetails().getModelName());
+                String udn = device.getIdentity().getUdn().getIdentifierString();
+                if (!id.isEmpty() && !SonosBindingConstants.UNSUPPORTED_KNOWN_IDS.contains(id.toLowerCase())
+                        && !udn.isEmpty()) {
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id);
+                    if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                        // Try with the model name all in uppercase
+                        thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id.toUpperCase());
+                        // In case a new "unknown" Sonos player is discovered a generic ThingTypeUID will be used
+                        if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                            thingTypeUID = SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
+                            logger.warn(
+                                    "'{}' is not yet a supported model, thing type '{}' is considered as default; please open an issue",
+                                    device.getDetails().getModelDetails().getModelName(), thingTypeUID);
+                        }
                     }
-                }
 
-                logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingUID,
-                        device.getIdentity().getUdn().getIdentifierString());
-                return new ThingUID(thingUID, device.getIdentity().getUdn().getIdentifierString());
+                    logger.debug("Discovered a Sonos '{}' thing with UDN '{}'", thingTypeUID, udn);
+                    return new ThingUID(thingTypeUID, udn);
+                }
             }
         }
 
         return null;
     }
 
-    private String getModelName(RemoteDevice device) {
-        return SonosXMLParser.extractModelName(device.getDetails().getModelDetails().getModelName());
-    }
-
     private @Nullable String getSonosRoomName(RemoteDevice device) {
-        return SonosXMLParser.getRoomName(device.getIdentity().getDescriptorURL().toString());
+        return SonosXMLParser.getRoomName(device.getIdentity().getDescriptorURL());
     }
 }

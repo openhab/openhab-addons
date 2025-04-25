@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,23 +37,19 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    public static final ThingUID testGenericThing = new ThingUID(GENERIC_MQTT_THING, "genericthing");
+    public static final ThingUID TEST_GENERIC_THING = new ThingUID(GENERIC_MQTT_THING, "genericthing");
 
-    public static final ChannelTypeUID textChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.STRING);
-    public static final ChannelTypeUID textWithJsonChannel = new ChannelTypeUID(BINDING_ID,
+    public static final ChannelTypeUID TEXT_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.STRING);
+    public static final ChannelTypeUID TEXT_WITH_JSON_CHANNEL = new ChannelTypeUID(BINDING_ID,
             MqttBindingConstants.STRING);
-    public static final ChannelTypeUID onoffChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
-    public static final ChannelTypeUID numberChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
-    public static final ChannelTypeUID percentageChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
-    public static final ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
+    public static final ChannelTypeUID ON_OFF_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
+    public static final ChannelTypeUID NUMBER_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
+    public static final ChannelTypeUID PERCENTAGE_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
+    public static final ChannelTypeUID UNKNOWN_CHANNEL = new ChannelTypeUID(BINDING_ID, "unknown");
 
-    public static final ChannelUID textChannelUID = new ChannelUID(testGenericThing, "mytext");
+    public static final ChannelUID TEXT_CHANNEL_UID = new ChannelUID(TEST_GENERIC_THING, "mytext");
 
-    public static final String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
-    public static final String jsonPathPattern = "$.device.status.temperature";
-
-    public static final List<Channel> thingChannelList = new ArrayList<>();
-    public static final List<Channel> thingChannelListWithJson = new ArrayList<>();
+    public static final List<Channel> THING_CHANNEL_LIST = new ArrayList<>();
 
     /**
      * Create a channel with exact the parameters we need for the tests
@@ -65,34 +61,21 @@ public class ThingChannelConstants {
      * @return
      */
     public static Channel cb(String id, String acceptedType, Configuration config, ChannelTypeUID channelTypeUID) {
-        return ChannelBuilder.create(new ChannelUID(testGenericThing, id), acceptedType).withConfiguration(config)
+        return ChannelBuilder.create(new ChannelUID(TEST_GENERIC_THING, id), acceptedType).withConfiguration(config)
                 .withType(channelTypeUID).build();
     }
 
     static {
-        thingChannelList.add(cb("mytext", "TextItemType", textConfiguration(), textChannel));
-        thingChannelList.add(cb("onoff", "OnOffType", onoffConfiguration(), onoffChannel));
-        thingChannelList.add(cb("num", "NumberType", numberConfiguration(), numberChannel));
-        thingChannelList.add(cb("percent", "NumberType", percentageConfiguration(), percentageChannel));
-
-        thingChannelListWithJson.add(cb("mytext", "TextItemType", textConfigurationWithJson(), textWithJsonChannel));
-        thingChannelListWithJson.add(cb("onoff", "OnOffType", onoffConfiguration(), onoffChannel));
-        thingChannelListWithJson.add(cb("num", "NumberType", numberConfiguration(), numberChannel));
-        thingChannelListWithJson.add(cb("percent", "NumberType", percentageConfiguration(), percentageChannel));
+        THING_CHANNEL_LIST.add(cb("mytext", "String", textConfiguration(), TEXT_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("onoff", "Switch", onoffConfiguration(), ON_OFF_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("num", "Number", numberConfiguration(), NUMBER_CHANNEL));
+        THING_CHANNEL_LIST.add(cb("percent", "Number:Dimensionless", percentageConfiguration(), PERCENTAGE_CHANNEL));
     }
 
     static Configuration textConfiguration() {
         Map<String, Object> data = new HashMap<>();
         data.put("stateTopic", "test/state");
         data.put("commandTopic", "test/command");
-        return new Configuration(data);
-    }
-
-    static Configuration textConfigurationWithJson() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("stateTopic", "test/state");
-        data.put("commandTopic", "test/command");
-        data.put("transformationPattern", "JSONPATH:" + jsonPathPattern);
         return new Configuration(data);
     }
 

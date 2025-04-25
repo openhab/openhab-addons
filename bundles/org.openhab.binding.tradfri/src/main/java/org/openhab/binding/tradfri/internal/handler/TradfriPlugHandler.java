@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.tradfri.internal.handler;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.CHANNEL_POWER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tradfri.internal.TradfriCoapClient;
 import org.openhab.binding.tradfri.internal.model.TradfriPlugData;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -47,7 +48,7 @@ public class TradfriPlugHandler extends TradfriThingHandler {
             TradfriPlugData state = new TradfriPlugData(data);
             updateStatus(state.getReachabilityStatus() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
-            updateState(CHANNEL_POWER, state.getOnOffState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_POWER, OnOffType.from(state.getOnOffState()));
             updateDeviceProperties(state);
         }
     }
@@ -62,15 +63,20 @@ public class TradfriPlugHandler extends TradfriThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (active) {
             if (command instanceof RefreshType) {
-                logger.debug("Refreshing channel {}", channelUID);
-                coapClient.asyncGet(this);
+                TradfriCoapClient coapClient = this.coapClient;
+                if (coapClient != null) {
+                    logger.debug("Refreshing channel {}", channelUID);
+                    coapClient.asyncGet(this);
+                } else {
+                    logger.debug("coapClient is null!");
+                }
                 return;
             }
 
             switch (channelUID.getId()) {
                 case CHANNEL_POWER:
-                    if (command instanceof OnOffType) {
-                        setState(((OnOffType) command));
+                    if (command instanceof OnOffType onOffCommand) {
+                        setState(onOffCommand);
                     } else {
                         logger.debug("Cannot handle command '{}' for channel '{}'", command, CHANNEL_POWER);
                     }

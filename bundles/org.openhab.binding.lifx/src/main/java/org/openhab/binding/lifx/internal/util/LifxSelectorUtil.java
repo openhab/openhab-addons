@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,17 +32,17 @@ import java.util.function.BiConsumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.LifxSelectorContext;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.PacketFactory;
+import org.openhab.binding.lifx.internal.dto.PacketHandler;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.PacketFactory;
-import org.openhab.binding.lifx.internal.protocol.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for sharing {@link Selector} logic between objects.
  *
- * @author Wouter Born - Make selector logic reusable between discovery and handlers
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxSelectorUtil {
@@ -160,8 +160,8 @@ public class LifxSelectorUtil {
                 readBuffer.rewind();
 
                 try {
-                    if (channel instanceof DatagramChannel) {
-                        InetSocketAddress address = (InetSocketAddress) ((DatagramChannel) channel).receive(readBuffer);
+                    if (channel instanceof DatagramChannel datagramChannel) {
+                        InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(readBuffer);
                         if (address == null) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace("{} : No datagram is available", logId);
@@ -169,9 +169,9 @@ public class LifxSelectorUtil {
                         } else if (isRemoteAddress(address.getAddress())) {
                             supplyParsedPacketToConsumer(readBuffer, address, packetConsumer, logId);
                         }
-                    } else if (channel instanceof SocketChannel) {
-                        ((SocketChannel) channel).read(readBuffer);
-                        InetSocketAddress address = (InetSocketAddress) ((SocketChannel) channel).getRemoteAddress();
+                    } else if (channel instanceof SocketChannel socketChannel) {
+                        socketChannel.read(readBuffer);
+                        InetSocketAddress address = (InetSocketAddress) socketChannel.getRemoteAddress();
                         if (address == null) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace("{} : Channel socket is not connected", logId);
@@ -276,8 +276,10 @@ public class LifxSelectorUtil {
 
         try {
             if (castType == UNICAST) {
+                packet.setTagged(false);
                 LifxThrottlingUtil.lock(packet.getTarget());
             } else {
+                packet.setTagged(true);
                 LifxThrottlingUtil.lock();
             }
 
@@ -290,20 +292,19 @@ public class LifxSelectorUtil {
 
                     if (key.isValid() && key.isWritable() && key.equals(castKey)) {
                         SelectableChannel channel = key.channel();
-                        if (channel instanceof DatagramChannel) {
+                        if (channel instanceof DatagramChannel datagramChannel) {
                             if (LOGGER.isTraceEnabled()) {
                                 LOGGER.trace(
                                         "{} : Sending packet type '{}' from '{}' to '{}' for '{}' with sequence '{}' and source '{}'",
                                         new Object[] { context.getLogId(), packet.getClass().getSimpleName(),
-                                                ((InetSocketAddress) ((DatagramChannel) channel).getLocalAddress())
-                                                        .toString(),
+                                                ((InetSocketAddress) datagramChannel.getLocalAddress()).toString(),
                                                 address.toString(), packet.getTarget().getHex(), packet.getSequence(),
                                                 Long.toString(packet.getSource(), 16) });
                             }
-                            ((DatagramChannel) channel).send(packet.bytes(), address);
+                            datagramChannel.send(packet.bytes(), address);
                             return true;
-                        } else if (channel instanceof SocketChannel) {
-                            ((SocketChannel) channel).write(packet.bytes());
+                        } else if (channel instanceof SocketChannel socketChannel) {
+                            socketChannel.write(packet.bytes());
                             return true;
                         }
                     }

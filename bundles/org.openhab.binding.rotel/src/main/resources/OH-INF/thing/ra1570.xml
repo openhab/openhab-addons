@@ -8,6 +8,7 @@
 	<thing-type id="ra1570">
 		<label>RA-1570 Integrated Amplifier</label>
 		<description>Connection to the Rotel RA-1570 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -19,6 +20,11 @@
 			<channel id="playControl" typeId="system.media-control"/>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

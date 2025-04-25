@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,10 @@ package org.openhab.binding.keba.internal;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACTP20;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.keba.internal.handler.KeContactHandler;
+import org.openhab.binding.keba.internal.handler.KeContactTransceiver;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -34,7 +34,9 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.keba")
 public class KebaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KECONTACTP20);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KECONTACTP20);
+
+    private final KeContactTransceiver transceiver = new KeContactTransceiver();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +48,7 @@ public class KebaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KECONTACTP20)) {
-            return new KeContactHandler(thing);
+            return new KeContactHandler(thing, transceiver);
         }
 
         return null;

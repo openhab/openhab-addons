@@ -5,7 +5,7 @@ Primarily this was designed for S20 Wifi Sockets but other products using the sa
 
 ## Supported Things
 
-*   S20 Wifi Sockets
+- S20 Wifi Sockets
 
 ## Discovery
 
@@ -21,30 +21,30 @@ This is optional, it is recommended to let the binding discover and add Orvibo d
 To manually configure an S20 Thing you must specify its deviceId (MAC address).
 In the thing file, this looks like:
 
-```
+```java
 Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 ```
 
 ## Channels
 
-### S20:
+### S20
 
 | Channel | Description                   | Example                   |
 |---------|-------------------------------|---------------------------|
 | power   | Current power state of switch | orvibo:s20:mysocket:power |
 
-## Items:
+## `orvibo.items` Example
 
-```
+```java
 Switch MySwitch              "Switch state [%s]"  { channel="orvibo:s20:mysocket:power" }
 ```
 
-## Example Sitemap
+## `orbivo.sitemap` Example
 
 Using the above things channels and items
 Sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu" {
         Frame  {
                 Switch item=MySwitch

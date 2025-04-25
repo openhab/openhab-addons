@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tellstick.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Bridge;
 import org.tellstick.device.iface.Device;
 import org.tellstick.device.iface.TellstickEvent;
@@ -22,18 +23,21 @@ import org.tellstick.device.iface.TellstickEvent;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceStatusListener {
 
     /**
      * This method is called whenever the state of the given device has changed.
-     * The new state can be obtained by {@link FullLight#getState()}.
+     * The new state can be obtained by
+     * {@link org.openhab.binding.tellstick.internal.live.dto.TellstickNetDevice#getState()} /
+     * {@link org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO#getState()}.
      *
      * @param bridge
      *            The Tellstick bridge the changed device is connected to.
      * @param device
      *            The device which received the state update.
      */
-    public void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
+    void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
 
     /**
      * This method us called whenever a device is removed.
@@ -43,7 +47,7 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is removed.
      */
-    public void onDeviceRemoved(Bridge bridge, Device device);
+    void onDeviceRemoved(Bridge bridge, Device device);
 
     /**
      * This method us called whenever a device is added.
@@ -53,5 +57,5 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is added.
      */
-    public void onDeviceAdded(Bridge bridge, Device device);
+    void onDeviceAdded(Bridge bridge, Device device);
 }

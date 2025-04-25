@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
-@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
@@ -50,12 +50,12 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
-    private static final int TIMEOUT = 5;
-    private static final int REFRESH_INTERVAL = 60;
+    private static final int TIMOUT_S = 5;
+    private static final int REFRESH_INTERVAL_S = 60;
 
     public NikoHomeControlBridgeDiscoveryService() {
-        super(NikoHomeControlBindingConstants.BRIDGE_THING_TYPES_UIDS, TIMEOUT);
-        logger.debug("Niko Home Control: bridge discovery service started");
+        super(NikoHomeControlBindingConstants.BRIDGE_THING_TYPES_UIDS, TIMOUT_S);
+        logger.debug("bridge discovery service started");
     }
 
     /**
@@ -65,40 +65,47 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         try {
             String broadcastAddr = networkAddressService.getConfiguredBroadcastAddress();
             if (broadcastAddr == null) {
-                logger.warn("Niko Home Control: discovery not possible, no broadcast address found");
+                logger.warn("discovery not possible, no broadcast address found");
                 return;
             }
-            logger.debug("Niko Home Control: discovery broadcast on {}", broadcastAddr);
+            logger.debug("discovery broadcast on {}", broadcastAddr);
             NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-            if (nhcDiscover.isNhcII()) {
-                addNhcIIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
-            } else {
-                addNhcIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            for (String nhcController : nhcDiscover.getNhcBridgeIds()) {
+                InetAddress addr = nhcDiscover.getAddr(nhcController);
+                if (addr != null) {
+                    if (nhcDiscover.isNhcII(nhcController)) {
+                        addNhcIIBridge(addr, nhcController);
+                    } else {
+                        addNhcIBridge(addr, nhcController);
+                    }
+                }
             }
         } catch (IOException e) {
-            logger.debug("Niko Home Control: no bridge found.");
+            logger.debug("bridge discovery IO exception");
         }
     }
 
     private void addNhcIBridge(InetAddress addr, String bridgeId) {
-        logger.debug("Niko Home Control: NHC I bridge found at {}", addr);
+        logger.debug("NHC I bridge found at {}", addr);
 
         String bridgeName = "Niko Home Control Bridge";
         ThingUID uid = new ThingUID(BINDING_ID, "bridge", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 
     private void addNhcIIBridge(InetAddress addr, String bridgeId) {
-        logger.debug("Niko Home Control: NHC II bridge found at {}", addr);
+        logger.debug("NHC II bridge found at {}", addr);
 
         String bridgeName = "Niko Home Control II Bridge";
         ThingUID uid = new ThingUID(BINDING_ID, "bridge2", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -115,17 +122,17 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Niko Home Control: Start background bridge discovery");
+        logger.debug("Start bridge background discovery");
         ScheduledFuture<?> job = nhcDiscoveryJob;
         if (job == null || job.isCancelled()) {
-            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL,
+            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL_S,
                     TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Niko Home Control: Stop bridge background discovery");
+        logger.debug("Stop bridge background discovery");
         ScheduledFuture<?> job = nhcDiscoveryJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);

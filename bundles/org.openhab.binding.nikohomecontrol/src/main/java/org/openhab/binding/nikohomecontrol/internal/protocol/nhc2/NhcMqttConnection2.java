@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.io.transport.mqtt.reconnect.AbstractReconnectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +59,11 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile @Nullable CompletableFuture<Boolean> subscribedFuture;
     private volatile @Nullable CompletableFuture<Boolean> stoppedFuture;
 
-    private MqttMessageSubscriber messageSubscriber;
-    private MqttConnectionObserver connectionObserver;
+    private final MqttMessageSubscriber messageSubscriber;
+    private final MqttConnectionObserver connectionObserver;
 
-    private TrustManager trustManagers[];
-    private String clientId;
+    private TrustManager[] trustManagers;
+    private final String clientId;
 
     private volatile String cocoAddress = "";
     private volatile int port;
@@ -100,7 +101,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             tmFactory.init(keyStore);
             return tmFactory.getTrustManagers();
         } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            logger.warn("Niko Home Control: error with SSL context creation: {} ", e.getMessage());
+            logger.debug("error with SSL context creation: {} ", e.getMessage());
             throw new CertificateException("SSL context creation exception", e);
         } finally {
             ResourceBundle.clearCache();
@@ -121,14 +122,14 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         if (future != null) {
             try {
                 future.get(5000, TimeUnit.MILLISECONDS);
-                logger.debug("Niko Home Control: finished stopping connection");
+                logger.debug("finished stopping connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-                logger.debug("Niko Home Control: error stopping connection");
+                logger.debug("error stopping connection");
             }
             stoppedFuture = null;
         }
 
-        logger.debug("Niko Home Control: starting connection...");
+        logger.debug("starting connection...");
         this.cocoAddress = cocoAddress;
         this.port = port;
         this.profile = profile;
@@ -142,26 +143,33 @@ public class NhcMqttConnection2 implements MqttActionCallback {
                     subscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
-                logger.debug("Niko Home Control: error connecting");
+                logger.debug("error connecting");
                 throw new MqttException("Connection execution exception");
             }
         } catch (InterruptedException e) {
-            logger.debug("Niko Home Control: connection interrupted exception");
+            logger.debug("connection interrupted exception");
             throw new MqttException("Connection interrupted exception");
         } catch (ExecutionException e) {
-            logger.debug("Niko Home Control: connection execution exception", e.getCause());
+            logger.debug("connection execution exception", e.getCause());
             throw new MqttException("Connection execution exception");
         } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: connection timeout exception");
+            logger.debug("connection timeout exception");
             throw new MqttException("Connection timeout exception");
         }
     }
 
     private MqttBrokerConnection createMqttConnection() throws MqttException {
-        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
+        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, false, clientId);
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);
+
+        // Don't use the transport periodic reconnect strategy. It doesn't restart the initialization when the
+        // connection is lost and creates extra threads that do not get cleaned up. Just stop it.
+        AbstractReconnectStrategy reconnectStrategy = connection.getReconnectStrategy();
+        if (reconnectStrategy != null) {
+            reconnectStrategy.stop();
+        }
         return connection;
     }
 
@@ -169,7 +177,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * Stop the MQTT connection.
      */
     void stopConnection() {
-        logger.debug("Niko Home Control: stopping connection...");
+        logger.debug("stopping connection...");
         MqttBrokerConnection connection = mqttConnection;
         if (connection != null) {
             connection.removeConnectionObserver(connectionObserver);
@@ -203,7 +211,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             try {
                 if ((future != null) && future.get(5000, TimeUnit.MILLISECONDS)) {
                     MqttConnectionState state = connection.connectionState();
-                    logger.debug("Niko Home Control: connection state {} for {}", state, connection.getClientId());
+                    logger.debug("connection state {} for {}", state, connection.getClientId());
                     return state == MqttConnectionState.CONNECTED;
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -223,25 +231,25 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     void connectionPublish(String topic, String payload) throws MqttException {
         MqttBrokerConnection connection = mqttConnection;
         if (connection == null) {
-            logger.debug("Niko Home Control: cannot publish, no connection");
+            logger.debug("cannot publish, no connection");
             throw new MqttException("No connection exception");
         }
 
         if (isConnected()) {
-            logger.debug("Niko Home Control: publish {}, {}", topic, payload);
+            logger.debug("publish {}, {}", topic, payload);
             connection.publish(topic, payload.getBytes(), connection.getQos(), false);
         } else {
-            logger.debug("Niko Home Control: cannot publish, not subscribed to connection messages");
+            logger.debug("cannot publish, not subscribed to connection messages");
         }
     }
 
     @Override
     public void onSuccess(String topic) {
-        logger.debug("Niko Home Control: publish succeeded {}", topic);
+        logger.debug("publish succeeded {}", topic);
     }
 
     @Override
     public void onFailure(String topic, Throwable error) {
-        logger.debug("Niko Home Control: publish failed {}, {}", topic, error.getMessage(), error);
+        logger.debug("publish failed {}, {}", topic, error.getMessage(), error);
     }
 }

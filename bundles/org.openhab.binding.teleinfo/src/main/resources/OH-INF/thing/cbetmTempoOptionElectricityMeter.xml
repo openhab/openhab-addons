@@ -12,7 +12,7 @@
 		<label>CBETM TEMPO</label>
 		<description>Three-phase Electricity meter with TEMPO option - CBETM (aka "Compteur Bleu Electronique Triphasé
 			Multitarif")</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="frameType" typeId="frameTypeType"/>
 			<channel id="isousc" typeId="isouscType"/>
@@ -42,7 +42,7 @@
 			<channel id="lastUpdate" typeId="lastUpdateType"/>
 		</channels>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

@@ -26,7 +26,7 @@
 		</parameter>
 		<parameter name="authcode" type="text" groupName="authentication">
 			<label>Authorization Code</label>
-			<description><![CDATA[The auth-code is a one-time code needed to retrieve the necessary access-codes from Google Cloud Platform. <b>Please go to your browser ...</b> https://accounts.google.com/o/oauth2/auth?client_id={{clientId}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code <b>... to generate an auth-code and paste it here</b>.]]></description>
+			<description><![CDATA[This code is used once for retrieving the Google Cloud Platform access and refresh tokens. Open the following URL in your browser to generate an authorization code:<br><br>https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id={{clientId}}<br><br>After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.]]></description>
 		</parameter>
 		<parameter name="pitch" type="decimal" min="-20" max="20" step="0.1" groupName="tts">
 			<label>Pitch</label>
@@ -43,13 +43,5 @@
 			<description>Speaking rate can be 4x faster or slower than the normal rate.</description>
 			<default>1</default>
 		</parameter>
-		<parameter name="purgeCache" type="boolean">
-			<advanced>true</advanced>
-			<label>Purge Cache</label>
-			<description>Purges the cache e.g. after testing different voice configuration parameters. When enabled the cache is
-				purged once. Make sure to disable this setting again so the cache is maintained after restarts.</description>
-			<default>false</default>
-		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>

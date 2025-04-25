@@ -12,9 +12,10 @@
 			It is also possible to switch the
 			light on and off.
 		</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -25,7 +26,8 @@
 		<description>The color channel allows to control the color of a light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -34,8 +36,9 @@
 		<item-type>Dimmer</item-type>
 		<label>Color Temperature</label>
 		<description>The CT channel allows to control the CT of a light.</description>
-		<category>DimmableCT</category>
+		<category>ColorLight</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
 	</channel-type>
@@ -53,19 +56,12 @@
 		<label>Background Color</label>
 		<description>The color channel allows to control the color of a light.</description>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="nightlight">
 		<item-type>Switch</item-type>
 		<label>nightlight</label>
-		<description>The nightlight channel allows to switch to nightlight mode.
-		</description>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
+		<description>The nightlight channel allows to switch to nightlight mode.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

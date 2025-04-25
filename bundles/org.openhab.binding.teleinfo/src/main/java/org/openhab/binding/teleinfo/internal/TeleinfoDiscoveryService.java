@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,35 +17,20 @@ import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmBaseOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmEjpOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmHcOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmTempoOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccEjpOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
-import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
-import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongBaseOption;
-import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongEjpOption;
-import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongHcOption;
-import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongTempoOption;
-import org.openhab.binding.teleinfo.internal.dto.common.FrameAdco;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoControllerHandlerListener;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,30 +39,32 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TeleinfoDiscoveryService.class)
 @NonNullByDefault
-public class TeleinfoDiscoveryService extends AbstractDiscoveryService
-        implements TeleinfoControllerHandlerListener, ThingHandlerService, DiscoveryService {
+public class TeleinfoDiscoveryService extends AbstractThingHandlerDiscoveryService<TeleinfoAbstractControllerHandler>
+        implements TeleinfoControllerHandlerListener {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
             THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
+            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID, THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMT_ELECTRICITY_METER_TYPE_UID, THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMM_ELECTRICITY_METER_TYPE_UID);
 
     private static final int SCAN_DURATION_IN_S = 60;
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
-    private @Nullable TeleinfoAbstractControllerHandler controllerHandler;
 
     public TeleinfoDiscoveryService() {
-        super(SCAN_DURATION_IN_S);
+        super(TeleinfoAbstractControllerHandler.class, SCAN_DURATION_IN_S);
     }
 
     public TeleinfoDiscoveryService(TeleinfoAbstractControllerHandler controllerHandler) {
-        super(SCAN_DURATION_IN_S);
-        this.controllerHandler = controllerHandler;
+        this();
+        setThingHandler(controllerHandler);
     }
 
     @Override
@@ -85,147 +72,85 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
         return SUPPORTED_THING_TYPES;
     }
 
-    public void activate() {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("Teleinfo discovery: Activate {}", controllerHandlerRef.getThing().getUID());
-        } else {
-            logNullControllerHandler();
-        }
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start Teleinfo device background discovery");
+        thingHandler.addListener(this);
     }
 
     @Override
-    public void deactivate() {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("Teleinfo discovery: Deactivate {}", controllerHandlerRef.getThing().getUID());
-        } else {
-            logNullControllerHandler();
-        }
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop Teleinfo device background discovery");
+        thingHandler.removeListener(this);
     }
 
     @Override
     protected void startScan() {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("Teleinfo discovery: Start {}", controllerHandlerRef.getThing().getUID());
+        logger.debug("Teleinfo discovery: Start {}", thingHandler.getThing().getUID());
 
-            // Start the search for new devices
-            controllerHandlerRef.addListener(this);
-        } else {
-            logNullControllerHandler();
-        }
+        // Start the search for new devices
+        thingHandler.addListener(this);
     }
 
     @Override
     public synchronized void abortScan() {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("Teleinfo discovery: Abort {}", controllerHandlerRef.getThing().getUID());
-            controllerHandlerRef.removeListener(this);
-            super.abortScan();
-        } else {
-            logNullControllerHandler();
-        }
+        logger.debug("Teleinfo discovery: Abort {}", thingHandler.getThing().getUID());
+        thingHandler.removeListener(this);
+        super.abortScan();
     }
 
     @Override
     protected synchronized void stopScan() {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("Teleinfo discovery: Stop {}", controllerHandlerRef.getThing().getUID());
-            controllerHandlerRef.removeListener(this);
-            super.stopScan();
-        } else {
-            logNullControllerHandler();
-        }
+        logger.debug("Teleinfo discovery: Stop {}", thingHandler.getThing().getUID());
+        thingHandler.removeListener(this);
+        super.stopScan();
     }
 
     @Override
-    public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
+    public void onFrameReceived(Frame frame) {
         detectNewElectricityMeterFromReceivedFrame(frame);
     }
 
     private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
-        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
-        if (controllerHandlerRef != null) {
-            logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
-            if (!(frameSample instanceof FrameAdco)) {
-                throw new IllegalStateException("Teleinfo frame type not supported: " + frameSample.getClass());
-            }
-            final FrameAdco frameAdco = (FrameAdco) frameSample;
+        logger.debug("New eletricity meter detection from frame {}", frameSample);
+        if (frameSample.get(Label.ADCO) == null && frameSample.get(Label.ADSC) == null) {
+            throw new IllegalStateException("Missing ADCO or ADSC key");
+        }
 
-            ThingUID thingUID = new ThingUID(getThingTypeUID(frameAdco), frameAdco.getAdco(),
-                    controllerHandlerRef.getThing().getUID().getId());
+        String adco = frameSample.get(Label.ADCO) != null ? frameSample.get(Label.ADCO) : frameSample.get(Label.ADSC);
+        if (adco != null) {
+            ThingUID thingUID = new ThingUID(getThingTypeUID(frameSample), adco,
+                    thingHandler.getThing().getUID().getId());
 
-            final Map<String, Object> properties = getThingProperties(frameAdco);
+            final Map<String, Object> properties = getThingProperties(adco);
             final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
-                    .withBridge(controllerHandlerRef.getThing().getUID())
-                    .withRepresentationProperty(representationProperty).build();
+                    .withLabel("Teleinfo ADCO/ADSC " + adco).withThingType(getThingTypeUID(frameSample))
+                    .withBridge(thingHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
+                    .build();
 
             thingDiscovered(discoveryResult);
-        } else {
-            logNullControllerHandler();
         }
     }
 
     private ThingTypeUID getThingTypeUID(final Frame teleinfoFrame) {
-        if (teleinfoFrame instanceof FrameCbemmHcOption) {
-            return THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmBaseOption) {
-            return THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmEjpOption) {
-            return THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmTempoOption) {
-            return THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmEvolutionIccHcOption) {
-            return THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmEvolutionIccBaseOption) {
-            return THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmEvolutionIccEjpOption) {
-            return THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbemmEvolutionIccTempoOption) {
-            return THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbetmLongHcOption) {
-            return THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbetmLongBaseOption) {
-            return THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbetmLongEjpOption) {
-            return THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID;
-        } else if (teleinfoFrame instanceof FrameCbetmLongTempoOption) {
-            return THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID;
+        ThingTypeUID thingTypeUID;
+        try {
+            thingTypeUID = teleinfoFrame.getType().getThingTypeUid();
+        } catch (InvalidFrameException e) {
+            throw new IllegalStateException("Frame type can not be evaluated");
+        }
+        if (thingTypeUID != null) {
+            return thingTypeUID;
         } else {
             throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
         }
     }
 
-    private Map<String, Object> getThingProperties(final Frame teleinfoFrame) {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        if (teleinfoFrame instanceof FrameAdco) {
-            final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
-            properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
+    private Map<String, Object> getThingProperties(String adco) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, adco);
 
-            return properties;
-        }
-
-        throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TeleinfoAbstractControllerHandler) {
-            controllerHandler = (TeleinfoAbstractControllerHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return controllerHandler;
-    }
-
-    private void logNullControllerHandler() {
-        logger.warn("Null controller handler");
+        return properties;
     }
 }

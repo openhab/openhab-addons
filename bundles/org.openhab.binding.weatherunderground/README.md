@@ -1,9 +1,3 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # WeatherUnderground Binding
 
 This binding uses the [Weather Underground service](https://www.wunderground.com/weather/api/) for providing weather information for any location worldwide.
@@ -24,7 +18,7 @@ If a system location is set, "Local Weather" will be automatically discovered fo
 
 If the system location is changed, the background discovery updates the configuration of "Local Weather" automatically.
 
-If a bridge is correctly configured, the discovered thing will automatically go online. 
+If a bridge is correctly configured, the discovered thing will automatically go online.
 
 ## Binding Configuration
 
@@ -59,7 +53,7 @@ For the location parameter, different syntaxes are possible:
 
 It can happen that the service is not able to determine the station to use, for example when you select as location a city in which several stations are registered. In this case, the thing configuration will fail because the service will not return the data expected by the binding. The best solution in this case is to use as location latitude and longitude, the service will automatically select a station from this position.
 
-For the language parameter Weather Underground uses a special set of language codes which are different from ISO 639-1 standard, for example for German use `DL`  or Swedish use `SW`. See [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list. 
+For the language parameter Weather Underground uses a special set of language codes which are different from ISO 639-1 standard, for example for German use `DL`  or Swedish use `SW`. See [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list.
 
 ## Channels
 
@@ -103,16 +97,15 @@ The weather information that is retrieved is available as these channels:
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindSpeed                | Number:Speed         | Maximum wind speed |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirection        | String               | Average wind direction | |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirectionDegrees | Number:Angle         | Average wind direction as an angle |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindSpeed            | Number:Speed         | Average wind speed | 
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindSpeed            | Number:Speed         | Average wind speed |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | icon                        | Image                | Icon representing the weather forecast conditions |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | iconKey                     | String               | Key used in the icon URL |
-
 
 ## Full Example
 
 demo.things:
 
-```
+```java
 Bridge weatherunderground:bridge:api "API" [ apikey="XXXXXXXXXXXX" ] {
         Thing weather paris "Météo Paris" [ location="France/Paris", language="FR", refresh=15 ]
 }
@@ -120,7 +113,7 @@ Bridge weatherunderground:bridge:api "API" [ apikey="XXXXXXXXXXXX" ] {
 
 demo.items:
 
-```
+```java
 String Conditions "Conditions [%s]" {channel="weatherunderground:weather:api:paris:current#conditions"}
 Image Icon "Icon" {channel="weatherunderground:weather:api:paris:current#icon"}
 String IconKey "Icon key [%s]" {channel="weatherunderground:weather:api:paris:current#iconKey"}

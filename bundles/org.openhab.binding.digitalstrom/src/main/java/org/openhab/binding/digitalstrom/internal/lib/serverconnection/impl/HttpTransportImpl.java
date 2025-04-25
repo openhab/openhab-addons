@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,8 +43,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.HttpTransport;
@@ -52,10 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HttpTransportImpl} executes an request to the digitalSTROM-Server.
+ * The {@link HttpTransportImpl} executes a request to the digitalSTROM-Server.
  * <p>
  * If a {@link Config} is given at the constructor. It sets the SSL-Certificate what is set in
- * {@link Config#getCert()}. If there is no SSL-Certificate, but an path to an external SSL-Certificate file what is set
+ * {@link Config#getCert()}. If there is no SSL-Certificate, but a path to an external SSL-Certificate file what is set
  * in {@link Config#getTrustCertPath()} this will be set. If no SSL-Certificate is set in the {@link Config} it will be
  * red out from the server and set in {@link Config#setCert(String)}.
  *
@@ -68,8 +67,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * If a {@link ConnectionManager} is given at the constructor, the session-token is not needed by requests and the
- * {@link ConnectionListener}, which is registered at the {@link ConnectionManager}, will be automatically informed
- * about
+ * {@link org.openhab.binding.digitalstrom.internal.lib.listener.ConnectionListener}, which is registered at the
+ * {@link ConnectionManager}, will be automatically informed about
  * connection state changes through the {@link #execute(String, int, int)} method.
  * </p>
  *
@@ -194,13 +193,14 @@ public class HttpTransportImpl implements HttpTransport {
             if (config != null) {
                 cert = config.getCert();
                 logger.debug("generate SSLcontext from config cert");
-                if (StringUtils.isNotBlank(cert)) {
+                if (cert != null && !cert.isBlank()) {
                     sslSocketFactory = generateSSLContextFromPEMCertString(cert);
                 } else {
-                    if (StringUtils.isNotBlank(config.getTrustCertPath())) {
+                    String trustCertPath = config.getTrustCertPath();
+                    if (trustCertPath != null && !trustCertPath.isBlank()) {
                         logger.debug("generate SSLcontext from config cert path");
-                        cert = readPEMCertificateStringFromFile(config.getTrustCertPath());
-                        if (StringUtils.isNotBlank(cert)) {
+                        cert = readPEMCertificateStringFromFile(trustCertPath);
+                        if (cert != null && !cert.isBlank()) {
                             sslSocketFactory = generateSSLContextFromPEMCertString(cert);
                         }
                     } else {
@@ -333,7 +333,12 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private boolean checkNeededSessionToken(String request) {
-        String functionName = StringUtils.substringAfterLast(StringUtils.substringBefore(request, "?"), "/");
+        String requestFirstPart = request;
+        int indexOfSeparator = request.indexOf("?");
+        if (indexOfSeparator >= 0) {
+            requestFirstPart = request.substring(0, request.indexOf("?"));
+        }
+        String functionName = requestFirstPart.substring(requestFirstPart.lastIndexOf("/") + 1);
         return !DsAPIImpl.METHODS_MUST_NOT_BE_LOGGED_IN.contains(functionName);
     }
 
@@ -346,16 +351,20 @@ public class HttpTransportImpl implements HttpTransport {
                 correctedRequest = correctedRequest + "?" + ParameterKeys.TOKEN + "=" + sessionToken;
             }
         } else {
-            correctedRequest = StringUtils.replaceOnce(correctedRequest, StringUtils.substringBefore(
-                    StringUtils.substringAfter(correctedRequest, ParameterKeys.TOKEN + "="), "&"), sessionToken);
-
+            String strippedRequest = correctedRequest
+                    .substring(correctedRequest.indexOf(ParameterKeys.TOKEN + "=") + ParameterKeys.TOKEN.length() + 1);
+            int indexOfSeparator = strippedRequest.indexOf("&");
+            if (indexOfSeparator >= 0) {
+                strippedRequest = strippedRequest.substring(0, indexOfSeparator);
+            }
+            correctedRequest = correctedRequest.replaceFirst(strippedRequest, sessionToken);
         }
         return correctedRequest;
     }
 
     private HttpsURLConnection getConnection(String request, int connectTimeout, int readTimeout) throws IOException {
         String correctedRequest = request;
-        if (StringUtils.isNotBlank(correctedRequest)) {
+        if (correctedRequest != null && !correctedRequest.isBlank()) {
             correctedRequest = fixRequest(correctedRequest);
             URL url = new URL(this.uri + correctedRequest);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -415,7 +424,7 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private String readPEMCertificateStringFromFile(String path) {
-        if (StringUtils.isBlank(path)) {
+        if (path == null || path.isBlank()) {
             logger.error("Path is empty.");
         } else {
             File dssCert = new File(path);
@@ -446,9 +455,9 @@ public class HttpTransportImpl implements HttpTransport {
 
     @Override
     public String writePEMCertFile(String path) {
-        String correctedPath = StringUtils.trimToEmpty(path);
+        String correctedPath = path == null ? "" : path.trim();
         File certFilePath;
-        if (StringUtils.isNotBlank(correctedPath)) {
+        if (!correctedPath.isBlank()) {
             certFilePath = new File(correctedPath);
             boolean pathExists = certFilePath.exists();
             if (!pathExists) {
@@ -458,7 +467,7 @@ public class HttpTransportImpl implements HttpTransport {
                 correctedPath = correctedPath + "/";
             }
         }
-        InputStream certInputStream = IOUtils.toInputStream(cert);
+        InputStream certInputStream = new ByteArrayInputStream(cert.getBytes(StandardCharsets.UTF_8));
         X509Certificate trustedCert;
         try {
             trustedCert = (X509Certificate) CertificateFactory.getInstance("X.509")
@@ -485,9 +494,9 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private SSLSocketFactory generateSSLContextFromPEMCertString(String pemCert) {
-        if (StringUtils.isNotBlank(pemCert) && pemCert.startsWith(BEGIN_CERT)) {
+        if (pemCert != null && !pemCert.isBlank() && pemCert.startsWith(BEGIN_CERT)) {
             try {
-                InputStream certInputStream = IOUtils.toInputStream(pemCert);
+                InputStream certInputStream = new ByteArrayInputStream(pemCert.getBytes(StandardCharsets.UTF_8));
                 final X509Certificate trustedCert = (X509Certificate) CertificateFactory.getInstance("X.509")
                         .generateCertificate(certInputStream);
 

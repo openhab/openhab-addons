@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,14 +19,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.binding.BindingInfo;
+import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.TokenScore;
+import org.openhab.io.neeo.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +91,7 @@ public class TokenSearch {
         NeeoUtil.requireNotEmpty(query, "query cannot be empty");
 
         final List<TokenScore<NeeoDevice>> results = new ArrayList<>();
-
-        final String[] needles = StringUtils.split(query, DELIMITER);
+        final String[] needles = StringUtils.split(query, String.valueOf(DELIMITER));
         int maxScore = -1;
 
         for (NeeoDevice device : context.getDefinitions().getExposed()) {
@@ -104,7 +103,7 @@ public class TokenSearch {
             final Thing thing = context.getThingRegistry().get(device.getUid().asThingUID());
             if (thing != null) {
                 final String location = thing.getLocation();
-                if (location != null && StringUtils.isNotEmpty(location)) {
+                if (location != null && !location.isEmpty()) {
                     score += search(location, needles);
                 }
 
@@ -118,7 +117,7 @@ public class TokenSearch {
                 if (tt != null) {
                     score += search(tt.getLabel(), needles);
 
-                    final BindingInfo bi = context.getBindingInfoRegistry().getBindingInfo(tt.getBindingId());
+                    final AddonInfo bi = context.getAddonInfoRegistry().getAddonInfo(tt.getBindingId());
                     if (bi != null) {
                         score += search(bi.getName(), needles);
                     }
@@ -142,7 +141,8 @@ public class TokenSearch {
      * @return the score of the match
      */
     private int search(String haystack, String[] needles) {
-        return Arrays.stream(StringUtils.split(haystack, DELIMITER)).mapToInt(hs -> searchAlgorithm(hs, needles)).sum();
+        return Arrays.stream(StringUtils.split(haystack, String.valueOf(DELIMITER)))
+                .mapToInt(hs -> searchAlgorithm(hs, needles)).sum();
     }
 
     /**
@@ -160,13 +160,13 @@ public class TokenSearch {
         int arrayLength = needles.length;
         for (int i = 0; i < arrayLength; i++) {
             String needle = needles[i];
-            int stringPos = StringUtils.indexOfIgnoreCase(haystack, needle);
+            int stringPos = haystack.toLowerCase().indexOf(needle.toLowerCase());
             int tokenScore = 0;
             if (stringPos > -1) {
                 if (needle.length() < 2) {
                     tokenScore = 1;
                 } else {
-                    if (StringUtils.equalsIgnoreCase(haystack, needle)) {
+                    if (haystack.equalsIgnoreCase(needle)) {
                         tokenScore = 6;
                     } else if (stringPos == 0) {
                         tokenScore = 2;

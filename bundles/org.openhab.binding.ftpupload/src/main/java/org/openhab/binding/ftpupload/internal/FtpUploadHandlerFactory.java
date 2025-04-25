@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,10 @@ package org.openhab.binding.ftpupload.internal;
 
 import static org.openhab.binding.ftpupload.internal.FtpUploadBindingConstants.THING_TYPE_IMAGERECEIVER;
 
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.openhab.binding.ftpupload.internal.ftp.FtpServer;
@@ -46,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_IMAGERECEIVER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_IMAGERECEIVER);
 
     private final int DEFAULT_PORT = 2121;
     private final int DEFAULT_IDLE_TIMEOUT = 60;
@@ -90,13 +89,14 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void modified(ComponentContext componentContext) {
         stopFtpServer();
         Dictionary<String, Object> properties = componentContext.getProperties();
+        DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
 
         int port = DEFAULT_PORT;
         int idleTimeout = DEFAULT_IDLE_TIMEOUT;
 
         if (properties.get("port") != null) {
             String strPort = properties.get("port").toString();
-            if (StringUtils.isNotEmpty(strPort)) {
+            if (!strPort.isEmpty()) {
                 try {
                     port = Integer.valueOf(strPort);
                 } catch (NumberFormatException e) {
@@ -107,7 +107,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
         if (properties.get("idleTimeout") != null) {
             String strIdleTimeout = properties.get("idleTimeout").toString();
-            if (StringUtils.isNotEmpty(strIdleTimeout)) {
+            if (!strIdleTimeout.isEmpty()) {
                 try {
                     idleTimeout = Integer.valueOf(strIdleTimeout);
                 } catch (NumberFormatException e) {
@@ -116,9 +116,21 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
             }
         }
 
+        if (properties.get("passivePorts") != null) {
+            String strPassivePorts = properties.get("passivePorts").toString();
+            if (!strPassivePorts.isEmpty()) {
+                try {
+                    dataConnectionConfigurationFactory.setPassivePorts(strPassivePorts);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid passive ports '{}' ({})", strPassivePorts, e.getMessage());
+                }
+            }
+        }
+
         try {
             logger.debug("Starting FTP server, port={}, idleTimeout={}", port, idleTimeout);
-            ftpServer.startServer(port, idleTimeout);
+            ftpServer.startServer(port, idleTimeout,
+                    dataConnectionConfigurationFactory.createDataConnectionConfiguration());
         } catch (FtpException | FtpServerConfigurationException e) {
             logger.warn("FTP server starting failed, reason: {}", e.getMessage());
         }

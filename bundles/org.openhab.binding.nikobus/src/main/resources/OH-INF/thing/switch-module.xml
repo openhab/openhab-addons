@@ -11,6 +11,7 @@
 
 		<label>Switch Module</label>
 		<description>Nikobus Switch module</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="switch-output">
@@ -51,7 +52,7 @@
 			</channel>
 		</channels>
 
-		<config-description-ref uri="module:address:config"/>
+		<config-description-ref uri="thing-type:nikobus:module"/>
 	</thing-type>
 
 	<channel-type id="switch-output">

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 import org.openhab.core.library.types.DecimalType;
@@ -79,7 +78,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         // update all channels that are linked
                         switch (channel.getUID().getId()) {
                             case CHANNEL_POWER:
-                                updateState(channel.getUID(), radioOn ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radioOn));
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
@@ -93,7 +92,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), radio.getMuted() ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore
@@ -128,7 +127,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         final BigDecimal port = (BigDecimal) getThing().getConfiguration().get(CONFIG_PROPERTY_PORT);
         final String pin = (String) getThing().getConfiguration().get(CONFIG_PROPERTY_PIN);
 
-        if (ip == null || StringUtils.isEmpty(pin) || port.intValue() == 0) {
+        if (ip == null || pin == null || pin.isEmpty() || port.intValue() == 0) {
             // configuration incomplete
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration incomplete");
         } else {
@@ -201,8 +200,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof PercentType) {
-                        radio.setVolumePercent(((PercentType) command).intValue());
+                    } else if (command instanceof PercentType percentCommand) {
+                        radio.setVolumePercent(percentCommand.intValue());
                     }
                     // absolute value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
@@ -212,20 +211,20 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof DecimalType) {
-                        radio.setVolumeAbsolute(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        radio.setVolumeAbsolute(decimalCommand.intValue());
                     }
                     // percent value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof DecimalType) {
-                        radio.setMode(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setMode(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_PRESET:
-                    if (command instanceof DecimalType) {
-                        radio.setPreset(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setPreset(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_MUTE:

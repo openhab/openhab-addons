@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the XsltTransformationservice on a ItemChannelLink
+ * Profile to offer the XsltTransformationservice on an ItemChannelLink
  *
  * @author Stefan Triller - initial contribution
  *
@@ -65,9 +65,9 @@ public class XSLTTransformationProfile implements StateProfile {
         if (paramSource == null) {
             paramSource = "%s";
         }
-        if (paramFunction instanceof String && paramSource instanceof String) {
-            function = (String) paramFunction;
-            sourceFormat = (String) paramSource;
+        if (paramFunction instanceof String pFunction && paramSource instanceof String pFormat) {
+            function = pFunction;
+            sourceFormat = pFormat;
         } else {
             logger.warn("Parameter '{}' and '{}' have to be Strings. Profile will be inactive.", FUNCTION_PARAM,
                     SOURCE_FORMAT_PARAM);

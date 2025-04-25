@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,10 @@ package org.openhab.binding.networkupstools.internal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -112,7 +112,7 @@ public class NUTHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(NUTChannelTypeProvider.class);
+        return Set.of(NUTChannelTypeProvider.class);
     }
 
     public void setChannelTypeProvider(final NUTChannelTypeProvider channelTypeProvider) {
@@ -309,7 +309,7 @@ public class NUTHandler extends BaseThingHandler {
      * @param nutApiFunction function that will be called
      * @return the value returned by the api call or null in case of an error
      */
-    private <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction, String logging) {
+    private @Nullable <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction, String logging) {
         try {
             final NUTConfiguration localConfig = config;
 

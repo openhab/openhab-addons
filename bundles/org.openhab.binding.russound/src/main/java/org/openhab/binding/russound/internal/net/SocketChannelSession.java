@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.openhab.binding.russound.internal.RussoundBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +128,10 @@ public class SocketChannelSession implements SocketSession {
 
         responses.clear();
 
-        dispatchingThread = new Thread(new Dispatcher());
-        responseThread = new Thread(new ResponseReader());
+        dispatchingThread = new Thread(new Dispatcher(),
+                "OH-binding-" + RussoundBindingConstants.BINDING_ID + "-dispatcher");
+        responseThread = new Thread(new ResponseReader(),
+                "OH-binding-" + RussoundBindingConstants.BINDING_ID + "-responseReader");
 
         dispatchingThread.start();
         responseThread.start();
@@ -292,15 +295,15 @@ public class SocketChannelSession implements SocketSession {
                     final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String) {
+                        if (response instanceof String stringCommand) {
                             logger.debug("Dispatching response: {}", response);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseReceived((String) response);
+                                listener.responseReceived(stringCommand);
                             }
-                        } else if (response instanceof IOException) {
+                        } else if (response instanceof IOException ioException) {
                             logger.debug("Dispatching exception: {}", response);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseException((IOException) response);
+                                listener.responseException(ioException);
                             }
                         } else {
                             logger.warn("Unknown response class: {}", response);

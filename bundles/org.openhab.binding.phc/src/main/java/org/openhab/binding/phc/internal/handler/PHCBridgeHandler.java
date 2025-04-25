@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.phc.internal.PHCBindingConstants;
@@ -48,6 +47,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +77,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private final BlockingQueue<QueueObject> sendQueue = new LinkedBlockingQueue<>();
     private final ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(3);
 
-    private final byte emLedOutputState[] = new byte[32];
-    private final byte amOutputState[] = new byte[32];
-    private final byte dmOutputState[] = new byte[32];
+    private final byte[] emLedOutputState = new byte[32];
+    private final byte[] amOutputState = new byte[32];
+    private final byte[] dmOutputState = new byte[32];
 
     private final List<Byte> modules = new ArrayList<>();
 
@@ -210,7 +210,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 byte sizeToggle = buffer.get();
 
                 // read length of command and check if makes sense
-                if ((sizeToggle < 1 || sizeToggle > 3) && ((sizeToggle & 0xFF) < 0x81 || (sizeToggle & 0xFF) > 0x83)) {
+                int size = (sizeToggle & 0x7F);
+
+                if (!isSizeToggleValid(sizeToggle, module)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("get invalid sizeToggle: {}", new String(HexUtils.byteToHex(sizeToggle)));
                     }
@@ -220,7 +222,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 }
 
                 // read toggle, size and command
-                int size = (sizeToggle & 0x7F);
                 boolean toggle = (sizeToggle & 0x80) == 0x80;
 
                 logger.debug("get toggle: {}", toggle);
@@ -268,6 +269,24 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private boolean isSizeToggleValid(byte sizeToggle, byte module) {
+        int unsigned = sizeToggle & 0xFF;
+
+        if (unsigned > 0 && unsigned < 4) {
+            return true;
+        } else if (unsigned > 0x80 && unsigned < 0x84) {
+            return true;
+        } else if ((module & 0xE0) == 0x00) {
+            if (unsigned > 0 && unsigned < 16) {
+                return true;
+            } else if (unsigned > 0x80 && unsigned < 0x90) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int handleCrcFault(int faultCounter) throws InterruptedException {
@@ -320,23 +339,31 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
             // EM command / update
         } else {
-            if (((module & 0xE0) == 0x00)) {
+            if ((module & 0xE0) == 0x00) {
                 sendEmAcknowledge(module, toggle);
                 logger.debug("send acknowledge (modul, toggle) {} {}", module, toggle);
 
-                byte channel = (byte) ((command[0] >>> 4) & 0x0F);
+                for (byte cmdByte : command) {
+                    byte channel = (byte) ((cmdByte >>> 4) & 0x0F);
 
-                OnOffType onOff = OnOffType.OFF;
+                    OnOffType onOff = OnOffType.OFF;
 
-                if ((command[0] & 0x0F) == 2) {
-                    onOff = OnOffType.ON;
-                }
+                    byte cmd = (byte) (cmdByte & 0x0F);
+                    if (cmd % 2 == 0) {
+                        if (cmd == 2) {
+                            onOff = OnOffType.ON;
+                        } else {
+                            logger.debug("Command {} isn't implemented for EM", cmd);
+                            continue;
+                        }
+                    }
 
-                QueueObject qo = new QueueObject(PHCBindingConstants.CHANNELS_EM, module, channel, onOff);
+                    QueueObject qo = new QueueObject(PHCBindingConstants.CHANNELS_EM, module, channel, onOff);
 
-                // put recognized message into queue
-                if (!receiveQueue.contains(qo)) {
-                    receiveQueue.offer(qo);
+                    // put recognized message into queue
+                    if (!receiveQueue.contains(qo)) {
+                        receiveQueue.offer(qo);
+                    }
                 }
 
                 // ignore if message not from EM module
@@ -411,7 +438,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             amOutputState[qo.getModuleAddress() & 0x1F] = -1;
         } else if (PHCBindingConstants.CHANNELS_DIM.equals(qo.getModuleType())) {
             // state ist the same for every dim level except zero/off -> inizialize state
-            // with 0x0F after sending an command.
+            // with 0x0F after sending a command.
             dmOutputState[qo.getModuleAddress() & 0x1F] |= (0x0F << (qo.getChannel() * 4));
         }
 
@@ -543,7 +570,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private void sendDim(byte moduleAddress, byte channel, Command command, short dimTime) {
         byte module = (byte) (moduleAddress | 0xA0);
-        byte[] cmd = new byte[(command instanceof PercentType && !(((PercentType) command).byteValue() == 0)) ? 3 : 1];
+        byte[] cmd = new byte[(command instanceof PercentType percentCommand && percentCommand.byteValue() != 0) ? 3
+                : 1];
 
         cmd[0] = (byte) (channel << 5);
 
@@ -685,7 +713,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private void handleIncomingCommand(byte moduleAddress, int channel, OnOffType onOff) {
         ThingUID uid = PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress);
         Thing thing = getThing().getThing(uid);
-        String channelId = "em#" + StringUtils.leftPad(Integer.toString(channel), 2, '0');
+        String channelId = "em#" + StringUtils.padLeft(Integer.toString(channel), 2, "0");
 
         if (thing != null && thing.getHandler() != null) {
             logger.debug("Input: {}, {}, {}", thing.getUID(), channelId, onOff);

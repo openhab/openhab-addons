@@ -10,12 +10,12 @@ To see what features each brand has implemented from their APIs, please see this
 
 ## How to Get Help
 
-+ Check this readme for any setup steps for your brand.
-+ Check if the camera is offline, if so there will be a reason listed.
-+ Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
+- Check this readme for any setup steps for your brand.
+- Check if the camera is offline, if so there will be a reason listed.
+- Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
 To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
-+ Search the forum using any log messages to find how others have already solved it.
-+ Only after doing the above ask for help in the forum and create a new thread.
+- Search the forum using any log messages to find how others have already solved it.
+- Only after doing the above ask for help in the forum and create a new thread.
 
 ## Special Notes for Different Brands
 
@@ -35,18 +35,20 @@ Some cameras allow the key frame to be created every second or a different amoun
 
 These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
+Another limitation is that they can only provide a single stream at a time, so you need to setup the `ffmpegInput` to use the ipcamera.mjpeg feed from the openHAB server and change `ffmpegInputOptions` to "-f mjpeg" so FFmpeg knows the input is MJPEG format and not H.264.
 
 Example:
 
-```
+```java
 Thing ipcamera:generic:Esp32Cam
 [
-    ipAddress="192.168.1.181", serverPort=54322,
+    ipAddress="192.168.1.181",
     gifPreroll=1,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
     ffmpegInputOptions="-f mjpeg",
-    ffmpegOutput="/tmp/Esp32Camera/", ffmpegInput="http://192.168.1.181:81/stream"
+    ffmpegOutput="/tmp/Esp32Camera/",
+    ffmpegInput="http://192.168.1.3:8080/ipcamera/{cameraUID}/ipcamera.mjpeg"
 ]
 ```
 
@@ -54,7 +56,7 @@ Thing ipcamera:generic:Esp32Cam
 
 It is better to always setup your Amcrest camera as a `dahua` thing type.
 The old alarm polling based method is used if you setup as `amcrest`, and the newer/better event based method is used if you setup as `dahua` instead.
-All other features should be the same between the two. 
+All other features should be the same between the two.
 
 ### Dahua
 
@@ -62,47 +64,47 @@ For MJPEG to work, you need to set the first sub-stream to use MJPEG format for 
 
 ### Foscam
 
-* If the user/pass is wrong, the camera can lockout and refuse to answer the binding requiring a reboot of the camera, so be sure the details are correct before the camera tries to poll the camera too many times.
-* To use MJPEG streaming, you need to enable one of the streams to use this format. This can be done by entering this into any browser:`http://ip:88/cgi-bin/CGIProxy.fcgi?cmd=setSubStreamFormat&format=1&usr=admin&pwd=password`
-* If your camera does not support MJPEG as some Foscams no longer do, then you can set `mjpegUrl` to contain *ffmpeg* to use your CPU to generate a MJPEG stream.
-* Some Foscam cameras need to have a detection area listed in the URL when you enable the motion alarm.
+- If the user/pass is wrong, the camera can lockout and refuse to answer the binding requiring a reboot of the camera, so be sure the details are correct before the camera tries to poll the camera too many times.
+- To use MJPEG streaming, you need to enable one of the streams to use this format. This can be done by entering this into any browser:`http://ip:88/cgi-bin/CGIProxy.fcgi?cmd=setSubStreamFormat&format=1&usr=admin&pwd=password`
+- If your camera does not support MJPEG as some Foscams no longer do, then you can set `mjpegUrl` to contain _ffmpeg_ to use your CPU to generate a MJPEG stream.
+- Some Foscam cameras need to have a detection area listed in the URL when you enable the motion alarm.
 
-As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL. 
+As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL.
 This setting is called `customMotionAlarmUrl` and the steps to using it are:
 
 1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in. E.g. tree branches moving in the wind.
-2. Use any web browser to fetch this URL `https://x.x.x.x/cgi-bin/CGIProxy.fcgi?cmd=getMotionDetectConfig1&usr=xxxxx&pwd=xxxxx`
-3. Use the information returned by the above URL to create the override settings.
+1. Use any web browser to fetch this URL `https://x.x.x.x/cgi-bin/CGIProxy.fcgi?cmd=getMotionDetectConfig1&usr=xxxxx&pwd=xxxxx`
+1. Use the information returned by the above URL to create the override settings.
 
 An example for a Foscam C2 is...
 
-```
+```text
 /cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig1&isEnable=1&snapInterval=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&x1=0&y1=0&width1=10000&height1=10000&sensitivity1=1&valid1=1&linkage=6&usr=xxxxx&pwd=xxxxx
 ```
 
 Another example is:
 
-```
+```text
 /cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=0001&sensitivity=1&triggerInterval=15&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area7=1023&area8=1023&area9=1023&usr=username&pwd=password
 ```
 
 ### Hikvision
 
-+ For MJPEG to work, you need to set the first sub-stream to be in MJPEG format, otherwise you can override the default with the `mjpegUrl` config with a valid URL for MJPEG streams.
-+ The CGI/API and also ONVIF features are disabled by default on these cameras, so enable and create user details for ONVIF that are the same user/pass as what you have given the binding.
+- For MJPEG to work, you need to set the first sub-stream to be in MJPEG format, otherwise you can override the default with the `mjpegUrl` config with a valid URL for MJPEG streams.
+- The CGI/API and also ONVIF features are disabled by default on these cameras, so enable and create user details for ONVIF that are the same user/pass as what you have given the binding.
 If your camera does not have PTZ (Pan Tilt Zoom) then you can leave ONVIF disabled and just enable the CGI/API.
-+ Each alarm you wish to use must have `Notify Surveillance Center` enabled under each alarms settings in the control panel of the camera itself. 
+- Each alarm you wish to use must have `Notify Surveillance Center` enabled under each alarms settings in the control panel of the camera itself.
 
 ### Hikvision NVRs
 
 In case your Hikvision NVR does not communicate with the binding, make sure that:
 
-* ISAPI is enabled in the NVR settings.
-* ONVIF is enabled and a user/pass created that match the bindings.
-* RTSP is enabled.
-* Some NVR's allow each camera to be exposed on a set port to give direct access to each camera, some users report this works the best and needs to be enabled.
+- ISAPI is enabled in the NVR settings.
+- ONVIF is enabled and a user/pass created that match the bindings.
+- RTSP is enabled.
+- Some NVR's allow each camera to be exposed on a set port to give direct access to each camera, some users report this works the best and needs to be enabled.
 
-Some older versions of these NVRs require setting a different snapshot URL (`snapshotUrl`), as well as `ffmpegInput`. 
+Some older versions of these NVRs require setting a different snapshot URL (`snapshotUrl`), as well as `ffmpegInput`.
 The older ones use the same URLs just with 'ISAPI' removed.
 
 ```java
@@ -114,23 +116,30 @@ Thing ipcamera:hikvision:West "West Camera"
     onvifPort=8000, //normally 80 check what it needs
     port=80,
     nvrChannel=4,
-    serverPort=54324,
-    ffmpegOutput="/etc/openhab2/html/cameras/camera-west/",
+    ffmpegOutput="/var/lib/openhab/ipcamera/West/",
     ffmpegInput="rtsp://192.168.0.XX:554/ISAPI/Streaming/channels/401"
 ]
 ```
 
 ### Instar
 
-+ For MJPEG to work, you need to set the first sub-stream to be MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
-+ Be sure to update to the latest firmware for your camera as Instar have made a lot of improvements recently, including adding MQTT features (MQTT is not needed for this binding to work).
+- For MJPEG to work, you need to set the first sub-stream to be MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
+- Be sure to update to the latest firmware for your camera as Instar have made a lot of improvements recently, including adding MQTT features (MQTT is not needed for this binding to work).
+
+### Reolink
+
+- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF, or newer firmwares may be able to do this via their app or web UI.
+- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
+- Cameras have ONVIF, RTSP and HTTP disabled by default, to enable these required features, do the following: DEVICE SETTINGS>NETWORK>ADVANCED>PORT SETTINGS> then turn these on leaving the default port number alone.
+- Consider setting the substream of the camera to be 4 FPS and to 640*360 as this will lower CPU load if using the ipcamera.mjpeg stream.
 
 ## Discovery
 
-The discovery feature of openHAB can be used to find and setup any ONVIF cameras. 
+The discovery feature of openHAB can be used to find and setup ONVIF cameras.
 This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
 The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
+The binding will only search using openHAB's currently selected primary network address, see <https://www.openhab.org/docs/settings/>.
 If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
 Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
@@ -154,22 +163,21 @@ Example: The thing type for a camera with no ONVIF support is "generic".
 
 ## Thing Configuration
 
-After a camera is added, the first step is to provide login details and a valid serverPort for your camera before it will come online.
+After a camera is added, the first step is to provide login details for your camera before it will come online.
 If your camera is not ONVIF/API based, you will also need to provide the binding with the cameras URLs to the relevant config field/s.
 For ONVIF cameras that auto detect the wrong URL, these same fields can be used to force a URL of your choosing but leaving them blank will allow the binding to find the URL for you.
 
 NOTE: Leave any `user:pass@` out of any URLs, the binding will handle this for you.
 Not only does this hide your login details, it will also make changing your password much easier if it is only located in 1 field.
 
-Below is a list of all configuration parameters (useful for textual config) with a short description. 
+Below is a list of all configuration parameters (useful for textual config) with a short description.
 If you do not specify any of these, the binding will use the default which should work in most cases and should be tried first.
 
 | Parameter | Description |
 |-|-|
 | `ipAddress`| The IP address or host name of your camera. |
 | `port`| This port will be used for HTTP calls for fetching the snapshot and any API calls. |
-| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. |
-| `serverPort`| The port that will serve the video streams and snapshots back to openHAB without authentication. You can choose any number, but it must be unique and unused for each camera that you setup. Setting the port to -1 (default), will turn all file serving off and some features will fail to work. |
+| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. A value of 0 will prevent the binding from trying to connect to ONVIF. |
 | `username`| Leave blank if your camera does not use login details. |
 | `password`| Leave blank if your camera does not use login details. |
 | `onvifMediaProfile`| 0 (default) is your cameras Mainstream and the numbers above 0 are the substreams. Any auto discovered URLs will use the streams that this indicates. You can always override the URLs should you wish to use something different for one of them. |
@@ -188,11 +196,11 @@ If you do not specify any of these, the binding will use the default which shoul
 | `alarmInputUrl` | A URL you can use for the FFmpeg created Audio and Motion Alarms as they don't require high res feeds as they are not seen. |
 | `customMotionAlarmUrl`| Foscam only, for custom enable motion alarm use. More info found in Foscam's setup steps. |
 | `customAudioAlarmUrl`| Foscam only, for custom enable audio alarm use. More info found in Foscam's setup steps. |
-| `mjpegUrl`| A HTTP URL for MJPEG format streams. If you enter 'ffmpeg' the stream can be generated from the RTSP URL. |
+| `mjpegUrl`| A HTTP or RTSP URL to use for MJPEG streams. If you enter 'ffmpeg' the stream can be generated using the RTSP URL. |
 | `ffmpegInput`| Best if this stream is in H.264 format and can be RTSP or HTTP URLs. Leave this blank to use the auto detected RTSP address for ONVIF cameras. |
-| `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have a ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
+| `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have an ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
 | `ffmpegLocation`| The full path including the filename for where you have installed FFmpeg. The default should work for most Linux installs but if using windows use this format: `c:\ffmpeg\bin\ffmpeg.exe` |
-| `ffmpegOutput`| The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this format: `c:\openhabconf\html\ipcamera\`. If you would like to expose the GIF files to your static server, you can set it to `/etc/openhab2/html/cameras/camera-name/` |
+| `ffmpegOutput`| The full path to a unique folder (different for each camera) where FFmpeg has the ability to write files to ending with a slash. If you leave this blank, the binding will automatically use `$OPENHAB_USERDATA/ipcamera/UID`. See here for where this is located on your installation, <https://www.openhab.org/docs/installation/#getting-installation-info> |
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |
 | `gifOutOptions`| This gives you direct access to specify your own FFmpeg options to be used for animated GIF files. Default: `-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse` |
 | `mjpegOptions` | Allows you to change the settings for creating a MJPEG stream from RTSP using FFmpeg. Possible reasons to change this would be to rotate or re-scale the picture from the camera, change the JPG compression for better quality or the FPS rate. |
@@ -201,91 +209,114 @@ If you do not specify any of these, the binding will use the default which shoul
 | `gifPreroll`| Store this many snapshots from BEFORE you trigger a GIF creation. Default: `0` will not use snapshots and will instead use a realtime stream from the ffmpegInput URL |
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
 | `ptzContinuous`| If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an `OFF` command to stop the movement. |
+| `onvifEventServiceType`| ONVIF event method to use. If camera does not report event capabilities, the event method can be forced here. |
+| | `0` - Auto detect event capabilities. (Default) ONVIF event capabilities are detected automatically. PullMessages is preferred over WSBaseNotification because there is no way to determine if an WSBaseNotification subscription exists on startup. |
+| | `1` - ONVIF events disabled. |
+| | `2` - Force ONVIF PullMessages event method even if the camera does not claim to support this. |
+| | `3` - Force ONVIF WSBaseSubscription event method even if the camera does not claim to support this. |
 
 ## Channels
 
-Each camera brand will have different channels depending on how much of the support for an API has been added. 
+Each camera brand will have different channels depending on how much of the support for an API has been added.
 The channels are kept consistent as much as possible from brand to brand to make upgrading to a different camera easier.
 
-| Channel | Type | Description |
-|-|-|-|
-| `activateAlarmOutput` | Switch | Toggles a cameras relay output 1. |
-| `activateAlarmOutput2` | Switch | Toggles a cameras relay output 2. |
-| `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
-| `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
-| `cellMotionAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
-| `doorBell` | Switch (read only) | Doorbird only, will reflect the status of the doorbell button. |
-| `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
-| `enableExternalAlarmInput` | Switch | Hikvision and Instar allow the Alarm input terminals to be disabled by this control. |
-| `enableFieldDetectionAlarm` | Switch | Allows the field detection alarm to be turned ON or OFF. Some cameras will call this the Intrusion Alarm. |
-| `enableLED` | Switch | Turn the IR LED ON or OFF. Some cameras have 3 states the LED can be in, so see the `autoLED` channel. |
-| `enableLineCrossingAlarm` | Switch | Turns the line crossing alarm for API cameras, ON and OFF. |
-| `enableMotionAlarm` | Switch | Turns the motion alarm ON and OFF for API cameras. This will not effect FFmpeg based alarms which have their own control. |
-| `enablePirAlarm` | Switch | Turn PIR sensor ON or OFF. |
-| `externalAlarmInput` | Switch (read only) | Reflects the status of the alarm input terminals on some cameras. |
-| `externalAlarmInput2`  | Switch (read only) | Reflects the status of the alarm input 2 terminals on some cameras. |
-| `externalLight` | Switch | Some cameras have a dedicated relay output for turning lights on and off with. |
-| `externalMotion` | Switch | Can be used to inform the camera if it has motion in its view area. Handy if you own a PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
-| `faceDetected` | Switch (read only) | When a camera detects a face (API cameras only) this switch will move to ON. |
-| `fieldDetectionAlarm` | Switch (read only) | Reflects the cameras status for the field or intrusion alarm. |
-| `ffmpegMotionAlarm` | Switch (read only) | The status of the FFmpeg based motion alarm. |
-| `ffmpegMotionControl` | Dimmer | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB. The channel that will move is called `ffmpegMotionAlarm`. |
-| `gifHistory` | String | The 50 most recent filenames the binding has used unless reset. |
-| `gifHistoryLength` | Number | How many filenames are in the `gifHistory`. |
-| `gotoPreset` | String | ONVIF cameras that can move only. Will cause the camera to move to a preset location. |
-| `hlsUrl` | String | The URL for the ipcamera.m3u8 file. |
-| `imageUrl` | String | The URL for the ipcamera.jpg file. |
-| `itemLeft` | Switch (read only) | Will turn ON if an API camera detects an item has been left behind. |
-| `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
-| `lastMotionType` | String | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
-| `lineCrossingAlarm` | Switch (read only) | Will turn on if the API camera detects motion has crossed a line. |
-| `mjpegUrl` | String | The URL for the ipcamera.mjpeg stream. |
-| `motionAlarm` | Switch (read only) | The status of the 'video motion' events in ONVIF and API cameras. Also see `cellMotionAlarm` as these can give different results. |
-| `mp4History` | String | The 50 most recent filenames the binding has used unless reset. |
-| `mp4HistoryLength` | Number | How many filenames are in the `mp4History`. Setting this to 0 will clear the history. |
-| `pan` | Dimmer | Works with ONVIF cameras that can be moved. |
-| `parkingAlarm` | Switch (read only) | When an API camera detects a car, this will turn ON. |
-| `pirAlarm` | Switch (read only) | When a camera with PIR ability detects motion, this turns ON. |
-| `privacyMode` | Switch | Enable or disable the Privacy Mode of newer Amcrest/Dahua cameras. The camera will move the lens way down and stop the stream. |
-| `recordingGif` | Number (read only) | How many seconds recording to GIF for. 0 when file ready. |
-| `recordingMp4` | Number (read only) | How many seconds recording to MP4 for. 0 when file ready. |
-| `rtspUrl` | String | The URL for the cameras auto detected RTSP stream. |
-| `sceneChangeAlarm` | Switch (read only) | When an API camera detects the camera has moved, this turns ON. |
-| `startStream` | Switch | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand. |
-| `storageAlarm` | Switch (read only) | When an ONVIF cameras storage is full and/or removed, this turns ON. |
-| `tamperAlarm` | Switch (read only) | When an ONVIF cameras tamper switch is tripped, this turns ON. |
-| `textOverlay` | String | Dahua, Instar and Hikvision can overlay any text you enter here over the video stream. |
-| `thresholdAudioAlarm` | Dimmer | This channel can be linked to a Switch and a Slider. The value of the slider is the value in dB that is detected as noise/alarm down from digital full scale. Higher values are more sensitive and will trigger the alarm with quieter / less noise. |
-| `tilt` | Dimmer | Works with ONVIF cameras that can be moved. |
-| `triggerExternalAlarmInput` | Switch | Hikvision cameras can change if the alarm input terminal is ON when high or low. This can be used to manually cause an alarm input event to occur. |
-| `tooBlurryAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
-| `tooBrightAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
-| `tooDarkAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
-| `pollImage` | Switch | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel. |
-| `zoom` | Dimmer | Works with ONVIF cameras that can be moved. |
+| Channel                     | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                        |
+|-----------------------------|--------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `activateAlarmOutput`       | Switch | RW         | Toggles a cameras relay output 1.                                                                                                                                                                                                                                                                                                  |
+| `activateAlarmOutput2`      | Switch | RW         | Toggles a cameras relay output 2.                                                                                                                                                                                                                                                                                                  |
+| `animalAlarm`               | Switch | RW         | Toggles when an animal is in view.                                                                                                                                                                                                                                                                                                 |
+| `audioAlarm`                | Switch | R          | When the camera detects noise above a threshold this switch will move to ON.                                                                                                                                                                                                                                                       |
+| `autoLED`                   | Switch | RW         | When ON this sets a cameras IR LED to automatically turn on or off.                                                                                                                                                                                                                                                                |
+| `autoTracking`              | Switch | RW         | Turn the automatic mode for tracking ON or OFF.                                                                                                                                                                                                                                                                                    |
+| `autoWhiteLED`              | Switch | RW         | When ON this sets a cameras visible white LED to automatically turn on or off.                                                                                                                                                                                                                                                     |
+| `carAlarm`                  | Switch | RW         | When a car is detected the switch will turn ON.                                                                                                                                                                                                                                                                                    |
+| `cellMotionAlarm`           | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `doorBell`                  | Switch | R          | Doorbird only, will reflect the status of the doorbell button.                                                                                                                                                                                                                                                                     |
+| `enableAudioAlarm`          | Switch | RW         | Allows the audio alarm to be turned ON or OFF.                                                                                                                                                                                                                                                                                     |
+| `enableEmail`               | Switch | RW         | Allows the email features to be turned ON or OFF.                                                                                                                                                                                                                                                                                  |
+| `enableExternalAlarmInput`  | Switch | RW         | Hikvision and Instar allow the Alarm input terminals to be disabled by this control.                                                                                                                                                                                                                                               |
+| `enableFieldDetectionAlarm` | Switch | RW         | Allows the field detection alarm to be turned ON or OFF. Some cameras will call this the Intrusion Alarm.                                                                                                                                                                                                                          |
+| `enableFTP`                 | Switch | RW         | Turn the cameras internal FTP recordings ON or OFF.                                                                                                                                                                                                                                                                                |
+| `enableLED`                 | Switch | RW         | Turn the IR LED ON or OFF. Some cameras have 3 states the LED can be in, so see the `autoLED` channel.                                                                                                                                                                                                                             |
+| `enableLineCrossingAlarm`   | Switch | RW         | Turns the line crossing alarm for API cameras, ON and OFF.                                                                                                                                                                                                                                                                         |
+| `enableMotionAlarm`         | Switch | RW         | Turns the motion alarm ON and OFF for API cameras. This will not effect FFmpeg based alarms which have their own control.                                                                                                                                                                                                          |
+| `enablePirAlarm`            | Switch | RW         | Turn PIR sensor ON or OFF.                                                                                                                                                                                                                                                                                                         |
+| `enablePush`                | Switch | RW         | Allows the push notification features to be turned ON or OFF.                                                                                                                                                                                                                                                                      |
+| `enableRecordings`          | Switch | RW         | Turn the cameras internal recordings ON or OFF.                                                                                                                                                                                                                                                                                    |
+| `externalAlarmInput`        | Switch | R          | Reflects the status of the alarm input terminals on some cameras.                                                                                                                                                                                                                                                                  |
+| `externalAlarmInput2`       | Switch | R          | Reflects the status of the alarm input 2 terminals on some cameras.                                                                                                                                                                                                                                                                |
+| `externalLight`             | Switch | RW         | Some cameras have a dedicated relay output for turning lights on and off with.                                                                                                                                                                                                                                                     |
+| `externalMotion`            | Switch | RW         | Can be used to inform the camera if it has motion in its view area. Handy if you own a PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
+| `faceDetected`              | Switch | R          | When a camera detects a face (API cameras only) this switch will move to ON.                                                                                                                                                                                                                                                       |
+| `fieldDetectionAlarm`       | Switch | R          | Reflects the cameras status for the field or intrusion alarm.                                                                                                                                                                                                                                                                      |
+| `ffmpegMotionAlarm`         | Switch | R          | The status of the FFmpeg based motion alarm.                                                                                                                                                                                                                                                                                       |
+| `ffmpegMotionControl`       | Dimmer | RW         | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB. The channel that will move is called `ffmpegMotionAlarm`.                                                                                                                                                                             |
+| `gifHistory`                | String | RW         | The 50 most recent filenames the binding has used unless reset.                                                                                                                                                                                                                                                                    |
+| `gifHistoryLength`          | Number | RW         | How many filenames are in the `gifHistory`.                                                                                                                                                                                                                                                                                        |
+| `gotoPreset`                | String | RW         | ONVIF cameras that can move only. Will cause the camera to move to a preset location.                                                                                                                                                                                                                                              |
+| `hlsUrl`                    | String | RW         | The URL for the ipcamera.m3u8 file.                                                                                                                                                                                                                                                                                                |
+| `humanAlarm`                | Switch | RW         | When a camera detects a human this switch will turn ON.                                                                                                                                                                                                                                                                            |
+| `imageUrl`                  | String | RW         | The URL for the ipcamera.jpg file.                                                                                                                                                                                                                                                                                                 |
+| `itemLeft`                  | Switch | R          | Will turn ON if an API camera detects an item has been left behind.                                                                                                                                                                                                                                                                |
+| `itemTaken`                 | Switch | R          | Will turn ON if an API camera detects an item has been stolen.                                                                                                                                                                                                                                                                     |
+| `lastMotionType`            | String | RW         | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes.                                                  |
+| `lastEventData`             | String | RW         | Detailed information about the last smart alarm that can contain information like which Line number was crossed and in which direction. The channel `lastMotionType` will hold the name of the alarm that this data belongs to.                                                                                                    |
+| `lineCrossingAlarm`         | Switch | R          | Will turn on if the API camera detects motion has crossed a line.                                                                                                                                                                                                                                                                  |
+| `mjpegUrl`                  | String | RW         | The URL for the ipcamera.mjpeg stream.                                                                                                                                                                                                                                                                                             |
+| `motionAlarm`               | Switch | R          | The status of the 'video motion' events in ONVIF and API cameras. Also see `cellMotionAlarm` as these can give different results.                                                                                                                                                                                                  |
+| `mp4History`                | String | RW         | The 50 most recent filenames the binding has used unless reset.                                                                                                                                                                                                                                                                    |
+| `mp4HistoryLength`          | Number | RW         | How many filenames are in the `mp4History`. Setting this to 0 will clear the history.                                                                                                                                                                                                                                              |
+| `pan`                       | Dimmer | RW         | Works with ONVIF cameras that can be moved.                                                                                                                                                                                                                                                                                        |
+| `parkingAlarm`              | Switch | R          | When an API camera detects a car, this will turn ON.                                                                                                                                                                                                                                                                               |
+| `pirAlarm`                  | Switch | R          | When a camera with PIR ability detects motion, this turns ON.                                                                                                                                                                                                                                                                      |
+| `privacyMode`               | Switch | RW         | Enable or disable the Privacy Mode of newer Amcrest/Dahua cameras. The camera will move the lens way down and stop the stream.                                                                                                                                                                                                     |
+| `recordingGif`              | Number | R          | How many seconds recording to GIF for. 0 when file ready.                                                                                                                                                                                                                                                                          |
+| `recordingMp4`              | Number | R          | How many seconds recording to MP4 for. 0 when file ready.                                                                                                                                                                                                                                                                          |
+| `rtspUrl`                   | String | RW         | The URL for the cameras auto detected RTSP stream.                                                                                                                                                                                                                                                                                 |
+| `sceneChangeAlarm`          | Switch | R          | When an API camera detects the camera has moved, this turns ON.                                                                                                                                                                                                                                                                    |
+| `startStream`               | Switch | RW         | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand.                                                                                                                                                                                                            |
+| `storageAlarm`              | Switch | R          | When an ONVIF cameras storage is full and/or removed, this turns ON.                                                                                                                                                                                                                                                               |
+| `tamperAlarm`               | Switch | R          | When an ONVIF cameras tamper switch is tripped, this turns ON.                                                                                                                                                                                                                                                                     |
+| `textOverlay`               | String | RW         | Dahua, Instar and Hikvision can overlay any text you enter here over the video stream.                                                                                                                                                                                                                                             |
+| `thresholdAudioAlarm`       | Dimmer | RW         | This channel can be linked to a Switch and a Slider. The value of the slider is the value in dB that is detected as noise/alarm down from digital full scale. Higher values are more sensitive and will trigger the alarm with quieter / less noise.                                                                               |
+| `tilt`                      | Dimmer | RW         | Works with ONVIF cameras that can be moved.                                                                                                                                                                                                                                                                                        |
+| `triggerExternalAlarmInput` | Switch | RW         | Hikvision cameras can change if the alarm input terminal is ON when high or low. This can be used to manually cause an alarm input event to occur.                                                                                                                                                                                 |
+| `tooBlurryAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `tooBrightAlarm`            | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `tooDarkAlarm`              | Switch | R          | ONVIF cameras only will reflect the status of the ONVIF event of the same name.                                                                                                                                                                                                                                                    |
+| `pollImage`                 | Switch | RW         | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel.                                                                                                    |
+| `whiteLED`                  | Dimmer | RW         | Turn the visible white LED ON or OFF and if supported dim from 0-100%.                                                                                                                                                                                                                                                             |
+| `zoom`                      | Dimmer | RW         | Works with ONVIF cameras that can be moved.                                                                                                                                                                                                                                                                                        |
+| `acceptedCardNumber`        | String | R          | This channel shows the last accepted access card number that opened the door. The channel doesn't show rejected/unauthorized cards.                                                                                                                                                                                                |
+| `unacceptedCardNumber`      | String | R          | This channel shows the last unaccepted access card number that was read.                                                                                                                                                                                                                                                           |
+| `doorUnlock`                | Switch | RW         | This channel could reflect door lock state and at the same time send commands to door lock. Note that under some conditions doorphone doesn't send "lock off" message, so it's better to add expiration timer to corresponding item.                                                                                               |
+| `doorContact`               | Contact | R         | Reflects door open/closed contact state.                                                                                                                                                                                                                                                                                           |
+| `exitButton`                | Switch | R          | Reflects exit button state. This could be used to check for exit button's long clicks/double clicks, so the button could control other gates connected to openHAB, or outdoor lights.                                                                                                                                              |
+| `exitButtonEnabled`         | Switch | RW         | This channel could be used to disable the exit button to provide additional security at night or when noone is home.                                                                                                                                                                                                               |
+| `motionDetectionLevel`      | Number | RW         | Controls camera's built-in motion detection sensitivity.                                                                                                                                                                                                                                                                           |
+| `magneticLockWarning`       | Switch | R          | This alarm will trigger if the door was opened while the lock is closed, signalling possible intrusion alarm.                                                                                                                                                                                                                      |
 
 ## Moving PTZ Cameras
 
 To move a camera with this binding you need an ONVIF camera that supports one of the following:
 
-+ Absolute movements
-+ Relative movements
-+ Continuous movements  
-+ Presets
+- Absolute movements
+- Relative movements
+- Continuous movements
+- Presets
 
 To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).
 Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets can not be created with the binding, only loaded after they are already created in a program like ODM.
-After creating new or changing existing presets, it is necessary to send the REFRESH command to the `gotoPreset` channel or you can restart the binding if that is easier. 
+After creating new or changing existing presets, it is necessary to send the REFRESH command to the `gotoPreset` channel or you can restart the binding if that is easier.
 You can create names using the mappings feature of the selection element.
 See docs here <https://www.openhab.org/docs/configuration/sitemaps.html#mappings>
 
-Moving the camera using *Relative* or *Continuous* (config `ptzContinuous` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
+Moving the camera using _Relative_ or _Continuous_ (config `ptzContinuous` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
 The OFF command (to any of the PTZ channels) will stop the cameras movements in the case of continuous being selected.
-When the config is set to false (the default if not specified) the binding will send relative movements. 
+When the config is set to false (the default if not specified) the binding will send relative movements.
 There are some widgets created in the HABpanel widget gallery that you can download and use right away saving you time if your camera supports either presets, relative or continuous modes.
 
 For sitemaps, the below examples can be used.
-
 
 item:
 
@@ -338,19 +369,19 @@ This is where this feature can come in handy, as you can add any of the many FFm
 
 To get this working:
 
-+ Provide a URL to the bindings config `alarmInputUrl` or leave it blank to use the auto detected URL if your camera has ONVIF.
-+ Install FFmpeg.
-+ You have the resolution and FPS at realistic settings for your CPU. You need to reach 1.x speed otherwise the alarm will lag further behind realtime the longer you have this running.
+- Provide a URL to the bindings config `alarmInputUrl` or leave it blank to use the auto detected URL if your camera has ONVIF.
+- Install FFmpeg.
+- You have the resolution and FPS at realistic settings for your CPU. You need to reach 1.x speed otherwise the alarm will lag further behind realtime the longer you have this running.
 1080p and 10 fps maximum for an ARM processor is probably a good place to start testing or even lower if you can.
-+ Set the `ffmpegMotionControl` channel to 16 with a slider control and if the alarm stays on increase the value until it works as desired.
+- Set the `ffmpegMotionControl` channel to 16 with a slider control and if the alarm stays on increase the value until it works as desired.
 If it will not trigger, lower the control until it does.
-+ Set the `ffmpegMotionControl` to OFF or 0 and it stops using your CPU.
+- Set the `ffmpegMotionControl` to OFF or 0 and it stops using your CPU.
 You can link this same channel to BOTH a switch and a slider at the same time if you like to have both types of controls.
-+ The output of the alarm will go to a channel called `ffmpegMotionAlarm` and you can use the `lastMotionType` channel to determine which alarm was last tripped if your camera has multiple alarm types.
+- The output of the alarm will go to a channel called `ffmpegMotionAlarm` and you can use the `lastMotionType` channel to determine which alarm was last tripped if your camera has multiple alarm types.
 
-**audioAlarm**
+### audioAlarm
 
-This works in the same way, just with different channels. 
+This works in the same way, just with different channels.
 If you setup a lower resolution URL in the config `alarmInputUrl` you need to ensure it contains audio otherwise this feature wont work.
 A value of 10 on a slider translates to -10dB below max volume (digital full scale) and when the audio goes above the -10dB threshold the alarm will turn ON.
 
@@ -360,87 +391,93 @@ There are a number of ways to use snapshots with this binding.
 
 **Ways to use snapshots are:**
 
-+ Use the cameras URL so it passes from the camera directly to your end device. ie a tablet.
+- Use the cameras URL so it passes from the camera directly to your end device. ie a tablet.
 This is always the best option if it works.
-+ Request a snapshot with the URL `http://192.168.xxx.xxx:54321/ipcamera.jpg`.
-The IP is for your openHAB server not the camera, and 54321 is the `serverPort` number that you specified in the bindings setup. If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
+
+- Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
+The IP is for your openHAB server not the camera.
+If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
 The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
-+ Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
-+ Use the record GIF action and use a `gifPreroll` value > 0. 
-This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`. 
-This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action. 
+- Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format.
+- Use the record GIF action and use a `gifPreroll` value > 0.
+This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`.
+This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action.
 Handy for cameras which lag due to slow processors, or if you do not want a hand blocking the image when the door bell was pushed.
-These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
-`http://192.168.xxx.xxx:54321/snapshot0.jpg`
-+ Also worth a mention is that you can off load cameras to a software package running on a separate server such as, Motion, Shinobi and Zoneminder.
+These snapshots can be fetched either directly as they exist on disk, or via this URL format.
+`http://openHAB:8080/ipcamera/{cameraUID}/snapshot0.jpg`
+- Also worth a mention is that you can off load cameras to a software package running on a separate server such as, Motion, Shinobi and Zoneminder.
 
 See this forum thread for examples of how to use snapshots and streams in a sitemap.
 <https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
 
 ## Video Streams
 
-To get some of the video formats working, you need to install FFmpeg. 
+To get video streams working, this forum thread has working widget examples that you can use.
+<https://community.openhab.org/t/oh3-widget-building-a-camera-widget/110069>
+
+To get some of the video formats working, you need to install FFmpeg.
 Visit their site here to learn how <https://ffmpeg.org/>
 
 Under Linux, FFmpeg can be installed very easily with this one command.
 
-```
+```shell
 sudo apt update && sudo apt install ffmpeg
 ```
 
 **IMPORTANT:**
-The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`. 
-Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer. 
-If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" (the default since the feature also needs a valid serverPort set) to turn this feature off and then all internal IPs will have access.
+The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`.
+Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer.
+If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" and then all internal IPs will have access.
 
-There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:serverPort/name.format` replacing the name.format with one of the options that are listed below:
+There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://openHAB:8080/ipcamera/{cameraUID}/name.format` replacing the name.format with one of the options that are listed below:
 
-+ **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
+- **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression.
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
 Please understand that this format due to the way it works will give you lag behind real time, more on this below.
-+ **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
+- **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
 It is normally 1 second or less behind real-time.
-FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
+FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU.
 A lot of cameras limit the resolution in this format, so consider using HLS, autofps.mjpeg, or snapshots.mjpeg instead which will be in a higher resolution.
-+ **snapshots.mjpeg** is a special MJPEG stream created from the cameras snapshots that are taken at the polling rate.
-+ **autofps.mjpeg** This requires a camera that has a motion alarm to be turned on or it will only send a picture every 8 seconds.
+- **snapshots.mjpeg** is a special MJPEG stream created from the cameras snapshots that are taken at the polling rate.
+- **autofps.mjpeg** This requires a camera that has a motion alarm to be turned on or it will only send a picture every 8 seconds.
 You can also use the `externalMotion` channel to change the framerate.
 This feature is designed to keep data traffic to your mobile devices as low as possible by automatically sending 1fps when motion is occurring, but only 1 picture every 8 seconds when the picture has no motion.
 The idea is to not send lots of pictures if the picture has not changed as doing so only eats up your data plan.
-+ **ipcamera.gif** This is small in size and very compatible and handy to use in push notifications, Pushover, Telegram, or emails.
-You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet. 
-+ MP4 recordings can be created by the binding and FFmpeg, more on this below.
+- **ipcamera.gif** This is small in size and very compatible and handy to use in push notifications, Pushover, Telegram, or emails.
+You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet.
+- MP4 recordings can be created by the binding and FFmpeg, more on this below.
 
 ## MJPEG Streams
 
 Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
-Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion.
+Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this may use a lot of CPU power to handle the conversion.
+The lower the resolution of the stream, the lower the CPU load, so consider using a substream of the camera in the `mjpegUrl` configuration field.
 The alternative is to use HLS format which does not need the conversion and does not use any CPU to speak of.
 For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power.
 This can be done in a dedicated video server which will be the only way with lots of cameras, unless you purchase cameras that have the ability built in.
 
-An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
+An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` or `autofps.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
 
-The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hikvision, Foscam HD and Instar HD.
+The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, ESP32 Camera, Hikvision, Foscam HD and Instar HD.
 To set this up, see [Special Notes for Different Brands](#special-notes-for-different-brands).
 The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
 
-To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the serverPort to match the settings in the bindings setup for that camera.
+To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the uniqueID of the camera.
 
-<http://openHABIP:serverPort/ipcamera.mjpeg>
+<http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.mjpeg>
 
-**Creating MJPEG with FFmpeg**
+### Creating MJPEG with FFmpeg
 
 To use this feature, all you need to do is set the config `mjpegUrl` to contain "ffmpeg" to use your CPU to generate the MJPEG stream with FFmpeg.
 For cameras that have an API you can opt to not use the cameras stream and use FFmpeg instead should you run out of available streams.
 
 FFmpeg may require you to lower the resolution and/or the FPS to lower the CPU load down enough to run, you may need to experiment.
 To change the settings used by this feature the binding exposes the config `mjpegOptions` which the default is currently `-q:v 5 -r 2 -vf scale=640:-2 -update 1` where 5 is the JPG quality/compression setting, and -r 2 is how many frames per second to try and create.
-In this case it will create 2 frames every second. 
+In this case it will create 2 frames every second.
 `-vf scale=640:-2` will lower the resolution down to make the video 640 pixels wide.
 You can remove this to use the same resolution as the camera is set to use, however it may become a trade off and you may get less frames per second if you raise the resolution.
 Always try to get the default settings working first before you begin to experiment and if your stream is above 1080p and 10 frames per second, consider lowering it if you have issues on an ARM based server like a Raspberry PIx.
- 
+
 ## snapshots.mjpeg and autofps.mjpeg
 
 These similar features allow you to request a MJPEG stream created by the binding with low CPU usage from the cameras snapshots.
@@ -448,55 +485,53 @@ Snapshots are usually high resolution and look great, however they are limited t
 The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
 
 The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
-This means lower traffic unless the picture is actually changing. 
+This means lower traffic unless the picture is actually changing.
 
-Request the stream to be sent to an item with this URL. 
-NOTE: The IP is openHAB's not your cameras IP and the 54321 is what you have set as the serverPort.
+Request the stream to be sent to an item with this URL.
+NOTE: The IP is openHAB's not your cameras IP.
 
-`http://192.168.xxx.xxx:54321/snapshots.mjpeg`
+`http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg`
 
 Use the following to display it in your sitemap.
 
-```
-Video url="http://192.168.0.32:54321/autofps.mjpeg" encoding="mjpeg"
+```java
+Video url="http://openHAB:8080/ipcamera/{cameraUID}/autofps.mjpeg" encoding="mjpeg"
 
-Video url="http://192.168.0.32:54321/snapshots.mjpeg" encoding="mjpeg"
+Video url="http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg" encoding="mjpeg"
 ```
 
 ## HLS (HTTP Live Streaming)
 
 HLS is a way of splitting the live stream up into small H.264 based files so it can be played in many browsers (some require addons to be installed) without using much CPU power as cameras generally are already in H.264 and this does not transcode the data.
-Because the files need to be created, this creates a lag/delay behind real time that can be reduced (more on that below). 
+Because the files need to be created, this creates a lag/delay behind real time that can be reduced (more on that below).
 
-The channel called 'startStream' can be used to create HLS files non stop and will remove the startup delay that comes with using this type of stream. 
+The channel called 'startStream' can be used to create HLS files non stop and will remove the startup delay that comes with using this type of stream.
 The startup delay and the lag are two different things, with the startup delay easily solved by turning this channel ON.
 If the channel is OFF, the stream will start and stop automatically as required and the channel will reflect its current status.
 With a fast openHAB server it should only need to be requested once, but on slower ARM systems it takes a while for FFmpeg to get up and running at full speed.
 
-It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://192.168.0.2:54321/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
+It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
 This 64 second delay before the stream is stopped helps when you are moving back and forth in a UI, as the stream does not keep stopping and needing to start each time you move around in a UI.
 
 To use the HLS feature, you need to:
 
-+ Ensure FFmpeg is installed.
-+ For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
-+ Supply a folder that the openhab user has write permissions for to the config `ffmpegOutput`.
-+ Set a valid `serverPort` as the default value of -1 will turn this feature off.
-+ Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
+- Ensure FFmpeg is installed.
+- For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
+- Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
 
 ### Ram Drive Setup
 
-To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing. 
+To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing.
 Recommend using 20Mb per camera that uses this location although it could use less than half that amount if carefully streamlined for less ram.
-If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera. 
+If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera.
 
-```
+```shell
 nano /etc/fstab
 ```
 
 Enter and save this at the bottom of the file using ctrl X when done.
 
-```
+```shell
 tmpfs /tmpfs tmpfs defaults,nosuid,nodev,noatime,size=20m 0 0
 ```
 
@@ -510,26 +545,26 @@ Then you need to change the HLS settings to what you need, some are suggestions 
 
 Less delay behind realtime (no audio) if your cameras iFrames are 1 second apart (-hls_time 1):
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 1 -hls_list_size 4
 ```
 
 For cameras with no audio in the stream (default setting).
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
 ```
 
 For cameras with audio in the stream.
 Note: will break Chromecast if the camera does not send audio which is why this is not the default.
 
-```bash
+```shell
 -strict -2 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
 ```
 
 Some browsers require larger segment sizes to prevent choppy playback, this can be done with this setting to create 10 second segment files which increases the time before you can get playback working.
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 10 -hls_list_size 4
 
 ```
@@ -538,22 +573,19 @@ Some browsers require larger segment sizes to prevent choppy playback, this can 
 
 The webview version allows you to zoom in on the video when using the iOS app, the Video element version does not zoom, but it will pass through myopenHAB.
 
+```java
+Text label="HLS Video Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" encoding="hls"}
+
+Text label="HLS Webview Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" height=15}
 ```
 
-Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.1.9:54321/ipcamera.m3u8" encoding="hls"}
-
-Text label="HLS Webview Stream" icon="camera"{Webview url="http://192.168.1.9:54321/ipcamera.m3u8" height=15}
-
-```
-
-**Display multiple HLS streams side by side**
+#### Display multiple HLS streams side by side
 
 In order to display camera hls streams side by side you can also create a webView item and link it to a HTML file in the conf/html directory as follows:
 The webView URL is that of your openHAB installation.
 
-```
+```java
 Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
-
 ```
 
 ```html
@@ -561,20 +593,19 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 <html>
     <body>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50001/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width:100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50002/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50003/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width:100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50004/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
     </body>
-</html> 
-
+</html>
 ```
 
 ## How to Cast a Camera
@@ -587,14 +618,13 @@ There are two ways to cast a camera.
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
 This must use the HLS format and use the metadata tag shown below with the openHAB Cloud Connector setup.
-Don't forget to ask Google to 'sync my devices' after adding the metadata. 
+Don't forget to ask Google to 'sync my devices' after adding the metadata.
 The synonyms in the tag allows Google to understand multiple names that the camera may be called by different people in your family.
 
 Example of how this is done in an items file.
 
-```
+```java
 String FrontDoorCamHlsUrl "Front Door" { channel="ipcamera:ONVIF:FrontDoor:hlsUrl", synonyms="door bell, front camera", ga="Camera" [ protocols="hls" ] }
-
 ```
 
 The second method is by using the Chromecast Binding and by sending the URL you wish to cast to the `playuri` channel.
@@ -604,16 +634,14 @@ Example:
 
 items
 
-```
+```java
 String KitchenHomeHubPlayURI { channel="chromecast:chromecast:KitchenHomeHub:playuri" }
-
 ```
 
 In a rule...
 
-```
-KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
-
+```java
+KitchenHomeHubPlayURI.sendCommand("http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8")
 ```
 
 ## MP4 and GIF Recordings
@@ -622,19 +650,19 @@ You can use FFmpeg to recording to either GIF or MP4 format.
 
 The steps to do this are:
 
-+ Use the Action called `recordMP4(String filename, int secondsToRecord)` or `recordGIF(String filename, int secondsToRecord)` with the first argument being the filename you wish to use, and the second the time in seconds you wish to record for.
-+ Once the file is created, the channel `recordingMp4` or `recordingGif` will change itself back to `0`, which can be used to trigger a rule to send/use the file which will appear in the `ffmpegOutput` folder.
-+ The channel `mp4History` or `gifHistory` keeps a string of the last 50 filenames (comma separated values CSV) until you reset the history. If you use `ipcamera` as the filename, this stops the history from growing.
-+ The channel `mp4HistoryLength` and `gifHistoryLength` keeps track of how many recordings were made since it was last reset.
+- Use the Action called `recordMP4(String filename, int secondsToRecord)` or `recordGIF(String filename, int secondsToRecord)` with the first argument being the filename you wish to use, and the second the time in seconds you wish to record for.
+- Once the file is created, the channel `recordingMp4` or `recordingGif` will change itself back to `0`, which can be used to trigger a rule to send/use the file which will appear in the `ffmpegOutput` folder.
+- The channel `mp4History` or `gifHistory` keeps a string of the last 50 filenames (comma separated values CSV) until you reset the history. If you use `ipcamera` as the filename, this stops the history from growing.
+- The channel `mp4HistoryLength` and `gifHistoryLength` keeps track of how many recordings were made since it was last reset.
 You can send the `0` command to this channel to clear the `mp4History` at the same time as setting this channel back to 0.
-+ You can use the `mp4OutOptions` or `gifOutOptions` config's to apply any FFmpeg filters that you wish.
+- You can use the `mp4OutOptions` or `gifOutOptions` config's to apply any FFmpeg filters that you wish.
 
 There is also a HABpanel Widget worth checking out that uses the history feature to display a list of recent recordings.
 <https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
 
 **NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space by moving the files with a rule.
 
-**GIF Preroll**
+### GIF Preroll
 
 There is also a config called `gifPreroll` to be aware of.
 When `gifPreroll` is 0 (the default) the binding will use the `ffmpegInput` stream to record from.
@@ -644,7 +672,7 @@ The snapshots are saved to disk and can be used as a feature that is described i
 
 You can request the GIF and MP4 by using this URL format, or by the direct path to where the file is stored:
 
-<http://openHAB.IP:serverPort/ipcamera.gif>
+<http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.gif>
 
 .items
 
@@ -675,6 +703,16 @@ then
 end
 ```
 
+## How To Reboot Camera
+```
+rule "Reboot Camera At 12:00 AM"
+when
+    Time cron "0 0 0 ? *"
+then
+  getActions("ipcamera", "ipcamera:reolink:1a40bbe041").reboot()
+end
+```
+
 ## HABpanel
 
 This section is about how to get things working in HABpanel.
@@ -691,10 +729,11 @@ The display order can be allowed to change if one or more of the cameras detects
 
 Some additional checks to get it working are:
 
-+ If using the groups HLS feature, the poll time of the group must be the same or less than the total time contained in each cameras m3u8 file.
+- If using the groups HLS feature, the poll time of the group must be the same or less than the total time contained in each cameras m3u8 file.
 If you have 3 seconds worth of video segments in each cameras HLS stream, this is the max you can set the poll time of the group to.
-+ All cameras in a group should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
-+ Mixing cameras with different aspect ratios may cause issues when cast.
+- All cameras in a group should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
+- Mixing cameras with different aspect ratios may cause issues when cast.
+- The HLS files need to remain on disk for the number of cameras X pollTime, use the `-hls_delete_threshold` ffmpeg option to control this.
 
 ## Sitemap Example
 
@@ -706,21 +745,21 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
 ```java
 
     Text label="BabyMonitor" icon="camera"{
-        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]            
-        Text label="Advanced Controls" icon="settings"{ 
+        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]
+        Text label="Advanced Controls" icon="settings"{
             Default item=BabyCam_AutoLED
             Default item=BabyCam_AudioAlarmThreshold icon=recorder
             Switch item=BabyCam_AudioAlarm
             Default item=BabyCam_EnableMotionAlarm
-            Default item=BabyCam_MotionAlarm                                
+            Default item=BabyCam_MotionAlarm
             Slider item=BabyCam_Pan icon=movecontrol
             Slider item=BabyCam_Tilt icon=movecontrol
             Slider item=BabyCam_Zoom icon=zoom
         }
         Default item=BabyCam_StartHLSStream
-        Text label="Mjpeg Stream" icon="camera"{Video url="http://192.168.0.2:54321/ipcamera.mjpeg" encoding="mjpeg"}
-        Text label="HLS Stream" icon="camera"{Webview url="http://192.168.0.2:54321/ipcamera.m3u8" height=15}
-        Video url="http://192.168.0.2:54321/autofps.mjpeg" encoding="mjpeg"            
-    }  
+        Text label="Mjpeg Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.mjpeg" encoding="mjpeg"}
+        Text label="HLS Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.m3u8" height=15}
+        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"
+    }
 
 ```

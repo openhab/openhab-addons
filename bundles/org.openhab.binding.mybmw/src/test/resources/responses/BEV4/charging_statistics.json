@@ -1,0 +1,8 @@
+{
+    "description": "Laden Sie Ihren BMW und verfolgen Sie Ihre Ladehistorie. Ladevorgänge werden ab dem Aktivierungszeitpunkt gespeichert, d. h. ab dem 27.07.2020.",
+    "optStateType": "OPT_IN_WITHOUT_SESSIONS",
+    "statistics": {
+        "totalEnergyCharged": 0,
+        "numberOfChargingSessions": 0
+    }
+}

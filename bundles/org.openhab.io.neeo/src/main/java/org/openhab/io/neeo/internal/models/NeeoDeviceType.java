@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,11 +30,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class NeeoDeviceType {
-    /** Represents an device that should be excluded */
+    /** Represents a device that should be excluded */
     public static final NeeoDeviceType EXCLUDE = new NeeoDeviceType("");
     /** Represents an accessory device (spelled the way NEEO spells it) */
     public static final NeeoDeviceType ACCESSOIRE = new NeeoDeviceType("ACCESSOIRE");
-    /** Represents an light device */
+    /** Represents a light device */
     static final NeeoDeviceType LIGHT = new NeeoDeviceType("LIGHT");
 
     /** Represents the propery way to spell accessory! */
@@ -51,7 +50,7 @@ public class NeeoDeviceType {
      */
     private NeeoDeviceType(final String text) {
         Objects.requireNonNull(text, "text is required");
-        this.text = StringUtils.equalsIgnoreCase(text, ACCESSORY) ? ACCESSOIRE.text : text;
+        this.text = text.equalsIgnoreCase(ACCESSORY) ? ACCESSOIRE.text : text;
     }
 
     /**
@@ -61,11 +60,11 @@ public class NeeoDeviceType {
      * @return the possibly null NeeoDeviceType
      */
     public static NeeoDeviceType parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return EXCLUDE;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, ACCESSOIRE.text) || StringUtils.equalsIgnoreCase(text, ACCESSORY)) {
+        if (text.equalsIgnoreCase(ACCESSOIRE.text) || text.equalsIgnoreCase(ACCESSORY)) {
             return ACCESSOIRE;
         }
 
@@ -82,7 +81,7 @@ public class NeeoDeviceType {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        return StringUtils.equals(text, ((NeeoDeviceType) obj).text);
+        return text.equals(((NeeoDeviceType) obj).text);
     }
 
     @Override

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,12 +22,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ShellyThingConfiguration {
     public String deviceIp = ""; // ip address of thedevice
+    public String deviceAddress = ""; // IP address or MAC address for BLU devices
     public String userId = ""; // userid for http basic auth
     public String password = ""; // password for http basic auth
 
     public int updateInterval = 60; // schedule interval for the update job
     public int lowBattery = 15; // threshold for battery value
     public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
+
+    public int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
+    public int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
 
     public boolean eventsButton = false; // true: register for Relay btn_xxx events
     public boolean eventsSwitch = true; // true: register for device out_xxx events
@@ -38,4 +42,17 @@ public class ShellyThingConfiguration {
 
     public String localIp = ""; // local ip addresses used to create callback url
     public String localPort = "8080";
+    public String serviceName = "";
+
+    public Boolean enableBluGateway = false;
+    public Boolean enableRangeExtender = true;
+
+    @Override
+    public String toString() {
+        return "Device address=" + deviceAddress + ", HTTP user/password=" + userId + "/"
+                + (password.isEmpty() ? "<none>" : "***") + ", update interval=" + updateInterval + "\n"
+                + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
+                + ", Roller: " + eventsRoller + "Sensor: " + eventsSensorReport + ", CoIoT: " + eventsCoIoT + "\n"
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
+    }
 }

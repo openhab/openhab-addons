@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jellyfin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="server">
+		<label>Jellyfin Server</label>
+		<description>Represents a running Jellyfin server instance</description>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname/IP</label>
+				<description>Hostname or IP address of the server</description>
+				<default>127.0.0.1</default>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" required="true">
+				<label>Port</label>
+				<description>Port of the server</description>
+				<default>8096</default>
+			</parameter>
+			<parameter name="ssl" type="boolean" required="true">
+				<label>SSL</label>
+				<description>Connect through https</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="path" type="text" required="false">
+				<label>Base Path</label>
+				<description>Base path of the server</description>
+			</parameter>
+			<parameter name="refreshSeconds" type="integer" min="10" max="300" required="true">
+				<label>Refresh Seconds</label>
+				<description>Interval to pull devices state from the server</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="clientActiveWithInSeconds" type="integer" min="0" max="950" required="true">
+				<label>Client Active Timeout</label>
+				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="userId" type="text">
+				<label>User ID</label>
+				<description>The user id</description>
+			</parameter>
+			<parameter name="token" type="text">
+				<label>Access Token</label>
+				<description>The user access token</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<!-- Sample Thing Type -->
+	<thing-type id="client">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Jellyfin Client</label>
+		<description>Represents a running Jellyfin client connected to a server</description>
+
+		<channels>
+			<channel id="send-notification" typeId="send-notification-channel"/>
+			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="playing-item-id" typeId="playing-item-id-channel"/>
+			<channel id="playing-item-name" typeId="playing-item-name-channel"/>
+			<channel id="playing-item-series-name" typeId="playing-item-series-name-channel"/>
+			<channel id="playing-item-season-name" typeId="playing-item-season-name-channel"/>
+			<channel id="playing-item-season" typeId="playing-item-season-channel"/>
+			<channel id="playing-item-episode" typeId="playing-item-episode-channel"/>
+			<channel id="playing-item-genders" typeId="playing-item-genders-channel"/>
+			<channel id="playing-item-type" typeId="playing-item-type-channel"/>
+			<channel id="playing-item-percentage" typeId="playing-item-percentage-channel"/>
+			<channel id="playing-item-second" typeId="playing-item-second-channel"/>
+			<channel id="playing-item-total-seconds" typeId="playing-item-total-seconds-channel"/>
+			<channel id="play-by-terms" typeId="play-by-terms-channel"/>
+			<channel id="play-next-by-terms" typeId="play-next-by-terms-channel"/>
+			<channel id="play-last-by-terms" typeId="play-last-by-terms-channel"/>
+			<channel id="browse-by-terms" typeId="browse-by-terms-channel"/>
+			<channel id="play-by-id" typeId="play-by-id-channel"/>
+			<channel id="play-next-by-id" typeId="play-next-by-id-channel"/>
+			<channel id="play-last-by-id" typeId="play-last-by-id-channel"/>
+			<channel id="browse-by-id" typeId="browse-by-id-channel"/>
+		</channels>
+
+		<config-description>
+		</config-description>
+	</thing-type>
+
+	<!-- Client Channels -->
+	<channel-type id="send-notification-channel">
+		<item-type>String</item-type>
+		<label>Send Notification</label>
+		<description>Send notification to the client</description>
+	</channel-type>
+	<channel-type id="playing-item-id-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Id</label>
+		<description>Id of the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Name</label>
+		<description>Name of the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-series-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Series Name</label>
+		<description>Name of the item's series currently playing, only have value when item is an episode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-season-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Season Name</label>
+		<description>Name of the item's season currently playing, only have value when item is an episode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-season-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Season</label>
+		<description>Number of the item's season currently playing, only have value when item is an episode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-episode-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Episode</label>
+		<description>Number of the episode item currently playing, only have value when item is an episode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-genders-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Genders</label>
+		<description>Coma separate list genders of the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-type-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Type</label>
+		<description>Type of the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-percentage-channel">
+		<item-type>Dimmer</item-type>
+		<label>Playing Item Percentage</label>
+		<description>Played percentage for the item currently playing, allow seek</description>
+	</channel-type>
+	<channel-type id="playing-item-second-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Second</label>
+		<description>Current second for the item currently playing, allow seek</description>
+	</channel-type>
+	<channel-type id="playing-item-total-seconds-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Total Seconds</label>
+		<description>Total seconds for the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="play-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play By Terms</label>
+		<description>Play media by terms, works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-next-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play Next By Terms</label>
+		<description>Add to playback queue as next by terms; works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-last-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play Last By Terms</label>
+		<description>Add to playback queue as last by terms; works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="browse-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Browse By Terms</label>
+		<description>Browse media by terms, works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play By Id</label>
+		<description>Play media by id</description>
+	</channel-type>
+	<channel-type id="play-next-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Next By Id</label>
+		<description>Add to playback queue as next by id</description>
+	</channel-type>
+	<channel-type id="play-last-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Last By Id</label>
+		<description>Add to playback queue as last by id</description>
+	</channel-type>
+	<channel-type id="browse-by-id-channel">
+		<item-type>String</item-type>
+		<label>Browse By Id</label>
+		<description>Browse media by id</description>
+	</channel-type>
+</thing:thing-descriptions>

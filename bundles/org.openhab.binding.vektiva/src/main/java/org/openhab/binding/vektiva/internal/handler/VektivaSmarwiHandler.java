@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,11 @@ import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -237,7 +241,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             statusMessage = "Blocked";
         }
 
-        int position = values.getOrDefault("pos", NA).equals("o") ? 0 : 100;
+        int position = "o".equals(values.getOrDefault("pos", NA)) ? 0 : 100;
         if (position == 0 && lastPosition != -1) {
             position = lastPosition;
         }

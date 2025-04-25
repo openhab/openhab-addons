@@ -13,7 +13,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -59,7 +58,6 @@
 				"property": "cct",
 				"friendlyName": "Correlated Color Temperature",
 				"channel": "cct",
-				"channelType": "cct",
 				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
@@ -73,7 +71,6 @@
 				"property": "snm",
 				"friendlyName": "Scene",
 				"channel": "scene",
-				"channelType": "scene",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -87,7 +84,6 @@
 				"property": "dv",
 				"friendlyName": "DV",
 				"channel": "dv",
-				"channelType": "dv",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -149,7 +145,6 @@
 				"property": "",
 				"friendlyName": "Delay Off",
 				"channel": "delayoff",
-				"channelType": "delayoff",
 				"type": "Switch",
 				"refresh": false,
 				"ChannelGroup": "actions",

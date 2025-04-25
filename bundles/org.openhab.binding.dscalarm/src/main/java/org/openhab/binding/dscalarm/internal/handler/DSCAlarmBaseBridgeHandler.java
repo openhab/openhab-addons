@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -233,7 +234,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), BRIDGE_RESET);
-        updateState(channelUID, isOnline ? OnOffType.ON : OnOffType.OFF);
+        updateState(channelUID, OnOffType.from(isOnline));
     }
 
     /**
@@ -341,7 +342,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 sendCommand(DSCAlarmCode.StatusReport);
             }
         } else {
-            logger.error("Not Connected to the DSC Alarm!");
+            logger.warn("Not Connected to the DSC Alarm!");
             connect();
         }
     }
@@ -380,7 +381,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
             } else {
-                logger.error("checkThings(): Thing handler not found!");
+                logger.warn("checkThings(): Thing handler not found! Thing: {}", thing.getUID());
             }
         }
     }
@@ -449,94 +450,123 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         return thing;
     }
 
+    public List<Thing> findAllZoneThings() {
+        List<Thing> things = getThing().getThings();
+        return things.stream().filter(this::isZoneThing).toList();
+    }
+
+    private boolean isZoneThing(Thing thing) {
+        ThingHandler thingHandler = thing.getHandler();
+        if (thingHandler == null) {
+            return false;
+        }
+
+        DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thingHandler;
+        return DSCAlarmThingType.ZONE.equals(handler.getDSCAlarmThingType());
+    }
+
     /**
      * Handles an incoming message from the DSC Alarm System.
      *
      * @param incomingMessage
      */
     public synchronized void handleIncomingMessage(String incomingMessage) {
-        if (incomingMessage != null && !incomingMessage.isEmpty()) {
-            DSCAlarmMessage dscAlarmMessage = new DSCAlarmMessage(incomingMessage);
-            DSCAlarmMessageType dscAlarmMessageType = dscAlarmMessage.getDSCAlarmMessageType();
+        if (incomingMessage == null || incomingMessage.isEmpty()) {
+            logger.debug("handleIncomingMessage(): No Message Received!");
+            return;
+        }
 
-            logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage,
-                    dscAlarmMessage.toString());
+        DSCAlarmMessage dscAlarmMessage = new DSCAlarmMessage(incomingMessage);
+        DSCAlarmMessageType dscAlarmMessageType = dscAlarmMessage.getDSCAlarmMessageType();
 
-            DSCAlarmEvent event = new DSCAlarmEvent(this);
-            event.dscAlarmEventMessage(dscAlarmMessage);
-            DSCAlarmThingType dscAlarmThingType = null;
-            int partitionId = 0;
-            int zoneId = 0;
+        logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage, dscAlarmMessage);
 
-            DSCAlarmCode dscAlarmCode = DSCAlarmCode
-                    .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
 
-            if (panelThingHandler != null) {
-                panelThingHandler.setPanelMessage(dscAlarmMessage);
+        if (panelThingHandler != null) {
+            panelThingHandler.setPanelMessage(dscAlarmMessage);
+        }
+
+        if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
+            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+            if ("3".equals(dscAlarmMessageData)) {
+                sendCommand(DSCAlarmCode.NetworkLogin);
+                // onConnected();
+            } else if ("1".equals(dscAlarmMessageData)) {
+                onConnected();
             }
-
-            if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
-                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if (dscAlarmMessageData.equals("3")) {
-                    sendCommand(DSCAlarmCode.NetworkLogin);
-                    // onConnected();
-                } else if (dscAlarmMessageData.equals("1")) {
-                    onConnected();
-                }
-                return;
-            } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
-                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if (dscAlarmMessageData.equals("000")) {
-                    setBridgeStatus(true);
-                }
+            return;
+        } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
+            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+            if ("000".equals(dscAlarmMessageData)) {
+                setBridgeStatus(true);
             }
+        }
 
-            switch (dscAlarmMessageType) {
-                case PANEL_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.PANEL;
-                    break;
-                case PARTITION_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.PARTITION;
-                    partitionId = Integer
-                            .parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
-                    break;
-                case ZONE_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.ZONE;
-                    zoneId = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.ZONE));
-                    break;
-                case KEYPAD_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.KEYPAD;
-                    break;
-                default:
-                    break;
+        DSCAlarmEvent event = new DSCAlarmEvent(this);
+        event.dscAlarmEventMessage(dscAlarmMessage);
+
+        DSCAlarmThingType dscAlarmThingType = null;
+        int partitionId = 0;
+        int zoneId = 0;
+
+        switch (dscAlarmMessageType) {
+            case PANEL_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.PANEL;
+                break;
+            case PARTITION_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.PARTITION;
+                partitionId = Integer
+                        .parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
+                break;
+            case ZONE_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.ZONE;
+                zoneId = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.ZONE));
+                break;
+            case KEYPAD_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.KEYPAD;
+                break;
+            default:
+                break;
+        }
+
+        if (dscAlarmThingType == null) {
+            return;
+        }
+
+        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)) {
+            List<Thing> allZoneThings = findAllZoneThings();
+            for (Thing zone : allZoneThings) {
+                handleIncomingMessage(event, zone, dscAlarmThingType);
             }
+        } else {
+            Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
+            handleIncomingMessage(event, thing, dscAlarmThingType);
+        }
+    }
 
-            if (dscAlarmThingType != null) {
-                Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
+    private void handleIncomingMessage(DSCAlarmEvent event, Thing thing, DSCAlarmThingType dscAlarmThingType) {
 
-                logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
+        logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
 
-                if (thing != null) {
-                    DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
+        if (thing != null) {
+            DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
 
-                    if (thingHandler != null) {
-                        if (thingHandler.isThingHandlerInitialized() && thing.getStatus() == ThingStatus.ONLINE) {
-                            thingHandler.dscAlarmEventReceived(event, thing);
+            if (thingHandler != null) {
+                if (thingHandler.isThingHandlerInitialized() && thing.getStatus() == ThingStatus.ONLINE) {
+                    thingHandler.dscAlarmEventReceived(event, thing);
 
-                        } else {
-                            logger.debug("handleIncomingMessage(): Thing '{}' Not Refreshed!", thing.getUID());
-                        }
-                    }
                 } else {
-                    logger.debug("handleIncomingMessage(): Thing Not Found! Send to Discovery Service!");
-
-                    if (dscAlarmDiscoveryService != null) {
-                        dscAlarmDiscoveryService.addThing(getThing(), dscAlarmThingType, event);
-                    }
+                    logger.debug("handleIncomingMessage(): Thing '{}' Not Refreshed!", thing.getUID());
                 }
             }
         } else {
-            logger.debug("handleIncomingMessage(): No Message Received!");
+            logger.debug("handleIncomingMessage(): Thing Not Found! Send to Discovery Service!");
+
+            if (dscAlarmDiscoveryService != null) {
+                dscAlarmDiscoveryService.addThing(getThing(), dscAlarmThingType, event);
+            }
         }
     }
 
@@ -648,7 +678,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (password == null) {
-                    logger.error("sendCommand(): No password!");
+                    logger.warn("sendCommand(): No password!");
                     break;
                 }
                 data = password;
@@ -669,14 +699,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case CommandOutputControl: /* 020 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
                 }
 
                 if (dscAlarmData[1] == null || !dscAlarmData[1].matches("[1-4]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Output number must be a single character string from 1 to 4, it was: {}",
                             dscAlarmData[1]);
                     break;
@@ -693,7 +723,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case PartitionArmControlStay: /* 031 */
             case PartitionArmControlZeroEntryDelay: /* 032 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
@@ -704,14 +734,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case PartitionArmControlWithUserCode: /* 033 */
             case PartitionDisarmControl: /* 040 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
                 }
 
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
+                    logger.warn("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
@@ -732,7 +762,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case TimeDateBroadcastControl: /* 056 */
             case TemperatureBroadcastControl: /* 057 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[0-1]")) {
-                    logger.error("sendCommand(): Value must be a single character string of 0 or 1: {}",
+                    logger.warn("sendCommand(): Value must be a single character string of 0 or 1: {}",
                             dscAlarmData[0]);
                     break;
                 }
@@ -741,7 +771,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case TriggerPanicAlarm: /* 060 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-3]")) {
-                    logger.error("sendCommand(): FAPcode must be a single character string from 1 to 3, it was: {}",
+                    logger.warn("sendCommand(): FAPcode must be a single character string from 1 to 3, it was: {}",
                             dscAlarmData[1]);
                     break;
                 }
@@ -752,7 +782,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 if (dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     if (dscAlarmData[0] == null || dscAlarmData[0].length() != 1
                             || !dscAlarmData[0].matches("[0-9]|A|#|\\*")) {
-                        logger.error(
+                        logger.warn(
                                 "sendCommand(): \'keystroke\' must be a single character string from 0 to 9, *, #, or A, it was: {}",
                                 dscAlarmData[0]);
                         break;
@@ -760,18 +790,18 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 } else if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
                     if (dscAlarmData[0] == null || dscAlarmData[0].length() != 1
                             || !dscAlarmData[0].matches("[0-9]|\\*|#|F|A|P|[a-e]|<|>|=|\\^|L")) {
-                        logger.error(
+                        logger.warn(
                                 "sendCommand(): \'keystroke\' must be a single character string from 0 to 9, *, #, F, A, P, a to e, <, >, =, or ^, it was: {}",
                                 dscAlarmData[0]);
                         break;
-                    } else if (dscAlarmData[0].equals("L")) { /* Long Key Press */
+                    } else if ("L".equals(dscAlarmData[0])) { /* Long Key Press */
                         try {
                             Thread.sleep(1500);
                             data = "^";
                             validCommand = true;
                             break;
                         } catch (InterruptedException e) {
-                            logger.error("sendCommand(): \'keystroke\': Error with Long Key Press!");
+                            logger.warn("sendCommand(): \'keystroke\': Error with Long Key Press!");
                             break;
                         }
                     }
@@ -789,7 +819,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
                 if (dscAlarmData[0] == null || dscAlarmData[0].length() > 6
                         || !dscAlarmData[0].matches("(\\d|#|\\*)+")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): \'keysequence\' must be a string of up to 6 characters consiting of 0 to 9, *, or #, it was: {}",
                             dscAlarmData[0]);
                     break;
@@ -799,7 +829,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case CodeSend: /* 200 */
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars");
+                    logger.warn("sendCommand(): Access Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
@@ -820,7 +850,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             successful = true;
             logger.debug("sendCommand(): '{}' Command Sent - {}", dscAlarmCode, confidentialData ? "***" : cmd);
         } else {
-            logger.error("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
+            logger.warn("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
         }
 
         return successful;

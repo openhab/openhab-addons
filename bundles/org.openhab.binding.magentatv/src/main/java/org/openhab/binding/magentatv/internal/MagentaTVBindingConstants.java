@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.magentatv.internal;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +32,7 @@ public class MagentaTVBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RECEIVER = new ThingTypeUID(BINDING_ID, "receiver");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_RECEIVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_RECEIVER);
 
     /**
      * Property names for config/status properties
@@ -99,8 +97,6 @@ public class MagentaTVBindingConstants {
 
     public static final int DEF_REFRESH_INTERVAL_SEC = 60;
     public static final int NETWORK_TIMEOUT_MS = 3000;
-
-    public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
     public static final String HEADER_HOST = "HOST";

@@ -7,16 +7,17 @@
 	<thing-type id="projector-serial">
 		<label>Epson Projector - Serial</label>
 		<description>An Epson projector which supports the ESC/VP21 protocol via a serial port connection</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -39,16 +40,36 @@
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial Port to Use for Connecting to the Epson Projector</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="loadSourceList" type="boolean">
+				<label>Load Source List</label>
+				<description>Attempt to load source list options from the Projector when True</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="maxVolume" type="integer">
+				<label>Volume Range</label>
+				<description>Set to Match the Volume Range Seen in the Projector's OSD</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="20">Volume range is 0-20</option>
+					<option value="40">Volume range is 0-40</option>
+				</options>
+				<default>20</default>
 			</parameter>
 		</config-description>
 
@@ -58,16 +79,17 @@
 		<label>Epson Projector - TCP/IP</label>
 		<description>An Epson projector which supports the ESC/VP21 protocol via the built-in ethernet port or a serial over
 			IP connection</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -89,6 +111,10 @@
 			<channel id="errcode" typeId="errcode"/>
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>macAddress</representation-property>
 
@@ -104,35 +130,54 @@
 				<default>3629</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="loadSourceList" type="boolean">
+				<label>Load Source List</label>
+				<description>Attempt to load source list options from the Projector when True</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="maxVolume" type="integer">
+				<label>Volume Range</label>
+				<description>Set to Match the Volume Range Seen in the Projector's OSD</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="20">Volume range is 0-20</option>
+					<option value="40">Volume range is 0-40</option>
+				</options>
+				<default>20</default>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Powers the Projector On or Off</description>
-	</channel-type>
 	<channel-type id="powerstate">
 		<item-type>String</item-type>
 		<label>Power State</label>
 		<description>Retrieves the Textual Power State of the Projector</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
-		<description>Retrieves the Lamp Hours</description>
+		<description>Retrieves the number of hours the lamp has been used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">
 		<item-type>String</item-type>
 		<label>KeyCode</label>
 		<description>Send a KEY Operation Command to the Projector</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="verticalkeystone" advanced="true">
 		<item-type>Number</item-type>
@@ -202,6 +247,9 @@
 				<option value="20">PC DSUB</option>
 				<option value="41">Video</option>
 				<option value="42">S-Video</option>
+				<option value="52">USB</option>
+				<option value="53">LAN</option>
+				<option value="56">WiFi Direct</option>
 			</options>
 		</state>
 	</channel-type>
@@ -301,12 +349,6 @@
 				<option value="CUSTOM">CUSTOM</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="volume">
-		<item-type>Number</item-type>
-		<label>Volume</label>
-		<description>Retrieve or Set the Volume</description>
-		<state min="0" max="20" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>

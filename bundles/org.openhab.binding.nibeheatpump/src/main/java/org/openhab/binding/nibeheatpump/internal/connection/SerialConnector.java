@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
+import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.MessageFactory;
@@ -165,6 +166,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         final InputStream in;
 
         SerialReader(InputStream in) {
+            super(String.format("OH-binding-%s-%s", NibeHeatPumpBindingConstants.BINDING_ID, "SerialReader"));
             this.in = in;
         }
 
@@ -191,7 +193,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                 @Override
                 public void sendAck() {
                     try {
-                        byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                        byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                         sendAckToNibe(addr);
                     } catch (IOException e) {
                         sendErrorToListeners(e.getMessage());
@@ -215,7 +217,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                             sendDataToNibe(writeQueue.remove(0));
                         } else {
                             // no messages to send, send ack to pump
-                            byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                            byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                             sendAckToNibe(addr);
                         }
                     } catch (IOException e) {
@@ -230,7 +232,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                             sendDataToNibe(readQueue.remove(0));
                         } else {
                             // no messages to send, send ack to pump
-                            byte addr = msg().get(NibeHeatPumpProtocol.OFFSET_ADR);
+                            byte addr = msg().get(NibeHeatPumpProtocol.RES_OFFS_ADR);
                             sendAckToNibe(addr);
                         }
                     } catch (IOException e) {
@@ -278,7 +280,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
             int b;
             // wait first byte (blocking)
             if ((b = in.read()) > -1) {
-                byte d[] = new byte[] { (byte) b };
+                byte[] d = new byte[] { (byte) b };
                 os.write(d);
 
                 // read rest of the available bytes

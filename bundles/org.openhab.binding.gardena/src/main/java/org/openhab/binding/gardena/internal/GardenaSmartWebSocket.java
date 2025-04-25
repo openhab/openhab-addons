@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,15 +23,17 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
-import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
-import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
-import org.openhab.core.io.net.http.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,40 +48,34 @@ import org.slf4j.LoggerFactory;
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
     private final GardenaSmartWebSocketListener socketEventListener;
-    private final long WEBSOCKET_IDLE_TIMEOUT = 300;
+    private static final int MAX_UNANSWERED_PINGS = 5;
 
     private WebSocketSession session;
     private WebSocketClient webSocketClient;
     private boolean closing;
-    private Instant lastPong = Instant.now();
+    private int unansweredPings = 0;
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> connectionTracker;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
     private @Nullable PostOAuth2Response token;
     private String socketId;
+    private String locationID;
 
     /**
      * Starts the websocket session.
      */
-    public GardenaSmartWebSocket(GardenaSmartWebSocketListener socketEventListener,
-            WebSocketCreatedResponse webSocketCreatedResponse, GardenaConfig config, ScheduledExecutorService scheduler,
-            WebSocketFactory webSocketFactory, @Nullable PostOAuth2Response token, String socketId) throws Exception {
+    public GardenaSmartWebSocket(GardenaSmartWebSocketListener socketEventListener, WebSocketClient webSocketClient,
+            ScheduledExecutorService scheduler, String url, @Nullable PostOAuth2Response token, String socketId,
+            String locationID) throws Exception {
         this.socketEventListener = socketEventListener;
+        this.webSocketClient = webSocketClient;
         this.scheduler = scheduler;
         this.token = token;
         this.socketId = socketId;
+        this.locationID = locationID;
 
-        String webSocketId = String.valueOf(hashCode());
-        webSocketClient = webSocketFactory.createWebSocketClient(webSocketId);
-        webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
-        webSocketClient.setStopTimeout(3000);
-        webSocketClient.setMaxIdleTimeout(150000);
-        webSocketClient.start();
-
+        session = (WebSocketSession) webSocketClient.connect(this, new URI(url)).get();
         logger.debug("Connecting to Gardena Webservice ({})", socketId);
-        session = (WebSocketSession) webSocketClient
-                .connect(this, new URI(webSocketCreatedResponse.data.attributes.url)).get();
-        session.setStopTimeout(3000);
     }
 
     /**
@@ -92,60 +87,73 @@ public class GardenaSmartWebSocket {
         if (connectionTracker != null) {
             connectionTracker.cancel(true);
         }
-        if (isRunning()) {
-            logger.debug("Closing Gardena Webservice client ({})", socketId);
-            try {
-                session.close();
-            } catch (Exception ex) {
-                // ignore
-            } finally {
-                try {
-                    webSocketClient.stop();
-                } catch (Exception e) {
-                    // ignore
-                }
-            }
+
+        logger.debug("Closing Gardena Webservice ({})", socketId);
+        try {
+            session.close();
+        } catch (Exception ex) {
+            // ignore
         }
     }
 
-    /**
-     * Returns true, if the websocket is running.
-     */
-    public synchronized boolean isRunning() {
-        return session.isOpen();
+    public boolean isClosing() {
+        return this.closing;
+    }
+
+    public String getSocketID() {
+        return this.socketId;
+    }
+
+    public String getLocationID() {
+        return this.locationID;
+    }
+
+    public void restart(String newUrl) throws Exception {
+        logger.debug("Reconnecting to Gardena Webservice ({})", socketId);
+        session = (WebSocketSession) webSocketClient.connect(this, new URI(newUrl)).get();
     }
 
     @OnWebSocketConnect
-    public void onConnect(Session session) {
+    public synchronized void onConnect(Session session) {
         closing = false;
+        unansweredPings = 0;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
-        connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
+        ScheduledFuture<?> connectionTracker = this.connectionTracker;
+        if (connectionTracker != null && !connectionTracker.isCancelled()) {
+            connectionTracker.cancel(true);
+        }
+
+        // start sending PING every two minutes
+        this.connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 1, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
-    public void onFrame(Frame pong) {
+    public synchronized void onFrame(Frame pong) {
         if (pong instanceof PongFrame) {
-            lastPong = Instant.now();
+            unansweredPings = 0;
             logger.trace("Pong received ({})", socketId);
         }
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
+        logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
+                reason);
+
         if (!closing) {
-            logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
-                    reason);
-            socketEventListener.onWebSocketClose();
+            // let listener handle restart of socket
+            socketEventListener.onWebSocketClose(locationID);
         }
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
+        logger.debug("Gardena Webservice error ({})", socketId, cause); // log whole stack trace
+
         if (!closing) {
-            logger.warn("Gardena Webservice error ({}): {}, restarting", socketId, cause.getMessage());
-            logger.debug("{}", cause.getMessage(), cause);
-            socketEventListener.onWebSocketError();
+            // let listener handle restart of socket
+            socketEventListener.onWebSocketError(locationID);
         }
     }
 
@@ -160,17 +168,20 @@ public class GardenaSmartWebSocket {
     /**
      * Sends a ping to tell the Gardena smart system that the client is alive.
      */
-    private void sendKeepAlivePing() {
-        try {
-            logger.trace("Sending ping ({})", socketId);
-            session.getRemote().sendPing(pingPayload);
-            final PostOAuth2Response accessToken = token;
-            if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
-                    || accessToken == null || accessToken.isAccessTokenExpired()) {
-                session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
+    private synchronized void sendKeepAlivePing() {
+        final PostOAuth2Response accessToken = token;
+        if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null || accessToken.isAccessTokenExpired()) {
+            session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
+        } else {
+            if (session.isOpen()) {
+                try {
+                    logger.trace("Sending ping ({})", socketId);
+                    session.getRemote().sendPing(pingPayload);
+                    ++unansweredPings;
+                } catch (IOException ex) {
+                    logger.debug("Error while sending ping: {}", ex.getMessage());
+                }
             }
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getMessage());
         }
     }
 }

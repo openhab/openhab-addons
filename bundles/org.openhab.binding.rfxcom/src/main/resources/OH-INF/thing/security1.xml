@@ -15,6 +15,7 @@
 
 		<label>RFXCOM Security1 Sensor</label>
 		<description>A Security1 device.</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="status" typeId="status"/>
@@ -27,12 +28,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Remote/sensor Id. Example 10001</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="X10_SECURITY">X10 security door/window sensor</option>
 					<option value="X10_SECURITY_MOTION">X10 security motion sensor</option>

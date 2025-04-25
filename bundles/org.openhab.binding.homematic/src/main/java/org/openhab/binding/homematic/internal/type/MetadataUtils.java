@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,8 +30,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class MetadataUtils {
-    private static final Logger logger = LoggerFactory.getLogger(MetadataUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
     private static ResourceBundle descriptionsBundle;
     private static Map<String, String> descriptions = new HashMap<>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
@@ -77,9 +77,16 @@ public class MetadataUtils {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (StringUtils.trimToNull(line) != null && !StringUtils.startsWith(line, "#")) {
-                    String channelType = StringUtils.trimToNull(StringUtils.substringBefore(line, "|"));
-                    String datapointName = StringUtils.trimToNull(StringUtils.substringAfter(line, "|"));
+                if (!line.trim().isEmpty() && !line.startsWith("#")) {
+                    String[] parts = line.split("\\|");
+                    String channelType = null;
+                    String datapointName = null;
+                    if (parts.length > 0) {
+                        channelType = parts[0].trim();
+                        if (parts.length > 1) {
+                            datapointName = parts[1].trim();
+                        }
+                    }
 
                     Set<String> channelDatapoints = standardDatapoints.get(channelType);
                     if (channelDatapoints == null) {
@@ -91,7 +98,7 @@ public class MetadataUtils {
                 }
             }
         } catch (IllegalStateException | IOException e) {
-            logger.warn("Can't load standard-datapoints.properties file!", e);
+            LOGGER.warn("Can't load standard-datapoints.properties file!", e);
         }
     }
 
@@ -105,7 +112,7 @@ public class MetadataUtils {
     public static <T> List<T> generateOptions(HmDatapoint dp, OptionsBuilder<T> optionsBuilder) {
         List<T> options = null;
         if (dp.getOptions() == null) {
-            logger.warn("No options for ENUM datapoint {}", dp);
+            LOGGER.warn("No options for ENUM datapoint {}", dp);
         } else {
             options = new ArrayList<>();
             for (int i = 0; i < dp.getOptions().length; i++) {
@@ -142,8 +149,7 @@ public class MetadataUtils {
      */
     public static String getUnit(HmDatapoint dp) {
         if (dp.getUnit() != null) {
-            String unit = StringUtils.replace(dp.getUnit(), "100%", "%");
-            return StringUtils.replace(unit, "%", "%%");
+            return dp.getUnit().replace("100%", "%").replace("%", "%%");
         }
         return null;
     }
@@ -169,7 +175,7 @@ public class MetadataUtils {
         if ("%%".equals(unit)) {
             return "%d %%";
         }
-        if (unit != null && unit != "") {
+        if (unit != null && !unit.isEmpty()) {
             String pattern = getPattern(dp);
             if (pattern != null) {
                 return String.format("%s %s", pattern, "%unit%");
@@ -182,7 +188,7 @@ public class MetadataUtils {
      * Returns the label string for the given Datapoint.
      */
     public static String getLabel(HmDatapoint dp) {
-        return WordUtils.capitalizeFully(StringUtils.replace(dp.getName(), "_", " "));
+        return MiscUtils.capitalize(dp.getName().replace("_", " "));
     }
 
     /**
@@ -198,7 +204,7 @@ public class MetadataUtils {
     public static String getDescription(String... keys) {
         StringBuilder sb = new StringBuilder();
         for (int startIdx = 0; startIdx < keys.length; startIdx++) {
-            String key = StringUtils.join(keys, "|", startIdx, keys.length);
+            String key = String.join("|", Arrays.copyOfRange(keys, startIdx, keys.length));
             if (key.endsWith("|")) {
                 key = key.substring(0, key.length() - 1);
             }
@@ -208,8 +214,8 @@ public class MetadataUtils {
             }
             sb.append(key).append(", ");
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Description not found for: {}", sb.toString().substring(0, sb.length() - 2));
         }
         return null;
     }
@@ -224,9 +230,8 @@ public class MetadataUtils {
 
         String deviceDescription = null;
         boolean isTeam = device.getType().endsWith("-Team");
-        String type = isTeam ? StringUtils.remove(device.getType(), "-Team") : device.getType();
+        String type = isTeam ? device.getType().replace("-Team", "") : device.getType();
         deviceDescription = getDescription(type);
-
         if (deviceDescription != null && isTeam) {
             deviceDescription += " Team";
         }
@@ -266,7 +271,7 @@ public class MetadataUtils {
         try {
             return new BigDecimal(number.toString());
         } catch (Exception ex) {
-            logger.warn("Can't create BigDecimal for number: {}", number.toString());
+            LOGGER.warn("Can't create BigDecimal for number: {}", number.toString());
             return null;
         }
     }
@@ -276,7 +281,10 @@ public class MetadataUtils {
      */
     public static String getItemType(HmDatapoint dp) {
         String dpName = dp.getName();
-        String channelType = StringUtils.defaultString(dp.getChannel().getType());
+        String channelType = dp.getChannel().getType();
+        if (channelType == null) {
+            channelType = "";
+        }
 
         if (dp.isBooleanType()) {
             if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
@@ -302,6 +310,9 @@ public class MetadataUtils {
                         return ITEM_TYPE_NUMBER + ":Temperature";
                     case "V":
                         return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                    case "100%":
+                    case "% rH":
+                    case "% rF":
                     case "%":
                         return ITEM_TYPE_NUMBER + ":Dimensionless";
                     case "mHz":
@@ -323,14 +334,16 @@ public class MetadataUtils {
                         return ITEM_TYPE_NUMBER + ":Energy";
                     case "m3":
                         return ITEM_TYPE_NUMBER + ":Volume";
+                    case "":
+                        if (dpName.startsWith(DATAPOINT_NAME_OPERATING_VOLTAGE)) {
+                            return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                        }
                     case "s":
                     case "min":
                     case "minutes":
                     case "day":
                     case "month":
                     case "year":
-                    case "100%":
-                    case "":
                     default:
                         return ITEM_TYPE_NUMBER;
                 }
@@ -359,7 +372,10 @@ public class MetadataUtils {
      */
     public static String getCategory(HmDatapoint dp, String itemType) {
         String dpName = dp.getName();
-        String channelType = StringUtils.defaultString(dp.getChannel().getType());
+        String channelType = dp.getChannel().getType();
+        if (channelType == null) {
+            channelType = "";
+        }
 
         if (dpName.equals(DATAPOINT_NAME_BATTERY_TYPE) || dpName.equals(DATAPOINT_NAME_LOWBAT)
                 || dpName.equals(DATAPOINT_NAME_LOWBAT_IP)) {

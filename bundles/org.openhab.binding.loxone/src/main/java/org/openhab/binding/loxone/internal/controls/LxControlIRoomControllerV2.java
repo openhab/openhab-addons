@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An Intelligent Room Controller V2.
@@ -72,8 +70,6 @@ class LxControlIRoomControllerV2 extends LxControl {
     private static final String CMD_SET_ABSENT_MIN_TEMPERATURE = "setAbsentMinTemperature/";
     private static final String CMD_SET_ABSENT_MAX_TEMPERATURE = "setAbsentMaxTemperature/";
     private static final String CMD_SET_MANUAL_TEMPERATURE = "setManualTemperature/";
-
-    private final Logger logger = LoggerFactory.getLogger(LxControlIRoomControllerV2.class);
 
     private LxControlIRoomControllerV2(LxUuid uuid) {
         super(uuid);
@@ -167,16 +163,14 @@ class LxControlIRoomControllerV2 extends LxControl {
     }
 
     private void setOperatingMode(Command command) throws IOException {
-        if (command instanceof DecimalType) {
-            DecimalType mode = (DecimalType) command;
-            sendAction(CMD_SET_OPERATING_MODE + String.valueOf(mode.intValue()));
+        if (command instanceof DecimalType mode) {
+            sendAction(CMD_SET_OPERATING_MODE + mode.intValue());
         }
     }
 
     private void setTemperature(Command command, String prefix) throws IOException {
-        if (command instanceof DecimalType) {
-            DecimalType temp = (DecimalType) command;
-            sendAction(prefix + String.valueOf(temp.doubleValue()));
+        if (command instanceof DecimalType temp) {
+            sendAction(prefix + temp.doubleValue());
         }
     }
 }

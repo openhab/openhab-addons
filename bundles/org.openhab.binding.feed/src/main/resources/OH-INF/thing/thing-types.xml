@@ -20,6 +20,7 @@
 			<channel id="latest-description" typeId="latest-description"/>
 			<channel id="latest-date" typeId="latest-date"/>
 			<channel id="latest-link" typeId="latest-link"/>
+			<channel id="latest-enclosure" typeId="latest-enclosure"/>
 			<channel id="author" typeId="author"/>
 			<channel id="description" typeId="description"/>
 			<channel id="title" typeId="title"/>
@@ -61,13 +62,20 @@
 		<item-type>DateTime</item-type>
 		<label>Latest Published Date</label>
 		<description>Contains the published date of the last feed entry.</description>
-		<state readOnly="true" pattern="%tc %n"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="latest-link">
 		<item-type>String</item-type>
 		<label>Latest Link</label>
 		<description>Contains the link of the last feed entry.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="latest-enclosure">
+		<item-type>String</item-type>
+		<label>Latest Enclosure</label>
+		<description>Contains the first (if any) enclosure link of the last feed entry.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -96,7 +104,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The last update date of the feed.</description>
-		<state readOnly="true" pattern="%tc %n"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="number-of-entries" advanced="true">

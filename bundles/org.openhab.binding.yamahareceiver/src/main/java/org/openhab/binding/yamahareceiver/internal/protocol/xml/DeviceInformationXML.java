@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -56,6 +55,9 @@ public class DeviceInformationXML implements DeviceInformation {
      * We need that called only once. Will give us name, id, version and zone information.
      *
      * Example:
+     * 
+     * <pre>
+     * {@code
      * <Feature_Existence>
      * <Main_Zone>1</Main_Zone>
      * <Zone_2>1</Zone_2>
@@ -78,6 +80,8 @@ public class DeviceInformationXML implements DeviceInformation {
      * <iPod_USB>1</iPod_USB>
      * <AirPlay>1</AirPlay>
      * </Feature_Existence>
+     * }
+     * </pre>
      *
      * @throws IOException
      */
@@ -109,7 +113,6 @@ public class DeviceInformationXML implements DeviceInformation {
 
             XMLConstants.FEATURE_BY_YNC_TAG
                     .forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
-
         } else {
             // on older models (RX-V3900) the Feature_Existence element does not exist
 
@@ -136,7 +139,7 @@ public class DeviceInformationXML implements DeviceInformation {
             // Retrieve Main_Zone basic status, from which we will know this AVR supports Zone_B feature.
             Node basicStatusNode = getZoneResponse(con, Main_Zone, ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
             String power = getNodeContentOrEmpty(basicStatusNode, "Power_Control/Zone_B_Power_Info");
-            if (StringUtils.isNotEmpty(power)) {
+            if (!power.isEmpty()) {
                 logger.debug("Zone_2 emulation enabled via Zone_B");
                 state.zones.add(Zone_2);
                 state.features.add(Feature.ZONE_B);
@@ -146,8 +149,7 @@ public class DeviceInformationXML implements DeviceInformation {
 
     private boolean isFeatureSupported(Node node, String name) {
         String value = getNodeContentOrEmpty(node, name);
-        boolean supported = value.equals("1") || value.equals("Available");
-        return supported;
+        return "1".equals(value) || "Available".equals(value);
     }
 
     private <T> void checkFeature(Node node, String name, T value, Set<T> set) {

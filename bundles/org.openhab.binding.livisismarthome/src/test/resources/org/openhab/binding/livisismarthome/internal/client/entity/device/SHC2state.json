@@ -1,0 +1,80 @@
+{
+    "configVersion": {
+        "value": 38,
+        "lastChanged": "2019-07-13T08:34:35.627766Z"
+    },
+    "cpuUsage": {
+        "value": 0.80912222750515084,
+        "lastChanged": "2019-07-22T19:35:06.080964Z"
+    },
+    "currentUtcOffset": {
+        "value": 120,
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "deviceConfigurationState": {
+        "value": "Complete",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "deviceInclusionState": {
+        "value": "Included",
+        "lastChanged": "2019-02-07T19:47:50.2148Z"
+    },
+    "discoveryActive": {
+        "value": false,
+        "lastChanged": "2019-07-13T07:19:47.187338Z"
+    },
+    "diskUsage": {
+        "value": 57.358010125846029,
+        "lastChanged": "2019-07-22T19:35:06.081238Z"
+    },
+    "ethIpAddress": {
+        "value": "192.168.0.42",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "ethMacAddress": {
+        "value": "94:c6:91:a1:93:b2",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "inUseAdapter": {
+        "value": "eth",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "isReachable": {
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "lastReboot": {
+        "value": "2019-07-11T22:15:02Z",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "lbDongleAttached": {
+        "value": false,
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "memoryUsage": {
+        "value": 29.485105729836945,
+        "lastChanged": "2019-07-22T19:35:06.081461Z"
+    },
+    "operationStatus": {
+        "value": "active",
+        "lastChanged": "2019-07-11T22:15:35.284088Z"
+    },
+    "updateAvailable": {
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "wMBusDongleAttached": {
+        "value": false,
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "wifiIpAddress": {
+        "value": "",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "wifiMacAddress": {
+        "value": "40:9f:38:3d:b5:7d",
+        "lastChanged": "1970-01-01T00:00:00Z"
+    },
+    "wifiSignalStrength": {
+        "value": 0,
+        "lastChanged": "1970-01-01T00:00:00Z"
+    }
+}

@@ -8,6 +8,7 @@
 	<thing-type id="onkyoAVR">
 		<label>Onkyo AV Receiver</label>
 		<description>Network enabled Onkyo AV Receiver</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1"/>
@@ -15,6 +16,7 @@
 			<channel-group typeId="zone3Controls" id="zone3"/>
 			<channel-group typeId="playerControls" id="player"/>
 			<channel-group typeId="netMenuControls" id="netmenu"/>
+			<channel-group typeId="information" id="info"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:onkyo:config"/>

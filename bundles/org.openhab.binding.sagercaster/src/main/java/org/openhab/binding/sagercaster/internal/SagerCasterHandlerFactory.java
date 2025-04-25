@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,11 @@ package org.openhab.binding.sagercaster.internal;
 
 import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.THING_TYPE_SAGERCASTER;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sagercaster.internal.caster.SagerWeatherCaster;
 import org.openhab.binding.sagercaster.internal.handler.SagerCasterHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sagercaster")
 @NonNullByDefault
 public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAGERCASTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAGERCASTER);
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
     private final SagerWeatherCaster sagerWeatherCaster;
 
@@ -58,9 +58,8 @@ public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAGERCASTER)) {
-            return new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster);
-        }
-        return null;
+        return thingTypeUID.equals(THING_TYPE_SAGERCASTER)
+                ? new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster)
+                : null;
     }
 }

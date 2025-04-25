@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.wled.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +31,16 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 
+@Component(scope = ServiceScope.PROTOTYPE, service = WLedActions.class)
 @ThingActionsScope(name = "wled")
 @NonNullByDefault
 public class WLedActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
-    private @Nullable WLedHandler handler;
+    private @Nullable WLedBridgeHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (WLedHandler) handler;
+        this.handler = (WLedBridgeHandler) handler;
     }
 
     @Override
@@ -47,15 +51,30 @@ public class WLedActions implements ThingActions {
     @RuleAction(label = "save state to preset", description = "Save a WLED state to a preset slot")
     public void savePreset(
             @ActionInput(name = "presetNumber", label = "Preset Slot", description = "Number for the preset slot you wish to use") int presetNumber) {
-        WLedHandler localHandler = handler;
-        if (presetNumber > 0 && localHandler != null) {
-            localHandler.savePreset(presetNumber);
-        }
+        savePreset(presetNumber, "");
     }
 
     public static void savePreset(@Nullable ThingActions actions, int presetNumber) {
-        if (actions instanceof WLedActions) {
-            ((WLedActions) actions).savePreset(presetNumber);
+        if (actions instanceof WLedActions wLedActions) {
+            wLedActions.savePreset(presetNumber, "");
+        } else {
+            throw new IllegalArgumentException("Instance is not a WLED class.");
+        }
+    }
+
+    @RuleAction(label = "save state to preset", description = "Save a WLED state to a preset slot")
+    public void savePreset(
+            @ActionInput(name = "presetNumber", label = "Preset Slot", description = "Number for the preset slot you wish to use") int presetNumber,
+            @ActionInput(name = "presetName", label = "Preset Name", description = "Name for the preset that you wish to use") String presetName) {
+        WLedBridgeHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.savePreset(presetNumber, presetName);
+        }
+    }
+
+    public static void savePreset(@Nullable ThingActions actions, int presetNumber, String presetName) {
+        if (actions instanceof WLedActions wLedActions) {
+            wLedActions.savePreset(presetNumber, presetName);
         } else {
             throw new IllegalArgumentException("Instance is not a WLED class.");
         }

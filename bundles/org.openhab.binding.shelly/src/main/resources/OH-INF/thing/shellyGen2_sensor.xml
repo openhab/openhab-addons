@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shellyplusht">
+		<label>ShellyPlus H&amp;T</label>
+		<description>@text/thing-type.shelly.shellypludht.description</description>
+		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyhtg3">
+		<label>ShellyPlus H&amp;T Gen 3</label>
+		<description>@text/thing-type.shelly.shellypludhtg3.description</description>
+		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplussmoke">
+		<label>Shelly Plus Smoke</label>
+		<description>@text/thing-type.shelly.shellyplussmoke.description</description>
+		<category>SmokeDetector</category>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellywalldisplay">
+		<label>Shelly Wall Display</label>
+		<description>@text/thing-type.shelly.shellywalldisplay.description</description>
+		<category>Sensor</category>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+</thing:thing-descriptions>

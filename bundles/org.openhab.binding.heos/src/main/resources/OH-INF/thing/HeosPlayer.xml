@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>HEOS Player</label>
 		<description>A HEOS Player of the HEOS Network</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="Control" typeId="system.media-control"/>
@@ -38,10 +39,9 @@
 		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
-			<parameter name="pid" type="text" readOnly="false">
+			<parameter name="pid" type="text" readOnly="false" required="true">
 				<label>Player ID</label>
 				<description>The internal Player ID</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:sonos:zoneplayer">
 		<parameter name="udn" type="text" required="true">
 			<label>Unique Device Name</label>
-			<description>The UDN identifies the Zone Player.</description>
+			<description>The UDN identifies the Sonos device.</description>
 		</parameter>
 		<parameter name="notificationTimeout" type="integer" unit="s">
 			<label>Notification Timeout</label>

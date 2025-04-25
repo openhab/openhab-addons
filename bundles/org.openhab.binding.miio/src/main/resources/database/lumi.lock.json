@@ -1,0 +1,50 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.lock.v1",
+			"lumi.lock.aq1",
+			"lumi.lock.acn02",
+			"lumi.lock.acn03"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 3,
+		"channels": [
+			{
+				"property": "status",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"category": "lock",
+				"tags": [
+					"Lock"
+				]
+			},
+			{
+				"property": "log",
+				"friendlyName": "Device Log",
+				"channel": "log",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "/v2/user/getuserdevicedatatab",
+				"customRefreshParameters": {
+					"limit": 10,
+					"timestamp": "$timestamp$",
+					"did": "$deviceId$",
+					"type": "prop",
+					"key": "device_log"
+				},
+				"transformation": "deviceDataTab",
+				"actions": [],
+				"category": "setting",
+				"tags": [
+					"Point"
+				],
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data"
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": true
+	}
+}

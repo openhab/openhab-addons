@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public interface DeviceStateUpdate {
     static final String UPDATE_SCENE_CONFIG = "sceneConfig";
 
     // general
-    /** command to refresh the output value of an device. */
+    /** command to refresh the output value of a device. */
     static final String REFRESH_OUTPUT = "refreshOutput";
 
     // standard values
@@ -81,7 +81,9 @@ public interface DeviceStateUpdate {
      * <li>For SceneCall-type the value is between 0 and 127.</li>
      * <li>For all SceneUndo-types the value is the new output value.</li>
      * <li>For all SensorUpdate-types will read the sensor data directly, if the value is 0, otherwise a
-     * {@link SensorJob} will be added to the {@link SensorJobExecutor}.</li>
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}
+     * will be added to the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor}.</li>
      * </ul>
      *
      * @return new state value

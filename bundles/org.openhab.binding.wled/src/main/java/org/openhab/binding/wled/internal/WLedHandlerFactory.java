@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.wled.internal;
 
-import static org.openhab.binding.wled.internal.WLedBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.wled.internal.api.WledApiFactory;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
+import org.openhab.binding.wled.internal.handlers.WLedSegmentHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -36,29 +38,28 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.wled", service = ThingHandlerFactory.class)
 public class WLedHandlerFactory extends BaseThingHandlerFactory {
-    private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final WledApiFactory apiFactory;
 
     @Activate
-    public WLedHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+    public WLedHandlerFactory(@Reference WledApiFactory apiFactory,
             final @Reference WledDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.apiFactory = apiFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return true;
-        }
-        return false;
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new WLedHandler(thing, httpClient, stateDescriptionProvider);
+        if (THING_TYPE_SEGMENT.equals(thingTypeUID)) {
+            return new WLedSegmentHandler(thing);
+        } else if (THING_TYPE_JSON.equals(thingTypeUID)) {
+            return new WLedBridgeHandler((Bridge) thing, apiFactory, stateDescriptionProvider);
         }
         return null;
     }

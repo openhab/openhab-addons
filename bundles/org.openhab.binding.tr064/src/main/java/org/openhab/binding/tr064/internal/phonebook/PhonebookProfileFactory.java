@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,13 @@ package org.openhab.binding.tr064.internal.phonebook;
 import static java.util.Comparator.comparing;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -57,6 +63,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
+    @Nullable
     private final Bundle bundle;
 
     @Activate
@@ -124,7 +131,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
                         thingName + " - " + phonebook.getName()))
                 .collect(Collectors.toList());
 
-        if (parameterOptions.size() > 0) {
+        if (!parameterOptions.isEmpty()) {
             parameterOptions.add(new ParameterOption(thingUid, thingName));
         }
 

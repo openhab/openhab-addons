@@ -11,21 +11,19 @@
 
 		<label>Environmental Sensor</label>
 		<description>Sensor for different environmental sensors like a weather station (EEP: A5-13)</description>
-
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
 					<option value="A5_13_01">A5-13-01 Weather station</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

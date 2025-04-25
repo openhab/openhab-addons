@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.openwebnet.internal.discovery;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +26,7 @@ import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -54,18 +53,19 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         MH202("scheduler", "MH202"),
         F454("webserver", "F454"),
         MY_HOME_SERVER1("myhomeserver1", "MYHOMESERVER1"),
+        TOUCH_SCREEN_3_5("touchscreen", "TOUCHSCREEN3_5"),
         TOUCH_SCREEN_10("ts10", "TOUCHSCREEN10"),
         MH200N("lightingcontrolunit", "MH200N");
 
-        private final String value, thingId;
+        private final String discoveryString, thingId;
 
         private BusGatewayId(String value, String thingId) {
-            this.value = value;
+            this.discoveryString = value;
             this.thingId = thingId;
         }
 
         public static @Nullable BusGatewayId fromValue(String s) {
-            Optional<BusGatewayId> m = Arrays.stream(values()).filter(val -> s.equals(val.value)).findFirst();
+            Optional<BusGatewayId> m = Arrays.stream(values()).filter(val -> s.equals(val.discoveryString)).findFirst();
             if (m.isPresent()) {
                 return m.get();
             } else {
@@ -144,15 +144,15 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY);
+        return Set.of(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY);
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        logger.info("Found device {}", device.getType());
+        logger.debug("Found device {}", device.getType());
         DeviceInfo devInfo = new DeviceInfo(device);
         if (!devInfo.manufacturer.matches("<unknown>")) {
-            logger.info("                              |- {} ({})", devInfo.modelName, devInfo.manufacturer);
+            logger.debug("                              |- {} ({})", devInfo.modelName, devInfo.manufacturer);
         }
         ThingUID thingId = generateThingUID(devInfo);
         if (thingId != null) {
@@ -225,7 +225,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     }
                 }
             }
-            logger.info("Found BTicino device: not a OpenWebNet gateway or is not supported (UDN={})", idString);
+            logger.info("Found BTicino device: not an OpenWebNet gateway or not supported (UDN={})", idString);
         }
         return null;
     }

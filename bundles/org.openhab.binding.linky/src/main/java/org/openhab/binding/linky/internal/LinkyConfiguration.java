@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,23 @@
  */
 package org.openhab.binding.linky.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LinkyConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class LinkyConfiguration {
     public static final String INTERNAL_AUTH_ID = "internalAuthId";
-    public String username;
-    public String password;
-    public String internalAuthId;
+    public String username = "";
+    public String password = "";
+    public String internalAuthId = "";
+    public String timezone = "";
+
+    public boolean seemsValid() {
+        return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
+    }
 }

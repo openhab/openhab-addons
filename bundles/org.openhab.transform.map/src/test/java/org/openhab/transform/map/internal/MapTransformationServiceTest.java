@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,168 +13,179 @@
 package org.openhab.transform.map.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 
-import java.io.*;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.concurrent.Callable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.osgi.framework.BundleContext;
+import org.mockito.stubbing.Answer;
+import org.openhab.core.test.java.JavaTest;
+import org.openhab.core.transform.Transformation;
+import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 
 /**
  * @author Gaël L'hopital - Initial contribution
+ * @author Jan N. Klug - Refactored to use {@link TransformationRegistry}
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
-public class MapTransformationServiceTest {
-
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
+public class MapTransformationServiceTest extends JavaTest {
     private static final String SOURCE_CLOSED = "CLOSED";
     private static final String SOURCE_UNKNOWN = "UNKNOWN";
-    private static final String EXISTING_FILENAME_DE = "map/doorstatus_de.map";
-    private static final String SHOULD_BE_LOCALIZED_FILENAME = "map/doorstatus.map";
-    private static final String DEFAULTED_FILENAME = "map/doorstatus_defaulted.map";
-    private static final String INEXISTING_FILENAME = "map/de.map";
-    private static final String BASE_FOLDER = "target";
-    private static final String SRC_FOLDER = "conf";
-    private static final String CONFIG_FOLDER = BASE_FOLDER + File.separator + SRC_FOLDER;
-    private static final String USED_FILENAME = CONFIG_FOLDER + File.separator + "transform/" + EXISTING_FILENAME_DE;
 
-    private @Mock BundleContext bundleContext;
+    private static final String NON_DEFAULTED_TRANSFORMATION_DE = "map" + File.separator + "doorstatus_de.map";
+    private static final String NON_DEFAULTED_TRANSFORMATION_FR = "map" + File.separator + "doorstatus_fr.map";
+    private static final String DEFAULTED_TRANSFORMATION = "map" + File.separator + "doorstatus_defaulted.map";
+    private static final String FALLBACK_TRANSFORMATION = "map" + File.separator + "doorstatus_fallback.map";
+    private static final String UNKNOWN_TRANSFORMATION = "map" + File.separator + "de.map";
 
-    private TestableMapTransformationService processor;
+    private static final String SRC_FOLDER = "conf" + File.separator + "transform";
 
-    private class TestableMapTransformationService extends MapTransformationService {
-        @Override
-        protected String getSourcePath() {
-            return BASE_FOLDER + File.separator + super.getSourcePath();
-        }
+    @Mock
+    private @NonNullByDefault({}) TransformationRegistry transformationRegistry;
 
-        @Override
-        protected Locale getLocale() {
-            return Locale.US;
-        }
-
-        @Override
-        public void activate(BundleContext context) {
-            super.activate(context);
-        }
-
-        @Override
-        public void deactivate() {
-            super.deactivate();
-        }
-    };
+    private @NonNullByDefault({}) MapTransformationService processor;
+    private final Map<String, Transformation> configurationMap = new HashMap<>();
 
     @BeforeEach
     public void setUp() throws IOException {
-        processor = new TestableMapTransformationService();
-        processor.activate(bundleContext);
-        FileUtils.copyDirectory(new File(SRC_FOLDER), new File(CONFIG_FOLDER));
-    }
-
-    @AfterEach
-    public void tearDown() throws IOException {
-        processor.deactivate();
-        FileUtils.deleteDirectory(new File(CONFIG_FOLDER));
-    }
-
-    @Test
-    public void testTransformByMap() throws Exception {
-        // Test that we find a translation in an existing file
-        String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-        assertEquals("zu", transformedResponse);
-
-        Properties properties = new Properties();
-        try (FileReader reader = new FileReader(USED_FILENAME); FileWriter writer = new FileWriter(USED_FILENAME)) {
-            properties.load(reader);
-            properties.setProperty(SOURCE_CLOSED, "changevalue");
-            properties.store(writer, "");
-
-            // This tests that the requested transformation file has been removed from
-            // the cache
-            waitForAssert(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    final String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-                    assertEquals("changevalue", transformedResponse);
-                    return null;
-                }
-            }, 10000, 100);
-
-            properties.setProperty(SOURCE_CLOSED, "zu");
-            properties.store(writer, "");
-
-            waitForAssert(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    final String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-                    assertEquals("zu", transformedResponse);
-                    return null;
-                }
-            }, 10000, 100);
-        } catch (IOException e1) {
-            PrintStream err = System.err;
-            if (err != null) {
-                e1.printStackTrace(err);
-            }
-        }
-
-        // Checks that an unknown input in an existing file give the expected
-        // transformed response that shall be empty string (Issue #1107) if not found in the file
-        transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_UNKNOWN);
-        assertEquals("", transformedResponse);
-
-        // Test that an inexisting file raises correct exception as expected
-        try {
-            transformedResponse = processor.transform(INEXISTING_FILENAME, SOURCE_CLOSED);
-            fail();
-        } catch (Exception e) {
-            // That's what we expect.
-        }
-
-        // Test that we find a localized version of desired file
-        transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, SOURCE_CLOSED);
-        // as we don't know the real locale at the moment the
-        // test is run, we test that the string has actually been transformed
-        assertNotEquals(SOURCE_CLOSED, transformedResponse);
-        transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, SOURCE_CLOSED);
-        assertNotEquals(SOURCE_CLOSED, transformedResponse);
-    }
-
-    @Test
-    public void testTransformByMapWithDefault() throws Exception {
-        // Standard behaviour with no default value
-        String transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, "toBeDefaulted");
-        assertEquals("", transformedResponse);
-        // Modified behaviour with a file containing default value definition
-        transformedResponse = processor.transform(DEFAULTED_FILENAME, "toBeDefaulted");
-        assertEquals("Default Value", transformedResponse);
-    }
-
-    protected void waitForAssert(Callable<Void> assertion, int timeout, int sleepTime) throws Exception {
-        int waitingTime = 0;
-        while (waitingTime < timeout) {
+        configurationMap.clear();
+        Files.walk(Path.of(SRC_FOLDER)).filter(Files::isRegularFile).forEach(file -> {
             try {
-                assertion.call();
-                return;
-            } catch (AssertionError error) {
-                waitingTime += sleepTime;
-                try {
-                    Thread.sleep(sleepTime);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+                String uid = Path.of(SRC_FOLDER).relativize(file).toString();
+                Transformation transformation = new Transformation(uid, uid, "map",
+                        Map.of(Transformation.FUNCTION, content));
+                configurationMap.put(uid, transformation);
+            } catch (IOException ignored) {
             }
-        }
-        assertion.call();
+        });
+
+        Mockito.when(transformationRegistry.get(anyString(), eq(null)))
+                .thenAnswer((Answer<Transformation>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    return configurationMap.get(args[0]);
+                });
+
+        processor = new MapTransformationService(transformationRegistry);
+    }
+
+    @Test
+    public void testTransformSucceeds() throws TransformationException {
+        String transformedResponse = processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED);
+        assertEquals("zu", transformedResponse);
+    }
+
+    @Test
+    public void testTransformFailsWithoutDefault() {
+        assertThrows(TransformationException.class,
+                () -> processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_UNKNOWN));
+    }
+
+    @Test
+    public void testTransformSucceedsWithDefault() throws TransformationException {
+        assertEquals("Default Value", processor.transform(DEFAULTED_TRANSFORMATION, SOURCE_UNKNOWN));
+    }
+
+    @Test
+    public void testTransformSucceedsWithFallbackDefault() throws TransformationException {
+        assertEquals(SOURCE_UNKNOWN, processor.transform(FALLBACK_TRANSFORMATION, SOURCE_UNKNOWN));
+    }
+
+    @Test
+    public void testTransformFailsOnUnknownTransformation() {
+        assertThrows(TransformationException.class, () -> processor.transform(UNKNOWN_TRANSFORMATION, SOURCE_CLOSED));
+    }
+
+    @Test
+    public void setTransformationIsRemoved() throws TransformationException {
+        assertEquals("zu", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
+
+        Transformation transformation = configurationMap.remove(NON_DEFAULTED_TRANSFORMATION_DE);
+        processor.removed(Objects.requireNonNull(transformation));
+
+        assertThrows(TransformationException.class,
+                () -> processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
+    }
+
+    @Test
+    public void setTransformationIsNotUpdatedIfOldElementMissing() throws TransformationException {
+        // update configuration
+        Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
+        Transformation transformationModified = new Transformation(transformationDE.getUID(),
+                transformationDE.getLabel(), transformationDE.getType(), transformationDE.getConfiguration());
+        processor.updated(transformationDE, transformationModified);
+
+        // assert there is no modified cached version
+        assertEquals("zu", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
+    }
+
+    @Test
+    public void setTransformationIsUpdatedIfOldElementPresent() throws TransformationException {
+        // ensure old transformation is cached
+        processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED);
+
+        // update configuration
+        Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
+        Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
+        Transformation transformationModified = new Transformation(transformationDE.getUID(),
+                transformationDE.getLabel(), transformationDE.getType(), transformationFR.getConfiguration());
+        processor.updated(transformationDE, transformationModified);
+
+        // ensure modified configuration is applied
+        assertEquals("fermé", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
+    }
+
+    @Test
+    public void oneLineInlineMapTest() throws TransformationException {
+        String transformation = "|key1=semicolons_are_the_separators ; key2 = value2";
+        assertEquals("value2", processor.transform(transformation, "key2"));
+    }
+
+    @Test
+    public void defaultInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=default";
+        assertEquals("default", processor.transform(transformation, "nonexistent"));
+    }
+
+    @Test
+    public void defaultSourceInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=_source_";
+        assertEquals("nonexistent", processor.transform(transformation, "nonexistent"));
+    }
+
+    @Test
+    public void customSeparatorTest() throws TransformationException {
+        String transformation = "|?delimiter=,key1=value1;with;semicolons,key2;too=value2,?delimiter=value3";
+        assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2;too"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+
+        transformation = "|?delimiter=||key1=value1;with;semicolons||key2;too=value2||?delimiter=value3";
+        assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2;too"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+
+        transformation = "|key1=value1;key2=value2;?delimiter=value3";
+        assertEquals("value1", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
     }
 }

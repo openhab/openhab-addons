@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.manager.impl;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.climate.TemperatureControlSensorTransmitter;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
@@ -30,14 +31,15 @@ import org.openhab.binding.digitalstrom.internal.lib.listener.SystemStateChangeL
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TemperatureControlManager} is responsible for handling the zone temperature control of the digitalSTROM
- * zones. For that it implements a {@link EventHandler} to get informed by control changes, like the target temperature.
+ * zones. For that it implements an {@link EventHandler} to get informed by control changes, like the target
+ * temperature.
  * It also implement the {@link TemperatureControlSensorTransmitter}, so the zone temperature can be set through this
  * class. <br>
  * <br>
@@ -54,12 +56,12 @@ import org.slf4j.LoggerFactory;
  * {@link #GET_HEATING_WATER_SYSTEM_STATE_PATH} to get the current heating water system state through
  * {@link DsAPI#propertyTreeGetString(String, String)}.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class TemperatureControlManager implements EventHandler, TemperatureControlSensorTransmitter {
 
-    private final List<String> SUPPORTED_EVENTS = Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE);
+    private final Set<String> supportedEvents;
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureControlManager.class);
 
@@ -148,12 +150,14 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
         this.systemStateChangeListener = systemStateChangeListener;
         this.discovery = discovery;
         this.eventListener = eventListener;
+        this.supportedEvents = new HashSet<>();
+        this.supportedEvents.add(EventNames.HEATING_CONTROL_OPERATION_MODE);
         checkZones();
         if (eventListener != null) {
             if (isConfigured) {
-                SUPPORTED_EVENTS.add(EventNames.ZONE_SENSOR_VALUE);
+                supportedEvents.add(EventNames.ZONE_SENSOR_VALUE);
                 if (systemStateChangeListener != null) {
-                    SUPPORTED_EVENTS.add(EventNames.STATE_CHANGED);
+                    supportedEvents.add(EventNames.STATE_CHANGED);
                 }
             }
             eventListener.addEventHandler(this);
@@ -293,7 +297,6 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
                         Integer zoneID = Integer
                                 .parseInt(eventItem.getSource().getOrDefault(EventResponseEnum.ZONEID, ""));
                         if (zoneTemperationControlListenerMap.get(zoneID) != null) {
-
                             Float newValue = Float.parseFloat(
                                     eventItem.getProperties().getOrDefault(EventResponseEnum.SENSOR_VALUE_FLOAT, ""));
                             if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {
@@ -367,12 +370,12 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
 
     @Override
     public List<String> getSupportedEvents() {
-        return SUPPORTED_EVENTS;
+        return List.copyOf(supportedEvents);
     }
 
     @Override
     public boolean supportsEvent(String eventName) {
-        return SUPPORTED_EVENTS.contains(eventName);
+        return supportedEvents.contains(eventName);
     }
 
     @Override
@@ -406,7 +409,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
     public boolean pushControlValue(Integer zoneID, Float newValue) {
         if (checkAndGetTemperatureControlStatus(zoneID) != null) {
             if (dSapi.pushZoneSensorValue(connectionMananager.getSessionToken(), zoneID, null,
-                    FuncNameAndColorGroupEnum.TEMPERATION_CONTROL.getFunctionalColorGroup(), null, newValue,
+                    ApplicationGroup.TEMPERATURE_CONTROL.getId(), null, newValue,
                     SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE)) {
                 addEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue);
                 return true;
@@ -442,7 +445,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
      */
     public void registerSystemStateChangeListener(SystemStateChangeListener systemStateChangeListener) {
         if (eventListener != null) {
-            SUPPORTED_EVENTS.add(EventNames.STATE_CHANGED);
+            supportedEvents.add(EventNames.STATE_CHANGED);
             eventListener.addSubscribe(EventNames.STATE_CHANGED);
         }
         this.systemStateChangeListener = systemStateChangeListener;

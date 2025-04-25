@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.listener.DeviceStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
@@ -48,8 +47,8 @@ import org.slf4j.LoggerFactory;
  * For that it uses the {@link BridgeHandler} to register this class as a {@link DeviceStatusListener} to get informed
  * about changes from the accompanying {@link Circuit}.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class CircuitHandler extends BaseThingHandler implements DeviceStatusListener {
 
@@ -77,8 +76,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     @Override
     public void initialize() {
         logger.debug("Initializing CircuitHandler.");
-        if (StringUtils.isNotBlank((String) getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID))) {
-            dSID = getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID).toString();
+        dSID = (String) getConfig().get(DigitalSTROMBindingConstants.DEVICE_DSID);
+        if (dSID != null && !dSID.isBlank()) {
             final Bridge bridge = getBridge();
             if (bridge != null) {
                 bridgeStatusChanged(bridge.getStatusInfo());
@@ -112,8 +111,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                dssBridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridgeHandler) {
+                dssBridgeHandler = bridgeHandler;
             } else {
                 return null;
             }
@@ -180,8 +179,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
 
     @Override
     public void onDeviceRemoved(GeneralDeviceInformation device) {
-        if (device instanceof Circuit) {
-            this.circuit = (Circuit) device;
+        if (device instanceof Circuit circ) {
+            this.circuit = circ;
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 if (!circuit.isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -198,8 +197,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
 
     @Override
     public void onDeviceAdded(GeneralDeviceInformation device) {
-        if (device instanceof Circuit) {
-            this.circuit = (Circuit) device;
+        if (device instanceof Circuit circ) {
+            this.circuit = circ;
             if (this.circuit.isPresent()) {
                 ThingStatusInfo statusInfo = this.dssBridgeHandler.getThing().getStatusInfo();
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());

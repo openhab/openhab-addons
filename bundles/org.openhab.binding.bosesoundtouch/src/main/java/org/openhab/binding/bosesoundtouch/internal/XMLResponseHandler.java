@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
@@ -54,8 +55,8 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
-    private Stack<XMLHandlerState> states;
-    private XMLHandlerState state;
+    private final Stack<XMLHandlerState> states = new Stack<>();
+    private XMLHandlerState state = XMLHandlerState.INIT;
     private boolean msgHeaderWasValid;
 
     private ContentItem contentItem;
@@ -63,13 +64,22 @@ public class XMLResponseHandler extends DefaultHandler {
     private OnOffType rateEnabled;
     private OnOffType skipEnabled;
     private OnOffType skipPreviousEnabled;
-
     private State nowPlayingSource;
 
     private BoseSoundTouchConfiguration masterDeviceId;
+
     String deviceId;
 
     private Map<Integer, ContentItem> playerPresets;
+
+    /**
+     * String builder to collect text content.
+     * <p>
+     * Background: {@code characters()} may be called multiple times for the same
+     * text content in case there are entities like {@code &apos;} inside the
+     * content.
+     */
+    private StringBuilder textContent = new StringBuilder();
 
     /**
      * Creates a new instance of this class
@@ -82,11 +92,11 @@ public class XMLResponseHandler extends DefaultHandler {
         this.handler = handler;
         this.commandExecutor = handler.getCommandExecutor();
         this.stateSwitchingMap = stateSwitchingMap;
-        init();
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+            @Nullable Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
         logger.trace("{}: startElement('{}'; state: {})", handler.getDeviceName(), localName, state);
         states.push(state);
@@ -94,7 +104,9 @@ public class XMLResponseHandler extends DefaultHandler {
         Map<String, XMLHandlerState> stateMap = stateSwitchingMap.get(state);
         state = XMLHandlerState.Unprocessed; // set default value; we avoid default in select to have the compiler
                                              // showing a
-        // warning for unhandled states
+                                             // warning for unhandled states
+        textContent = new StringBuilder();
+
         switch (curState) {
             case INIT:
                 if ("updates".equals(localName)) {
@@ -105,13 +117,13 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
-                    state = stateMap.get(localName);
-                    if (state == null) {
-                        if (logger.isDebugEnabled()) {
-                            logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
-                                    localName);
-                        }
+                    XMLHandlerState localState = stateMap.get(localName);
+                    if (localState == null) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                                localName);
                         state = XMLHandlerState.Unprocessed;
+                    } else {
+                        state = localState;
                     }
                 }
                 break;
@@ -131,10 +143,9 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                                localName);
-                    }
+                    logger.debug("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
+
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -142,10 +153,8 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("request".equals(localName)) {
                     state = XMLHandlerState.Unprocessed; // TODO implement request id / response tracking...
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                                localName);
-                    }
+                    logger.debug("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -161,7 +170,10 @@ public class XMLResponseHandler extends DefaultHandler {
                     skipEnabled = OnOffType.OFF;
                     skipPreviousEnabled = OnOffType.OFF;
                     state = XMLHandlerState.NowPlaying;
-                    String source = attributes.getValue("source");
+                    String source = "";
+                    if (attributes != null) {
+                        source = attributes.getValue("source");
+                    }
                     if (nowPlayingSource == null || !nowPlayingSource.toString().equals(source)) {
                         // source changed
                         nowPlayingSource = new StringType(source);
@@ -196,10 +208,9 @@ public class XMLResponseHandler extends DefaultHandler {
                 } else {
                     state = stateMap.get(localName);
                     if (state == null) {
-                        if (logger.isDebugEnabled()) {
-                            logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
-                                    localName);
-                        }
+                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                                localName);
+
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
                             && state != XMLHandlerState.Group && state != XMLHandlerState.Unprocessed) {
@@ -213,63 +224,78 @@ public class XMLResponseHandler extends DefaultHandler {
             case Presets:
                 if ("preset".equals(localName)) {
                     state = XMLHandlerState.Preset;
-                    String id = attributes.getValue("id");
+                    String id = "0";
+                    if (attributes != null) {
+                        id = attributes.getValue("id");
+                    }
                     if (contentItem == null) {
                         contentItem = new ContentItem();
                     }
                     contentItem.setPresetID(Integer.parseInt(id));
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                                localName);
-                    }
+                    logger.debug("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
+
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
             case Sources:
                 if ("sourceItem".equals(localName)) {
                     state = XMLHandlerState.Unprocessed;
-                    String source = attributes.getValue("source");
-                    String sourceAccount = attributes.getValue("sourceAccount");
-                    String status = attributes.getValue("status");
-                    if (status.equals("READY")) {
-                        if (source.equals("AUX")) {
-                            if (sourceAccount.equals("AUX")) {
-                                commandExecutor.setAUXAvailable(true);
-                            }
-                            if (sourceAccount.equals("AUX1")) {
-                                commandExecutor.setAUX1Available(true);
-                            }
-                            if (sourceAccount.equals("AUX2")) {
-                                commandExecutor.setAUX2Available(true);
-                            }
-                            if (sourceAccount.equals("AUX3")) {
-                                commandExecutor.setAUX3Available(true);
-                            }
-                        }
-                        if (source.equals("STORED_MUSIC")) {
-                            commandExecutor.setStoredMusicAvailable(true);
-                        }
-                        if (source.equals("INTERNET_RADIO")) {
-                            commandExecutor.setInternetRadioAvailable(true);
-                        }
-                        if (source.equals("BLUETOOTH")) {
-                            commandExecutor.setBluetoothAvailable(true);
-                        }
-                        if (source.equals("PRODUCT")) {
-                            if (sourceAccount.equals("TV")) {
-                                commandExecutor.setTVAvailable(true);
-                            }
-                            if (sourceAccount.equals("HDMI_1")) {
-                                commandExecutor.setHDMI1Available(true);
-                            }
+                    String source = "";
+                    String status = "";
+                    String sourceAccount = "";
+                    if (attributes != null) {
+                        source = attributes.getValue("source");
+                        sourceAccount = attributes.getValue("sourceAccount");
+                        status = attributes.getValue("status");
+                    }
+                    if ("READY".equals(status)) {
+                        switch (source) {
+                            case "AUX":
+                                if ("AUX".equals(sourceAccount)) {
+                                    commandExecutor.setAUXAvailable(true);
+                                }
+                                if ("AUX1".equals(sourceAccount)) {
+                                    commandExecutor.setAUX1Available(true);
+                                }
+                                if ("AUX2".equals(sourceAccount)) {
+                                    commandExecutor.setAUX2Available(true);
+                                }
+                                if ("AUX3".equals(sourceAccount)) {
+                                    commandExecutor.setAUX3Available(true);
+                                }
+                                break;
+                            case "STORED_MUSIC":
+                                commandExecutor.setStoredMusicAvailable(true);
+                                break;
+                            case "INTERNET_RADIO":
+                                commandExecutor.setInternetRadioAvailable(true);
+                                break;
+                            case "BLUETOOTH":
+                                commandExecutor.setBluetoothAvailable(true);
+                                break;
+                            case "PRODUCT":
+                                switch (sourceAccount) {
+                                    case "TV":
+                                        commandExecutor.setTVAvailable(true);
+                                        break;
+                                    case "HDMI_1":
+                                        commandExecutor.setHDMI1Available(true);
+                                        break;
+                                    default:
+                                        logger.debug("{}: has an unknown source account: '{}'", handler.getDeviceName(),
+                                                sourceAccount);
+                                        break;
+                                }
+                            default:
+                                logger.debug("{}: has an unknown source: '{}'", handler.getDeviceName(), source);
+                                break;
                         }
                     }
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                                localName);
-                    }
+                    logger.debug("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -350,25 +376,42 @@ public class XMLResponseHandler extends DefaultHandler {
             if (contentItem == null) {
                 contentItem = new ContentItem();
             }
-            contentItem.setSource(attributes.getValue("source"));
-            contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
-            contentItem.setLocation(attributes.getValue("location"));
-            contentItem.setPresetable(Boolean.parseBoolean(attributes.getValue("isPresetable")));
-            for (int attrId = 0; attrId < attributes.getLength(); attrId++) {
-                String attrName = attributes.getLocalName(attrId);
-                if ("source".equalsIgnoreCase(attrName)) {
-                    continue;
+
+            if (attributes != null) {
+                String source = attributes.getValue("source");
+                String location = attributes.getValue("location");
+                String sourceAccount = attributes.getValue("sourceAccount");
+                Boolean isPresetable = Boolean.parseBoolean(attributes.getValue("isPresetable"));
+
+                if (source != null) {
+                    contentItem.setSource(source);
                 }
-                if ("location".equalsIgnoreCase(attrName)) {
-                    continue;
+                if (sourceAccount != null) {
+                    contentItem.setSourceAccount(sourceAccount);
                 }
-                if ("sourceAccount".equalsIgnoreCase(attrName)) {
-                    continue;
+                if (location != null) {
+                    contentItem.setLocation(location);
                 }
-                if ("isPresetable".equalsIgnoreCase(attrName)) {
-                    continue;
+                contentItem.setPresetable(isPresetable);
+
+                for (int attrId = 0; attrId < attributes.getLength(); attrId++) {
+                    String attrName = attributes.getLocalName(attrId);
+                    if ("source".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("location".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("sourceAccount".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("isPresetable".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if (attrName != null) {
+                        contentItem.setAdditionalAttribute(attrName, attributes.getValue(attrId));
+                    }
                 }
-                contentItem.setAdditionalAttribute(attrName, attributes.getValue(attrId));
             }
         }
     }
@@ -428,7 +471,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 skipPreviousEnabled = OnOffType.ON;
                 break;
             case Volume:
-                OnOffType muted = volumeMuteEnabled ? OnOffType.ON : OnOffType.OFF;
+                OnOffType muted = OnOffType.from(volumeMuteEnabled);
                 commandExecutor.setCurrentMuted(volumeMuteEnabled);
                 commandExecutor.postVolumeMuted(muted);
                 break;
@@ -442,6 +485,27 @@ public class XMLResponseHandler extends DefaultHandler {
             case Group:
                 handler.handleGroupUpdated(masterDeviceId);
                 break;
+            case NowPlayingAlbum:
+                updateNowPlayingAlbum(new StringType(textContent.toString()));
+                break;
+            case NowPlayingArtist:
+                updateNowPlayingArtist(new StringType(textContent.toString()));
+                break;
+            case NowPlayingDescription:
+                updateNowPlayingDescription(new StringType(textContent.toString()));
+                break;
+            case NowPlayingGenre:
+                updateNowPlayingGenre(new StringType(textContent.toString()));
+                break;
+            case NowPlayingStationLocation:
+                updateNowPlayingStationLocation(new StringType(textContent.toString()));
+                break;
+            case NowPlayingStationName:
+                updateNowPlayingStationName(new StringType(textContent.toString()));
+                break;
+            case NowPlayingTrack:
+                updateNowPlayingTrack(new StringType(textContent.toString()));
+                break;
             default:
                 // no actions...
                 break;
@@ -450,8 +514,11 @@ public class XMLResponseHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, new String(ch, start, length));
+        String string = new String(ch, start, length);
+        logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, string);
+
         super.characters(ch, start, length);
+
         switch (state) {
             case INIT:
             case Msg:
@@ -474,8 +541,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case Zone:
             case ZoneUpdated:
             case Sources:
-                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
-                        new String(ch, start, length));
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state, string);
                 break;
             case BassMin: // @TODO - find out how to dynamically change "channel-type" bass configuration
             case BassMax: // based on these values...
@@ -485,38 +551,37 @@ public class XMLResponseHandler extends DefaultHandler {
                 // this are currently unprocessed values.
                 break;
             case BassCapabilities:
-                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
-                        new String(ch, start, length));
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state, string);
                 break;
             case Unprocessed:
                 // drop quietly..
                 break;
             case BassActual:
-                commandExecutor.updateBassLevelGUIState(new DecimalType(new String(ch, start, length)));
+                commandExecutor.updateBassLevelGUIState(new DecimalType(string));
                 break;
             case InfoName:
-                setConfigOption(DEVICE_INFO_NAME, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_NAME, string);
                 break;
             case InfoType:
-                setConfigOption(DEVICE_INFO_TYPE, new String(ch, start, length));
-                setConfigOption(PROPERTY_MODEL_ID, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_TYPE, string);
+                setConfigOption(PROPERTY_MODEL_ID, string);
                 break;
             case InfoModuleType:
-                setConfigOption(PROPERTY_HARDWARE_VERSION, new String(ch, start, length));
+                setConfigOption(PROPERTY_HARDWARE_VERSION, string);
                 break;
             case InfoFirmwareVersion:
-                String[] fwVersion = new String(ch, start, length).split(" ");
+                String[] fwVersion = string.split(" ");
                 setConfigOption(PROPERTY_FIRMWARE_VERSION, fwVersion[0]);
                 break;
             case BassAvailable:
-                boolean bassAvailable = Boolean.parseBoolean(new String(ch, start, length));
+                boolean bassAvailable = Boolean.parseBoolean(string);
                 commandExecutor.setBassAvailable(bassAvailable);
                 break;
             case NowPlayingAlbum:
-                updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingArt:
-                String url = new String(ch, start, length);
+                String url = string;
                 if (url.startsWith("http")) {
                     // We download the cover art in a different thread to not delay the other operations
                     handler.getScheduler().submit(() -> {
@@ -532,22 +597,22 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case NowPlayingArtist:
-                updateNowPlayingArtist(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case ContentItemItemName:
-                contentItem.setItemName(new String(ch, start, length));
+                contentItem.setItemName(string);
                 break;
             case ContentItemContainerArt:
-                contentItem.setContainerArt(new String(ch, start, length));
+                contentItem.setContainerArt(string);
                 break;
             case NowPlayingDescription:
-                updateNowPlayingDescription(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingGenre:
-                updateNowPlayingGenre(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingPlayStatus:
-                String playPauseState = new String(ch, start, length);
+                String playPauseState = string;
                 if ("PLAY_STATE".equals(playPauseState) || "BUFFERING_STATE".equals(playPauseState)) {
                     commandExecutor.updatePlayerControlGUIState(PlayPauseType.PLAY);
                 } else if ("STOP_STATE".equals(playPauseState) || "PAUSE_STATE".equals(playPauseState)) {
@@ -555,37 +620,37 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case NowPlayingStationLocation:
-                updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingStationName:
-                updateNowPlayingStationName(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingTrack:
-                updateNowPlayingTrack(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case VolumeActual:
-                commandExecutor.updateVolumeGUIState(new PercentType(Integer.parseInt(new String(ch, start, length))));
+                commandExecutor.updateVolumeGUIState(new PercentType(Integer.parseInt(string)));
                 break;
             case VolumeMuteEnabled:
-                volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
+                volumeMuteEnabled = Boolean.parseBoolean(string);
                 commandExecutor.setCurrentMuted(volumeMuteEnabled);
                 break;
             case MasterDeviceId:
                 if (masterDeviceId != null) {
-                    masterDeviceId.macAddress = new String(ch, start, length);
+                    masterDeviceId.macAddress = string;
                 }
                 break;
             case GroupName:
                 if (masterDeviceId != null) {
-                    masterDeviceId.groupName = new String(ch, start, length);
+                    masterDeviceId.groupName = string;
                 }
                 break;
             case DeviceId:
-                deviceId = new String(ch, start, length);
+                deviceId = string;
                 break;
             case DeviceIp:
                 if (masterDeviceId != null && Objects.equals(masterDeviceId.macAddress, deviceId)) {
-                    masterDeviceId.host = new String(ch, start, length);
+                    masterDeviceId.host = string;
                 }
                 break;
             default:
@@ -599,8 +664,9 @@ public class XMLResponseHandler extends DefaultHandler {
         super.skippedEntity(name);
     }
 
-    private boolean checkDeviceId(String localName, Attributes attributes, boolean allowFromMaster) {
-        String deviceID = attributes.getValue("deviceID");
+    private boolean checkDeviceId(@Nullable String localName, @Nullable Attributes attributes,
+            boolean allowFromMaster) {
+        String deviceID = (attributes != null) ? attributes.getValue("deviceID") : null;
         if (deviceID == null) {
             logger.warn("{}: No device-ID in entity {}", handler.getDeviceName(), localName);
             return false;
@@ -611,12 +677,6 @@ public class XMLResponseHandler extends DefaultHandler {
         logger.warn("{}: Wrong device-ID in entity '{}': Got: '{}', expected: '{}'", handler.getDeviceName(), localName,
                 deviceID, handler.getMacAddress());
         return false;
-    }
-
-    private void init() {
-        states = new Stack<>();
-        state = XMLHandlerState.INIT;
-        nowPlayingSource = null;
     }
 
     private XMLHandlerState nextState(Map<String, XMLHandlerState> stateMap, XMLHandlerState curState,
@@ -632,11 +692,13 @@ public class XMLResponseHandler extends DefaultHandler {
     }
 
     private void setConfigOption(String option, String value) {
-        Map<String, String> prop = handler.getThing().getProperties();
-        String cur = prop.get(option);
-        if (cur == null || !cur.equals(value)) {
-            logger.debug("{}: Option '{}' updated: From '{}' to '{}'", handler.getDeviceName(), option, cur, value);
-            handler.getThing().setProperty(option, value);
+        if (option != null) {
+            Map<String, String> prop = handler.getThing().getProperties();
+            String cur = prop.get(option);
+            if (cur == null || !cur.equals(value)) {
+                logger.debug("{}: Option '{}' updated: From '{}' to '{}'", handler.getDeviceName(), option, cur, value);
+                handler.getThing().setProperty(option, value);
+            }
         }
     }
 

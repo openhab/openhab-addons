@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.THREAD_NAME_PREFIX;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -35,32 +39,35 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler1.class);
 
-    public NikoHomeControlBridgeHandler1(Bridge nikoHomeControlBridge) {
-        super(nikoHomeControlBridge);
+    public NikoHomeControlBridgeHandler1(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
+            TimeZoneProvider timeZoneProvider) {
+        super(nikoHomeControlBridge, networkAddressService, timeZoneProvider);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Niko Home Control: initializing bridge handler");
+        logger.debug("initializing bridge handler");
 
-        setConfig();
+        scheduler.submit(() -> getControllerId());
+
         InetAddress addr = getAddr();
         int port = getPort();
 
-        logger.debug("Niko Home Control: bridge handler host {}, port {}", addr, port);
+        logger.debug("bridge handler host {}, port {}", addr, port);
 
         if (addr != null) {
-            nhcComm = new NikoHomeControlCommunication1(this, scheduler);
+            String eventThreadName = THREAD_NAME_PREFIX + thing.getUID().getAsString();
+            nhcComm = new NikoHomeControlCommunication1(this, scheduler, eventThreadName);
             startCommunication();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: cannot resolve bridge IP with hostname " + config.addr);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip");
         }
     }
 
     @Override
     protected void updateProperties() {
-        Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
 
         NikoHomeControlCommunication1 comm = (NikoHomeControlCommunication1) nhcComm;
         if (comm != null) {

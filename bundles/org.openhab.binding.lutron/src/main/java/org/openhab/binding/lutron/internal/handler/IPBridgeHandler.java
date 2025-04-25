@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openhab.binding.lutron.internal.StringUtils;
 import org.openhab.binding.lutron.internal.config.IPBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.net.TelnetSession;
@@ -34,6 +33,7 @@ import org.openhab.binding.lutron.internal.protocol.LIPCommand;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandNew;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronOperation;
+import org.openhab.binding.lutron.internal.protocol.lip.Monitoring;
 import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -57,11 +57,6 @@ public class IPBridgeHandler extends LutronBridgeHandler {
             .compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE|SYSVAR|GROUP),([0-9\\.:/]+),([0-9,\\.:/]*)\\Z");
 
     private static final String DB_UPDATE_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
-
-    private static final Integer MONITOR_PROMPT = 12;
-    private static final Integer MONITOR_SYSVAR = 10;
-    private static final Integer MONITOR_ENABLE = 1;
-    private static final Integer MONITOR_DISABLE = 2;
 
     private static final Integer SYSTEM_DBEXPORTDATETIME = 10;
 
@@ -156,7 +151,8 @@ public class IPBridgeHandler extends LutronBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.ipAddress)) {
+        String ipAddress = config.ipAddress;
+        if (ipAddress == null || ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
 
             return false;
@@ -208,8 +204,9 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
         // Disable prompts
         sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.EXECUTE, LutronCommandType.MONITORING, null,
-                MONITOR_PROMPT, MONITOR_DISABLE));
+                Monitoring.PROMPT, Monitoring.ACTION_DISABLE));
 
+        initMonitoring();
         if (requireSysvarMonitoring.get()) {
             setSysvarMonitoring(true);
         }
@@ -219,7 +216,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.QUERY, LutronCommandType.SYSTEM, null,
                 SYSTEM_DBEXPORTDATETIME));
 
-        messageSender = new Thread(this::sendCommandsThread, "Lutron sender");
+        messageSender = new Thread(this::sendCommandsThread, "OH-binding-" + getThing().getUID() + "-IPBridgeSender");
         messageSender.start();
 
         logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);
@@ -347,7 +344,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         String scrubbedLine;
 
         for (String line : this.session.readLines()) {
-            if (line.trim().equals("")) {
+            if ("".equals(line.trim())) {
                 // Sometimes we get an empty line (possibly only when prompts are disabled). Ignore them.
                 continue;
             }
@@ -457,10 +454,17 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         }
     }
 
+    private void initMonitoring() {
+        for (Integer monitorType : Monitoring.REQUIRED_SET) {
+            sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.EXECUTE, LutronCommandType.MONITORING, null,
+                    monitorType, Monitoring.ACTION_ENABLE));
+        }
+    }
+
     private void setSysvarMonitoring(boolean enable) {
-        Integer setting = (enable) ? MONITOR_ENABLE : MONITOR_DISABLE;
+        Integer setting = (enable) ? Monitoring.ACTION_ENABLE : Monitoring.ACTION_DISABLE;
         sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.EXECUTE, LutronCommandType.MONITORING, null,
-                MONITOR_SYSVAR, setting));
+                Monitoring.SYSVAR, setting));
     }
 
     @Override

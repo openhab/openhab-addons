@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="jaxbEntity">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:element name="conn" type="connection"/>
+
+  <xs:element name="details" type="stopDetails"/>
+
+  <xs:element name="event" type="event"/>
+
+  <xs:element name="m" type="message"/>
+
+  <xs:element name="s" type="timetableStop"/>
+
+  <xs:element name="station" type="stationData"/>
+
+  <xs:element name="station-details" type="stationDetails"/>
+
+  <xs:element name="stations" type="multipleStationData"/>
+
+  <xs:element name="timetable" type="timetable"/>
+
+  <xs:element name="timetables" type="multipleTimetables"/>
+
+  <xs:element name="tl" type="tripLabel"/>
+
+  <xs:element name="trip" type="trip"/>
+
+  <xs:element name="trips" type="multipleTrips"/>
+  
+  <xs:complexType name="multipleStationData">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="station" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="multipleTimetables">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="timetable" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="timetable">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="s" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="station" type="xs:string"/>
+        <xs:attribute name="eva" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="timetableStop">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="conn" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="ar" type="event" minOccurs="0"/>
+          <xs:element name="dp" type="event" minOccurs="0"/>
+          <xs:element name="hd" type="historicDelay" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="hpc" type="historicPlatformChange" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="rtr" type="referenceTripRelation" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="tl" minOccurs="0"/>
+          <xs:element name="ref" type="tripReference" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="eva" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stop" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="conn" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="ar" type="event" minOccurs="0"/>
+          <xs:element name="dp" type="event" minOccurs="0"/>
+          <xs:element name="hd" type="historicDelay" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="hpc" type="historicPlatformChange" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="rtr" type="referenceTripRelation" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="tripLabel">
+    <xs:complexContent>
+      <xs:extension base="referenceTripLabel">
+        <xs:sequence/>
+        <xs:attribute name="f" type="xs:string"/>
+        <xs:attribute name="t" type="tripType"/>
+        <xs:attribute name="o" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="connection">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element name="ref" type="timetableStop" minOccurs="0"/>
+          <xs:element ref="s"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="ts" type="xs:string" use="required"/>
+        <xs:attribute name="eva" type="xs:string"/>
+        <xs:attribute name="cs" type="connectionStatus" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="message">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element name="dm" type="distributorMessage" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="tl" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="t" type="messageType" use="required"/>
+        <xs:attribute name="from" type="xs:string"/>
+        <xs:attribute name="to" type="xs:string"/>
+        <xs:attribute name="c" type="xs:int"/>
+        <xs:attribute name="int" type="xs:string"/>
+        <xs:attribute name="ext" type="xs:string"/>
+        <xs:attribute name="elnk" type="xs:string"/>
+        <xs:attribute name="cat" type="xs:string"/>
+        <xs:attribute name="ec" type="xs:int"/>
+        <xs:attribute name="ts" type="xs:string" use="required"/>
+        <xs:attribute name="pr" type="priority"/>
+        <xs:attribute name="o" type="xs:string"/>
+        <xs:attribute name="del" type="xs:int"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="distributorMessage">
+    <xs:sequence/>
+    <xs:attribute name="t" type="distributorType"/>
+    <xs:attribute name="n" type="xs:string"/>
+    <xs:attribute name="int" type="xs:string"/>
+    <xs:attribute name="ts" type="xs:string"/>
+  </xs:complexType>
+  
+  <xs:complexType name="event">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="cpth" type="xs:string"/>
+        <xs:attribute name="ppth" type="xs:string"/>
+        <xs:attribute name="cp" type="xs:string"/>
+        <xs:attribute name="pp" type="xs:string"/>
+        <xs:attribute name="ct" type="xs:string"/>
+        <xs:attribute name="pt" type="xs:string"/>
+        <xs:attribute name="cs" type="eventStatus"/>
+        <xs:attribute name="ps" type="eventStatus"/>
+        <xs:attribute name="hi" type="xs:int"/>
+        <xs:attribute name="clt" type="xs:string"/>
+        <xs:attribute name="wings" type="xs:string"/>
+        <xs:attribute name="tra" type="xs:string"/>
+        <xs:attribute name="pde" type="xs:string"/>
+        <xs:attribute name="cde" type="xs:string"/>
+        <xs:attribute name="dc" type="xs:int"/>
+        <xs:attribute name="l" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="historicChange">
+    <xs:sequence/>
+    <xs:attribute name="ts" type="xs:string"/>
+  </xs:complexType>
+  
+  <xs:complexType name="historicDelay">
+    <xs:complexContent>
+      <xs:extension base="historicChange">
+        <xs:sequence/>
+        <xs:attribute name="ar" type="xs:string"/>
+        <xs:attribute name="dp" type="xs:string"/>
+        <xs:attribute name="src" type="delaySource"/>
+        <xs:attribute name="cod" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="historicPlatformChange">
+    <xs:complexContent>
+      <xs:extension base="historicChange">
+        <xs:sequence/>
+        <xs:attribute name="ar" type="xs:string"/>
+        <xs:attribute name="dp" type="xs:string"/>
+        <xs:attribute name="cot" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stationDetails">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="eva" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="multipleTrips">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="trip" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="trip">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="tl"/>
+          <xs:element ref="s" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="tripStop">
+    <xs:complexContent>
+      <xs:extension base="stop">
+        <xs:sequence/>
+        <xs:attribute name="i" type="xs:int" use="required"/>
+        <xs:attribute name="eva" type="xs:string" use="required"/>
+        <xs:attribute name="jt" type="junctionType"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stopDetails">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="conn" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="connectionStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="w"/>
+      <xs:enumeration value="n"/>
+      <xs:enumeration value="a"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="messageType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="h"/>
+      <xs:enumeration value="q"/>
+      <xs:enumeration value="f"/>
+      <xs:enumeration value="d"/>
+      <xs:enumeration value="i"/>
+      <xs:enumeration value="u"/>
+      <xs:enumeration value="r"/>
+      <xs:enumeration value="c"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="priority">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+      <xs:enumeration value="3"/>
+      <xs:enumeration value="4"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="distributorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="s"/>
+      <xs:enumeration value="r"/>
+      <xs:enumeration value="f"/>
+      <xs:enumeration value="x"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="eventStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="p"/>
+      <xs:enumeration value="a"/>
+      <xs:enumeration value="c"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="delaySource">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="L"/>
+      <xs:enumeration value="NA"/>
+      <xs:enumeration value="NM"/>
+      <xs:enumeration value="V"/>
+      <xs:enumeration value="IA"/>
+      <xs:enumeration value="IM"/>
+      <xs:enumeration value="A"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="filterFlag">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="EXTERNAL"/>
+      <xs:enumeration value="LONG_DISTANCE"/>
+      <xs:enumeration value="REGIONAL"/>
+      <xs:enumeration value="SBAHN"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="junctionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="t"/>
+      <xs:enumeration value="s"/>
+      <xs:enumeration value="j"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="referenceTripRelation">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element name="rt" type="referenceTrip" minOccurs="0"/>
+          <xs:element name="rts" type="referenceTripRelationToStop" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="referenceTrip">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element name="rtl" type="referenceTripLabel" minOccurs="0"/>
+          <xs:element name="sd" type="referenceTripStopLabel" minOccurs="0"/>
+          <xs:element name="ea" type="referenceTripStopLabel" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="c" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="referenceTripLabel">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence/>
+        <xs:attribute name="c" type="xs:string" use="required"/>
+        <xs:attribute name="n" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="referenceTripStopLabel">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence/>
+        <xs:attribute name="eva" type="xs:string" use="required"/>
+        <xs:attribute name="n" type="xs:string" use="required"/>
+        <xs:attribute name="i" type="xs:int" use="required"/>
+        <xs:attribute name="pt" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="referenceTripRelationToStop">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="b"/>
+      <xs:enumeration value="e"/>
+      <xs:enumeration value="c"/>
+      <xs:enumeration value="s"/>
+      <xs:enumeration value="a"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="tripReference">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence>
+          <xs:element ref="tl" minOccurs="0"/>
+          <xs:element name="rt" type="referenceTrip" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stationData">
+    <xs:complexContent>
+      <xs:extension base="jaxbEntity">
+        <xs:sequence/>
+        <xs:attribute name="p" type="xs:string"/>
+        <xs:attribute name="meta" type="xs:string"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="eva" type="xs:string" use="required"/>
+        <xs:attribute name="ds100" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="tripType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="p"/>
+      <xs:enumeration value="e"/>
+      <xs:enumeration value="z"/>
+      <xs:enumeration value="s"/>
+      <xs:enumeration value="h"/>
+      <xs:enumeration value="n"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
+

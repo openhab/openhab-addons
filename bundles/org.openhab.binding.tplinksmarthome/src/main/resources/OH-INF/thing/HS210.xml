@@ -8,7 +8,7 @@
 		<label>HS210</label>
 		<description>TP-Link HS210 Smart Wi-Fi Light Switch 3-Way Kit</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>
@@ -17,6 +17,6 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:switch"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-switch"/>
 	</thing-type>
 </thing:thing-descriptions>

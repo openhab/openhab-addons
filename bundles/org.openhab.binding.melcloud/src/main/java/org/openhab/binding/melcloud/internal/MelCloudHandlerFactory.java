@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.melcloud.internal;
 
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
 import org.openhab.binding.melcloud.internal.handler.MelCloudDeviceHandler;
@@ -33,6 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
 public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
 
@@ -46,14 +48,11 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_MELCLOUD_ACCOUNT.equals(thingTypeUID)) {
-            MelCloudAccountHandler handler = new MelCloudAccountHandler((Bridge) thing);
-            return handler;
+            return new MelCloudAccountHandler((Bridge) thing);
         } else if (THING_TYPE_ACDEVICE.equals(thingTypeUID)) {
-            MelCloudDeviceHandler handler = new MelCloudDeviceHandler(thing);
-            return handler;
+            return new MelCloudDeviceHandler(thing);
         } else if (THING_TYPE_HEATPUMPDEVICE.equals(thingTypeUID)) {
-            MelCloudHeatpumpDeviceHandler handler = new MelCloudHeatpumpDeviceHandler(thing);
-            return handler;
+            return new MelCloudHeatpumpDeviceHandler(thing);
         }
 
         return null;

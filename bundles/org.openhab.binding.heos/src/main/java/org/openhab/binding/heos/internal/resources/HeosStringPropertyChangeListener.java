@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@Link HeosStringPropertyChangeListener} provides the possibility
- * to add a listener to an String and get informed about the new value.
+ * The {@link HeosStringPropertyChangeListener} provides the possibility
+ * to add a listener to a String and get informed about the new value.
  *
  * @author Johannes Einig - Initial contribution
  */

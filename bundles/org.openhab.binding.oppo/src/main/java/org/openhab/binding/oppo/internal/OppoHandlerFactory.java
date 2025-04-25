@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,13 @@ package org.openhab.binding.oppo.internal;
 
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oppo.internal.handler.OppoHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,17 +40,22 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.oppo", service = ThingHandlerFactory.class)
 public class OppoHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER);
 
     private final SerialPortManager serialPortManager;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     private final OppoStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public OppoHandlerFactory(final @Reference OppoStateDescriptionOptionProvider provider,
-            final @Reference SerialPortManager serialPortManager) {
+            final @Reference SerialPortManager serialPortManager, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
         this.stateDescriptionProvider = provider;
         this.serialPortManager = serialPortManager;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -62,9 +68,8 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            OppoHandler handler = new OppoHandler(thing, stateDescriptionProvider, serialPortManager);
-
-            return handler;
+            return new OppoHandler(thing, stateDescriptionProvider, serialPortManager, translationProvider,
+                    localeProvider);
         }
         return null;
     }

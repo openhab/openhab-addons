@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,40 +13,24 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URL;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,359 +38,86 @@ import org.slf4j.LoggerFactory;
  * The {@link WemoHandler} is responsible for handling commands, which are
  * sent to one of the channels and to update their states.
  *
- * @author Hans-Jörg Merk - Initial contribution; Added support for WeMo Insight energy measurement
+ * @author Hans-Jörg Merk - Initial contribution
  * @author Kai Kreuzer - some refactoring for performance and simplification
  * @author Stefan Bußweiler - Added new thing status handling
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Mihir Patil - Added standby switch
+ * @author Jacob Laursen - Refactoring
  */
-
-public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+@NonNullByDefault
+public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
-            .collect(Collectors.toSet());
+    private final Object jobLock = new Object();
 
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-
-    // protected static final int SUBSCRIPTION_DURATION = WemoBindingConstants.SUBSCRIPTION_DURATION;
-
-    private UpnpIOService service;
-
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private final int DEFAULT_REFRESH_INTERVAL = 120;
-
-    private ScheduledFuture<?> refreshJob;
-
-    private final Runnable refreshRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-                }
-
-                updateWemoState();
-                onSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
-    };
-
-    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemohttpCaller) {
-        super(thing);
-
-        this.wemoHttpCaller = wemohttpCaller;
+    public WemoHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
-
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
     }
 
     @Override
     public void initialize() {
-        Configuration configuration = getConfig();
+        super.initialize();
 
-        if (configuration.get("udn") != null) {
-            logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get("udn"));
-            service.registerParticipant(this);
-            onSubscription();
-            onUpdate();
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            logger.debug("Cannot initalize WemoHandler. UDN not set.");
+        addSubscription(BASICEVENT);
+        if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
+            addSubscription(INSIGHTEVENT);
         }
+        pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        logger.debug("WeMoHandler disposed.");
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
+        this.pollingJob = null;
+        super.dispose();
+    }
 
-        removeSubscription();
-
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+    private void poll() {
+        synchronized (jobLock) {
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                return;
+            }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
-        } else if (channelUID.getId().equals(CHANNEL_STATE)) {
+            updateWemoState();
+        } else if (CHANNEL_STATE.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 try {
-                    String binaryState = null;
-
-                    if (command.equals(OnOffType.ON)) {
-                        binaryState = "1";
-                    } else if (command.equals(OnOffType.OFF)) {
-                        binaryState = "0";
-                    }
-
+                    boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
-                            + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
-                            + "</s:Envelope>";
-
-                    String wemoURL = getWemoURL("basicevent");
-
-                    if (wemoURL != null) {
-                        wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    }
-                } catch (Exception e) {
-                    logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                    String content = createBinaryStateContent(binaryState);
+                    probeAndExecuteCall(BASICACTION, soapHeader, content);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (MissingHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                } catch (WemoException e) {
+                    logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                             e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }
-    }
-
-    @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
-        logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service, succeeded ? "succeeded" : "failed");
-        subscriptionState.put(service, succeeded);
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    public void onValueReceived(String variable, String value, String service) {
-        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
-
-        updateStatus(ThingStatus.ONLINE);
-
-        this.stateMap.put(variable, value);
-
-        if (getThing().getThingTypeUID().getId().equals("insight")) {
-            String insightParams = stateMap.get("InsightParams");
-
-            if (insightParams != null) {
-                String[] splitInsightParams = insightParams.split("\\|");
-
-                if (splitInsightParams[0] != null) {
-                    OnOffType binaryState = null;
-                    binaryState = splitInsightParams[0].equals("0") ? OnOffType.OFF : OnOffType.ON;
-                    if (binaryState != null) {
-                        logger.trace("New InsightParam binaryState '{}' for device '{}' received", binaryState,
-                                getThing().getUID());
-                        updateState(CHANNEL_STATE, binaryState);
-                    }
-                }
-
-                long lastChangedAt = 0;
-                try {
-                    lastChangedAt = Long.parseLong(splitInsightParams[1]) * 1000; // convert s to ms
-                } catch (NumberFormatException e) {
-                    logger.error("Unable to parse lastChangedAt value '{}' for device '{}'; expected long",
-                            splitInsightParams[1], getThing().getUID());
-                }
-                ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastChangedAt),
-                        TimeZone.getDefault().toZoneId());
-
-                State lastChangedAtState = new DateTimeType(zoned);
-                if (lastChangedAt != 0) {
-                    logger.trace("New InsightParam lastChangedAt '{}' for device '{}' received", lastChangedAtState,
-                            getThing().getUID());
-                    updateState(CHANNEL_LASTCHANGEDAT, lastChangedAtState);
-                }
-
-                State lastOnFor = DecimalType.valueOf(splitInsightParams[2]);
-                if (lastOnFor != null) {
-                    logger.trace("New InsightParam lastOnFor '{}' for device '{}' received", lastOnFor,
-                            getThing().getUID());
-                    updateState(CHANNEL_LASTONFOR, lastOnFor);
-                }
-
-                State onToday = DecimalType.valueOf(splitInsightParams[3]);
-                if (onToday != null) {
-                    logger.trace("New InsightParam onToday '{}' for device '{}' received", onToday,
-                            getThing().getUID());
-                    updateState(CHANNEL_ONTODAY, onToday);
-                }
-
-                State onTotal = DecimalType.valueOf(splitInsightParams[4]);
-                if (onTotal != null) {
-                    logger.trace("New InsightParam onTotal '{}' for device '{}' received", onTotal,
-                            getThing().getUID());
-                    updateState(CHANNEL_ONTOTAL, onTotal);
-                }
-
-                State timespan = DecimalType.valueOf(splitInsightParams[5]);
-                if (timespan != null) {
-                    logger.trace("New InsightParam timespan '{}' for device '{}' received", timespan,
-                            getThing().getUID());
-                    updateState(CHANNEL_TIMESPAN, timespan);
-                }
-
-                State averagePower = DecimalType.valueOf(splitInsightParams[6]); // natively given in W
-                if (averagePower != null) {
-                    logger.trace("New InsightParam averagePower '{}' for device '{}' received", averagePower,
-                            getThing().getUID());
-                    updateState(CHANNEL_AVERAGEPOWER, averagePower);
-                }
-
-                BigDecimal currentMW = new BigDecimal(splitInsightParams[7]);
-                State currentPower = new DecimalType(currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP)); // recalculate
-                // mW to W
-                if (currentPower != null) {
-                    logger.trace("New InsightParam currentPower '{}' for device '{}' received", currentPower,
-                            getThing().getUID());
-                    updateState(CHANNEL_CURRENTPOWER, currentPower);
-                }
-
-                BigDecimal energyTodayMWMin = new BigDecimal(splitInsightParams[8]);
-                // recalculate mW-mins to Wh
-                State energyToday = new DecimalType(
-                        energyTodayMWMin.divide(new BigDecimal(60000), RoundingMode.HALF_UP));
-                if (energyToday != null) {
-                    logger.trace("New InsightParam energyToday '{}' for device '{}' received", energyToday,
-                            getThing().getUID());
-                    updateState(CHANNEL_ENERGYTODAY, energyToday);
-                }
-
-                BigDecimal energyTotalMWMin = new BigDecimal(splitInsightParams[9]);
-                // recalculate mW-mins to Wh
-                State energyTotal = new DecimalType(
-                        energyTotalMWMin.divide(new BigDecimal(60000), RoundingMode.HALF_UP));
-                if (energyTotal != null) {
-                    logger.trace("New InsightParam energyTotal '{}' for device '{}' received", energyTotal,
-                            getThing().getUID());
-                    updateState(CHANNEL_ENERGYTOTAL, energyTotal);
-                }
-
-                BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
-                State standByLimit = new DecimalType(standByLimitMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP)); // recalculate
-                // mW to W
-                if (standByLimit != null) {
-                    logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
-                            getThing().getUID());
-                    updateState(CHANNEL_STANDBYLIMIT, standByLimit);
-                }
-                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW
-                        .divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()) {
-                    updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
-                } else {
-                    updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
-                }
-            }
-        } else {
-            State state = stateMap.get("BinaryState").equals("0") ? OnOffType.OFF : OnOffType.ON;
-
-            logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
-
-            if (state != null) {
-                if (getThing().getThingTypeUID().getId().equals("motion")) {
-                    updateState(CHANNEL_MOTIONDETECTION, state);
-                    if (state.equals(OnOffType.ON)) {
-                        State lastMotionDetected = new DateTimeType();
-                        updateState(CHANNEL_LASTMOTIONDETECTED, lastMotionDetected);
-                    }
-                } else {
-                    updateState(CHANNEL_STATE, state);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }
-    }
-
-    private synchronized void onSubscription() {
-        if (service.isRegistered(this)) {
-            logger.debug("Checking WeMo GENA subscription for '{}'", this);
-
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            String subscription = "basicevent1";
-
-            if ((subscriptionState.get(subscription) == null) || !subscriptionState.get(subscription).booleanValue()) {
-                logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), subscription);
-                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
-                subscriptionState.put(subscription, true);
-            }
-
-            if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
-                subscription = "insight1";
-                if ((subscriptionState.get(subscription) == null)
-                        || !subscriptionState.get(subscription).booleanValue()) {
-                    logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                            subscription);
-                    service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
-                    subscriptionState.put(subscription, true);
-                }
-            }
-        } else {
-            logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                    this);
-        }
-    }
-
-    private synchronized void removeSubscription() {
-        logger.debug("Removing WeMo GENA subscription for '{}'", this);
-
-        if (service.isRegistered(this)) {
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            String subscription = "basicevent1";
-
-            if ((subscriptionState.get(subscription) != null) && subscriptionState.get(subscription).booleanValue()) {
-                logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                service.removeSubscription(this, subscription);
-            }
-
-            if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
-                subscription = "insight1";
-                if ((subscriptionState.get(subscription) != null)
-                        && subscriptionState.get(subscription).booleanValue()) {
-                    logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                    service.removeSubscription(this, subscription);
-                }
-            }
-            subscriptionState = new HashMap<>();
-            service.unregisterParticipant(this);
-        }
-    }
-
-    private synchronized void onUpdate() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
-            }
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
-        }
-    }
-
-    private boolean isUpnpDeviceRegistered() {
-        return service.isRegistered(this);
-    }
-
-    @Override
-    public String getUDN() {
-        return (String) this.getThing().getConfiguration().get(UDN);
     }
 
     /**
@@ -415,83 +126,35 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
      *
      */
     protected void updateWemoState() {
+        String actionService = BASICACTION;
         String action = "GetBinaryState";
         String variable = "BinaryState";
-        String actionService = "basicevent";
         String value = null;
-
-        if (getThing().getThingTypeUID().getId().equals("insight")) {
+        if ("insight".equals(getThing().getThingTypeUID().getId())) {
             action = "GetInsightParams";
             variable = "InsightParams";
-            actionService = "insight";
+            actionService = INSIGHTACTION;
         }
-
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
+        String content = createStateRequestContent(action, actionService);
         try {
-            String wemoURL = getWemoURL(actionService);
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    if (variable.equals("InsightParams")) {
-                        value = StringUtils.substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                    } else {
-                        value = StringUtils.substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                    }
-                    if (value != null) {
-                        logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                        this.onValueReceived(variable, value, actionService + "1");
-                    }
-                }
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
+            if ("InsightParams".equals(variable)) {
+                value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+            } else {
+                value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
             }
-        } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
-        }
-    }
-
-    public String getWemoURL(String actionService) {
-        URL descriptorURL = service.getDescriptorURL(this);
-        int portCheckStart = 49151;
-        int portCheckStop = 49157;
-        String wemoURL = null;
-        String host = null;
-        String port = null;
-        if (descriptorURL != null) {
-            host = StringUtils.substringBetween(descriptorURL.toString(), "://", ":");
-            for (int i = portCheckStart; i < portCheckStop; i++) {
-                try {
-                    boolean portFound = servicePing(host, i);
-                    if (portFound) {
-                        logger.trace("WeMo device {} responded at Port {}", getUDN(), i);
-                        port = String.valueOf(i);
-                        break;
-                    }
-                } catch (Exception e) {
-                }
+            if (value.length() != 0) {
+                logger.trace("New state '{}' for thing '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
             }
-            wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
-            logger.trace("WeMo url {}", wemoURL);
-            return wemoURL;
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
+            logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        return wemoURL;
-    }
-
-    public boolean servicePing(String host, int port) {
-        logger.trace("Ping WeMo device at '{}:{}'", host, port);
-        try {
-            HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
     }
 }

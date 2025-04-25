@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,13 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.openhab.binding.caddx.internal.action.CaddxZoneActions;
@@ -50,9 +51,25 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd1 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
+        String cmd2 = CaddxBindingConstants.ZONE_NAME_REQUEST;
+        String data = String.format("%d", getZoneNumber() - 1);
+
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd1, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd2, data);
+    }
+
+    @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (channelUID.getId().equals(CaddxBindingConstants.ZONE_NAME)) {
-            getThing().setLabel(data);
             updateState(channelUID, new StringType(data));
 
             logger.trace("  updateChannel: {} = {}", channelUID, data);
@@ -62,7 +79,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
             logger.trace("  updateChannel: {} = {}", channelUID, data);
         } else {
-            OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType onOffType = OnOffType.from("true".equals(data));
             updateState(channelUID, onOffType);
 
             logger.trace("  updateChannel: {} = {}", channelUID, onOffType);
@@ -71,7 +88,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         String cmd1 = null;
         String cmd2 = null;
@@ -100,8 +117,8 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd1, data);
-        bridgeHandler.sendCommand(cmd2, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd1, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd2, data);
     }
 
     @Override
@@ -120,18 +137,17 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);
-
-                    logger.trace("  updateChannel: {} = {}", channelUID, value);
+                    logger.trace("Updating zone channel: {}", channelUID.getAsString());
                 }
             }
-
-            updateStatus(ThingStatus.ONLINE);
         }
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CaddxZoneActions.class);
+        return Set.of(CaddxZoneActions.class);
     }
 
     public void bypass() {
@@ -142,6 +158,6 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
     }
 }

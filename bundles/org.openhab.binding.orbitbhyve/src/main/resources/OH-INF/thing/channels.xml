@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="orbitbhyve"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Mode Channel Type -->
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Irrigation Mode</label>
+		<description>Channel representing mode of Orbit B-hyve Device (auto/manual)</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manual">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="next_start">
+		<item-type>DateTime</item-type>
+		<label>Next Watering Time</label>
+		<description>Channel representing start time of the next watering</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="rain_delay">
+		<item-type>Number:Time</item-type>
+		<label>Rain Delay</label>
+		<description>Channel representing rain delay in hours</description>
+		<state pattern="%d h"></state>
+	</channel-type>
+	<channel-type id="watering_time">
+		<item-type>Number:Time</item-type>
+		<label>Zone Watering Time</label>
+		<description>Channel representing the manual zone watering time in minutes</description>
+		<state max="240" min="0" pattern="%d min"></state>
+	</channel-type>
+	<channel-type id="control">
+		<item-type>Switch</item-type>
+		<label>Sprinkler State Control</label>
+		<description>Channel for enabling/disabling the sprinkler (ON/OFF)</description>
+	</channel-type>
+	<channel-type id="smart_watering">
+		<item-type>Switch</item-type>
+		<label>Smart Watering Control</label>
+		<description>Channel for enabling/disabling the smart watering mode</description>
+	</channel-type>
+	<channel-type id="program">
+		<item-type>Switch</item-type>
+		<label>Program Channel</label>
+		<description>Dynamic channel representing a program</description>
+	</channel-type>
+	<channel-type id="zone">
+		<item-type>Switch</item-type>
+		<label>Zone Channel</label>
+		<description>Dynamic channel representing a zone</description>
+	</channel-type>
+</thing:thing-descriptions>

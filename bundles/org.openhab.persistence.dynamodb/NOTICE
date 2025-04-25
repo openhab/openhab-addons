@@ -11,3 +11,34 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+ 
+com.typesafe.netty: netty-reactive-streams-http
+* License: Apache 2.0 License
+* Project: https://github.com/playframework/netty-reactive-streams
+* Source: https://github.com/playframework/netty-reactive-streams
+
+com.typesafe.netty: netty-reactive-streams
+* License: Apache 2.0 License
+* Project: https://github.com/playframework/netty-reactive-streams
+* Source: https://github.com/playframework/netty-reactive-streams
+
+org.reactivestreams: reactive-streams
+* License: Public Domain (CC0)
+* Project: http://www.reactive-streams.org/
+* Source: https://github.com/reactive-streams/reactive-streams-jvm/tree/v1.0.3
+
+software.amazon.awssdk: annotations, auth, aws-core, aws-json-protocol,
+                        dynamodb-enhanced, dynamodb, http-client-spi,
+                        json-utils, metrics-spi, netty-nio-client, profiles,
+                        protocol-core, regions, sdk-core,
+                        third-party-jackson-core, utils
+* License: Apache 2.0 License
+* Project: https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html
+* Source: https://github.com/aws/aws-sdk-java-v2/
+
+software.amazon.eventstream: eventstream
+* License: Apache 2.0 License
+* Project: https://github.com/awslabs/aws-eventstream-java/
+* Source: https://github.com/awslabs/aws-eventstream-java/

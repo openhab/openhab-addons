@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dbquery"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="query">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="influxdb2"/>
+		</supported-bridge-type-refs>
+		<label>Query Thing</label>
+		<description>Thing that represents a native query</description>
+
+		<channels>
+			<channel id="execute" typeId="execute-channel"/>
+			<channel id="resultString" typeId="result-channel-string"/>
+			<channel id="resultNumber" typeId="result-channel-number"/>
+			<channel id="resultDateTime" typeId="result-channel-datetime"/>
+			<channel id="resultContact" typeId="result-channel-contact"/>
+			<channel id="resultSwitch" typeId="result-channel-switch"/>
+
+			<channel id="parameters" typeId="parameters-channel"/>
+			<channel id="correct" typeId="correct-channel"/>
+			<channel id="calculateParameters" typeId="calculate-parameters-channel"/>
+		</channels>
+
+
+
+		<config-description>
+			<parameter name="query" type="text" required="true">
+				<label>Query Definition</label>
+				<description>Query definition using native query language</description>
+				<context>script</context>
+			</parameter>
+			<parameter name="hasParameters" type="boolean">
+				<label>Query has Parameters</label>
+				<description>True if the query has parameters, otherwise false</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="scalarResult" type="boolean">
+				<label>Scalar Result</label>
+				<description>True if the query always return only one single scalar value (only one row and one value-column in this
+					row), otherwise false</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="scalarColumn" type="text" required="false">
+				<label>Scalar Column Name</label>
+				<description>The column's name that is used to extract scalarResult. If only one column is returned this
+					parameter
+					can be blank</description>
+			</parameter>
+			<parameter name="interval" type="integer" min="0">
+				<label>Interval</label>
+				<description>
+					An interval, in seconds, the query will be repeatedly executed. Default values is 0, which means that
+					query is never executed automatically. You need to send the ON command each time you wish to execute.
+				</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<label>Timeout Query</label>
+				<description>
+					A time-out in seconds to wait for the query result, if it's exceeded result will be discarded.
+					Use 0 for
+					no timeout
+				</description>
+				<default>0</default>
+			</parameter>
+
+
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="execute-channel">
+		<item-type>Switch</item-type>
+		<label>Execute Query</label>
+		<description>Send ON to execute the query, the current state tells if the query is running</description>
+	</channel-type>
+	<channel-type id="result-channel-string">
+		<item-type>String</item-type>
+		<label>String Result</label>
+		<description>Execute query and binds result value to channel as a String</description>
+	</channel-type>
+	<channel-type id="result-channel-number">
+		<item-type>Number</item-type>
+		<label>Number Result</label>
+		<description>Execute query and binds result value to channel as a Number</description>
+	</channel-type>
+	<channel-type id="result-channel-datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime Result</label>
+		<description>Execute query and binds result value to channel as a DateTime</description>
+	</channel-type>
+	<channel-type id="result-channel-contact">
+		<item-type>DateTime</item-type>
+		<label>Contact Result</label>
+		<description>Execute query and binds result value to channel as a Contact</description>
+	</channel-type>
+	<channel-type id="result-channel-switch">
+		<item-type>Switch</item-type>
+		<label>Switch Result</label>
+		<description>Execute query and binds result value to channel as a Switch</description>
+	</channel-type>
+	<channel-type id="parameters-channel">
+		<item-type>String</item-type>
+		<label>JSON Result</label>
+	</channel-type>
+	<channel-type id="correct-channel">
+		<item-type>Switch</item-type>
+		<label>Last Query Worked</label>
+		<description>True if last query executed correctly</description>
+	</channel-type>
+	<channel-type id="calculate-parameters-channel">
+		<kind>trigger</kind>
+		<label>Calculate Parameters</label>
+		<description>Event to calculate query parameters</description>
+		<event>
+			<options>
+				<option value="START">START</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

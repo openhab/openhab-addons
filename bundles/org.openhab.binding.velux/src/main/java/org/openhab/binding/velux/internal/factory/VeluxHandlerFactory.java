@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -63,6 +64,8 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
+
+    private @Nullable static VeluxHandlerFactory activeInstance = null;
 
     // Private
 
@@ -123,7 +126,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void updateLocalization() {
-        if (localization == Localization.UNKNOWN && localeProvider != null && i18nProvider != null) {
+        if (Localization.UNKNOWN.equals(localization) && (localeProvider != null) && (i18nProvider != null)) {
             logger.trace("updateLocalization(): creating Localization based on locale={},translation={}).",
                     localeProvider, i18nProvider);
             localization = new Localization(localeProvider, i18nProvider);
@@ -196,10 +199,10 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
             veluxBindingHandlers.remove(thingHandler);
         } else
         // Handle Bridge removal
-        if (thingHandler instanceof VeluxBridgeHandler) {
+        if (thingHandler instanceof VeluxBridgeHandler veluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService((VeluxBridgeHandler) thingHandler);
+            unregisterDeviceDiscoveryService(veluxBridgeHandler);
         } else
         // Handle removal of Things behind the Bridge
         if (thingHandler instanceof VeluxHandler) {
@@ -208,5 +211,24 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         }
         updateBindingState();
         super.removeHandler(thingHandler);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        activeInstance = this;
+        super.activate(componentContext);
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        activeInstance = null;
+        super.deactivate(componentContext);
+    }
+
+    public static void refreshBindingInfo() {
+        VeluxHandlerFactory instance = VeluxHandlerFactory.activeInstance;
+        if (instance != null) {
+            instance.updateBindingState();
+        }
     }
 }

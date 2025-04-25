@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.io.neeo.internal.net;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +20,9 @@ import java.util.Objects;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.ContentResponse;
 
 /**
  * This class represents an {@link HttpRequest} response
@@ -51,21 +50,15 @@ public class HttpResponse {
      * @param response the non-null response
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    HttpResponse(Response response) throws IOException {
+    HttpResponse(ContentResponse response) throws IOException {
         Objects.requireNonNull(response, "response cannot be null");
 
         httpStatus = response.getStatus();
-        httpReason = response.getStatusInfo().getReasonPhrase();
+        httpReason = response.getReason();
+        contents = response.getContent();
 
-        if (response.hasEntity()) {
-            InputStream is = response.readEntity(InputStream.class);
-            contents = IOUtils.toByteArray(is);
-        } else {
-            contents = null;
-        }
-
-        for (String key : response.getHeaders().keySet()) {
-            headers.put(key, response.getHeaderString(key));
+        for (String key : response.getHeaders().getFieldNamesCollection()) {
+            headers.put(key, response.getHeaders().getField(key).toString());
         }
     }
 

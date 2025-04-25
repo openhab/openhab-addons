@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +44,7 @@ import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.items.Item;
@@ -60,9 +60,12 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.link.AbstractLink;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkProvider;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -72,9 +75,17 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
+
+    /**
+     * When Mockito is used for mocking {@link ThingHandler}s it has to be able to load the {@link ChannelTypeUID}
+     * class. Bnd will add the package to the generated manifest when the class is referenced here.
+     */
+    static void mockitoPackageImport() {
+        ChannelTypeUID.class.getClass();
+    }
 
     private static class StateSubscriber implements EventSubscriber {
 
@@ -84,7 +95,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
         @Override
         public Set<@NonNull String> getSubscribedEventTypes() {
-            return Collections.singleton(ItemStateEvent.TYPE);
+            return Set.of(ItemStateEvent.TYPE);
         }
 
         @Override
@@ -99,7 +110,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
             ItemStateEvent stateEvent = (ItemStateEvent) event;
             logger.trace("Captured event: {} of type {}. Payload: {}", event,
                     stateEvent.getItemState().getClass().getSimpleName(), event.getPayload());
-            stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<>())
+            stateUpdates.computeIfAbsent(stateEvent.getItemName(), item -> new ArrayList<>())
                     .add(stateEvent.getItemState());
         }
     }
@@ -107,23 +118,21 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
     protected @Mock @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @Mock @NonNullByDefault({}) UnitProvider mockedUnitProvider;
+    protected @NonNullByDefault({}) ModbusManager realModbusManager;
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
     protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
     protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected @NonNullByDefault({}) ItemChannelLinkRegistry itemChannelLinkRegistry;
     protected @NonNullByDefault({}) CoreItemFactory coreItemFactory;
 
-    private @NonNullByDefault({}) ModbusManager realModbusManager;
     private Set<Item> addedItems = new HashSet<>();
     private Set<Thing> addedThings = new HashSet<>();
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
     private StateSubscriber stateSubscriber = new StateSubscriber();
 
     protected @Mock @NonNullByDefault({}) ModbusCommunicationInterface comms;
-
-    public AbstractModbusOSGiTest() {
-        super();
-    }
 
     /**
      * Before each test, configure mocked services
@@ -145,8 +154,10 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         assertThat("Could not get ManagedItemChannelLinkProvider", itemChannelLinkProvider, is(notNullValue()));
         itemRegistry = getService(ItemRegistry.class);
         assertThat("Could not get ItemRegistry", itemRegistry, is(notNullValue()));
+        itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
+        assertThat("Could not get ItemChannelLinkRegistry", itemChannelLinkRegistry, is(notNullValue()));
 
-        coreItemFactory = new CoreItemFactory();
+        coreItemFactory = new CoreItemFactory(mockedUnitProvider);
 
         // Clean slate for all tests
         reset(mockedModbusManager);
@@ -209,6 +220,8 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         ItemChannelLink link = new ItemChannelLink(itemName, channelUID);
         assertThat(addedLinks.contains(link), not(equalTo(true)));
         itemChannelLinkProvider.add(link);
+        waitForAssert(() -> assertThat(itemChannelLinkRegistry.get(AbstractLink.getIDFor(itemName, channelUID)),
+                is(notNullValue())));
         addedLinks.add(link);
     }
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -39,9 +38,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NeoBaseHandler} is the openHAB Handler for NeoPlug devices
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class NeoBaseHandler extends BaseThingHandler {
@@ -166,8 +165,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             if (channel != null) {
                 Configuration config = channel.getConfiguration();
                 Object holdOnlineState = config.get(PARAM_HOLD_ONLINE_STATE);
-                if (holdOnlineState != null && (holdOnlineState instanceof Boolean)
-                        && ((Boolean) holdOnlineState).booleanValue()) {
+                if (holdOnlineState instanceof Boolean booleanValue && booleanValue.booleanValue()) {
                     /*
                      * the Configuration Parameter "holdOnlineState" is True so do NOT send a
                      * state update to OpenHAB
@@ -211,17 +209,17 @@ public class NeoBaseHandler extends BaseThingHandler {
                         break;
 
                     case ERR_COMMUNICATION:
-                        logger.debug(MSG_HUB_COMM);
+                        logger.debug(MSG_HUB_COMM, hub.getThing().getUID());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         break;
 
                     case ERR_INITIALIZATION:
-                        logger.warn(MSG_HUB_CONFIG);
+                        logger.warn(MSG_HUB_CONFIG, hub.getThing().getUID());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                         break;
                 }
             } else {
-                logger.debug(MSG_HUB_CONFIG);
+                logger.debug(MSG_HUB_CONFIG, "unknown");
             }
         } else {
             logger.debug(MSG_FMT_COMMAND_BAD, command.toString());
@@ -230,17 +228,15 @@ public class NeoBaseHandler extends BaseThingHandler {
 
     /**
      * internal getter returns the NeoHub handler
-     * 
+     *
      * @return the neohub handler or null
      */
     protected @Nullable NeoHubHandler getNeoHub() {
         @Nullable
         Bridge b;
-        @Nullable
-        BridgeHandler h;
 
-        if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof NeoHubHandler) {
-            return (NeoHubHandler) h;
+        if ((b = getBridge()) != null && (b.getHandler() instanceof NeoHubHandler neoHubHandler)) {
+            return neoHubHandler;
         }
 
         return null;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,8 @@ import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
 /**
  * The {@link EventHandler} can be implemented to get informed by {@link EventItem}'s through the {@link EventListener}.
  * <br>
- * For that the {@link #getSupportetEvents()} and {@link #supportsEvent(String)} methods have to be implemented, so that
+ * For that the {@link #getSupportedEvents()} and
+ * {@link #supportsEvent(String)} methods have to be implemented, so that
  * the {@link EventListener} knows whitch events it has to subscribe at the digitalSTROM-server and which handler has
  * to be informed. <br>
  * The implementation of the {@link EventHandler} also has to be registered through
@@ -28,13 +29,13 @@ import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
  * <br>
  * To handle the {@link EventItem} the method {@link #handleEvent(EventItem)} has to be implemented.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public interface EventHandler {
 
     /**
-     * Handles a {@link EventItem} e.g. which was detected by the {@link EventListener}.
+     * Handles an {@link EventItem} e.g. which was detected by the {@link EventListener}.
      *
      * @param eventItem to handle
      */
@@ -63,14 +64,14 @@ public interface EventHandler {
     String getUID();
 
     /**
-     * Sets a {@link EventListener} to this {@link EventHandler}.
+     * Sets an {@link EventListener} to this {@link EventHandler}.
      *
      * @param eventListener to set
      */
     void setEventListener(EventListener eventListener);
 
     /**
-     * Unsets a {@link EventListener} to this {@link EventHandler}.
+     * Unsets an {@link EventListener} to this {@link EventHandler}.
      *
      * @param eventListener to unset
      */

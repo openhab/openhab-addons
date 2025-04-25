@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="bev">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Mercedes Benz BEV</label>
+		<description>Battery Electric Vehicle</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="vehicle" typeId="vehicle-values"/>
+			<channel-group id="doors" typeId="door-values"/>
+			<channel-group id="lock" typeId="lock-ev-values"/>
+			<channel-group id="windows" typeId="window-values"/>
+			<channel-group id="hvac" typeId="hvac-values"/>
+			<channel-group id="service" typeId="service-ev-values"/>
+			<channel-group id="range" typeId="range-ev-values"/>
+			<channel-group id="charge" typeId="charge-values"/>
+			<channel-group id="trip" typeId="trip-ev-values"/>
+			<channel-group id="eco" typeId="eco-values"/>
+			<channel-group id="position" typeId="position-values"/>
+			<channel-group id="tires" typeId="tires-values"/>
+			<channel-group id="command" typeId="command-values"/>
+		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mercedesme:bev"/>
+	</thing-type>
+</thing:thing-descriptions>

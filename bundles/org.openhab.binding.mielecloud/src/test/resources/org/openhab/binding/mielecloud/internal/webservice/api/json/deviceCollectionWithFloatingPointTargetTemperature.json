@@ -1,0 +1,13 @@
+{
+    "000091465021": {
+        "state": {
+            "targetTemperature": [
+                {
+                    "value_raw": 80,
+                    "value_localized": 0.8,
+                    "unit": "Celsius"
+                }
+            ]
+        }
+    }
+}

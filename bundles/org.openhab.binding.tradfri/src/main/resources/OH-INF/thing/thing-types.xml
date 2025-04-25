@@ -7,14 +7,14 @@
 	<bridge-type id="gateway">
 		<label>TRÅDFRI Gateway</label>
 		<description>IKEA TRÅDFRI IP Gateway</description>
-
-		<representation-property>host</representation-property>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="bridge-type:tradfri:gateway"/>
 	</bridge-type>
 
 	<!-- thing types for devices -->
-	<!-- their IDs refer to the Zigbee Lightlink device ids (see chapter 2.2 in https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf) -->
+	<!-- their IDs refer to the Zigbee Lightlink device ids (see chapter 2.2 in https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf) -->
 	<thing-type id="0010">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
@@ -22,7 +22,7 @@
 
 		<label>On/Off Plug</label>
 		<description>A plug that can be switched on and off.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 		</channels>
@@ -39,9 +39,9 @@
 
 		<label>Dimmable Light</label>
 		<description>A light that has continuous brightness control.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -56,10 +56,10 @@
 
 		<label>Color Temperature Light</label>
 		<description>A dimmable light that supports different color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
-			<channel id="color_temperature" typeId="color_temperature"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -74,10 +74,10 @@
 
 		<label>Color Light</label>
 		<description>A dimmable light that supports full colors and color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
-			<channel id="color_temperature" typeId="color_temperature"/>
-			<channel id="color" typeId="color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color" typeId="system.color"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -92,7 +92,7 @@
 
 		<label>Occupancy Sensor</label>
 		<description>This represents the motion sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -110,7 +110,7 @@
 
 		<label>Non-Colour Controller</label>
 		<description>This represents the wireless dimmer sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -128,7 +128,7 @@
 
 		<label>Non-Colour Scene Controller</label>
 		<description>This represents the remote control capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -146,7 +146,7 @@
 
 		<label>Window Covering Device</label>
 		<description>This represents a blind or curtain that can be moved up and down. Also reports current battery level.</description>
-
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
@@ -165,7 +165,7 @@
 
 		<label>Window Covering Controller</label>
 		<description>This represents the wireless open/close remote capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -176,15 +176,30 @@
 		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Control the brightness and switch the light on and off.</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
+	<thing-type id="0007">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Purifier</label>
+		<description>This represents the air purifier sensors and controls.</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
+		<channels>
+			<channel id="fan_speed" typeId="fan-speed"/>
+			<channel id="fan_mode" typeId="fan-mode"/>
+			<channel id="disable_led" typeId="disable-led"/>
+			<channel id="lock_button" typeId="lock-button"/>
+			<channel id="air_quality_pm25" typeId="air-quality-pm25"/>
+			<channel id="air_quality_rating" typeId="air-quality-rating"/>
+			<channel id="filter_check_next" typeId="filter-check-next"/>
+			<channel id="filter_check_alarm" typeId="filter-check-alarm"/>
+			<channel id="filter_uptime" typeId="filter-uptime"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:tradfri:device"/>
+	</thing-type>
 
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
@@ -193,18 +208,100 @@
 		<category>Blinds</category>
 	</channel-type>
 
-	<channel-type id="color_temperature">
-		<item-type>Dimmer</item-type>
-		<label>Color Temperature</label>
-		<description>Control the color temperature of the light.</description>
-		<category>ColorLight</category>
+	<channel-type id="fan-mode">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Fan Speed Mode</label>
+		<description>Controls the configured fan speed.</description>
+
+		<state pattern="%d">
+			<options>
+				<option value="0">Power Off</option>
+				<option value="1">Automatic</option>
+				<option value="10">Speed 1</option>
+				<option value="20">Speed 2</option>
+				<option value="30">Speed 3</option>
+				<option value="40">Speed 4</option>
+				<option value="50">Speed 5</option>
+			</options>
+		</state>
 	</channel-type>
 
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>Control the color of the light.</description>
-		<category>ColorLight</category>
+	<channel-type id="fan-speed">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Current Fan Speed</label>
+		<description>Displays the current fan speed (0..50).</description>
+		<category>Fan</category>
+
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="disable-led">
+		<item-type>Switch</item-type>
+
+		<label>Disable LED</label>
+		<description>Disables the LED's on the Air Purifier.</description>
+	</channel-type>
+
+	<channel-type id="lock-button">
+		<item-type>Switch</item-type>
+
+		<label>Lock Physical Button</label>
+		<description>When ON, locks the physical button on the device.</description>
+	</channel-type>
+
+	<channel-type id="air-quality-pm25">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>PM 2.5</label>
+		<description>Density of Particulate Matter of 2.5μm measured by the Air Purifier, in ppm.</description>
+
+		<state readOnly="true" pattern="%d ppm"/>
+	</channel-type>
+
+	<channel-type id="air-quality-rating">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Air Quality</label>
+		<description>An evaluation of the Air Quality between 1 (Good) and 3 (Bad).</description>
+
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="1">Good</option>
+				<option value="2">OK</option>
+				<option value="3">Bad</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filter-check-next">
+		<item-type>Number:Time</item-type>
+
+		<label>Next Filter Check</label>
+		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
+		<category>Time</category>
+
+		<state readOnly="true" pattern="%.2f d"/>
+	</channel-type>
+
+	<channel-type id="filter-check-alarm">
+		<item-type>Switch</item-type>
+
+		<label>Filter Check Alarm</label>
+		<description>When this value is ON, you need to perform a filter check.</description>
+
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="filter-uptime">
+		<item-type>Number:Time</item-type>
+
+		<label>Filter Uptime</label>
+		<description>The duration for which the current filter was used.</description>
+		<category>Time</category>
+
+		<state readOnly="true" pattern="%.2f week"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,17 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
 
 /**
  *
- * This interface is used to provide a callback mechanism between a @link {@link ThingHandler} and the assoicated
- * protocol.
+ * This interface is used to provide a callback mechanism between a {@link org.openhab.core.thing.binding.ThingHandler}
+ * and the associated protocol.
  * This is necessary since the status and state of a bridge/thing is private and the protocol handler cannot access it
  * directly.
  *
- * @author Tim Roberts - initial contribution
+ * @author Tim Roberts - Initial contribution
  *
  */
 @NonNullByDefault
@@ -44,7 +43,7 @@ public interface NeeoHandlerCallback {
      * Callback to the bridge/thing to update the state of a channel in the bridge/thing.
      *
      * @param channelId the non-null, non-empty channel id
-     * @param state the new non-null {@State}
+     * @param state the new non-null {@link State}
      */
     void stateChanged(String channelId, State state);
 

@@ -7,6 +7,7 @@
 	<thing-type id="mower">
 		<label>Mower</label>
 		<description>Mower robot connected via robonect module</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="nameType"/>
 			<channel id="battery" typeId="system.battery-level"/>
@@ -17,6 +18,7 @@
 			<channel id="start" typeId="startType"/>
 			<channel id="status" typeId="mowerStatusType"/>
 			<channel id="status-duration" typeId="durationType"/>
+			<channel id="status-distance" typeId="distanceType"/>
 
 			<channel id="timer-status" typeId="timerStatusType"/>
 			<channel id="timer-next" typeId="nextTimerType"/>
@@ -44,6 +46,10 @@
 
 			<channel id="health-temperature" typeId="temperatureType"/>
 			<channel id="health-humidity" typeId="humidityType"/>
+
+			<channel id="blades-quality" typeId="blades-quality"/>
+			<channel id="blades-replacement-days" typeId="blades-replacement-days"/>
+			<channel id="blades-usage-hours" typeId="blades-usage-hours"/>
 		</channels>
 
 		<properties>
@@ -51,6 +57,7 @@
 			<property name="firmwareVersion">N/A</property>
 			<property name="compiled">N/A</property>
 			<property name="serialNumber">N/A</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -126,6 +133,13 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="distanceType">
+		<item-type>Number:Length</item-type>
+		<label>Status Distance</label>
+		<description>The distance the mower is away from the charging station when searching the remote start.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="hoursType">
 		<item-type>Number:Time</item-type>
 		<label>Total Mowing Hours</label>
@@ -141,10 +155,31 @@
 	</channel-type>
 
 	<channel-type id="humidityType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blades-quality">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Blade Quality</label>
+		<description>The quality of the blades</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blades-usage-hours">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Blade Usage Hours</label>
+		<description>The usage time in hours of the blades</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="blades-replacement-days">
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Blade In Use Days</label>
+		<description>The number of days since the blades have been replaced</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="modeType">
@@ -165,7 +200,7 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
-		<config-description-ref uri="channel-type:job:config"/>
+		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

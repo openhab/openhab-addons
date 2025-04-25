@@ -1,33 +1,32 @@
 # WlanThermo Binding
 
-This binding add support for the WlanThermo BBQ Thermometer.  
+This binding add support for the WlanThermo BBQ Thermometer.
 | Nano                                 | Mini                                |
 |--------------------------------------|-------------------------------------|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
-
 
 ## Supported Things
 
 This binding supports the following version of WlanThermo:
 
- - Nano V1 (untested, but should be working)
- - Nano V1+
- - Mini V1 (untested, but should be working)
- - Mini V2
+- Nano V1 (untested, but should be working)
+- Nano V1+
+- Mini V1 (untested, but should be working)
+- Mini V2
 
- Pitmaster support is currently only enabled for Mini V1/V2.  
+ Pitmaster support is currently only enabled for Mini V1/V2.
  If you have a WlanThermo Nano with Pitmaster, please contact the author of this binding to include the support in future releases.
 
 ## Discovery
 
-There is no auto-discovery for WlanThermo Things. 
+There is no auto-discovery for WlanThermo Things.
 Things must be created manually.
 
 ## Thing Configuration
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
-The configuration of username/password is optional. 
-If ommitted, the binding data will be read-only for all channels. 
+The configuration of username/password is optional.
+If ommitted, the binding data will be read-only for all channels.
 WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
@@ -36,9 +35,9 @@ Depending on the WlanThermo you're using, the following channels are available.
 
 ### WlanThermo Nano
 
-If username/password is given in the thing, most channels are writeable. 
+If username/password is given in the thing, most channels are writeable.
 
-#### The device itself provides the following channels:  
+#### The device itself provides the following channels
 
 | channel             | type                 | description                              |
 |---------------------|----------------------|------------------------------------------|
@@ -47,8 +46,7 @@ If username/password is given in the thing, most channels are writeable.
 | rssi_signalstrength | Number               | Signal Strength in range [0 ... 4]       |
 | rssi                | Number               | Signal Strength in dBm                   |
 
-
-#### The following channels apply for all 8 probes of the WlanThermo Nano:  
+#### The following channels apply for all 8 probes of the WlanThermo Nano
 
 | channel            | type               | description                                                          |
 |--------------------|--------------------|----------------------------------------------------------------------|
@@ -64,8 +62,6 @@ If username/password is given in the thing, most channels are writeable.
 | color              | Color              | The color of this probe. Read only.                                  |
 | color_name         | String             | The color name of the probe.                                         |
 
-
-
 #### The following channels are available for the Pitmaster
 
 | channel    | type                 | description                                                                                 |
@@ -76,20 +72,18 @@ If username/password is given in the thing, most channels are writeable.
 | channel_id | Number               | The channel id of the probe assigned to the pitmaster channel                               |
 | pid_id     | Number               | The number of the PID profile to be used. Check the WlanThermo WebUI for available IDs!     |
 
-
-
 ### WlanThermo Mini
 
 All channels are read only!
-#### The device itself provides the following channels:
+
+#### The device itself provides the following channels
 
 | channel  | type                 | description                   |
 |----------|----------------------|-------------------------------|
 | cpu_load | Number:Dimensionless | CPU Load in %                 |
 | cpu_temp | Number:Temperature   | CPU Temperature               |
 
-
-#### The following channels apply for all 10 probes of the WlanThermo Mini:
+#### The following channels apply for all 10 probes of the WlanThermo Mini
 
 | channel            | type               | description                                                          |
 |--------------------|--------------------|----------------------------------------------------------------------|
@@ -103,8 +97,7 @@ All channels are read only!
 | color              | Color              | The color of this probe                                              |
 | color_name         | String             | The color name of this probe                                         |
 
-
-#### The following channels apply for both Pitmaster channels of the WlanThermo Mini:
+#### The following channels apply for both Pitmaster channels of the WlanThermo Mini
 
 | channel    | type                 | description                                                             |
 |------------|----------------------|-------------------------------------------------------------------------|
@@ -115,8 +108,6 @@ All channels are read only!
 | lid_open   | Switch               | Indicates if Lid-open detection is active                               |
 | channel_id | Number               | The channel id of the probe assigned to this pitmaster channel          |
 
-
-
 ## Triggers
 
 The following trigger apply for all channels of Nano and Mini:
@@ -126,16 +117,14 @@ The following trigger apply for all channels of Nano and Mini:
 | alarm_openhab | MIN    | Triggers repeatedly if current temp is below minimum temperature threshold |
 | alarm_openhab | MAX    | Triggers repeatedly if current temp is above maximum temperature threshold |
 
-
-
 ## Full Example
 
 ### Items
 
-Example .items file for WlanThermo Nano and Mini. 
+Example .items file for WlanThermo Nano and Mini.
 Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
 
-```
+```java
 Group                   gWlanThermoNano         "WlanThermo Nano"
 Number:Dimensionless    nano_soc                "State of Charge"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#soc"}
 Number                  nano_rssi               "Signal Strength"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#rssi"}
@@ -251,9 +240,6 @@ Number:Temperature      nano_pit_setpoint       "Setpoint"              (gPitmas
 Number                  nano_pit_cycle          "Duty Cycle"            (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#duty_cycle"}
 Number                  nano_pit_pidprofile     "PID Profile"           (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#pid_id"}
 Number                  nano_pit_channel        "Input Channel ID"      (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#channel_id"}
-
-
-
 
 Group                   gWlanThermoMini         "WlanThermo Mini"
 Number                  mini_cpuload            "CPU Load"              (gWlanThermoMini)   {channel="wlanthermo:mini:<mini_thing_id>:system#cpu_load"}
@@ -390,142 +376,142 @@ Number                  mini_pit_channel_2      "Input Channel ID"      (gPitmas
 
 (Example for WlanThermo Nano)
 
-```
+```perl
 sitemap wlanthermo label="WlanThermo" {
     Frame label="WlanThermo" {
         Default item=nano_rssi icon="qualityofservice"
         Default item=nano_soc icon="batterylevel"
         Default item=nano_charging icon="energy"
-        
+
         Text item=nano_name_1 icon="fire" {
             Frame {
                 Default item=nano_typ_1 icon="settings"
                 Default item=nano_color_1
-                
+
                 Default item=nano_temp_1 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_1 icon="temperature_cold"
                 Setpoint item=nano_max_1 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_1 icon="switch"
                 Default item=nano_alarm_push_1 icon="switch"
                 Default item=nano_alarm_low_1 icon="siren"
                 Default item=nano_alarm_high_1 icon="siren"
             }
         }
-        
+
         Text item=nano_name_2 icon="fire" {
             Frame {
                 Default item=nano_typ_2 icon="settings"
                 Default item=nano_color_2
-                
+
                 Default item=nano_temp_2 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_2 icon="temperature_cold"
                 Setpoint item=nano_max_2 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_2 icon="switch"
                 Default item=nano_alarm_push_2 icon="switch"
                 Default item=nano_alarm_low_2 icon="siren"
                 Default item=nano_alarm_high_2 icon="siren"
             }
         }
-        
+
         Text item=nano_name_3 icon="fire" {
             Frame {
                 Default item=nano_typ_3 icon="settings"
                 Default item=nano_color_3
-                
+
                 Default item=nano_temp_3 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_3 icon="temperature_cold"
                 Setpoint item=nano_max_3 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_3 icon="switch"
                 Default item=nano_alarm_push_3 icon="switch"
                 Default item=nano_alarm_low_3 icon="siren"
                 Default item=nano_alarm_high_3 icon="siren"
             }
         }
-        
+
         Text item=nano_name_4 icon="fire" {
             Frame {
                 Default item=nano_typ_4 icon="settings"
                 Default item=nano_color_4
-                
+
                 Default item=nano_temp_4 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_4 icon="temperature_cold"
                 Setpoint item=nano_max_4 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_4 icon="switch"
                 Default item=nano_alarm_push_4 icon="switch"
                 Default item=nano_alarm_low_4 icon="siren"
                 Default item=nano_alarm_high_4 icon="siren"
             }
         }
-        
+
         Text item=nano_name_5 icon="fire" {
             Frame {
                 Default item=nano_typ_5 icon="settings"
                 Default item=nano_color_5
-                
+
                 Default item=nano_temp_5 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_5 icon="temperature_cold"
                 Setpoint item=nano_max_5 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_5 icon="switch"
                 Default item=nano_alarm_push_5 icon="switch"
                 Default item=nano_alarm_low_5 icon="siren"
                 Default item=nano_alarm_high_5 icon="siren"
             }
         }
-        
+
         Text item=nano_name_6 icon="fire" {
             Frame {
                 Default item=nano_typ_6 icon="settings"
                 Default item=nano_color_6
-                
+
                 Default item=nano_temp_6 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_6 icon="temperature_cold"
                 Setpoint item=nano_max_6 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_6 icon="switch"
                 Default item=nano_alarm_push_6 icon="switch"
                 Default item=nano_alarm_low_6 icon="siren"
                 Default item=nano_alarm_high_6 icon="siren"
             }
         }
-        
+
         Text item=nano_name_7 icon="fire" {
             Frame {
                 Default item=nano_typ_7 icon="settings"
                 Default item=nano_color_7
-                
+
                 Default item=nano_temp_7 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_7 icon="temperature_cold"
                 Setpoint item=nano_max_7 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_7 icon="switch"
                 Default item=nano_alarm_push_7 icon="switch"
                 Default item=nano_alarm_low_7 icon="siren"
                 Default item=nano_alarm_high_7 icon="siren"
             }
         }
-        
+
         Text item=nano_name_8 icon="fire" {
             Frame {
                 Default item=nano_typ_8 icon="settings"
                 Default item=nano_color_8
-                
+
                 Default item=nano_temp_8 icon="temperature"
                 Text icon=""
                 Setpoint item=nano_min_8 icon="temperature_cold"
                 Setpoint item=nano_max_8 icon="temperature_hot"
-                
+
                 Default item=nano_alarm_device_8 icon="switch"
                 Default item=nano_alarm_push_8 icon="switch"
                 Default item=nano_alarm_low_8 icon="siren"
@@ -536,4 +522,3 @@ sitemap wlanthermo label="WlanThermo" {
 }
 
 ```
-

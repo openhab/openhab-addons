@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,46 +12,44 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.api.dto.HomeDevice;
 
 /**
- *
- * The {@link ApplianceStatusListener} is notified when an appliance status has changed or
- * an appliance has been removed or added.
+ * The {@link ApplianceStatusListener} is notified when the status for the subscribed
+ * appliance has changed or it has been removed or added.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
+@NonNullByDefault
 public interface ApplianceStatusListener {
 
     /**
      * This method is called whenever the state of the given appliance has changed.
      *
-     * @param uid the UID of the aplliance that has changed
      * @param dco the POJO containing the new state (properties and/or operations)
      */
-    void onApplianceStateChanged(String uid, DeviceClassObject dco);
+    void onApplianceStateChanged(DeviceClassObject dco);
 
     /**
      * This method is called whenever a "property" of the given appliance has changed.
      *
-     * @param uid the UID of the aplliance that has changed
-     * @param dco the POJO containing the new state of the property
+     * @param dp the POJO containing the new state of the property
      */
-    void onAppliancePropertyChanged(String uid, DeviceProperty dp);
+    void onAppliancePropertyChanged(DeviceProperty dp);
 
     /**
-     * This method us called whenever an appliance is removed.
-     *
-     * @param appliance The XGW homedevice definition of the appliance that was removed
+     * This method is called whenever an appliance is removed.
      */
-    void onApplianceRemoved(HomeDevice appliance);
+    void onApplianceRemoved();
 
     /**
-     * This method us called whenever an appliance is added.
+     * This method is called whenever an appliance is added.
      *
-     * @param appliance The XGW homedevice definition of the appliance that was removed
+     * @param appliance The XGW homedevice definition of the appliance that was added
      */
     void onApplianceAdded(HomeDevice appliance);
 }

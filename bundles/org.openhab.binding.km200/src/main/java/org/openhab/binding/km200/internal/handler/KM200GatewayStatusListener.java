@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,5 +23,5 @@ import org.openhab.core.thing.ThingStatus;
  */
 @NonNullByDefault
 public interface KM200GatewayStatusListener {
-    public void gatewayStatusChanged(ThingStatus status);
+    void gatewayStatusChanged(ThingStatus status);
 }

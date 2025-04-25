@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.mqtt.homie.internal.handler;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -39,6 +43,13 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +64,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     private final Logger logger = LoggerFactory.getLogger(HomieThingHandler.class);
     protected Device device;
     protected final MqttChannelTypeProvider channelTypeProvider;
+    protected final MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    protected final ChannelTypeRegistry channelTypeRegistry;
     /** The timeout per attribute field subscription */
     protected final int attributeReceiveTimeout;
     protected final int subscribeTimeout;
@@ -67,16 +80,21 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
      *
      * @param thing The thing of this handler
      * @param channelTypeProvider A channel type provider
+     * @param stateDescriptionProvider A state description provider
+     * @param channelTypeRegistry The channel type registry
      * @param deviceTimeout Timeout for the entire device subscription. In milliseconds.
      * @param subscribeTimeout Timeout for an entire attribute class subscription and receive. In milliseconds.
      *            Even a slow remote device will publish a full node or property within 100ms.
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      *            One attribute subscription and receiving should not take longer than 50ms.
      */
-    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int deviceTimeout,
-            int subscribeTimeout, int attributeReceiveTimeout) {
+    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
+            MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
+            int deviceTimeout, int subscribeTimeout, int attributeReceiveTimeout) {
         super(thing, deviceTimeout);
         this.channelTypeProvider = channelTypeProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
         this.deviceTimeout = deviceTimeout;
         this.subscribeTimeout = subscribeTimeout;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
@@ -98,13 +116,24 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize Homie device {}", device.attributes.name);
         config = getConfigAs(HandlerConfiguration.class);
+        logger.debug("About to initialize Homie device {}", config.deviceid);
         if (config.deviceid.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Object ID unknown");
             return;
         }
         device.initialize(config.basetopic, config.deviceid, thing.getChannels());
+
+        updateThingType();
+        if (getThing().getThingTypeUID().equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
+            logger.debug("Migrating Homie thing {} from generic type to dynamic type {}", getThing().getUID(),
+                    device.thingTypeUID);
+            changeThingType(device.thingTypeUID, getConfig());
+            return;
+        } else {
+            updateChannels();
+        }
+
         super.initialize();
     }
 
@@ -114,28 +143,30 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (config.removetopics) {
             this.removeRetainedTopics();
         }
+        channelTypeProvider.removeThingType(thing.getThingTypeUID());
+        channelTypeProvider.removeChannelGroupTypesForPrefix(thing.getThingTypeUID().getId());
         super.handleRemoval();
     }
 
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
-        logger.debug("About to start Homie device {}", device.attributes.name);
+        logger.debug("About to start Homie device {}", config.deviceid);
         if (connection.getQos() != 1) {
             // QoS 1 is required.
             logger.warn(
                     "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
             connection.setQos(1);
         }
-        return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
-            return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
-        }).thenRun(() -> {
-            logger.debug("Homie device {} fully attached (start)", device.attributes.name);
-        });
+        return device.subscribe(connection, scheduler, attributeReceiveTimeout)
+                .thenCompose((Void v) -> device.startChannels(connection, scheduler, attributeReceiveTimeout, this))
+                .thenRun(() -> {
+                    logger.debug("Homie device {} fully attached (start)", config.deviceid);
+                });
     }
 
     @Override
     protected void stop() {
-        logger.debug("About to stop Homie device {}", device.attributes.name);
+        logger.debug("About to stop Homie device {}", config.deviceid);
         final ScheduledFuture<?> heartBeatTimer = this.heartBeatTimer;
         if (heartBeatTimer != null) {
             heartBeatTimer.cancel(false);
@@ -189,25 +220,32 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void nodeRemoved(Node node) {
-        channelTypeProvider.removeChannelGroupType(node.channelGroupTypeUID);
         delayedProcessing.accept(node);
     }
 
     @Override
     public void propertyRemoved(Property property) {
-        channelTypeProvider.removeChannelType(property.channelTypeUID);
+        stateDescriptionProvider.remove(property.getChannelUID());
         delayedProcessing.accept(property);
     }
 
     @Override
     public void nodeAddedOrChanged(Node node) {
-        channelTypeProvider.setChannelGroupType(node.channelGroupTypeUID, node.type());
         delayedProcessing.accept(node);
     }
 
     @Override
     public void propertyAddedOrChanged(Property property) {
-        channelTypeProvider.setChannelType(property.channelTypeUID, property.getType());
+        ChannelUID channelUID = property.getChannelUID();
+        stateDescriptionProvider.remove(channelUID);
+        StateDescription stateDescription = property.getStateDescription();
+        if (stateDescription != null) {
+            stateDescriptionProvider.setDescription(channelUID, stateDescription);
+        }
+        CommandDescription commandDescription = property.getCommandDescription();
+        if (commandDescription != null) {
+            stateDescriptionProvider.setDescription(channelUID, commandDescription);
+        }
         delayedProcessing.accept(property);
     }
 
@@ -220,14 +258,13 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream()).map(Property::getChannel)
-                .collect(Collectors.toList());
-        updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
+        updateThingType();
+        updateChannels();
         final MqttBrokerConnection connection = this.connection;
         if (connection != null) {
             device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
-                logger.debug("Homie device {} fully attached (accept)", device.attributes.name);
+                logger.debug("Homie device {} fully attached (accept)", config.deviceid);
             });
         }
     }
@@ -241,13 +278,61 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             logger.warn("couldn't remove retained topics for {} because connection is null", thing.getUID());
             return;
         }
-        device.getRetainedTopics().stream().map(d -> {
-            return String.format("%s/%s", config.basetopic, d);
-        }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
+        device.getRetainedTopics().stream().map(d -> String.format("%s/%s", config.basetopic, d))
+                .collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
     }
 
     @Override
     protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availabilityTopicsSeen) {
         // not used here
+    }
+
+    private void updateThingType() {
+        // Make sure any dynamic channel types exist (i.e. ones created for a number channel with a specific dimension)
+        device.nodes.stream().flatMap(n -> n.properties.stream()).map(Property::getChannelType).filter(Objects::nonNull)
+                .forEach(ct -> channelTypeProvider.putChannelType(Objects.requireNonNull(ct)));
+
+        // if this is a dynamic type, then we update the type
+        ThingTypeUID typeID = device.thingTypeUID;
+        if (!MqttBindingConstants.HOMIE300_MQTT_THING.equals(typeID)) {
+            channelTypeProvider.updateChannelGroupTypesForPrefix(thing.getThingTypeUID().getId(), device.nodes.stream()
+                    .map(n -> n.type(thing.getThingTypeUID().getId(), channelTypeProvider)).toList());
+
+            List<ChannelGroupDefinition> groupDefs = device.nodes.stream(nodeOrder())
+                    .map(n -> n.getChannelGroupDefinition(thing.getThingTypeUID().getId())).toList();
+            var builder = channelTypeProvider.derive(typeID, MqttBindingConstants.HOMIE300_MQTT_THING)
+                    .withChannelGroupDefinitions(groupDefs);
+
+            channelTypeProvider.putThingType(builder.build());
+        }
+    }
+
+    private void updateChannels() {
+        List<Channel> channels = device.nodes.stream(nodeOrder())
+                .flatMap(node -> node.properties
+                        .stream(node.propertyOrder(thing.getThingTypeUID().getId(), channelTypeProvider))
+                        .map(p -> p.getChannel(channelTypeRegistry)))
+                .toList();
+        updateThing(editThing().withChannels(channels).build());
+    }
+
+    private Collection<String> nodeOrder() {
+        String[] nodes = device.attributes.nodes;
+        if (nodes != null) {
+            return Stream.of(nodes).toList();
+        }
+        ThingType thingType = channelTypeProvider.getThingType(thing.getThingTypeUID(), null);
+        if (thingType != null) {
+            return thingType.getChannelGroupDefinitions().stream().map(ChannelGroupDefinition::getId).toList();
+        }
+
+        return device.nodes.keySet();
+    }
+
+    // This odd method resolves a compilation issue (possibly with Mockito?) where for some reason
+    // it doesn't realize it needs to import this class which is used by AvailabilityTracker, but
+    // not directly from this bundle
+    // See https://github.com/openhab/openhab-addons/pull/17400
+    private void doNothing(ChannelTransformation transform) {
     }
 }

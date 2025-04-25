@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BluetoothScanNotification} provides a notification of a received scan packet
  *
  * @author Chris Jackson - Initial contribution
+ * @author Peter Rosenberg - Add support for ServiceData
  */
+@NonNullByDefault
 public class BluetoothScanNotification extends BluetoothNotification {
     /**
      * The receive signal strength for this beacon packet
@@ -26,12 +33,19 @@ public class BluetoothScanNotification extends BluetoothNotification {
     /**
      * The raw data
      */
-    private byte[] data = null;
+    private byte[] data = new byte[0];
 
     /**
      * The manufacturer specific data
      */
-    private byte[] manufacturerData = null;
+    private byte[] manufacturerData = new byte[0];
+
+    /**
+     * The service data.
+     * Key: UUID of the service
+     * Value: Data of the characteristic
+     */
+    private Map<String, byte[]> serviceData = new HashMap<>();
 
     /**
      * The beacon type
@@ -106,10 +120,18 @@ public class BluetoothScanNotification extends BluetoothNotification {
         return manufacturerData;
     }
 
+    public void setServiceData(Map<String, byte[]> serviceData) {
+        this.serviceData = serviceData;
+    }
+
+    public Map<String, byte[]> getServiceData() {
+        return serviceData;
+    }
+
     /**
      * Sets the beacon type for this packet
      *
-     * @beaconType the {@link BluetoothBeaconType} for this packet
+     * @param beaconType the {@link BluetoothBeaconType} for this packet
      */
     public void setBeaconType(BluetoothBeaconType beaconType) {
         this.beaconType = beaconType;

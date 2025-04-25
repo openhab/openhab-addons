@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,13 @@ import static org.openhab.binding.linuxinput.internal.LinuxInputBindingConstants
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +32,12 @@ import org.openhab.binding.linuxinput.internal.evdev4j.jnr.EvdevLibrary;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -84,9 +95,13 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
         EvdevDevice newDevice = new EvdevDevice(config.path);
         for (EvdevDevice.Key o : newDevice.enumerateKeys()) {
             String name = o.getName();
+            if (name == null) {
+                name = Integer.toString(o.getCode());
+            }
             Channel channel = ChannelBuilder
                     .create(new ChannelUID(thing.getUID(), CHANNEL_GROUP_KEYPRESSES_ID, name), CoreItemFactory.CONTACT)
-                    .withLabel(name).withType(CHANNEL_TYPE_KEY_PRESS).build();
+                    .withLabel(name).withType(CHANNEL_TYPE_KEY_PRESS).withDescription("Event Code " + o.getCode())
+                    .build();
             channels.put(o.getCode(), channel);
             newChannels.add(channel);
         }
@@ -134,7 +149,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
             @Nullable
             EvdevDevice currentDevice = device;
             if (currentDevice == null) {
-                throw new IOException("trying to handle events without an device");
+                throw new IOException("trying to handle events without a device");
             }
             SelectionKey evdevReady = currentDevice.register(selector);
 
@@ -151,7 +166,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
                 if (selector.selectedKeys().remove(evdevReady)) {
                     while (true) {
                         Optional<EvdevDevice.InputEvent> ev = currentDevice.nextEvent();
-                        if (!ev.isPresent()) {
+                        if (ev.isEmpty()) {
                             break;
                         }
                         handleEvent(ev.get());

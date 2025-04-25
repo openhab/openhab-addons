@@ -7,8 +7,10 @@
 	<thing-type id="intesisHome">
 		<label>IntesisHome WiFi Adapter</label>
 		<description>Represents a single IntesisHome WiFi adapter on the network, connected to an A/C unit.</description>
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -21,12 +23,22 @@
 				<description>@text/thing-type.config.intesisHome.password.description</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="pollingInterval" type="decimal" min="30" unit="s">
+				<label>Polling Interval</label>
+				<description>
+					Defines the time in seconds to pull the
+					state of the connected devices. The minimum is 30
+					seconds.
+				</description>
+				<default>30</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
 	<thing-type id="intesisBox">
 		<label>IntesisBox Adapter</label>
 		<description>Represents a single IntesisBox WiFi adapter on the network, connected to an A/C unit.</description>
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
@@ -44,6 +56,15 @@
 				<label>Port</label>
 				<description>The TCP port to the IntesisBox.</description>
 				<default>3310</default>
+			</parameter>
+			<parameter name="pollingInterval" type="decimal" min="45" unit="s">
+				<label>Polling Interval</label>
+				<description>
+					Defines the time in seconds to pull the
+					state of the connected devices. The minimum is 45
+					seconds.
+				</description>
+				<default>45</default>
 			</parameter>
 		</config-description>
 	</thing-type>

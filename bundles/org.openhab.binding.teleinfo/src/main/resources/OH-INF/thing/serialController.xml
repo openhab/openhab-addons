@@ -19,6 +19,22 @@
 				<description>Serial port of Teleinfo device (e.g.: /dev/ttyUSB0 on Linux, COM1 on Windows)</description>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
+			<parameter name="ticMode" type="text" required="true">
+				<label>TIC mode</label>
+				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
+				<default>HISTORICAL</default>
+				<options>
+					<option value="HISTORICAL">Historical</option>
+					<option value="STANDARD">Standard</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="verifyChecksum" type="boolean" required="true">
+				<label>Checksum Verification</label>
+				<description>Activate checksum verification</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="autoRepairInvalidADPSgroupLine" type="boolean" required="false">
 				<label>Auto Repair Malformed ADPS Data</label>
 				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032"

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NetworkActions.class)
 @ThingActionsScope(name = "network")
 @NonNullByDefault
 public class NetworkActions implements ThingActions {
@@ -37,8 +40,8 @@ public class NetworkActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NetworkHandler) {
-            this.handler = (NetworkHandler) handler;
+        if (handler instanceof NetworkHandler networkHandler) {
+            this.handler = networkHandler;
         }
     }
 
@@ -47,17 +50,44 @@ public class NetworkActions implements ThingActions {
         return handler;
     }
 
+    /**
+     * @deprecated Use sendWakeOnLanPacketViaMac or sendWakeOnLanPacketViaIp instead.
+     */
+    @Deprecated
     @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
     public void sendWakeOnLanPacket() {
+        sendWakeOnLanPacketViaMac();
+    }
+
+    public static void sendWakeOnLanPacket(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via Mac.")
+    public void sendWakeOnLanPacketViaMac() {
         NetworkHandler localHandler = handler;
         if (localHandler != null) {
-            localHandler.sendWakeOnLanPacket();
+            localHandler.sendWakeOnLanPacketViaMac();
         } else {
             logger.warn("Failed to send Wake-on-LAN packet (handler null)");
         }
     }
 
-    public static void sendWakeOnLanPacket(ThingActions actions) {
-        ((NetworkActions) actions).sendWakeOnLanPacket();
+    public static void sendWakeOnLanPacketViaMac(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via IP.")
+    public void sendWakeOnLanPacketViaIp() {
+        NetworkHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.sendWakeOnLanPacketViaIp();
+        } else {
+            logger.warn("Failed to send Wake-on-LAN packet (handler null)");
+        }
+    }
+
+    public static void sendWakeOnLanPacketViaIp(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaIp();
     }
 }

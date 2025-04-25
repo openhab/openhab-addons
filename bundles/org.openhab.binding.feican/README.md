@@ -31,7 +31,7 @@ It is possible to connect to devices in a different network, but these must be a
 
 ## Thing Configuration
 
-The thing has a one configuration parameter:
+The thing has one configuration parameter:
 
 | Parameter | Description                                                              |
 |-----------|------------------------------------------------------------------------- |

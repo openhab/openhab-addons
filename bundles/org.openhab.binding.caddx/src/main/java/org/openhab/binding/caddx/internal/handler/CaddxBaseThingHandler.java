@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
     /** Partition */
     private int partitionNumber;
-    private int userNumber;
 
     /** Zone */
     private int zoneNumber;
@@ -89,8 +88,8 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof CaddxBridgeHandler) {
-                this.caddxBridgeHandler = (CaddxBridgeHandler) handler;
+            if (handler instanceof CaddxBridgeHandler bridgeHandler) {
+                this.caddxBridgeHandler = bridgeHandler;
             } else {
                 logger.debug("getCaddxBridgeHandler(): Unable to get bridge handler!");
             }
@@ -103,15 +102,14 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      * Method to Update a Channel
      *
      * @param channel
-     * @param state
-     * @param description
+     * @param data
      */
     public abstract void updateChannel(ChannelUID channel, String data);
 
     /**
      * Receives Events from the bridge.
      *
-     * @param event.
+     * @param event
      * @param thing
      */
     public abstract void caddxEventReceived(CaddxEvent event, Thing thing);
@@ -130,7 +128,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
             case PARTITION:
                 CaddxPartitionConfiguration partitionConfiguration = getConfigAs(CaddxPartitionConfiguration.class);
                 setPartitionNumber(partitionConfiguration.getPartitionNumber());
-                setUserNumber(partitionConfiguration.getUserNumber());
                 break;
             case ZONE:
                 CaddxZoneConfiguration zoneConfiguration = getConfigAs(CaddxZoneConfiguration.class);
@@ -139,6 +136,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
             case KEYPAD:
                 CaddxKeypadConfiguration keypadConfiguration = getConfigAs(CaddxKeypadConfiguration.class);
                 setKeypadAddress(keypadConfiguration.getKeypadAddress());
+                setTerminalModeSeconds(keypadConfiguration.getTerminalModeSeconds());
             default:
                 break;
         }
@@ -169,24 +167,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      */
     public void setPartitionNumber(int partitionNumber) {
         this.partitionNumber = partitionNumber;
-    }
-
-    /**
-     * Get User Number.
-     *
-     * @return userNumber
-     */
-    public int getUserNumber() {
-        return userNumber;
-    }
-
-    /**
-     * Set User Number.
-     *
-     * @param userNumber
-     */
-    public void setUserNumber(int userNumber) {
-        this.userNumber = userNumber;
     }
 
     /**
@@ -228,16 +208,16 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /**
      * Get Keypad Terminal Mode Seconds.
      *
-     * @return keypadAddress
+     * @return terminalModeSeconds
      */
     public int getTerminalModeSeconds() {
         return terminalModeSeconds;
     }
 
     /**
-     * Set Keypad Address.
+     * Set Keypad Terminal Mode Seconds.
      *
-     * @param keypadAddress
+     * @param terminalModeSeconds
      */
     public void setTerminalModeSeconds(int terminalModeSeconds) {
         this.terminalModeSeconds = terminalModeSeconds;
@@ -254,7 +234,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         List<Channel> channels = getThing().getChannels();
 
         for (Channel ch : channels) {
-            if (channelUID == ch.getUID()) {
+            if (channelUID.equals(ch.getUID())) {
                 channel = ch;
                 break;
             }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,9 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,11 +23,14 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,23 +47,37 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NumberValue extends Value {
+    private static final String NAN = "NaN";
+    private static final String NEGATIVE_NAN = "-NaN";
+
     private final Logger logger = LoggerFactory.getLogger(NumberValue.class);
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
-    private final String unit;
+    private final @Nullable Unit<?> unit;
 
     public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
-            @Nullable String unit) {
-        super(CoreItemFactory.NUMBER, Stream.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class)
-                .collect(Collectors.toList()));
+            @Nullable Unit<?> unit) {
+        super(getItemType(unit), List.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
+                UpDownType.class, StringType.class));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
-        this.unit = unit == null ? "" : unit;
+        this.unit = unit;
     }
 
-    protected boolean checkConditions(BigDecimal newValue, DecimalType oldvalue) {
+    private static String getItemType(@Nullable Unit<?> unit) {
+        if (unit == null) {
+            return CoreItemFactory.NUMBER;
+        }
+        String dimension = Units.MIRED.equals(unit) ? "Temperature" : UnitUtils.getDimensionName(unit);
+        if (dimension == null) {
+            return CoreItemFactory.NUMBER;
+        }
+        return CoreItemFactory.NUMBER + ":" + dimension;
+    }
+
+    protected boolean checkConditions(BigDecimal newValue) {
         BigDecimal min = this.min;
         if (min != null && newValue.compareTo(min) == -1) {
             logger.trace("Number not accepted as it is below the configured minimum");
@@ -75,62 +93,81 @@ public class NumberValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
-        if (state == UnDefType.UNDEF) {
-            return "";
-        }
-
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
-            formatPattern = "%s";
+            if (command instanceof DecimalType || command instanceof QuantityType<?>) {
+                formatPattern = "%.0f";
+            } else {
+                formatPattern = "%s";
+            }
         }
 
-        return state.format(formatPattern);
+        return command.format(formatPattern);
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
-        DecimalType oldvalue = (state == UnDefType.UNDEF) ? new DecimalType() : (DecimalType) state;
+    public Command parseCommand(Command command) throws IllegalArgumentException {
         BigDecimal newValue = null;
-        if (command instanceof DecimalType) {
-            if (!checkConditions(((DecimalType) command).toBigDecimal(), oldvalue)) {
-                return;
-            }
-            state = (DecimalType) command;
+        if (command instanceof DecimalType decimalCommand) {
+            newValue = decimalCommand.toBigDecimal();
         } else if (command instanceof IncreaseDecreaseType || command instanceof UpDownType) {
+            BigDecimal oldValue = getOldValue();
             if (command == IncreaseDecreaseType.INCREASE || command == UpDownType.UP) {
-                newValue = oldvalue.toBigDecimal().add(step);
+                newValue = oldValue.add(step);
             } else {
-                newValue = oldvalue.toBigDecimal().subtract(step);
+                newValue = oldValue.subtract(step);
             }
-            if (!checkConditions(newValue, oldvalue)) {
-                return;
-            }
-            state = new DecimalType(newValue);
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> qType = (QuantityType<?>) command;
-
-            if (qType.getUnit().isCompatible(Units.ONE)) {
-                newValue = qType.toBigDecimal();
-            } else {
-                qType = qType.toUnit(unit);
-                if (qType != null) {
-                    newValue = qType.toBigDecimal();
-                }
-            }
-            if (newValue != null) {
-                if (!checkConditions(newValue, oldvalue)) {
-                    return;
-                }
-                state = new DecimalType(newValue);
-            }
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            newValue = getQuantityTypeAsDecimal(quantityCommand);
         } else {
             newValue = new BigDecimal(command.toString());
-            if (!checkConditions(newValue, oldvalue)) {
-                return;
-            }
-            state = new DecimalType(newValue);
         }
+        if (!checkConditions(newValue)) {
+            throw new IllegalArgumentException(newValue + " is out of range");
+        }
+        // items with units specified in the label in the UI but no unit on mqtt are stored as
+        // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
+        Unit<?> unit = this.unit;
+        if (unit != null) {
+            return new QuantityType<>(newValue, unit);
+        } else {
+            return new DecimalType(newValue);
+        }
+    }
+
+    @Override
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType) {
+            if (command.toString().equalsIgnoreCase(NAN) || command.toString().equalsIgnoreCase(NEGATIVE_NAN)) {
+                return UnDefType.UNDEF;
+            } else if (command.toString().isEmpty()) {
+                return UnDefType.NULL;
+            }
+        }
+        return parseCommand(command);
+    }
+
+    private BigDecimal getOldValue() {
+        BigDecimal val = BigDecimal.ZERO;
+        if (state instanceof DecimalType decimalCommand) {
+            val = decimalCommand.toBigDecimal();
+        } else if (state instanceof QuantityType<?> quantityCommand) {
+            val = quantityCommand.toBigDecimal();
+        }
+        return val;
+    }
+
+    private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
+        BigDecimal val = qType.toBigDecimal();
+        Unit<?> unit = this.unit;
+        if (unit != null) {
+            QuantityType<?> convertedType = qType.toInvertibleUnit(unit);
+            if (convertedType != null) {
+                val = convertedType.toBigDecimal();
+            }
+        }
+        return val;
     }
 
     @Override
@@ -144,10 +181,11 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        builder = builder.withStep(step);
-        if (this.unit.length() > 0) {
-            builder = builder.withPattern("%s " + this.unit.replace("%", "%%"));
+        if (unit != null) {
+            builder.withPattern("%.0f %unit%");
+        } else {
+            builder.withPattern("%.0f");
         }
-        return builder;
+        return builder.withStep(step);
     }
 }

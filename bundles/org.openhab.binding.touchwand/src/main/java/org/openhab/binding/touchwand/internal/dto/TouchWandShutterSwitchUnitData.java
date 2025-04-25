@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TouchWandShutterSwitchUnitData extends TouchWandUnitData {
 
-    private Integer currStatus = 0;
+    private int currStatus = 0;
 
     @Override
     public Integer getCurrStatus() {

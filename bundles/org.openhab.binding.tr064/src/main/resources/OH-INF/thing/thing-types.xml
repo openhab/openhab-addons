@@ -7,6 +7,8 @@
 	<bridge-type id="generic">
 		<label>Generic CPE</label>
 
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -24,14 +26,21 @@
 			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<default>60</default>
-				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s">
+				<label>Timeout</label>
+				<description>Timeout for all requests (SOAP requests, phone book retrieval, call lists, ...).</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
 
 	<bridge-type id="fritzbox">
-		<label>FritzBox</label>
-		<description>A physical FritzBox Device.</description>
+		<label>FRITZ!Box</label>
+		<description>A physical FRITZ!Box device.</description>
+
+		<representation-property>host</representation-property>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -50,7 +59,12 @@
 			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<default>60</default>
-				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s">
+				<label>Timeout</label>
+				<description>Timeout for all requests (SOAP requests, phone book retrieval, call lists, ...).</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tamIndices" type="text" multiple="true">
 				<label>TAM</label>
@@ -93,9 +107,20 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="phonebookInterval" type="integer" min="0" unit="s">
-				<label>Phonebook Interval</label>
-				<description>The interval for refreshing the phonebook (disabled = 0)</description>
+				<label>Phone Book Interval</label>
+				<description>The interval for refreshing the phone book (disabled = 0).</description>
 				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="backupDirectory" type="text">
+				<label>Backup Directory</label>
+				<description>The directory where configuration backups are stored (default to userdata directory).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="backupPassword" type="text">
+				<label>Backup Password</label>
+				<description>The password used to encrypt the backup data.</description>
+				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -109,6 +134,8 @@
 		<label>Sub-Device</label>
 		<description>A virtual sub-device.</description>
 
+		<representation-property>uuid</representation-property>
+
 		<config-description>
 			<parameter name="uuid" type="text" required="true">
 				<label>UUID</label>
@@ -117,7 +144,6 @@
 			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<default>60</default>
-				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -130,6 +156,8 @@
 		<label>Sub-Device (LAN)</label>
 		<description>A virtual Sub-Device (LAN).</description>
 
+		<representation-property>uuid</representation-property>
+
 		<config-description>
 			<parameter name="uuid" type="text" required="true">
 				<label>UUID</label>
@@ -138,11 +166,10 @@
 			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<default>60</default>
-				<unitLabel>s</unitLabel>
 			</parameter>
 			<parameter name="macOnline" type="text" multiple="true">
 				<label>MAC Online</label>
-				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11).</description>
+				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11). One MAC-Address per row.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,35 +12,51 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.HOSTNAME;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.ID;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.IP;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.NAME;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 
 /**
  * The {@link UniFiClientCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
  * {@link UniFiClient} instances.
  *
  * The cache uses the following prefixes: <code>mac</code>, <code>ip</code>, <code>hostname</code>, and
- * <code>alias</code>
+ * <code>name</code>
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiClientCache extends UniFiCache<UniFiClient> {
+@NonNullByDefault
+class UniFiClientCache extends UniFiCache<UniFiClient> {
 
     public UniFiClientCache() {
-        super(PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
+        super(ID, MAC, IP, HOSTNAME, NAME);
     }
 
     @Override
-    protected String getSuffix(UniFiClient client, String prefix) {
+    protected @Nullable String getSuffix(final UniFiClient client, final Prefix prefix) {
         switch (prefix) {
-            case PREFIX_MAC:
+            case ID:
+                return client.getId();
+            case MAC:
                 return client.getMac();
-            case PREFIX_IP:
+            case IP:
                 return client.getIp();
-            case PREFIX_HOSTNAME:
-                return client.getHostname();
-            case PREFIX_ALIAS:
-                return client.getAlias();
+            case HOSTNAME:
+                return safeTidy(client.getHostname());
+            case NAME:
+                return safeTidy(client.getName());
+            default:
+                return null;
         }
-        return null;
+    }
+
+    private static @Nullable String safeTidy(final @Nullable String value) {
+        return value == null ? null : value.trim().toLowerCase();
     }
 }

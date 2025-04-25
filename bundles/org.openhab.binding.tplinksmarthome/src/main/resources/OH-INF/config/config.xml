@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:device:bulb">
+	<config-description uri="thing-type:tplinksmarthome:device-bulb">
 		<parameter name="ipAddress" type="text">
 			<context>network-address</context>
 			<label>IP Address</label>
@@ -29,7 +29,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:device:plug">
+	<config-description uri="thing-type:tplinksmarthome:device-plug">
 		<parameter name="ipAddress" type="text">
 			<context>network-address</context>
 			<label>IP Address</label>
@@ -47,7 +47,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:device:switch">
+	<config-description uri="thing-type:tplinksmarthome:device-switch">
 		<parameter name="ipAddress" type="text">
 			<context>network-address</context>
 			<label>IP Address</label>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.THING_TYPE_ZONE;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SatelZoneHandler extends WirelessChannelsHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ZONE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZONE);
 
     public SatelZoneHandler(Thing thing) {
         super(thing);
@@ -75,6 +74,7 @@ public class SatelZoneHandler extends WirelessChannelsHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected StateType getStateType(String channelId) {
         StateType result = super.getStateType(channelId);
         if (result == StateType.NONE) {

@@ -1,19 +1,18 @@
 # Digiplex/EVO Binding
 
-This binding provides integration with Digiplex/EVO alarm systems from [Paradox](http://paradox.com).
-It utilizes [PRT3 module](http://www.paradox.com/Products/default.asp?CATID=7&SUBCATID=75&PRD=234) for serial communication.
+This binding provides integration with Digiplex/EVO alarm systems from [Paradox](https://paradox.com).
+It utilizes [PRT3 module](https://www.paradox.com/Products/default.asp?CATID=7&SUBCATID=75&PRD=234) for serial communication.
 
 ## Supported Things
 
 ### PRT3 Module
 
-Before the binding can be used, a serial adapter must be added manually. Select `PRT3 Module` and enter serial port parameters. 
+Before the binding can be used, a serial adapter must be added manually. Select `PRT3 Module` and enter serial port parameters.
 Please refer to PRT3 module manual for instructions how to modify baudrate (default setting is 2400)
 
 ## Discovery
 
 Once `PRT3 Module` is added and communication with the alarm system confirmed by its `online` status, please start discovery process to automatically discover (and add as new Things) all zones and areas defined in the alarm system.
-
 
 ## Binding Configuration
 
@@ -105,6 +104,6 @@ Message format is as follows:
 
 For example, the following sitemap item can be used to send commands to the area and receive response status as modified color of a label:
 
-```
+```java
 Switch item=areaControl label="Actions[]" mappings=[QA="Regular Quick Arm",QS="Stay Quick Arm",D1111="Disarm"] labelcolor=[Ok="green",Fail="red"]
 ```

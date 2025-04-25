@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 public class RobonectBindingConstants {
 
-    private static final String BINDING_ID = "robonect";
+    public static final String BINDING_ID = "robonect";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "mower");
@@ -31,6 +31,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_MOWER_NAME = "name";
     public static final String CHANNEL_STATUS_BATTERY = "battery";
     public static final String CHANNEL_STATUS_DURATION = "status-duration";
+    public static final String CHANNEL_STATUS_DISTANCE = "status-distance";
     public static final String CHANNEL_STATUS_HOURS = "mowing-hours";
     public static final String CHANNEL_STATUS_MODE = "mode";
     public static final String CHANNEL_STATUS = "status";
@@ -52,6 +53,10 @@ public class RobonectBindingConstants {
 
     public static final String CHANNEL_HEALTH_TEMP = "health-temperature";
     public static final String CHANNEL_HEALTH_HUM = "health-humidity";
+
+    public static final String CHANNEL_BLADES_QUALITY = "blades-quality";
+    public static final String CHANNEL_BLADES_REPL_DAYS = "blades-replacement-days";
+    public static final String CHANNEL_BLADES_USAGE_HOURS = "blades-usage-hours";
 
     public static final String PROPERTY_COMPILED = "compiled";
     public static final String PROPERTY_COMMENT = "comment";

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,13 +136,11 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
             return false;
         }
         Object discovery = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
-        if (discovery != null && discovery.toString().equalsIgnoreCase("false")) {
-            return false;
-        }
-        return true;
+        return !(discovery != null && "false".equalsIgnoreCase(discovery.toString()));
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void addBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;
@@ -164,6 +162,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void removeBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;

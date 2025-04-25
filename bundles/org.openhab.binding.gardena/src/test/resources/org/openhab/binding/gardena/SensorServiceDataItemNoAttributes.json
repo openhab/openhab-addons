@@ -1,0 +1,12 @@
+{
+	"id": "638e82cd-774c-4f34-be10-2eec41d1c0a6",
+	"type": "SENSOR",
+	"relationships": {
+		"device": {
+			"data": {
+				"id": "638e82cd-774c-4f34-be10-2eec41d1c0a6",
+				"type": "DEVICE"
+			}
+		}
+	}
+}

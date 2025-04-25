@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyInfoYear {
-    private static final Logger logger = LoggerFactory.getLogger(EnergyInfoYear.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoYear.class);
 
     public Optional<Integer[]> energyHeatingThisYear = Optional.empty();
 
@@ -37,16 +37,16 @@ public class EnergyInfoYear {
     }
 
     public static EnergyInfoYear parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
         EnergyInfoYear info = new EnergyInfoYear();
         info.energyHeatingThisYear = Optional.ofNullable(responseMap.get("curr_year_heat"))
-                .flatMap(value -> InfoParser.parseArrayofInt(value, 12));
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
 
         info.energyCoolingThisYear = Optional.ofNullable(responseMap.get("curr_year_cool"))
-                .flatMap(value -> InfoParser.parseArrayofInt(value, 12));
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
 
         return info;
     }

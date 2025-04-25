@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,11 @@
 package org.openhab.binding.network.internal.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
-import java.util.Optional;
+import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Andreas Hirsch - Initial contribution
  */
+@NonNullByDefault
 public class LatencyParserTest {
 
     @Test
@@ -32,11 +35,11 @@ public class LatencyParserTest {
         String input = "64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=1.225 ms";
 
         // Act
-        Optional<Double> resultLatency = latencyParser.parseLatency(input);
+        Duration resultLatency = latencyParser.parseLatency(input);
 
         // Assert
-        assertTrue(resultLatency.isPresent());
-        assertEquals(1.225, resultLatency.get(), 0);
+        assertNotNull(resultLatency);
+        assertEquals(1.225, durationToMillis(resultLatency), 0);
     }
 
     @Test
@@ -52,10 +55,10 @@ public class LatencyParserTest {
 
         for (String inputLine : inputLines) {
             // Act
-            Optional<Double> resultLatency = latencyParser.parseLatency(inputLine);
+            Duration resultLatency = latencyParser.parseLatency(inputLine);
 
             // Assert
-            assertFalse(resultLatency.isPresent());
+            assertNull(resultLatency);
         }
     }
 
@@ -66,10 +69,10 @@ public class LatencyParserTest {
         String input = "Reply from 192.168.178.207: bytes=32 time=2ms TTL=64";
 
         // Act
-        Optional<Double> resultLatency = latencyParser.parseLatency(input);
+        Duration resultLatency = latencyParser.parseLatency(input);
 
         // Assert
-        assertTrue(resultLatency.isPresent());
-        assertEquals(2, resultLatency.get(), 0);
+        assertNotNull(resultLatency);
+        assertEquals(2, durationToMillis(resultLatency), 0);
     }
 }

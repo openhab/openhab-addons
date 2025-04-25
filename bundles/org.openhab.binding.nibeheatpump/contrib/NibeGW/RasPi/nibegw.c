@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- *	This application listening data from Nibe F1145/F1245/F1155/F1255 heat pumps (RS485 bus)
+ *	This application listening data from various Nibe heat pumps (RS485 bus)
  *	and send valid frames to configurable IP/port address by UDP packets.
  *	Application also acknowledge the valid packets to heat pump.
  *
@@ -21,18 +21,18 @@
  *	MODBUS module support should be turned ON from the heat pump.
  *
  *	Frame format:
- *	+----+----+------+-----+-----+----+----+-----+
- *	| 5C | 00 | ADDR | CMD | LEN |  DATA   | CHK |
- *	+----+----+------+-----+-----+----+----+-----+
+ *	+----+------+------+-----+-----+----+----+-----+
+ *	| 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
+ *	+----+------+------+-----+-----+----+----+-----+
  *
- *	          |------------ CHK -----------|
+ *	     |------------ CHK ------------------|
  *
- *	 Address: 
- *	   0x16 = SMS40
- *	   0x19 = RMU40
- *	   0x20 = MODBUS40
+ *	Address: 
+ *		0x0016 = SMS40
+ *		0x0019 = RMU40
+ *		0x0020 = MODBUS40
  *
- *   Checksum: XOR
+ *	Checksum: XOR
  *
  *	When valid data is received (checksum ok),
  *	 ACK (0x06) should be sent to the heat pump.
@@ -53,8 +53,11 @@
  *	3.6.2014    v1.04   
  *	4.6.2014    v1.10   More options.
  *	10.9.2014   v1.20   Bidirectional support.
- *  30.6.2015   v1.21   Some fixes.
- *  20.2.2017	v1.22	Separated read and write token support.
+ *	30.6.2015   v1.21   Some fixes.
+ *	20.2.2017   v1.22   Separated read and write token support.
+ *	7.2.2021    v1.23   Fixed compile error in RasPi.
+ *	19.11.2022  v1.30   Support 16-bit addressing.
+ *	26.12.2022  v1.31   Fixed serial settings (for RPi Zero 2 W + Waveshare RS485 CAN hat)
  */
 
 #include <signal.h>
@@ -71,8 +74,9 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <time.h>
 
-#define VERSION	"1.22"
+#define VERSION	"1.31"
 
 #define FALSE	0
 #define TRUE	1
@@ -94,7 +98,6 @@ int initSerialPort(int fd, int hwflowctrl)
 	struct termios options;
 	
 	// Get the current options for the port...
-	
 	tcgetattr(fd, &options);
 	
 	// Set the baud rates
@@ -110,13 +113,18 @@ int initSerialPort(int fd, int hwflowctrl)
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
 	
-	// Flow control
-	options.c_iflag &= ~(IXON | IXOFF | IXANY);
-	
 	if (hwflowctrl)
 		options.c_cflag |= CRTSCTS;		// Enable hardware flow control
 	else
 		options.c_cflag &= ~CRTSCTS;	// Disable hardware flow control
+	
+	// Flow control
+	options.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL );
+	
+	// Local flags
+	options.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL | ECHOKE );
+	
+	options.c_oflag &= ~(OPOST | ONLCR);
 	
 	options.c_cc[VMIN] = 1;				// Min character to be read
 	options.c_cc[VTIME] = 1;			// Time to wait for data (tenth of seconds)
@@ -199,8 +207,8 @@ char* getTimeStamp(char* buffer)
 		   tm->tm_mon + 1,
 		   tm->tm_mday,
 		   tm->tm_hour,
-	       tm->tm_min, tm->tm_sec, tv.tv_usec
-	       );
+		   tm->tm_min, tm->tm_sec, tv.tv_usec
+		   );
 	return buffer;
 }
 
@@ -271,12 +279,6 @@ int checkMessage(const unsigned char* const data, int len)
 		if (data[0] != 0x5C)
 			return -1;
 		
-		if (len >= 2)
-		{
-			if (data[1] != 0x00)
-				return -1;
-		}
-		
 		if (len >= 6)
 		{
 			int datalen = data[4];
@@ -287,7 +289,7 @@ int checkMessage(const unsigned char* const data, int len)
 			unsigned char calc_checksum = 0;
 			
 			// calculate XOR checksum
-			for(int i = 2; i < (datalen + 5); i++)
+			for(int i = 1; i < (datalen + 5); i++)
 				calc_checksum ^= data[i];
 			
 			unsigned char msg_checksum = data[datalen + 5];

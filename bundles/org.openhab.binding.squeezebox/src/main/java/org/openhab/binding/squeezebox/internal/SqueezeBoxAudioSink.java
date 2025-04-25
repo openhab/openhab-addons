@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,20 @@
  */
 package org.openhab.binding.squeezebox.internal;
 
-import java.util.HashSet;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FileAudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
@@ -34,40 +36,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes a SqueezeBox Player serve as an {@link AudioSink}-
+ * This makes a SqueezeBox Player serve as an {@link org.openhab.core.audio.AudioSink}
  *
  * @author Mark Hilbush - Initial contribution
  * @author Mark Hilbush - Add callbackUrl
  */
-public class SqueezeBoxAudioSink implements AudioSink {
+@NonNullByDefault
+public class SqueezeBoxAudioSink extends AudioSinkSync {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxAudioSink.class);
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.WAV, AudioFormat.MP3);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
 
     // Needed because Squeezebox does multiple requests for the stream
-    private static final int STREAM_TIMEOUT = 15;
+    private static final int STREAM_TIMEOUT = 10;
 
-    private String callbackUrl;
-
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_FORMATS.add(AudioFormat.MP3);
-
-        SUPPORTED_STREAMS.add(FixedLengthAudioStream.class);
-        SUPPORTED_STREAMS.add(URLAudioStream.class);
-    }
+    private @Nullable String callbackUrl;
 
     private AudioHTTPServer audioHTTPServer;
     private SqueezeBoxPlayerHandler playerHandler;
 
     public SqueezeBoxAudioSink(SqueezeBoxPlayerHandler playerHandler, AudioHTTPServer audioHTTPServer,
-            String callbackUrl) {
+            @Nullable String callbackUrl) {
         this.playerHandler = playerHandler;
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
-        if (StringUtils.isNotEmpty(callbackUrl)) {
-            logger.debug("SqueezeBox AudioSink created with callback URL {}", callbackUrl);
+        if (callbackUrl != null && !callbackUrl.isEmpty()) {
+            logger.debug("SqueezeBox AudioSink created with callback URL: {}", callbackUrl);
         }
     }
 
@@ -77,46 +72,68 @@ public class SqueezeBoxAudioSink implements AudioSink {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public @Nullable String getLabel(@Nullable Locale locale) {
         return playerHandler.getThing().getLabel();
     }
 
     @Override
-    public void process(AudioStream audioStream)
+    public void processSynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (audioStream == null) {
+            return;
+        }
         AudioFormat format = audioStream.getFormat();
         if (!AudioFormat.WAV.isCompatible(format) && !AudioFormat.MP3.isCompatible(format)) {
+            tryClose(audioStream);
             throw new UnsupportedAudioFormatException("Currently only MP3 and WAV formats are supported: ", format);
         }
 
         String url;
-        if (audioStream instanceof URLAudioStream) {
-            url = ((URLAudioStream) audioStream).getURL();
-        } else if (audioStream instanceof FixedLengthAudioStream) {
-            // Since Squeezebox will make multiple requests for the stream, set a timeout on the stream
-            url = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, STREAM_TIMEOUT).toString();
-
-            if (AudioFormat.WAV.isCompatible(format)) {
-                url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.WAV_EXTENSION;
-            } else if (AudioFormat.MP3.isCompatible(format)) {
-                url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.MP3_EXTENSION;
-            }
-
-            // Form the URL for streaming the notification from the OH2 web server
-            // Use the callback URL if it is set in the binding configuration
-            String host = StringUtils.isEmpty(callbackUrl) ? playerHandler.getHostAndPort() : callbackUrl;
-            if (host == null) {
-                logger.warn("Unable to get host/port from which to stream notification");
-                return;
-            }
-            url = host + url;
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            url = urlAudioStream.getURL();
+            tryClose(audioStream);
         } else {
-            throw new UnsupportedAudioStreamException(
-                    "SqueezeBox can only handle URLAudioStream or FixedLengthAudioStreams.", null);
+            try {
+                // Since Squeezebox will make multiple requests for the stream, set multiple to true
+                StreamServed streamServed = audioHTTPServer.serve(audioStream, STREAM_TIMEOUT, true);
+                url = streamServed.url();
+
+                if (AudioFormat.WAV.isCompatible(format)) {
+                    url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.WAV_EXTENSION;
+                } else if (AudioFormat.MP3.isCompatible(format)) {
+                    url += AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.MP3_EXTENSION;
+                }
+
+                // Form the URL for streaming the notification from the OH web server
+                // Use the callback URL if it is set in the binding configuration
+                String callbackUrl = this.callbackUrl;
+                String host = callbackUrl == null || callbackUrl.isEmpty() ? playerHandler.getHostAndPort()
+                        : callbackUrl;
+                if (host == null) {
+                    logger.warn("Unable to get host/port from which to stream notification");
+                    tryClose(audioStream);
+                    return;
+                }
+                url = host + url;
+            } catch (IOException e) {
+                tryClose(audioStream);
+                throw new UnsupportedAudioStreamException(
+                        "Squeezebox binding was not able to handle the audio stream (cache on disk failed)",
+                        audioStream.getClass(), e);
+            }
         }
 
         logger.debug("Processing audioStream {} of format {}", url, format);
         playerHandler.playNotificationSoundURI(new StringType(url));
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     @Override

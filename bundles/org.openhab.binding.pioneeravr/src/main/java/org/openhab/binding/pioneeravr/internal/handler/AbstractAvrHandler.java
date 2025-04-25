@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,9 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         connection.sendMuteQuery(zone);
         connection.sendInputSourceQuery(zone);
         connection.sendListeningModeQuery(zone);
+
+        // Channels which are not bound to any specific zone
+        connection.sendMCACCMemoryQuery();
     }
 
     /**
@@ -136,6 +139,11 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.LISTENING_MODE_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.PLAYING_LISTENING_MODE_CHANNEL, zone), UnDefType.UNDEF);
+
+        // Channels which are not bound to any specific zone
+        if (zone == 1) {
+            updateState(PioneerAvrBindingConstants.MCACC_MEMORY_CHANNEL, UnDefType.UNDEF);
+        }
     }
 
     /**
@@ -198,6 +206,12 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                 } else {
                     commandSent = connection.sendMuteCommand(command, getZoneFromChannelUID(channelUID.getId()));
                 }
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.MCACC_MEMORY_CHANNEL)) {
+                if (command == RefreshType.REFRESH) {
+                    commandSent = connection.sendMCACCMemoryQuery();
+                } else {
+                    commandSent = connection.sendMCACCMemoryCommand(command);
+                }
             } else {
                 unknownCommand = true;
             }
@@ -248,6 +262,10 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                     manageDisplayedInformationUpdate(response);
                     break;
 
+                case MCACC_MEMORY:
+                    manageMCACCMemoryUpdate(response);
+                    break;
+
                 default:
                     logger.debug("Unknown response type from AVR @{}. Response discarded: {}", event.getData(),
                             event.getConnection());
@@ -279,7 +297,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      * @param response
      */
     private void managePowerStateUpdate(AvrResponse response) {
-        OnOffType state = PowerStateValues.ON_VALUE.equals(response.getParameterValue()) ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(PowerStateValues.ON_VALUE.equals(response.getParameterValue()));
 
         // When a Power ON state update is received, call the onPowerOn method.
         if (OnOffType.ON == state) {
@@ -311,7 +329,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageMuteStateUpdate(AvrResponse response) {
         updateState(getChannelUID(PioneerAvrBindingConstants.MUTE_CHANNEL, response.getZone()),
-                response.getParameterValue().equals(MuteStateValues.OFF_VALUE) ? OnOffType.OFF : OnOffType.ON);
+                OnOffType.from(!response.getParameterValue().equals(MuteStateValues.OFF_VALUE)));
     }
 
     /**
@@ -352,6 +370,15 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     private void manageDisplayedInformationUpdate(AvrResponse response) {
         updateState(PioneerAvrBindingConstants.DISPLAY_INFORMATION_CHANNEL,
                 new StringType(DisplayInformationConverter.convertMessageFromIpControl(response.getParameterValue())));
+    }
+
+    /**
+     * Notify an AVR MCACC Memory update to openHAB
+     *
+     * @param response
+     */
+    private void manageMCACCMemoryUpdate(AvrResponse response) {
+        updateState(PioneerAvrBindingConstants.MCACC_MEMORY_CHANNEL, new StringType(response.getParameterValue()));
     }
 
     /**

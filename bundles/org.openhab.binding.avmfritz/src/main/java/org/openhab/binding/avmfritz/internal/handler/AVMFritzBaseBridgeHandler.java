@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoM
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
@@ -78,7 +79,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
-    private long refreshInterval = 15;
+    private long pollingInterval = 15;
 
     /**
      * Interface object for querying the FRITZ!Box web interface
@@ -130,10 +131,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
         }
-        refreshInterval = config.pollingInterval;
-        if (refreshInterval < 5) {
+        pollingInterval = config.pollingInterval;
+        if (pollingInterval < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'pollingInterval' parameter must be greater then at least 5 seconds.");
+                    "The 'pollingInterval' parameter must be greater than or equals to 1 second.");
             configValid = false;
         }
 
@@ -171,21 +172,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FritzAhaStatusListener) {
-            registerStatusListener((FritzAhaStatusListener) childHandler);
+        if (childHandler instanceof FritzAhaStatusListener listener) {
+            registerStatusListener(listener);
         }
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FritzAhaStatusListener) {
-            unregisterStatusListener((FritzAhaStatusListener) childHandler);
+        if (childHandler instanceof FritzAhaStatusListener listener) {
+            unregisterStatusListener(listener);
         }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(AVMFritzDiscoveryService.class);
+        return Set.of(AVMFritzDiscoveryService.class);
     }
 
     public boolean registerStatusListener(FritzAhaStatusListener listener) {
@@ -202,8 +203,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected void startPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
-            logger.debug("Start polling job at interval {}s", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
+            logger.debug("Start polling job at interval {}s", pollingInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, pollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -296,13 +297,14 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @return ThingUID without illegal characters.
      */
     public @Nullable ThingUID getThingUID(AVMFritzBaseModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device));
+        String id = getThingTypeId(device);
+        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
         ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
-        if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+        if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
-                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
             return new ThingUID(GROUP_HEATING_THING_TYPE, bridgeUID, thingName);
@@ -325,13 +327,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
             }
-        } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
-            List<String> interfaces = Arrays
-                    .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));
+        } else if (device instanceof DeviceModel deviceModel && device.isHANFUNUnit()) {
+            if (device.isHANFUNBlinds()) {
+                return DEVICE_HAN_FUN_BLINDS;
+            } else if (device.isColorLight()) {
+                return DEVICE_HAN_FUN_COLOR_BULB;
+            } else if (device.isDimmableLight()) {
+                return DEVICE_HAN_FUN_DIMMABLE_BULB;
+            }
+            List<String> interfaces = Arrays.asList(deviceModel.getEtsiunitinfo().getInterfaces().split(","));
             if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
                 return DEVICE_HAN_FUN_SWITCH;
+            } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
+                return DEVICE_HAN_FUN_ON_OFF;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");

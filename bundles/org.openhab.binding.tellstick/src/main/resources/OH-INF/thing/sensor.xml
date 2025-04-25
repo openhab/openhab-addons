@@ -8,10 +8,12 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="telldus-core"/>
 			<bridge-type-ref id="telldus-live"/>
+			<bridge-type-ref id="telldus-local"/>
 		</supported-bridge-type-refs>
 
 		<label>Sensor</label>
 		<description>This Thing defines a Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -29,6 +31,7 @@
 
 		<label>RainSensor</label>
 		<description>This Thing defines a Rain Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="rainrate" typeId="rainrate"/>
@@ -44,6 +47,7 @@
 
 		<label>PowerSensor</label>
 		<description>This Thing defines a Power Sensor</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="watt" typeId="watt"/>
@@ -60,6 +64,7 @@
 
 		<label>WindSensor</label>
 		<description>This Thing defines a Wind Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="windgust" typeId="windgust"/>
@@ -79,7 +84,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Actual measured room Humidity</description>
 		<category>Humidity</category>
@@ -91,14 +96,14 @@
 		<item-type>Number:Length</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="raintotal">
 		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<description>Total rain</description>
-		<state pattern="%d %unit%" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -126,9 +131,9 @@
 
 	<channel-type id="watt">
 		<item-type>Number:Power</item-type>
-		<label>Watt</label>
-		<description>Current kWatt</description>
-		<state readOnly="true" pattern="%f %unit%">
+		<label>Power</label>
+		<description>Current power</description>
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 

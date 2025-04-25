@@ -1,0 +1,30 @@
+{
+	"action": {
+		"alert": "none",
+		"bri": 127,
+		"colormode": "hs",
+		"ct": 0,
+		"effect": "none",
+		"hue": 0,
+		"on": false,
+		"sat": 127,
+		"scene": null,
+		"xy": [
+			0,
+			0
+		]
+	},
+	"devicemembership": [
+		"3"
+	],
+	"etag": "586d2448a818aa7f6f3baa4907f43468",
+	"id": "1",
+	"lights": [],
+	"name": "RM01",
+	"scenes": [],
+	"state": {
+		"all_on": false,
+		"any_on": false
+	},
+	"type": "LightGroup"
+}

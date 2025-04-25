@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,15 @@ package org.openhab.binding.opensprinkler.internal.util;
 
 import java.security.MessageDigest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Hash} class contains static methods for creating hashes
  * of strings. Usually for password hashing.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class Hash {
     private static final String MD5_HASH_ALGORITHM = "MD5";
     private static final String UTF8_CHAR_SET = "UTF-8";
@@ -44,11 +47,10 @@ public class Hash {
                 sb.append(String.format("%02x", b & 0xff));
             }
 
-            String digest = sb.toString();
-
-            return digest;
+            return sb.toString();
         } catch (Exception exp) {
-            return null;
+            // Instead of null we return the unhashed password.
+            return unhashed;
         }
     }
 }

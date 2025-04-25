@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -37,7 +37,7 @@ public interface InboundSpec {
     /**
      * Get the affected group addresses.
      *
-     * @return a list of group addresses.
+     * @return a Set of group addresses.
      */
-    List<GroupAddress> getGroupAddresses();
+    Set<GroupAddress> getGroupAddresses();
 }

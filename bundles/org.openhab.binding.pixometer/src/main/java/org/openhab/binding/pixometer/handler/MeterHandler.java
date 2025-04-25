@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,6 @@ public class MeterHandler extends BaseThingHandler {
     private final GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(ReadingInstance.class,
             new CustomReadingInstanceDeserializer());
     private final Gson gson = gsonBuilder.create();
-    private final JsonParser jsonParser = new JsonParser();
 
     private @NonNullByDefault({}) String resourceID;
     private @NonNullByDefault({}) String meterID;
@@ -178,7 +177,7 @@ public class MeterHandler extends BaseThingHandler {
             urlHeader.put("Authorization", token);
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
-            JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
+            JsonObject responseJson = (JsonObject) JsonParser.parseString(urlResponse);
 
             if (responseJson.has("meter_id")) {
                 setMeterID(responseJson.get("meter_id").toString());
@@ -247,11 +246,16 @@ public class MeterHandler extends BaseThingHandler {
 
             Properties urlHeader = new Properties();
             urlHeader.put("CONTENT-TYPE", "application/json");
-            urlHeader.put("Authorization", getTokenFromBridge());
+            String token = getTokenFromBridge();
+            if (token == null) {
+                logger.debug("Unable to get the token from the bridge");
+                return null;
+            }
+            urlHeader.put("Authorization", token);
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
 
-            ReadingInstance latestReading = gson.fromJson(new JsonParser().parse(urlResponse), ReadingInstance.class);
+            ReadingInstance latestReading = gson.fromJson(JsonParser.parseString(urlResponse), ReadingInstance.class);
 
             return new MeterState(Objects.requireNonNull(latestReading));
         } catch (IOException e) {

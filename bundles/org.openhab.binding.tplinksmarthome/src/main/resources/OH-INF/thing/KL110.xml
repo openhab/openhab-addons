@@ -8,7 +8,7 @@
 		<label>KL110</label>
 		<description>TP-Link KL110 Smart Wi-Fi LED Bulb with Brightness</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="power" typeId="power"/>
@@ -17,6 +17,6 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:bulb"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-bulb"/>
 	</thing-type>
 </thing:thing-descriptions>

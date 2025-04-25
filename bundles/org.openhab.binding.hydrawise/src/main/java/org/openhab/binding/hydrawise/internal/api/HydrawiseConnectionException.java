@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,19 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown for connection issues to the Hydrawise controller
  *
  * @author Dan Cunningham - Initial contribution
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class HydrawiseConnectionException extends Exception {
+    private static final long serialVersionUID = 1L;
+
+    private int code = 0;
+    private String response = "";
 
     public HydrawiseConnectionException(Exception e) {
         super(e);
@@ -26,5 +32,23 @@ public class HydrawiseConnectionException extends Exception {
 
     public HydrawiseConnectionException(String message) {
         super(message);
+    }
+
+    public HydrawiseConnectionException(String message, int code, String response) {
+        super(message);
+        this.code = code;
+        this.response = response;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getResponse() {
+        return response;
     }
 }

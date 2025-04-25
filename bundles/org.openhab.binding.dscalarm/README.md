@@ -3,8 +3,8 @@
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
 This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
-It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  
-Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
+It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
+Additionally, there is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
 
@@ -27,16 +27,16 @@ Most settings are through thing configuration parameters.
 
 ## Discovery
 
-The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.  
+The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.
 There is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
-This bridge discovery mode is started manually through Paper UI.  
+This bridge discovery mode is started manually through the UI.
 After a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.
 The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
 Note:
 The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.
 This may create issues on the network so it is suggested that caution be used when trying this discovery.
-The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the Paper UI.
+The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the UI.
 And then allow the binding to discover the DSC Alarm things.
 
 ## Thing Configuration
@@ -45,18 +45,18 @@ DSC Alarm things can be configured either through the online configuration utili
 The following table shows the available configuration parameters for each thing.
 
 <table>
-	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
-	<tr><td>envisalink</td><td><table><tr><td><b>ipAddress</b> - IP address for the Envisalink adapter - Required.</td></tr><tr><td><b>port</b> - TCP port for the Envisalink adapter - Not Required - default = 4025.</td></tr><tr><td><b>password</b> - Password to login to the Envisalink bridge - Not Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the Envisalink bridge - Not Required - default=1.</td></tr></table></td></tr>
-	<tr><td>it100</td><td><table><tr><td><b>serialPort</b> - Serial port for the IT-100s bridge - Required.</td></tr><tr><td><b>baud</b> - Baud rate of the IT-100 bridge - Not Required - default = 9600.</td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.</td></tr></table></td></tr>
+ <tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
+ <tr><td>envisalink</td><td><table><tr><td><b>ipAddress</b> - IP address for the Envisalink adapter - Required.</td></tr><tr><td><b>port</b> - TCP port for the Envisalink adapter - Not Required - default = 4025.</td></tr><tr><td><b>password</b> - Password to login to the Envisalink bridge - Not Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the Envisalink bridge - Not Required - default=1.</td></tr></table></td></tr>
+ <tr><td>it100</td><td><table><tr><td><b>serialPort</b> - Serial port for the IT-100s bridge - Required.</td></tr><tr><td><b>baud</b> - Baud rate of the IT-100 bridge - Not Required - default = 9600.</td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.</td></tr></table></td></tr>
     <tr><td>tcpserver</td><td><table><tr><td><b>ipAddress</b> - IP address for the TCP Server - Required.</td></tr><tr><td><b>port</b> - TCP port for the TCP Server - Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the TCP Server bridge - Not Required - default=1.</td></tr><tr><td><b>protocol</b> - The protocol used to interact with the DSC Alarm. Valid values are 1 for IT100 API or 2 for Envisalink TPI. The default is 1. - Not Required.</td></tr></table></td></tr>
     <tr><td>panel</td><td><table><tr><td><b>userCode</b> - User code for the DSC alarm panel - Not Required.</td></tr><tr><td><b>suppressAcknowledgementMsgs</b> - Suppress the display of acknowledgement messages when received - Not Required - default = false.</td></tr></table></td></tr>
-	<tr><td>partition</td><td><b>partitionNumber</b> - Partition number (1-8) - Required.</td></tr>
-	<tr><td>zone</td><td><table><tr><td><b>partitionNumber</b> - Partition number (1-8) - Not Required - default=1.</td></tr><tr><td><b>zoneNumber</b> - Zone number (1-64) - Required.</td></tr></table></td></tr>
-	<tr><td>keypad</td><td>No parameters</td></tr>
+ <tr><td>partition</td><td><b>partitionNumber</b> - Partition number (1-8) - Required.</td></tr>
+ <tr><td>zone</td><td><table><tr><td><b>partitionNumber</b> - Partition number (1-8) - Not Required - default=1.</td></tr><tr><td><b>zoneNumber</b> - Zone number (1-64) - Required.</td></tr></table></td></tr>
+ <tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  
-A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  
+The binding can be configured manually if discovery is not used.
+A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.
 Here is an example of a thing configuration file called 'dscalarm.things':
 
 ```perl
@@ -86,8 +86,8 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 
 <table>
     <tr><td><b>Channel</b></td><td><b>Item Type</b></td><td><b>Description</b></td></tr>
-    <tr><td>bridge_reset</td><td>Switch</td><td>Reset the bridge connection.</td></tr>
-    <tr><td>send_command</td><td>Switch</td><td>Send a DSC Alarm command.</td></tr>
+    <tr><td>bridge_reset</td><td>Switch</td><td>(Writable) Reset the bridge connection.</td></tr>
+    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="https://forum.eyezon.com/download/file.php?id=379&sid=6b1e1197bad7c56a9e24bf0f697ce420">here</a> for a list of commands.</td></tr>
     <tr><td>panel_message</td><td>String</td><td>Event messages received from the DSC Alarm system.</td></tr>
     <tr><td>panel_system_error</td><td>String</td><td>DSC Alarm system error.</td></tr>
     <tr><td>panel_trouble_message</td><td>String</td><td>Displays any trouble messages the panel might send.</td></tr>
@@ -101,14 +101,14 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>panel_zone_low_battery</td><td>Switch</td><td>There is a low battery condition on a zone/sensor.</td></tr>
     <tr><td>panel_time_loss</td><td>Switch</td><td>Loss of time on the panel.</td></tr>
     <tr><td>panel_time</td><td>DateTime</td><td>DSC Alarm system time and date.</td></tr>
-    <tr><td>panel_time_stamp</td><td>Switch</td><td>Turn DSC Alarm message time stamping ON/OFF.</td></tr>
-    <tr><td>panel_time_broadcast</td><td>Switch</td><td>Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
+    <tr><td>panel_time_stamp</td><td>Switch</td><td>(Writable) Turn DSC Alarm message time stamping ON/OFF.</td></tr>
+    <tr><td>panel_time_broadcast</td><td>Switch</td><td>(Writable) Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
     <tr><td>panel_fire_key_alarm</td><td>Switch</td><td>A fire key alarm has happened.</td></tr>
     <tr><td>panel_panic_key_alarm</td><td>Switch</td><td>A panic key alarm has happened.</td></tr>
     <tr><td>panel_aux_key_alarm</td><td>Switch</td><td>An auxiliary key alarm has happened.</td></tr>
     <tr><td>panel_aux_input_alarm</td><td>Switch</td><td>An auxiliary input alarm has happened.</td></tr>
     <tr><td>partition_status</td><td>String</td><td>A partitions current status.</td></tr>
-    <tr><td>partition_arm_mode</td><td>Number</td><td>A partitions current arm mode. The possible values are:
+    <tr><td>partition_arm_mode</td><td>Number</td><td>(Writable) A partitions current arm mode. The possible values are:
 <br/>
 0=disarmed<br/>
 1=armed away<br/>
@@ -175,10 +175,10 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 1=ON<br/>
 2=Flashing<br/></td></tr>
     <tr><td>keypad_lcd_update</td><td>String</td><td>Text Changes of the IT-100 LCD Menu.</td></tr>
-    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
+    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>
 </table>
 
-##Example
+## Example
 
 The following is an example of an item file (dscalarm.items):
 
@@ -204,7 +204,7 @@ String PANEL_MESSAGE "Panel Message: [%s]" (DSCAlarmPanel) {channel="dscalarm:pa
 Number PANEL_COMMAND "Panel Commands" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_command"}
 String PANEL_SYSTEM_ERROR "Panel System Error: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_system_error"}
 
-String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <"shieldGreen"> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_message"}
+String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <shieldGreen> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_message"}
 Switch PANEL_TROUBLE_LED "Panel Trouble LED" <warning> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_led"}
 Switch PANEL_SERVICE_REQUIRED <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_service_required"}
 Switch PANEL_AC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_ac_trouble"}
@@ -415,7 +415,7 @@ Here is an example sitemap:
                     Text item=PANEL_ZONE_FAULT label="Zone Fault"
                     Text item=PANEL_ZONE_TAMPER label="Zone Tamper"
                     Text item=PANEL_ZONE_LOW_BATTERY label="Zone Low Battery"
-                    Text item=PANEL_TIME_LOSS label="Panel Time Loss"                   
+                    Text item=PANEL_TIME_LOSS label="Panel Time Loss"
                 }
             }
 
@@ -602,16 +602,16 @@ Sample Rules for Sending a DSC Alarm Command
 
 ```javascript
 rule "SendKeystrokeStringCommand"
-when   
+when
     Item SwitchItemName received command ON
-then   
+then
     SEND_DSC_ALARM_COMMAND.sendCommand("071,1*101#")
 end
 
 rule "SendPollingCommand"
-when   
+when
     Item SwitchItemName received command ON
-then   
+then
     SEND_DSC_ALARM_COMMAND.sendCommand("000")
 end
 ```

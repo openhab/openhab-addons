@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,11 @@
 package org.openhab.persistence.influxdb.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 
 /**
- * Creates InfluxDB query sentence given a OpenHab persistence {@link FilterCriteria}
+ * Creates InfluxDB query sentence given an OpenHab persistence {@link FilterCriteria}
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
@@ -24,29 +25,22 @@ import org.openhab.core.persistence.FilterCriteria;
 public interface FilterCriteriaQueryCreator {
     /**
      * Create query from {@link FilterCriteria}
-     * 
+     *
      * @param criteria Criteria to create query from
      * @param retentionPolicy Name of the retentionPolicy/bucket to use in query
-     * @return Created query as an String
+     * @param alias
+     * @return Created query as a String
      */
-    String createQuery(FilterCriteria criteria, String retentionPolicy);
+    String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias);
 
     default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
-        switch (operator) {
-            case EQ:
-                return "=";
-            case LT:
-                return "<";
-            case LTE:
-                return "<=";
-            case GT:
-                return ">";
-            case GTE:
-                return ">=";
-            case NEQ:
-                return version == InfluxDBVersion.V1 ? "<>" : "!=";
-            default:
-                throw new UnnexpectedConditionException("Not expected operator " + operator);
-        }
+        return switch (operator) {
+            case EQ -> "=";
+            case LT -> "<";
+            case LTE -> "<=";
+            case GT -> ">";
+            case GTE -> ">=";
+            case NEQ -> version == InfluxDBVersion.V1 ? "<>" : "!=";
+        };
     }
 }

@@ -11,8 +11,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Dimmer</label>
-		<description>A OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
-
+		<description>An OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 		</channels>
@@ -27,8 +27,8 @@
 
 		<config-description>
 			<parameter name="where" type="text" required="true">
-				<label>OpenWebNet Device Address (where)</label>
-				<description>Example: A/PL address: A=1 PL=3 --> where=13. On local bus: where=13#4#01</description>
+				<label>OpenWebNet Address (where)</label>
+				<description>Example: A/PL address: A=1 PL=3 --> where="13". On local bus: where="13#4#01"</description>
 			</parameter>
 		</config-description>
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_USERDATA_PATH;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -86,10 +91,9 @@ public final class Utils {
 
     public static String obfuscateToken(String tokenString) {
         if (tokenString.length() > 8) {
-            String tokenText = tokenString.substring(0, 8)
+            return tokenString.substring(0, 8)
                     .concat((tokenString.length() < 24) ? tokenString.substring(8).replaceAll(".", "X")
                             : tokenString.substring(8, 24).replaceAll(".", "X").concat(tokenString.substring(24)));
-            return tokenText;
         } else {
             return tokenString;
         }
@@ -98,12 +102,32 @@ public final class Utils {
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
             JsonParseException, IOException, URISyntaxException, NoSuchFileException {
         JsonObject jsonObject = new JsonObject();
-        JsonParser parser = new JsonParser();
         try (InputStream inputStream = fileName.openStream();
                 InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            JsonElement jsonElement = parser.parse(reader);
+            JsonElement jsonElement = JsonParser.parseReader(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;
+        }
+    }
+
+    /**
+     * Saves string to file in userdata folder
+     *
+     * @param filename
+     * @param data String with content
+     * @param logger
+     */
+    public static void saveToFile(String filename, String data, Logger logger) {
+        File folder = new File(BINDING_USERDATA_PATH);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        File dataFile = new File(folder, filename);
+        try (FileWriter writer = new FileWriter(dataFile)) {
+            writer.write(data);
+            logger.debug("Saved to {}", dataFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.debug("Failed to write file '{}': {}", dataFile.getName(), e.getMessage());
         }
     }
 
@@ -127,5 +151,18 @@ public final class Utils {
             //
         }
         return value;
+    }
+
+    /**
+     * Formats the deviceId to a hex string if possible. Otherwise returns the id unmodified.
+     *
+     * @param did
+     * @return did
+     */
+    public static String getHexId(String did) {
+        if (!did.isBlank() && !did.contains(".")) {
+            return toHEX(did);
+        }
+        return did;
     }
 }

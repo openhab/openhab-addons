@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,13 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.openhab.binding.caddx.internal.action.CaddxKeypadActions;
@@ -42,6 +43,19 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     public ThingHandlerKeypad(Thing thing) {
         super(thing, CaddxThingType.KEYPAD);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        // Follow the bridge status
+        updateStatus(bridgeHandler.getThing().getStatus());
     }
 
     @Override
@@ -85,7 +99,7 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CaddxKeypadActions.class);
+        return Set.of(CaddxKeypadActions.class);
     }
 
     public void enterTerminalMode() {
@@ -97,7 +111,7 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
     }
 
     public void sendKeypadTextMessage(String displayLocation, String text) {
@@ -114,6 +128,6 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, data);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
     }
 }

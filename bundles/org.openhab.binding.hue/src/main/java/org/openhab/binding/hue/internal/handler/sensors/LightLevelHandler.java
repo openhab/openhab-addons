@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.hue.internal.handler.sensors;
 
-import static org.openhab.binding.hue.internal.FullSensor.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.api.dto.clip1.FullSensor.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.LightLevelConfigUpdate;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.LightLevelConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -41,7 +40,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class LightLevelHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_LIGHT_LEVEL_SENSOR);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LIGHT_LEVEL_SENSOR);
 
     public LightLevelHandler(Thing thing) {
         super(thing);
@@ -80,17 +80,17 @@ public class LightLevelHandler extends HueSensorHandler {
         Object dark = sensor.getState().get(STATE_DARK);
         if (dark != null) {
             boolean value = Boolean.parseBoolean(String.valueOf(dark));
-            updateState(CHANNEL_DARK, value ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_DARK, OnOffType.from(value));
         }
 
         Object daylight = sensor.getState().get(STATE_DAYLIGHT);
         if (daylight != null) {
             boolean value = Boolean.parseBoolean(String.valueOf(daylight));
-            updateState(CHANNEL_DAYLIGHT, value ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_DAYLIGHT, OnOffType.from(value));
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {
-            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK));
+            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LED_INDICATION));
         }
         if (sensor.getConfig().containsKey(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK)) {
             config.put(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK, sensor.getConfig().get(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK));

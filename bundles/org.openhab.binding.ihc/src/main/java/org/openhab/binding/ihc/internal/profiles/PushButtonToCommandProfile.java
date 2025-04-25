@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,8 +96,8 @@ public class PushButtonToCommandProfile implements TriggerProfile {
         long retval;
         Object paramValue = context.getConfiguration().get(param);
         logger.debug("Configuring profile with {} parameter '{}'", param, paramValue);
-        if (paramValue instanceof BigDecimal) {
-            retval = ((BigDecimal) paramValue).longValue();
+        if (paramValue instanceof BigDecimal decimalParam) {
+            retval = decimalParam.longValue();
         } else {
             logger.debug("Parameter '{}' is not of type BigDecimal, using default value '{}'", param, defValue);
             retval = defValue;
@@ -117,7 +117,6 @@ public class PushButtonToCommandProfile implements TriggerProfile {
                 logger.warn("Parameter '{}' is not a valid command type, using default value '{}'", param, defValue);
                 retval = defValue;
             }
-
         } else {
             logger.debug("Parameter '{}' is not of type String, using default value '{}'", param, defValue);
             retval = defValue;
@@ -202,7 +201,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     private Command toggleCommandIfNeeded(@Nullable Command command) {
         if (command == null) {
             logger.debug("Toggling command: previous state is '{}'", previousState);
-            return OnOffType.ON.equals(previousState) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!OnOffType.ON.equals(previousState));
         }
         return command;
     }

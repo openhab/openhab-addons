@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,7 +75,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     // First run it should not have authenticate as null
     // nonce is reused if authenticate is null so the NC needs to increment to allow this//
     public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
-        if (authenticate.contains("Basic realm=\"")) {
+        if (authenticate.contains("Basic realm=")) {
             if (ipCameraHandler.useDigestAuth) {
                 // Possible downgrade authenticate attack avoided.
                 return;
@@ -89,13 +90,14 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
         realm = Helper.searchString(authenticate, "realm=\"");
         if (realm.isEmpty()) {
-            logger.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
+            logger.warn(
+                    "No valid WWW-Authenticate in response. Has the camera activated the illegal login lock? Details:{}",
+                    authenticate);
             return;
         }
         nonce = Helper.searchString(authenticate, "nonce=\"");
         opaque = Helper.searchString(authenticate, "opaque=\"");
         qop = Helper.searchString(authenticate, "qop=\"");
-
         if (!qop.isEmpty() && !realm.isEmpty()) {
             ipCameraHandler.useDigestAuth = true;
         } else {
@@ -105,7 +107,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale.equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(stale)) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 
@@ -116,7 +118,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         // create the MD5 hashes
         String ha1 = username + ":" + realm + ":" + password;
         ha1 = calcMD5Hash(ha1);
-        Random random = new Random();
+        Random random = new SecureRandom();
         String cnonce = Integer.toHexString(random.nextInt());
         ncCounter = (ncCounter > 125) ? 1 : ++ncCounter;
         String nc = String.format("%08X", ncCounter); // 8 digit hex number
@@ -128,8 +130,10 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
 
         String digestString = "username=\"" + username + "\", realm=\"" + realm + "\", nonce=\"" + nonce + "\", uri=\""
                 + requestURI + "\", cnonce=\"" + cnonce + "\", nc=" + nc + ", qop=\"" + qop + "\", response=\""
-                + response + "\", opaque=\"" + opaque + "\"";
-
+                + response + "\"";
+        if (!opaque.isEmpty()) {
+            digestString += ", opaque=\"" + opaque + "\"";
+        }
         if (reSend) {
             ipCameraHandler.sendHttpRequest(httpMethod, requestURI, digestString);
             return;
@@ -141,49 +145,40 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        boolean closeConnection = true;
-        String authenticate = "";
-        if (msg instanceof HttpResponse) {
-            HttpResponse response = (HttpResponse) msg;
+        if (msg instanceof HttpResponse response) {
             if (response.status().code() == 401) {
+                ctx.close();
                 if (!response.headers().isEmpty()) {
+                    String authenticate = "";
                     for (CharSequence name : response.headers().names()) {
                         for (CharSequence value : response.headers().getAll(name)) {
-                            if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
+                            if ("WWW-Authenticate".equalsIgnoreCase(name.toString())) {
                                 authenticate = value.toString();
-                            }
-                            if (name.toString().equalsIgnoreCase("Connection")
-                                    && value.toString().contains("keep-alive")) {
-                                // closeConnection = false;
-                                // trial this for a while to see if it solves too many bytes with digest turned on.
-                                closeConnection = true;
                             }
                         }
                     }
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
-                        ipCameraHandler.cameraConfigError(
-                                "Camera gave no WWW-Authenticate: Your login details must be wrong.");
-                    }
-                    if (closeConnection) {
-                        ctx.close();// needs to be here
+                        ipCameraHandler.cameraCommunicationError(
+                                "Camera gave no WWW-Authenticate: Your login details might be wrong. Trying to reconnect");
                     }
                 }
             } else if (response.status().code() != 200) {
-                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
-                        ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                ctx.close();
+                switch (response.status().code()) {
+                    case 403:
+                        logger.warn(
+                                "403 Forbidden: Check camera setup or has the camera activated the illegal login lock?");
+                        break;
+                    default:
+                        logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
+                                ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                        break;
+                }
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
         super.channelRead(ctx, msg);
-    }
-
-    @Override
-    public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-    }
-
-    @Override
-    public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
     }
 }

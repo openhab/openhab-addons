@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxAckMessage extends PowermaxBaseMessage {
 
     /**
@@ -32,17 +35,18 @@ public class PowermaxAckMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
 
         PowermaxState updatedState = null;
 
-        if (commManager.getLastSendMsg().getSendType() == PowermaxSendType.EXIT) {
+        PowermaxBaseMessage lastSendMsg = commManager.getLastSendMsg();
+        if (lastSendMsg != null && lastSendMsg.getSendType() == PowermaxSendType.EXIT) {
             updatedState = commManager.createNewState();
-            updatedState.setPowerlinkMode(true);
-            updatedState.setDownloadMode(false);
+            updatedState.powerlinkMode.setValue(true);
+            updatedState.downloadMode.setValue(false);
         }
 
         return updatedState;

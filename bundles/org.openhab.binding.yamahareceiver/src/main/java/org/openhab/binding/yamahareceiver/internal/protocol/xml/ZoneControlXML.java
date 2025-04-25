@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -40,11 +39,11 @@ import org.w3c.dom.Node;
  * The zone protocol class is used to control one zone of a Yamaha receiver with HTTP/xml.
  * No state will be saved in here, but in {@link ZoneControlState} instead.
  *
+ * @author Tomasz Maruszak - Initial contribution, refactoring, input mapping fix, added
+ *         Straight surround, volume DB fix and config improvement.
  * @author David Gräff - Refactored
- * @author Eric Thill
- * @author Ben Jones
- * @author Tomasz Maruszak - Refactoring, input mapping fix, added Straight surround, volume DB fix and config
- *         improvement.
+ * @author Eric Thill - Unknown
+ * @author Ben Jones - Unknown
  */
 public class ZoneControlXML implements ZoneControl {
 
@@ -78,7 +77,15 @@ public class ZoneControlXML implements ZoneControl {
     protected CommandTemplate dialogueLevel = new CommandTemplate(
             "<Sound_Video><Dialogue_Adjust><Dialogue_Lvl>%d</Dialogue_Lvl></Dialogue_Adjust></Sound_Video>",
             "Sound_Video/Dialogue_Adjust/Dialogue_Lvl");
+    protected CommandTemplate hdmi1Out = new CommandTemplate(
+            "<System><Sound_Video><HDMI><Output><OUT_1>%s</OUT_1></Output></HDMI></Sound_Video></System>",
+            "Sound_Video/HDMI/Output/OUT_1");
+    protected CommandTemplate hdmi2Out = new CommandTemplate(
+            "<System><Sound_Video><HDMI><Output><OUT_2>%s</OUT_2></Output></HDMI></Sound_Video></System>",
+            "Sound_Video/HDMI/Output/OUT_2");
     protected boolean dialogueLevelSupported = false;
+    protected boolean hdmi1OutSupported = false;
+    protected boolean hdmi2OutSupported = false;
 
     public ZoneControlXML(AbstractConnection con, Zone zone, YamahaZoneConfig zoneSettings,
             ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
@@ -119,6 +126,12 @@ public class ZoneControlXML implements ZoneControl {
             logger.debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_DIALOGUE_LEVEL);
         }
 
+        hdmi1OutSupported = zoneDescriptor.hasCommandEnding("Sound_Video,HDMI,Output,OUT_1", () -> logger
+                .debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_HDMI1OUT));
+
+        hdmi2OutSupported = zoneDescriptor.hasCommandEnding("Sound_Video,HDMI,Output,OUT_2", () -> logger
+                .debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_HDMI2OUT));
+
         // Note: Detection for RX-V3900, which uses <Vol> instead of <Volume>
         if (zoneDescriptor.hasCommandEnding("Vol,Lvl")) {
             volume = volume.replace("Volume", "Vol");
@@ -135,7 +148,7 @@ public class ZoneControlXML implements ZoneControl {
                     ZONE_BASIC_STATUS_PATH);
             String surroundProgram = getNodeContentOrEmpty(basicStatusNode, "Surr/Pgm_Sel/Pgm");
 
-            if (StringUtils.isNotEmpty(surroundProgram)) {
+            if (!surroundProgram.isEmpty()) {
                 surroundSelProgram = new CommandTemplate(
                         "<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelProgram);
@@ -144,7 +157,6 @@ public class ZoneControlXML implements ZoneControl {
                         "Surr/Pgm_Sel/Straight");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelStraight);
             }
-
         } catch (ReceivedMessageParseException | IOException e) {
             logger.debug("Could not perform feature detection for RX-V3900");
         }
@@ -152,6 +164,10 @@ public class ZoneControlXML implements ZoneControl {
 
     protected void sendCommand(String message) throws IOException {
         comReference.get().send(XMLUtils.wrZone(zone, message));
+    }
+
+    protected void sendCommandWithoutZone(String message) throws IOException {
+        comReference.get().send(message);
     }
 
     /**
@@ -255,6 +271,24 @@ public class ZoneControlXML implements ZoneControl {
     }
 
     @Override
+    public void setHDMI1Out(boolean on) throws IOException, ReceivedMessageParseException {
+        if (!hdmi1OutSupported) {
+            return;
+        }
+        sendCommandWithoutZone(hdmi1Out.apply(on ? ON : OFF));
+        update();
+    }
+
+    @Override
+    public void setHDMI2Out(boolean on) throws IOException, ReceivedMessageParseException {
+        if (!hdmi2OutSupported) {
+            return;
+        }
+        sendCommandWithoutZone(hdmi2Out.apply(on ? ON : OFF));
+        update();
+    }
+
+    @Override
     public void setScene(String scene) throws IOException, ReceivedMessageParseException {
         if (!sceneSelSupported) {
             return;
@@ -287,9 +321,15 @@ public class ZoneControlXML implements ZoneControl {
 
         value = getNodeContentOrEmpty(statusNode, inputSel.getPath());
         state.inputID = inputConverterSupplier.get().fromStateName(value);
-        if (StringUtils.isBlank(state.inputID)) {
+        if (state.inputID == null || state.inputID.isBlank()) {
             throw new ReceivedMessageParseException("Expected inputID. Failed to read Input/Input_Sel");
         }
+
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi1Out = ON.equalsIgnoreCase(value);
+
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi2Out = ON.equalsIgnoreCase(value);
 
         // Some receivers may use Src_Name instead?
         value = getNodeContentOrEmpty(statusNode, inputSelNamePath);

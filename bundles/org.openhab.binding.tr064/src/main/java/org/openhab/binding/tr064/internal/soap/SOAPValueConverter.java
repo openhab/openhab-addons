@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +39,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -56,9 +58,11 @@ import com.google.gson.GsonBuilder;
 public class SOAPValueConverter {
     private final Logger logger = LoggerFactory.getLogger(SOAPValueConverter.class);
     private final HttpClient httpClient;
+    private final int timeout;
 
-    public SOAPValueConverter(HttpClient httpClient) {
+    public SOAPValueConverter(HttpClient httpClient, int timeout) {
         this.httpClient = httpClient;
+        this.timeout = timeout;
     }
 
     /**
@@ -74,37 +78,40 @@ public class SOAPValueConverter {
             // we don't have data to send
             return Optional.of("");
         }
-        if (command instanceof QuantityType) {
-            QuantityType<?> value = (unit.isEmpty()) ? ((QuantityType<?>) command)
-                    : ((QuantityType<?>) command).toUnit(unit);
+        if (command instanceof QuantityType quantityCommand) {
+            QuantityType<?> value = (unit.isEmpty()) ? quantityCommand : quantityCommand.toUnit(unit);
             if (value == null) {
                 logger.warn("Could not convert {} to unit {}", command, unit);
                 return Optional.empty();
             }
             switch (dataType) {
-                case "ui2":
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
-                case "i4":
-                case "ui4":
+                }
+                case "i4", "ui4" -> {
                     return Optional.of(String.valueOf(value.intValue()));
-                default:
+                }
+                default -> {
+                }
             }
-        } else if (command instanceof DecimalType) {
-            BigDecimal value = ((DecimalType) command).toBigDecimal();
+        } else if (command instanceof DecimalType decimalCommand) {
+            BigDecimal value = decimalCommand.toBigDecimal();
             switch (dataType) {
-                case "ui2":
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
-                case "i4":
-                case "ui4":
+                }
+                case "i4", "ui4" -> {
                     return Optional.of(String.valueOf(value.intValue()));
-                default:
+                }
+                default -> {
+                }
             }
         } else if (command instanceof StringType) {
-            if (dataType.equals("string")) {
+            if ("string".equals(dataType)) {
                 return Optional.of(command.toString());
             }
         } else if (command instanceof OnOffType) {
-            if (dataType.equals("boolean")) {
+            if ("boolean".equals(dataType)) {
                 return Optional.of(OnOffType.ON.equals(command) ? "1" : "0");
             }
         }
@@ -124,27 +131,35 @@ public class SOAPValueConverter {
             @Nullable Tr064ChannelConfig channelConfig) {
         String dataType = channelConfig != null ? channelConfig.getDataType() : "string";
         String unit = channelConfig != null ? channelConfig.getChannelTypeDescription().getItem().getUnit() : "";
+        BigDecimal factor = channelConfig != null ? channelConfig.getChannelTypeDescription().getItem().getFactor()
+                : null;
 
         return getSOAPElement(soapMessage, element).map(rawValue -> {
             // map rawValue to State
             switch (dataType) {
-                case "boolean":
-                    return rawValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                case "string":
+                case "boolean" -> {
+                    return OnOffType.from(!"0".equals(rawValue));
+                }
+                case "string" -> {
                     return new StringType(rawValue);
-                case "ui2":
-                case "i4":
-                case "ui4":
-                    if (!unit.isEmpty()) {
-                        return new QuantityType<>(rawValue + " " + unit);
-                    } else {
-                        return new DecimalType(rawValue);
+                }
+                case "ui1", "ui2", "i4", "ui4" -> {
+                    BigDecimal decimalValue = new BigDecimal(rawValue);
+                    if (factor != null) {
+                        decimalValue = decimalValue.multiply(factor);
                     }
-                default:
+                    if (!unit.isEmpty()) {
+                        return new QuantityType<>(decimalValue + " " + unit);
+                    } else {
+                        return new DecimalType(decimalValue);
+                    }
+                }
+                default -> {
                     return null;
+                }
             }
         }).map(state -> {
-            // check if we need post processing
+            // check if we need post-processing
             if (channelConfig == null
                     || channelConfig.getChannelTypeDescription().getGetAction().getPostProcessor() == null) {
                 return state;
@@ -154,8 +169,8 @@ public class SOAPValueConverter {
                 Method method = SOAPValueConverter.class.getDeclaredMethod(postProcessor, State.class,
                         Tr064ChannelConfig.class);
                 Object o = method.invoke(this, state, channelConfig);
-                if (o instanceof State) {
-                    return (State) o;
+                if (o instanceof State stateInstance) {
+                    return stateInstance;
                 }
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 logger.warn("Postprocessor {} not found, this most likely is a programming error", postProcessor, e);
@@ -169,6 +184,55 @@ public class SOAPValueConverter {
     }
 
     /**
+     * post processor for current bitrate
+     */
+    @SuppressWarnings("unused")
+    private State processCurrentBitrate(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
+        Double bps = Arrays.stream(state.toString().split(",")).mapToDouble(s -> {
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                return 0.0;
+            }
+        }).limit(3).average().orElse(Double.NaN);
+
+        if (bps.equals(Double.NaN)) {
+            return UnDefType.UNDEF;
+        } else {
+            return new QuantityType<>(bps * 8.0 / 1024.0, Units.KILOBIT_PER_SECOND);
+        }
+    }
+
+    /**
+     * post processor to map mac device signal strength to system.signal-strength 0-4
+     *
+     * @param state with signalStrength
+     * @param channelConfig channel config of the mac signal strength
+     * @return the mapped system.signal-strength in range 0-4
+     */
+    @SuppressWarnings("unused")
+    private State processMacSignalStrength(State state, Tr064ChannelConfig channelConfig) {
+        State mappedSignalStrength = UnDefType.UNDEF;
+        DecimalType currentStateValue = state.as(DecimalType.class);
+
+        if (currentStateValue != null) {
+            if (currentStateValue.intValue() > 80) {
+                mappedSignalStrength = new DecimalType(4);
+            } else if (currentStateValue.intValue() > 60) {
+                mappedSignalStrength = new DecimalType(3);
+            } else if (currentStateValue.intValue() > 40) {
+                mappedSignalStrength = new DecimalType(2);
+            } else if (currentStateValue.intValue() > 20) {
+                mappedSignalStrength = new DecimalType(1);
+            } else {
+                mappedSignalStrength = new DecimalType(0);
+            }
+        }
+
+        return mappedSignalStrength;
+    }
+
+    /**
      * post processor for answering machine new messages channel
      *
      * @param state the message list URL
@@ -179,14 +243,14 @@ public class SOAPValueConverter {
     @SuppressWarnings("unused")
     private State processTamListURL(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
         try {
-            ContentResponse response = httpClient.newRequest(state.toString()).timeout(1000, TimeUnit.MILLISECONDS)
+            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.SECONDS)
                     .send();
             String responseContent = response.getContentAsString();
             int messageCount = responseContent.split("<New>1</New>").length - 1;
 
             return new DecimalType(messageCount);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new PostProcessingException("Failed to get TAM list from URL " + state.toString(), e);
+            throw new PostProcessingException("Failed to get TAM list from URL " + state, e);
         }
     }
 
@@ -266,23 +330,22 @@ public class SOAPValueConverter {
      */
     private State processCallList(State state, @Nullable String days, CallListType type)
             throws PostProcessingException {
-        Root callListRoot = Util.getAndUnmarshalXML(httpClient, state.toString() + "&days=" + days, Root.class);
+        Root callListRoot = Util.getAndUnmarshalXML(httpClient, state + "&days=" + days, Root.class, timeout);
         if (callListRoot == null) {
-            throw new PostProcessingException("Failed to get call list from URL " + state.toString());
+            throw new PostProcessingException("Failed to get call list from URL " + state);
         }
         List<Call> calls = callListRoot.getCall();
         switch (type) {
-            case INBOUND_COUNT:
-            case MISSED_COUNT:
-            case OUTBOUND_COUNT:
-            case REJECTED_COUNT:
+            case INBOUND_COUNT, MISSED_COUNT, OUTBOUND_COUNT, REJECTED_COUNT -> {
                 long callCount = calls.stream().filter(call -> type.typeString().equals(call.getType())).count();
                 return new DecimalType(callCount);
-            case JSON_LIST:
+            }
+            case JSON_LIST -> {
                 Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").serializeNulls().create();
                 List<CallListEntry> callListEntries = calls.stream().map(CallListEntry::new)
                         .collect(Collectors.toList());
                 return new StringType(gson.toJson(callListEntries));
+            }
         }
         return UnDefType.UNDEF;
     }

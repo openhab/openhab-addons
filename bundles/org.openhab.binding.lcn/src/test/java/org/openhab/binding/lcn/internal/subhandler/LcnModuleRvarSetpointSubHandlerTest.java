@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,7 +75,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT1)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(1100), LcnChannelGroup.RVARSETPOINT, 0);
-        verify(handler).sendPck("REASA+100");
+        verify(handler).sendPck("X2030032100");
     }
 
     @Test
@@ -82,7 +83,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT2)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(1100), LcnChannelGroup.RVARSETPOINT, 1);
-        verify(handler).sendPck("REBSA+100");
+        verify(handler).sendPck("X2030096100");
     }
 
     @Test
@@ -90,7 +91,7 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT1)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(900), LcnChannelGroup.RVARSETPOINT, 0);
-        verify(handler).sendPck("REASA-100");
+        verify(handler).sendPck("X2030040100");
     }
 
     @Test
@@ -98,41 +99,47 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
         when(info.getVariableValue(Variable.RVARSETPOINT2)).thenReturn(1000L);
         when(info.hasExtendedMeasurementProcessing()).thenReturn(false);
         l.handleCommandDecimal(new DecimalType(900), LcnChannelGroup.RVARSETPOINT, 1);
-        verify(handler).sendPck("REBSA-100");
+        verify(handler).sendPck("X2030104100");
     }
 
     @Test
     public void testRvar1() {
-        l.tryParse("=M000005.S11234");
+        tryParseAllHandlers("=M000005.S11234");
         verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1", new DecimalType(1234));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "1", OnOffType.OFF);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testRvar2() {
-        l.tryParse("=M000005.S21234");
+        tryParseAllHandlers("=M000005.S21234");
         verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "2", new DecimalType(1234));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "2", OnOffType.OFF);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testRvar1SensorDefective() {
-        l.tryParse("=M000005.S132512");
-        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1", new StringType("DEFECTIVE"));
+        tryParseAllHandlers("=M000005.S132512");
+        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1",
+                new StringType("Sensor defective: RVARSETPOINT1"));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "1", OnOffType.OFF);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testRvar1Locked() {
-        l.tryParse("=M000005.S134002");
+        tryParseAllHandlers("=M000005.S134002");
         verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1", new DecimalType(1234));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "1", OnOffType.ON);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testRvar2Locked() {
-        l.tryParse("=M000005.S234002");
+        tryParseAllHandlers("=M000005.S234002");
         verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "2", new DecimalType(1234));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "2", OnOffType.ON);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 }

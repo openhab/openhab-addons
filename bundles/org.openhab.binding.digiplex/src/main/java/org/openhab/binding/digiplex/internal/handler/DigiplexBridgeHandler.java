@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TooManyListenersException;
@@ -31,12 +31,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.digiplex.internal.DigiplexBindingConstants;
 import org.openhab.binding.digiplex.internal.DigiplexBridgeConfiguration;
 import org.openhab.binding.digiplex.internal.communication.CommunicationStatus;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponseResolver;
+import org.openhab.binding.digiplex.internal.communication.ErroneousResponse;
 import org.openhab.binding.digiplex.internal.communication.events.AbstractEvent;
 import org.openhab.binding.digiplex.internal.communication.events.TroubleEvent;
 import org.openhab.binding.digiplex.internal.communication.events.TroubleStatus;
@@ -101,7 +103,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     @Override
     public void initialize() {
         config = getConfigAs(DigiplexBridgeConfiguration.class);
-        if (config.port == null) {
+        if (config.port.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         }
@@ -272,7 +274,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DigiplexDiscoveryService.class);
+        return List.of(DigiplexDiscoveryService.class);
     }
 
     private class BridgeMessageHandler implements DigiplexMessageHandler {
@@ -294,6 +296,12 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
                 updateState(channel, state);
             }
         }
+
+        @Override
+        public void handleErroneousResponse(ErroneousResponse response) {
+            logger.debug("Erroneous response: {}", response.message);
+            handleCommunicationError();
+        }
     }
 
     private class DigiplexReceiverThread extends Thread {
@@ -303,13 +311,13 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
         private final InputStream stream;
 
         DigiplexReceiverThread(InputStream stream) {
-            super("DigiplexReceiveThread");
+            super(String.format("OH-binding-%s-%s", DigiplexBindingConstants.BINDING_ID, "Receiver"));
             this.stream = stream;
         }
 
         @Override
         public void run() {
-            logger.debug("Receiver thread started");
+            logger.debug("Starting receiver thread");
             while (!interrupted()) {
                 try {
                     Optional<String> message = readLineBlocking();
@@ -360,14 +368,14 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         @Override
         public void run() {
-            logger.debug("Sender thread started");
+            logger.debug("Starting sender thread");
             while (!interrupted()) {
                 try {
                     DigiplexRequest request = sendQueue.take();
                     stream.write(request.getSerialMessage().getBytes());
                     stream.flush();
                     updateState(BRIDGE_MESSAGES_SENT, new DecimalType(messagesSent.incrementAndGet()));
-                    logger.debug("message sent: '{}'", request.getSerialMessage().replaceAll("\r", ""));
+                    logger.debug("message sent: '{}'", request.getSerialMessage().replace("\r", ""));
                     Thread.sleep(SLEEP_TIME); // do not flood PRT3 with messages as it creates unpredictable responses
                 } catch (IOException e) {
                     handleCommunicationError();

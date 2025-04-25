@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -158,7 +158,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     configurationParameter.getKey(), configurationParameter.getValue());
 
             // Test if it is a part of the configuration properties.
-            // As paperUI sends all parameters as changed, we need to determine which ones really changed.
+            // With the update all parameters are sends, so we need to determine which ones really changed.
             if (deviceProperties.containsKey(configurationParameter.getKey())) {
                 if (deviceProperties.get(configurationParameter.getKey()).equals(configurationParameter.getValue())) {
                     logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID(),
@@ -198,7 +198,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MaxDevicesActions.class);
+        return Set.of(MaxDevicesActions.class);
     }
 
     private void sendPropertyUpdate(Map<String, Object> configurationParameters, Map<String, Object> deviceProperties) {
@@ -536,30 +536,30 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void setDeviceConfiguration(Device device) {
         try {
-            boolean config_changed = false;
+            boolean configChanged = false;
             logger.debug("MAX! {} {} configuration update", device.getType(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
             if (!device.getRoomName().equalsIgnoreCase((String) getConfig().get(PROPERTY_ROOMNAME))) {
                 configuration.put(PROPERTY_ROOMNAME, device.getRoomName());
-                config_changed = true;
+                configChanged = true;
             }
-            if (getConfig().get(PROPERTY_ROOMID) == null || !(new BigDecimal(device.getRoomId())
-                    .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) == 0)) {
+            if (getConfig().get(PROPERTY_ROOMID) == null || new BigDecimal(device.getRoomId())
+                    .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) != 0) {
                 configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
-                config_changed = true;
+                configChanged = true;
             }
             if (!device.getName().equalsIgnoreCase((String) getConfig().get(PROPERTY_DEVICENAME))) {
                 configuration.put(PROPERTY_DEVICENAME, device.getName());
-                config_changed = true;
+                configChanged = true;
             }
             if (!device.getRFAddress().equalsIgnoreCase((String) getConfig().get(PROPERTY_RFADDRESS))) {
                 configuration.put(PROPERTY_RFADDRESS, device.getRFAddress());
-                config_changed = true;
+                configChanged = true;
             }
             for (Map.Entry<String, Object> entry : device.getProperties().entrySet()) {
                 configuration.put(entry.getKey(), entry.getValue());
             }
-            if (config_changed) {
+            if (configChanged) {
                 updateConfiguration(configuration);
                 logger.debug("Config updated: {}", configuration.getProperties());
             } else {

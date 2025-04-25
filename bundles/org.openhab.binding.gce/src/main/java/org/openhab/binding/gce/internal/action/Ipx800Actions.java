@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = Ipx800Actions.class)
 @ThingActionsScope(name = "gce")
 @NonNullByDefault
 public class Ipx800Actions implements ThingActions {
@@ -41,8 +44,8 @@ public class Ipx800Actions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof Ipx800v3Handler) {
-            this.handler = (Ipx800v3Handler) handler;
+        if (handler instanceof Ipx800v3Handler ipx800v3Handler) {
+            this.handler = ipx800v3Handler;
         }
     }
 
@@ -55,8 +58,7 @@ public class Ipx800Actions implements ThingActions {
     public void resetCounter(
             @ActionInput(name = "counter", label = "Counter", required = true, description = "Id of the counter", type = "java.lang.Integer") Integer counter) {
         logger.debug("IPX800 action 'resetCounter' called");
-        Ipx800v3Handler theHandler = this.handler;
-        if (theHandler != null) {
+        if (handler instanceof Ipx800v3Handler theHandler) {
             theHandler.resetCounter(counter);
         } else {
             logger.warn("Method call resetCounter failed because IPX800 action service ThingHandler is null!");
@@ -67,8 +69,7 @@ public class Ipx800Actions implements ThingActions {
     public void reset(
             @ActionInput(name = "placeholder", label = "Placeholder", required = false, description = "This parameter is not used", type = "java.lang.Integer") @Nullable Integer placeholder) {
         logger.debug("IPX800 action 'reset' called");
-        Ipx800v3Handler theHandler = this.handler;
-        if (theHandler != null) {
+        if (handler instanceof Ipx800v3Handler theHandler) {
             theHandler.reset();
         } else {
             logger.warn("Method call reset failed because IPX800 action service ThingHandler is null!");

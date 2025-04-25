@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,8 @@ import static org.mockito.Mockito.times;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,8 +38,16 @@ import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
-import org.openhab.binding.deconz.internal.types.*;
+import org.openhab.binding.deconz.internal.types.GroupType;
+import org.openhab.binding.deconz.internal.types.GroupTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.LightType;
+import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.binding.deconz.internal.types.ResourceTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -53,7 +61,7 @@ import com.google.gson.GsonBuilder;
  * @author Jan N. Klug - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class DeconzTest {
     private @NonNullByDefault({}) Gson gson;
@@ -85,7 +93,9 @@ public class DeconzTest {
         Mockito.doAnswer(answer -> CompletableFuture.completedFuture(Optional.of(bridgeFullState))).when(bridgeHandler)
                 .getBridgeFullState();
         ThingDiscoveryService discoveryService = new ThingDiscoveryService();
+        discoveryService.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
         discoveryService.setThingHandler(bridgeHandler);
+        discoveryService.initialize();
         discoveryService.addDiscoveryListener(discoveryListener);
         discoveryService.startScan();
         Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
@@ -108,10 +118,9 @@ public class DeconzTest {
     @Test
     public void dateTimeConversionTest() {
         DateTimeType dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09Z");
-        assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:00Z")), dateTime);
+        assertEquals(new DateTimeType(Instant.parse("2020-08-22T11:09:00Z")), dateTime);
 
         dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09:47");
-        assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()),
-                dateTime);
+        assertEquals(new DateTimeType(Instant.parse("2020-08-22T11:09:47Z")), dateTime);
     }
 }

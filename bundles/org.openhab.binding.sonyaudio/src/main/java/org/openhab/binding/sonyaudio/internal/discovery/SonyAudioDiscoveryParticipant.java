@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.sonyaudio.internal.SonyAudioBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -61,15 +60,15 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
-            String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
-                    : device.getDetails().getFriendlyName();
-            String host = device.getIdentity().getDescriptorURL().getHost();
-            int port = device.getIdentity().getDescriptorURL().getPort();
-            String path = device.getIdentity().getDescriptorURL().getPath();
+            String friendlyName = device.getDetails().getFriendlyName();
+            String label = friendlyName == null || friendlyName.isEmpty() ? device.getDisplayString() : friendlyName;
+            URL descriptorURL = device.getIdentity().getDescriptorURL();
+            String host = descriptorURL.getHost();
+            int port = descriptorURL.getPort();
+            String path = descriptorURL.getPath();
             try {
                 Map<String, Object> properties = getDescription(host, port, path);
-                properties.put(SonyAudioBindingConstants.HOST_PARAMETER,
-                        device.getIdentity().getDescriptorURL().getHost());
+                properties.put(SonyAudioBindingConstants.HOST_PARAMETER, descriptorURL.getHost());
                 result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties).build();
             } catch (IOException e) {
                 return null;
@@ -82,18 +81,20 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
 
-        if (!StringUtils.containsIgnoreCase(device.getDetails().getManufacturerDetails().getManufacturer(),
-                SonyAudioBindingConstants.MANUFACTURER)) {
+        String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+        if (manufacturer == null
+                || !manufacturer.toLowerCase().contains(SonyAudioBindingConstants.MANUFACTURER.toLowerCase())) {
             return result;
         }
 
         logger.debug("Manufacturer matched: search: {}, device value: {}.", SonyAudioBindingConstants.MANUFACTURER,
-                device.getDetails().getManufacturerDetails().getManufacturer());
-        if (!StringUtils.containsIgnoreCase(device.getType().getType(), SonyAudioBindingConstants.UPNP_DEVICE_TYPE)) {
+                manufacturer);
+        String type = device.getType().getType();
+        if (type == null || !type.toLowerCase().contains(SonyAudioBindingConstants.UPNP_DEVICE_TYPE.toLowerCase())) {
             return result;
         }
         logger.debug("Device type matched: search: {}, device value: {}.", SonyAudioBindingConstants.UPNP_DEVICE_TYPE,
-                device.getType().getType());
+                type);
         logger.debug("Device services: {}", device.getServices().toString());
         String deviceModel = device.getDetails().getModelDetails() != null
                 ? device.getDetails().getModelDetails().getModelName()
@@ -127,19 +128,19 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
             while ((s = bufferedReader.readLine()) != null) {
                 builder.append(s);
             }
-            Pattern ScalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
+            Pattern scalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
             Pattern baseURLmatch = Pattern.compile("http://(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d+)([^<]*)");
 
-            Matcher tagmatch = ScalarWebAPImatch.matcher(builder.toString());
+            Matcher tagmatch = scalarWebAPImatch.matcher(builder.toString());
             if (tagmatch.find()) {
                 Matcher matcher = baseURLmatch.matcher(tagmatch.group());
                 matcher.find();
                 // String scalar_host = matcher.group(0);
-                int scalar_port = Integer.parseInt(matcher.group(2));
-                String scalar_path = matcher.group(3);
+                int scalarPort = Integer.parseInt(matcher.group(2));
+                String scalarPath = matcher.group(3);
 
-                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalar_port);
-                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalar_path);
+                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalarPort);
+                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalarPath);
             }
             return properties;
         }

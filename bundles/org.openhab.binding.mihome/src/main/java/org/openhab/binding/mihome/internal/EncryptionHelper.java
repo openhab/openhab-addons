@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mihome.internal;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encrypts communication between openhab & xiaomi bridge (required by xiaomi).
+ * Encrypts communication between openhab and xiaomi bridge (required by xiaomi).
  *
  * @author Ondřej Pečta - Initial contribution to Xiaomi MiHome Binding for OH 1.x
  * @author Dieter Schmidt - Refactor logger
@@ -55,13 +55,7 @@ public class EncryptionHelper {
             logger.warn("Failed to construct Cipher");
             return "";
         }
-        SecretKeySpec keySpec;
-        try {
-            keySpec = new SecretKeySpec(key.getBytes("UTF8"), "AES");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Failed to construct SecretKeySpec");
-            return "";
-        }
+        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
         try {
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
         } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {

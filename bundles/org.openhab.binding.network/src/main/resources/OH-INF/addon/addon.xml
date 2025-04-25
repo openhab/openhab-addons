@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="network" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Network Binding</name>
+	<description>The Network Binding can be used for device presence detection and to determine network device health</description>
+	<connection>local</connection>
+	<config-description>
+		<parameter name="allowSystemPings" type="boolean">
+			<default>true</default>
+			<label>Allow System Pings</label>
+			<description>Allows or disallows to use system pings next to the java integrated ping functionality.
+				On windows the
+				system ping works more reliable most of the time.</description>
+		</parameter>
+		<parameter name="allowDHCPlisten" type="boolean">
+			<default>true</default>
+			<label>Listen for DHCP Requests</label>
+			<description>Usually a device requests an IP address in an IPv4 network with the help of DHCP as soon as it enters a
+				network. If we listen to those
+				packets, we can detect a device presence even faster. You need elevated access rights
+				(see readme) for this to work.</description>
+		</parameter>
+		<parameter name="cacheDeviceStateTimeInMS" type="integer" unit="ms">
+			<default>2000</default>
+			<label>Cache Time</label>
+			<description>The result of a device presence detection is cached for a small amount of time. Be aware that no new
+				pings will be issued within this time frame, even if explicitly requested.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="arpPingToolPath" type="text">
+			<default>arping</default>
+			<label>ARP Ping Tool Path</label>
+			<description>If your arp ping tool is not called arping and cannot be found in the PATH environment, you can
+				configure the absolute path / tool name here.</description>
+		</parameter>
+		<parameter name="preferResponseTimeAsLatency" type="boolean">
+			<default>false</default>
+			<label>Use Response Time as Latency</label>
+			<description>If enabled, an attempt will be made to extract the latency from the output of the ping command. If no
+				such latency value is found in the ping command output, the time to execute the ping command is used as fallback
+				latency. If disabled, the time to execute the ping command is always used as latency value.</description>
+		</parameter>
+	</config-description>
+</addon:addon>
