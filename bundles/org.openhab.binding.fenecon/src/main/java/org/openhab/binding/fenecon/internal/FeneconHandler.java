@@ -30,6 +30,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -175,6 +176,12 @@ public class FeneconHandler extends BaseThingHandler {
                 // { "address": "_meta/Version","type": "STRING", "accessMode": "RO", "text": "", "unit": "", "value":
                 // "2025.2.3"}
                 updateState(FeneconBindingConstants.FEMS_VERSION_CHANNEL, new StringType(response.value()));
+                break;
+            case FeneconBindingConstants.BATT_INVERTER_AIR_TEMP_ADDRESS:
+                // {"address": "batteryInverter0/AirTemperature","type": "INTEGER","accessMode": "RO", "text": "",
+                // "unit": "C", "value": 41 }
+                updateState(FeneconBindingConstants.BATT_INVERTER_AIR_TEMP_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), SIUnits.CELSIUS));
                 break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());

@@ -51,6 +51,7 @@ The FENECON binding currently only provides access to read out the values from t
 | consumption-active-power-l3   | Number:Power         | R          | Current active power consumer load in watt on phase 3.                      |
 | import-from-grid-power        | Number:Power         | R          | Current import power from grid in watt.                                     |
 | imported-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
+| inverter-air-temperature      | Number:Temperature   | R          | Air temperature at the inverter in °C.                                      |
 
 ## Full Example
 
@@ -91,6 +92,7 @@ Number:Power         ConsumptionActivePowerPhase2   <energy>       (GF_UtilityRo
 Number:Power         ConsumptionActivePowerPhase3   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l3"}
 Number:Power         BuyFromGridPower               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:import-from-grid-power"}
 Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:imported-from-grid-energy"}
+Number:Temperature   InverterAirTemp                <temperature>  (GF_UtilityRoomSolar) ["Measurement", "Temperature"] {channel="fenecon:home-device:local:inverter-air-temperature"}
 
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)

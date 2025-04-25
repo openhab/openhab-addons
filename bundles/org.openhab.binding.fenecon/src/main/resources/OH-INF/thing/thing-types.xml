@@ -31,6 +31,7 @@
 			<channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
 			<channel id="import-from-grid-power" typeId="import-from-grid-power"/>
 			<channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
+			<channel id="inverter-air-temperature" typeId="inverter-air-temperature"/>
 		</channels>
 
 		<config-description>
@@ -180,6 +181,13 @@
 		<label>Imported Grid Energy</label>
 		<description>Total energy imported from the grid in watt per hour.</description>
 		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="inverter-air-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Inverter Air Temperature</label>
+		<description>Air temperature at the inverter.</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
