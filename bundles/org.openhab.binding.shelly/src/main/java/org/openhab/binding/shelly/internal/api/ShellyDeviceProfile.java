@@ -158,9 +158,6 @@ public class ShellyDeviceProfile {
         String mode = getString(device.mode);
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
-        if (name.contains("pro1cb")) {
-            int i = 1;
-        }
         numRelays = !isLight ? getInteger(device.numOutputs) : 0;
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
