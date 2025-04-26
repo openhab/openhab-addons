@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.robotic_vacuum_cleaner.label</label>
 		<description>@text/thing-type.mielecloud.robotic_vacuum_cleaner.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channels>
 			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>

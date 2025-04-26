@@ -7,6 +7,7 @@
 	<thing-type id="s20">
 		<label>Orvibo S20 Smart Wifi Socket</label>
 		<description>This is an Orvibo S20 Smart Wifi Socket</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 		</channels>

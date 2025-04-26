@@ -12,6 +12,7 @@
 
 		<label>Pentair Intelliflo</label>
 		<description>A Pentair Intelliflo pump</description>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="run" typeId="run"/>

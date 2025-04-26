@@ -11,6 +11,7 @@
 
 		<label>Caddx Alarm Zone</label>
 		<description>Represents a physical device such as a door, window, or motion sensor.</description>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 
 		<channels>
 			<!-- Zone partitions -->

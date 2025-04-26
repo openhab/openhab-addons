@@ -7,6 +7,7 @@
 	<bridge-type id="network">
 		<label>Insteon Network (Legacy)</label>
 		<description>An Insteon PLM or Hub that communicates with Insteon devices.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
@@ -42,7 +43,7 @@
 
 		<label>Insteon Device (Legacy)</label>
 		<description>An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<representation-property>address</representation-property>
 
 		<config-description>

@@ -135,11 +135,11 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             scriptEngine.put("$dependencyListener", jrubyDependencyTracker.getTracker(wrapper.getScriptIdentifier()));
         }
 
-        // scopeValues is called twice. The first call only passed 'se'. The second call
-        // passed the rest of the
-        // presets, including 'ir'. We wait for the second call before running the
-        // require statements.
+        // scopeValues is called twice. The first call only passed 'se'.
+        // The second call passed the rest of the presets, including 'ir'.
+        // We wait for the second call before running the require statements.
         if (scopeValues.containsKey("ir")) {
+            configuration.bundlerSetup(scriptEngine);
             configuration.injectRequire(scriptEngine);
         }
     }
@@ -203,9 +203,5 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             return false;
         }
         return file.startsWith(gemHome + File.separator);
-    }
-
-    public void updateGems(ScriptEngine engine) {
-        configuration.configureGems(engine, true);
     }
 }

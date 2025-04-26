@@ -8,7 +8,7 @@
 		<label>KB130</label>
 		<description>TP-Link KB130 Kasa Multi-color Smart Light Bulb</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>

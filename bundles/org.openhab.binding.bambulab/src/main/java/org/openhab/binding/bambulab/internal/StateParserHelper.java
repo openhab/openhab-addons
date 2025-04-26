@@ -141,8 +141,12 @@ public class StateParserHelper {
     public static Optional<State> parseSpeedLevel(@Nullable Integer speedLvl) {
         return Optional.ofNullable(speedLvl)//
                 .map(PrintSpeedCommand::findByLevel)//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType);
+                .map(lvl -> {
+                    if (!lvl.canSend()) {
+                        return UNDEF;
+                    }
+                    return new StringType(lvl.getName());
+                });
     }
 
     public static Optional<State> parseTrayType(@Nullable String trayType) {

@@ -8,7 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Hayward OmniLogix Connection</label>
 		<description>Connection to Hayward's Server</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="endpointUrl" type="text" required="true">
 				<context>url</context>
