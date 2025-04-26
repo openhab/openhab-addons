@@ -695,10 +695,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>.</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
+              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
+            </validationSet>
+          </validationSets>
+          <catalogs>
+            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
+    <profile>
+      <id>skipXmlValidation</id>
+      <activation>
+        <file>
+          <exists>skipXmlValidation.marker</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>
