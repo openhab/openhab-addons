@@ -208,6 +208,12 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState(FeneconBindingConstants.BATT_TOWER_CURRENT_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.AMPERE));
                 break;
+            case FeneconBindingConstants.BATT_SOH_ADDRESS:
+                // { "address": "battery0/Soh", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "%", "value":
+                // 100 }
+                updateState(FeneconBindingConstants.BATT_SOH_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.PERCENT));
+                break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());
                 break;

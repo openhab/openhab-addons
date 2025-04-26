@@ -37,6 +37,7 @@ The FENECON binding currently only provides access to read out the values from t
 | fems-version                  | String                     | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3              |
 | last-update                   | DateTime                   | R          | Last successful update via REST-API from the FENECON system                 |
 | ess-soc                       | Number:Dimensionless       | R          | Battery state of charge in percent                                          |
+| batt-tower-soh                | Number:Dimensionless       | R          | Battery state of health in percent.                                         |
 | charger-power                 | Number:Power               | R          | Current charger power of energy storage system in watt.                     |
 | discharger-power              | Number:Power               | R          | Current discharger power of energy storage system in watt.                  |
 | emergency-power-mode          | Switch                     | R          | Indicates if there is grid power is off and the emergency power mode is on. |
@@ -81,6 +82,7 @@ String                     FemsVersion                    <text>         (GF_Uti
 DateTime                   LastFeneconUpdate              <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:last-update"}
 
 Number:Dimensionless       EssSoc                         <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:ess-soc"}
+Number:Dimensionless       BattSoh                        <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:batt-tower-soh"}
 Number:Power               ChargerPower                   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger-power"}
 Number:Power               DischargerPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:discharger-power"}
 Switch                     EmergencyPowerMode             <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:home-device:local:emergency-power-mode"}

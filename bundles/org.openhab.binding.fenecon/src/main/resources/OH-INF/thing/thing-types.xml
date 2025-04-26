@@ -17,6 +17,7 @@
 			<channel id="fems-version" typeId="fems-version"/>
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="ess-soc" typeId="ess-soc"/>
+			<channel id="batt-tower-soh" typeId="batt-tower-soh"/>
 			<channel id="charger-power" typeId="charger-power"/>
 			<channel id="discharger-power" typeId="discharger-power"/>
 			<channel id="emergency-power-mode" typeId="emergency-power-mode"/>
@@ -100,6 +101,13 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery State</label>
 		<description>Battery state of charge in percent</description>
+		<category>BatteryLevel</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="batt-tower-soh">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Health State</label>
+		<description>Battery state of health in percent</description>
 		<category>BatteryLevel</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -190,35 +198,35 @@
 	<channel-type id="inverter-air-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Air Temperature</label>
-		<description>Air temperature at the inverter.</description>
+		<description>Air temperature at the inverter in °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-radiator-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Radiator Temperature</label>
-		<description>Radiator temperature at the inverter.</description>
+		<description>Radiator temperature at the inverter in °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="bms-pack-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>BMS Pack Temperature</label>
-		<description>Temperature in the battery management system (BMS) box.</description>
+		<description>Temperature in the battery management system (BMS) box in °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>FEMS Battery Voltage</label>
-		<description>Battery voltage of the FENECON energy management system (FEMS).</description>
+		<description>Battery voltage of the FENECON energy management system (FEMS) in Volt.</description>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>FEMS Battery Current</label>
-		<description>Battery current of the FENECON energy management system (FEMS).</description>
+		<description>Battery current of the FENECON energy management system (FEMS) in Ampere.</description>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
