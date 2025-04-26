@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>Weather Company Account</label>
 		<description>Represents an account at the Weather Company service</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:weathercompany:account"/>
 	</bridge-type>
 
@@ -17,6 +18,7 @@
 
 		<label>Weather Company Observations</label>
 		<description>Current observations from Personal Weather Station</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channels>
 			<channel id="neighborhood" typeId="neighborhood"/>
 			<channel id="observationTimeLocal" typeId="observationTimeLocal"/>
@@ -76,6 +78,7 @@
 
 		<label>Weather Company Forecast</label>
 		<description>Weather Company weather forecast</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channel-groups>
 			<!-- Daily forecasts -->
 			<channel-group id="forecastDay0" typeId="forecastDay">

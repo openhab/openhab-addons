@@ -15,6 +15,7 @@
 		<label>@text/thing-type.velux.rollershutter.label</label>
 		<description>@text/thing-type.velux.rollershutter.description</description>
 		<category>Blinds</category>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="vanePosition" typeId="vanePosition"/>

@@ -7,7 +7,7 @@
 	<thing-type id="dimmer">
 		<label>WeMo DimmerSwitch</label>
 		<description>This is a WeMo DimmerSwitch</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="faderCountDownTime" typeId="faderCountDownTime"/>

@@ -8,6 +8,7 @@
 	<bridge-type id="heathub">
 		<label>HeatHub</label>
 		<description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<representation-property>networkAddress</representation-property>
 
@@ -42,6 +43,7 @@
 
 		<label>Boiler Controller</label>
 		<description>The controller attached to the boiler</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channels>
 			<channel id="heatingOverride" typeId="heatingOverride-channel"/>
@@ -79,6 +81,7 @@
 
 		<label>Hot Water</label>
 		<description>The hot water heating system</description>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 
 		<channels>
 			<channel id="hotWaterOverride" typeId="hotWaterOverride-channel"/>
@@ -108,6 +111,7 @@
 
 		<label>Room</label>
 		<description>A Room that contains a thermostat and/or TRV</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -145,6 +149,7 @@
 
 		<label>Thermostat</label>
 		<description>Wireless Thermostat device</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -182,6 +187,7 @@
 
 		<label>iTRV</label>
 		<description>Thermostatic Radiator Valve</description>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -219,6 +225,7 @@
 
 		<label>Smart Plug</label>
 		<description>Remote controlled Plug Socket</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="plugOutputState" typeId="plugOutputState-channel"/>

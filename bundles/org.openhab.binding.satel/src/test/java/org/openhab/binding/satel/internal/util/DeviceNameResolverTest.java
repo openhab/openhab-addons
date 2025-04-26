@@ -241,6 +241,11 @@ class DeviceNameResolverTest {
         assertEquals("telephone: unknown", result);
     }
 
+    @Test
+    void resolveTelephoneRelayShouldReturnTelephoneRelayName() {
+        assertEquals("telephone relay: 1", testSubject.resolveTelephoneRelay(1));
+    }
+
     void setUpResponse(String deviceName) {
         when(bridgeHandler.sendCommand(isA(ReadDeviceInfoCommand.class), eq(false))).thenAnswer(invocationOnMock -> {
             ReadDeviceInfoCommand cmd = invocationOnMock.getArgument(0);

@@ -9,6 +9,7 @@
 		<label>Entur Timetable</label>
 		<description>Provides real-time (estimated) departure timetable for chosen public transport line and stop in Norway.
 			Data provided by Entur.no API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="stopPlace" typeId="stopPlace"/>

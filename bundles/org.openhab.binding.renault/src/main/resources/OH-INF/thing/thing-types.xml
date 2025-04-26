@@ -8,6 +8,7 @@
 
 		<label>Renault Car</label>
 		<description>A MyRenault registered car.</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>

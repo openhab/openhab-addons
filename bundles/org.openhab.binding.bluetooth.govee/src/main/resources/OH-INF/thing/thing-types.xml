@@ -14,7 +14,7 @@
 
 		<label>Govee Hygrometer</label>
 		<description>Govee Thermo-Hygrometer</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="battery" typeId="system.battery-level"/>
@@ -66,7 +66,7 @@
 
 		<label>Govee Monitoring Hygrometer</label>
 		<description>Govee Thermo-Hygrometer w/ Warning Alarms</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="battery" typeId="system.battery-level"/>

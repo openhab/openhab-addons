@@ -28,8 +28,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.ApiController;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -56,51 +57,25 @@ import org.xml.sax.InputSource;
 @NonNullByDefault
 public class WemoLinkDiscoveryService extends AbstractDiscoveryService implements UpnpIOParticipant {
 
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
+    private static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
+    private static final int SCAN_INTERVAL_SECONDS = 120;
+
     private final Logger logger = LoggerFactory.getLogger(WemoLinkDiscoveryService.class);
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
-
-    public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
-
-    /**
-     * Maximum time to search for devices in seconds.
-     */
-    private static final int SEARCH_TIME = 20;
-
-    /**
-     * Scan interval for scanning job in seconds.
-     */
-    private static final int SCAN_INTERVAL = 120;
-
-    /**
-     * The handler for WeMo Link bridge
-     */
     private final WemoBridgeHandler wemoBridgeHandler;
-
-    /**
-     * Job which will do the background scanning
-     */
     private final WemoLinkScan scanningRunnable;
+    private final UpnpIOService service;
+    private final ApiController apiController;
 
-    /**
-     * Schedule for scanning
-     */
     private @Nullable ScheduledFuture<?> scanningJob;
 
-    /**
-     * The Upnp service
-     */
-    private UpnpIOService service;
-
-    private final WemoHttpCall wemoHttpCaller;
-
-    public WemoLinkDiscoveryService(WemoBridgeHandler wemoBridgeHandler, UpnpIOService upnpIOService,
-            WemoHttpCall wemoHttpCaller) {
-        super(SEARCH_TIME);
+    public WemoLinkDiscoveryService(final WemoBridgeHandler wemoBridgeHandler, final UpnpIOService upnpIOService,
+            final HttpClient httpClient) {
+        super(DISCOVERY_TIMEOUT_SECONDS);
         this.service = upnpIOService;
         this.wemoBridgeHandler = wemoBridgeHandler;
-
-        this.wemoHttpCaller = wemoHttpCaller;
+        this.apiController = new ApiController(httpClient);
 
         this.scanningRunnable = new WemoLinkScan();
         this.activate(null);
@@ -139,7 +114,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
                 String deviceURL = substringBefore(descriptorURL.toString(), "/setup.xml");
                 String wemoURL = deviceURL + "/upnp/control/bridge1";
 
-                String endDeviceRequest = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                String endDeviceRequest = apiController.executeCall(wemoURL, soapHeader, content);
 
                 logger.trace("endDeviceRequest answered '{}'", endDeviceRequest);
 
@@ -246,7 +221,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
         if (job == null || job.isCancelled()) {
             this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable,
-                    LINK_DISCOVERY_SERVICE_INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+                    LINK_DISCOVERY_SERVICE_INITIAL_DELAY, SCAN_INTERVAL_SECONDS, TimeUnit.SECONDS);
         } else {
             logger.trace("scanningJob active");
         }

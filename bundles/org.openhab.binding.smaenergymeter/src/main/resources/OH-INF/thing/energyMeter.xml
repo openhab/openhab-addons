@@ -6,7 +6,7 @@
 
 	<thing-type id="energymeter">
 		<label>SMA Energy Meter</label>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="powerIn" typeId="powerInType"/>
 			<channel id="powerOut" typeId="powerOutType"/>

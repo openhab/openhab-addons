@@ -8,6 +8,7 @@
 	<thing-type id="rsp1069">
 		<label>RSP-1069 Surround Processor</label>
 		<description>Connection to the Rotel RSP-1069 surround processor</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="mainZone" typeId="mainZoneType1"/>

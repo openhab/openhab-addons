@@ -1,0 +1,12 @@
+# This workflow triggers the ci_build workflow when a pull request
+# is labeled with 'rebuild'.
+name: Trigger ci_build on label
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  trigger-build:
+    if: ${{ github.event.label.name == 'rebuild' }}
+    uses: ./.github/workflows/ci-build.yml

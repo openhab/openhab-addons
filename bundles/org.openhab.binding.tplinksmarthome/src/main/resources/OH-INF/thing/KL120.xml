@@ -8,7 +8,7 @@
 		<label>KL120</label>
 		<description>TP-Link KL120 Smart Wi-Fi LED Bulb with Tunable White Light Brightness</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>
