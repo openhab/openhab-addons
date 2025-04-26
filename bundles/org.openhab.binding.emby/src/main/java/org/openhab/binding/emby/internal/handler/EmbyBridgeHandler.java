@@ -14,6 +14,9 @@ package org.openhab.binding.emby.internal.handler;
 
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONNECTION_CHECK_INTERVAL_MS;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,10 +26,13 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.emby.internal.EmbyBridgeConfiguration;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
+import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 import org.openhab.binding.emby.internal.protocol.EmbyHTTPUtils;
 import org.openhab.binding.emby.internal.protocol.EmbyHttpRetryExceeded;
 import org.openhab.core.config.core.validation.ConfigValidationException;
+import org.openhab.core.config.core.validation.ConfigValidationMessage;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -38,6 +44,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,15 +67,41 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private @Nullable String callbackIpAddress = null;
     private @Nullable EmbyClientDiscoveryService clientDiscoveryService;
     private @Nullable EmbyHTTPUtils httputils;
-    private EmbyBridgeConfiguration config;
+    private @Nullable EmbyBridgeConfiguration config;
     private int reconnectionCount;
-    private String lastDiscoveryStatus = null;
+    private @Nullable String lastDiscoveryStatus = null;
+    private int port;
+    @Reference
+    private @Nullable TranslationProvider i18nProvider;
 
     public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port,
-            WebSocketClient passedWebSocketClient) {
+            WebSocketClient webSocketClient) {
         super(bridge);
-        this.callbackIpAddress = hostAddress + ":" + port;
-        this.webSocketClient = passedWebSocketClient;
+
+        if (hostAddress == null || port == null) {
+            throw new IllegalArgumentException("Host address and port must not be null");
+        }
+
+        // Validate host
+        try {
+            InetAddress.getByName(hostAddress);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid host address: " + hostAddress);
+        }
+
+        // Validate port
+        int portNumber;
+        try {
+            portNumber = Integer.parseInt(port);
+            if (portNumber < 1 || portNumber > 65535) {
+                throw new IllegalArgumentException("Port number out of range: " + port);
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid port number: " + port);
+        }
+
+        this.callbackIpAddress = hostAddress + ":" + portNumber;
+        this.webSocketClient = webSocketClient;
     }
 
     public void sendCommand(String commandURL) {
@@ -107,28 +142,15 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     private void establishConnection() {
         scheduler.execute(() -> {
-            try {
-                connection.connect(config.ipAddress, config.port, config.api, scheduler, config.refreshInterval,
-                        config.bufferSize);
+            connection.connect(config.ipAddress, config.port, config.api, scheduler, config.refreshInterval,
+                    config.bufferSize);
 
-                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
-                    if (!(connection.checkConnection())) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Connection could not be established");
-                    }
-                }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ie) {
-                // Preserve interrupt and stop trying
-                Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection init interrupted");
-            } catch (IOException | URISyntaxException io) {
-                // Expected I/O or URI parsing failures
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect: " + io.getMessage());
-            } catch (EmbyHttpRetryExceeded retryEx) {
-                // Too many retries contacting server
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Retry limit exceeded");
-            }
+            connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                if (!connection.checkConnection()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Connection could not be established");
+                }
+            }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
         });
     }
 
@@ -141,13 +163,15 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         scheduler.execute(() -> {
             this.reconnectionCount = 0;
             this.config = new EmbyBridgeConfiguration();
-            this.callbackIpAddress = hostAddress + ":" + port;
-            logger.debug("The callback ip address is: {}", callbackIpAddress);
+            if (callbackIpAddress != null) {
+                logger.debug("The callback ip address is: {}", callbackIpAddress);
+            } else {
+                logger.warn("Callback IP address is not set");
+            }
             if (config.api != null && !config.api.isEmpty()) {
                 this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
             }
-            this.webSocketClient = passedWebSocketClient;
-            this.connection = new EmbyConnection(this, passedWebSocketClient);
+            this.connection = new EmbyConnection(this, this.webSocketClient);
             try {
                 EmbyBridgeConfiguration cfg = checkConfiguration();
                 this.config = cfg;
@@ -156,9 +180,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             } catch (ConfigValidationException cve) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configuration error: " + cve.getMessage());
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initialization interrupted");
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Initialization failed: " + e.getMessage());
@@ -232,19 +253,27 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         if (embyConfig.api == null || embyConfig.api.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "There is no API key configured for this bridge, please add an API key to enable communication");
-            throw new ConfigValidationException("There is no API key configured for this bridge.");
+            throwValidationError("api", "Missing value for: api");
+
         }
 
         if (embyConfig.ipAddress == null || embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No network address specified, please specify the network address for the EMBY server");
-            throw new ConfigValidationException("No network address specified, please specify the network address for the EMBY server");
+            throwValidationError("ipAddress", "Missing value for: ipAddress");
+
         }
 
-        if (this.httputils == null && config.api != null && !config.api.isEmpty()) {
+        if (this.httputils == null && config != null && config.api != null && !config.api.isEmpty()) {
             this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
         }
         return embyConfig;
+    }
+
+    private void throwValidationError(String parameterName, String errorMessage) throws ConfigValidationException {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        ConfigValidationMessage message = new ConfigValidationMessage(parameterName, "error", errorMessage);
+        throw new ConfigValidationException(bundle, this.i18nProvider, Collections.singletonList(message));
     }
 
     private State pollCurrentValueBridge(ChannelUID channelUID) {
@@ -256,7 +285,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
             case "discoveryStatus":
                 // A simple text status you update as discovery runs
-                return (lastDiscoveryStatus != null) ? new StringType(lastDiscoveryStatus) : UnDefType.UNDEF;
+                return (this.lastDiscoveryStatus != null) ? new StringType(this.lastDiscoveryStatus) : UnDefType.UNDEF;
             default:
                 return UnDefType.UNDEF;
         }

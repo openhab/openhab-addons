@@ -173,7 +173,6 @@ public class EmbyPlayStateModel {
                 imagePath = "/emby/items/" + this.nowPlayingItem.getSeasonId() + "/Images/" + embyType;
             } else {
                 imagePath = "/emby/items/" + this.nowPlayingItem.getId() + "/Images/" + embyType;
-
             }
 
             String query = "";

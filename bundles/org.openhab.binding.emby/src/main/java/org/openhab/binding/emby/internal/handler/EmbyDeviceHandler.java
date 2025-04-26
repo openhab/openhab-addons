@@ -43,6 +43,7 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 import javax.measure.Unit;
 
@@ -53,6 +54,9 @@ import org.openhab.binding.emby.internal.EmbyEventListener;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.util.EmbyThrottle;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.core.validation.ConfigValidationException;
+import org.openhab.core.config.core.validation.ConfigValidationMessage;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
@@ -70,6 +74,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +90,7 @@ import org.slf4j.LoggerFactory;
 public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyDeviceHandler.class);
-    private EmbyDeviceConfiguration config;
+    private @Nullable EmbyDeviceConfiguration config;
     private @Nullable EmbyPlayStateModel currentPlayState = null;
     private @Nullable EmbyBridgeHandler bridgeHandler;
     private static final long MIN_UPDATE_INTERVAL_MS = 1000; // 1 second
@@ -95,6 +102,8 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     private boolean lastMuted = false;
     private long lastCurrentTime = -1;
     private long lastDuration = -1;
+    @Reference
+    private @Nullable TranslationProvider i18nProvider;
 
     public EmbyDeviceHandler(Thing thing) {
         super(thing);
@@ -102,35 +111,25 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // 1) Handle REFRESH requests immediately
         if (command instanceof RefreshType) {
             updateState(channelUID, pollCurrentValue(channelUID));
             return;
         }
-        // if we are in an active playstate then processs the command
+
         Channel channel = this.thing.getChannel(channelUID.getId());
         if (channel != null) {
-            String commandName;
-            if (bridgeHandler != null) {
+            if (bridgeHandler != null && config != null) {
                 EmbyBridgeHandler handler = bridgeHandler;
-                logger.debug("The channel ID of the received command is: {}", channelUID.getId());
-                if (!(currentPlayState == null)) {
+                if (currentPlayState != null) {
                     String currentSessionID = currentPlayState.getId();
-                    logger.debug("The device Id is: {}, the received deviceID is: {} ", currentSessionID,
-                            config.deviceID);
                     switch (channelUID.getId()) {
                         case CHANNEL_CONTROL:
                             if (command instanceof PlayPauseType) {
-                                // if we are unpause
                                 if (PlayPauseType.PLAY.equals(command)) {
                                     handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PLAY);
-                                    // send the pause command
                                 } else {
                                     handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PAUSE);
                                 }
-                            } else {
-                                logger.warn("The channel {} receceived a command {}, this command is not supported",
-                                        channelUID.getAsString(), command.toString());
                             }
                             break;
                         case CHANNEL_MUTE:
@@ -145,35 +144,29 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                                 handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_STOP);
                             }
                             break;
-
                         case CHANNEL_SENDPLAYCOMMAND:
                             handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_SENDPLAY,
                                     command.toString());
                             break;
-
                         case CHANNEL_GENERALCOMMAND:
-                            commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            logger.trace("Sending the following command {} for device: {}", commandName,
-                                    currentSessionID);
+                        case CHANNEL_GENERALCOMMANDWITHARGS:
+                            String commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
                             if (OnOffType.ON.equals(command)) {
                                 handler.sendCommand(
                                         CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName);
+                            } else {
+                                handler.sendCommand(
+                                        CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
+                                        "{ Arguments:" + command + "}");
                             }
                             break;
-                        case CHANNEL_GENERALCOMMANDWITHARGS:
-                            commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            handler.sendCommand(
-                                    CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
-                                    "Arguments:" + command + "}");
-                            break;
                         default:
-                            logger.warn("The channel {} is not a supported channel", channelUID.getAsString());
+                            logger.warn("Unsupported channel: {}", channelUID.getAsString());
                             break;
                     }
                 }
             } else {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                        "Unable to handle command, You must choose a Emby Server for this Device.");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "No Emby server bridge linked or configuration invalid.");
             }
         }
     }
@@ -230,42 +223,54 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
     }
 
+    private String getOrDefault(Configuration config, String key, String defaultValue) {
+        String value = (String) config.get(key);
+        return value != null ? value : defaultValue;
+    }
+
     private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
         // 1) Device-ID is mandatory
         Object deviceId = this.thing.getConfiguration().get(DEVICE_ID);
         if (deviceId == null || deviceId.toString().isEmpty()) {
-            throw new ConfigValidationException("Device ID must be set");
+            throwValidationError(DEVICE_ID, "Missing value for key: " + DEVICE_ID);
         }
         EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(deviceId.toString());
 
         // 2) Image URL channel parameters
         Configuration imgCfg = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
 
-        String maxWidth = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_MAXWIDTH, ""));
+        String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_MAXWIDTH, "");
         if (!maxWidth.matches("\\d*")) {
-            throw new ConfigValidationException("Image max width must be a number");
+            throwValidationError(CHANNEL_IMAGEURL_MAXWIDTH, "Image max width must be a number");
+            ;
         }
         embyDeviceConfig.imageMaxWidth = maxWidth;
 
-        String maxHeight = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_MAXHEIGHT, ""));
+        String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_MAXHEIGHT, "");
         if (!maxHeight.matches("\\d*")) {
-            throw new ConfigValidationException("Image max height must be a number");
+            throwValidationError(CHANNEL_IMAGEURL_MAXHEIGHT, "Image max height must be a number");
         }
         embyDeviceConfig.imageMaxHeight = maxHeight;
 
-        String pctPlayed = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_PERCENTPLAYED, "false"));
+        String pctPlayed = getOrDefault(imgCfg, CHANNEL_IMAGEURL_PERCENTPLAYED, "false");
         if (!("true".equalsIgnoreCase(pctPlayed) || "false".equalsIgnoreCase(pctPlayed))) {
-            throw new ConfigValidationException("Image percent-played must be true or false");
+            throwValidationError(CHANNEL_IMAGEURL_PERCENTPLAYED, "Image percent-played must be true or false");
         }
         embyDeviceConfig.imagePercentPlayed = Boolean.parseBoolean(pctPlayed);
 
-        String imgType = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_TYPE, ""));
+        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_TYPE, "");
         if (imgType.isEmpty()) {
-            throw new ConfigValidationException("Image type must be specified");
+            throwValidationError(CHANNEL_IMAGEURL_TYPE, "Missing configuration value: " + CHANNEL_IMAGEURL_TYPE);
         }
         embyDeviceConfig.imageImageType = imgType;
 
         return embyDeviceConfig;
+    }
+
+    private void throwValidationError(String parameterName, String errorMessage) throws ConfigValidationException {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        ConfigValidationMessage validationMessage = new ConfigValidationMessage(parameterName, "error", errorMessage);
+        throw new ConfigValidationException(bundle, i18nProvider, Collections.singletonList(validationMessage));
     }
 
     @Override
@@ -295,24 +300,16 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                 }
 
                 // All checks passed—link the bridge handler and go ONLINE
-                bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
+                this.bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
                 updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException cve) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configuration error: " + cve.getMessage());
             } catch (Exception e) {
-                // Unexpected failure during init
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Initialization failed: " + e.getMessage());
-            } catch (InterruptedException ie) {
-                // Preserve interrupt and stop initialization
-                Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initialization interrupted");
-            } catch (Exception e) {
-                // Unexpected failure during init
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Initialization failed: " + e.getMessage());
             }
+
         });
     }
 

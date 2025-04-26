@@ -18,11 +18,13 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -72,7 +74,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
         // Find the server using UDP broadcast
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
-            socket.setSoTimeout(5000); 
+            socket.setSoTimeout(5000);
             byte[] sendData = REQUEST_MSG.getBytes();
 
             // Send to 255.255.255.255 broadcast address
@@ -85,9 +87,6 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 // Discovery loop was interrupted—stop scanning
                 Thread.currentThread().interrupt();
                 logger.debug("Discovery interrupted, exiting");
-            } catch (SocketException | IOException ioe) {
-                // Network problems: log once at WARN
-                logger.warn("Discovery I/O error: {}", ioe.getMessage(), ioe);
             }
 
             // Broadcast message over all network interfaces
@@ -128,22 +127,22 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
 
             try {
                 socket.receive(receivePacket);
-            
+
                 // We have a response
                 logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
                 String message = new String(receivePacket.getData(), StandardCharsets.UTF_8).trim();
                 logger.debug("The message is {}", message);
-            
+
                 final Gson gson = new Gson();
                 JsonObject body = gson.fromJson(message, JsonObject.class);
-            
+
                 String serverId = body.get("Id").getAsString();
                 String serverName = body.get("Name").getAsString();
                 String serverAddress = body.get("Address").getAsString();
-            
+
                 EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
                 serverId = encoder.encodeDeviceID(serverId);
-            
+
                 try {
                     URI serverAddressURI = new URI(serverAddress);
                     addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
@@ -175,9 +174,6 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                     .withProperties(properties).withRepresentationProperty(DEVICE_ID).withLabel(Name).build();
 
             thingDiscovered(discoveryResult);
-            // now update the bridge’s status text
-            embyBridgeHandler.updateDiscoveryStatus("Discovered device: " + Name);
-
         } else {
             logger.debug("Unable to add {} found at {}:{} with id of {}", Name, hostAddress, embyPort, DeviceID);
         }

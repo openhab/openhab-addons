@@ -13,8 +13,7 @@
 		<bundle start-level="80">mvn:com.google.code.gson/gson/2.11.0</bundle>
 
 		<!-- the Emby binding bundle itself -->
-		<bundle start-level="80">
-			mvn:org.openhab.addons.bundles/org.openhab.binding.emby/${project.version}
-		</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.emby/${project.version}</bundle>
+
 	</feature>
 </features>
