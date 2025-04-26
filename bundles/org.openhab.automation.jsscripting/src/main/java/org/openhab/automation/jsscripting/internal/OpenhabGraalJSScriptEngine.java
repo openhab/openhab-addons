@@ -14,7 +14,6 @@ package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -77,9 +76,10 @@ public class OpenhabGraalJSScriptEngine
     private static final Source GLOBAL_SOURCE;
     static {
         try {
-            GLOBAL_SOURCE = Source.newBuilder("js",
-                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + File.separator + "@jsscripting-globals.js"),
-                    "@jsscripting-globals.js").cached(true).build();
+            GLOBAL_SOURCE = Source
+                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@jsscripting-globals.js"),
+                            "@jsscripting-globals.js")
+                    .cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
         }
@@ -88,9 +88,10 @@ public class OpenhabGraalJSScriptEngine
     private static final Source OPENHAB_JS_SOURCE;
     static {
         try {
-            OPENHAB_JS_SOURCE = Source.newBuilder("js",
-                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + File.separator + "@openhab-globals.js"),
-                    "@openhab-globals.js").cached(true).build();
+            OPENHAB_JS_SOURCE = Source
+                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@openhab-globals.js"),
+                            "@openhab-globals.js")
+                    .cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @openhab-globals.js", e);
         }

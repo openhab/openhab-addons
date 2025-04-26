@@ -9,7 +9,7 @@
 	<thing-type id="lgtv-M6503C">
 		<label>M6503C Model</label>
 		<description>This thing supports the M6503C monitor</description>
-
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="aspect-ratio" typeId="aspect-ratio-M6503C"/>
 			<channel id="auto-sleep" typeId="auto-sleep"/>

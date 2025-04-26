@@ -6,6 +6,7 @@
 
 	<bridge-type id="api">
 		<label>Air Quality API</label>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
@@ -22,6 +23,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Air Quality Station</label>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="aqi" typeId="aqi"/>

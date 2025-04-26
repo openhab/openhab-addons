@@ -8,6 +8,7 @@
 		<label>Shelly H&amp;T</label>
 		<description>@text/thing-type.shelly.shellyht.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -22,6 +23,7 @@
 		<label>Shelly Smoke</label>
 		<description>@text/thing-type.shelly.shellysmoke.description</description>
 		<category>SmokeDetector</category>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -36,6 +38,7 @@
 		<label>Shelly Gas</label>
 		<description>@text/thing-type.shelly.shellygas.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -49,6 +52,7 @@
 		<label>Shelly Flood</label>
 		<description>@text/thing-type.shelly.shellyflood.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -63,6 +67,7 @@
 		<label>Shelly Door/Window</label>
 		<description>@text/thing-type.shelly.shellydw.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -77,6 +82,7 @@
 		<label>Shelly Door/Window</label>
 		<description>@text/thing-type.shelly.shellydw2.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -90,6 +96,7 @@
 	<thing-type id="shellysense">
 		<label>Shelly Sense</label>
 		<description>@text/thing-type.shelly.shellysense.description</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="sensors" typeId="sensorData"/>
@@ -105,6 +112,7 @@
 		<label>Shelly Button 1</label>
 		<description>@text/thing-type.shelly.shellybutton1.description</description>
 		<category>WallSwitch</category>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="status" typeId="buttonState"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -119,6 +127,7 @@
 		<label>Shelly Button 2</label>
 		<description>@text/thing-type.shelly.shellybutton2.description</description>
 		<category>WallSwitch</category>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="status" typeId="buttonState"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -133,6 +142,7 @@
 		<label>Shelly Motion</label>
 		<description>@text/thing-type.shelly.shellymotion.description</description>
 		<category>MotionDetector</category>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -147,6 +157,7 @@
 		<label>Shelly TRV</label>
 		<description>@text/thing-type.shelly.shellytrv.description</description>
 		<category>RadiatorControl</category>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="control" typeId="control"/>

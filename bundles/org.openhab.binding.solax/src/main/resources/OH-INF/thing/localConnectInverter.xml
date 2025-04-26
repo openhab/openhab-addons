@@ -8,7 +8,7 @@
 
 		<label>Local Connect Inverter</label>
 		<description>The inverter representation that supports local connections via HTTP</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<!-- Single phase specific channels -->
 			<channel id="inverter-output-power" typeId="system.electric-power">

@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>SunSynk Account</label>
 		<description>Access to SunSynk Account. Used to discover plants and inverters tied to account.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">SunSynk</property>
 		</properties>
@@ -31,7 +32,7 @@
 		</supported-bridge-type-refs>
 		<label>SunSynk Inverter</label>
 		<description>Inverter thing for SunSynk Binding.</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="interval-1-grid-charge" typeId="grid-charge">
 				<label>Interval 1 Grid Charge</label>

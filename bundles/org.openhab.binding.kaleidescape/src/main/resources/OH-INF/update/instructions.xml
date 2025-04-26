@@ -9,6 +9,45 @@
 				<type>kaleidescape:sendcmd</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="title" groupIds="music">
+				<type>kaleidescape:music_title</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="play_mode" groupIds="ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="track_length" groupIds="music">
+				<type>kaleidescape:track_length</type>
+			</update-channel>
+			<update-channel id="track_position" groupIds="music">
+				<type>kaleidescape:track_position</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:cinemaone">
@@ -17,6 +56,45 @@
 				<type>kaleidescape:sendcmd</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="title" groupIds="music">
+				<type>kaleidescape:music_title</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="play_mode" groupIds="c1-alto_ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="track_length" groupIds="music">
+				<type>kaleidescape:track_length</type>
+			</update-channel>
+			<update-channel id="track_position" groupIds="music">
+				<type>kaleidescape:track_position</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:alto">
@@ -24,6 +102,36 @@
 			<add-channel id="sendcmd" groupIds="c1-alto_ui">
 				<type>kaleidescape:sendcmd</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="play_mode" groupIds="c1-alto_ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -33,43 +141,35 @@
 				<type>kaleidescape:sendcmd</type>
 			</add-channel>
 		</instruction-set>
-	</thing-type>
 
-	<thing-type uid="kaleidescape:player">
-		<instruction-set targetVersion="2">
-			<add-channel id="endtime" groupIds="ui">
-				<type>kaleidescape:endtime</type>
-			</add-channel>
-			<add-channel id="title" groupIds="music">
-				<type>kaleidescape:music_title</type>
-			</add-channel>
-		</instruction-set>
-	</thing-type>
-
-	<thing-type uid="kaleidescape:cinemaone">
-		<instruction-set targetVersion="2">
-			<add-channel id="endtime" groupIds="c1-alto_ui">
-				<type>kaleidescape:endtime</type>
-			</add-channel>
-			<add-channel id="title" groupIds="music">
-				<type>kaleidescape:music_title</type>
-			</add-channel>
-		</instruction-set>
-	</thing-type>
-
-	<thing-type uid="kaleidescape:alto">
-		<instruction-set targetVersion="2">
-			<add-channel id="endtime" groupIds="c1-alto_ui">
-				<type>kaleidescape:endtime</type>
-			</add-channel>
-		</instruction-set>
-	</thing-type>
-
-	<thing-type uid="kaleidescape:strato">
 		<instruction-set targetVersion="2">
 			<add-channel id="endtime" groupIds="strato_ui">
 				<type>kaleidescape:endtime</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="play_mode" groupIds="strato_ui">
+				<type>kaleidescape:movie_play_mode</type>
+			</update-channel>
+			<update-channel id="title_length" groupIds="strato_ui">
+				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="strato_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="endtime" groupIds="strato_ui">
+				<type>kaleidescape:endtime</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="strato_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="strato_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

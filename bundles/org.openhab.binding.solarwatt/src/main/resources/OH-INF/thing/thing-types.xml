@@ -8,7 +8,7 @@
 		<label>Solarwatt Energymanager</label>
 		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.
 		</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>hostname</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:energymanager"/>
@@ -21,7 +21,7 @@
 
 		<label>EV Station</label>
 		<description>Electric vehicle charger station</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -34,7 +34,7 @@
 
 		<label>Battery Converter</label>
 		<description>Battery converter to supply AC from battery storage.</description>
-
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -47,7 +47,7 @@
 
 		<label>Location</label>
 		<description>Location aggregates all things taking part in the production process.</description>
-
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -60,7 +60,7 @@
 
 		<label>PV Plant</label>
 		<description>Photovoltaic plant generating DC from solar energy.</description>
-
+		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -73,7 +73,7 @@
 
 		<label>Gridflow</label>
 		<description>Gridflow regulates interaction with the external power grid.</description>
-
+		<semantic-equipment-tag>TransferSwitch</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -86,7 +86,7 @@
 
 		<label>Power Meter</label>
 		<description>Power meter for produced or consumed energy</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -99,7 +99,7 @@
 
 		<label>Inverter</label>
 		<description>Inverter supplying AC from DC.</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
@@ -112,7 +112,7 @@
 
 		<label>SmartHeater</label>
 		<description>Smart heater for the production of hot water.</description>
-
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
 		<config-description-ref uri="thing-type:solarwatt:device"/>
