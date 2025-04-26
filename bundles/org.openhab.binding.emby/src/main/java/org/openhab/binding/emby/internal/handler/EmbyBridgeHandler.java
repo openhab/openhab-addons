@@ -65,17 +65,8 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port,
             WebSocketClient passedWebSocketClient) {
         super(bridge);
-        reconnectionCount = 0;
-        config = new EmbyBridgeConfiguration();
-        checkConfiguration();
-        callbackIpAddress = hostAddress + ":" + port;
-        logger.debug("The callback ip address is: {}", callbackIpAddress);
-        if (config.api != null && !config.api.isEmpty()) {
-            httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
-        }
-        ;
+        this.callbackIpAddress = hostAddress + ":" + port;
         this.webSocketClient = passedWebSocketClient;
-        connection = new EmbyConnection(this, passedWebSocketClient);
     }
 
     public void sendCommand(String commandURL) {
@@ -148,8 +139,18 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
         // Background setup
         scheduler.execute(() -> {
+            this.reconnectionCount = 0;
+            this.config = new EmbyBridgeConfiguration();
+            this.callbackIpAddress = hostAddress + ":" + port;
+            logger.debug("The callback ip address is: {}", callbackIpAddress);
+            if (config.api != null && !config.api.isEmpty()) {
+                this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
+            }
+            this.webSocketClient = passedWebSocketClient;
+            this.connection = new EmbyConnection(this, passedWebSocketClient);
             try {
-                checkConfiguration();
+                EmbyBridgeConfiguration cfg = checkConfiguration();
+                this.config = cfg;
                 establishConnection();
                 updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException cve) {
@@ -225,24 +226,25 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         updateState(new ChannelUID(getThing().getUID(), "discoveryStatus"), new StringType(status));
     }
 
-    private void checkConfiguration() throws ConfigValidationException {
+    private EmbyBridgeConfiguration checkConfiguration() throws ConfigValidationException {
         EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
 
         if (embyConfig.api == null || embyConfig.api.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "There is no API key configured for this bridge, please add an API key to enable communication");
+            throw new ConfigValidationException("There is no API key configured for this bridge.");
         }
 
         if (embyConfig.ipAddress == null || embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No network address specified, please specify the network address for the EMBY server");
+            throw new ConfigValidationException("No network address specified, please specify the network address for the EMBY server");
         }
 
-        this.config = embyConfig;
-
-        if (httputils == null && config.api != null && !config.api.isEmpty()) {
-            httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
+        if (this.httputils == null && config.api != null && !config.api.isEmpty()) {
+            this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
         }
+        return embyConfig;
     }
 
     private State pollCurrentValueBridge(ChannelUID channelUID) {

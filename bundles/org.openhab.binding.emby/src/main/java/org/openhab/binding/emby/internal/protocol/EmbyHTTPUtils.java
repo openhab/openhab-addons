@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * HTTP Get and Put reqeust class.
+ * HTTP Get and Put request class.
  *
  * @author Zachary Christiansen - Initial contribution
  */

@@ -98,7 +98,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     public EmbyDeviceHandler(Thing thing) {
         super(thing);
-        config = validateConfiguration();
     }
 
     @Override
@@ -231,31 +230,46 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
     }
 
-    private EmbyDeviceConfiguration validateConfiguration() {
-        EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(
-                String.valueOf(this.thing.getConfiguration().get(DEVICE_ID)));
+    private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
+        // 1) Device-ID is mandatory
+        Object deviceId = this.thing.getConfiguration().get(DEVICE_ID);
+        if (deviceId == null || deviceId.toString().isEmpty()) {
+            throw new ConfigValidationException("Device ID must be set");
+        }
+        EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(deviceId.toString());
 
-        Configuration testConfig = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
+        // 2) Image URL channel parameters
+        Configuration imgCfg = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
 
-        Object maxWidth = testConfig.get(CHANNEL_IMAGEURL_MAXWIDTH);
-        embyDeviceConfig.imageMaxWidth = (maxWidth != null) ? maxWidth.toString() : "";
+        String maxWidth = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_MAXWIDTH, ""));
+        if (!maxWidth.matches("\\d*")) {
+            throw new ConfigValidationException("Image max width must be a number");
+        }
+        embyDeviceConfig.imageMaxWidth = maxWidth;
 
-        Object maxHeight = testConfig.get(CHANNEL_IMAGEURL_MAXHEIGHT);
-        embyDeviceConfig.imageMaxHeight = (maxHeight != null) ? maxHeight.toString() : "";
+        String maxHeight = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_MAXHEIGHT, ""));
+        if (!maxHeight.matches("\\d*")) {
+            throw new ConfigValidationException("Image max height must be a number");
+        }
+        embyDeviceConfig.imageMaxHeight = maxHeight;
 
-        Object percentPlayed = testConfig.get(CHANNEL_IMAGEURL_PERCENTPLAYED);
-        embyDeviceConfig.imagePercentPlayed = "true".equals(String.valueOf(percentPlayed));
+        String pctPlayed = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_PERCENTPLAYED, "false"));
+        if (!("true".equalsIgnoreCase(pctPlayed) || "false".equalsIgnoreCase(pctPlayed))) {
+            throw new ConfigValidationException("Image percent-played must be true or false");
+        }
+        embyDeviceConfig.imagePercentPlayed = Boolean.parseBoolean(pctPlayed);
 
-        Object imageType = testConfig.get(CHANNEL_IMAGEURL_TYPE);
-        embyDeviceConfig.imageImageType = (imageType != null) ? imageType.toString() : "";
+        String imgType = String.valueOf(imgCfg.getOrDefault(CHANNEL_IMAGEURL_TYPE, ""));
+        if (imgType.isEmpty()) {
+            throw new ConfigValidationException("Image type must be specified");
+        }
+        embyDeviceConfig.imageImageType = imgType;
 
         return embyDeviceConfig;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing emby device: {}", getThing().getLabel());
-
         // 1) Immediately show “initializing”
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby device");
 
@@ -263,7 +277,8 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         scheduler.execute(() -> {
             try {
                 // Validate config early
-                config = validateConfiguration();
+                EmbyDeviceConfiguration cfg = validateConfiguration();
+                this.config = cfg;
 
                 Bridge bridge = getBridge();
                 if (bridge == null || bridge.getHandler() == null

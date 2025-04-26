@@ -72,6 +72,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
         // Find the server using UDP broadcast
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
+            socket.setSoTimeout(5000); 
             byte[] sendData = REQUEST_MSG.getBytes();
 
             // Send to 255.255.255.255 broadcast address
@@ -125,31 +126,33 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
             byte[] recvBuf = new byte[15000];
             DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 
-            socket.receive(receivePacket);
-
-            // We have a response
-            logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
-
-            String message = new String(receivePacket.getData(), StandardCharsets.UTF_8).trim();
-            logger.debug("The message is {}", message);
-
-            final Gson gson = new Gson();
-            JsonObject body = gson.fromJson(message, JsonObject.class);
-
-            String serverId = body.get("Id").getAsString();
-            String serverName = body.get("Name").getAsString();
-            String serverAddress = body.get("Address").getAsString();
-
-            EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
-            serverId = encoder.encodeDeviceID(serverId);
-
             try {
-                URI serverAddressURI = new URI(serverAddress);
-                addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
-            } catch (URISyntaxException use) {
-                // Configuration or protocol bug—this should never happen at runtime
-                logger.error("Unexpected URI syntax: {}", use.getMessage(), use);
-                throw new IllegalStateException(use);
+                socket.receive(receivePacket);
+            
+                // We have a response
+                logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
+                String message = new String(receivePacket.getData(), StandardCharsets.UTF_8).trim();
+                logger.debug("The message is {}", message);
+            
+                final Gson gson = new Gson();
+                JsonObject body = gson.fromJson(message, JsonObject.class);
+            
+                String serverId = body.get("Id").getAsString();
+                String serverName = body.get("Name").getAsString();
+                String serverAddress = body.get("Address").getAsString();
+            
+                EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
+                serverId = encoder.encodeDeviceID(serverId);
+            
+                try {
+                    URI serverAddressURI = new URI(serverAddress);
+                    addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
+                } catch (URISyntaxException use) {
+                    logger.error("Unexpected URI syntax: {}", use.getMessage(), use);
+                    throw new IllegalStateException(use);
+                }
+            } catch (SocketTimeoutException timeout) {
+                logger.debug("Socket receive timed out, no Emby server discovered");
             }
         } catch (IOException e) {
             logger.warn("Exception occurred during Emby server discovery: {}", e.getMessage(), e);
@@ -173,7 +176,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
             // now update the bridge’s status text
-            embyBridgeHandler.updateDiscoveryStatus("Discovered device: " + playstate.getDeviceName());
+            embyBridgeHandler.updateDiscoveryStatus("Discovered device: " + Name);
 
         } else {
             logger.debug("Unable to add {} found at {}:{} with id of {}", Name, hostAddress, embyPort, DeviceID);
