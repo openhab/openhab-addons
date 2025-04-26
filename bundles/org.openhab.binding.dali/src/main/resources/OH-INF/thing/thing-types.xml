@@ -18,6 +18,8 @@
 		</supported-bridge-type-refs>
 		<label>DALI Device</label>
 		<description>Controls a single device/ballast</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+
 		<channels>
 			<channel id="dimAtFadeRate" typeId="system.brightness"/>
 			<channel id="dimImmediately" typeId="system.brightness"/>
@@ -38,6 +40,7 @@
 		</supported-bridge-type-refs>
 		<label>DALI Group</label>
 		<description>Controls a group of devices/ballasts</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="dimAtFadeRate" typeId="system.brightness"/>
 			<channel id="dimImmediately" typeId="system.brightness"/>
@@ -64,6 +67,7 @@
 		</supported-bridge-type-refs>
 		<label>DALI RGB Device</label>
 		<description>Controls three DALI devices representing R,G,B lighting channels</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 		</channels>
@@ -113,6 +117,7 @@
 		</supported-bridge-type-refs>
 		<label>DALI DT8 Group</label>
 		<description>Controls a DT8 group of devices/ballasts</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="dimAtFadeRate" typeId="system.brightness"/>
 			<channel id="dimImmediately" typeId="system.brightness"/>

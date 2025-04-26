@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>evohome Display</label>
 		<description>This represents the evohome control display.</description>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="SystemMode" typeId="systemMode"/>
 		</channels>
@@ -29,6 +30,7 @@
 		</supported-bridge-type-refs>
 		<label>evohome Heating Zone</label>
 		<description>This represents the evohome Heating Zone.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="Temperature" typeId="temperature"/>
 			<channel id="SetPointStatus" typeId="setpointstatus"/>

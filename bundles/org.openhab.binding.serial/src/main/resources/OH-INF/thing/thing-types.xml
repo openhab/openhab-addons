@@ -8,6 +8,7 @@
 	<bridge-type id="serialBridge">
 		<label>Serial Bridge</label>
 		<description>Serial port which can send and receive data</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="string" typeId="stringData"/>

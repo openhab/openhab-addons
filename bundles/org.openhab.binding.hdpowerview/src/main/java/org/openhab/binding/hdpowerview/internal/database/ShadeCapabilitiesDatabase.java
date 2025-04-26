@@ -14,6 +14,7 @@ package org.openhab.binding.hdpowerview.internal.database;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShadeCapabilitiesDatabase {
+
+    public static final Set<Integer> DRAPES_TYPES = Set.of(69, 70, 71);
 
     private final Logger logger = LoggerFactory.getLogger(ShadeCapabilitiesDatabase.class);
 

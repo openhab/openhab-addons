@@ -11,6 +11,7 @@
 
 		<label>Sense Energy Monitor</label>
 		<description>Sense energy monitor instance.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>

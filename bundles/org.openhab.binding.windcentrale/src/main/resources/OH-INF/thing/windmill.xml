@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Windcentrale Windmill</label>
-
+		<semantic-equipment-tag>WindGenerator</semantic-equipment-tag>
 		<channels>
 			<channel id="power-shares" typeId="power-shares"/>
 			<channel id="power-total" typeId="power-total"/>
