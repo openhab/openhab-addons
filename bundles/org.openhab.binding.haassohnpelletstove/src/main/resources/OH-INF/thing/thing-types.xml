@@ -11,7 +11,7 @@
 			optional
 			WLAN-Modul. More information can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion. It allows
 			to power on/off the stove as well as receiving different operation information about the stove.</description>
-
+		<semantic-equipment-tag>Furnace</semantic-equipment-tag>
 
 		<channels>
 			<channel id="channelIsTemp" typeId="isTemp"/>

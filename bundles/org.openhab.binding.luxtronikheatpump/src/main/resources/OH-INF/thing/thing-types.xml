@@ -6,6 +6,7 @@
 	<thing-type id="heatpump">
 		<label>Heatpump with Luxtronik Control</label>
 		<description>Integrates a heatpump with a Luxtronik control.</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="temperatureHeatingCircuitFlow" typeId="temperatureHeatingCircuitFlow"/>
 			<channel id="temperatureHeatingCircuitReturn" typeId="temperatureHeatingCircuitReturn"/>

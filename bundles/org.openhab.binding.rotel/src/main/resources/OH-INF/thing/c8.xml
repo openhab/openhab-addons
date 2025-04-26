@@ -8,6 +8,7 @@
 	<thing-type id="c8">
 		<label>C8 Distribution Amplifier</label>
 		<description>Connection to the Rotel C8 or C8+ distribution amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="allZones" typeId="allZones"/>

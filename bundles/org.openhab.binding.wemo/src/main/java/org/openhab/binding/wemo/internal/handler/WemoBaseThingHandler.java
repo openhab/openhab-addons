@@ -14,19 +14,17 @@ package org.openhab.binding.wemo.internal.handler;
 
 import java.net.URL;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.ApiController;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ChannelUID;
@@ -47,29 +45,24 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
-    private static final int PORT_RANGE_START = 49151;
-    private static final int PORT_RANGE_END = 49157;
-
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
     private final UpnpIOService service;
+    private final ApiController apiController;
     private final Object upnpLock = new Object();
-
-    protected WemoHttpCall wemoHttpCaller;
 
     private @Nullable String host;
     private Map<String, Instant> subscriptions = new ConcurrentHashMap<>();
 
-    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+    public WemoBaseThingHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
         super(thing);
+        this.apiController = new ApiController(httpClient);
         this.service = upnpIOService;
-        this.wemoHttpCaller = wemoHttpCaller;
     }
 
     @Override
     public void initialize() {
         logger.debug("Registering UPnP participant for {}", getThing().getUID());
         service.registerParticipant(this);
-        initializeHost();
     }
 
     @Override
@@ -152,57 +145,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         }
     }
 
-    public @Nullable String getWemoURL(String actionService) {
-        String host = getHost();
-        if (host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return null;
-        }
-        int port = scanForPort(host);
-        if (port == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
-            return null;
-        }
-        return "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
-    }
-
-    private @Nullable String getHost() {
-        if (host != null) {
-            return host;
-        }
-        initializeHost();
-        return host;
-    }
-
-    private void initializeHost() {
-        host = getHostFromService();
-    }
-
-    private int scanForPort(String host) {
-        Integer portFromService = getPortFromService();
-        List<Integer> portsToCheck = new ArrayList<>(PORT_RANGE_END - PORT_RANGE_START + 1);
-        Stream<Integer> portRange = IntStream.rangeClosed(PORT_RANGE_START, PORT_RANGE_END).boxed();
-        if (portFromService != null) {
-            portsToCheck.add(portFromService);
-            portRange = portRange.filter(p -> p.intValue() != portFromService);
-        }
-        portsToCheck.addAll(portRange.collect(Collectors.toList()));
-        int port = 0;
-        for (Integer portCheck : portsToCheck) {
-            String urlProbe = "http://" + host + ":" + portCheck;
-            logger.trace("Probing {} to find port", urlProbe);
-            if (!wemoHttpCaller.probeURL(urlProbe)) {
-                continue;
-            }
-            port = portCheck;
-            logger.trace("Successfully detected port {}", port);
-            break;
-        }
-        return port;
-    }
-
     private @Nullable String getHostFromService() {
         URL descriptorURL = service.getDescriptorURL(this);
         if (descriptorURL != null) {
@@ -220,5 +162,25 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             }
         }
         return null;
+    }
+
+    protected String probeAndExecuteCall(String actionService, String soapHeader, String soapBody)
+            throws WemoException {
+        String host = this.host;
+
+        if (host == null) {
+            host = this.host = getHostFromService();
+        }
+
+        if (host == null) {
+            throw new MissingHostException("Host/IP address is missing");
+        }
+
+        try {
+            return apiController.probeAndExecuteCall(host, getPortFromService(), actionService, soapHeader, soapBody);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new WemoException("Interrupted", e);
+        }
     }
 }

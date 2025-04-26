@@ -20,7 +20,14 @@
 				<type>tado:openWindowRemainingTime</type>
 			</add-channel>
 		</instruction-set>
+	</thing-type>
 
+	<thing-type uid="tado:home">
+		<instruction-set targetVersion="1">
+			<add-channel id="geofencingEnabled">
+				<type>tado:geofencingEnabled</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
