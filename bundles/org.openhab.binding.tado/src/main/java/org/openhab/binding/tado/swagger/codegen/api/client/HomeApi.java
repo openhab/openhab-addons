@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -25,6 +26,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
@@ -510,15 +512,13 @@ public class HomeApi {
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
-    public void updatePresenceLock(Long homeId, HomePresence json) throws IOException, ApiException {
+    /**
+     * If the {@link HomePresence} DTO is null we send an HTTP DELETE otherwise we send an HTTP PUT.
+     */
+    public void updatePresenceLock(Long homeId, HomePresence dto) throws IOException, ApiException {
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updatePresenceLock");
-        }
-
-        // verify the required parameter 'json' is set
-        if (json == null) {
-            throw new ApiException(400, "Missing the required parameter 'json' when calling updatePresenceLock");
         }
 
         startHttpClient(CLIENT);
@@ -526,18 +526,20 @@ public class HomeApi {
         // create path and map variables
         String path = "/homes/{home_id}/presenceLock".replaceAll("\\{" + "home_id" + "\\}", homeId.toString());
 
-        Request request = CLIENT.newRequest(baseUrl + path).method(HttpMethod.PUT).timeout(timeout,
-                TimeUnit.MILLISECONDS);
+        Request request = CLIENT.newRequest(baseUrl + path).method(dto == null ? HttpMethod.DELETE : HttpMethod.PUT)
+                .timeout(timeout, TimeUnit.MILLISECONDS);
 
-        request.accept("application/json");
         request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
         }
 
-        String serializedBody = gson.toJson(json);
-        request.content(new StringContentProvider(serializedBody), "application/json");
+        if (dto != null) {
+            String serializedBody = gson.toJson(dto);
+            request.content(new StringContentProvider(serializedBody), "application/json");
+            request.accept("application/json");
+        }
 
         ContentResponse response;
         try {
@@ -613,5 +615,9 @@ public class HomeApi {
                 // nothing we can do here
             }
         }
+    }
+
+    public @Nullable OAuthorizerV2 getAuthorizerV2() {
+        return authorizer instanceof OAuthorizerV2 v2 ? v2 : null;
     }
 }

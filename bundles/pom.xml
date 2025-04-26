@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -71,6 +71,7 @@
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
+    <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
@@ -98,6 +99,7 @@
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.caddx</module>
+    <module>org.openhab.binding.casokitchen</module>
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chatgpt</module>
     <module>org.openhab.binding.chromecast</module>
@@ -216,7 +218,6 @@
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.jellyfin</module>
-    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
@@ -230,6 +231,7 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
+    <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
@@ -277,6 +279,7 @@
     <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
+    <module>org.openhab.binding.mqtt.awtrixlight</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.generic</module>
@@ -370,6 +373,7 @@
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.senseenergy</module>
     <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.sensorcommunity</module>
     <module>org.openhab.binding.serial</module>
@@ -428,6 +432,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -690,10 +695,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>.</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
+              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
+            </validationSet>
+          </validationSets>
+          <catalogs>
+            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
+    <profile>
+      <id>skipXmlValidation</id>
+      <activation>
+        <file>
+          <exists>skipXmlValidation.marker</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>

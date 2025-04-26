@@ -216,7 +216,7 @@ public class VehicleHandler extends BaseThingHandler {
         var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
-        String pin = accountHandler.get().config.get().pin;
+        String pin = accountHandler.get().config.pin;
         if (group == null) {
             logger.trace("No command {} found for {}", command, channel);
             return;

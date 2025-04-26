@@ -11,7 +11,7 @@
 
 		<label>Pluggable Smart Dimmer (PSD)</label>
 		<description>A pluggable dimmer.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="dimmer" typeId="dimmerActuator"/>
 		</channels>

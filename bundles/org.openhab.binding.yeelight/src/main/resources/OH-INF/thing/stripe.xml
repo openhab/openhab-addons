@@ -7,7 +7,7 @@
 	<thing-type id="stripe">
 		<label>Yeelight Color LED Stripe</label>
 		<description>Yeelight Color LED Stripe</description>
-
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="color"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>

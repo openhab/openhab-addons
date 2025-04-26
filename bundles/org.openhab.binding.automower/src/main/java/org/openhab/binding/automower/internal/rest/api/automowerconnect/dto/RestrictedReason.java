@@ -21,5 +21,8 @@ public enum RestrictedReason {
     PARK_OVERRIDE,
     SENSOR,
     DAILY_LIMIT,
-    NOT_APPLICABLE
+    FOTA,
+    FROST,
+    ALL_WORK_AREAS_COMPLETED,
+    EXTERNAL
 }

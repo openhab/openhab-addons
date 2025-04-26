@@ -8,6 +8,7 @@
 	<bridge-type id="airgradient-api">
 		<label>AirGradient API</label>
 		<description>Connection to the AirGradient Cloud API</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<representation-property>token</representation-property>
 		<config-description>
@@ -36,6 +37,7 @@
 	<thing-type id="airgradient-local">
 		<label>AirGradient Local Sensor</label>
 		<description>Direct network connection to a local AirGradient Sensor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="pm01" typeId="pm1"/>

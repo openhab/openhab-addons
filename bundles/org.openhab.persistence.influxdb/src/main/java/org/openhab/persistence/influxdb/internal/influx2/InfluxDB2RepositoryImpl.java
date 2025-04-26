@@ -176,7 +176,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         String predicate = "";
         String itemName = filter.getItemName();
         if (itemName != null) {
-            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName);
             String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
             predicate = "(_measurement=\"" + measurementName + "\")";
         }
@@ -213,11 +213,11 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy, @Nullable String alias) {
         try {
             final QueryApi currentQueryAPI = queryAPI;
             if (currentQueryAPI != null) {
-                String query = queryCreator.createQuery(filter, retentionPolicy);
+                String query = queryCreator.createQuery(filter, retentionPolicy, alias);
                 logger.trace("Query {}", query);
                 List<FluxTable> clientResult = currentQueryAPI.query(query);
                 return clientResult.stream().flatMap(this::mapRawResultToHistoric).toList();

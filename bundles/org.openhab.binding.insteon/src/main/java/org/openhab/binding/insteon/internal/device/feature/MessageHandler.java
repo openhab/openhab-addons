@@ -49,6 +49,7 @@ import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.Thermost
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTemperatureScale;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTimeFormat;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.VenstarSystemMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.X10Event;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.utils.BinaryUtils;
@@ -1850,11 +1851,10 @@ public abstract class MessageHandler extends BaseFeatureHandler {
     }
 
     /**
-     * Process X10 messages that are generated when another controller
-     * changes the state of an X10 device.
+     * X10 on message handler
      */
-    public static class X10OnHandler extends MessageHandler {
-        X10OnHandler(DeviceFeature feature) {
+    public static class X10OnMsgHandler extends MessageHandler {
+        X10OnMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1865,8 +1865,11 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         }
     }
 
-    public static class X10OffHandler extends MessageHandler {
-        X10OffHandler(DeviceFeature feature) {
+    /**
+     * X10 off message handler
+     */
+    public static class X10OffMsgHandler extends MessageHandler {
+        X10OffMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1877,8 +1880,11 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         }
     }
 
-    public static class X10BrightHandler extends MessageHandler {
-        X10BrightHandler(DeviceFeature feature) {
+    /**
+     * X10 brighten message handler
+     */
+    public static class X10BrightMsgHandler extends MessageHandler {
+        X10BrightMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1888,8 +1894,11 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         }
     }
 
-    public static class X10DimHandler extends MessageHandler {
-        X10DimHandler(DeviceFeature feature) {
+    /**
+     * X10 dim message handler
+     */
+    public static class X10DimMsgHandler extends MessageHandler {
+        X10DimMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1899,8 +1908,11 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         }
     }
 
-    public static class X10OpenHandler extends MessageHandler {
-        X10OpenHandler(DeviceFeature feature) {
+    /**
+     * X10 open message handler
+     */
+    public static class X10OpenMsgHandler extends MessageHandler {
+        X10OpenMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1911,8 +1923,11 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         }
     }
 
-    public static class X10ClosedHandler extends MessageHandler {
-        X10ClosedHandler(DeviceFeature feature) {
+    /**
+     * X10 closed message handler
+     */
+    public static class X10ClosedMsgHandler extends MessageHandler {
+        X10ClosedMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1920,6 +1935,28 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         public void handleMessage(byte cmd1, Msg msg) {
             logger.debug("{}: device {} is CLOSED", nm(), getX10Device().getAddress());
             feature.updateState(OpenClosedType.CLOSED);
+        }
+    }
+
+    /**
+     * X10 event message handler
+     */
+    public static class X10EventMsgHandler extends MessageHandler {
+        X10EventMsgHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            try {
+                X10Event event = X10Event.valueOf(cmd1);
+                logger.debug("{}: device {} {} received event {}", nm(), getDevice().getAddress(), feature.getName(),
+                        event);
+                feature.triggerEvent(event.toString());
+                feature.pollRelatedDevices(0L);
+            } catch (IllegalArgumentException e) {
+                logger.warn("{}: got unexpected x10 event: {}", nm(), HexUtils.getHexString(cmd1));
+            }
         }
     }
 

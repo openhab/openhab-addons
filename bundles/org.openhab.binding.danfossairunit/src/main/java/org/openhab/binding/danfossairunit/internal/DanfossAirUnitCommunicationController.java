@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
-import static org.openhab.binding.danfossairunit.internal.Commands.EMPTY;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,20 +36,26 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DanfossAirUnitCommunicationController implements CommunicationController {
 
-    private static final int SOCKET_TIMEOUT_MILLISECONDS = 5_000;
+    private static final int TCP_PORT = 30046;
+    private static final int READ_TIMEOUT_MILLISECONDS = 5_000;
+    private static final int DEFAULT_CONNECT_TIMEOUT_MILLISECONDS = 5_000;
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitCommunicationController.class);
-
     private final InetAddress inetAddr;
-    private final int port;
+    private final int connectTimeoutMilliseconds;
+
     private boolean connected = false;
     private @Nullable Socket socket;
     private @Nullable OutputStream outputStream;
     private @Nullable InputStream inputStream;
 
-    public DanfossAirUnitCommunicationController(InetAddress inetAddr, int port) {
+    public DanfossAirUnitCommunicationController(InetAddress inetAddr) {
+        this(inetAddr, DEFAULT_CONNECT_TIMEOUT_MILLISECONDS);
+    }
+
+    public DanfossAirUnitCommunicationController(InetAddress inetAddr, int connectTimeoutMilliseconds) {
         this.inetAddr = inetAddr;
-        this.port = port;
+        this.connectTimeoutMilliseconds = connectTimeoutMilliseconds;
     }
 
     @Override
@@ -57,11 +63,11 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         if (connected) {
             return;
         }
-        Socket localSocket = new Socket(inetAddr, port);
-        localSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
-        this.outputStream = localSocket.getOutputStream();
-        this.inputStream = localSocket.getInputStream();
-        this.socket = localSocket;
+        Socket socket = this.socket = new Socket();
+        socket.connect(new InetSocketAddress(inetAddr, TCP_PORT), connectTimeoutMilliseconds);
+        socket.setSoTimeout(READ_TIMEOUT_MILLISECONDS);
+        outputStream = socket.getOutputStream();
+        inputStream = socket.getInputStream();
         connected = true;
     }
 
@@ -86,17 +92,14 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     }
 
     @Override
-    public byte[] sendRobustRequest(byte[] operation, byte[] register) throws IOException {
-        return sendRobustRequest(operation, register, EMPTY);
+    public byte[] sendRobustRequest(Parameter parameter) throws IOException {
+        return sendRobustRequest(parameter, new byte[] {});
     }
 
     @Override
-    public synchronized byte[] sendRobustRequest(byte[] operation, byte[] register, byte[] value) throws IOException {
+    public synchronized byte[] sendRobustRequest(Parameter parameter, byte[] value) throws IOException {
         connect();
-        byte[] request = new byte[4 + value.length];
-        System.arraycopy(operation, 0, request, 0, 2);
-        System.arraycopy(register, 0, request, 2, 2);
-        System.arraycopy(value, 0, request, 4, value.length);
+        byte[] request = parameter.getRequest(value);
         try {
             return sendRequestInternal(request);
         } catch (IOException ioe) {

@@ -1066,10 +1066,10 @@
 
 	<feature-type name="X10Dimmer">
 		<message-dispatcher>X10Dispatcher</message-dispatcher>
-		<message-handler command="0x02">X10OnHandler</message-handler>
-		<message-handler command="0x03">X10OffHandler</message-handler>
-		<message-handler command="0x05">X10BrightHandler</message-handler>
-		<message-handler command="0x04">X10DimHandler</message-handler>
+		<message-handler command="0x02">X10OnMsgHandler</message-handler>
+		<message-handler command="0x03">X10OffMsgHandler</message-handler>
+		<message-handler command="0x05">X10BrightMsgHandler</message-handler>
+		<message-handler command="0x04">X10DimMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
 		<command-handler command="PercentType">X10PercentCommandHandler</command-handler>
@@ -1078,8 +1078,8 @@
 	</feature-type>
 	<feature-type name="X10Switch">
 		<message-dispatcher>X10Dispatcher</message-dispatcher>
-		<message-handler command="0x02">X10OnHandler</message-handler>
-		<message-handler command="0x03">X10OffHandler</message-handler>
+		<message-handler command="0x02">X10OnMsgHandler</message-handler>
+		<message-handler command="0x03">X10OffMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
 		<command-handler command="PercentType">NoOpCommandHandler</command-handler>
@@ -1088,10 +1088,19 @@
 	</feature-type>
 	<feature-type name="X10Contact">
 		<message-dispatcher>X10Dispatcher</message-dispatcher>
-		<message-handler command="0x02">X10OpenHandler</message-handler>
-		<message-handler command="0x03">X10ClosedHandler</message-handler>
+		<message-handler command="0x02">X10OpenMsgHandler</message-handler>
+		<message-handler command="0x03">X10ClosedMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="X10BridgeEvent" event="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">X10EventMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">X10EventMsgHandler</message-handler>
+		<message-handler command="0x15" group="1">X10EventMsgHandler</message-handler>
+		<message-handler command="0x16" group="1">X10EventMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature-type>
 </xml>

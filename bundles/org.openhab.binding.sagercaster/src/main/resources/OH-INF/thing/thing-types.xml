@@ -7,7 +7,7 @@
 	<thing-type id="sagercaster">
 		<label>@text/sagercasterLabel</label>
 		<description>@text/sagercasterDescription</description>
-
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="input"/>
 			<channel-group id="output" typeId="output"/>

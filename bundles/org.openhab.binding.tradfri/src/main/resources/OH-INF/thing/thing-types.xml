@@ -7,7 +7,7 @@
 	<bridge-type id="gateway">
 		<label>TRÅDFRI Gateway</label>
 		<description>IKEA TRÅDFRI IP Gateway</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="bridge-type:tradfri:gateway"/>
@@ -22,7 +22,7 @@
 
 		<label>On/Off Plug</label>
 		<description>A plug that can be switched on and off.</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 		</channels>
@@ -39,7 +39,7 @@
 
 		<label>Dimmable Light</label>
 		<description>A light that has continuous brightness control.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -56,7 +56,7 @@
 
 		<label>Color Temperature Light</label>
 		<description>A dimmable light that supports different color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
@@ -74,7 +74,7 @@
 
 		<label>Color Light</label>
 		<description>A dimmable light that supports full colors and color temperature settings.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
 			<channel id="color" typeId="system.color"/>
@@ -92,7 +92,7 @@
 
 		<label>Occupancy Sensor</label>
 		<description>This represents the motion sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -110,7 +110,7 @@
 
 		<label>Non-Colour Controller</label>
 		<description>This represents the wireless dimmer sensor capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -128,7 +128,7 @@
 
 		<label>Non-Colour Scene Controller</label>
 		<description>This represents the remote control capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -146,7 +146,7 @@
 
 		<label>Window Covering Device</label>
 		<description>This represents a blind or curtain that can be moved up and down. Also reports current battery level.</description>
-
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
@@ -165,7 +165,7 @@
 
 		<label>Window Covering Controller</label>
 		<description>This represents the wireless open/close remote capable of reporting the battery level.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -183,7 +183,7 @@
 
 		<label>Air Purifier</label>
 		<description>This represents the air purifier sensors and controls.</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="fan_speed" typeId="fan-speed"/>
 			<channel id="fan_mode" typeId="fan-mode"/>

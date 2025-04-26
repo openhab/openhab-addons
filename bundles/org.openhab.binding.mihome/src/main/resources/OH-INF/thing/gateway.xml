@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Home Gateway</label>
 		<description>Multifunctional Gateway with a built in light, ambient light sensor and capability to play sounds.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="illumination" typeId="illumination"/>

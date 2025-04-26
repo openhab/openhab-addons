@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Zone</label>
 		<description>A Qolsys IQ Zone</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="zoneState"/>
 			<channel id="status" typeId="zoneStatus"/>
