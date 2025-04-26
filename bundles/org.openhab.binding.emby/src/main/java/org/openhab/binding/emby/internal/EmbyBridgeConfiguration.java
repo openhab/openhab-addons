@@ -31,9 +31,9 @@ import org.openhab.core.config.core.Configuration;
 public class EmbyBridgeConfiguration extends Configuration {
 
     public String api = "";
-    public int bufferSize = 10000;         // Default websocket buffer size
+    public int bufferSize = 10000; // Default websocket buffer size
     public String ipAddress = "";
-    public int port = 8096;                // Default server port
-    public int refreshInterval = 10000;    // Default refresh interval
-    public boolean discovery = true;       // Discovery enabled by default
+    public int port = 8096; // Default server port
+    public int refreshInterval = 10000; // Default refresh interval
+    public boolean discovery = true; // Discovery enabled by default
 }

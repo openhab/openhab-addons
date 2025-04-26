@@ -67,83 +67,86 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-public void startScan() {
-    // Find the server using UDP broadcast
-    try (DatagramSocket socket = new DatagramSocket()) {
-        socket.setBroadcast(true);
-        byte[] sendData = REQUEST_MSG.getBytes();
+    public void startScan() {
+        // Find the server using UDP broadcast
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setBroadcast(true);
+            byte[] sendData = REQUEST_MSG.getBytes();
 
-        // Send to 255.255.255.255 broadcast address
-        try {
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
-                    InetAddress.getByName("255.255.255.255"), REQUEST_PORT);
-            socket.send(sendPacket);
-            logger.trace(">>> Request packet sent to: {} ({})", REQUEST_MSG, REQUEST_PORT);
-        } catch (IOException e) {
-            logger.warn("Failed to send broadcast to 255.255.255.255: {}", e.getMessage(), e);
-        }
-
-        // Broadcast message over all network interfaces
-        for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+            // Send to 255.255.255.255 broadcast address
             try {
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue; // Skip loopback and inactive interfaces
-                }
-
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress broadcast = interfaceAddress.getBroadcast();
-                    if (broadcast == null) {
-                        continue;
-                    }
-
-                    try {
-                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, REQUEST_PORT);
-                        socket.send(sendPacket);
-                        logger.trace(">>> Request packet sent to: {} ; Interface: {}", broadcast.getHostAddress(),
-                                networkInterface.getDisplayName());
-                    } catch (IOException e) {
-                        logger.warn("Failed to send broadcast on interface {}: {}", networkInterface.getDisplayName(), e.getMessage(), e);
-                    }
-                }
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
+                        InetAddress.getByName("255.255.255.255"), REQUEST_PORT);
+                socket.send(sendPacket);
+                logger.trace(">>> Request packet sent to: {} ({})", REQUEST_MSG, REQUEST_PORT);
             } catch (IOException e) {
-                logger.warn("Failed to process network interface {}: {}", networkInterface.getDisplayName(), e.getMessage(), e);
+                logger.warn("Failed to send broadcast to 255.255.255.255: {}", e.getMessage(), e);
             }
+
+            // Broadcast message over all network interfaces
+            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                try {
+                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                        continue; // Skip loopback and inactive interfaces
+                    }
+
+                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                        InetAddress broadcast = interfaceAddress.getBroadcast();
+                        if (broadcast == null) {
+                            continue;
+                        }
+
+                        try {
+                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast,
+                                    REQUEST_PORT);
+                            socket.send(sendPacket);
+                            logger.trace(">>> Request packet sent to: {} ; Interface: {}", broadcast.getHostAddress(),
+                                    networkInterface.getDisplayName());
+                        } catch (IOException e) {
+                            logger.warn("Failed to send broadcast on interface {}: {}",
+                                    networkInterface.getDisplayName(), e.getMessage(), e);
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to process network interface {}: {}", networkInterface.getDisplayName(),
+                            e.getMessage(), e);
+                }
+            }
+
+            logger.trace(">>> Done sending broadcasts. Now waiting for a reply!");
+
+            // Wait for a response
+            byte[] recvBuf = new byte[15000];
+            DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+
+            socket.receive(receivePacket);
+
+            // We have a response
+            logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
+
+            String message = new String(receivePacket.getData()).trim();
+            logger.debug("The message is {}", message);
+
+            final Gson gson = new Gson();
+            JsonObject body = gson.fromJson(message, JsonObject.class);
+
+            String serverId = body.get("Id").getAsString();
+            String serverName = body.get("Name").getAsString();
+            String serverAddress = body.get("Address").getAsString();
+
+            EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
+            serverId = encoder.encodeDeviceID(serverId);
+
+            try {
+                URI serverAddressURI = new URI(serverAddress);
+                addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
+            } catch (URISyntaxException e) {
+                logger.warn("Unable to parse URI from Emby server address '{}': {}", serverAddress, e.getMessage(), e);
+            }
+        } catch (IOException e) {
+            logger.warn("Exception occurred during Emby server discovery: {}", e.getMessage(), e);
         }
-
-        logger.trace(">>> Done sending broadcasts. Now waiting for a reply!");
-
-        // Wait for a response
-        byte[] recvBuf = new byte[15000];
-        DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-
-        socket.receive(receivePacket);
-
-        // We have a response
-        logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
-
-        String message = new String(receivePacket.getData()).trim();
-        logger.debug("The message is {}", message);
-
-        final Gson gson = new Gson();
-        JsonObject body = gson.fromJson(message, JsonObject.class);
-
-        String serverId = body.get("Id").getAsString();
-        String serverName = body.get("Name").getAsString();
-        String serverAddress = body.get("Address").getAsString();
-
-        EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
-        serverId = encoder.encodeDeviceID(serverId);
-
-        try {
-            URI serverAddressURI = new URI(serverAddress);
-            addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
-        } catch (URISyntaxException e) {
-            logger.warn("Unable to parse URI from Emby server address '{}': {}", serverAddress, e.getMessage(), e);
-        }
-    } catch (IOException e) {
-        logger.warn("Exception occurred during Emby server discovery: {}", e.getMessage(), e);
     }
-}
 
     public void addEMBYServer(String hostAddress, int embyPort, @Nullable String DeviceID, String Name) {
         logger.debug("creating discovery result with address: {}:{}, for server {}", hostAddress,

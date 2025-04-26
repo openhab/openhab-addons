@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.emby.internal.handler;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.API_KEY;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.DISCOVERY_ENABLE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.HOST_PARAMETER;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.REFRESH_PARAMETER;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_BUFFER_SIZE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONNECTION_CHECK_INTERVAL_MS;
 
 import java.util.concurrent.ScheduledFuture;
@@ -33,7 +27,6 @@ import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 import org.openhab.binding.emby.internal.protocol.EmbyHTTPUtils;
 import org.openhab.binding.emby.internal.protocol.EmbyHttpRetryExceeded;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -90,7 +83,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             }
         }
     }
-    
+
     public void sendCommand(String commandURL, String payload) {
         logger.trace("Sending command: {} with payload: {}", commandURL, payload);
         if (httputils != null) {
@@ -101,7 +94,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             }
         }
     }
-    
 
     private String getServerAddress() {
         return config.ipAddress + ":" + config.port;
@@ -191,25 +183,23 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     private void checkConfiguration() throws ConfigValidationException {
         EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
-    
+
         if (embyConfig.api == null || embyConfig.api.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "There is no API key configured for this bridge, please add an API key to enable communication");
         }
-    
+
         if (embyConfig.ipAddress == null || embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No network address specified, please specify the network address for the EMBY server");
         }
-    
+
         this.config = embyConfig;
-    
+
         if (httputils == null && config.api != null && !config.api.isEmpty()) {
             httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
         }
     }
-    
-    
 
     @Override
     public void dispose() {
