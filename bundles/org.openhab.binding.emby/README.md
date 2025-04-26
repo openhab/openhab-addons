@@ -1,82 +1,109 @@
-<!--
-    Title: Emby Binding
-    Description: Integrates Emby Media Server clients and devices into openHAB
-    Author: Zachary Christiansen
-    Binding ID: emby
--->
-
 # Emby Binding
 
 The **Emby Binding** integrates [Emby](https://emby.media/), a personal media server, with openHAB.
 
-It allows controlling Emby players and retrieving player status data, such as the currently playing movie title.
+It allows controlling Emby players and retrieving player status data.
 
-This binding supports multiple clients connected to an Emby Media Server.
+For example, you can monitor the currently playing movie title or automatically dim your lights when playback starts.
 
-It enables similar integration and control to the Plex Binding.
+This binding supports multiple Emby clients connected to a single Emby Media Server.
 
-For example, you can automatically dim your lights when a video starts playing.
+It provides functionality similar to the Plex Binding.
 
-## Supported Things
+---
+
+# Supported Things
+
+This binding defines the following Thing Type IDs:
 
 - **`emby:controller`**  
-  A bridge to an instance of an Emby server you want to connect to.
+  Represents a connection to an Emby server (a Bridge Thing).
 
 - **`emby:device`**  
-  A player device connected to the Emby server that you want to monitor.
+  Represents a client/player device connected to the Emby server.
 
-## Discovery
+---
 
-This binding supports automatic discovery of both Emby servers and client devices.
+# Discovery
 
-- **Bridge Discovery**  
-  Automatically finds Emby servers on your local network and offers them as **`emby:controller`** Things.
+The binding supports automatic discovery for both servers and clients.
 
-- **Client Discovery**  
-  Once a bridge is online, all connected Emby client devices are detected and offered as **`emby:device`** Things under that bridge.
+## Bridge Discovery
 
-## Binding Configuration
+Emby servers are automatically detected on the local network.
 
-No global binding-level configuration is required or supported.
+They are offered as **`emby:controller`** Things.
 
-## Thing Configuration
+## Client Discovery
 
-There are two types of Things in this binding: the bridge (**`emby:controller`**) and the device (**`emby:device`**).
+When an **`emby:controller`** Bridge is online, connected Emby clients are automatically discovered.
 
-The bridge must be created before any device Things can be generated.
+They are offered as **`emby:device`** Things under the respective bridge.
 
-### `emby:controller` Bridge Configuration
+---
 
-| Name                | Type       | Description                                             | Default | Required | Advanced |
-|---------------------|------------|---------------------------------------------------------|---------|----------|----------|
-| **`ipAddress`**      | Text       | IP address or hostname of the Emby server.              | N/A     | Yes      | No       |
-| **`api`**            | Text       | API Key generated from Emby for authorization.          | N/A     | Yes      | No       |
-| **`bufferSize`**     | Integer    | WebSocket buffer size in bytes.                         | N/A     | No       | No       |
-| **`refreshInterval`**| Integer    | Polling interval for play-state updates (milliseconds). | N/A     | No       | No       |
-| **`discovery`**      | Boolean    | Enable or disable automatic device discovery.           | true    | No       | Yes      |
+# Binding Configuration
 
-## Channels
+There is no global binding-level configuration required or supported.
 
-### Preconfigured Channels for Discovered `emby:device`
+---
 
-An automatically discovered **`emby:device`** Thing will include the following preconfigured channels:
+# Thing Configuration
 
-| Channel ID        | Item Type       | Config Parameters                                          | Description                                                                                                                                  |
-|-------------------|-----------------|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| **`control`**      | Player           | None                                                       | Indicates and controls playback status (play/pause/next/previous/fast-forward/rewind).                                                       |
-| **`stop`**         | Switch           | None                                                       | ON when media is playing; sending OFF stops playback.                                                                                        |
-| **`title`**        | String           | None                                                       | Displays the title of the currently playing song.                                                                                            |
-| **`mute`**         | Switch           | None                                                       | Indicates mute status; sending ON mutes the player.                                                                                           |
-| **`showtitle`**    | String           | None                                                       | Displays the title of the currently playing movie or TV show.                                                                                 |
-| **`imageurl`**     | String           | `imageurl_maxHeight`, `imageurl_maxWidth`, `imageurl_type`  | URL to the current media’s artwork. See the [Emby Images documentation](https://github.com/MediaBrowser/Emby/wiki/Images) for details.         |
-| **`currenttime`**  | Number:Time      | None                                                       | Current playback position of the media.                                                                                                      |
-| **`duration`**     | Number:Time      | None                                                       | Total duration of the current media.                                                                                                         |
-| **`mediatype`**    | String           | None                                                       | Media type of the current media (e.g., Movie, Episode).                                                                                       |
-| **`sendplay`**     | String           | None                                                       | Send a JSON-formatted command to play a list of item IDs on the client. See the [Emby Remote Control API](https://github.com/MediaBrowser/Emby/wiki/Remote-control). |
+## `emby:controller` Bridge Configuration
 
-## Full Example
+The following Configuration Parameter Keys are available:
 
-### Thing Configuration
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| **`ipAddress`** | Text | IP address or hostname of the Emby server. | N/A | Yes | No |
+| **`api`** | Text | API Key generated from Emby for authorization. | N/A | Yes | No |
+| **`bufferSize`** | Integer | WebSocket buffer size in bytes. | N/A | No | No |
+| **`refreshInterval`** | Integer | Polling interval for play-state updates (milliseconds). | N/A | No | No |
+| **`discovery`** | Boolean | Enable or disable automatic device discovery. | true | No | Yes |
+
+## `emby:device` Thing Configuration
+
+The following Configuration Parameter Key is available:
+
+- **`deviceID`**  
+  The unique identifier for the client device connected to the Emby server.
+
+---
+
+# Channels
+
+The following Channel IDs are available for an `emby:device` Thing:
+
+| Channel ID | Item Type | Config Parameters | Description |
+|------------|-----------|-------------------|-------------|
+| **`control`** | Player | None | Playback control (play, pause, next, previous, fast-forward, rewind). |
+| **`stop`** | Switch | None | Indicates playback state; OFF stops playback. |
+| **`title`** | String | None | Title of the currently playing song. |
+| **`showtitle`** | String | None | Title of the currently playing movie or TV show. |
+| **`mute`** | Switch | None | Mute status control. |
+| **`imageurl`** | String | `imageurl_maxHeight`, `imageurl_maxWidth`, `imageurl_type` | URL for current media artwork. |
+| **`currenttime`** | Number:Time | None | Current playback position. |
+| **`duration`** | Number:Time | None | Total media duration. |
+| **`mediatype`** | String | None | Type of media (e.g., Movie, Episode). |
+| **`sendplay`** | String | None | Sends a JSON command to play a list of item IDs. |
+
+Additionally, custom remote control channels can be created:
+
+- **`generalCommand`**
+- **`generalCommand_withArguments`**
+
+These channels are **extensible**.
+
+Multiple instances of **`generalCommand`** and **`generalCommand_withArguments`** can be added and configured by the user.
+
+This allows defining multiple dedicated commands for different control actions.
+
+---
+
+# Full Example
+
+## Thing Configuration Example
 
 ```java
 Bridge emby:controller:myEmbyServer [
@@ -91,8 +118,10 @@ Bridge emby:controller:myEmbyServer [
     ]
 }
 ```
-### Item Configuration
-```
+
+## Item Configuration Example
+
+```text
 Switch      Emby_PlayPause   "Play/Pause"        { channel="emby:device:myEmbyServer:myClientDevice:control" }
 Switch      Emby_Stop        "Stop"              { channel="emby:device:myEmbyServer:myClientDevice:stop" }
 Switch      Emby_Mute        "Mute"              { channel="emby:device:myEmbyServer:myClientDevice:mute" }
@@ -103,11 +132,11 @@ Number:Time Emby_Duration    "Duration [%d %unit%]"     { channel="emby:device:m
 String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:mediatype" }
 String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:imageurl" }
 String      Emby_SendPlay    "Send Play [%s]"    { channel="emby:device:myEmbyServer:myClientDevice:sendplay" }
-
 ```
 
-### Sitemap Configuration
-```
+## Sitemap Configuration Example
+
+```text
 sitemap emby label="Emby Control"
 {
     Frame label="Controls" {
@@ -124,10 +153,107 @@ sitemap emby label="Emby Control"
         Text item=Emby_ImageURL
     }
 }
-
 ```
 
-## Advanced
-You can also use the generalCommand and generalCommand_withArguments channels to send arbitrary commands supported by the Emby API.
+---
 
-These channels allow you to implement custom interactions beyond the predefined set of controls.
+# Using General Commands with Emby Binding
+
+## General Command (Without Arguments)
+
+**Channel Type:** `generalCommand`
+
+**Item Type:** Switch
+
+### How to Use
+
+- Configure the `generalCommand_CommandName`.
+- Send `ON` to trigger the command.
+- `OFF` is ignored.
+
+### Supported Commands
+
+| Command Name | Description |
+|--------------|-------------|
+| MoveUp | Move focus up. |
+| MoveDown | Move focus down. |
+| MoveLeft | Move focus left. |
+| MoveRight | Move focus right. |
+| PageUp | Page up through a list. |
+| PageDown | Page down through a list. |
+| PreviousLetter | Scroll to previous letter. |
+| NextLetter | Scroll to next letter. |
+| ToggleOsdMenu | Show/hide OSD. |
+| ToggleContextMenu | Show/hide context menu. |
+| ToggleMute | Toggle mute. |
+| Select | Confirm selection. |
+| Back | Navigate back. |
+| TakeScreenshot | Capture screen. |
+| GoHome | Return to Home. |
+| GoToSettings | Open Settings. |
+| VolumeUp | Increase volume. |
+| VolumeDown | Decrease volume. |
+| ToggleFullscreen | Toggle fullscreen. |
+| GoToSearch | Open Search. |
+
+## General Command with Arguments
+
+**Channel Type:** `generalCommand_withArguments`
+
+**Item Type:** String
+
+### How to Use
+
+- Configure the `generalCommand_CommandName`.
+- Send the JSON payload (only the inside `{}` part).
+
+### Examples
+
+| Command Name | Required Arguments | Example |
+|--------------|--------------------|---------|
+| SetVolume | `Volume` (0–100) | `Volume:50` |
+| SetAudioStreamIndex | `Index` (integer) | `Index:2` |
+| SetSubtitleStreamIndex | `Index` (-1 disables) | `Index:-1` |
+| DisplayContent | `ItemName`, `ItemId`, `ItemType` | `ItemName:"Movie",ItemId:"123",ItemType:"Video"` |
+| PlayTrailers | `ItemId` | `ItemId:"456"` |
+| SendString (Future) | `String` | `String:"Hello"` |
+| DisplayMessage (Future) | `Header`, `Text`, `TimeoutMs` optional | `Header:"Alert",Text:"Starting Movie"` |
+
+---
+
+# Example Thing with Custom General Commands
+
+```yaml
+Bridge emby:controller:server "Emby Server" [
+    api="YOUR_API_KEY",
+    ipAddress="192.168.1.100",
+    port=8096,
+    refreshInterval=5000
+] {
+    Thing device livingroomtv "Living Room TV" [
+        deviceID="device12345"
+    ] {
+        Channels:
+            Type generalCommand : MoveUpButton "Move Up" [
+                generalCommand_CommandName="MoveUp"
+            ]
+            Type generalCommand : ToggleMuteButton "Toggle Mute" [
+                generalCommand_CommandName="ToggleMute"
+            ]
+            Type generalCommand_withArguments : SetVolumeButton "Set Volume" [
+                generalCommand_CommandName="SetVolume"
+            ]
+            Type generalCommand_withArguments : PlayTrailerButton "Play Trailer" [
+                generalCommand_CommandName="PlayTrailers"
+            ]
+    }
+}
+```
+
+---
+
+# References
+
+- [Emby Remote Control API Documentation](https://github.com/MediaBrowser/Emby/wiki/Remote-control)
+
+---

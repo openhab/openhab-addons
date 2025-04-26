@@ -43,7 +43,9 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.measure.Unit;
 
@@ -94,7 +96,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     private @Nullable EmbyPlayStateModel currentPlayState = null;
     private @Nullable EmbyBridgeHandler bridgeHandler;
     private static final long MIN_UPDATE_INTERVAL_MS = 1000; // 1 second
-    private volatile long lastUpdateCurrentTime = 0;
     private final EmbyThrottle throttle = new EmbyThrottle(1000); // 1 second throttle for all events
     private @Nullable String lastImageUrl = null;
     private @Nullable String lastShowTitle = null;
@@ -104,6 +105,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     private long lastDuration = -1;
     @Reference
     private @Nullable TranslationProvider i18nProvider;
+
+    private static final List<String> ALLOWED_IMAGE_TYPES = Collections.unmodifiableList(Arrays.asList("Primary", "Art",
+            "Backdrop", "Banner", "Logo", "Thumb", "Disc", "Box", "Screenshot", "Menu", "Chapter"));
 
     public EmbyDeviceHandler(Thing thing) {
         super(thing);
@@ -149,16 +153,20 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                                     command.toString());
                             break;
                         case CHANNEL_GENERALCOMMAND:
-                        case CHANNEL_GENERALCOMMANDWITHARGS:
                             String commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
                             if (OnOffType.ON.equals(command)) {
                                 handler.sendCommand(
                                         CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName);
-                            } else {
-                                handler.sendCommand(
-                                        CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
-                                        "{ Arguments:" + command + "}");
                             }
+                            break;
+
+                        case CHANNEL_GENERALCOMMANDWITHARGS:
+                            // always take the incoming command.toString() as your JSON body
+                            String cmdName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
+                            String argsBody = command.toString(); // e.g. { "Name": "Value" }
+                            String payload = "{ Arguments:" + argsBody + " }"; // wraps it in your braces
+                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + cmdName,
+                                    payload);
                             break;
                         default:
                             logger.warn("Unsupported channel: {}", channelUID.getAsString());
@@ -178,46 +186,32 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                 if (currentPlayState == null) {
                     return UnDefType.UNDEF;
                 }
-                // if paused → PAUSE, otherwise PLAY
                 Boolean paused = currentPlayState.getEmbyPlayStatePausedState();
                 return Boolean.TRUE.equals(paused) ? PlayPauseType.PAUSE : PlayPauseType.PLAY;
-
             case CHANNEL_MUTE:
                 if (currentPlayState == null) {
                     return UnDefType.UNDEF;
                 }
                 Boolean muted = currentPlayState.getEmbyMuteSate();
                 return Boolean.TRUE.equals(muted) ? OnOffType.ON : OnOffType.OFF;
-
             case CHANNEL_STOP:
                 if (currentPlayState == null) {
                     return UnDefType.UNDEF;
                 }
-                // STOP channel is ON when playback is paused/stopped
                 Boolean stopped = currentPlayState.getEmbyPlayStatePausedState();
                 return Boolean.TRUE.equals(stopped) ? OnOffType.ON : OnOffType.OFF;
-
             case CHANNEL_TITLE:
-                // The item name, e.g. movie title
                 return createStringState(currentPlayState != null ? currentPlayState.getNowPlayingName() : null);
-
             case CHANNEL_SHOWTITLE:
-                // The “show” title, cached from last event
                 return createStringState(lastShowTitle);
-
             case CHANNEL_MEDIATYPE:
                 return createStringState(lastMediaType);
-
             case CHANNEL_CURRENTTIME:
-                // seconds since start
                 return (lastCurrentTime < 0) ? UnDefType.UNDEF : createQuantityState(lastCurrentTime, Units.SECOND);
-
             case CHANNEL_DURATION:
                 return (lastDuration < 0) ? UnDefType.UNDEF : createQuantityState(lastDuration, Units.SECOND);
-
             case CHANNEL_IMAGEURL:
                 return createStringState(lastImageUrl);
-
             default:
                 return UnDefType.UNDEF;
         }
@@ -229,20 +223,17 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     }
 
     private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
-        // 1) Device-ID is mandatory
         Object deviceId = this.thing.getConfiguration().get(DEVICE_ID);
         if (deviceId == null || deviceId.toString().isEmpty()) {
             throwValidationError(DEVICE_ID, "Missing value for key: " + DEVICE_ID);
         }
         EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(deviceId.toString());
 
-        // 2) Image URL channel parameters
         Configuration imgCfg = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
 
         String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_MAXWIDTH, "");
         if (!maxWidth.matches("\\d*")) {
             throwValidationError(CHANNEL_IMAGEURL_MAXWIDTH, "Image max width must be a number");
-            ;
         }
         embyDeviceConfig.imageMaxWidth = maxWidth;
 
@@ -258,9 +249,10 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
         embyDeviceConfig.imagePercentPlayed = Boolean.parseBoolean(pctPlayed);
 
-        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_TYPE, "");
-        if (imgType.isEmpty()) {
-            throwValidationError(CHANNEL_IMAGEURL_TYPE, "Missing configuration value: " + CHANNEL_IMAGEURL_TYPE);
+        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_TYPE, "Primary");
+        if (!ALLOWED_IMAGE_TYPES.contains(imgType)) {
+            throwValidationError(CHANNEL_IMAGEURL_TYPE,
+                    "Invalid image type: " + imgType + ". Allowed values: " + ALLOWED_IMAGE_TYPES);
         }
         embyDeviceConfig.imageImageType = imgType;
 
@@ -275,13 +267,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void initialize() {
-        // 1) Immediately show “initializing”
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby device");
-
-        // 2) Offload the actual setup to the scheduler
         scheduler.execute(() -> {
             try {
-                // Validate config early
                 EmbyDeviceConfiguration cfg = validateConfiguration();
                 this.config = cfg;
 
@@ -299,7 +287,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                     return;
                 }
 
-                // All checks passed—link the bridge handler and go ONLINE
                 this.bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
                 updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException cve) {
@@ -372,7 +359,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     private void updateState(EmbyState state) {
         updatePlayerState(state);
         if (state == EmbyState.STOP) {
-            // Clear cached values on STOP
             lastImageUrl = null;
             lastShowTitle = null;
             lastMediaType = null;
@@ -380,7 +366,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             lastCurrentTime = -1;
             lastDuration = -1;
 
-            // Clear openHAB state channels
             updateTitle("");
             updateShowTitle("");
             updatePrimaryImageURL("");
@@ -437,9 +422,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
     }
 
-    /**
-     * Wrap the given String in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the String is empty.
-     */
     private State createStringState(@Nullable String string) {
         if (string == null || string.isEmpty()) {
             return UnDefType.UNDEF;
@@ -454,8 +436,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport) {
-        // check the deviceId of this handler against the deviceId of the event to see if it matches
-        if (playstate.compareDeviceId(config.deviceID)) {
+        if (config != null && playstate.compareDeviceId(config.deviceID)) {
             this.currentPlayState = playstate;
             logger.debug("the deviceId for: {} matches the deviceId of the thing so we will update stringUrl",
                     playstate.getDeviceName());
@@ -517,7 +498,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             }
         } else {
             logger.trace("{} does not equal {} the event is for device named: {} ", playstate.getDeviceId(),
-                    config.deviceID, playstate.getDeviceName());
+                    config != null ? config.deviceID : "null", playstate.getDeviceName());
         }
     }
 }

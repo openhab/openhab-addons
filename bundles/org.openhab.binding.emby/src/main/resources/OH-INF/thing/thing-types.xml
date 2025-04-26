@@ -15,6 +15,8 @@
 			<parameter name="bufferSize" type="integer" min="1024">
 				<label>WebSocket Buffer Size</label>
 				<description>Size of the WebSocket buffer in bytes.</description>
+				<default>10000</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Server Host</label>
@@ -24,10 +26,12 @@
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Server Port</label>
 				<description>Port number for the EMBY server.</description>
+				<default>8096</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1000">
 				<label>Refresh Interval</label>
 				<description>Polling interval for play-state updates.</description>
+				<default>10000</default>
 			</parameter>
 			<parameter name="discovery" type="boolean">
 				<label>Auto Discover</label>
@@ -37,6 +41,7 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+
 	<thing-type id="device" extensible="generalCommand,generalCommand_withArguments">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
@@ -62,6 +67,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
 	<channel-type id="sendplay">
 		<item-type>String</item-type>
 		<label>Send Play</label>
@@ -70,52 +76,61 @@
 			https://github.com/MediaBrowser/Emby/wiki/Remote-control</description>
 		<state pattern="%s"/>
 	</channel-type>
+
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title of the current song</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+
 	<channel-type id="showtitle">
 		<item-type>String</item-type>
 		<label>Show Title</label>
 		<description>Title of the current show</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
 		<description>Control the Emby Player, e.g. start/stop/next/previous/ffward/rewind</description>
 		<category>Player</category>
 	</channel-type>
+
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
 	</channel-type>
+
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute/unmute your device</description>
 	</channel-type>
+
 	<channel-type id="currenttime">
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
+
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
+
 	<channel-type id="mediatype">
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+
 	<channel-type id="generalCommand">
 		<item-type>Switch</item-type>
 		<label>General Command</label>
@@ -147,6 +162,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
+
 	<channel-type id="generalCommand_withArguments">
 		<item-type>String</item-type>
 		<label>General Command With Arguments</label>
@@ -164,6 +180,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
+
 	<channel-type id="imageurl">
 		<item-type>String</item-type>
 		<label>image url</label>

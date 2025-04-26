@@ -48,10 +48,12 @@ public class EmbyHTTPUtils {
     }
 
     /**
-     * Sends a {@link doPost} request with a timeout of 30 seconds
+     * Sends an HTTP POST request to the Emby server.
      *
-     * @param urlAddress the address to send the request
-     * @param payload the json payload to include with the request
+     * @param urlAddress the endpoint path (appended to the configured hostIpPort) to send the request to
+     * @param payload the JSON payload to include in the request body
+     * @return the response body as a string
+     * @throws IOException if an I/O error occurs during the request
      */
     private String doPost(String urlAddress, String payload) throws IOException {
         urlAddress = "http://" + hostIpPort + urlAddress;
@@ -71,11 +73,15 @@ public class EmbyHTTPUtils {
     }
 
     /**
-     * Sends a {@link doPost} request with a timeout of 30 seconds
+     * Sends an HTTP POST request to the Emby server with retry logic.
+     * 
+     * Implements a simple linear backoff strategy between retries.
      *
-     * @param urlAddress the address to send the request
-     * @param payload the json payload you want to send as part of the request
-     * @param retry the number of retries before throwing the IOexpcetion back to the handler
+     * @param urlAddress the endpoint path (appended to the configured hostIpPort) to send the request to
+     * @param payload the JSON payload to include in the request body
+     * @param retryCount the maximum number of retry attempts before failing
+     * @return the response body as a string, or null if no response was received
+     * @throws EmbyHttpRetryExceeded if the number of retries is exceeded or the thread is interrupted
      */
     public synchronized @Nullable String doPost(String urlAddress, String payload, int retryCount)
             throws EmbyHttpRetryExceeded {

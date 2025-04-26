@@ -130,34 +130,29 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         return config.ipAddress + ":" + config.port;
     }
 
-    private int getIntConfigParameter(String key, int defaultValue) {
-        Object obj = this.getConfig().get(key);
-        if (obj instanceof Number) {
-            return ((Number) obj).intValue();
-        } else if (obj instanceof String) {
-            return Integer.parseInt(obj.toString());
-        }
-        return defaultValue;
-    }
-
     private void establishConnection() {
         scheduler.execute(() -> {
-            connection.connect(config.ipAddress, config.port, config.api, scheduler, config.refreshInterval,
-                    config.bufferSize);
+            try {
+                connection.connect(config.ipAddress, config.port, config.api, scheduler, config.refreshInterval,
+                        config.bufferSize);
 
-            connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
-                if (!connection.checkConnection()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Connection could not be established");
-                }
-            }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
+                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+                    if (!connection.checkConnection()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Connection could not be established");
+                    }
+                }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Connection attempt failed: " + e.getMessage());
+            }
         });
     }
 
     @Override
     public void initialize() {
-        // Show initializing
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby bridge");
+        // Indicate that we're trying to connect
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Attempting to connect to Emby server");
 
         // Background setup
         scheduler.execute(() -> {
@@ -176,13 +171,9 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                 EmbyBridgeConfiguration cfg = checkConfiguration();
                 this.config = cfg;
                 establishConnection();
-                updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException cve) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configuration error: " + cve.getMessage());
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Initialization failed: " + e.getMessage());
             }
         });
     }
