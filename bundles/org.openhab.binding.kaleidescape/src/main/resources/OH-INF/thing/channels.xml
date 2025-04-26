@@ -458,7 +458,7 @@
 		<description>Identifies the location in the movie, ie: Main Content, Intermission, or End Credits</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -964,10 +964,6 @@
 		<item-type>String</item-type>
 		<label>Disc Location</label>
 		<description>Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

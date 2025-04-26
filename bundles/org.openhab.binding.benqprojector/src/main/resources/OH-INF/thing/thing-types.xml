@@ -158,7 +158,7 @@
 		<description>Turn the Screen Blank On or Off</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="directcmd" advanced="true">

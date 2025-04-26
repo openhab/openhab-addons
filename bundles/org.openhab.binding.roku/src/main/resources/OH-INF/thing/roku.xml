@@ -232,7 +232,7 @@
 		<label>Media Progress</label>
 		<description>The current progress of playing media</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Progress</tag>
 		</tags>
 	</channel-type>

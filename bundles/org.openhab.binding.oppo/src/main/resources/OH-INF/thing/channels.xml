@@ -327,6 +327,10 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>Simulate Pressing a Button on the Remote Control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="EJT">Eject</option>

@@ -233,7 +233,7 @@
 		<description>Retrieve or Set the Lamp Mode</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -368,7 +368,7 @@
 		<description>Turn the AV Mute On or Off</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">
