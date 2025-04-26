@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>RFXCOM USB Transceiver</label>
 		<description>This is universal RFXCOM transceiver bridge for manual configuration purposes.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">

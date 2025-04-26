@@ -11,7 +11,7 @@
 
 		<label>Wall Mounted Door/Window Sensor (WDS)</label>
 		<description>A window/door sensor, that provides the open/close state.</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="contact" typeId="windowDoorSensor"/>
 			<channel id="batteryLow" typeId="system.low-battery"/>

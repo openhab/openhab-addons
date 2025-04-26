@@ -12,6 +12,7 @@
 
 		<label>Controller</label>
 		<description>A Pentair Controller such as EasyTouch or IntelliTouch.</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="poolheat" typeId="heat">

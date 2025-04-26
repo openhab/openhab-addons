@@ -11,6 +11,7 @@
 		<label>A Pulseaudio Sink</label>
 		<description>represents a pulseaudio sink</description>
 		<category>Speaker</category>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 
 		<channels>
 			<channel id="volume" typeId="volume"/>

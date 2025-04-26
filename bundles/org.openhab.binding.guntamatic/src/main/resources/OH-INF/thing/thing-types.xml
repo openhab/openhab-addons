@@ -7,6 +7,7 @@
 	<thing-type id="biostar">
 		<label>Guntamatic Biostar</label>
 		<description>Guntamatic Biostar Pellets Heating System</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -27,6 +28,7 @@
 	<thing-type id="biosmart">
 		<label>Guntamatic Biosmart</label>
 		<description>Guntamatic Biosmart Log Heating System</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type-wo-boiler-app"/>
@@ -46,6 +48,7 @@
 	<thing-type id="powerchip">
 		<label>Guntamatic Powerchip</label>
 		<description>Guntamatic Powerchip WoodChip Heating System</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -66,6 +69,7 @@
 	<thing-type id="powercorn">
 		<label>Guntamatic Powercorn</label>
 		<description>Guntamatic Powercorn EnergyGrain Heating System. Untested! Please provide Feedback!</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -86,6 +90,7 @@
 	<thing-type id="biocom">
 		<label>Guntamatic Biocom</label>
 		<description>Guntamatic Biocom Pellets Heating System. Untested! Please provide Feedback!</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -106,6 +111,7 @@
 	<thing-type id="pro">
 		<label>Guntamatic Pro</label>
 		<description>Guntamatic Pro Pellets or WoodChip Heating System. Untested! Please provide Feedback!</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -126,6 +132,7 @@
 	<thing-type id="therm">
 		<label>Guntamatic Therm</label>
 		<description>Guntamatic Therm Pellets Heating System. Untested! Please provide Feedback!</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type"/>
@@ -147,6 +154,7 @@
 		<label>Guntamatic Generic</label>
 		<description>Generic Guntamatic Heating System. Use this type, if your Heating System is none of the others. Please
 			provide Feedback!</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control-group-type-wo-boiler-app"/>

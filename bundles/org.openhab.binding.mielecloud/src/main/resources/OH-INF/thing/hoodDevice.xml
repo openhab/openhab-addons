@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.hood.label</label>
 		<description>@text/thing-type.mielecloud.hood.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>KitchenHood</semantic-equipment-tag>
 
 		<channels>
 			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>

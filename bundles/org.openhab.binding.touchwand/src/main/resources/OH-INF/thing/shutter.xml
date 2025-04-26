@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Shutter Unit</label>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="shutter" typeId="shutter">
 				<description>Shutter control</description>

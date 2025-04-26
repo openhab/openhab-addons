@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Heatpump Device</label>
 		<description>Heatpump device</description>
-
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power-channel"/>
 			<channel id="tankWaterTemperature" typeId="tankWaterTemperature-channel"/>

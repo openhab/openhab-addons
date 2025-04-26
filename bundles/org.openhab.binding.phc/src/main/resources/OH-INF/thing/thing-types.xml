@@ -28,7 +28,7 @@
 
 		<label>PHC AM</label>
 		<description>Thing for an output/relay module (AM).</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="am" typeId="amChannels"/>
 		</channel-groups>
@@ -49,7 +49,7 @@
 
 		<label>PHC EM</label>
 		<description>Thing for an input/switch module (EM).</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="em" typeId="emChannels"/>
 			<channel-group id="emLed" typeId="amChannels"/>
@@ -70,7 +70,7 @@
 
 		<label>PHC JRM</label>
 		<description>Thing for a shutter module (JRM).</description>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="jrm" typeId="jrmChannels"/>
 			<channel-group id="jrmT" typeId="jrmTimeChannels"/>
@@ -115,7 +115,7 @@
 
 		<label>PHC DIM</label>
 		<description>Thing for a dimmer module (DM).</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dim" typeId="dimChannels"/>
 		</channel-groups>
