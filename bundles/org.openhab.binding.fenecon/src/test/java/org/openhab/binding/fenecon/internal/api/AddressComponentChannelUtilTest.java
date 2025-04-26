@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,9 +44,24 @@ public class AddressComponentChannelUtilTest {
 
         // ASSERT
         assertTrue(result.size() == 3);
-        assertEquals("_sum/(State%7CGridMode)", result.get(0));
-        assertEquals("system/(Version)", result.get(1));
-        assertEquals("battery/(SoH%7CCurrent)", result.get(2));
+        assertTrue(result.contains("_sum/(GridMode%7CState)"));
+        assertTrue(result.contains("system/(Version)"));
+        assertTrue(result.contains("battery/(Current%7CSoH)"));
+    }
+
+    @Test
+    void testCreateComponentRequestsWithRegEx() {
+        // ARRANGE
+        List<Address> expectedSumList = List.of(new Address("system/Version"), new Address("battery0/SoH"),
+                new Address("battery0/Current"), new Address("battery1/SoH"));
+
+        // ACT
+        List<String> result = AddressComponentChannelUtil.createComponentRequests(expectedSumList);
+
+        // ASSERT
+        assertTrue(result.size() == 2);
+        assertTrue(result.contains("system/(Version)"));
+        assertTrue(result.contains("battery.+/(Current%7CSoH)"));
     }
 
     @Test
@@ -62,16 +78,16 @@ public class AddressComponentChannelUtilTest {
                 .flatMap(Collection::stream).toList();
 
         // ACT
-        Map<AddressComponent, List<AddressChannel>> result = AddressComponentChannelUtil.split(addresses);
+        Map<AddressComponent, Set<AddressChannel>> result = AddressComponentChannelUtil.split(addresses);
 
         // ASSERT
-        assertTrue(result.getOrDefault(new Address(FeneconBindingConstants.STATE_ADDRESS).getComponent(), List.of())
+        assertTrue(result.getOrDefault(new Address(FeneconBindingConstants.STATE_ADDRESS).getComponent(), Set.of())
                 .containsAll(expectedSumList.stream().map(Address::getChannel).toList()));
 
-        assertTrue(result.getOrDefault(new AddressComponent("fantasy"), List.of())
+        assertTrue(result.getOrDefault(new AddressComponent("fantasy"), Set.of())
                 .containsAll(expectedFantasyList.stream().map(Address::getChannel).toList()));
 
-        assertTrue(result.getOrDefault(new AddressComponent("scify"), List.of())
+        assertTrue(result.getOrDefault(new AddressComponent("scify"), Set.of())
                 .containsAll(expectedScyFiList.stream().map(Address::getChannel).toList()));
     }
 
@@ -83,11 +99,11 @@ public class AddressComponentChannelUtilTest {
 
         // ACT
         AddressComponent component = new AddressComponent("_sum");
-        Map<AddressComponent, List<AddressChannel>> split = AddressComponentChannelUtil.split(expectedSumList);
-        List<AddressChannel> sciFyChannels = split.getOrDefault(component, List.of());
+        Map<AddressComponent, Set<AddressChannel>> split = AddressComponentChannelUtil.split(expectedSumList);
+        Set<AddressChannel> sciFyChannels = split.getOrDefault(component, Set.of());
         String result = AddressComponentChannelUtil.createComponentRequest(component, sciFyChannels);
 
         // ASSERT
-        assertEquals("_sum/(State%7CGridMode)", result);
+        assertEquals("_sum/(GridMode%7CState)", result);
     }
 }

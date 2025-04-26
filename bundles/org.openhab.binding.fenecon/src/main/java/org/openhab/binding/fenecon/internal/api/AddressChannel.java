@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
+import java.util.Comparator;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -20,5 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Philipp Schneider - Initial contribution
  */
 @NonNullByDefault
-public record AddressChannel(String channel) {
+public record AddressChannel(String channel) implements Comparable<AddressChannel> {
+    @Override
+    public int compareTo(AddressChannel that) {
+        return Objects.compare(this, that,
+                Comparator.comparing(AddressChannel::channel).thenComparing(AddressChannel::channel));
+    }
 }

@@ -21,4 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public record AddressComponent(String component) {
+    public AddressComponent(String component) {
+        this.component = convertComponentWithRegEx(component);
+    }
+
+    // Bundle same components with regex if possible, to reduce the number of requests
+    private static String convertComponentWithRegEx(String component) {
+        return component.replaceFirst("\\d$", ".+");
+    }
 }

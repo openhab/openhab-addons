@@ -37,6 +37,9 @@
 			<channel id="bms-pack-temperature" typeId="bms-pack-temperature"/>
 			<channel id="batt-tower-voltage" typeId="batt-tower-voltage"/>
 			<channel id="batt-tower-current" typeId="batt-tower-current"/>
+			<channel id="charger0-actual-power" typeId="charger-actual-power"/>
+			<channel id="charger1-actual-power" typeId="charger-actual-power"/>
+			<channel id="charger2-actual-power" typeId="charger-actual-power"/>
 		</channels>
 
 		<config-description>
@@ -228,6 +231,13 @@
 		<label>FEMS Battery Current</label>
 		<description>Battery current of the FENECON energy management system (FEMS) in Ampere.</description>
 		<category>Current</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="charger-actual-power">
+		<item-type>Number:Power</item-type>
+		<label>Charger Actual Power</label>
+		<description>Charger actual power in watt on the corresponding charger.</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

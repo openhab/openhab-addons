@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,16 +34,16 @@ public class AddressComponentChannelUtil {
                 .map(entry -> createComponentRequest(entry.getKey(), entry.getValue())).toList();
     }
 
-    protected static Map<AddressComponent, List<AddressChannel>> split(List<Address> addresses) {
+    protected static Map<AddressComponent, Set<AddressChannel>> split(List<Address> addresses) {
         return addresses.stream().collect(Collectors.toMap(Address::getComponent,
-                value -> new ArrayList<AddressChannel>(List.of(value.getChannel())), (existing, newest) -> {
+                value -> new TreeSet<AddressChannel>(List.of(value.getChannel())), (existing, newest) -> {
                     existing.addAll(newest);
                     return existing;
                 }));
     }
 
-    protected static String createComponentRequest(AddressComponent component, List<AddressChannel> channels) {
-        // Grouping REST-API requests - e.g. http://...:8084/rest/channel/_sum0/(State|EssSoc)
+    protected static String createComponentRequest(AddressComponent component, Set<AddressChannel> channels) {
+        // Grouping REST-API requests - e.g. http://...:8084/rest/channel/_sum/(State|EssSoc)
 
         // For valid URIs the pipe delimiter must be encoded as %7C
         return component.component() + "/("

@@ -31,32 +31,35 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 The FENECON binding currently only provides access to read out the values from the energy storage system.
 
-| Channel                       | Type                       | Read/Write | Description                                                                 |
-|-------------------------------|----------------------------|------------|-----------------------------------------------------------------------------|
-| state                         | String                     | R          | FENECON system state: Ok, Info, Warning or Fault                            |
-| fems-version                  | String                     | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3              |
-| last-update                   | DateTime                   | R          | Last successful update via REST-API from the FENECON system                 |
-| ess-soc                       | Number:Dimensionless       | R          | Battery state of charge in percent                                          |
-| batt-tower-soh                | Number:Dimensionless       | R          | Battery state of health in percent.                                         |
-| charger-power                 | Number:Power               | R          | Current charger power of energy storage system in watt.                     |
-| discharger-power              | Number:Power               | R          | Current discharger power of energy storage system in watt.                  |
-| emergency-power-mode          | Switch                     | R          | Indicates if there is grid power is off and the emergency power mode is on. |
-| production-active-power       | Number:Power               | R          | Current active power producer load in watt.                                 |
-| production-max-active-power   | Number:Power               | R          | Maximum active production power in watt that was measured.                  |
-| export-to-grid-power          | Number:Power               | R          | Current export power to grid in watt.                                       |
-| exported-to-grid-energy       | Number:Energy              | R          | Total energy exported to the grid in watt per hour.                         |
-| consumption-active-power      | Number:Power               | R          | Current active power consumer load in watt.                                 |
-| consumption-max-active-power  | Number:Power               | R          | Maximum active consumption power in watt that was measured.                 |
-| consumption-active-power-l1   | Number:Power               | R          | Current active power consumer load in watt on phase 1.                      |
-| consumption-active-power-l2   | Number:Power               | R          | Current active power consumer load in watt on phase 2.                      |
-| consumption-active-power-l3   | Number:Power               | R          | Current active power consumer load in watt on phase 3.                      |
-| import-from-grid-power        | Number:Power               | R          | Current import power from grid in watt.                                     |
-| imported-from-grid-energy     | Number:Energy              | R          | Total energy imported from the grid in watt per hour.                       |
-| inverter-air-temperature      | Number:Temperature         | R          | Air temperature at the inverter in °C.                                      |
-| inverter-radiator-temperature | Number:Temperature         | R          | Radiator temperature of the inverter in °C.                                 |
-| bms-pack-temperature          | Number:Temperature         | R          | Temperature in the battery management system (BMS) box in °C.               |
-| batt-tower-voltage            | Number:ElectricPotential   | R          | Battery voltage of the FENECON energy management system (FEMS) in Volt.     |
-| batt-tower-current            | Number:ElectricCurrent     | R          | Battery current of the FENECON energy management system (FEMS) in Ampere.   |
+| Channel                       | Type                       | Read/Write | Description                                                                    |
+|-------------------------------|----------------------------|------------|--------------------------------------------------------------------------------|
+| state                         | String                     | R          | FENECON system state: Ok, Info, Warning or Fault                               |
+| fems-version                  | String                     | R          | FENECON energy management system (FEMS) version - e.g 2025.2.3                 |
+| last-update                   | DateTime                   | R          | Last successful update via REST-API from the FENECON system                    |
+| ess-soc                       | Number:Dimensionless       | R          | Battery state of charge in percent                                             |
+| batt-tower-soh                | Number:Dimensionless       | R          | Battery state of health in percent.                                            |
+| charger-power                 | Number:Power               | R          | Current charger power of energy storage system in watt.                        |
+| discharger-power              | Number:Power               | R          | Current discharger power of energy storage system in watt.                     |
+| emergency-power-mode          | Switch                     | R          | Indicates if there is grid power is off and the emergency power mode is on.    |
+| production-active-power       | Number:Power               | R          | Current active power producer load in watt.                                    |
+| production-max-active-power   | Number:Power               | R          | Maximum active production power in watt that was measured.                     |
+| export-to-grid-power          | Number:Power               | R          | Current export power to grid in watt.                                          |
+| exported-to-grid-energy       | Number:Energy              | R          | Total energy exported to the grid in watt per hour.                            |
+| consumption-active-power      | Number:Power               | R          | Current active power consumer load in watt.                                    |
+| consumption-max-active-power  | Number:Power               | R          | Maximum active consumption power in watt that was measured.                    |
+| consumption-active-power-l1   | Number:Power               | R          | Current active power consumer load in watt on phase 1.                         |
+| consumption-active-power-l2   | Number:Power               | R          | Current active power consumer load in watt on phase 2.                         |
+| consumption-active-power-l3   | Number:Power               | R          | Current active power consumer load in watt on phase 3.                         |
+| import-from-grid-power        | Number:Power               | R          | Current import power from grid in watt.                                        |
+| imported-from-grid-energy     | Number:Energy              | R          | Total energy imported from the grid in watt per hour.                          |
+| inverter-air-temperature      | Number:Temperature         | R          | Air temperature at the inverter in °C.                                         |
+| inverter-radiator-temperature | Number:Temperature         | R          | Radiator temperature of the inverter in °C.                                    |
+| bms-pack-temperature          | Number:Temperature         | R          | Temperature in the battery management system (BMS) box in °C.                  |
+| batt-tower-voltage            | Number:ElectricPotential   | R          | Battery voltage of the FENECON energy management system (FEMS) in Volt.        |
+| batt-tower-current            | Number:ElectricCurrent     | R          | Battery current of the FENECON energy management system (FEMS) in Ampere.      |
+| charger0-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 0 - e.g west roof, if available.   |
+| charger1-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 1 - e.g east roof, if available.   |
+| charger2-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 2 - e.g south roof, if available.  |
 
 ## Full Example
 
@@ -107,6 +110,11 @@ Number:Temperature         BmsBoxTemp                     <temperature>  (GF_Uti
 
 Number:ElectricPotential   BattTowerVoltage               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"] {channel="fenecon:home-device:local:batt-tower-voltage"}
 Number:ElectricCurrent     BattTowerCurrent               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"] {channel="fenecon:home-device:local:batt-tower-current"}
+
+Number:Power               ChargerWestActualPower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger0-actual-power"}
+Number:Power               ChargerEastActualPower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger1-actual-power"}
+Number:Power               ChargerSouthActualPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger2-actual-power"}
+
 ```
 
 ### demo.sitemap

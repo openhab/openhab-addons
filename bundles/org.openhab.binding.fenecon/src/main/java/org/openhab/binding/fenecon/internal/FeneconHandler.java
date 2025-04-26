@@ -214,6 +214,24 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState(FeneconBindingConstants.BATT_SOH_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.PERCENT));
                 break;
+            case FeneconBindingConstants.CHARGER0_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger0/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 312 }
+                updateState(FeneconBindingConstants.CHARGER0_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.CHARGER1_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger1/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 33 }
+                updateState(FeneconBindingConstants.CHARGER1_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.CHARGER2_ACTUAL_POWER_ADDRESS:
+                // { "address": "charger2/ActualPower", "type": "INTEGER", "accessMode": "RO", "text": "", "unit": "W",
+                // "value": 412 }
+                updateState(FeneconBindingConstants.CHARGER2_ACTUAL_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
             default:
                 logger.trace("FENECON - No channel ID to address {} found.", response.address());
                 break;
