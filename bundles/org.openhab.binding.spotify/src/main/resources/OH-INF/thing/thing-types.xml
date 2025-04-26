@@ -230,6 +230,10 @@
 		<item-type>Number</item-type>
 		<label>Track Progress (ms)</label>
 		<description>The progress of the currently played track (ms)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDuration">
@@ -246,6 +250,10 @@
 		<item-type>String</item-type>
 		<label>Track Progress (m:ss)</label>
 		<description>The progress of the currently played track formatted (m:ss)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackNumber" advanced="true">

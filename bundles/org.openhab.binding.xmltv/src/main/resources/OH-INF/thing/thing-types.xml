@@ -179,6 +179,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
 		<description>Relative progression of the current program.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

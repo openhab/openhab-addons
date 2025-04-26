@@ -757,6 +757,10 @@
 		<item-type>Number</item-type>
 		<label>Track Progress</label>
 		<description>The percentage complete of the current playing track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
