@@ -96,6 +96,7 @@ public class ShellyBindingConstants {
             // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
             THING_TYPE_SHELLYPRO1PM, //
+            THING_TYPE_SHELLYPRO1CB, //
             THING_TYPE_SHELLYPRO2_RELAY, //
             THING_TYPE_SHELLYPRO2PM_RELAY, //
             THING_TYPE_SHELLYPRO2PM_ROLLER, //

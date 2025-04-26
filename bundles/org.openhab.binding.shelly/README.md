@@ -117,6 +117,7 @@ See section [Discovery](#discovery) for details.
 | ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
+| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
@@ -1375,7 +1376,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
-### Shelly Pro 1 PM (thing-type: shellypro1pm)
+### Shelly Pro 1 PM (thing-type: shellypro1pm, shellypro1cb)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
