@@ -23,17 +23,21 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.emby.internal.EmbyBridgeConfiguration;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
-import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 import org.openhab.binding.emby.internal.protocol.EmbyHTTPUtils;
 import org.openhab.binding.emby.internal.protocol.EmbyHttpRetryExceeded;
 import org.openhab.core.config.core.validation.ConfigValidationException;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +60,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private @Nullable EmbyHTTPUtils httputils;
     private EmbyBridgeConfiguration config;
     private int reconnectionCount;
+    private String lastDiscoveryStatus = null;
 
     public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port,
             WebSocketClient passedWebSocketClient) {
@@ -74,7 +79,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     public void sendCommand(String commandURL) {
-        logger.trace("Sending command without payload: {}", commandURL);
+        logger.debug("Sending command without payload: {}", commandURL);
         if (httputils != null) {
             try {
                 httputils.doPost(commandURL, "", 2);
@@ -121,21 +126,43 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                                 "Connection could not be established");
                     }
                 }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            } catch (InterruptedException ie) {
+                // Preserve interrupt and stop trying
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection init interrupted");
+            } catch (IOException | URISyntaxException io) {
+                // Expected I/O or URI parsing failures
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect: " + io.getMessage());
+            } catch (EmbyHttpRetryExceeded retryEx) {
+                // Too many retries contacting server
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Retry limit exceeded");
             }
         });
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-        try {
-            checkConfiguration();
-        } catch (ConfigValidationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
-        establishConnection();
+        // Show initializing
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby bridge");
+
+        // Background setup
+        scheduler.execute(() -> {
+            try {
+                checkConfiguration();
+                establishConnection();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (ConfigValidationException cve) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration error: " + cve.getMessage());
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initialization interrupted");
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Initialization failed: " + e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -177,8 +204,25 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command was received for thing {}, no command processed as the bridge handler is read only",
-                thing.getLabel());
+        // 1) Handle REFRESH immediately on any bridge channel
+        if (command instanceof RefreshType) {
+            updateState(channelUID, pollCurrentValueBridge(channelUID));
+            return;
+        }
+
+        // 2) Everything else is read-only
+        logger.trace("Bridge received command '{}' on {}, but no write operations are supported here", command,
+                channelUID.getId());
+    }
+
+    /**
+     * Called by the discovery service to update the status string
+     * that backs the “discoveryStatus” channel.
+     */
+    public void updateDiscoveryStatus(String status) {
+        this.lastDiscoveryStatus = status;
+        // optionally push it immediately so rules/UI see it
+        updateState(new ChannelUID(getThing().getUID(), "discoveryStatus"), new StringType(status));
     }
 
     private void checkConfiguration() throws ConfigValidationException {
@@ -201,8 +245,32 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         }
     }
 
+    private State pollCurrentValueBridge(ChannelUID channelUID) {
+        String id = channelUID.getId();
+        switch (id) {
+            case "serverReachable":
+                // Reflect the actual ThingStatus of the bridge
+                return (getThing().getStatus() == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF;
+
+            case "discoveryStatus":
+                // A simple text status you update as discovery runs
+                return (lastDiscoveryStatus != null) ? new StringType(lastDiscoveryStatus) : UnDefType.UNDEF;
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
     @Override
     public void dispose() {
-        connection.close();
+        // 1) Cancel the periodic connection check
+        if (connectionCheckerFuture != null && !connectionCheckerFuture.isCancelled()) {
+            connectionCheckerFuture.cancel(true);
+        }
+        // 2) Close the Emby connection
+        if (connection != null) {
+            connection.close();
+        }
+        // 3) Let the super class do its cleanup (threads, etc.)
+        super.dispose();
     }
 }

@@ -25,6 +25,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,8 +80,13 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                         InetAddress.getByName("255.255.255.255"), REQUEST_PORT);
                 socket.send(sendPacket);
                 logger.trace(">>> Request packet sent to: {} ({})", REQUEST_MSG, REQUEST_PORT);
-            } catch (IOException e) {
-                logger.warn("Failed to send broadcast to 255.255.255.255: {}", e.getMessage(), e);
+            } catch (InterruptedIOException ie) {
+                // Discovery loop was interrupted—stop scanning
+                Thread.currentThread().interrupt();
+                logger.debug("Discovery interrupted, exiting");
+            } catch (SocketException | IOException ioe) {
+                // Network problems: log once at WARN
+                logger.warn("Discovery I/O error: {}", ioe.getMessage(), ioe);
             }
 
             // Broadcast message over all network interfaces
@@ -124,7 +130,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
             // We have a response
             logger.debug(">>> Broadcast response from server: {}", receivePacket.getAddress().getHostAddress());
 
-            String message = new String(receivePacket.getData()).trim();
+            String message = new String(receivePacket.getData(), StandardCharsets.UTF_8).trim();
             logger.debug("The message is {}", message);
 
             final Gson gson = new Gson();
@@ -140,8 +146,10 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
             try {
                 URI serverAddressURI = new URI(serverAddress);
                 addEMBYServer(serverAddressURI.getHost(), serverAddressURI.getPort(), serverId, serverName);
-            } catch (URISyntaxException e) {
-                logger.warn("Unable to parse URI from Emby server address '{}': {}", serverAddress, e.getMessage(), e);
+            } catch (URISyntaxException use) {
+                // Configuration or protocol bug—this should never happen at runtime
+                logger.error("Unexpected URI syntax: {}", use.getMessage(), use);
+                throw new IllegalStateException(use);
             }
         } catch (IOException e) {
             logger.warn("Exception occurred during Emby server discovery: {}", e.getMessage(), e);
@@ -164,6 +172,9 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                     .withProperties(properties).withRepresentationProperty(DEVICE_ID).withLabel(Name).build();
 
             thingDiscovered(discoveryResult);
+            // now update the bridge’s status text
+            embyBridgeHandler.updateDiscoveryStatus("Discovered device: " + playstate.getDeviceName());
+
         } else {
             logger.debug("Unable to add {} found at {}:{} with id of {}", Name, hostAddress, embyPort, DeviceID);
         }

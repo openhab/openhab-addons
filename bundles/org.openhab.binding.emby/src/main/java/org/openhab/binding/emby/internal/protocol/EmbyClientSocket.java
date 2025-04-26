@@ -112,7 +112,7 @@ public class EmbyClientSocket {
         this.session = wsSession;
         this.connected = true;
 
-        logger.info("EMBY client socket is Connected to emby server");
+        logger.debug("EMBY client socket is Connected to emby server");
         if (eventHandler != null) {
             scheduler.submit(() -> {
                 try {
@@ -213,11 +213,11 @@ public class EmbyClientSocket {
         }
 
         reconnectAttempts++;
-        logger.info("Attempting reconnect {} of {}", reconnectAttempts, maxReconnectAttempts);
+        logger.debug("Attempting reconnect {} of {}", reconnectAttempts, maxReconnectAttempts);
 
         try {
             open(); // reuse the existing open logic
-            logger.info("Reconnection successful.");
+            logger.debug("Reconnection successful.");
             reconnectAttempts = 0; // reset on success
         } catch (Exception e) {
             logger.error("Reconnect attempt failed: {}", e.getMessage(), e);

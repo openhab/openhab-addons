@@ -76,10 +76,10 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_EMBY_DEVICE)) {
-            logger.info("Creating EMBY Device Handler for {}.", thing.getLabel());
+            logger.debug("Creating EMBY Device Handler for {}.", thing.getLabel());
             return new EmbyDeviceHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_EMBY_CONTROLLER)) {
-            logger.info("Creating EMBY Bridge Handler for {}.", thing.getLabel());
+            logger.debug("Creating EMBY Bridge Handler for {}.", thing.getLabel());
             EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, createCallbackUrl(),
                     createCallbackPort(), webSocketClientFactory.getCommonWebSocketClient());
             registerEmbyClientDiscoveryService(bridgeHandler);

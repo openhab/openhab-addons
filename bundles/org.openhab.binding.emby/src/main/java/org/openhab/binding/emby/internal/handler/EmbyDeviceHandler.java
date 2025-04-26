@@ -39,7 +39,6 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_STO
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_UNMUTE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.net.URI;
@@ -68,6 +67,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -103,16 +103,21 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // 1) Handle REFRESH requests immediately
+        if (command instanceof RefreshType) {
+            updateState(channelUID, pollCurrentValue(channelUID));
+            return;
+        }
         // if we are in an active playstate then processs the command
         Channel channel = this.thing.getChannel(channelUID.getId());
         if (channel != null) {
             String commandName;
             if (bridgeHandler != null) {
                 EmbyBridgeHandler handler = bridgeHandler;
-                logger.trace("The channel ID of the received command is: {}", channelUID.getId());
+                logger.debug("The channel ID of the received command is: {}", channelUID.getId());
                 if (!(currentPlayState == null)) {
                     String currentSessionID = currentPlayState.getId();
-                    logger.trace("The device Id is: {}, the received deviceID is: {} ", currentSessionID,
+                    logger.debug("The device Id is: {}, the received deviceID is: {} ", currentSessionID,
                             config.deviceID);
                     switch (channelUID.getId()) {
                         case CHANNEL_CONTROL:
@@ -174,6 +179,58 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         }
     }
 
+    private State pollCurrentValue(ChannelUID channelUID) {
+        String id = channelUID.getId();
+        switch (id) {
+            case CHANNEL_CONTROL:
+                if (currentPlayState == null) {
+                    return UnDefType.UNDEF;
+                }
+                // if paused → PAUSE, otherwise PLAY
+                Boolean paused = currentPlayState.getEmbyPlayStatePausedState();
+                return Boolean.TRUE.equals(paused) ? PlayPauseType.PAUSE : PlayPauseType.PLAY;
+
+            case CHANNEL_MUTE:
+                if (currentPlayState == null) {
+                    return UnDefType.UNDEF;
+                }
+                Boolean muted = currentPlayState.getEmbyMuteSate();
+                return Boolean.TRUE.equals(muted) ? OnOffType.ON : OnOffType.OFF;
+
+            case CHANNEL_STOP:
+                if (currentPlayState == null) {
+                    return UnDefType.UNDEF;
+                }
+                // STOP channel is ON when playback is paused/stopped
+                Boolean stopped = currentPlayState.getEmbyPlayStatePausedState();
+                return Boolean.TRUE.equals(stopped) ? OnOffType.ON : OnOffType.OFF;
+
+            case CHANNEL_TITLE:
+                // The item name, e.g. movie title
+                return createStringState(currentPlayState != null ? currentPlayState.getNowPlayingName() : null);
+
+            case CHANNEL_SHOWTITLE:
+                // The “show” title, cached from last event
+                return createStringState(lastShowTitle);
+
+            case CHANNEL_MEDIATYPE:
+                return createStringState(lastMediaType);
+
+            case CHANNEL_CURRENTTIME:
+                // seconds since start
+                return (lastCurrentTime < 0) ? UnDefType.UNDEF : createQuantityState(lastCurrentTime, Units.SECOND);
+
+            case CHANNEL_DURATION:
+                return (lastDuration < 0) ? UnDefType.UNDEF : createQuantityState(lastDuration, Units.SECOND);
+
+            case CHANNEL_IMAGEURL:
+                return createStringState(lastImageUrl);
+
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
     private EmbyDeviceConfiguration validateConfiguration() {
         EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(
                 String.valueOf(this.thing.getConfiguration().get(DEVICE_ID)));
@@ -197,22 +254,51 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     @Override
     public void initialize() {
-        logger.debug("Initializing emby device: {}", this.getThing().getLabel());
-        config = validateConfiguration();
-        updateStatus(ThingStatus.UNKNOWN);
-        Bridge bridge = getBridge();
-        if (bridge == null || bridge.getHandler() == null || !(bridge.getHandler() instanceof EmbyBridgeHandler)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "Can't initialize thing, You must choose a Emby Server for this Device.");
-            return;
-        }
+        logger.debug("Initializing emby device: {}", getThing().getLabel());
 
-        if (bridge.getStatus() == OFFLINE) {
-            updateStatus(OFFLINE, BRIDGE_OFFLINE, "The Emby Server is currently offline.");
-            return;
-        }
-        updateStatus(ThingStatus.ONLINE);
-        bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
+        // 1) Immediately show “initializing”
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby device");
+
+        // 2) Offload the actual setup to the scheduler
+        scheduler.execute(() -> {
+            try {
+                // Validate config early
+                config = validateConfiguration();
+
+                Bridge bridge = getBridge();
+                if (bridge == null || bridge.getHandler() == null
+                        || !(bridge.getHandler() instanceof EmbyBridgeHandler)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "You must choose an Emby Server for this Device");
+                    return;
+                }
+
+                if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            "The Emby Server is currently offline");
+                    return;
+                }
+
+                // All checks passed—link the bridge handler and go ONLINE
+                bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (ConfigValidationException cve) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration error: " + cve.getMessage());
+            } catch (Exception e) {
+                // Unexpected failure during init
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Initialization failed: " + e.getMessage());
+            } catch (InterruptedException ie) {
+                // Preserve interrupt and stop initialization
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initialization interrupted");
+            } catch (Exception e) {
+                // Unexpected failure during init
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Initialization failed: " + e.getMessage());
+            }
+        });
     }
 
     @Override
