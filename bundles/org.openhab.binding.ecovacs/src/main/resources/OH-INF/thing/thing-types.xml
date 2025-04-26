@@ -160,7 +160,7 @@
 		<label>Current Cleaning Time</label>
 		<description>Cleaning time in current clean cycle</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -185,7 +185,7 @@
 		<label>Total Cleaning Time</label>
 		<description>Cleaning time in device life time</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -355,8 +355,8 @@
 		<label>Dust Filter Lifetime</label>
 		<description>Remaining life time of dust bin filter in percent</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<tag>Status</tag>
+			<tag>Level</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>

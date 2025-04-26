@@ -2702,10 +2702,6 @@
 		<label>MJPEG URL</label>
 		<description>A link you can use in openHAB/HABpanel to fetch a MJPEG video feed from the camera.</description>
 		<category>Camera</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2714,10 +2710,6 @@
 		<label>HLS URL</label>
 		<description>A link you can use in openHAB to cast video feeds.</description>
 		<category>Camera</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2975,7 +2967,7 @@
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Control</tag>
 			<tag>Motion</tag>
 		</tags>
 	</channel-type>
@@ -3001,7 +2993,7 @@
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Control</tag>
 			<tag>Motion</tag>
 		</tags>
 	</channel-type>
@@ -3040,7 +3032,7 @@
 		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>

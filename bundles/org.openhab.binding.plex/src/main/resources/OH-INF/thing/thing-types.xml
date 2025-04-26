@@ -48,8 +48,8 @@
 		<label>Current Players</label>
 		<description>The number of players currently configured to watch on PLEX</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Current Players Active</label>
 		<description>The number of players currently being used on PLEX</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -79,7 +79,7 @@
 		<description>The power status of the player</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -89,7 +89,7 @@
 		<description>The title of media that is playing</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -118,7 +118,7 @@
 		<description>The current type of playing media</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -138,7 +138,7 @@
 		<description>The current progress of playing media</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Progress</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="art">
@@ -157,7 +157,7 @@
 		<description>The URL of the cover art for currently playing media</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -176,7 +176,7 @@
 		<description>The title of the user controlling the player</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

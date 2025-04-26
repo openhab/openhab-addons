@@ -53,7 +53,7 @@
 		<description>Current Wi-Fi signal strength.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<tag>RSSI</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -116,7 +116,7 @@
 		<label>Print Speed Level</label>
 		<description>Current speed setting of the print job.</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state>
@@ -159,7 +159,7 @@
 		<item-type>Color</item-type>
 		<label>Tray Color</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Color</tag>
 		</tags>
 		<state readOnly="true"/>

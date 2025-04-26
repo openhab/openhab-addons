@@ -754,7 +754,7 @@
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>

@@ -51,7 +51,7 @@
 		<label>Dimmer</label>
 		<tags>
 			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<tag>Level</tag>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:dimmer_channel"></config-description-ref>
 	</channel-type>
@@ -71,7 +71,7 @@
 		<label>Open/Close Contact</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
 	</channel-type>

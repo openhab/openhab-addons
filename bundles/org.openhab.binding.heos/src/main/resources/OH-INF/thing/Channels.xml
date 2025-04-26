@@ -68,8 +68,8 @@
 		<description>The current track position</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>Control</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
