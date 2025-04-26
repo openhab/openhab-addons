@@ -368,7 +368,7 @@
 		<description>Turn the AV Mute On or Off</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">
