@@ -295,7 +295,7 @@
 		<description>Now playing track position</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Position</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -306,7 +306,7 @@
 		<category>MediaControl</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Position</tag>
+			<tag>Progress</tag>
 		</tags>
 	</channel-type>
 
