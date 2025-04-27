@@ -93,10 +93,12 @@ public class FeneconController {
 
             int statusCode = response.getStatus();
             if (statusCode > 300) {
-                // Authentication error
-                if (statusCode == 401) {
+                if (statusCode == 401) { // Authentication error
                     throw new FeneconAuthenticationException(
                             "Authentication on the FENECON system was not possible. Check password.");
+                } else if (statusCode == 404) { // Channel-URL not supported
+                    logger.debug("Channel request '{}' not possible, is not supported by the FENECON system.", channel);
+                    return List.of();
                 } else {
                     throw new FeneconCommunicationException("Unexpected http status code: " + statusCode);
                 }
