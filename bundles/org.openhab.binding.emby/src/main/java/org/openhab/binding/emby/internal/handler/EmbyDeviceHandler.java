@@ -15,9 +15,6 @@ package org.openhab.binding.emby.internal.handler;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CONTROL;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CURRENTTIME;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_DURATION;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMAND;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMANDWITHARGS;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMAND_NAME;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXHEIGHT;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXWIDTH;
@@ -25,7 +22,6 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMA
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_TYPE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MEDIATYPE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SENDPLAYCOMMAND;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SHOWTITLE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_STOP;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_TITLE;
@@ -44,6 +40,7 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,6 +69,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -81,6 +79,9 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link EmbyDeviceHandler} is responsible for handling commands, which are
@@ -111,6 +112,76 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     public EmbyDeviceHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(EmbyActions.class);
+    }
+
+    public void sendGeneralCommand(String commandName) {
+        if (bridgeHandler == null || currentPlayState == null) {
+            throw new IllegalStateException("Cannot send command: no bridge or no active session");
+        }
+        String sessionId = currentPlayState.getId();
+        String url = CONTROL_SESSION + sessionId + CONTROL_GENERALCOMMAND + commandName;
+        bridgeHandler.sendCommand(url);
+    }
+
+    /**
+     * Send a general Emby command with a JSON‐formatted arguments blob.
+     *
+     * @param commandName the generic command name (e.g. "SetVolume", "DisplayMessage", etc.)
+     * @param jsonArguments a JSON string of the form `{ "Name": "Value", … }`
+     */
+    public void sendGeneralCommandWithArgs(String commandName, String jsonArguments) {
+        if (bridgeHandler == null || currentPlayState == null) {
+            throw new IllegalStateException("Cannot send command: no bridge or no active session");
+        }
+        String sessionId = currentPlayState.getId();
+
+        // parse the user-supplied JSON into a JsonObject
+        JsonObject args = JsonParser.parseString(jsonArguments).getAsJsonObject();
+
+        // envelope around arguments
+        JsonObject envelope = new JsonObject();
+        envelope.add("Arguments", args);
+
+        String url = CONTROL_SESSION + sessionId + CONTROL_GENERALCOMMAND + commandName;
+        bridgeHandler.sendCommand(url, envelope.toString());
+    }
+
+    public void sendPlayWithParams(String itemIds, String playCommand, @Nullable Integer startPositionTicks,
+            @Nullable String mediaSourceId, @Nullable Integer audioStreamIndex, @Nullable Integer subtitleStreamIndex,
+            @Nullable Integer startIndex) {
+        // make sure we have a bridge + session
+        if (bridgeHandler == null || currentPlayState == null) {
+            throw new IllegalStateException("No bridge or active session available");
+        }
+
+        String sessionId = currentPlayState.getId();
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("ItemIds", itemIds);
+        payload.addProperty("PlayCommand", playCommand);
+        if (startPositionTicks != null) {
+            payload.addProperty("StartPositionTicks", startPositionTicks);
+        }
+        if (mediaSourceId != null) {
+            payload.addProperty("MediaSourceId", mediaSourceId);
+        }
+        if (audioStreamIndex != null) {
+            payload.addProperty("AudioStreamIndex", audioStreamIndex);
+        }
+        if (subtitleStreamIndex != null) {
+            payload.addProperty("SubtitleStreamIndex", subtitleStreamIndex);
+        }
+        if (startIndex != null) {
+            payload.addProperty("StartIndex", startIndex);
+        }
+
+        String url = CONTROL_SESSION + sessionId + CONTROL_SENDPLAY;
+        bridgeHandler.sendCommand(url, payload.toString());
     }
 
     @Override
@@ -148,26 +219,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                                 handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_STOP);
                             }
                             break;
-                        case CHANNEL_SENDPLAYCOMMAND:
-                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_SENDPLAY,
-                                    command.toString());
-                            break;
-                        case CHANNEL_GENERALCOMMAND:
-                            String commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            if (OnOffType.ON.equals(command)) {
-                                handler.sendCommand(
-                                        CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName);
-                            }
-                            break;
 
-                        case CHANNEL_GENERALCOMMANDWITHARGS:
-                            // always take the incoming command.toString() as your JSON body
-                            String cmdName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            String argsBody = command.toString(); // e.g. { "Name": "Value" }
-                            String payload = "{ Arguments:" + argsBody + " }"; // wraps it in your braces
-                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + cmdName,
-                                    payload);
-                            break;
                         default:
                             logger.warn("Unsupported channel: {}", channelUID.getAsString());
                             break;

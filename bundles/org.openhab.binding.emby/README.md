@@ -86,18 +86,6 @@ The following Channel IDs are available for an `emby:device` Thing:
 | **`currenttime`** | Number:Time | None | Current playback position. |
 | **`duration`** | Number:Time | None | Total media duration. |
 | **`mediatype`** | String | None | Type of media (e.g., Movie, Episode). |
-| **`sendplay`** | String | None | Sends a JSON command to play a list of item IDs. |
-
-Additionally, custom remote control channels can be created:
-
-- **`generalCommand`**
-- **`generalCommand_withArguments`**
-
-These channels are **extensible**.
-
-Multiple instances of **`generalCommand`** and **`generalCommand_withArguments`** can be added and configured by the user.
-
-This allows defining multiple dedicated commands for different control actions.
 
 ---
 
@@ -131,7 +119,6 @@ Number:Time Emby_CurrentTime "Current Time [%d %unit%]" { channel="emby:device:m
 Number:Time Emby_Duration    "Duration [%d %unit%]"     { channel="emby:device:myEmbyServer:myClientDevice:duration" }
 String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:mediatype" }
 String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:imageurl" }
-String      Emby_SendPlay    "Send Play [%s]"    { channel="emby:device:myEmbyServer:myClientDevice:sendplay" }
 ```
 
 ## Sitemap Configuration Example
@@ -157,97 +144,39 @@ sitemap emby label="Emby Control"
 
 ---
 
-# Using General Commands with Emby Binding
-
-## General Command (Without Arguments)
-
-**Channel Type:** `generalCommand`
-
-**Item Type:** Switch
-
-### How to Use
-
-- Configure the `generalCommand_CommandName`.
-- Send `ON` to trigger the command.
-- `OFF` is ignored.
-
-### Supported Commands
-
-| Command Name | Description |
-|--------------|-------------|
-| MoveUp | Move focus up. |
-| MoveDown | Move focus down. |
-| MoveLeft | Move focus left. |
-| MoveRight | Move focus right. |
-| PageUp | Page up through a list. |
-| PageDown | Page down through a list. |
-| PreviousLetter | Scroll to previous letter. |
-| NextLetter | Scroll to next letter. |
-| ToggleOsdMenu | Show/hide OSD. |
-| ToggleContextMenu | Show/hide context menu. |
-| ToggleMute | Toggle mute. |
-| Select | Confirm selection. |
-| Back | Navigate back. |
-| TakeScreenshot | Capture screen. |
-| GoHome | Return to Home. |
-| GoToSettings | Open Settings. |
-| VolumeUp | Increase volume. |
-| VolumeDown | Decrease volume. |
-| ToggleFullscreen | Toggle fullscreen. |
-| GoToSearch | Open Search. |
-
-## General Command with Arguments
-
-**Channel Type:** `generalCommand_withArguments`
-
-**Item Type:** String
-
-### How to Use
-
-- Configure the `generalCommand_CommandName`.
-- Send the JSON payload (only the inside `{}` part).
-
-### Examples
-
-| Command Name | Required Arguments | Example |
-|--------------|--------------------|---------|
-| SetVolume | `Volume` (0–100) | `Volume:50` |
-| SetAudioStreamIndex | `Index` (integer) | `Index:2` |
-| SetSubtitleStreamIndex | `Index` (-1 disables) | `Index:-1` |
-| DisplayContent | `ItemName`, `ItemId`, `ItemType` | `ItemName:"Movie",ItemId:"123",ItemType:"Video"` |
-| PlayTrailers | `ItemId` | `ItemId:"456"` |
-| SendString (Future) | `String` | `String:"Hello"` |
-| DisplayMessage (Future) | `Header`, `Text`, `TimeoutMs` optional | `Header:"Alert",Text:"Starting Movie"` |
-
 ---
 
-# Example Thing with Custom General Commands
+# Rule Actions
 
-```yaml
-Bridge emby:controller:server "Emby Server" [
-    api="YOUR_API_KEY",
-    ipAddress="192.168.1.100",
-    port=8096,
-    refreshInterval=5000
-] {
-    Thing device livingroomtv "Living Room TV" [
-        deviceID="device12345"
-    ] {
-        Channels:
-            Type generalCommand : MoveUpButton "Move Up" [
-                generalCommand_CommandName="MoveUp"
-            ]
-            Type generalCommand : ToggleMuteButton "Toggle Mute" [
-                generalCommand_CommandName="ToggleMute"
-            ]
-            Type generalCommand_withArguments : SetVolumeButton "Set Volume" [
-                generalCommand_CommandName="SetVolume"
-            ]
-            Type generalCommand_withArguments : PlayTrailerButton "Play Trailer" [
-                generalCommand_CommandName="PlayTrailers"
-            ]
-    }
-}
+All playback and control commands are now implemented as Rule Actions rather than channels. Use the standard `getActions` API in your rules to invoke these.
+
+## Available Actions
+
+| Action ID                     | Method Signature                                                                            | Description                                                                                               |
+|-------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| **sendPlay**                  | `sendPlay(ItemIds: String, PlayCommand: String, StartPositionTicks: Integer?, MediaSourceId: String?, AudioStreamIndex: Integer?, SubtitleStreamIndex: Integer?, StartIndex: Integer?)` | Send a play command with optional parameters to an Emby player.                                            |
+| **sendGeneralCommand**        | `sendGeneralCommand(CommandName: String)`                                                   | Send a generic Emby control command (e.g., MoveUp, ToggleMute, GoHome).                                     |
+| **sendGeneralCommandWithArgs**| `sendGeneralCommandWithArgs(CommandName: String, Arguments: String)`                        | Send a generic Emby control command with a JSON arguments blob (e.g., SetVolume, DisplayMessage, etc.).    |
+
+## Example Rule (XTend)
+
+```xtend
+rule "Play Movie on Emby"
+when
+    Item MySwitch changed to ON
+then
+    val embyActions = getActions("emby", "emby:device:myServer:myDevice")
+    // Play item IDs "abc,def" immediately
+    embyActions.sendPlay("abc,def", "PlayNow", null, null, null, null, null)
+end
+```
+
+## Example Rule (JavaScript)
+
+```javascript
+// inside a JS Scripting rule
+let emby = actions.getActions("emby", "emby:device:myServer:myDevice");
+emby.sendGeneralCommand("ToggleMute");
 ```
 
 ---

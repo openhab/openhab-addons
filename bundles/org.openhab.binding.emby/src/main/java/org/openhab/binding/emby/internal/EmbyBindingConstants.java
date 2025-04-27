@@ -32,14 +32,8 @@ public class EmbyBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_STOP = "stop";
     public static final String CHANNEL_CONTROL = "control";
-    public static final String CHANNEL_SENDPLAYCOMMAND = "sendplay";
-    public static final String CHANNEL_GENERALCOMMAND = "generalCommand";
-    public static final String CHANNEL_GENERALCOMMANDWITHARGS = "generalCommand_withArguments";
-
-    public static final String CHANNEL_GENERALCOMMAND_NAME = "generalCommand_CommandName";
 
     public static final String CHANNEL_TITLE = "title";
     public static final String CHANNEL_SHOWTITLE = "showtitle";
