@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.discovery.AutomowerDiscoveryService;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
@@ -29,6 +30,7 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -57,13 +59,15 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     protected final @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
     private final TimeZoneProvider timeZoneProvider;
+    private final WebSocketClient webSocketClient;
 
     @Activate
     public AutomowerHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference WebSocketFactory webSocketFactory) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
     }
 
     @Override
@@ -74,7 +78,8 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (AutomowerBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            AutomowerBridgeHandler handler = new AutomowerBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
+            AutomowerBridgeHandler handler = new AutomowerBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
+                    webSocketClient);
             registerAutomowerDiscoveryService(handler);
             return handler;
         }

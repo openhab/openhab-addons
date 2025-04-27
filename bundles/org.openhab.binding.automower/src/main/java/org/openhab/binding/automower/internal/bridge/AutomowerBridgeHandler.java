@@ -14,6 +14,11 @@ package org.openhab.binding.automower.internal.bridge;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -22,10 +27,24 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
+import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -52,16 +71,26 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private final OAuthFactory oAuthFactory;
+    private @Nullable WebSocketSession webSocketSession;
+
+    private int unansweredPings = 0;
+    private static final int MAX_UNANSWERED_PINGS = 5;
+    private boolean closing;
+
+    private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
 
     private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
     private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
+    private final WebSocketClient webSocketClient;
 
-    public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
+    public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
+            WebSocketClient webSocketClient) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
+        this.webSocketClient = webSocketClient;
     }
 
     private void pollAutomowers(AutomowerBridge bridge) {
@@ -79,16 +108,36 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        closing = true;
+
         AutomowerBridge currentBridge = bridge;
         if (currentBridge != null) {
             stopAutomowerBridgePolling(currentBridge);
             bridge = null;
         }
+
+        if (webSocketSession != null) {
+            try {
+                webSocketSession.close();
+            } catch (Exception e) {
+                logger.error("Failed to close WebSocket session: {}", e.getMessage());
+            }
+        }
+        /*
+         * if (webSocketClient != null) {
+         * try {
+         * webSocketClient.stop();
+         * } catch (Exception e) {
+         * logger.error("Failed to stop WebSocket client: {}", e.getMessage());
+         * }
+         * }
+         */
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
             this.oAuthService = null;
         }
+        logger.debug("Bridge {} disposed", thing.getUID().getAsString());
     }
 
     @Override
@@ -115,6 +164,8 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
                 bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
+
+                connectWebSocket();
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -162,6 +213,143 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         } catch (AutomowerCommunicationException e) {
             logger.debug("Bridge cannot get list of available automowers {}", e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    private void connectWebSocket() {
+        if (oAuthService == null) {
+            logger.error("OAuthService is not initialized, cannot connect WebSocket");
+            return;
+        }
+        try {
+            String accessToken = authenticate().getAccessToken();
+            if (accessToken == null) {
+                logger.error("No OAuth2 access token available for WebSocket connection");
+                return;
+            }
+            String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
+            org.eclipse.jetty.websocket.client.ClientUpgradeRequest request = new org.eclipse.jetty.websocket.client.ClientUpgradeRequest();
+            request.setHeader("Authorization", "Bearer " + accessToken);
+            webSocketSession = (WebSocketSession) webSocketClient
+                    .connect(new AutomowerWebSocketAdapter(), URI.create(wsUrl), request).get();
+        } catch (Exception e) {
+            logger.error("Failed to start WebSocket client: {}", e.getMessage());
+        }
+    }
+
+    private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
+        try {
+            AccessTokenResponse result = oAuthService.getAccessTokenResponse();
+            if (result == null || result.isExpired(Instant.now(), 120)) {
+                logger.debug("renew Authentication token");
+                result = oAuthService.getAccessTokenByClientCredentials(null);
+            }
+            return result;
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            throw new AutomowerCommunicationException("Unable to authenticate", e);
+        }
+    }
+
+    @WebSocket
+    public class AutomowerWebSocketAdapter {
+        private @Nullable ScheduledFuture<?> connectionTracker;
+
+        @OnWebSocketConnect
+        public synchronized void onConnect(Session session) {
+            closing = false;
+            unansweredPings = 0;
+
+            logger.debug("Connected to Husqvarna Webservice ({})", session.getRemoteAddress().getHostString());
+            // Subscribe to all messages after connecting
+            try {
+                String subscribeAllMessage = "{\"type\":\"subscribe\",\"topics\":[\"*\"]}";
+                session.getRemote().sendString(subscribeAllMessage);
+                logger.debug("Sent subscription message to subscribe to all topics");
+            } catch (Exception e) {
+                logger.error("Failed to send subscription message: {}", e.getMessage());
+            }
+
+            ScheduledFuture<?> connectionTracker = this.connectionTracker;
+            if (connectionTracker != null && !connectionTracker.isCancelled()) {
+                connectionTracker.cancel(true);
+            }
+            // start sending PING every minute
+            connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 1, 1, TimeUnit.MINUTES);
+        }
+
+        @OnWebSocketFrame
+        public synchronized void onFrame(Frame pong) {
+            if (pong instanceof PongFrame) {
+                unansweredPings = 0;
+                // logger.trace("Pong received");
+            }
+        }
+
+        @OnWebSocketMessage
+        public void onMessage(String message) {
+            logger.debug("Message from Server: {}", message);
+        }
+
+        @OnWebSocketClose
+        public void onClose(int statusCode, String reason) {
+            logger.info("WebSocket closed: {} - {}", statusCode, reason);
+
+            // Cancel ping task on disconnect
+            final ScheduledFuture<?> connectionTracker = this.connectionTracker;
+            if (connectionTracker != null) {
+                logger.trace("Cancelling ping task");
+                connectionTracker.cancel(true);
+            }
+
+            if (!closing) {
+                try {
+                    restart();
+                } catch (Exception e) {
+                    logger.error("Failed to restart WebSocket client: {}", e.getMessage());
+                }
+            }
+        }
+
+        public void restart() throws Exception {
+            String accessToken = authenticate().getAccessToken();
+            if (accessToken == null) {
+                logger.error("No OAuth2 access token available for WebSocket connection");
+                return;
+            }
+            logger.debug("Reconnecting to Husqvarna Webservice ()");
+            String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
+            org.eclipse.jetty.websocket.client.ClientUpgradeRequest request = new org.eclipse.jetty.websocket.client.ClientUpgradeRequest();
+            request.setHeader("Authorization", "Bearer " + accessToken);
+            webSocketSession = (WebSocketSession) webSocketClient.connect(this, URI.create(wsUrl), request).get();
+        }
+
+        @OnWebSocketError
+        public void onError(Throwable cause) {
+            logger.error("WebSocket error: {}", cause.getMessage());
+        }
+
+        /**
+         * Sends a ping to tell the Husqvarna smart system that the client is alive.
+         */
+        private synchronized void sendKeepAlivePing() {
+            try {
+                String accessToken = authenticate().getAccessToken();
+                if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null) {
+                    webSocketSession.close(1000, "Timeout manually closing dead connection");
+                } else {
+                    if (webSocketSession.isOpen()) {
+                        try {
+                            // logger.trace("Sending ping ...");
+                            webSocketSession.getRemote().sendPing(pingPayload);
+                            ++unansweredPings;
+                        } catch (IOException ex) {
+                            logger.debug("Error while sending ping: {}", ex.getMessage());
+                        }
+                    }
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.error("Failed to authenticate while sending keep-alive ping: {}", e.getMessage());
+            }
         }
     }
 }
