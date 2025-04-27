@@ -61,13 +61,15 @@ public class FeneconBindingConstants {
     // Group: charger0/...
     public static final String CHARGER0_ACTUAL_POWER_ADDRESS = "charger0/ActualPower";
     public static final String CHARGER0_VOLTAGE_ADDRESS = "charger0/Voltage";
+    public static final String CHARGER0_CURRENT_ADDRESS = "charger0/Current";
     // Group: charger1/...
     public static final String CHARGER1_ACTUAL_POWER_ADDRESS = "charger1/ActualPower";
     public static final String CHARGER1_VOLTAGE_ADDRESS = "charger1/Voltage";
+    public static final String CHARGER1_CURRENT_ADDRESS = "charger1/Current";
     // Group: charger2/...
     public static final String CHARGER2_ACTUAL_POWER_ADDRESS = "charger2/ActualPower";
     public static final String CHARGER2_VOLTAGE_ADDRESS = "charger2/Voltage";
-    // http://192.168.0.123:8084/rest/channel/charger.+/(ActualPower|Voltage|Current)
+    public static final String CHARGER2_CURRENT_ADDRESS = "charger2/Current";
 
     // Group of all FENECON Addresses
     public static final List<Address> ADDRESSES = List.of(new Address(STATE_ADDRESS), new Address(GRID_MODE_ADDRESS),
@@ -82,7 +84,9 @@ public class FeneconBindingConstants {
             new Address(BATT_TOWER_CURRENT_ADDRESS), new Address(BATT_SOH_ADDRESS),
             new Address(CHARGER0_ACTUAL_POWER_ADDRESS), new Address(CHARGER1_ACTUAL_POWER_ADDRESS),
             new Address(CHARGER2_ACTUAL_POWER_ADDRESS), new Address(CHARGER0_VOLTAGE_ADDRESS),
-            new Address(CHARGER1_VOLTAGE_ADDRESS), new Address(CHARGER2_VOLTAGE_ADDRESS));
+            new Address(CHARGER1_VOLTAGE_ADDRESS), new Address(CHARGER2_VOLTAGE_ADDRESS),
+            new Address(CHARGER0_CURRENT_ADDRESS), new Address(CHARGER1_CURRENT_ADDRESS),
+            new Address(CHARGER2_CURRENT_ADDRESS));
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
@@ -115,4 +119,7 @@ public class FeneconBindingConstants {
     public static final String CHARGER0_VOLTAGE_CHANNEL = "charger0-voltage";
     public static final String CHARGER1_VOLTAGE_CHANNEL = "charger1-voltage";
     public static final String CHARGER2_VOLTAGE_CHANNEL = "charger2-voltage";
+    public static final String CHARGER0_CURRENT_CHANNEL = "charger0-current";
+    public static final String CHARGER1_CURRENT_CHANNEL = "charger1-current";
+    public static final String CHARGER2_CURRENT_CHANNEL = "charger2-current";
 }

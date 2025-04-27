@@ -38,11 +38,14 @@
 			<channel id="batt-tower-voltage" typeId="batt-tower-voltage"/>
 			<channel id="batt-tower-current" typeId="batt-tower-current"/>
 			<channel id="charger0-actual-power" typeId="charger-actual-power"/>
-			<channel id="charger1-actual-power" typeId="charger-actual-power"/>
-			<channel id="charger2-actual-power" typeId="charger-actual-power"/>
 			<channel id="charger0-voltage" typeId="charger-voltage"/>
+			<channel id="charger0-current" typeId="charger-current"/>
+			<channel id="charger1-actual-power" typeId="charger-actual-power"/>
 			<channel id="charger1-voltage" typeId="charger-voltage"/>
+			<channel id="charger1-current" typeId="charger-current"/>
+			<channel id="charger2-actual-power" typeId="charger-actual-power"/>
 			<channel id="charger2-voltage" typeId="charger-voltage"/>
+			<channel id="charger2-current" typeId="charger-current"/>
 		</channels>
 
 		<config-description>
@@ -225,14 +228,14 @@
 	<channel-type id="batt-tower-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>FEMS Battery Voltage</label>
-		<description>Battery voltage of the FENECON energy management system (FEMS) in Volt.</description>
+		<description>Battery voltage of the FENECON energy management system (FEMS) in volt.</description>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>FEMS Battery Current</label>
-		<description>Battery current of the FENECON energy management system (FEMS) in Ampere.</description>
+		<description>Battery current of the FENECON energy management system (FEMS) in ampere.</description>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -248,6 +251,13 @@
 		<label>Charger Voltage</label>
 		<description>Charger voltage in volt on the corresponding charger.</description>
 		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="charger-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current</label>
+		<description>Charger current in ampere on the corresponding charger.</description>
+		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

@@ -58,11 +58,14 @@ The FENECON binding currently only provides access to read out the values from t
 | batt-tower-voltage            | Number:ElectricPotential   | R          | Battery voltage of the FENECON energy management system (FEMS) in Volt.        |
 | batt-tower-current            | Number:ElectricCurrent     | R          | Battery current of the FENECON energy management system (FEMS) in Ampere.      |
 | charger0-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 0 - e.g west roof, if available.   |
-| charger1-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 1 - e.g east roof, if available.   |
-| charger2-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 2 - e.g south roof, if available.  |
 | charger0-voltage              | Number:ElectricPotential   | R          | Charger voltage in volt on the charger 0 - e.g west roof, if available.        |
+| charger0-current              | Number:ElectricCurrent     | R          | Charger current in ampere on the charger 0 - e.g west roof, if available.      |
+| charger1-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 1 - e.g east roof, if available.   |
 | charger1-voltage              | Number:ElectricPotential   | R          | Charger voltage in volt on the charger 1 - e.g east roof, if available.        |
+| charger1-current              | Number:ElectricCurrent     | R          | Charger current in ampere on the charger 1 - e.g east roof, if available.      |
+| charger2-actual-power         | Number:Power               | R          | Charger actual power in watt on the charger 2 - e.g south roof, if available.  |
 | charger2-voltage              | Number:ElectricPotential   | R          | Charger voltage in volt on the charger 2 - e.g south roof, if available.       |
+| charger2-current              | Number:ElectricCurrent     | R          | Charger current in ampere on the charger 1 - e.g south roof, if available.     |
 
 ## Full Example
 
@@ -114,12 +117,16 @@ Number:Temperature         BmsBoxTemp                     <temperature>  (GF_Uti
 Number:ElectricPotential   BattTowerVoltage               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"] {channel="fenecon:home-device:local:batt-tower-voltage"}
 Number:ElectricCurrent     BattTowerCurrent               <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"] {channel="fenecon:home-device:local:batt-tower-current"}
 
+// Charger corresponds to the solar power plant on the roof.
 Number:Power               ChargerWestActualPower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]    {channel="fenecon:home-device:local:charger0-actual-power"}
 Number:ElectricPotential   ChargerWestVoltage             <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"]  {channel="fenecon:home-device:local:charger0-voltage"}
+Number:ElectricCurrent     ChargerWestCurrent             <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"]  {channel="fenecon:home-device:local:charger0-current"}
 Number:Power               ChargerEastActualPower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]    {channel="fenecon:home-device:local:charger1-actual-power"}
 Number:ElectricPotential   ChargerEastVoltage             <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"]  {channel="fenecon:home-device:local:charger1-voltage"}
+Number:ElectricCurrent     ChargerEastCurrent             <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"]  {channel="fenecon:home-device:local:charger1-current"}
 Number:Power               ChargerSouthActualPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]    {channel="fenecon:home-device:local:charger2-actual-power"}
 Number:ElectricPotential   ChargerSouthVoltage            <energy>       (GF_UtilityRoomSolar) ["Measurement", "Voltage"]  {channel="fenecon:home-device:local:charger2-voltage"}
+Number:ElectricCurrent     ChargerSouthCurrent            <energy>       (GF_UtilityRoomSolar) ["Measurement", "Current"]  {channel="fenecon:home-device:local:charger2-current"}
 
 ```
 
