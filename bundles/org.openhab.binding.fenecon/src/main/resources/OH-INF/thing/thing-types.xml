@@ -40,6 +40,9 @@
 			<channel id="charger0-actual-power" typeId="charger-actual-power"/>
 			<channel id="charger1-actual-power" typeId="charger-actual-power"/>
 			<channel id="charger2-actual-power" typeId="charger-actual-power"/>
+			<channel id="charger0-voltage" typeId="charger-voltage"/>
+			<channel id="charger1-voltage" typeId="charger-voltage"/>
+			<channel id="charger2-voltage" typeId="charger-voltage"/>
 		</channels>
 
 		<config-description>
@@ -239,6 +242,13 @@
 		<description>Charger actual power in watt on the corresponding charger.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="charger-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Charger Voltage</label>
+		<description>Charger voltage in volt on the corresponding charger.</description>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -60,10 +60,13 @@ public class FeneconBindingConstants {
     public static final String BATT_SOH_ADDRESS = "battery0/Soh";
     // Group: charger0/...
     public static final String CHARGER0_ACTUAL_POWER_ADDRESS = "charger0/ActualPower";
+    public static final String CHARGER0_VOLTAGE_ADDRESS = "charger0/Voltage";
     // Group: charger1/...
     public static final String CHARGER1_ACTUAL_POWER_ADDRESS = "charger1/ActualPower";
+    public static final String CHARGER1_VOLTAGE_ADDRESS = "charger1/Voltage";
     // Group: charger2/...
     public static final String CHARGER2_ACTUAL_POWER_ADDRESS = "charger2/ActualPower";
+    public static final String CHARGER2_VOLTAGE_ADDRESS = "charger2/Voltage";
     // http://192.168.0.123:8084/rest/channel/charger.+/(ActualPower|Voltage|Current)
 
     // Group of all FENECON Addresses
@@ -78,7 +81,8 @@ public class FeneconBindingConstants {
             new Address(BATT_INVERTER_BMS_PACK_TEMP_ADDRESS), new Address(BATT_TOWER_PACK_VOLTAGE_ADDRESS),
             new Address(BATT_TOWER_CURRENT_ADDRESS), new Address(BATT_SOH_ADDRESS),
             new Address(CHARGER0_ACTUAL_POWER_ADDRESS), new Address(CHARGER1_ACTUAL_POWER_ADDRESS),
-            new Address(CHARGER2_ACTUAL_POWER_ADDRESS));
+            new Address(CHARGER2_ACTUAL_POWER_ADDRESS), new Address(CHARGER0_VOLTAGE_ADDRESS),
+            new Address(CHARGER1_VOLTAGE_ADDRESS), new Address(CHARGER2_VOLTAGE_ADDRESS));
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
@@ -108,4 +112,7 @@ public class FeneconBindingConstants {
     public static final String CHARGER0_ACTUAL_POWER_CHANNEL = "charger0-actual-power";
     public static final String CHARGER1_ACTUAL_POWER_CHANNEL = "charger1-actual-power";
     public static final String CHARGER2_ACTUAL_POWER_CHANNEL = "charger2-actual-power";
+    public static final String CHARGER0_VOLTAGE_CHANNEL = "charger0-voltage";
+    public static final String CHARGER1_VOLTAGE_CHANNEL = "charger1-voltage";
+    public static final String CHARGER2_VOLTAGE_CHANNEL = "charger2-voltage";
 }
