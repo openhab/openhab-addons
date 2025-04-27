@@ -175,7 +175,7 @@
 		<label>Repeat Mode</label>
 		<description>The Current Repeat Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -195,7 +195,7 @@
 		<label>Zoom Mode</label>
 		<description>The Current Zoom Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -301,7 +301,7 @@
 		<label>HDMI Mode</label>
 		<description>The Current HDMI Output Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
@@ -311,7 +311,7 @@
 		<label>HDR Mode</label>
 		<description>The Current HDR Output Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>

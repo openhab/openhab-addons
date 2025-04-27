@@ -155,7 +155,7 @@
 		<label>DPM Select</label>
 		<description>Set the DPM (Display Power Management) function</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
@@ -187,8 +187,7 @@
 		<label>Fan Fault</label>
 		<description>Check the fan fault of the TV</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Speed</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -340,7 +339,7 @@
 		<description>Check the lamp fault of the TV</description>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>MediaControl</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -384,10 +383,6 @@
 		<item-type>Switch</item-type>
 		<label>OSD</label>
 		<description>To select OSD (On Screen Display) on/off</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="picture-mode">
@@ -395,7 +390,7 @@
 		<label>Picture Mode</label>
 		<description>To adjust picture mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -461,7 +456,7 @@
 		<description>Select screen mute on/off</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -511,8 +506,8 @@
 		<label>Sound Mode</label>
 		<description>To adjust sound mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 		<state>
 			<options>
@@ -540,7 +535,7 @@
 		<description>Turn the speaker on or off</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
 
@@ -673,7 +668,7 @@
 		<category>Mute</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
 

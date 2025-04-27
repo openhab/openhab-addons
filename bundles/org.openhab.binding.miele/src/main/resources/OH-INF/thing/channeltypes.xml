@@ -95,8 +95,8 @@
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Duration</tag>
+			<tag>Status</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
@@ -107,8 +107,8 @@
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Duration</tag>
+			<tag>Status</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
