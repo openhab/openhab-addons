@@ -247,7 +247,9 @@ public class JdbcBaseDAO {
     }
 
     public Properties getConnectionProperties() {
-        return new Properties(this.databaseProps);
+        Properties properties = new Properties(databaseProps.size());
+        properties.putAll(databaseProps);
+        return properties;
     }
 
     /**************

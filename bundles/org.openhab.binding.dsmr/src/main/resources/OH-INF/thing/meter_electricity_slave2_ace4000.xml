@@ -11,7 +11,7 @@
 
 		<label>Slave Electricity Meter 2 (ACE4000)</label>
 		<description>This is the second slave electricity meter that complies to the ACE4000 GTMM Mk3 specification.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="emeter_delivery_tariff0" typeId="deliveryTariff0Type"/>
 			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type"/>

@@ -7,7 +7,7 @@
 	<thing-type id="opengarage">
 		<label>OpenGarage</label>
 		<description>OpenGarage Controller</description>
-
+		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
 		<channels>
 			<channel id="distance" typeId="opengarage-distance"/>
 			<channel id="status" typeId="opengarage-status"/>

@@ -7,6 +7,7 @@
 	<thing-type id="group">
 		<label>Group Multiple Cameras</label>
 		<description>Show multiple cameras as a single rotating feed</description>
+
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="mjpegUrl" typeId="mjpegUrl"/>
@@ -97,6 +98,7 @@
 	<thing-type id="generic">
 		<label>RTSP/HTTP IP Camera</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -322,6 +324,7 @@
 	<thing-type id="onvif">
 		<label>ONVIF IP Camera</label>
 		<description>Use when the binding does not list your brand of ONVIF camera.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -612,6 +615,7 @@
 	<thing-type id="amcrest">
 		<label>Amcrest Camera with API</label>
 		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -887,6 +891,7 @@
 	<thing-type id="dahua">
 		<label>Dahua Camera with API</label>
 		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -1195,6 +1200,7 @@
 	<thing-type id="doorbird">
 		<label>Doorbird Camera with API</label>
 		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -1456,6 +1462,7 @@
 	<thing-type id="foscam">
 		<label>Foscam Camera with API</label>
 		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -1742,6 +1749,7 @@
 	<thing-type id="hikvision">
 		<label>Hikvision Camera with API</label>
 		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -2029,6 +2037,7 @@
 	<thing-type id="instar">
 		<label>Instar Camera with API</label>
 		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -2300,6 +2309,7 @@
 	<thing-type id="reolink">
 		<label>Reolink Camera with API</label>
 		<description>Use for all Reolink cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>

@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>Yamaha MusicCast Model</label>
 		<description>Your Yamaha model with MusicCast functionality</description>
-
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="main" typeId="mainControls"/>
 			<channel-group id="zone2" typeId="zone2Controls"/>

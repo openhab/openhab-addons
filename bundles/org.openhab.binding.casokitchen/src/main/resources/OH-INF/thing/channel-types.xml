@@ -9,8 +9,8 @@
 		<label>Temperature</label>
 		<description>Current Zone Temperature</description>
 		<tags>
-			<tag>Temperature</tag>
 			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Target Temperature</label>
 		<description>Target Zone Temperature</description>
 		<tags>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
-			<tag>SetPoint</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

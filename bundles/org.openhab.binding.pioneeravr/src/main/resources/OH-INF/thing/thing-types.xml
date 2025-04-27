@@ -11,6 +11,7 @@
 			VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921,
 			VSA-921, VSX-922) over IP
 		</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
