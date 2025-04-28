@@ -89,11 +89,6 @@ public class HueSyncConstants {
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";
 
-    public static final Integer REGISTRATION_INITIAL_DELAY = 5;
-    public static final Integer REGISTRATION_INTERVAL = 1;
-
-    public static final Integer POLL_INITIAL_DELAY = 10;
-
     public static final String REGISTRATION_ID = "registrationId";
     public static final String API_TOKEN = "apiAccessToken";
 }
