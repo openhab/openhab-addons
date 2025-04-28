@@ -518,7 +518,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
             ShellyApiResult res = e.getApiResult();
             if (res.isNotCalibrtated()) {
-                logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
+                logger.warn("{}: {}", thingName, messages.get("calibrating"));
             } else {
                 logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());

@@ -20,6 +20,36 @@
 		<config-description-ref uri="thing-type:shelly:rgbw2"/>
 	</thing-type>
 
+	<thing-type id="shellyprodimmer1pm">
+		<label>Shelly Pro Dimmer 1PM</label>
+		<description>@text/thing-type.shelly.shellyprodimmer1pm.description</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+	</thing-type>
+
+	<thing-type id="shellyprodimmer2pm">
+		<label>Shelly Pro Dimmer 2PM</label>
+		<description>@text/thing-type.shelly.shellyprodimmer2pm.description</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="dimmerChannel"/>
+			<channel-group id="relay2" typeId="dimmerChannel"/>
+			<channel-group id="meter1" typeId="meter"/>
+			<channel-group id="meter2" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+	</thing-type>
+
 	<channel-group-type id="rgbwpmColorControl">
 		<label>@text/channel-group-type.shelly.rgbwpmColorControl.label</label>
 		<description>@text/channel-group-type.shelly.rgbwpmColorControl.description</description>
