@@ -53,8 +53,6 @@ The following Configuration Parameter Key is available:
 - **`deviceID`**  
   The unique identifier for the client device connected to the Emby server.
 
----
-
 # Channels
 
 The following Channel IDs are available for an `emby:device` Thing:
