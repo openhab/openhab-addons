@@ -16,29 +16,15 @@ It provides functionality similar to the Plex Binding.
 
 This binding defines the following Thing Type IDs:
 
-- **`emby:controller`**  
+- **`controller`**  
   Represents a connection to an Emby server (a Bridge Thing).
 
-- **`emby:device`**  
+- **`device`**  
   Represents a client/player device connected to the Emby server.
 
 ---
 
-# Discovery
-
-The binding supports automatic discovery for both servers and clients.
-
-## Bridge Discovery
-
-Emby servers are automatically detected on the local network.
-
-They are offered as **`emby:controller`** Things.
-
-## Client Discovery
-
-When an **`emby:controller`** Bridge is online, connected Emby clients are automatically discovered.
-
-They are offered as **`emby:device`** Things under the respective bridge.
+The binding supports automatic discovery for both servers (`controller`) and clients (`device`).
 
 ---
 
