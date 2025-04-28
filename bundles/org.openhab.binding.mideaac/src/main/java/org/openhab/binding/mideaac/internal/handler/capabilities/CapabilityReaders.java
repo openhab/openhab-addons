@@ -40,68 +40,68 @@ public class CapabilityReaders {
 
         // Add READERS for each capability - Not all are supported
         READERS.put(CapabilityId.ANION, List.of(new Reader("anion", getValue.apply(1))));
-        READERS.put(CapabilityId.AUX_ELECTRIC_HEAT, List.of(new Reader("aux_electric_heat", getValue.apply(1))));
-        READERS.put(CapabilityId.BREEZE_AWAY, List.of(new Reader("breeze_away", getValue.apply(1))));
-        READERS.put(CapabilityId.BREEZE_CONTROL, List.of(new Reader("breeze_control", getValue.apply(1))));
+        READERS.put(CapabilityId.AUX_ELECTRIC_HEAT, List.of(new Reader("auxElectricHeat", getValue.apply(1))));
+        READERS.put(CapabilityId.BREEZE_AWAY, List.of(new Reader("breezeAway", getValue.apply(1))));
+        READERS.put(CapabilityId.BREEZE_CONTROL, List.of(new Reader("breezeControl", getValue.apply(1))));
         READERS.put(CapabilityId.BREEZELESS, List.of(new Reader("breezeless", getValue.apply(1))));
         READERS.put(CapabilityId.BUZZER, List.of(new Reader("buzzer", getValue.apply(1))));
 
         READERS.put(CapabilityId.DISPLAY_CONTROL,
-                List.of(new Reader("display_control", (value) -> List.of(1, 2, 100).contains(value))));
+                List.of(new Reader("displayControl", (value) -> List.of(1, 2, 100).contains(value))));
 
         READERS.put(CapabilityId.ENERGY,
-                List.of(new Reader("energy_stats", (value) -> List.of(2, 3, 4, 5).contains(value)),
-                        new Reader("energy_setting", (value) -> List.of(3, 5).contains(value)),
-                        new Reader("energy_bcd", (value) -> List.of(2, 3).contains(value))));
+                List.of(new Reader("energyStats", (value) -> List.of(2, 3, 4, 5).contains(value)),
+                        new Reader("energySetting", (value) -> List.of(3, 5).contains(value)),
+                        new Reader("energyBCD", (value) -> List.of(2, 3).contains(value))));
 
         READERS.put(CapabilityId.FAHRENHEIT, List.of(new Reader("fahrenheit", getValue.apply(0))));
 
         READERS.put(CapabilityId.FAN_SPEED_CONTROL,
-                List.of(new Reader("fan_silent", getValue.apply(6)),
-                        new Reader("fan_low", (value) -> List.of(3, 4, 5, 6, 7).contains(value)),
-                        new Reader("fan_medium", (value) -> List.of(5, 6, 7).contains(value)),
-                        new Reader("fan_high", (value) -> List.of(3, 4, 5, 6, 7).contains(value)),
-                        new Reader("fan_auto", (value) -> List.of(4, 5, 6).contains(value)),
-                        new Reader("fan_custom", getValue.apply(1))));
+                List.of(new Reader("fanSilent", getValue.apply(6)),
+                        new Reader("fanLow", (value) -> List.of(3, 4, 5, 6, 7).contains(value)),
+                        new Reader("fanMedium", (value) -> List.of(5, 6, 7).contains(value)),
+                        new Reader("fanHigh", (value) -> List.of(3, 4, 5, 6, 7).contains(value)),
+                        new Reader("fanAuto", (value) -> List.of(4, 5, 6).contains(value)),
+                        new Reader("fanCustom", getValue.apply(1))));
 
         READERS.put(CapabilityId.FILTER_REMIND,
-                List.of(new Reader("filter_notice", (value) -> List.of(1, 2, 4).contains(value)),
-                        new Reader("filter_clean", (value) -> List.of(3, 4).contains(value))));
+                List.of(new Reader("filterNotice", (value) -> List.of(1, 2, 4).contains(value)),
+                        new Reader("filterClean", (value) -> List.of(3, 4).contains(value))));
 
         READERS.put(CapabilityId.HUMIDITY,
-                List.of(new Reader("humidity_auto_set", (value) -> List.of(1, 2).contains(value)),
-                        new Reader("humidity_manual_set", (value) -> List.of(2, 3).contains(value))));
+                List.of(new Reader("humidityAutoSet", (value) -> List.of(1, 2).contains(value)),
+                        new Reader("humidityManualSet", (value) -> List.of(2, 3).contains(value))));
 
         READERS.put(CapabilityId.MODES,
-                List.of(new Reader("mode_heat", (value) -> List.of(1, 2, 4, 6, 7, 9, 10, 11, 12, 13).contains(value)),
-                        new Reader("mode_cool", (value) -> !List.of(2, 10, 12).contains(value)),
-                        new Reader("mode_dry", (value) -> List.of(0, 1, 5, 6, 9, 11, 13).contains(value)),
-                        new Reader("mode_auto", (value) -> List.of(0, 1, 2, 7, 8, 9, 13).contains(value)),
-                        new Reader("mode_aux_heat", getValue.apply(9)),
-                        new Reader("mode_aux", (value) -> List.of(9, 10, 11, 13).contains(value))));
+                List.of(new Reader("modeHeat", (value) -> List.of(1, 2, 4, 6, 7, 9, 10, 11, 12, 13).contains(value)),
+                        new Reader("modeCool", (value) -> !List.of(2, 10, 12).contains(value)),
+                        new Reader("modeDry", (value) -> List.of(0, 1, 5, 6, 9, 11, 13).contains(value)),
+                        new Reader("modeAuto", (value) -> List.of(0, 1, 2, 7, 8, 9, 13).contains(value)),
+                        new Reader("modeAuxHeat", getValue.apply(9)),
+                        new Reader("modeAux", (value) -> List.of(9, 10, 11, 13).contains(value))));
 
-        READERS.put(CapabilityId.PRESET_ECO, List.of(new Reader("eco_cool", (value) -> List.of(1, 2).contains(value))));
-        READERS.put(CapabilityId.PRESET_FREEZE_PROTECTION, List.of(new Reader("freeze_protection", getValue.apply(1))));
+        READERS.put(CapabilityId.PRESET_ECO, List.of(new Reader("ecoCool", (value) -> List.of(1, 2).contains(value))));
+        READERS.put(CapabilityId.PRESET_FREEZE_PROTECTION, List.of(new Reader("freezeProtection", getValue.apply(1))));
         READERS.put(CapabilityId.PRESET_IECO, List.of(new Reader("ieco", getValue.apply(1))));
 
         READERS.put(CapabilityId.PRESET_TURBO,
-                List.of(new Reader("turbo_heat", (value) -> List.of(1, 3).contains(value)),
-                        new Reader("turbo_cool", (value) -> value < 2)));
+                List.of(new Reader("turboHeat", (value) -> List.of(1, 3).contains(value)),
+                        new Reader("turboCool", (value) -> value < 2)));
 
         READERS.put(CapabilityId.RATE_SELECT, List.of(new Reader("rate_select_2_level", getValue.apply(1)),
-                new Reader("rate_select_5_level", (value) -> List.of(2, 3).contains(value))));
+                new Reader("rateSelect5Level", (value) -> List.of(2, 3).contains(value))));
 
-        READERS.put(CapabilityId.SELF_CLEAN, List.of(new Reader("self_clean", getValue.apply(1))));
-        READERS.put(CapabilityId.SMART_EYE, List.of(new Reader("smart_eye", getValue.apply(1))));
-        READERS.put(CapabilityId.SWING_LR_ANGLE, List.of(new Reader("swing_horizontal_angle", getValue.apply(1))));
-        READERS.put(CapabilityId.SWING_UD_ANGLE, List.of(new Reader("swing_vertical_angle", getValue.apply(1))));
+        READERS.put(CapabilityId.SELF_CLEAN, List.of(new Reader("selfClean", getValue.apply(1))));
+        READERS.put(CapabilityId.SMART_EYE, List.of(new Reader("smartEye", getValue.apply(1))));
+        READERS.put(CapabilityId.SWING_LR_ANGLE, List.of(new Reader("swingHorizontalAngle", getValue.apply(1))));
+        READERS.put(CapabilityId.SWING_UD_ANGLE, List.of(new Reader("swingVerticalAngle", getValue.apply(1))));
 
         READERS.put(CapabilityId.SWING_MODES,
-                List.of(new Reader("swing_horizontal", (value) -> List.of(1, 3).contains(value)),
-                        new Reader("swing_vertical", (value) -> value < 2)));
+                List.of(new Reader("swingHorizontal", (value) -> List.of(1, 3).contains(value)),
+                        new Reader("swingVertical", (value) -> value < 2)));
 
-        READERS.put(CapabilityId.WIND_OFF_ME, List.of(new Reader("wind_off_me", getValue.apply(1))));
-        READERS.put(CapabilityId.WIND_ON_ME, List.of(new Reader("wind_on_me", getValue.apply(1))));
+        READERS.put(CapabilityId.WIND_OFF_ME, List.of(new Reader("windOffMe", getValue.apply(1))));
+        READERS.put(CapabilityId.WIND_ON_ME, List.of(new Reader("windOnMe", getValue.apply(1))));
     }
 
     public static boolean hasReader(CapabilityId id) {
