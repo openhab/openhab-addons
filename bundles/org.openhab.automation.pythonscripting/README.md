@@ -57,7 +57,7 @@ By default, the scope, Registry and logger is automatically imported for UI base
 :::
  
 
-## `PY3` Transformation
+## `PY` Transformation
 
 openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
 It allows transforming values using any of the available scripting languages, which means Python Scripting is supported as well.
@@ -75,15 +75,15 @@ Use Python Scripting as script transformation by:
    calc(input)
    ```
 
-2. Using `PY3(<scriptname>.py):%s` as Item state transformation.
-3. Passing parameters is also possible by using a URL like syntax: `PY3(<scriptname>.py?arg=value)`.
+2. Using `PY(<scriptname>.py):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `PY(<scriptname>.py?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
-Simple transformations can also be given as an inline script: `PY3(|...)`, e.g. `PY3(|"String has " + input.length + "characters")`.
+Simple transformations can also be given as an inline script: `PY(|...)`, e.g. `PY(|"String has " + input.length + "characters")`.
 It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ::: tip Note
-By default, the scope, Registry and logger is automatically imported for `PY3` Transformation scripts
+By default, the scope, Registry and logger is automatically imported for `PY` Transformation scripts
 :::
 
 ## Examples 
