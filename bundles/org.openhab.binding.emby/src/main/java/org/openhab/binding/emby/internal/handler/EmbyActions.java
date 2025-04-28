@@ -133,8 +133,8 @@ public class EmbyActions implements ThingActions {
     }
 
     public static void sendGeneralCommand(ThingActions actions, EmbyGeneralCommand commandName) {
-        if (actions instanceof EmbyActions) {
-            ((EmbyActions) actions).sendGeneralCommand(commandName);
+        if (actions instanceof EmbyActions embyActions) {
+            embyActions.sendGeneralCommand(commandName);
         } else {
             throw new IllegalArgumentException("Not an EmbyActions instance");
         }
