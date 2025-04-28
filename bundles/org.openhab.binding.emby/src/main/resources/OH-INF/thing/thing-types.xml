@@ -47,7 +47,7 @@
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 		<label>EMBY Device</label>
-		<description>This is a player device which connects to an EMBY server to play files that you want to monitor.</description>
+		<description>This is a player device which connects to an EMBY server.</description>
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="stop" typeId="stop"/>
