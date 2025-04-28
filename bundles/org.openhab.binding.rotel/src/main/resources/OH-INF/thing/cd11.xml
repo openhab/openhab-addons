@@ -8,6 +8,7 @@
 	<thing-type id="cd11">
 		<label>CD11 CD Player</label>
 		<description>Connection to the Rotel CD11 CD player</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

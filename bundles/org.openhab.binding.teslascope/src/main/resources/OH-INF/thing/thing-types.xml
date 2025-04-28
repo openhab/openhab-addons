@@ -7,7 +7,7 @@
 	<thing-type id="vehicle">
 		<label>Teslascope</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
 			<channel id="vin" typeId="vin"/>
 			<channel id="vehicle-name" typeId="vehicle-name"/>

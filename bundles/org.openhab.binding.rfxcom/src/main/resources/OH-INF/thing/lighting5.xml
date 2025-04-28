@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Lighting5 Actuator</label>
 		<description>A Lighting5 device.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>

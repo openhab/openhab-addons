@@ -8,6 +8,7 @@
 		<label>Gateway Device</label>
 		<description>A WiFi connected gateway device (WN1900, GW1000, GW1100, WH2680, WH2650) to bridge Sensors</description>
 		<category>NetworkAppliance</category>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:fineoffsetweatherstation:gateway"/>
 	</bridge-type>
@@ -67,10 +68,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<category>Moisture</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
-		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 

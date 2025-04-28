@@ -36,6 +36,8 @@ public class PrinterConfiguration {
     public String hostname = "";
     public String accessCode = "";
     public String username = LOCAL_USERNAME;
+    public int reconnectTime = 300;
+    public int reconnectMax = 5;
     // MQTT
     public String scheme = SCHEME;
     public int port = DEFAULT_PORT;
@@ -73,7 +75,7 @@ public class PrinterConfiguration {
             return new URI(rawUri);
         } catch (URISyntaxException e) {
             throw new InitializationException(CONFIGURATION_ERROR,
-                    "@text/printer.handler.init.invalidHostname[\"%s\"]".formatted(rawUri), e);
+                    "@text/printer.handler.init.invalidHostname [\"%s\"]".formatted(rawUri), e);
         }
     }
 

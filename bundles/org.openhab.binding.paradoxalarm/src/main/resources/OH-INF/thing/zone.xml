@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Paradox Zone</label>
 		<description>Paradox zone</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="label" typeId="zoneLabel"/>

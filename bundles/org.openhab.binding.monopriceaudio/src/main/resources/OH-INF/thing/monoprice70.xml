@@ -10,6 +10,7 @@
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="all" typeId="monoprice70-all">

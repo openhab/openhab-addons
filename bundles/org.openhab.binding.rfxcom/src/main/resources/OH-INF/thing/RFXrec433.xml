@@ -7,6 +7,7 @@
 	<bridge-type id="RFXrec433">
 		<label>RFXrec433 USB 433.92MHz Receiver</label>
 		<description>This is an RFXCOM 433.92MHz receiver bridge.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">
