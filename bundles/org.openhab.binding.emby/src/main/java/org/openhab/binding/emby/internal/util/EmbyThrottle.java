@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Emby} is a Utility to throttle high-frequency events on a per-key basis.
+ * The {@link EmbyThrottle} is a Utility to throttle high-frequency events on a per-key basis.
  * Ensures updates for each key are only allowed after a configured interval.
  *
  * @author Zachary Christiansen - Initial contribution
