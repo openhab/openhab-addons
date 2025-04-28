@@ -613,7 +613,6 @@ public class ShellyThingCreator {
             if (res != null) {
                 return res;
             }
-            int i = 1;
         }
 
         String res = THING_TYPE_MAPPING.get(type);
