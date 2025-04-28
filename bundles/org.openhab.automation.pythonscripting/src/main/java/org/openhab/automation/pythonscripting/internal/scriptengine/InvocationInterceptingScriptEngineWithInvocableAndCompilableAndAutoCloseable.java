@@ -180,7 +180,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
         }
     }
 
-    private CompiledScript wrapCompiledScript(CompiledScript script) throws ScriptException {
+    private CompiledScript wrapCompiledScript(CompiledScript script) {
         return new CompiledScript() {
             @Override
             public ScriptEngine getEngine() {

@@ -476,7 +476,7 @@ public class PythonScriptEngine
     }
 
     private static Set<String> transformGraalWrapperSet(Value value) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (int i = 0; i < value.getArraySize(); ++i) {
             Value element = value.getArrayElement(i);
             set.add(element.asString());

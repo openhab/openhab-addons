@@ -61,7 +61,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     private void initGlobal() {
-        this.global = new HashMap<String, Object>();
+        this.global = new HashMap<>();
 
         requireContext();
 

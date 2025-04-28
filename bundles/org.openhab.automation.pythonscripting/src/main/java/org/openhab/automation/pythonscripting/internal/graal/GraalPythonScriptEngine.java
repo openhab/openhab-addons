@@ -58,16 +58,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     private static final String PYTHON_OPTION_FORCEIMPORTSITE = "python.ForceImportSite";
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
 
-    static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
-
     private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngine.class);
-
-    interface MagicBindingsOptionSetter {
-
-        String getOptionKey();
-
-        Context.Builder setOption(Builder builder, Object value);
-    }
 
     private final GraalPythonScriptEngineFactory factory;
     private final Context.Builder contextConfig;

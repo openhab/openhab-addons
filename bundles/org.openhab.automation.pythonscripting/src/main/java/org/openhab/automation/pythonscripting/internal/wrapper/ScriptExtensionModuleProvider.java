@@ -35,7 +35,7 @@ public class ScriptExtensionModuleProvider {
 
     public static final String IMPORT_PROXY_NAME = "__import_proxy__";
 
-    public static final String OENHAB_MODULE_PREFIX = "org.openhab";
+    public static final String OPENHAB_MODULE_PREFIX = "org.openhab";
     public static final String SCOPE_MODULE_PREFIX = "scope";
 
     private final Logger logger = LoggerFactory.getLogger(ScriptExtensionModuleProvider.class);
@@ -45,9 +45,9 @@ public class ScriptExtensionModuleProvider {
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier,
             ScriptExtensionAccessor scriptExtensionAccessor) {
         return (name, fromlist) -> {
-            Map<String, Object> symbols = new HashMap<String, Object>();
-            if (name.startsWith(OENHAB_MODULE_PREFIX)) {
-                List<String> classList = new ArrayList<String>();
+            Map<String, Object> symbols = new HashMap<>();
+            if (name.startsWith(OPENHAB_MODULE_PREFIX)) {
+                List<String> classList = new ArrayList<>();
                 if (!fromlist.isEmpty() && fromlist.contains("*")) {
                     logger.error("Wildcard support of java packages not supported");
                 } else {
@@ -63,7 +63,7 @@ public class ScriptExtensionModuleProvider {
             } else if (name.startsWith(SCOPE_MODULE_PREFIX)) {
                 String[] segments = name.split("\\.");
                 if (name.equals(SCOPE_MODULE_PREFIX)) {
-                    Map<String, Object> possibleSymbols = new HashMap<String, Object>(this.globals);
+                    Map<String, Object> possibleSymbols = new HashMap<>(this.globals);
 
                     if (fromlist.isEmpty() || fromlist.contains("*")) {
                         symbols = possibleSymbols;

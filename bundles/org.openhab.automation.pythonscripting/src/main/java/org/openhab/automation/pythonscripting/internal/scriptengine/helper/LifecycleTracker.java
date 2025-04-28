@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LifecycleTracker {
-    List<Runnable> disposables = new ArrayList<>();
+    private List<Runnable> disposables = new ArrayList<>();
 
     public void addDisposeHook(Runnable disposable) {
         disposables.add(disposable);

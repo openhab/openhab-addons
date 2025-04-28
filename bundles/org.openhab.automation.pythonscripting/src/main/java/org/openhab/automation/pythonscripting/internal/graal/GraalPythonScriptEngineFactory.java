@@ -41,7 +41,7 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
         super();
         this.userDefinedEngine = null;
 
-        defaultEngine = new WeakReference<Engine>(createDefaultEngine());
+        defaultEngine = new WeakReference<>(createDefaultEngine());
     }
 
     public GraalPythonScriptEngineFactory(Engine engine) {
