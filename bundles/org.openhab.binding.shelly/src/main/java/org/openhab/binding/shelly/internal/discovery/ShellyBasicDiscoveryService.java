@@ -125,7 +125,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String thingType = "";
         Map<String, Object> properties = new TreeMap<>();
 
-        int i = 1;
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
