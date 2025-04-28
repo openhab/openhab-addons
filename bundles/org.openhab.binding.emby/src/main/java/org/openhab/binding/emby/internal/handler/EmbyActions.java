@@ -92,17 +92,11 @@ public class EmbyActions implements ThingActions {
     @RuleAction(label = "@text/action.emby.SendPlay.label", description = "@text/action.emby.SendPlay.desc")
     public void sendPlay(
             @ActionInput(name = "itemIds", label = "@text/action.emby.SendPlay.input.itemIds.label", description = "@text/action.emby.SendPlay.input.itemIds.desc") String itemIds,
-
             @ActionInput(name = "playCommand", label = "@text/action.emby.SendPlay.input.playCommand.label", description = "@text/action.emby.SendPlay.input.playCommand.desc") EmbyPlayCommand playCommand,
-
             @ActionInput(name = "startPositionTicks", label = "@text/action.emby.SendPlay.input.startPositionTicks.label", description = "@text/action.emby.SendPlay.input.startPositionTicks.desc") @Nullable Integer startPositionTicks,
-
             @ActionInput(name = "mediaSourceId", label = "@text/action.emby.SendPlay.input.mediaSourceId.label", description = "@text/action.emby.SendPlay.input.mediaSourceId.desc") @Nullable String mediaSourceId,
-
             @ActionInput(name = "audioStreamIndex", label = "@text/action.emby.SendPlay.input.audioStreamIndex.label", description = "@text/action.emby.SendPlay.input.audioStreamIndex.desc") @Nullable Integer audioStreamIndex,
-
             @ActionInput(name = "subtitleStreamIndex", label = "@text/action.emby.SendPlay.input.subtitleStreamIndex.label", description = "@text/action.emby.SendPlay.input.subtitleStreamIndex.desc") @Nullable Integer subtitleStreamIndex,
-
             @ActionInput(name = "startIndex", label = "@text/action.emby.SendPlay.input.startIndex.label", description = "@text/action.emby.SendPlay.input.startIndex.desc") @Nullable Integer startIndex) {
         if (handler == null) {
             throw new IllegalStateException("EmbyDeviceHandler not set");
