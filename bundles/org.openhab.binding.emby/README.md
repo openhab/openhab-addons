@@ -30,8 +30,6 @@ The binding supports automatic discovery for both servers (`controller`) and cli
 
 There is no global binding-level configuration required or supported.
 
----
-
 # Thing Configuration
 
 ## `emby:controller` Bridge Configuration
