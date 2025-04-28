@@ -1376,7 +1376,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
-### Shelly Pro 1 PM (thing-type: shellypro1pm, shellypro1cb)
+### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1397,6 +1397,15 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+### Shelly Pro 1CB (thing-type: shellypro1cb)
+
+| Group | Channel      | Type     | read-only | Description                                                                      |
+| ----- | ------------ | -------- | --------- | -------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                     |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
+| meter | voltage       | Number   | yes       | RMS voltage, Volts                                                              |
+
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
