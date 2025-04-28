@@ -68,8 +68,8 @@ Group                     Wattpilot_Garage                             "Wattpilo
 // Control
 Switch                    Wattpilot_Garage_Charging_Allowed            "Charging Allowed"                      <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#charging-allowed"}
 String                    Wattpilot_Garage_Charging_Mode               "Charging Mode"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#charging-mode"}
-Number:ElectricCurrent    Wattpilot_Garage_Charging_Current            "Charging Current [%d A]"               <Energy>        (Wattpilot_Garage)  ["Current", "Setpoint"]     {channel="froniuswattpilot:wattpilot:garage:control#charging-current", unit="A"}
-Number:Power              Wattpilot_Garage_PV_Surplus_Power_Threshold  "PV Surplus Power Threshold [%.1f kW]"  <SolarPlant>    (Wattpilot_Garage)  ["Power", "Setpoint"]       {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-threshold", unit="kW"}
+Number:ElectricCurrent    Wattpilot_Garage_Charging_Current            "Charging Current [%d A]"               <Energy>        (Wattpilot_Garage)  ["Setpoint", "Current"]     {channel="froniuswattpilot:wattpilot:garage:control#charging-current", unit="A"}
+Number:Power              Wattpilot_Garage_PV_Surplus_Power_Threshold  "PV Surplus Power Threshold [%.1f kW]"  <SolarPlant>    (Wattpilot_Garage)  ["Setpoint", "Power"]       {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-threshold", unit="kW"}
 
 // Status
 Switch                    Wattpilot_Garage_Charging_Possible           "Charging Possible"                     <BatteryLevel>  (Wattpilot_Garage)  ["Status"]                  {channel="froniuswattpilot:wattpilot:garage:status#charging-possible"}
@@ -78,18 +78,18 @@ Switch                    Wattpilot_Garage_Single_Phase_Charging       "Single P
 
 // Metrics total
 Number:Power              Wattpilot_Garage_Total_Power                 "Total Power [%.2f kW]"                 <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#power", unit="kW"}
-Number:Energy             Wattpilot_Garage_Charged_Energy              "Charged Energy [%.2f kWh]"             <Energy>        (Wattpilot_Garage)  ["Energy", "Measurement"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-session", unit="kWh"}
-Number:Energy             Wattpilot_Garage_Total_Charged_Energy        "Total Charged Energy [%.0f kWh]"       <Energy>        (Wattpilot_Garage)  ["Energy", "Measurement"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-total", unit="kWh"}
+Number:Energy             Wattpilot_Garage_Charged_Energy              "Charged Energy [%.2f kWh]"             <Energy>        (Wattpilot_Garage)  ["Measurement", "Energy"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-session", unit="kWh"}
+Number:Energy             Wattpilot_Garage_Total_Charged_Energy        "Total Charged Energy [%.0f kWh]"       <Energy>        (Wattpilot_Garage)  ["Measurement", "Energy"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-total", unit="kWh"}
 // Metrics phase 1
 Number:Power              Wattpilot_Garage_Phase_1_Power               "Phase 1 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l1-power", unit="kW"}
 Number:ElectricPotential  Wattpilot_Garage_Phase_1_Voltage             "Phase 1 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l1-voltage", unit="V"}
-Number:ElectricCurrent    Wattpilot_Garage_Phase_1_Current             "Phase 1 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l1-current", unit="A"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_1_Current             "Phase 1 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Measurement", "Current"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l1-current", unit="A"}
 // Metrics phase 2
 Number:Power              Wattpilot_Garage_Phase_2_Power               "Phase 2 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l2-power", unit="kW"}
 Number:ElectricPotential  Wattpilot_Garage_Phase_2_Voltage             "Phase 2 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l2-voltage", unit="V"}
-Number:ElectricCurrent    Wattpilot_Garage_Phase_2_Current             "Phase 2 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l2-current", unit="A"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_2_Current             "Phase 2 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Measurement", "Current"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l2-current", unit="A"}
 // Metrics phase 3
 Number:Power              Wattpilot_Garage_Phase_3_Power               "Phase 3 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l3-power", unit="kW"}
 Number:ElectricPotential  Wattpilot_Garage_Phase_3_Voltage             "Phase 3 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-voltage", unit="V"}
-Number:ElectricCurrent    Wattpilot_Garage_Phase_3_Current             "Phase 3 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-current", unit="A"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_3_Current             "Phase 3 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Measurement", "Current"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-current", unit="A"}
 ```
