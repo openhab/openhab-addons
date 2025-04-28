@@ -36,12 +36,14 @@ There is no global binding-level configuration required or supported.
 
 The following Configuration Parameter Keys are available:
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| **`ipAddress`** | Text | IP address or hostname of the Emby server. | N/A | Yes | No |
-| **`api`** | Text | API Key generated from Emby for authorization. | N/A | Yes | No |
-| **`bufferSize`** | Integer | WebSocket buffer size in bytes. | N/A | No | No |
-| **`refreshInterval`** | Integer | Polling interval for play-state updates (milliseconds). | N/A | No | No |
+| Name                  | Type    | Description                                             | Default | Required | Advanced |
+|-----------------------|---------|---------------------------------------------------------|---------|----------|----------|
+| **`ipAddress`**       | Text    | IP address or hostname of the Emby server.              | N/A     | Yes      | No       |
+| **`api`**             | Text    | API Key generated from Emby for authorization.          | N/A     | Yes      | No       |
+| **`bufferSize`**      | Integer | WebSocket buffer size in bytes.                         | 10,000  | No       | No       |
+| **`refreshInterval`** | Integer | Polling interval for play-state updates (milliseconds). | 10,000  | No       | No       |
+
+
 | **`discovery`** | Boolean | Enable or disable automatic device discovery. | true | No | Yes |
 
 ## `emby:device` Thing Configuration
@@ -57,17 +59,17 @@ The following Configuration Parameter Key is available:
 
 The following Channel IDs are available for an `emby:device` Thing:
 
-| Channel ID | Item Type | Config Parameters | Description |
-|------------|-----------|-------------------|-------------|
-| **`control`** | Player | None | Playback control (play, pause, next, previous, fast-forward, rewind). |
-| **`stop`** | Switch | None | Indicates playback state; OFF stops playback. |
-| **`title`** | String | None | Title of the currently playing song. |
-| **`showtitle`** | String | None | Title of the currently playing movie or TV show. |
-| **`mute`** | Switch | None | Mute status control. |
-| **`imageurl`** | String | `imageurl_maxHeight`, `imageurl_maxWidth`, `imageurl_type` | URL for current media artwork. |
-| **`currenttime`** | Number:Time | None | Current playback position. |
-| **`duration`** | Number:Time | None | Total media duration. |
-| **`mediatype`** | String | None | Type of media (e.g., Movie, Episode). |
+| Channel ID        | Item Type   | Config Parameters                                          | Description                                                           |
+|-------------------|-------------|------------------------------------------------------------|-----------------------------------------------------------------------|
+| **`control`**     | Player      | None                                                       | Playback control (play, pause, next, previous, fast-forward, rewind). |
+| **`stop`**        | Switch      | None                                                       | Indicates playback state; OFF stops playback.                         |
+| **`title`**       | String      | None                                                       | Title of the currently playing song.                                  |
+| **`showtitle`**   | String      | None                                                       | Title of the currently playing movie or TV show.                      |
+| **`mute`**        | Switch      | None                                                       | Mute status control.                                                  |
+| **`imageurl`**    | String      | `imageurl_maxHeight`, `imageurl_maxWidth`, `imageurl_type` | URL for current media artwork.                                        |
+| **`currenttime`** | Number:Time | None                                                       | Current playback position.                                            |
+| **`duration`**    | Number:Time | None                                                       | Total media duration.                                                 |
+| **`mediatype`**   | String      | None                                                       | Type of media (e.g., Movie, Episode).                                 |
 
 ---
 
@@ -134,11 +136,11 @@ All playback and control commands are now implemented as Rule Actions rather tha
 
 ## Available Actions
 
-| Action ID                     | Method Signature                                                                            | Description                                                                                               |
-|-------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| **sendPlay**                  | `sendPlay(ItemIds: String, PlayCommand: String, StartPositionTicks: Integer?, MediaSourceId: String?, AudioStreamIndex: Integer?, SubtitleStreamIndex: Integer?, StartIndex: Integer?)` | Send a play command with optional parameters to an Emby player.                                            |
-| **sendGeneralCommand**        | `sendGeneralCommand(CommandName: String)`                                                   | Send a generic Emby control command (e.g., MoveUp, ToggleMute, GoHome).                                     |
-| **sendGeneralCommandWithArgs**| `sendGeneralCommandWithArgs(CommandName: String, Arguments: String)`                        | Send a generic Emby control command with a JSON arguments blob (e.g., SetVolume, DisplayMessage, etc.).    |
+| Action ID                      | Method Signature                                                                                                                                                                        | Description                                                                                             |
+|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| **sendPlay**                   | `sendPlay(ItemIds: String, PlayCommand: String, StartPositionTicks: Integer?, MediaSourceId: String?, AudioStreamIndex: Integer?, SubtitleStreamIndex: Integer?, StartIndex: Integer?)` | Send a play command with optional parameters to an Emby player.                                         |
+| **sendGeneralCommand**         | `sendGeneralCommand(CommandName: String)`                                                                                                                                               | Send a generic Emby control command (e.g., MoveUp, ToggleMute, GoHome).                                 |
+| **sendGeneralCommandWithArgs** | `sendGeneralCommandWithArgs(CommandName: String, Arguments: String)`                                                                                                                    | Send a generic Emby control command with a JSON arguments blob (e.g., SetVolume, DisplayMessage, etc.). |
 
 ## Example Rule (XTend)
 
