@@ -28,6 +28,8 @@ public class FroniusWattpilotBindingConstants {
 
     private static final String BINDING_ID = "froniuswattpilot";
 
+    public static final String HOSTNAME_CONFIGURATION_KEY = "hostname";
+
     // Wattpilot Thing Type UID
     public static final ThingTypeUID THING_TYPE_WATTPILOT = new ThingTypeUID(BINDING_ID, "wattpilot");
 

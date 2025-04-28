@@ -90,9 +90,9 @@ public class FroniusWattpilotMDNSDiscoveryServiceParticipant implements MDNSDisc
                 String ip = addresses[0];
                 return DiscoveryResultBuilder.create(uid) //
                         .withProperties(Map.of( //
-                                "hostname", ip)) //
+                                FroniusWattpilotBindingConstants.HOSTNAME_CONFIGURATION_KEY, ip)) //
                         .withLabel(service.getName()) //
-                        .withRepresentationProperty("hostname") //
+                        .withRepresentationProperty(FroniusWattpilotBindingConstants.HOSTNAME_CONFIGURATION_KEY) //
                         .build();
             }
         }

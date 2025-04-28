@@ -8,6 +8,7 @@
 	<thing-type id="wattpilot">
 		<label>Fronius Wattpilot</label>
 		<description>Fronius Wattpilot wallbox</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="control" typeId="control"/>

@@ -152,7 +152,6 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     @Override
     public void initialize() {
         config = getConfigAs(FroniusWattpilotConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
 
         FroniusWattpilotConfiguration config = this.config;
         if (config == null) {
@@ -172,6 +171,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         try {
             client.connect(config.hostname, config.password);
         } catch (IOException e) {
