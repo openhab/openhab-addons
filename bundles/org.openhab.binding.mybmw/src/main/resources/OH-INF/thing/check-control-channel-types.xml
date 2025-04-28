@@ -16,7 +16,7 @@
 		<label>CheckControl Details</label>
 		<tags>
 			<tag>Status</tag>
-            <tag>Info</tag>
+			<tag>Info</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-severity-channel">
