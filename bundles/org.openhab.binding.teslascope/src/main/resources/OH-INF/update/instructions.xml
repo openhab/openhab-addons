@@ -11,9 +11,6 @@
 			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
-			<add-channel id="car-version">
-				<type>teslascope:car-version</type>
-			</add-channel>
 			<add-channel id="charge-amps">
 				<type>teslascope:charge-amps</type>
 			</add-channel>

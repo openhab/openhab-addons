@@ -49,7 +49,6 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_SOFTWARE_UPDATE_VERSION = "software-update-version";
     public static final String CHANNEL_AUTOCONDITIONING = "auto-conditioning";
     public static final String CHANNEL_BATTERY_RANGE = "battery-range";
-    public static final String CHANNEL_CAR_VERSION = "car-version";
     public static final String CHANNEL_CENTER_REAR_SEAT_HEATER = "center-rear-seat-heater";
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_CHARGE_ENERGY_ADDED = "charge-energy-added";

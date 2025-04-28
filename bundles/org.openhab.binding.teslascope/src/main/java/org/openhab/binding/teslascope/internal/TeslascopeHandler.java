@@ -14,6 +14,7 @@ package org.openhab.binding.teslascope.internal;
 
 import static org.openhab.binding.teslascope.internal.TeslascopeBindingConstants.*;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -307,8 +308,9 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.driveState.speed, ImperialUnits.MILES_PER_HOUR));
 
             // vehicle state
-            updateState(TeslascopeBindingConstants.CHANNEL_CAR_VERSION,
-                    new StringType(detailedInformation.vehicleState.carVersion));
+            Map<String, String> properties = editProperties();
+            properties.put("version", detailedInformation.vehicleState.carVersion);
+            updateProperties(properties);
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
                     OnOffType.from(detailedInformation.vehicleState.locked));
             updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
