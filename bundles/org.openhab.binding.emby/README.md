@@ -105,7 +105,7 @@ String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbySe
 
 ## Sitemap Configuration Example
 
-```text
+```perl
 sitemap emby label="Emby Control"
 {
     Frame label="Controls" {
