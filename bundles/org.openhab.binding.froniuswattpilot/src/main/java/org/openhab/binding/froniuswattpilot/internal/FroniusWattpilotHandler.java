@@ -15,6 +15,7 @@ package org.openhab.binding.froniuswattpilot.internal;
 import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBindingConstants.*;
 
 import java.io.IOException;
+import java.net.NoRouteToHostException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.io.EofException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -206,9 +208,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
             awaitDisconnect.complete(null);
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (cause instanceof TimeoutException) {
-            logger.debug("Connection to Wattpilot timed out, scheduling reconnection attempt.");
-            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
+        if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
+                || cause instanceof EofException) {
+            this.logger.debug("Connection to Wattpilot lost, scheduling reconnection attempt.");
+            this.scheduler.schedule(this::initialize, 30L, TimeUnit.SECONDS);
         }
     }
 
