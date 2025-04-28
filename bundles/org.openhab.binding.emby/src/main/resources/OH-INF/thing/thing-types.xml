@@ -62,7 +62,7 @@
 		<config-description>
 			<parameter name="deviceID" type="text" required="true">
 				<label>DeviceID</label>
-				<description>This is the deviceId you want to connect to to monitor.</description>
+				<description>This is the deviceId you want to connect to.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
