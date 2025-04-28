@@ -40,7 +40,7 @@ public class MideaACConfigurationTest {
         config.deviceId = "1234567890";
         config.version = 3;
         assertTrue(config.isValid());
-        assertFalse(config.isDiscoveryNeeded());
+        assertTrue(config.isDiscoveryPossible());
     }
 
     /**
@@ -53,7 +53,7 @@ public class MideaACConfigurationTest {
         config.deviceId = "1234567890";
         config.version = 3;
         assertFalse(config.isValid());
-        assertTrue(config.isDiscoveryNeeded());
+        assertTrue(config.isDiscoveryPossible());
     }
 
     /**
@@ -110,16 +110,7 @@ public class MideaACConfigurationTest {
         config.deviceId = "1234567890";
         config.version = 3;
         assertTrue(config.isValid());
-        assertTrue(config.isDiscoveryNeeded());
-    }
-
-    /**
-     * Test to return cloud provider
-     */
-    @Test
-    public void testCloudProvider() {
-        config.cloud = "NetHome Plus";
-        assertEquals(config.cloud, "NetHome Plus");
+        assertFalse(config.isDiscoveryPossible());
     }
 
     /**

@@ -93,6 +93,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Performs the actual discovery of Midea AC devices (things).
+     * with unknown IP address.
      */
     private void discoverThings() {
         try {
@@ -127,6 +128,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Performs the actual discovery of a specific Midea AC device (thing)
+     * with a known IP address.
      * 
      * @param ipAddress IP Address
      * @param discoveryHandler Discovery Handler

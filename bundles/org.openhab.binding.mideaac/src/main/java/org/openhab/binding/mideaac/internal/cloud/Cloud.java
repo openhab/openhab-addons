@@ -41,11 +41,11 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link Cloud} class connects to the Cloud Provider
- * with user supplied information to retrieve the Security
+ * with user supplied information (or defaults) to retrieve the Security
  * Token and Key.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - JavaDoc and changed getQueryString for special characters
  */
 @NonNullByDefault
 public class Cloud {
@@ -57,21 +57,12 @@ public class Cloud {
 
     private HttpClient httpClient;
 
-    /**
-     * Sets Http Client
-     * 
-     * @param httpClient Http Client
-     */
-    public void setHttpClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
     private String errMsg = "";
 
     private @Nullable String accessToken = "";
 
     private String loginAccount;
-    private String password = "";
+    private String password;
     private CloudProvider cloudProvider;
     private Security security;
 
@@ -84,13 +75,14 @@ public class Cloud {
      * @param email email
      * @param password password
      * @param cloudProvider Cloud Provider
+     * @param httpClient Used to send posts to the cloud
      */
-    public Cloud(String email, String password, CloudProvider cloudProvider) {
+    public Cloud(String email, String password, CloudProvider cloudProvider, HttpClient httpClient) {
         this.loginAccount = email;
         this.password = password;
         this.cloudProvider = cloudProvider;
         this.security = new Security(cloudProvider);
-        this.httpClient = new HttpClient();
+        this.httpClient = httpClient;
         logger.debug("Cloud provider: {}", cloudProvider.name());
     }
 
@@ -227,10 +219,10 @@ public class Cloud {
     }
 
     /**
-     * First gets the loginId using your email, then gets the session
+     * First gets the loginId from the Cloud using the email, then gets the session
      * Id with the email and encypted password (using the LoginId). Then
      * gets the token and key. If loginId and sessionId exist from an earlier
-     * attempt, it goes directly to getting the token and key
+     * attempt, it goes directly to getting the token and key.
      * 
      * @return true or false
      */
@@ -301,7 +293,7 @@ public class Cloud {
 
     /**
      * Gets token and key with the device Id modified to udpid
-     * after SessionId (non-proxied) accessToken are established
+     * after SessionId (non-proxied) accessToken is established
      * 
      * @param deviceId The discovered Device Id
      * @return token and key

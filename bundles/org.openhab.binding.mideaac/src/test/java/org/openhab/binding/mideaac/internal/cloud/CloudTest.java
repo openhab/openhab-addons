@@ -68,8 +68,7 @@ public class CloudTest {
                 "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
 
         // Inject the mocked HttpClient into the Cloud class
-        Cloud cloud = new Cloud("email", "password", provider);
-        cloud.setHttpClient(mockHttpClient);
+        Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
 
         // Set loginId using reflection so that the getLoginId() check doesn't trigger
         Field loginIdField = Cloud.class.getDeclaredField("loginId");
@@ -123,8 +122,7 @@ public class CloudTest {
                 "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
 
         // Inject the mocked HttpClient into the Cloud class
-        Cloud cloud = new Cloud("email", "password", provider);
-        cloud.setHttpClient(mockHttpClient);
+        Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
 
         // Set loginId using reflection so that the getLoginId() check doesn't trigger
         Field loginIdField = Cloud.class.getDeclaredField("loginId");
@@ -150,7 +148,8 @@ public class CloudTest {
                 "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
 
         // Create the Cloud class
-        Cloud cloud = new Cloud("email", "password", provider);
+        HttpClient mockHttpClient = mock(HttpClient.class);
+        Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
 
         // Set loginId using reflection so that the getLoginId() check doesn't trigger
         Field loginIdField = Cloud.class.getDeclaredField("loginId");
@@ -199,8 +198,7 @@ public class CloudTest {
                 "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
 
         // Inject the mocked HttpClient into the Cloud class
-        Cloud cloud = new Cloud("email", "password", provider);
-        cloud.setHttpClient(mockHttpClient);
+        Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
 
         // Execute the getLoginId method
         boolean getLogin = cloud.getLoginId();

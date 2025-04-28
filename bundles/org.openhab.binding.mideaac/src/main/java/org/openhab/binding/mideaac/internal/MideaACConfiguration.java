@@ -99,13 +99,12 @@ public class MideaACConfiguration {
     }
 
     /**
-     * Check during initialization if discovery is needed
+     * Check during initialization if discovery is possible. This needs a valid IP
      * 
      * @return true(discovery needed), false (not needed)
      */
-    public boolean isDiscoveryNeeded() {
-        return ("0".equals(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
-                || !Utils.validateIP(ipAddress) || version <= 1);
+    public boolean isDiscoveryPossible() {
+        return (Utils.validateIP(ipAddress));
     }
 
     /**
