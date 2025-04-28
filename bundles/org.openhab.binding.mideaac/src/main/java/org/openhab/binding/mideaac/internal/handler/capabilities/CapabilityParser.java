@@ -78,10 +78,10 @@ public class CapabilityParser {
             } else if (capabilityId == CapabilityId.TEMPERATURES) {
                 if (size >= 6) {
                     numericCapabilities.put(capabilityId,
-                            Map.of("cool_min_temperature", payload[offset + 3] * 0.5, "cool_max_temperature",
-                                    payload[offset + 4] * 0.5, "auto_min_temperature", payload[offset + 5] * 0.5,
-                                    "auto_max_temperature", payload[offset + 6] * 0.5, "heat_min_temperature",
-                                    payload[offset + 7] * 0.5, "heat_max_temperature", payload[offset + 8] * 0.5));
+                            Map.of("coolMinTemperature", payload[offset + 3] * 0.5, "coolMaxTemperature",
+                                    payload[offset + 4] * 0.5, "autoMinTemperature", payload[offset + 5] * 0.5,
+                                    "autoMaxTemperature", payload[offset + 6] * 0.5, "heatMinTemperature",
+                                    payload[offset + 7] * 0.5, "heatMaxTemperature", payload[offset + 8] * 0.5));
                 }
             } else if (capabilityId == CapabilityId._UNKNOWN) {
                 logger.debug("Ignored unknown capability ID: {}, Size: {}", rawId, size);

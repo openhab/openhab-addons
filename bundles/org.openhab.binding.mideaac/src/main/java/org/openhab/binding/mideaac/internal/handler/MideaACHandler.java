@@ -74,7 +74,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler, Callback {
-
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
     private final boolean imperialUnits;
     private final HttpClient httpClient;
@@ -175,19 +174,27 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     /**
-     * Initialize is called on first pass or when a device parameter is changed
-     * The basic check is if the information from Discovery (or the user update)
-     * is valid. Because V2 devices do not require a cloud provider (or token/key)
-     * The first check is for the IP, port and deviceID. The second part
-     * checks the security configuration if required (V3 device).
+     * To initialize an AC Thing, first check if discovery on your LAN has
+     * been completed. In the discovery process the IP address, IP port, device ID
+     * and version are established. Next for V.3 devices, if the token and key are not
+     * known, the cloud needs to be contacted to get the token and key using either
+     * the default NetHome Plus cloud or your own cloud account with your password and
+     * email. LAN discovery DOES NOT include the token key retrieval needed to communicate
+     * with the AC. V2 devices bypass the cloud connection step because they use a simplier
+     * hard-coded encryption. Next the Connection Manager is established. Then a command
+     * is formed and sent to retrieve the AC capabilities if they have not been
+     * discovered. Capabilities are not returned in the initial LAN Discovery.
+     * Lastly the routine polling and token key update frequency are set.
+     * 
      */
     @Override
     public void initialize() {
         config = getConfigAs(MideaACConfiguration.class);
 
+        // Check for valid discovery configurations and discover again if not
         if (!config.isValid()) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Configuration not valid");
-            if (config.isDiscoveryNeeded()) {
+            if (config.isDiscoveryPossible()) {
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Configuration missing, discovery needed. Discovering...");
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
@@ -196,20 +203,20 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                     discoveryService.discoverThing(config.ipAddress, this);
                     return;
                 } catch (Exception e) {
-                    logger.debug("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Discovery failure. Check configuration.");
+                            "Discovery failure. Check IP Address.");
                     return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid MideaAC config. Check configuration.");
+                        "Invalid MideaAC config. Check IP Address.");
                 return;
             }
         } else {
-            logger.debug("Non-security Configuration valid for {}", thing.getUID());
+            logger.debug("Valid discovery for {}", thing.getUID());
         }
 
+        // Check for valid token and key and/or contact cloud account to get them
         if (config.version == 3 && !config.isV3ConfigValid()) {
             if (config.isTokenKeyObtainable()) {
                 CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
@@ -221,34 +228,29 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 return;
             }
         } else {
-            logger.debug("Security Configuration (V3 Device) valid for {}", thing.getUID());
+            logger.debug("Valid security for V.3 device {}", thing.getUID());
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Initialize connectionManager for communication with the AC
         connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
-        // Initialize connectionManager
-        connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
-                config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
-                config.deviceId, config.version, config.promptTone);
-
-        // This checks for one of the added default properties and means the command
-        // Has already run and doesn't need to be run again
-        if (!properties.containsKey("mode_fan_only")) {
+        // Form and send capabilities command if not already present in properties
+        if (!properties.containsKey("modeFanOnly")) {
             try {
-                // Send configuration command and get response
                 CommandSet initializationCommand = new CommandSet();
                 initializationCommand.getCapabilities();
-                // Send the command using the connection manager
                 connectionManager.sendCommand(initializationCommand, this);
-                // 'this' is passed as the callback because MideaACHandler implements Callback
             } catch (Exception e) {
-                logger.error("Error during capabilities initialization: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "AC capabilities not returned");
             }
         }
+
+        // Establish routine polling per configuration or defaults
         if (scheduledTask == null) {
             scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
@@ -256,11 +258,14 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Scheduler already running");
         }
 
+        // Establish token key update frequency, if not disabled
         if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
             scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
                     () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
                     config.keyTokenUpdate, TimeUnit.DAYS);
             logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
+        } else {
+            logger.debug("Token Key Scheduler already running");
         }
     }
 
@@ -330,9 +335,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
     }
 
+    // Handle capabilities responses
     @Override
     public void updateChannels(CapabilitiesResponse capabilitiesResponse) {
-        // Handle capabilities responses
         CapabilityParser parser = new CapabilityParser();
         parser.parse(capabilitiesResponse.getRawData());
 
@@ -351,32 +356,32 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         });
 
         // Default to false if "display_control" is missing from DISPLAY_CONTROL response
-        if (!properties.containsKey("display_control")) {
-            properties.put("display_control", "false - default");
+        if (!properties.containsKey("displayControl")) {
+            properties.put("displayControl", "false - default");
         }
         // Default to true if "fan_only" is missing from MODE response
-        if (!properties.containsKey("mode_fan_only")) {
-            properties.put("mode_fan_only", "true - default");
+        if (!properties.containsKey("modeFanOnly")) {
+            properties.put("modeFanOnly", "true - default");
         }
         // Defaults if FAN_SPEED_CONTROL is missing from response
-        if (!properties.containsKey("fan_low")) {
-            properties.put("fan_low", "true - default");
+        if (!properties.containsKey("fanLow")) {
+            properties.put("fanLow", "true - default");
         }
-        if (!properties.containsKey("fan_medium")) {
-            properties.put("fan_medium", "true - default");
+        if (!properties.containsKey("fanMedium")) {
+            properties.put("fanMedium", "true - default");
         }
-        if (!properties.containsKey("fan_high")) {
-            properties.put("fan_high", "true - default");
+        if (!properties.containsKey("fanHigh")) {
+            properties.put("fanHigh", "true - default");
         }
-        if (!properties.containsKey("fan_auto")) {
-            properties.put("fan_auto", "true - default");
+        if (!properties.containsKey("fanAuto")) {
+            properties.put("fanAuto", "true - default");
         }
         // Defaults if no TEMPERATURES were in response
-        if (!properties.containsKey("cool_min_temperature")) {
-            properties.put("min_target_temperature", "17°C / 62°F default");
+        if (!properties.containsKey("coolMinTemperature")) {
+            properties.put("minTargetTemperature", "17°C / 62°F default");
         }
-        if (!properties.containsKey("heat_max_temperature")) {
-            properties.put("max_target_temperature", "30°C / 86°F default");
+        if (!properties.containsKey("heatMaxTemperature")) {
+            properties.put("maxTargetTemperature", "30°C / 86°F default");
         }
 
         updateProperties(properties);
@@ -428,8 +433,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             stopScheduler();
         }
         logger.debug("Retrieving Token and/or Key from cloud");
-        Cloud cloud = new Cloud(config.email, config.password, cloudProvider);
-        cloud.setHttpClient(httpClient);
+        Cloud cloud = new Cloud(config.email, config.password, cloudProvider, httpClient);
         if (cloud.login()) {
             TokenKey tk = cloud.getToken(config.deviceId);
             Configuration configuration = editConfiguration();
