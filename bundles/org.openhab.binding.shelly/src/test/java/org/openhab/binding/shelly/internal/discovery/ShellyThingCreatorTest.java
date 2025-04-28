@@ -162,6 +162,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
 
                 // Plus Series
+
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1G3, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1G4, "", THING_TYPE_SHELLYPLUS1), //
