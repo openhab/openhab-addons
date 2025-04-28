@@ -108,20 +108,9 @@ public class EmbyClientSocket {
         Future<Session> future = client.connect(socket, uri, request);
         Session wsSession = future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        // 2) only *now* mark connected and fire the handler
+        // 2) store the session; actual "connected" event will fire in onConnect()
         this.session = wsSession;
-        this.connected = true;
-
-        logger.debug("EMBY client socket is Connected to emby server");
-        if (eventHandler != null) {
-            scheduler.submit(() -> {
-                try {
-                    eventHandler.onConnectionOpened();
-                } catch (Exception e) {
-                    logger.error("Error handling onConnectionOpened(): {}", e.getMessage(), e);
-                }
-            });
-        }
+        logger.debug("EMBY client socket open; awaiting Jetty onConnect callback");
     }
 
     /***
@@ -147,11 +136,7 @@ public class EmbyClientSocket {
     }
 
     public boolean isConnected() {
-        if (session == null || !session.isOpen()) {
-            return false;
-        }
-
-        return connected;
+        return session != null && session.isOpen();
     }
 
     @WebSocket
@@ -159,7 +144,21 @@ public class EmbyClientSocket {
     public class EmbyWebSocketListener {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            logger.debug("EMBY client socket connected (Jetty callback)");
+            // Jetty says “we’re open” – set the session and flag immediately
+            session = wssession;
+            connected = true;
+            logger.debug("EMBY client socket connected (Jetty callback); session.isOpen()={}  connected={}",
+                    session.isOpen(), connected);
+
+            // Fire your handler *synchronously*, so any callMethod() in onConnectionOpened()
+            // sees session!=null, session.isOpen()==true, and connected==true.
+            if (eventHandler != null) {
+                try {
+                    eventHandler.onConnectionOpened();
+                } catch (Exception e) {
+                    logger.error("Error in onConnectionOpened(): {}", e.getMessage(), e);
+                }
+            }
         }
 
         @OnWebSocketMessage
@@ -226,8 +225,10 @@ public class EmbyClientSocket {
     }
 
     private void sendMessage(String str) throws IOException {
-        if (isConnected()) {
-            logger.trace("send message: {}", str);
+        boolean conn = isConnected();
+        logger.trace("sendMessage: isConnected={}  session={}  session.isOpen()={}", conn, session,
+                session != null ? session.isOpen() : "N/A");
+        if (conn) {
             session.getRemote().sendString(str);
         } else {
             throw new IOException("socket not initialized");
