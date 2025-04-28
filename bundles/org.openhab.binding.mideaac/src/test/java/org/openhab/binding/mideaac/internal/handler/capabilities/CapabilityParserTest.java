@@ -47,20 +47,20 @@ public class CapabilityParserTest {
 
         // Assert: Check the parsed results
         Map<CapabilityId, Map<String, Boolean>> capabilities = parser.getCapabilities();
-        assertNotNull(capabilities, "Capabilities map should not be null");
+        assertNotNull(capabilities);
 
         // Check individual capabilities
-        assertTrue(capabilities.containsKey(CapabilityId.MODES), "Should contain MODES capability");
-        Optional.ofNullable(capabilities.get(CapabilityId.MODES)).map(modes -> modes.get("heat_mode"))
-                .ifPresent(value -> assertEquals(true, value, "MODES - heat_mode should be true"));
+        assertTrue(capabilities.containsKey(CapabilityId.MODES));
+        Optional.ofNullable(capabilities.get(CapabilityId.MODES)).map(modes -> modes.get("heatMode"))
+                .ifPresent(value -> assertEquals(true, value));
 
-        assertTrue(capabilities.containsKey(CapabilityId.ENERGY), "Should contain ENERGY capability");
-        Optional.ofNullable(capabilities.get(CapabilityId.ENERGY)).map(modes -> modes.get("energy_stats"))
-                .ifPresent(value -> assertEquals(true, value, "ENERGY - energy_stats should be true"));
+        assertTrue(capabilities.containsKey(CapabilityId.ENERGY));
+        Optional.ofNullable(capabilities.get(CapabilityId.ENERGY)).map(modes -> modes.get("energyStats"))
+                .ifPresent(value -> assertEquals(true, value));
 
-        assertTrue(capabilities.containsKey(CapabilityId.PRESET_TURBO), "Should contain PRESET_TURBO capability");
-        Optional.ofNullable(capabilities.get(CapabilityId.PRESET_TURBO)).map(modes -> modes.get("turbo_heat"))
-                .ifPresent(value -> assertEquals(true, value, "PRESET_TURBO - turbo_heat should be true"));
+        assertTrue(capabilities.containsKey(CapabilityId.PRESET_TURBO));
+        Optional.ofNullable(capabilities.get(CapabilityId.PRESET_TURBO)).map(modes -> modes.get("turboHeat"))
+                .ifPresent(value -> assertEquals(true, value));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class CapabilityParserTest {
         parser.parse(payload);
 
         // Assert: Ensure no capabilities are parsed
-        assertTrue(parser.getCapabilities().isEmpty(), "Capabilities map should be empty for an empty payload");
+        assertTrue(parser.getCapabilities().isEmpty());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class CapabilityParserTest {
 
         // Assert: Ensure unknown capability is ignored
         Map<CapabilityId, Map<String, Boolean>> capabilities = parser.getCapabilities();
-        assertTrue(capabilities.isEmpty(), "Capabilities map should not contain unknown capabilities");
+        assertTrue(capabilities.isEmpty());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class CapabilityParserTest {
         parser.parse(payload);
 
         // Assert: Ensure no capabilities are parsed
-        assertTrue(parser.getCapabilities().isEmpty(), "Capabilities map should be empty for invalid size");
+        assertTrue(parser.getCapabilities().isEmpty());
     }
 
     @Test
@@ -131,19 +131,19 @@ public class CapabilityParserTest {
 
         // Assert: Verify capabilities are parsed correctly
         Map<CapabilityId, Map<String, Boolean>> capabilities = parser.getCapabilities();
-        assertNotNull(capabilities, "Capabilities map should not be null");
+        assertNotNull(capabilities);
 
         // Verify specific capabilities
-        assertTrue(capabilities.containsKey(CapabilityId.PRESET_ECO), "Should contain PRESET_ECO capability");
+        assertTrue(capabilities.containsKey(CapabilityId.PRESET_ECO));
         Optional.ofNullable(capabilities.get(CapabilityId.PRESET_ECO)).map(modes -> modes.get("eco"))
-                .ifPresent(value -> assertEquals(true, value, "PRESET_ECO - eco should be true"));
+                .ifPresent(value -> assertEquals(true, value));
 
-        assertTrue(capabilities.containsKey(CapabilityId.MODES), "Should contain MODES capability");
-        Optional.ofNullable(capabilities.get(CapabilityId.MODES)).map(modes -> modes.get("heat_mode"))
-                .ifPresent(value -> assertEquals(true, value, "MODES - heat_mode should be true"));
+        assertTrue(capabilities.containsKey(CapabilityId.MODES));
+        Optional.ofNullable(capabilities.get(CapabilityId.MODES)).map(modes -> modes.get("heatMode"))
+                .ifPresent(value -> assertEquals(true, value));
 
         // Ensure CRC did not cause parsing issues
-        assertFalse(parser.hasAdditionalCapabilities(), "No additional capabilities");
+        assertFalse(parser.hasAdditionalCapabilities());
     }
 
     @Test
@@ -168,11 +168,11 @@ public class CapabilityParserTest {
 
         // Assert: Verify capabilities are parsed correctly
         Map<CapabilityId, Map<String, Double>> numericCapabilities = parser.getNumericCapabilities();
-        assertNotNull(numericCapabilities, "Capabilities map should not be null");
+        assertNotNull(numericCapabilities);
 
         Optional.ofNullable(numericCapabilities.get(CapabilityId.TEMPERATURES))
-                .map(modes -> modes.get("cool_min_temperature")).ifPresent(value -> assertEquals(16.0, value));
+                .map(modes -> modes.get("coolMinTemperature")).ifPresent(value -> assertEquals(16.0, value));
         Optional.ofNullable(numericCapabilities.get(CapabilityId.TEMPERATURES))
-                .map(modes -> modes.get("heat_max_temperature")).ifPresent(value -> assertEquals(30.0, value));
+                .map(modes -> modes.get("heatMaxTemperature")).ifPresent(value -> assertEquals(30.0, value));
     }
 }
