@@ -13,7 +13,6 @@
 package org.openhab.binding.emby.internal.handler;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +26,7 @@ import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link EmbyActions} is responsible for handling the actions which can be sent to {@link EmbyDeviceHandler}.
- *
+ * 
  * @author Zachary Christiansen - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = EmbyActions.class)
@@ -35,18 +34,12 @@ import org.osgi.service.component.annotations.ServiceScope;
 @NonNullByDefault
 public class EmbyActions implements ThingActions {
 
-    /**
-     * Allowed play commands.
-     */
     public enum EmbyPlayCommand {
         PlayNow,
         PlayNext,
         PlayLast
     }
 
-    /**
-     * Allowed general commands (no arguments).
-     */
     public enum EmbyGeneralCommand {
         MoveUp,
         MoveDown,
@@ -70,9 +63,6 @@ public class EmbyActions implements ThingActions {
         GoToSearch
     }
 
-    /**
-     * Allowed commands with arguments.
-     */
     public enum EmbyCommandWithArgs {
         SetVolume,
         SetAudioStreamIndex,
@@ -98,15 +88,22 @@ public class EmbyActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "@text/emby.action.sendPlay.label", description = "@text/emby.action.sendPlay.desc")
+    // ——— SendPlay Action ———
+    @RuleAction(label = "@text/action.emby.SendPlay.label", description = "@text/action.emby.SendPlay.desc")
     public void sendPlay(
-            @ActionInput(name = "@text/emby.action.sendPlay.input.itemIds.name", label = "@text/emby.action.sendPlay.input.itemIds.label", description = "@text/emby.action.sendPlay.input.itemIds.desc") String itemIds,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.playCommand.name", label = "@text/emby.action.sendPlay.input.playCommand.label", description = "@text/emby.action.sendPlay.input.playCommand.desc") EmbyPlayCommand playCommand,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.startPositionTicks.name", label = "@text/emby.action.sendPlay.input.startPositionTicks.label", description = "@text/emby.action.sendPlay.input.startPositionTicks.desc") @Nullable Integer startPositionTicks,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.mediaSourceId.name", label = "@text/emby.action.sendPlay.input.mediaSourceId.label", description = "@text/emby.action.sendPlay.input.mediaSourceId.desc") @Nullable String mediaSourceId,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.audioStreamIndex.name", label = "@text/emby.action.sendPlay.input.audioStreamIndex.label", description = "@text/emby.action.sendPlay.input.audioStreamIndex.desc") @Nullable Integer audioStreamIndex,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.subtitleStreamIndex.name", label = "@text/emby.action.sendPlay.input.subtitleStreamIndex.label", description = "@text/emby.action.sendPlay.input.subtitleStreamIndex.desc") @Nullable Integer subtitleStreamIndex,
-            @ActionInput(name = "@text/emby.action.sendPlay.input.startIndex.name", label = "@text/emby.action.sendPlay.input.startIndex.label", description = "@text/emby.action.sendPlay.input.startIndex.desc") @Nullable Integer startIndex) {
+            @ActionInput(name = "itemIds", label = "@text/action.emby.SendPlay.input.itemIds.label", description = "@text/action.emby.SendPlay.input.itemIds.desc") String itemIds,
+
+            @ActionInput(name = "playCommand", label = "@text/action.emby.SendPlay.input.playCommand.label", description = "@text/action.emby.SendPlay.input.playCommand.desc") EmbyPlayCommand playCommand,
+
+            @ActionInput(name = "startPositionTicks", label = "@text/action.emby.SendPlay.input.startPositionTicks.label", description = "@text/action.emby.SendPlay.input.startPositionTicks.desc") @Nullable Integer startPositionTicks,
+
+            @ActionInput(name = "mediaSourceId", label = "@text/action.emby.SendPlay.input.mediaSourceId.label", description = "@text/action.emby.SendPlay.input.mediaSourceId.desc") @Nullable String mediaSourceId,
+
+            @ActionInput(name = "audioStreamIndex", label = "@text/action.emby.SendPlay.input.audioStreamIndex.label", description = "@text/action.emby.SendPlay.input.audioStreamIndex.desc") @Nullable Integer audioStreamIndex,
+
+            @ActionInput(name = "subtitleStreamIndex", label = "@text/action.emby.SendPlay.input.subtitleStreamIndex.label", description = "@text/action.emby.SendPlay.input.subtitleStreamIndex.desc") @Nullable Integer subtitleStreamIndex,
+
+            @ActionInput(name = "startIndex", label = "@text/action.emby.SendPlay.input.startIndex.label", description = "@text/action.emby.SendPlay.input.startIndex.desc") @Nullable Integer startIndex) {
         if (handler == null) {
             throw new IllegalStateException("EmbyDeviceHandler not set");
         }
@@ -118,7 +115,6 @@ public class EmbyActions implements ThingActions {
             @Nullable Integer startPositionTicks, @Nullable String mediaSourceId, @Nullable Integer audioStreamIndex,
             @Nullable Integer subtitleStreamIndex, @Nullable Integer startIndex) {
         if (actions instanceof EmbyActions) {
-            // itemIds and playCommand are required, so cast away @Nullable:
             ((EmbyActions) actions).sendPlay(requireNonNull(itemIds), requireNonNull(playCommand), startPositionTicks,
                     mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
         } else {
@@ -126,12 +122,12 @@ public class EmbyActions implements ThingActions {
         }
     }
 
-    // ––– 2) General Command –––
-    @RuleAction(label = "@text/emby.action.generalCommand.label", description = "@text/emby.action.generalCommand.desc")
+    // ——— SendGeneralCommand Action ———
+    @RuleAction(label = "@text/action.emby.SendGeneralCommand.label", description = "@text/action.emby.SendGeneralCommand.desc")
     public void sendGeneralCommand(
-            @ActionInput(name = "@text/emby.action.generalCommand.input.commandName.name", label = "@text/emby.action.generalCommand.input.commandName.label", description = "@text/emby.action.generalCommand.input.commandName.desc") EmbyGeneralCommand commandName) {
+            @ActionInput(name = "commandName", label = "@text/action.emby.SendGeneralCommand.input.commandName.label", description = "@text/action.emby.SendGeneralCommand.input.commandName.desc") EmbyGeneralCommand commandName) {
         if (handler == null) {
-            throw new IllegalStateException("EmbyDeviceHandler is not set");
+            throw new IllegalStateException("EmbyDeviceHandler not set");
         }
         handler.sendGeneralCommand(commandName.name());
     }
@@ -144,13 +140,14 @@ public class EmbyActions implements ThingActions {
         }
     }
 
-    // ––– 3) General Command with Arguments –––
-    @RuleAction(label = "@text/emby.action.generalCommandWithArgs.label", description = "@text/emby.action.generalCommandWithArgs.desc")
+    // ——— SendGeneralCommandWithArgs Action ———
+    @RuleAction(label = "@text/action.emby.SendGeneralCommandWithArgs.label", description = "@text/action.emby.SendGeneralCommandWithArgs.desc")
     public void sendGeneralCommandWithArgs(
-            @ActionInput(name = "@text/emby.action.generalCommandWithArgs.input.name.name", label = "@text/emby.action.generalCommandWithArgs.input.name.label", description = "@text/emby.action.generalCommandWithArgs.input.name.desc") EmbyCommandWithArgs commandName,
-            @ActionInput(name = "@text/emby.action.generalCommandWithArgs.input.args.name", label = "@text/emby.action.generalCommandWithArgs.input.args.label", description = "@text/emby.action.generalCommandWithArgs.input.args.desc") String jsonArguments) {
+            @ActionInput(name = "commandName", label = "@text/action.emby.SendGeneralCommandWithArgs.input.commandName.label", description = "@text/action.emby.SendGeneralCommandWithArgs.input.commandName.desc") EmbyCommandWithArgs commandName,
+
+            @ActionInput(name = "jsonArguments", label = "@text/action.emby.SendGeneralCommandWithArgs.input.jsonArguments.label", description = "@text/action.emby.SendGeneralCommandWithArgs.input.jsonArguments.desc") String jsonArguments) {
         if (handler == null) {
-            throw new IllegalStateException("EmbyDeviceHandler is not set");
+            throw new IllegalStateException("EmbyDeviceHandler not set");
         }
         handler.sendGeneralCommandWithArgs(commandName.name(), jsonArguments);
     }
