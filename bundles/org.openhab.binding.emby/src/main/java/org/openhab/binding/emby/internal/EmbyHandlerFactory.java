@@ -138,7 +138,6 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         callbackUrl = (String) properties.get("callbackUrl");
     }
 
-    @SuppressWarnings("null")
     private synchronized void registerEmbyClientDiscoveryService(EmbyBridgeHandler bridgeHandler) {
         EmbyClientDiscoveryService discoveryService = new EmbyClientDiscoveryService(bridgeHandler);
         discoveryService.activate();

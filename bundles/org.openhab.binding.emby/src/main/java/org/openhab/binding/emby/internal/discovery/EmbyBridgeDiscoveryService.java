@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.util.List;
+import org.openhab.core.net.NetUtil;
 
 /**
  * The {@EmbyBridgeDiscoveryService} handles the bridge discovery which finds emby servers on the network
@@ -64,6 +66,8 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(EmbyBridgeDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_EMBY_CONTROLLER);
+    @Reference
+    private NetUtil netUtil;
 
     public EmbyBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
@@ -89,33 +93,14 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Discovery interrupted, exiting");
             }
 
-            // Broadcast message over all network interfaces
-            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+            +            // Broadcast over every interface’s broadcast address via NetUtil
+           List<InetAddress> broadcasts = netUtil.getAllBroadcastAddresses();
+            for (InetAddress broadcast : broadcasts) {
                 try {
-                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                        continue; // Skip loopback and inactive interfaces
-                    }
-
-                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                        InetAddress broadcast = interfaceAddress.getBroadcast();
-                        if (broadcast == null) {
-                            continue;
-                        }
-
-                        try {
-                            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast,
-                                    REQUEST_PORT);
-                            socket.send(sendPacket);
-                            logger.trace(">>> Request packet sent to: {} ; Interface: {}", broadcast.getHostAddress(),
-                                    networkInterface.getDisplayName());
-                        } catch (IOException e) {
-                            logger.warn("Failed to send broadcast on interface {}: {}",
-                                    networkInterface.getDisplayName(), e.getMessage(), e);
-                        }
-                    }
+                    socket.send(new DatagramPacket(sendData, sendData.length, broadcast, REQUEST_PORT));
+                    logger.trace(">>> Request packet sent to: {} ", broadcast.getHostAddress());
                 } catch (IOException e) {
-                    logger.warn("Failed to process network interface {}: {}", networkInterface.getDisplayName(),
-                            e.getMessage(), e);
+                    logger.warn("Failed to send broadcast to {}: {}", broadcast, e.getMessage());
                 }
             }
 
