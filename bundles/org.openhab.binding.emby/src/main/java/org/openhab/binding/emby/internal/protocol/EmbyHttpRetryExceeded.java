@@ -18,12 +18,16 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Custom exception class to be thrown when number of retries is exceeded.
  *
- * @author Zachary Christiansen - Initial contribution
+ * @author Zachary
  */
-@SuppressWarnings("serial")
 @NonNullByDefault
 public class EmbyHttpRetryExceeded extends Exception {
+
+    // Properly handle serialization warning instead of suppressing it
+    private static final long serialVersionUID = 1L;
+
     public EmbyHttpRetryExceeded(String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }
+
