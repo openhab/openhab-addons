@@ -524,6 +524,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("light:0")
             public Shelly2GetConfigLight light0;
+            @SerializedName("light:1")
+            public Shelly2GetConfigLight light1;
 
             @SerializedName("rgbw:0")
             public Shelly2GetConfigLight rgbw0;
@@ -610,6 +612,12 @@ public class Shelly2ApiJsonDTO {
             public Double timerStartedAt;
             @SerializedName("timer_duration")
             public Double timerDuration;
+            public Shelly2Energy aenergy;
+            public Double apower;
+            public Double current;
+            public Double voltage;
+            public String[] flags;
+            public static String SHELLY2_LIGHT_STATUS_UNCALIBRATED = "uncalibrated";
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -825,6 +833,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("light:0")
             public Shelly2DeviceStatusLight light0;
+            @SerializedName("light:1")
+            public Shelly2DeviceStatusLight light1;
 
             @SerializedName("temperature:0")
             public Shelly2DeviceStatusTempId temperature0;

@@ -234,6 +234,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateEmStatus(11, status, result.em11, channelUpdate);
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
+        updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
@@ -751,24 +752,44 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
     }
 
-    private boolean updateDimmerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+    private boolean updateDimmerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight ls,
             boolean channelUpdate) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (!profile.isDimmer || value == null) {
+        if (!profile.isDimmer || ls == null) {
             return false;
         }
-        if (value.id == null) { // fw 1.6.1
-            value.id = id;
+        if (ls.id == null) {
+            ls.id = id;
         }
 
-        ShellyShortLightStatus ds = status.dimmers.get(value.id);
-        if (value.brightness != null) {
-            ds.brightness = value.brightness.intValue();
+        ShellyShortLightStatus ds = status.dimmers.get(ls.id);
+        if (ds != null) {
+            if (ls.brightness != null) {
+                ds.brightness = ls.brightness.intValue();
+            }
+            ds.ison = ls.output;
+            ds.hasTimer = ls.timerStartedAt != null;
+            ds.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+            status.dimmers.set(ls.id, ds);
         }
-        ds.ison = value.output;
-        ds.hasTimer = value.timerStartedAt != null;
-        ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
-        status.dimmers.set(value.id, ds);
+
+        if (ls.aenergy != null) {
+            ShellySettingsMeter sm = new ShellySettingsMeter();
+            ShellySettingsEMeter emeter = status.emeters != null ? status.emeters.get(ls.id)
+                    : new ShellySettingsEMeter();
+            // Gen2 reports Watt, needs to be converted to W/h
+            sm.total = emeter.total = ls.aenergy.total;
+            sm.counters = ls.aenergy.byMinute;
+            sm.timestamp = ls.aenergy.minuteTs;
+            if (ls.voltage != null) {
+                emeter.voltage = ls.voltage;
+            }
+            if (ls.current != null) {
+                emeter.current = ls.current;
+            }
+            updateMeter(status, ls.id, sm, emeter, channelUpdate);
+        }
+
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 

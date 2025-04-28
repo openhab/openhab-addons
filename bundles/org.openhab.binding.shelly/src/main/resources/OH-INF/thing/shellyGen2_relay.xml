@@ -551,6 +551,7 @@
 		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
+
 	<thing-type id="shellyplus10v">
 		<label>Shelly Plus Dimmer 10V</label>
 		<description>@text/thing-type.shelly.shellyplus10v.description</description>
