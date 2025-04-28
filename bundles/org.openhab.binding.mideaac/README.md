@@ -10,7 +10,7 @@ An AC device is likely supported if it uses one of the following Android apps or
 | NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates    | NetHome Plus | Yes     |
 | SmartHome/MSmartHome (com.midea.ai.overseas) | Note: Reports that this cloud is offline | MSmartHome   |         |
 
-Note: The Air Conditioner must already be set-up on the WiFi network and have a fixed IP Address to be discovered.
+Note: The Air Conditioner must already be set-up on your WiFi network with a fixed IP Address to be discovered.
 
 ## Supported Things
 
@@ -18,10 +18,10 @@ This binding supports one Thing type `ac`.
 
 ## Discovery
 
-Once the Air Conditioner is on the network (WiFi active) activating the Inbox scan with this binding will send an IP broadcast message.
-Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either discovered values 
-or the default settings. For a V.3 device, if the defaults did not get the token and key enter your cloud provider, email and password.
-For security replace the default cloud provider, email and password with your account information. Required if keyTokenUpdate is used.
+Once the Air Conditioner is on your network activating the Inbox scan with this binding will send an IP broadcast message.
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either  
+discovered values or the default settings. For a V.3 device, in the unlikely event the defaults did not get the token and key,
+enter your cloud provider, email and password. The thing properties will show supported AC functions.
 
 ## Binding Configuration
 
@@ -37,8 +37,8 @@ No binding configuration is required.
 | cloud         | Yes for V.3 | Cloud Provider name for email and password                        | NetHome Plus              |
 | email         | No          | Email for cloud account chosen in Cloud Provider.                 | nethome+us@mailinator.com |
 | password      | No          | Password for cloud account chosen in Cloud Provider.              | password1                 |
-| token         | Yes for V.3 | Secret Token (length 128 HEX)                                     |                           |
-| key           | Yes for V.3 | Secret Key (length 64 HEX)                                        |                           |
+| token         | Yes for V.3 | Secret Token - Retrieved from Cloud                               |                           |
+| key           | Yes for V.3 | Secret Key - Retrieved from Cloud                                 |                           |
 | pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60                        |
 | keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0                         |
 | timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4                         |
@@ -53,8 +53,8 @@ Following channels are available:
 |------------------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
 | power                        | Switch             | Turn the AC on or off.                                                                                 |           |          |
 | target-temperature           | Number:Temperature | Target temperature.                                                                                    |           |          |
-| operational-mode             | String             | Operational mode: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                 |           |          |
-| fan-speed                    | String             | Fan speed: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.     |           |          |
+| operational-mode             | String             | Operational modes: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                |           |          |
+| fan-speed                    | String             | Fan speeds: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.    |           |          |
 | swing-mode                   | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
 | eco-mode                     | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
 | turbo-mode                   | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
@@ -72,19 +72,19 @@ Following channels are available:
 
 ## Examples
 
-### `demo.things` Example
+### `demo.things` Examples
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
 ```
 
-Option to use the built-in binding discovery of ipPort, deviceId, token and key.
+Minimal IP Address Option to use the built-in defaults.
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "myRoom" [ ipAddress="192.168.0.200"] 
 ```
 
-### `demo.items` Example
+### `demo.items` Examples
 
 ```java
 Switch power "Power"                                                        { channel="mideaac:ac:mideaac:power" }
@@ -100,7 +100,7 @@ Switch sleep_function "Sleep function"                                      { ch
 Switch temperature_unit "Fahrenheit or Celsius"                             { channel="mideaac:ac:mideaac:temperature-unit" }
 ```
 
-### `demo.sitemap` Example
+### `demo.sitemap` Examples
 
 ```java
 sitemap midea label="Split AC"{

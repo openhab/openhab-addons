@@ -108,10 +108,9 @@ public class ConnectionManager {
     }
 
     /**
-     * After checking if the key and token need to be updated (Default = 0 Never)
      * The socket is established with the writer and inputStream (for reading responses)
-     * The device is considered connected. V2 devices will proceed to send the poll or the
-     * set command. V3 devices will proceed to authenticate
+     * V2 devices will proceed to send the poll or the set command.
+     * V3 devices will proceed to authenticate
      */
     public synchronized void connect()
             throws MideaConnectionException, MideaAuthenticationException, SocketTimeoutException, IOException {
@@ -121,6 +120,7 @@ public class ConnectionManager {
         int retrySocket = 0;
 
         // If resending command add delay to avoid connection rejection
+        // Suspect that the AC device needs a few seconds to clear.
         if (!resend) {
             try {
                 Thread.sleep(5000);
@@ -130,7 +130,7 @@ public class ConnectionManager {
         }
 
         // Open socket
-        // RetrySocket addresses the Timeout exception, others exceptions end the thread
+        // RetrySocket addresses the Timeout exception only, others exceptions end the thread. Same as HA python version
         while (retrySocket < maxTries) {
             try {
                 socket = new Socket();
