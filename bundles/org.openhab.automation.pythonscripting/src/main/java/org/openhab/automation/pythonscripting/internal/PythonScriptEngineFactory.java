@@ -75,7 +75,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
     public static final String SCRIPT_TYPE = "application/x-python3";
-    private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE, "PY3");
+    private final List<String> scriptTypes = Arrays.asList("py", SCRIPT_TYPE);
 
     private final PythonDependencyTracker pythonDependencyTracker;
     private final PythonScriptEngineConfiguration pythonScriptEngineConfiguration;
