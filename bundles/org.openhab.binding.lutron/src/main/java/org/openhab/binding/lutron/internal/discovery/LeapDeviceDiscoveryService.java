@@ -131,7 +131,7 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                             notifyDiscovery(THING_TYPE_SHADE, deviceId, label);
                             break;
                         case "RPSWallMountedOccupancySensor":
-                            // Handle ra3 OccupancySensors, will need to get area
+                            // TODO: Handle ra3 OccupancySensors, will need to get area
                             // that the sensor is associated with to get at the sensor
                             // status
                             break;
