@@ -205,25 +205,25 @@
 		<state pattern="%d kWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC</label>
 		<description>Current charging limit of the vehicle, in %</description>
 		<state pattern="%.0f %%"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-min" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Min</label>
 		<description>Minimum charging limit of the vehicle, in %</description>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-max" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Max</label>
 		<description>Maximum charging limit of the vehicle, in %</description>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-standard" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Standard</label>
 		<description>Standard charging limit of the vehicle, in %</description>
 		<state pattern="%.0f %%" readOnly="true"></state>
