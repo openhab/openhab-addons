@@ -91,7 +91,7 @@ Bridge emby:controller:myEmbyServer [
 
 ## Item Configuration Example
 
-```text
+```java
 Switch      Emby_PlayPause   "Play/Pause"        { channel="emby:device:myEmbyServer:myClientDevice:control" }
 Switch      Emby_Stop        "Stop"              { channel="emby:device:myEmbyServer:myClientDevice:stop" }
 Switch      Emby_Mute        "Mute"              { channel="emby:device:myEmbyServer:myClientDevice:mute" }
