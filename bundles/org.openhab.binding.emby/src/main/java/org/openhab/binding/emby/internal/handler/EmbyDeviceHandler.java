@@ -259,9 +259,11 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             case CHANNEL_MEDIATYPE:
                 return createStringState(lastMediaType);
             case CHANNEL_CURRENTTIME:
-                return (lastCurrentTime < 0) ? UnDefType.UNDEF : createQuantityState(lastCurrentTime, Units.SECOND);
+                return (lastCurrentTime < 0) ? UnDefType.UNDEF
+                        : createQuantityState(convertNanoTimeToSeconds(lastCurrentTime), Units.SECOND);
             case CHANNEL_DURATION:
-                return (lastDuration < 0) ? UnDefType.UNDEF : createQuantityState(lastDuration, Units.SECOND);
+                return (lastDuration < 0) ? UnDefType.UNDEF
+                        : createQuantityState(convertNanoTimeToSeconds(lastDuration), Units.SECOND);
             case CHANNEL_IMAGEURL:
                 return createStringState(lastImageUrl);
             default:
@@ -315,6 +317,10 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         ConfigValidationMessage validationMessage = new ConfigValidationMessage(parameterName, "error", errorMessage);
         throw new ConfigValidationException(bundle, i18nProvider, Collections.singletonList(validationMessage));
+    }
+
+    public static double convertNanoTimeToSeconds(long nanoTime) {
+        return nanoTime / 1_000_000_000.0;
     }
 
     @Override
@@ -460,7 +466,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     @Override
     public void updateCurrentTime(long currentTime) {
         if (throttle.shouldProceed("updateCurrentTime")) {
-            updateState(CHANNEL_CURRENTTIME, createQuantityState(currentTime, Units.SECOND));
+            updateState(CHANNEL_CURRENTTIME, createQuantityState(convertNanoTimeToSeconds(currentTime), Units.SECOND));
             logger.trace("Throttled updateCurrentTime: {}", currentTime);
         } else {
             logger.trace("Skipped updateCurrentTime to throttle frequency");
@@ -470,7 +476,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     @Override
     public void updateDuration(long duration) {
         if (throttle.shouldProceed("updateDuration")) {
-            updateState(CHANNEL_DURATION, createQuantityState(duration, Units.SECOND));
+            updateState(CHANNEL_DURATION, createQuantityState(convertNanoTimeToSeconds(duration), Units.SECOND));
         }
     }
 
