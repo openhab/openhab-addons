@@ -15,7 +15,8 @@ package org.openhab.binding.mideaac.internal.connection.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MideaAuthenticationException} represents a binding specific {@link Exception}.
+ * The {@link MideaAuthenticationException} represents a binding
+ * Authentication specific {@link Exception}.
  *
  * @author Leo Siepel - Initial contribution
  */

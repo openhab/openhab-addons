@@ -162,10 +162,21 @@ public class CapabilityParser {
             this.id = id;
         }
 
+        /**
+         * Gets ID
+         * 
+         * @return Id from enum
+         */
         public int getId() {
             return id;
         }
 
+        /**
+         * Gets String name of capability
+         * 
+         * @param id of enum
+         * @return String Name
+         */
         public static CapabilityId fromId(int id) {
             for (CapabilityId capability : values()) {
                 if (capability.id == id) {

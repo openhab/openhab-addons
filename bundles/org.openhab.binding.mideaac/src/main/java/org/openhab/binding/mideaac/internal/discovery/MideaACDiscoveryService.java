@@ -57,6 +57,18 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     private final int receiveJobTimeout = 20000;
     private final int udpPacketTimeout = receiveJobTimeout - 50;
     private final String mideaacNamePrefix = "MideaAC";
+    /**
+     * UDP port1 to send command.
+     */
+    public static final int MIDEAAC_SEND_PORT1 = 6445;
+    /**
+     * UDP port2 to send command.
+     */
+    public static final int MIDEAAC_SEND_PORT2 = 20086;
+    /**
+     * UDP port devices send discover replies back.
+     */
+    public static final int MIDEAAC_RECEIVE_PORT = 6440;
 
     private final Logger logger = LoggerFactory.getLogger(MideaACDiscoveryService.class);
 
@@ -185,7 +197,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             throws SocketException, IOException {
         logger.trace("Discovering: {}", ipAddress);
         this.discoveryHandler = discoveryHandler;
-        discoverSocket = new DatagramSocket(new InetSocketAddress(Connection.MIDEAAC_RECEIVE_PORT));
+        discoverSocket = new DatagramSocket(new InetSocketAddress(MIDEAAC_RECEIVE_PORT));
         DatagramSocket discoverSocket = this.discoverSocket;
         if (discoverSocket != null) {
             discoverSocket.setBroadcast(true);
@@ -193,15 +205,15 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             final InetAddress broadcast = InetAddress.getByName(ipAddress);
             {
                 final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
-                        CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT1);
+                        CommandBase.discover().length, broadcast, MIDEAAC_SEND_PORT1);
                 discoverSocket.send(discoverPacket);
-                logger.trace("Broadcast discovery package sent to port: {}", Connection.MIDEAAC_SEND_PORT1);
+                logger.trace("Broadcast discovery package sent to port: {}", MIDEAAC_SEND_PORT1);
             }
             {
                 final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
-                        CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT2);
+                        CommandBase.discover().length, broadcast, MIDEAAC_SEND_PORT2);
                 discoverSocket.send(discoverPacket);
-                logger.trace("Broadcast discovery package sent to port: {}", Connection.MIDEAAC_SEND_PORT2);
+                logger.trace("Broadcast discovery package sent to port: {}", MIDEAAC_SEND_PORT2);
             }
         }
     }

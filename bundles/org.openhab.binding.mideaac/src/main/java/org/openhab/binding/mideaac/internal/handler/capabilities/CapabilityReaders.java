@@ -38,7 +38,7 @@ public class CapabilityReaders {
         // Helper to simplify creation of READERS
         Function<Integer, Predicate<Integer>> getValue = (expected) -> (value) -> Objects.equals(value, expected);
 
-        // Add READERS for each capability - Not all are supported
+        // Add READERS for each capability - Not all are supported by all AC devices
         READERS.put(CapabilityId.ANION, List.of(new Reader("anion", getValue.apply(1))));
         READERS.put(CapabilityId.AUX_ELECTRIC_HEAT, List.of(new Reader("auxElectricHeat", getValue.apply(1))));
         READERS.put(CapabilityId.BREEZE_AWAY, List.of(new Reader("breezeAway", getValue.apply(1))));
@@ -104,10 +104,21 @@ public class CapabilityReaders {
         READERS.put(CapabilityId.WIND_ON_ME, List.of(new Reader("windOnMe", getValue.apply(1))));
     }
 
+    /**
+     * Validates if Reader exists for the capability
+     * @param id capability id
+     * @return true or false
+     */
     public static boolean hasReader(CapabilityId id) {
         return READERS.containsKey(id);
     }
 
+    /**
+     * Applies the appropriate Reader
+     * @param id id
+     * @param value value from reader
+     * @param capabilities summary
+     */
     public static void apply(CapabilityId id, int value, Map<CapabilityId, Map<String, Boolean>> capabilities) {
         Optional.ofNullable(READERS.get(id)).ifPresent(readersList -> {
             Map<String, Boolean> result = readersList.stream()

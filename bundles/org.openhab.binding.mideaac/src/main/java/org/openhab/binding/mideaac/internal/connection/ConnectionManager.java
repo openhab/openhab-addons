@@ -76,6 +76,21 @@ public class ConnectionManager {
      */
     private boolean resend = true;
 
+    /**
+     * Connection manager configuration
+     * 
+     * @param ipAddress Device IP
+     * @param ipPort Device Port
+     * @param timeout Socket timeout
+     * @param key Security key V.3
+     * @param token Security token V.3
+     * @param cloud Cloud Provider
+     * @param email Cloud Provider login email
+     * @param password Cloud Provider login password
+     * @param deviceId Device ID
+     * @param version Device version
+     * @param promptTone Tone after command true or false
+     */
     public ConnectionManager(String ipAddress, int ipPort, int timeout, String key, String token, String cloud,
             String email, String password, String deviceId, int version, boolean promptTone) {
         this.deviceIsConnected = false;
@@ -111,6 +126,11 @@ public class ConnectionManager {
      * The socket is established with the writer and inputStream (for reading responses)
      * V2 devices will proceed to send the poll or the set command.
      * V3 devices will proceed to authenticate
+     * 
+     * @throws MideaConnectionException
+     * @throws MideaAuthenticationException
+     * @throws SocketTimeoutException
+     * @throws IOException
      */
     public synchronized void connect()
             throws MideaConnectionException, MideaAuthenticationException, SocketTimeoutException, IOException {
@@ -565,7 +585,7 @@ public class ConnectionManager {
     /**
      * Disconnects from the AC device
      * 
-     * @param force
+     * @param force true or false
      */
     public void dispose(boolean force) {
         disconnect();

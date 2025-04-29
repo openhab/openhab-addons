@@ -19,7 +19,7 @@ This binding supports one Thing type `ac`.
 ## Discovery
 
 Once the Air Conditioner is on your network activating the Inbox scan with this binding will send an IP broadcast message.
-Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either  
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either
 discovered values or the default settings. For a V.3 device, in the unlikely event the defaults did not get the token and key,
 enter your cloud provider, email and password. The thing properties will show supported AC functions.
 
