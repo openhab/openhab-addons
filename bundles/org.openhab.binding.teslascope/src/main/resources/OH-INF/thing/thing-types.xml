@@ -201,18 +201,30 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC</label>
 		<description>Current charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.0f %%"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-min" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Min</label>
 		<description>Minimum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-max" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Max</label>
 		<description>Maximum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-limit-soc-standard" advanced="true">
@@ -241,12 +253,19 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charger Current</label>
 		<description>Current actually delivered by the charger</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-current-request" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charger Current Requested</label>
 		<description>Current requested from the charger</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="charge-current-request-max" advanced="true">
@@ -254,6 +273,10 @@
 		<label>Charger Current Max</label>
 		<description>Maximum current supported by the charger</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<tags>
+			<tag>Status</tag>
+			<tag>Current</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="charger-power" advanced="true">
 		<item-type>Number:Power</item-type>
@@ -356,18 +379,30 @@
 		<item-type>Switch</item-type>
 		<label>At Home?</label>
 		<description>Car located at Home Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Location</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="located-at-work">
 		<item-type>Switch</item-type>
 		<label>At Work?</label>
 		<description>Car located at Work Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Location</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="located-at-favorite">
 		<item-type>Switch</item-type>
 		<label>At Favorite?</label>
 		<description>Car located at Address listed in favorites</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Location</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="location" advanced="false">
