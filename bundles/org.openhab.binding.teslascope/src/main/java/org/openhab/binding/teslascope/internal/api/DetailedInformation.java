@@ -29,6 +29,15 @@ public class DetailedInformation {
     public String name = "";
     public String state = "";
 
+    @SerializedName("located_at_home")
+    public int locatedAtHome;
+
+    @SerializedName("located_at_work")
+    public int locatedAtWork;
+
+    @SerializedName("located_at_favorite")
+    public int locatedAtFavorite;
+
     @SerializedName("vehicle_state")
     public @NonNullByDefault({}) VehicleState vehicleState;
 

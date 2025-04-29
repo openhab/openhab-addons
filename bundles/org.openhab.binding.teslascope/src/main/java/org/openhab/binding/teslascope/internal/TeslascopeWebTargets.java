@@ -53,6 +53,12 @@ public class TeslascopeWebTargets {
         return;
     }
 
+    public void sendCommand(String publicID, String apiKey, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params);
+        return;
+    }
+
     private String invoke(String uri) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";

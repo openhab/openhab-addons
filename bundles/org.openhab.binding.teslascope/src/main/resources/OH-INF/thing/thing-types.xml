@@ -19,7 +19,13 @@
 			<channel id="battery-range" typeId="battery-range"/>
 			<channel id="center-rear-seat-heater" typeId="center-rear-seat-heater"/>
 			<channel id="charge" typeId="charge"/>
+			<channel id="charge-amps" typeId="charge-amps"/>
+			<channel id="charge-current-request" typeId="charge-current-request"/>
+			<channel id="charge-current-request-max" typeId="charge-current-request-max"/>
 			<channel id="charge-energy-added" typeId="charge-energy-added"/>
+			<channel id="charge-limit-soc" typeId="charge-limit-soc"/>
+			<channel id="charge-limit-soc-min" typeId="charge-limit-soc-min"/>
+			<channel id="charge-limit-soc-max" typeId="charge-limit-soc-max"/>
 			<channel id="charge-limit-soc-standard" typeId="charge-limit-soc-standard"/>
 			<channel id="charge-port" typeId="charge-port"/>
 			<channel id="charge-port-latch" typeId="charge-port-latch"/>
@@ -43,6 +49,9 @@
 			<channel id="left-rear-seat-heater" typeId="left-rear-seat-heater"/>
 			<channel id="left-seat-heater" typeId="left-seat-heater"/>
 			<channel id="left-temp-direction" typeId="left-temp-direction"/>
+			<channel id="located-at-home" typeId="located-at-home"/>
+			<channel id="located-at-work" typeId="located-at-work"/>
+			<channel id="located-at-favorite" typeId="located-at-favorite"/>
 			<channel id="location" typeId="location"/>
 			<channel id="min-available-temp" typeId="min-available-temp"/>
 			<channel id="max-available-temp" typeId="max-available-temp"/>
@@ -85,7 +94,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -97,7 +106,7 @@
 				<label>Vehicle Public ID</label>
 				<description>Vehicle public ID listed in Teslascope</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
 				<description>Interval the API is polled in sec.</description>
 				<default>60</default>
@@ -188,11 +197,41 @@
 		<description>Energy added, in kWh, during the last charging session</description>
 		<state pattern="%d kWh" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="charge-limit-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC</label>
+		<description>Current charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%"></state>
+	</channel-type>
+	<channel-type id="charge-limit-soc-min" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC Min</label>
+		<description>Minimum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-limit-soc-max" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit SOC Max</label>
+		<description>Maximum charging limit of the vehicle, in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="charge-limit-soc-standard" advanced="true">
-		<item-type>Dimmer</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit SOC Standard</label>
 		<description>Standard charging limit of the vehicle, in %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
+		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-port">
 		<item-type>Switch</item-type>
@@ -209,6 +248,36 @@
 		<label>Charge Rate</label>
 		<description>Distance per hour charging rate</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-amps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current</label>
+		<description>Current actually delivered by the charger</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charge-current-request" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current Requested</label>
+		<description>Current requested from the charger</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="charge-current-request-max" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charger Current Max</label>
+		<description>Maximum current supported by the charger</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charger-power" advanced="true">
 		<item-type>Number:Power</item-type>
@@ -305,6 +374,36 @@
 		<item-type>Number</item-type>
 		<label>Left Temperature Direction</label>
 		<description>Not documented / To be defined</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-home">
+		<item-type>Switch</item-type>
+		<label>At Home?</label>
+		<description>Car located at Home Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-work">
+		<item-type>Switch</item-type>
+		<label>At Work?</label>
+		<description>Car located at Work Address</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="located-at-favorite">
+		<item-type>Switch</item-type>
+		<label>At Favorite?</label>
+		<description>Car located at Address listed in favorites</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="location" advanced="false">
