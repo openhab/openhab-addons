@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param proxied proxy - MSmarthome only
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - JavaDoc and conversion to record
+ * @author Bob Eckhoff - JavaDoc and conversion to record, NetHome Plus as default
  */
 @NonNullByDefault
 public record CloudProvider(String name, String appkey, String appid, String apiurl, String signkey, String iotkey,
@@ -51,12 +51,13 @@ public record CloudProvider(String name, String appkey, String appid, String api
                 return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             // Reported in HA version that this cloud has been shutdown.
-            // There is possible v2 version of security down the road
+            // There is a possible v2 version of security down the road
             case "MSmartHome":
                 return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
         }
+        // Blank is okay for version 2 as a hard coded signkey is used for all devices
         return new CloudProvider("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
     }
 }

@@ -106,7 +106,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test Type
+     * Test Type - ac
      */
     @Test
     public void testType() {

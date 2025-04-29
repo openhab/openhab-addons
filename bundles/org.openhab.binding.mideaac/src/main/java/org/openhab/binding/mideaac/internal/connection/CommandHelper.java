@@ -125,7 +125,7 @@ public class CommandHelper {
      * Device only uses Celsius in 0.5 degree increments
      * Fahrenheit is rounded to fit (example
      * setting to 64 F is 18 C but will result in 64.4 F display in OH)
-     * The evaporator only displays 2 digits, so will show 64.
+     * The evaporator (inside unit) only displays 2 digits, so will show 64.
      * 
      * @param command Target Temperature
      */
