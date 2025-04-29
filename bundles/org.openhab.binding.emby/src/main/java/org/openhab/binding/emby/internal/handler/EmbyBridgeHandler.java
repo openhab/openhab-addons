@@ -17,6 +17,7 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONNECTION_
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -131,17 +132,25 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     private void establishConnection() {
-        scheduler.execute(() -> {
-            try {
-                connection.connect(config.ipAddress, config.port, config.api, scheduler, config.refreshInterval,
-                        config.bufferSize);
+        // Ensure scheduler is non-null (BaseBridgeHandler always provides one, but it's annotated @Nullable)
+        final ScheduledExecutorService exec = java.util.Objects.requireNonNull(scheduler, "scheduler must not be null");
 
-                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(() -> {
+        exec.execute(() -> {
+            try {
+                // Build a full HTTP URL from host + port
+                String httpBaseUrl = String.format("http://%s:%d", config.ipAddress, config.port);
+
+                // Call the instance connect(...) with the 5-arg signature
+                connection.connect(httpBaseUrl, config.api, exec, config.refreshInterval, config.bufferSize);
+
+                // Schedule periodic connection checks
+                connectionCheckerFuture = exec.scheduleWithFixedDelay(() -> {
                     if (!connection.checkConnection()) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Connection could not be established");
                     }
                 }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
+
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Connection attempt failed: " + e.getMessage());
