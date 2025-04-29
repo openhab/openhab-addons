@@ -106,6 +106,7 @@ public class CapabilityReaders {
 
     /**
      * Validates if Reader exists for the capability
+     * 
      * @param id capability id
      * @return true or false
      */
@@ -115,6 +116,7 @@ public class CapabilityReaders {
 
     /**
      * Applies the appropriate Reader
+     * 
      * @param id id
      * @param value value from reader
      * @param capabilities summary
