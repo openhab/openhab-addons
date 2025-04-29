@@ -78,6 +78,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 /**
  * The {@link AutomowerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -1335,6 +1337,105 @@ public class AutomowerHandler extends BaseThingHandler {
             return true;
         } else {
             return false;
+        }
+    }
+
+    // https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=websocket%20api
+    public void processWebSocketMessage(JsonObject event) {
+        String type = event.has("type") ? event.get("type").getAsString() : null;
+        if (type == null) {
+            logger.warn("WebSocket event without type: {}", event);
+            return;
+        }
+
+        switch (type) {
+            case "position-event-v2":
+                if (event.has("attributes")) {
+                    JsonObject attributes = event.getAsJsonObject("attributes");
+                    if (attributes.has("position")) {
+                        JsonObject position = attributes.getAsJsonObject("position");
+                        double latitude = position.has("latitude") ? position.get("latitude").getAsDouble() : 0.0;
+                        double longitude = position.has("longitude") ? position.get("longitude").getAsDouble() : 0.0;
+                        logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
+                        // Update the corresponding channel
+                        updateState(CHANNEL_POSITION_LAST,
+                                new PointType(new DecimalType(latitude), new DecimalType(longitude)));
+                    }
+                }
+                break;
+
+            case "battery-event-v2":
+                if (event.has("attributes")) {
+                    JsonObject attributes = event.getAsJsonObject("attributes");
+                    if (attributes.has("batteryPercent")) {
+                        double batteryPercent = attributes.get("batteryPercent").getAsDouble();
+                        logger.debug("Received battery update: {}%", batteryPercent);
+                        updateState(CHANNEL_STATUS_BATTERY, new DecimalType(batteryPercent));
+                    }
+                }
+                break;
+
+            case "messages-event-v2":
+                if (event.has("attributes")) {
+                    JsonObject attributes = event.getAsJsonObject("attributes");
+                    if (attributes.has("message") && attributes.get("message").isJsonObject()) {
+                        JsonObject msgObj = attributes.getAsJsonObject("message");
+                        long time = msgObj.has("time") ? msgObj.get("time").getAsLong() : 0L;
+                        int code = msgObj.has("code") ? msgObj.get("code").getAsInt() : 0;
+                        String severity = msgObj.has("severity") ? msgObj.get("severity").getAsString() : "";
+                        Double latitude = msgObj.has("latitude") ? msgObj.get("latitude").getAsDouble() : null;
+                        Double longitude = msgObj.has("longitude") ? msgObj.get("longitude").getAsDouble() : null;
+                        logger.debug("Received mower message: time={}, code={}, severity={}, lat={}, lon={}", time,
+                                code, severity, latitude, longitude);
+                        // You can update channels here, e.g.:
+                        // updateState(CHANNEL_MESSAGE_TIME, new DateTimeType(Instant.ofEpochSecond(time)));
+                        // updateState(CHANNEL_MESSAGE_CODE, new DecimalType(code));
+                        // updateState(CHANNEL_MESSAGE_SEVERITY, new StringType(severity));
+                        // updateState(CHANNEL_MESSAGE_LOCATION, new PointType(new DecimalType(latitude), new
+                        // DecimalType(longitude)));
+                    }
+                }
+                break;
+
+            case "mower-event-v2":
+                if (event.has("attributes")) {
+                    JsonObject attributes = event.getAsJsonObject("attributes");
+                    if (attributes.has("mower") && attributes.get("mower").isJsonObject()) {
+                        JsonObject mowerObj = attributes.getAsJsonObject("mower");
+                        String mode = mowerObj.has("mode") ? mowerObj.get("mode").getAsString() : "";
+                        String activity = mowerObj.has("activity") ? mowerObj.get("activity").getAsString() : "";
+                        String inactiveReason = mowerObj.has("inactiveReason")
+                                ? mowerObj.get("inactiveReason").getAsString()
+                                : "";
+                        String state = mowerObj.has("state") ? mowerObj.get("state").getAsString() : "";
+                        int errorCode = mowerObj.has("errorCode") ? mowerObj.get("errorCode").getAsInt() : 0;
+                        boolean isErrorConfirmable = mowerObj.has("isErrorConfirmable")
+                                && mowerObj.get("isErrorConfirmable").getAsBoolean();
+                        long errorCodeTimestamp = mowerObj.has("errorCodeTimestamp")
+                                ? mowerObj.get("errorCodeTimestamp").getAsLong()
+                                : 0L;
+                        long workAreaId = mowerObj.has("workAreaId") ? mowerObj.get("workAreaId").getAsLong() : 0L;
+                        logger.debug(
+                                "Received mower event: mode={}, activity={}, inactiveReason={}, state={}, errorCode={}, isErrorConfirmable={}, errorCodeTimestamp={}, workAreaId={}",
+                                mode, activity, inactiveReason, state, errorCode, isErrorConfirmable,
+                                errorCodeTimestamp, workAreaId);
+                        // You can update channels here, e.g.:
+                        // updateState(CHANNEL_STATUS_MODE, new StringType(mode));
+                        // updateState(CHANNEL_STATUS_ACTIVITY, new StringType(activity));
+                        // updateState(CHANNEL_STATUS_INACTIVE_REASON, new StringType(inactiveReason));
+                        // updateState(CHANNEL_STATUS_STATE, new StringType(state));
+                        // updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(errorCode));
+                        // updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE, OnOffType.from(isErrorConfirmable));
+                        // updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new
+                        // DateTimeType(Instant.ofEpochSecond(errorCodeTimestamp)));
+                        // updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
+                    }
+                }
+                break;
+
+            default:
+                logger.debug("Unhandled WebSocket event type: {}", type);
+                break;
         }
     }
 }

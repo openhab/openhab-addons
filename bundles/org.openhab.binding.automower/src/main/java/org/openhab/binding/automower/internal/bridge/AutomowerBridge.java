@@ -68,7 +68,7 @@ public class AutomowerBridge {
         this.automowerApi = new AutomowerConnectApi(httpClient);
     }
 
-    private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
+    public synchronized AccessTokenResponse authenticate() throws AutomowerCommunicationException {
         try {
             AccessTokenResponse result = authService.getAccessTokenResponse();
             if (result == null || result.isExpired(Instant.now(), 120)) {

@@ -14,7 +14,6 @@
 package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
@@ -29,15 +28,14 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link AutomowerWebSocketAdapter} handles the WebSocket Connection of the Husqvarna web service.
@@ -47,16 +45,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebSocket
 public class AutomowerWebSocketAdapter {
     private final AutomowerBridgeHandler handler;
+    private final AutomowerBridge bridge;
     private final Logger logger = LoggerFactory.getLogger(AutomowerWebSocketAdapter.class);
     private @Nullable ScheduledFuture<?> connectionTracker;
     private int unansweredPings = 0;
     private static final int MAX_UNANSWERED_PINGS = 5;
 
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public AutomowerWebSocketAdapter(AutomowerBridgeHandler handler) {
+    public AutomowerWebSocketAdapter(AutomowerBridgeHandler handler, AutomowerBridge bridge) {
         this.handler = handler;
+        this.bridge = bridge;
     }
 
     @OnWebSocketConnect
@@ -64,7 +63,7 @@ public class AutomowerWebSocketAdapter {
         handler.setClosing(false);
         unansweredPings = 0;
 
-        logger.debug("Connected to Husqvarna Webservice ({})", session.getRemoteAddress().getHostString());
+        logger.debug("Connected to Husqvarna WebSocket ({})", session.getRemoteAddress().getHostString());
         // Subscribe to all messages after connecting
         try {
             String subscribeAllMessage = "{\"type\":\"subscribe\",\"topics\":[\"*\"]}";
@@ -96,48 +95,27 @@ public class AutomowerWebSocketAdapter {
 
     @OnWebSocketMessage
     public void onMessage(String message) {
-        // logger.debug("Message from Server: {}", message);
+        if (message == null || message.isEmpty()) {
+            logger.trace("Received empty message from WebSocket");
+            return;
+        }
         try {
-            JsonNode node = OBJECT_MAPPER.readTree(message);
-            String id = node.has("id") ? node.get("id").asText() : null;
+            JsonObject event = JsonParser.parseString(message).getAsJsonObject();
+            String id = event.has("id") ? event.get("id").getAsString() : null;
             if (id != null) {
                 AutomowerHandler automowerHandler = handler.getAutomowerHandlerByThingId(id);
                 if (automowerHandler != null) {
-                    logger.trace("Message from WebSocket for AutomowerHandler: {}", message);
-                    // automowerHandler.processWebSocketMessage(message);
+                    logger.trace("Message from WebSocket for known AutomowerHandler: {}", message);
+                    automowerHandler.processWebSocketMessage(event);
                 } else {
-                    logger.trace("No AutomowerHandler found for id: {}", id);
+                    logger.trace("Message from WebSocket for unknown AutomowerHandler: {}", message);
                 }
             } else {
-                logger.warn("Received message without id: {}", message);
+                logger.trace("Message from WebSocket without Id: {}", message);
             }
         } catch (Exception e) {
-            logger.error("Failed to process message: {}", e.getMessage());
+            logger.error("Failed to process WebSocket message: {}", e.getMessage());
         }
-
-        /*
-         * StringBuilder logging = new StringBuilder(
-         * "Message from Server: " + message + ", known Automower: " + automowerHandlers.size());
-         * automowerHandlers.forEach(automowerHandler -> {
-         * if (message.contains(automowerHandler.getThing().getUID().getId())) {
-         * // logger.debug("Message from Server for Automower {}", automowerHandler.getThing().getUID().getId());
-         * // automowerHandler.processWebSocketMessage(message);
-         * logging.append(", mower: ").append(automowerHandler.getThing().getUID().getId());
-         * }
-         * });
-         * logger.debug("{}", logging.toString());
-         */
-        /*
-         * try {
-         * bridge.getAutomowers().getData().forEach(automower -> {
-         * if (message.contains(automower.getId())) {
-         * logger.debug("Message from Server for Automower {}", automower.getId());
-         * }
-         * });
-         * } catch (AutomowerCommunicationException e) {
-         * logger.error("Failed to process message due to communication error: {}", e.getMessage());
-         * }
-         */
     }
 
     @OnWebSocketClose
@@ -153,25 +131,12 @@ public class AutomowerWebSocketAdapter {
 
         if (!handler.isClosing()) {
             try {
-                restart();
+                logger.debug("Reconnecting to Husqvarna Webservice ()");
+                handler.connectWebSocket(this);
             } catch (Exception e) {
                 logger.error("Failed to restart WebSocket client: {}", e.getMessage());
             }
         }
-    }
-
-    public void restart() throws Exception {
-        String accessToken = handler.authenticate().getAccessToken();
-        if (accessToken == null) {
-            logger.error("No OAuth2 access token available for WebSocket connection");
-            return;
-        }
-        logger.debug("Reconnecting to Husqvarna Webservice ()");
-        String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
-        org.eclipse.jetty.websocket.client.ClientUpgradeRequest request = new org.eclipse.jetty.websocket.client.ClientUpgradeRequest();
-        request.setHeader("Authorization", "Bearer " + accessToken);
-        handler.setWebSocketSession(
-                (WebSocketSession) handler.getWebSocketClient().connect(this, URI.create(wsUrl), request).get());
     }
 
     @OnWebSocketError
@@ -184,9 +149,9 @@ public class AutomowerWebSocketAdapter {
      */
     private synchronized void sendKeepAlivePing() {
         try {
-            String accessToken = handler.authenticate().getAccessToken();
+            String accessToken = bridge.authenticate().getAccessToken();
             if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null) {
-                handler.getWebSocketSession().close(1000, "Timeout manually closing dead connection");
+                handler.getWebSocketSession().close(1000, "Timeout: manually closing dead connection");
             } else {
                 if (handler.getWebSocketSession().isOpen()) {
                     try {
