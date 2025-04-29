@@ -1404,8 +1404,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | ----- | ------------ | -------- | --------- | -------------------------------------------------------------------------------- |
 | relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                     |
 |       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
-| meter | voltage       | Number   | yes       | RMS voltage, Volts                                                              |
-
+| meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
