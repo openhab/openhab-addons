@@ -45,9 +45,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
@@ -55,6 +57,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
@@ -195,8 +198,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         profile.isRoller = dc.cover0 != null;
         profile.settings.relays = fillRelaySettings(profile, dc);
+        profile.settings.relays = fillBreakerSettings(profile, dc);
         profile.settings.inputs = fillInputSettings(profile, dc);
         profile.settings.rollers = fillRollerSettings(profile, dc);
+        profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
 
         profile.isEMeter = true;
         List<ShellySettingsInput> inputs = profile.settings.inputs;
@@ -890,9 +895,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        String method = "";
         params.id = rIdx;
-        params.on = SHELLY_API_ON.equals(turnMode);
-        apiRequest(SHELLYRPC_METHOD_SWITCH_SET, params, String.class);
+        if (!profile.isCB) {
+            method = SHELLYRPC_METHOD_SWITCH_SET;
+            params.on = SHELLY_API_ON.equals(turnMode);
+        } else {
+            method = SHELLYRPC_METHOD_CB_SET;
+            params.output = SHELLY_API_ON.equals(turnMode);
+        }
+        apiRequest(method, params, String.class);
     }
 
     @Override
