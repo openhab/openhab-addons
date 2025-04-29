@@ -273,11 +273,11 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charger Current Max</label>
 		<description>Maximum current supported by the charger</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
 		<tags>
 			<tag>Status</tag>
 			<tag>Current</tag>
 		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charger-power" advanced="true">
 		<item-type>Number:Power</item-type>
@@ -382,7 +382,7 @@
 		<description>Car located at Home Address</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Location</tag>
+			<tag>GeoLocation</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -392,7 +392,7 @@
 		<description>Car located at Work Address</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Location</tag>
+			<tag>GeoLocation</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -402,7 +402,7 @@
 		<description>Car located at Address listed in favorites</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Location</tag>
+			<tag>GeoLocation</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
