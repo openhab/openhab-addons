@@ -124,7 +124,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             // not implemented as it would causes >100 channel updates in a row during setup (performance)
         } else {
@@ -773,7 +773,7 @@ public class AutomowerHandler extends BaseThingHandler {
         return null;
     }
 
-    private void updateChannelState(@Nullable Mower mower, @Nullable MowerMessages mowerMessages) {
+    private synchronized void updateChannelState(@Nullable Mower mower, @Nullable MowerMessages mowerMessages) {
         if (isValidResult(mower)) {
             Capabilities capabilities = mower.getAttributes().getCapabilities();
 
@@ -1342,6 +1342,10 @@ public class AutomowerHandler extends BaseThingHandler {
 
     // https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=websocket%20api
     public void processWebSocketMessage(JsonObject event) {
+        if (!isConnected(mowerState)) {
+            logger.debug("Ignoring WebSocket message: {}", event);
+            return;
+        }
         String type = event.has("type") ? event.get("type").getAsString() : null;
         if (type == null) {
             logger.warn("WebSocket event without type: {}", event);
@@ -1354,12 +1358,14 @@ public class AutomowerHandler extends BaseThingHandler {
                     JsonObject attributes = event.getAsJsonObject("attributes");
                     if (attributes.has("position")) {
                         JsonObject position = attributes.getAsJsonObject("position");
-                        double latitude = position.has("latitude") ? position.get("latitude").getAsDouble() : 0.0;
-                        double longitude = position.has("longitude") ? position.get("longitude").getAsDouble() : 0.0;
-                        logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
-                        // Update the corresponding channel
-                        updateState(CHANNEL_POSITION_LAST,
-                                new PointType(new DecimalType(latitude), new DecimalType(longitude)));
+                        if (position.has("latitude") && position.has("longitude")) {
+                            double latitude = position.get("latitude").getAsDouble();
+                            double longitude = position.get("longitude").getAsDouble();
+                            logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
+                            mowerState.getAttributes().getLastPosition().setLatitude(latitude);
+                            mowerState.getAttributes().getLastPosition().setLongitude(longitude);
+                            updateChannelState(mowerState, mowerMessages);
+                        }
                     }
                 }
                 break;
@@ -1367,10 +1373,14 @@ public class AutomowerHandler extends BaseThingHandler {
             case "battery-event-v2":
                 if (event.has("attributes")) {
                     JsonObject attributes = event.getAsJsonObject("attributes");
-                    if (attributes.has("batteryPercent")) {
-                        double batteryPercent = attributes.get("batteryPercent").getAsDouble();
-                        logger.debug("Received battery update: {}%", batteryPercent);
-                        updateState(CHANNEL_STATUS_BATTERY, new DecimalType(batteryPercent));
+                    if (attributes.has("battery") && attributes.get("battery").isJsonObject()) {
+                        JsonObject batteryObj = attributes.getAsJsonObject("battery");
+                        if (batteryObj.has("batteryPercent")) {
+                            byte batteryPercent = batteryObj.get("batteryPercent").getAsByte();
+                            logger.debug("Received battery update: {}%", batteryPercent);
+                            mowerState.getAttributes().getBattery().setBatteryPercent(batteryPercent);
+                            updateChannelState(mowerState, mowerMessages);
+                        }
                     }
                 }
                 break;
