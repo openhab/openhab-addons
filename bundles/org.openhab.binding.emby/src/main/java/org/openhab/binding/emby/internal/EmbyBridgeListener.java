@@ -27,11 +27,11 @@ import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 @NonNullByDefault
 public interface EmbyBridgeListener extends EventListener {
 
-/**
+    /**
      * Callback invoked when the connection state to the Emby server changes.
      *
      * @param connected {@code true} if the binding is currently connected to the Emby server,
-     *                  {@code false} otherwise.
+     *            {@code false} otherwise.
      */
     void updateConnectionState(boolean connected);
 
@@ -39,8 +39,8 @@ public interface EmbyBridgeListener extends EventListener {
      * Callback invoked when a playback event is received from the Emby server.
      *
      * @param playstate the {@link EmbyPlayStateModel} containing details about the current playback state
-     * @param hostname  the hostname or IP address of the Emby server that sent the event
-     * @param embyport  the port number on which the Emby server is running
+     * @param hostname the hostname or IP address of the Emby server that sent the event
+     * @param embyport the port number on which the Emby server is running
      */
     void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport);
 }

@@ -30,4 +30,3 @@ public class EmbyHttpRetryExceeded extends Exception {
         super(message, cause);
     }
 }
-

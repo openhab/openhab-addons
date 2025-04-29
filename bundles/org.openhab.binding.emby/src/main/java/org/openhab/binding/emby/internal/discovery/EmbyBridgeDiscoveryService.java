@@ -22,14 +22,13 @@ import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,6 +39,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -48,8 +48,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.util.List;
-import org.openhab.core.net.NetUtil;
 
 /**
  * The {@EmbyBridgeDiscoveryService} handles the bridge discovery which finds emby servers on the network
@@ -93,7 +91,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Discovery interrupted, exiting");
             }
 
-            +            // Broadcast over every interface’s broadcast address via NetUtil
+           // Broadcast over every interface’s broadcast address via NetUtil
            List<InetAddress> broadcasts = netUtil.getAllBroadcastAddresses();
             for (InetAddress broadcast : broadcasts) {
                 try {
