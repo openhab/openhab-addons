@@ -771,7 +771,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: WebSocket error: {}", thingName, cause.getMessage());
         ShellyThingInterface thing = this.thing;
         if (thing != null && thing.getProfile().alwaysOn) {
-            thingOffline("WebSocket error");
+            thingOffline(String.format("WebSocket error: %s", cause.getMessage()));
         }
     }
 
