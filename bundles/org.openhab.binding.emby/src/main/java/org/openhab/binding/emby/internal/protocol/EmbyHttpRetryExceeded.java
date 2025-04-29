@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Custom exception class to be thrown when number of retries is exceeded.
  *
- * @author Zachary
+ * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
 public class EmbyHttpRetryExceeded extends Exception {

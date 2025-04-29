@@ -64,8 +64,6 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(EmbyBridgeDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_EMBY_CONTROLLER);
-    @Reference
-    private NetUtil netUtil;
 
     public EmbyBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
@@ -91,17 +89,16 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Discovery interrupted, exiting");
             }
 
-           // Broadcast over every interface’s broadcast address via NetUtil
-           List<InetAddress> broadcasts = netUtil.getAllBroadcastAddresses();
-            for (InetAddress broadcast : broadcasts) {
+            List<String> broadcastStrings = NetUtil.getAllBroadcastAddresses();
+            for (String broadcastStr : broadcastStrings) {
                 try {
+                    InetAddress broadcast = InetAddress.getByName(broadcastStr);
                     socket.send(new DatagramPacket(sendData, sendData.length, broadcast, REQUEST_PORT));
-                    logger.trace(">>> Request packet sent to: {} ", broadcast.getHostAddress());
+                    logger.trace(">>> Request packet sent to: {}", broadcast.getHostAddress());
                 } catch (IOException e) {
-                    logger.warn("Failed to send broadcast to {}: {}", broadcast, e.getMessage());
+                    logger.warn("Failed to send broadcast to {}: {}", broadcastStr, e.getMessage());
                 }
             }
-
             logger.trace(">>> Done sending broadcasts. Now waiting for a reply!");
 
             // Wait for a response

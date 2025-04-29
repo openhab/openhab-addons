@@ -12,6 +12,4 @@
 
   <artifactId>org.openhab.binding.emby</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Emby Binding</name>
-
 </project>

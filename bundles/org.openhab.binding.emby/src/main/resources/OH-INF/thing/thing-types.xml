@@ -7,9 +7,7 @@
 	<bridge-type id="controller">
 		<label>EMBY Server</label>
 		<description>This is the Bridge to an instance of an EMBY server you want to connect to.</description>
-		<thing:properties>
-			<thing:property name="semantic:equipment">Computer</thing:property>
-		</thing:properties>
+		<semantic-equipment-tag>Computer</semantic-equipment-tag>
 		<config-description>
 			<parameter name="api" type="text" required="true">
 				<label>API Key</label>
@@ -51,9 +49,7 @@
 		</supported-bridge-type-refs>
 		<label>EMBY Device</label>
 		<description>This is a player device which connects to an EMBY server.</description>
-		<thing:properties>
-			<thing:property name="semantic:equipment">MediaPlayer</thing:property>
-		</thing:properties>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="stop" typeId="stop"/>

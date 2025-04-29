@@ -20,7 +20,7 @@ import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
  * Implement this interface to handle connection lifecycle events and playback state updates
  * received from an Emby server.
  *
- * @author Zachary Christiansen
+ * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
 public interface EmbyClientSocketEventListener {

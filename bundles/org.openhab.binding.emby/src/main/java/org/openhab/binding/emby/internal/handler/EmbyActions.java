@@ -148,7 +148,7 @@ public class EmbyActions implements ThingActions {
 
     public static void sendGeneralCommandWithArgs(ThingActions actions, EmbyCommandWithArgs commandName,
             String jsonArguments) {
-        if (actions instanceof EmbyActionsembyActions) {
+        if (actions instanceof EmbyActions embyActions) {
             embyActions.sendGeneralCommandWithArgs(requireNonNull(commandName), requireNonNull(jsonArguments));
         } else {
             throw new IllegalArgumentException("Not an EmbyActions instance");
