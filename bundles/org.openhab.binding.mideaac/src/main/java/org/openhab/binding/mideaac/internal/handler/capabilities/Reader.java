@@ -18,15 +18,15 @@ import java.util.function.Predicate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CapabilityReaders} reads the raw capability message and
- * breaks them into detailed capabilities.
+ * The {@link Reader} reads the raw capability message and
+ * breaks them down for further parsing.
  *
  * @author Bob Eckhoff - Initial contribution
  */
 @NonNullByDefault
 public class Reader {
-    public final String name; // Name of the capability (e.g., "fan_silent")
-    public final Predicate<Integer> predicate; // Condition to check values
+    public final String name;
+    public final Predicate<Integer> predicate;
 
     public Reader(String name, Predicate<Integer> predicate) {
         this.name = name;

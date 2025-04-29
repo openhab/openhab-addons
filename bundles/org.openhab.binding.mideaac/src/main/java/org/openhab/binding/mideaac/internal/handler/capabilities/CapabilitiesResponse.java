@@ -24,6 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class CapabilitiesResponse {
     private final byte[] rawData;
 
+    /**
+     * Initialization
+     * 
+     * @param rawData as bytes
+     */
     public CapabilitiesResponse(byte[] rawData) {
         this.rawData = rawData;
     }

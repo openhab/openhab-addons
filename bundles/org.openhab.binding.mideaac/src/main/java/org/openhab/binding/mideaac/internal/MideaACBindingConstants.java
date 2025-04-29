@@ -27,7 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - OH naming conventions
+ * @author Bob Eckhoff - OH naming conventions and capability properties
  */
 @NonNullByDefault
 public class MideaACBindingConstants {
@@ -88,12 +88,12 @@ public class MideaACBindingConstants {
     public static final String CONFIG_PROMPT_TONE = "promptTone";
     public static final String CONFIG_VERSION = "version";
 
-    // From LAN Discovery
+    // Properties from LAN Discovery
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
     public static final String PROPERTY_TYPE = "type";
 
-    // Capabilities command
+    // Capabilities properties
     public static final String PROPERTY_ANION = "anion";
     public static final String PROPERTY_AUX_ELECTRIC_HEAT = "auxElectricHeat";
     public static final String PROPERTY_BREEZE_AWAY = "breezeAway";

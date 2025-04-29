@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link MideaACConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - OH addons changes
+ * @author Bob Eckhoff - OH addons changes, modified checks and defaults
  */
 @NonNullByDefault
 public class MideaACConfiguration {

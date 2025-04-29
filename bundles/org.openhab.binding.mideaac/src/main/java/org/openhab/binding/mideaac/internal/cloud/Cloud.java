@@ -320,7 +320,7 @@ public class Cloud {
     /**
      * Gets the login ID from your email address
      * 
-     * @return loginId (not your email)
+     * @return true or false
      */
     public boolean getLoginId() {
         JsonObject args = new JsonObject();

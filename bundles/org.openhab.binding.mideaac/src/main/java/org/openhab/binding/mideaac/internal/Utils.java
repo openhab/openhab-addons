@@ -35,7 +35,7 @@ import com.google.gson.JsonObject;
  * which are used across the whole binding.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - JavaDoc, reversed array and refined query String
  */
 @NonNullByDefault
 public class Utils {
