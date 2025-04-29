@@ -256,7 +256,8 @@
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
-		</tags>		<state pattern="%.1f %unit%" readOnly="true"></state>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charge-current-request" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
