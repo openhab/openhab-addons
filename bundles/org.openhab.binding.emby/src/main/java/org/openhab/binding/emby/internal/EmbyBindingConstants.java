@@ -36,18 +36,18 @@ public class EmbyBindingConstants {
     public static final String CHANNEL_CONTROL = "control";
 
     public static final String CHANNEL_TITLE = "title";
-    public static final String CHANNEL_SHOWTITLE = "showtitle";
+    public static final String CHANNEL_SHOWTITLE = "show-title";
 
-    public static final String CHANNEL_MEDIATYPE = "mediatype";
+    public static final String CHANNEL_MEDIATYPE = "media-type";
 
-    public static final String CHANNEL_CURRENTTIME = "currenttime";
+    public static final String CHANNEL_CURRENTTIME = "current-time";
 
     public static final String CHANNEL_DURATION = "duration";
-    public static final String CHANNEL_IMAGEURL = "imageurl";
-    public static final String CHANNEL_IMAGEURL_TYPE = "imageurl_type";
-    public static final String CHANNEL_IMAGEURL_MAXWIDTH = "imageurl_maxWidth";
-    public static final String CHANNEL_IMAGEURL_MAXHEIGHT = "imageurl_maxHeight";
-    public static final String CHANNEL_IMAGEURL_PERCENTPLAYED = "imageurl_PercentPlayed";
+    public static final String CHANNEL_IMAGEURL = "image-url";
+    public static final String CHANNEL_IMAGEURL_TYPE = "image-url_type";
+    public static final String CHANNEL_IMAGEURL_MAXWIDTH = "image-url_maxWidth";
+    public static final String CHANNEL_IMAGEURL_MAXHEIGHT = "image-url_maxHeight";
+    public static final String CHANNEL_IMAGEURL_PERCENTPLAYED = "image-url_PercentPlayed";
 
     // Module Properties
 

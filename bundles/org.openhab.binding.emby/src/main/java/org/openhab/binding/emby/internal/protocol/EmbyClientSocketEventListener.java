@@ -16,17 +16,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 
 /**
- * This interface has to be implemented for classes which need to be able to receive events from EmbyClientSocket
+ * Listener interface for receiving events from the {@code EmbyClientSocket}.
+ * Implement this interface to handle connection lifecycle events and playback state updates
+ * received from an Emby server.
  *
- * @author Zachary Christiansen - Initial contribution
- *
+ * @author Zachary Christiansen
  */
 @NonNullByDefault
 public interface EmbyClientSocketEventListener {
 
+    /**
+     * Called when a playback state update is received from the Emby server.
+     * Implementers should handle the new {@link EmbyPlayStateModel} accordingly.
+     *
+     * @param playstate the updated playback state information
+     */
     void handleEvent(EmbyPlayStateModel playstate);
 
-    void onConnectionClosed();
-
+    /**
+     * Called when the connection to the Emby server has been successfully opened.
+     * Implementers can perform initialization or resource allocation here.
+     */
     void onConnectionOpened();
+
+    /**
+     * Called when the connection to the Emby server has been closed.
+     * Implementers should handle cleanup or reconnection logic here.
+     */
+    void onConnectionClosed();
 }

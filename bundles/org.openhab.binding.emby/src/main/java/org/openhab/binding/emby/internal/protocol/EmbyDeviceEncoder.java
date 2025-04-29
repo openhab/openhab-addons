@@ -15,15 +15,26 @@ package org.openhab.binding.emby.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * EmbyClientSocket implements the low level communication to Emby through
- * websocket. Usually this communication is done through port 9090
+ * The {@link EmbyDeviceEncoder} is responsible for encoding device identifiers
+ * for communication with the Emby server. It transforms a given device ID into
+ * a format acceptable by the Emby protocol by replacing non-alphanumeric
+ * characters with a fixed token.
  *
  * @author Zachary Christiansen - Initial contribution
- *
  */
 @NonNullByDefault
 public class EmbyDeviceEncoder {
 
+    /**
+     * Encodes the specified device identifier by replacing any character
+     * that is not an ASCII letter (A-Z, a-z) or digit (0-9) with the token
+     * {@code UYHJKU}. This ensures the device ID conforms to the Emby protocol
+     * requirements.
+     *
+     * @param deviceID the original device identifier to encode
+     * @return the encoded device identifier, where all non-alphanumeric characters
+     *         have been replaced with {@code UYHJKU}
+     */
     public String encodeDeviceID(String deviceID) {
         return deviceID.replaceAll("[^A-Za-z0-9]", "UYHJKU");
     }

@@ -46,7 +46,7 @@ The following Configuration Parameter Keys are available:
 
 | **`discovery`** | Boolean | Enable or disable automatic device discovery. | true | No | Yes |
 
-## `emby:device` Thing Configuration
+## `device` Thing Configuration
 
 The following Configuration Parameter Key is available:
 
@@ -62,12 +62,12 @@ The following Channel IDs are available for an `emby:device` Thing:
 | **`control`**     | Player      | None                                                       | Playback control (play, pause, next, previous, fast-forward, rewind). |
 | **`stop`**        | Switch      | None                                                       | Indicates playback state; OFF stops playback.                         |
 | **`title`**       | String      | None                                                       | Title of the currently playing song.                                  |
-| **`showtitle`**   | String      | None                                                       | Title of the currently playing movie or TV show.                      |
+| **`show-title`**   | String      | None                                                       | Title of the currently playing movie or TV show.                      |
 | **`mute`**        | Switch      | None                                                       | Mute status control.                                                  |
-| **`imageurl`**    | String      | `imageurl_maxHeight`, `imageurl_maxWidth`, `imageurl_type` | URL for current media artwork.                                        |
-| **`currenttime`** | Number:Time | None                                                       | Current playback position.                                            |
+| **`image-url`**    | String      | `image-url_maxHeight`, `image-url_maxWidth`, `image-url_type` | URL for current media artwork.                                        |
+| **`current-time`** | Number:Time | None                                                       | Current playback position.                                            |
 | **`duration`**    | Number:Time | None                                                       | Total media duration.                                                 |
-| **`mediatype`**   | String      | None                                                       | Type of media (e.g., Movie, Episode).                                 |
+| **`media-type`**   | String      | None                                                       | Type of media (e.g., Movie, Episode).                                 |
 
 ---
 
@@ -96,11 +96,11 @@ Switch      Emby_PlayPause   "Play/Pause"        { channel="emby:device:myEmbySe
 Switch      Emby_Stop        "Stop"              { channel="emby:device:myEmbyServer:myClientDevice:stop" }
 Switch      Emby_Mute        "Mute"              { channel="emby:device:myEmbyServer:myClientDevice:mute" }
 String      Emby_Title       "Title [%s]"        { channel="emby:device:myEmbyServer:myClientDevice:title" }
-String      Emby_ShowTitle   "Show Title [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:showtitle" }
-Number:Time Emby_CurrentTime "Current Time [%d %unit%]" { channel="emby:device:myEmbyServer:myClientDevice:currenttime" }
+String      Emby_ShowTitle   "Show Title [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:show-title" }
+Number:Time Emby_CurrentTime "Current Time [%d %unit%]" { channel="emby:device:myEmbyServer:myClientDevice:current-time" }
 Number:Time Emby_Duration    "Duration [%d %unit%]"     { channel="emby:device:myEmbyServer:myClientDevice:duration" }
-String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:mediatype" }
-String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:imageurl" }
+String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbyServer:myClientDevice:media-type" }
+String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:image-url" }
 ```
 
 ## Sitemap Configuration Example

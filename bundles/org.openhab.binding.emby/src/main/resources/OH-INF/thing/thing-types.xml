@@ -7,6 +7,9 @@
 	<bridge-type id="controller">
 		<label>EMBY Server</label>
 		<description>This is the Bridge to an instance of an EMBY server you want to connect to.</description>
+		<thing:properties>
+			<thing:property name="semantic:equipment">Computer</thing:property>
+		</thing:properties>
 		<config-description>
 			<parameter name="api" type="text" required="true">
 				<label>API Key</label>
@@ -48,16 +51,19 @@
 		</supported-bridge-type-refs>
 		<label>EMBY Device</label>
 		<description>This is a player device which connects to an EMBY server.</description>
+		<thing:properties>
+			<thing:property name="semantic:equipment">MediaPlayer</thing:property>
+		</thing:properties>
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="stop" typeId="stop"/>
 			<channel id="title" typeId="title"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="showtitle" typeId="showtitle"/>
-			<channel id="imageurl" typeId="imageurl"/>
-			<channel id="currenttime" typeId="currenttime"/>
+			<channel id="show-title" typeId="show-title"/>
+			<channel id="image-url" typeId="image-url"/>
+			<channel id="current-time" typeId="current-time"/>
 			<channel id="duration" typeId="duration"/>
-			<channel id="mediatype" typeId="mediatype"/>
+			<channel id="media-type" typeId="media-type"/>
 		</channels>
 		<config-description>
 			<parameter name="deviceID" type="text" required="true">
@@ -73,7 +79,7 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="showtitle">
+	<channel-type id="show-title">
 		<item-type>String</item-type>
 		<label>Show Title</label>
 		<description>Title of the current show</description>
@@ -99,7 +105,7 @@
 		<description>Mute/unmute your device</description>
 	</channel-type>
 
-	<channel-type id="currenttime">
+	<channel-type id="current-time">
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
@@ -113,19 +119,19 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="mediatype">
+	<channel-type id="media-type">
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>Media type of the current file</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="imageurl">
+	<channel-type id="image-url">
 		<item-type>String</item-type>
 		<label>image url</label>
 		<description>The url of the playing media</description>
 		<state readOnly="true" pattern="%s"/>
 		<config-description>
-			<parameter name="imageurl_type" type="text">
+			<parameter name="image-url_type" type="text">
 				<default>Primary</default>
 				<options>
 					<option value="Primary">Primary</option>
@@ -141,11 +147,11 @@
 					<option value="Chapter">Chapter</option>
 				</options>
 			</parameter>
-			<parameter name="imageurl_maxHeight" type="text">
+			<parameter name="image-url_maxHeight" type="text">
 				<label>Image Max Height</label>
 				<description>The maximum height of the image that will be retrieved.</description>
 			</parameter>
-			<parameter name="imageurl_maxWidth" type="text">
+			<parameter name="image-url_maxWidth" type="text">
 				<label>Image Max Width</label>
 				<description>The maximum width of the image that will be retrieved.</description>
 			</parameter>
