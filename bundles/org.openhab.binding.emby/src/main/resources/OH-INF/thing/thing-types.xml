@@ -7,7 +7,7 @@
 	<bridge-type id="controller">
 		<label>EMBY Server</label>
 		<description>This is the Bridge to an instance of an EMBY server you want to connect to.</description>
-		<semantic-equipment-tag>Computer</semantic-equipment-tag>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="api" type="text" required="true">
 				<label>API Key</label>
