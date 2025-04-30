@@ -38,35 +38,44 @@ The following Configuration Parameter Keys are available:
 | bufferSize      | Integer | WebSocket buffer size in bytes.                         | 10,000  | No       | No       |
 | refreshInterval | Integer | Polling interval for play-state updates (milliseconds). | 10,000  | No       | No       |
 | port            | Integer | Port in which EMBY is listening for communication.      | 8096    | No       | No       |
-
-| **`discovery`** | Boolean | Enable or disable automatic device discovery. | true | No | Yes |
+| discovery       | Boolean | Enable or disable automatic device discovery.           | true    | No       | Yes      |
 
 ## `device` Thing Configuration
 
 The following Configuration Parameter Key is available:
 
-- **`deviceID`**  
+- `deviceID`  
   The unique identifier for the client device connected to the Emby server.
 
 # Channels
 
-The following Channel IDs are available for an `emby:device` Thing:
+The following Channel IDs are available for an `device` Thing:
 
-| Channel ID   | Item Type   | Config Parameters                                       | Description                                                           |
-|--------------|-------------|---------------------------------------------------------|-----------------------------------------------------------------------|
-| control      | Player      | None                                                    | Playback control (play, pause, next, previous, fast-forward, rewind). |
-| stop         | Switch      | None                                                    | Indicates playback state; OFF stops playback.                         |
-| title        | String      | None                                                    | Title of the currently playing song.                                  |
-| show-title   | String      | None                                                    | Title of the currently playing movie or TV show.                      |
-| mute         | Switch      | None                                                    | Mute status control.                                                  |
-| image-url    | String      | image-url_maxHeight, image-url_maxWidth, image-url_type | URL for current media artwork.                                        |
-| current-time | Number:Time | None                                                    | Current playback position.                                            |
-| duration     | Number:Time | None                                                    | Total media duration.                                                 |
-| media-type   | String      | None                                                    | Type of media (e.g., Movie, Episode).                                 |
+| Channel ID   | Item Type   | Config Parameters                                                     | Description                                                           |
+|--------------|-------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------|
+| control      | Player      | None                                                                  | Playback control (play, pause, next, previous, fast-forward, rewind). |
+| stop         | Switch      | None                                                                  | Indicates playback state; OFF stops playback.                         |
+| title        | String      | None                                                                  | Title of the currently playing song.                                  |
+| show-title   | String      | None                                                                  | Title of the currently playing movie or TV show.                      |
+| mute         | Switch      | None                                                                  | Mute status control.                                                  |
+| image-url    | String      | imageUrlMaxHeight, imageMaxWidth, imageUrlType, imageUrlPercentPlayed | URL for current media artwork.                                        |
+| current-time | Number:Time | None                                                                  | Current playback position.                                            |
+| duration     | Number:Time | None                                                                  | Total media duration.                                                 |
+| media-type   | String      | None                                                                  | Type of media (e.g., Movie, Episode).                                 |
+
+### `image-url` Config Parameters
+
+| Parameter Name          | Type    | Default | Description                                                                                                                                                        |
+|-------------------------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `imageUrlType`          | Text    | Primary | Specifies the image type to retrieve. Options include `Primary`, `Art`, `Backdrop`, `Banner`, `Logo`, `Thumb`, `Disc`, `Box`, `Screenshot`, `Menu`, and `Chapter`. |
+| `imageUrlMaxHeight`     | Text    | None    | The maximum height (in pixels) of the retrieved image.                                                                                                             |
+| `imageUrlMaxWidth`      | Text    | None    | The maximum width (in pixels) of the retrieved image.                                                                                                              |
+| `imageUrlPercentPlayed` | Boolean | false   | If true, adds an overlay indicating the percent played (e.g., 47%).                                                                                                |
+
 
 # Full Example
 
-## Thing Configuration Example
+## `emby.things` Example
 
 ```java
 Bridge emby:controller:myEmbyServer [
@@ -82,7 +91,7 @@ Bridge emby:controller:myEmbyServer [
 }
 ```
 
-## Item Configuration Example
+## `emby.items` Example
 
 ```java
 Switch      Emby_PlayPause   "Play/Pause"        { channel="emby:device:myEmbyServer:myClientDevice:control" }
@@ -96,7 +105,7 @@ String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbySe
 String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:image-url" }
 ```
 
-## Sitemap Configuration Example
+## `emby.sitemap` Configuration Example
 
 ```perl
 sitemap emby label="Emby Control"

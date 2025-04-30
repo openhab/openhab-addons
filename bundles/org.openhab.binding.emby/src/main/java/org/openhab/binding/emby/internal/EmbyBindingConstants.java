@@ -44,23 +44,20 @@ public class EmbyBindingConstants {
 
     public static final String CHANNEL_DURATION = "duration";
     public static final String CHANNEL_IMAGEURL = "image-url";
-    public static final String CHANNEL_IMAGEURL_TYPE = "image-url_type";
-    public static final String CHANNEL_IMAGEURL_MAXWIDTH = "image-url_maxWidth";
-    public static final String CHANNEL_IMAGEURL_MAXHEIGHT = "image-url_maxHeight";
-    public static final String CHANNEL_IMAGEURL_PERCENTPLAYED = "image-url_PercentPlayed";
+    public static final String CHANNEL_IMAGEURL_CONFIG_TYPE = "imageUrlType";
+    public static final String CHANNEL_IMAGEURL_CONFIG_MAXWIDTH = "imageUrlMaxWidth";
+    public static final String CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT = "imageUrlMaxHeight";
+    public static final String CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED = "imageUrlPercentPlayed";
 
     // Module Properties
 
-    public static final String HOST_PARAMETER = "ipAddress";
-    public static final String WS_PORT_PARAMETER = "port";
-    public static final String WS_BUFFER_SIZE = "bufferSize";
-    public static final String HTTP_PORT_PARAMETER = "httpPort";
-    public static final String HTTP_USER_PARAMETER = "httpUser";
-    public static final String HTTP_PASSWORD_PARAMETER = "httpPassword";
-    public static final String REFRESH_PARAMETER = "refreshInterval";
-    public static final String API_KEY = "api";
-    public static final String DEVICE_ID = "deviceID";
-    public static final String DISCOVERY_ENABLE = "discovery";
+    public static final String CONFIG_HOST_PARAMETER = "ipAddress";
+    public static final String CONFIG_WS_PORT_PARAMETER = "port";
+    public static final String CONFIG_WS_BUFFER_SIZE = "bufferSize";
+    public static final String CONFIG_REFRESH_PARAMETER = "refreshInterval";
+    public static final String CONFIG_API_KEY = "api";
+    public static final String CONFIG_DEVICE_ID = "deviceID";
+    public static final String CONFIG_DISCOVERY_ENABLE = "discovery";
     // control constant commands
     public static final String CONTROL_SESSION = "/Sessions/";
     public static final String CONTROL_GENERALCOMMAND = "/Command/";

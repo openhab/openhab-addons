@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.emby.internal.discovery;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_DEVICE_ID;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_DEVICE;
 
 import java.util.Collections;
@@ -70,10 +70,10 @@ public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
         if (thingUID != null) {
             ThingUID bridgeUID = embyBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put(DEVICE_ID, modelId);
+            properties.put(CONFIG_DEVICE_ID, modelId);
             logger.debug("Disovered device {} with id {}", playstate.getDeviceName(), modelId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(DEVICE_ID)
+                    .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(CONFIG_DEVICE_ID)
                     .withLabel(playstate.getDeviceName()).build();
             thingDiscovered(discoveryResult);
         } else {

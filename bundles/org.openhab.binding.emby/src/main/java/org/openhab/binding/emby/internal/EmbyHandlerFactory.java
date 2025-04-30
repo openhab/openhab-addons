@@ -59,13 +59,23 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
-    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
-    private @NonNullByDefault({}) WebSocketFactory webSocketClientFactory;
+    private NetworkAddressService networkAddressService;
+    private WebSocketFactory webSocketClientFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
     private @Nullable String callbackUrl = null;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    @Activate
+    public EmbyHandlerFactory(final @Reference WebSocketFactory webSocketClientFactory,
+            final @Reference NetworkAddressService networkAddressService, final ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.webSocketClientFactory = webSocketClientFactory;
+        this.networkAddressService = networkAddressService;
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        this.callbackUrl = (String) properties.get("callbackUrl");
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -98,7 +108,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("No network interface could be found.");
                 return null;
             }
-            logger.debug("The callback url not set so obtained ipAddress of {} from network address server", ipAddress);
+            logger.debug("Callback URL not set; obtained IP address {} from network address service", ipAddress);
             return ipAddress;
         }
     }
@@ -107,35 +117,10 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         // we do not use SSL as it can cause certificate validation issues.
         final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
         if (port == -1) {
-            logger.warn("Cannot find port of the http service.");
+            logger.warn("Cannot find port of the HTTP service.");
             return null;
         }
         return Integer.toString(port);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
-    @Reference
-    protected void setWebSocketClientFactoryService(WebSocketFactory WebSocketFactory) {
-        this.webSocketClientFactory = WebSocketFactory;
-    }
-
-    protected void unsetWebSocketClientFactoryService(WebSocketFactory WebSocketFactory) {
-        this.webSocketClientFactory = null;
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        callbackUrl = (String) properties.get("callbackUrl");
     }
 
     private synchronized void registerEmbyClientDiscoveryService(EmbyBridgeHandler bridgeHandler) {

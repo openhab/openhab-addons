@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.emby.internal.discovery;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.HOST_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_DEVICE_ID;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_HOST_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_WS_PORT_PARAMETER;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_CONTROLLER;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -146,12 +146,12 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
 
         if (thingUID != null && DeviceID != null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(DEVICE_ID, DeviceID);
-            properties.put(HOST_PARAMETER, hostAddress);
-            properties.put(WS_PORT_PARAMETER, Integer.toString(embyPort));
+            properties.put(CONFIG_DEVICE_ID, DeviceID);
+            properties.put(CONFIG_HOST_PARAMETER, hostAddress);
+            properties.put(CONFIG_WS_PORT_PARAMETER, Integer.toString(embyPort));
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperties(properties).withRepresentationProperty(DEVICE_ID).withLabel(Name).build();
+                    .withProperties(properties).withRepresentationProperty(CONFIG_DEVICE_ID).withLabel(Name).build();
 
             thingDiscovered(discoveryResult);
         } else {

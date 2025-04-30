@@ -127,7 +127,7 @@
 		<description>The url of the playing media</description>
 		<state readOnly="true" pattern="%s"/>
 		<config-description>
-			<parameter name="image-url_type" type="text">
+			<parameter name="imageUrlType" type="text">
 				<default>Primary</default>
 				<options>
 					<option value="Primary">Primary</option>
@@ -143,13 +143,18 @@
 					<option value="Chapter">Chapter</option>
 				</options>
 			</parameter>
-			<parameter name="image-url_maxHeight" type="text">
+			<parameter name="imageUrlMaxHeight" type="text">
 				<label>Image Max Height</label>
 				<description>The maximum height of the image that will be retrieved.</description>
 			</parameter>
-			<parameter name="image-url_maxWidth" type="text">
+			<parameter name="imageUrlMaxWidth" type="text">
 				<label>Image Max Width</label>
 				<description>The maximum width of the image that will be retrieved.</description>
+			</parameter>
+			<parameter name="imageUrlPercentPlayed" type="boolean" default="false">
+				<label>Show Percent Played Overlay</label>
+				<description>If set to true, a percent played overlay will be added to the image. For example, using
+					PercentPlayed=47 will overlay a 47% progress indicator. Default is false.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

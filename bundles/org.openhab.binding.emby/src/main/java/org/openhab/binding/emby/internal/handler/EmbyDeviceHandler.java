@@ -16,10 +16,10 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CON
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CURRENTTIME;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_DURATION;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXHEIGHT;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXWIDTH;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_PERCENTPLAYED;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_TYPE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_MAXWIDTH;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_TYPE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MEDIATYPE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MUTE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SHOWTITLE;
@@ -285,27 +285,27 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
         Configuration imgCfg = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
 
-        String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_MAXWIDTH, "");
+        String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "");
         if (!maxWidth.matches("\\d*")) {
-            throwValidationError(CHANNEL_IMAGEURL_MAXWIDTH, "Image max width must be a number");
+            throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "Image max width must be a number");
         }
         embyDeviceConfig.imageMaxWidth = maxWidth;
 
-        String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_MAXHEIGHT, "");
+        String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "");
         if (!maxHeight.matches("\\d*")) {
-            throwValidationError(CHANNEL_IMAGEURL_MAXHEIGHT, "Image max height must be a number");
+            throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "Image max height must be a number");
         }
         embyDeviceConfig.imageMaxHeight = maxHeight;
 
-        String pctPlayed = getOrDefault(imgCfg, CHANNEL_IMAGEURL_PERCENTPLAYED, "false");
+        String pctPlayed = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "false");
         if (!("true".equalsIgnoreCase(pctPlayed) || "false".equalsIgnoreCase(pctPlayed))) {
-            throwValidationError(CHANNEL_IMAGEURL_PERCENTPLAYED, "Image percent-played must be true or false");
+            throwValidationError(CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "Image percent-played must be true or false");
         }
         embyDeviceConfig.imagePercentPlayed = Boolean.parseBoolean(pctPlayed);
 
-        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_TYPE, "Primary");
+        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_TYPE, "Primary");
         if (!ALLOWED_IMAGE_TYPES.contains(imgType)) {
-            throwValidationError(CHANNEL_IMAGEURL_TYPE,
+            throwValidationError(CHANNEL_IMAGEURL_CONFIG_TYPE,
                     "Invalid image type: " + imgType + ". Allowed values: " + ALLOWED_IMAGE_TYPES);
         }
         embyDeviceConfig.imageImageType = imgType;
