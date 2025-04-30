@@ -344,7 +344,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return DEVICE_HAN_FUN_ON_OFF;
             }
         }
-        return device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productAlias = ALIAS_PRODUCT_NAME_MAP.get(productName.toUpperCase());
+        return productAlias != null ? productAlias : productName;
     }
 
     /**

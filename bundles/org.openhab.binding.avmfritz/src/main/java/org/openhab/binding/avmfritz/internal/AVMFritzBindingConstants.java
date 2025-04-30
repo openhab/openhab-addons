@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -202,4 +203,13 @@ public class AVMFritzBindingConstants {
             SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
             SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS).flatMap(Set::stream)
             .collect(Collectors.toUnmodifiableSet());
+
+    // Lookup of new (alias) to old product names
+    public static final Map<String, String> ALIAS_PRODUCT_NAME_MAP = Map.of( //
+            "FRITZ_SMART_ENERGY_200", DEVICE_DECT200, //
+            "FRITZ_SMART_ENERGY_210", DEVICE_DECT210, //
+            "FRITZ_SMART_THERMO_302", DEVICE_DECT302, //
+            "FRITZ_SMART_CONTROL_350", DEVICE_HAN_FUN_CONTACT, // TODO need a user to confirm this mapping
+            "FRITZ_SMART_CONTROL_440", DEVICE_DECT440 //
+    );
 }
