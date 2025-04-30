@@ -133,6 +133,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_MINIG4_1 = "S4SW-001X8EU";
     public static final String SHELLYDT_MINIG4_PM = "S4EM-001PXCEU16";
     public static final String SHELLYDT_MINIG4_1PM = "S4SW-001P8EU";
+    public static final String SHELLYDT_MINIG4_EM = "S4EM-001PXCEU16";
 
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
@@ -220,6 +221,8 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLY1PMMINI_STR = "shelly1pmmini";
     public static final String THING_TYPE_SHELLY1PMMINIG3_STR = "shelly1pmminig3";
     public static final String THING_TYPE_SHELLY1PMMINIG4_STR = "shelly1pmminig4";
+    public static final String THING_TYPE_SHELLYEMMINI_STR = "shellyemmini";
+
     // Shelly Pro Series
     public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
     public static final String THING_TYPE_SHELLYPRO1PM_STR = "shellypro1pm";
@@ -343,6 +346,8 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPMMINI_STR);
     public static final ThingTypeUID THING_TYPE_SHELLY1PMMINI = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLY1PMMINI_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYEMMINI = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYEMMINI_STR);
 
     // Shelly Pro
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO1_STR);
@@ -548,6 +553,8 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYPMMINIG3_STR, THING_TYPE_SHELLYPMMINI),
             Map.entry(THING_TYPE_SHELLYPMMINIG4_STR, THING_TYPE_SHELLYPMMINI),
             Map.entry(THING_TYPE_SHELLY1PMMINI_STR, THING_TYPE_SHELLY1PMMINI),
+            Map.entry(THING_TYPE_SHELLY1PMMINIG3_STR, THING_TYPE_SHELLY1PMMINI),
+            Map.entry(THING_TYPE_SHELLY1PMMINIG4_STR, THING_TYPE_SHELLY1PMMINI),
 
             // Shelly Pro
             Map.entry(THING_TYPE_SHELLYPRO1_STR, THING_TYPE_SHELLYPRO1),
