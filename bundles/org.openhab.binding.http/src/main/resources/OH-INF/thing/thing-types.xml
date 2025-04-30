@@ -157,6 +157,10 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact Channel</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-contact"/>
 	</channel-type>
 
@@ -189,10 +193,6 @@
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location Channel</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<config-description-ref uri="channel-type:http:channel-config"/>
 	</channel-type>
 

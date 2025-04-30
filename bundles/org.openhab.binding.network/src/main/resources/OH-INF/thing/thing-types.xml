@@ -249,6 +249,10 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>States whether a device is online or offline</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
