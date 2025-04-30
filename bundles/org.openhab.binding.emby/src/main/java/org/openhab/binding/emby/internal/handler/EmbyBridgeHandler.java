@@ -141,8 +141,13 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                 String httpBaseUrl = String.format("http://%s:%d", config.ipAddress, config.port);
 
                 // Call the instance connect(...) with the 5-arg signature
-                connection.connect(httpBaseUrl, config.api, exec, config.refreshInterval, config.bufferSize);
-
+                connection.connect(config.ipAddress, // String hostName
+                        config.port, // int port
+                        config.api, // String apiKey
+                        exec, // ScheduledExecutorService
+                        config.refreshInterval, // int refreshRate
+                        config.bufferSize // int bufferSize
+                );
                 // Schedule periodic connection checks
                 connectionCheckerFuture = exec.scheduleWithFixedDelay(() -> {
                     if (!connection.checkConnection()) {

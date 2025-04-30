@@ -10,12 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.emby.internal.protocol;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -36,110 +34,97 @@ import org.slf4j.LoggerFactory;
 public class EmbyConnection implements EmbyClientSocketEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyConnection.class);
+
     private int refreshRate;
+    private String hostname;
+    private int embyport;
     private @Nullable URI wsUri;
     private @Nullable EmbyClientSocket socket;
-    private @Nullable ScheduledExecutorService scheduler;
+    private @Nullable ScheduledExecutorService schedulerInstance;
+
     private final EmbyBridgeListener listener;
     private WebSocketClient sharedWebSocketClient;
-    private @Nullable String hostname;
-    private int embyport;
+    private volatile boolean hasSubscribed = false;
 
-    public EmbyConnection(EmbyBridgeListener listener, WebSocketClient client) {
+    public EmbyConnection(EmbyBridgeListener listener, WebSocketClient embyWebSocketClient) {
         this.listener = listener;
-        this.sharedWebSocketClient = client;
-    }
-
-    @Override
-    public void handleEvent(EmbyPlayStateModel playstate) {
-        // hostname is initialized in connect(...); enforce non-null here
-        String host = Objects.requireNonNull(this.hostname,
-                "EmbyConnection.hostname must be set before handling events");
-        logger.debug("Received event from EMBY server passing it to the bridge handler with hostname {} and port {}",
-                host, embyport);
-        listener.handleEvent(playstate, host, this.embyport);
-    }
-
-    @Override
-    public synchronized void onConnectionOpened() {
-        // Notify openHAB framework we're ONLINE
-        listener.updateConnectionState(true);
-        // Start session polling
-        if (socket != null) {
-            socket.callMethodString("SessionsStart", "0," + this.refreshRate);
-        }
+        this.hostname = "";
+        this.sharedWebSocketClient = embyWebSocketClient;
     }
 
     @Override
     public synchronized void onConnectionClosed() {
-        // Notify framework we're OFFLINE immediately
         listener.updateConnectionState(false);
+        // Optional: this.checkConnection(); — only needed if socket is null or not retrying
     }
 
-    /**
-     * Connect using the HTTP base URL configured by the user (e.g. "http://host:8096/emby").
-     */
-    public synchronized void connect(String httpBaseUrl, String apiKey, ScheduledExecutorService sched, int refreshRate,
-            int bufferSize) {
+    @Override
+    public synchronized void onConnectionOpened() {
+        listener.updateConnectionState(true);
 
-        this.scheduler = sched;
+        if (socket == null || !socket.isConnected()) {
+            schedulerInstance.schedule(this::onConnectionOpened, 50, TimeUnit.MILLISECONDS);
+            return;
+        }
+
+        if (hasSubscribed) {
+            logger.debug("Already subscribed—skipping SessionsStart");
+            return;
+        }
+        hasSubscribed = true;
+
+        socket.sendCommand("SessionsStart", "0," + refreshRate);
+    }
+
+    public synchronized void connect(String setHostName, int port, String apiKey, ScheduledExecutorService scheduler,
+            int refreshRate, int bufferSize) {
+        // remember the scheduler so onConnectionOpened() can reschedule itself
+        this.schedulerInstance = scheduler;
+        this.hostname = setHostName;
+        this.embyport = port;
         this.refreshRate = refreshRate;
-
         try {
-            // derive WS URI from whatever HTTP URL the user gave us
-            URI httpUri = new URI(httpBaseUrl);
-            // keep host/port for later event callbacks
-            this.hostname = httpUri.getHost();
-            this.embyport = httpUri.getPort();
-
-            String wsScheme = httpUri.getScheme().equalsIgnoreCase("https") ? "wss" : "ws";
-            String path = httpUri.getPath();
-            String query = "api_key=" + apiKey;
-            wsUri = new URI(wsScheme, null, httpUri.getHost(), httpUri.getPort(), path, query, null);
-
-            // tear down any old socket
             close();
 
-            // build new socket with shared client
-            socket = new EmbyClientSocket(this, wsUri, sched, bufferSize, sharedWebSocketClient);
-
-            // first attempt now; if it fails, schedule exactly one retry in 60s
-            if (!checkConnection()) {
-                logger.warn("Initial connect to {} failed; retrying in one minute", wsUri);
-                scheduler.schedule(() -> connect(httpBaseUrl, apiKey, sched, refreshRate, bufferSize), 1,
-                        TimeUnit.MINUTES);
-            }
-
+            wsUri = new URI("ws", null, hostname, embyport, null, "api_key=" + apiKey, null);
+            socket = new EmbyClientSocket(this, wsUri, scheduler, bufferSize, sharedWebSocketClient);
+            checkConnection();
         } catch (URISyntaxException e) {
-            logger.error("Invalid HTTP base URL '{}': {}", httpBaseUrl, e.getMessage(), e);
-        }
-    }
-
-    public synchronized boolean checkConnection() {
-        if (socket == null) {
-            return false;
-        }
-        try {
-            if (!socket.isConnected()) {
-                logger.debug("checkConnection: opening {}", wsUri);
-                socket.open();
-            }
-            return socket.isConnected();
-        } catch (Exception e) {
-            logger.error("Connection attempt to {} failed: {}", wsUri, e.getMessage());
-            socket.close();
-            return false;
+            logger.error("exception during constructing URI host={}, port={}", hostname, embyport, e);
         }
     }
 
     public synchronized void close() {
         if (socket != null) {
-            socket.close();
+            socket.close(); // Internally sets shouldReconnect = false
             socket = null;
         }
     }
 
+    @Override
+    public void handleEvent(EmbyPlayStateModel playstate) {
+        logger.debug("Received event from EMBY server passing it to the bridge handler with hostname {} and port {}",
+                hostname, embyport);
+        this.listener.handleEvent(playstate, this.hostname, this.embyport);
+    }
+
+    public boolean checkConnection() {
+        if (!socket.isConnected()) {
+            logger.debug("checkConnection: try to connect to emby {}", wsUri);
+            try {
+                socket.open();
+                return socket.isConnected();
+            } catch (Exception e) {
+                logger.error("exception during connect to {}", wsUri, e);
+                socket.close();
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
     public String getConnectionName() {
-        return wsUri != null ? wsUri.toString() : "";
+        return wsUri.toString();
     }
 }
