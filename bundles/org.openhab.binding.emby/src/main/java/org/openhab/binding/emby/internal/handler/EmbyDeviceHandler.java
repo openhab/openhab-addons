@@ -25,6 +25,7 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MUT
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SHOWTITLE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_STOP;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_TITLE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_DEVICE_ID;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_GENERALCOMMAND;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_MUTE;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_PAUSE;
@@ -33,7 +34,6 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SEN
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SESSION;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_STOP;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_UNMUTE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
@@ -277,9 +277,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     }
 
     private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
-        Object deviceId = this.thing.getConfiguration().get(DEVICE_ID);
+        Object deviceId = this.thing.getConfiguration().get(CONFIG_DEVICE_ID);
         if (deviceId == null || deviceId.toString().isEmpty()) {
-            throwValidationError(DEVICE_ID, "Missing value for key: " + DEVICE_ID);
+            throwValidationError(CONFIG_DEVICE_ID, "Missing value for key: " + CONFIG_DEVICE_ID);
         }
         EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(deviceId.toString());
 

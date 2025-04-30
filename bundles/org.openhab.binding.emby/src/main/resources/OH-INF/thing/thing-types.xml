@@ -151,7 +151,7 @@
 				<label>Image Max Width</label>
 				<description>The maximum width of the image that will be retrieved.</description>
 			</parameter>
-			<parameter name="imageUrlPercentPlayed" type="boolean" default="false">
+			<parameter name="imageUrlPercentPlayed" type="boolean">
 				<label>Show Percent Played Overlay</label>
 				<description>If set to true, a percent played overlay will be added to the image. For example, using
 					PercentPlayed=47 will overlay a 47% progress indicator. Default is false.</description>
