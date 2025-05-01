@@ -166,7 +166,7 @@
 		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -178,7 +178,7 @@
 		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -239,6 +239,7 @@
 		<description>Obstruction alarm of the blinds. The blinds were stopped and moved a bit in the opposite direction.</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Opening</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -249,6 +250,7 @@
 		<description>Temperature alarm of the blinds. Indicates overheating of the motor.</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
