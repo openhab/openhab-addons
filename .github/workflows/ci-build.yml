@@ -11,11 +11,12 @@ on:
       - 'main'
     paths-ignore:
       - '.github/**/*.md'
+    types: [opened,synchronize,reopened,labeled]
   workflow_dispatch:
-  workflow_call:
 
 jobs:
   build:
+    if: ${{ (github.event_name == 'pull_request' && github.event.action != 'labeled') || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.label.name == 'rebuild' }}
     strategy:
       fail-fast: false
       matrix:
@@ -122,3 +123,11 @@ jobs:
         run: |
           echo "::error::Files have changed: $CHANGED_FILES"
           exit 1
+
+      - name: Remove Label
+        if: ${{ always() && github.event.label.name == 'rebuild' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.number }}
+        run: |
+          gh pr edit $PR --remove-label rebuild
