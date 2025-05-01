@@ -92,7 +92,7 @@
 			Winter</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
