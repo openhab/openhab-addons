@@ -343,7 +343,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
                 return DEVICE_HAN_FUN_ON_OFF;
             }
-            if (device.isHumiditySensor() || device.isHumiditySensor()) {
+            if (device.isHumiditySensor() || device.isTemperatureSensor()) {
                 return DEVICE_HAN_FUN_SENSOR;
             }
         }
