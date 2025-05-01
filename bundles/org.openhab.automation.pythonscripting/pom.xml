@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.pythonscripting</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
+
+  <properties>
+    <graalpy.version>24.2.0</graalpy.version>
+  </properties>
+
+  <dependencies>
+    <!-- Graal Polyglot Framework -->
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>polyglot</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
+    <dependency>
+      <groupId>org.graalvm.regex</groupId>
+      <artifactId>regex</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>python-community</artifactId>
+      <version>${graalpy.version}</version>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>2.1.0</version>
+        <configuration>
+          <providerImplementations>
+            <git>jgit</git>
+          </providerImplementations>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-jgit</artifactId>
+            <version>2.1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>checkout-openhab-python</id>
+            <goals>
+              <goal>checkout</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <connectionUrl>scm:git:https://github.com/openhab/openhab-python</connectionUrl>
+              <checkoutDirectory>${project.build.directory}/python</checkoutDirectory>
+              <scmVersion>v1.0.0-rc1</scmVersion>
+              <scmVersionType>tag</scmVersionType>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-openhab-python</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/lib/openhab/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/python/src/</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.lastnpe.eea:eea-all</exclude>
+                  <exclude>org.apache.karaf.features:framework</exclude>
+                  <!-- we use OSGI-ified version, so we don't need the following -->
+                  <exclude>org.graalvm.sdk:collections</exclude>
+                  <exclude>org.graalvm.sdk:jniutils</exclude>
+                  <exclude>org.graalvm.sdk:nativeimage</exclude>
+                  <exclude>org.graalvm.sdk:word</exclude>
+                  <exclude>org.graalvm.shadowed:icu4j</exclude>
+                  <exclude>org.graalvm.shadowed:xz</exclude>
+                  <exclude>org.graalvm.truffle:truffle-compiler</exclude>
+                  <exclude>org.graalvm.truffle:truffle-runtime</exclude>
+                </excludes>
+              </artifactSet>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <!-- Transformer to merge module-info.class
+                  files, if needed -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- run SAT -->
+      <plugin>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-plugin</artifactId>
+        <configuration>
+          <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

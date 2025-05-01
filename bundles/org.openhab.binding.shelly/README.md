@@ -117,6 +117,7 @@ See section [Discovery](#discovery) for details.
 | ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
+| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
@@ -127,12 +128,14 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
-| shellybluht       | Shelly BLU H&T                                         | SBMO      |
+| thing-type        | Model                                                  | Vendor ID               |
+| ----------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton   | Shelly BLU Button 1                                    | SBBT                    |
+| shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
+| shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
+| shellybluht       | Shelly BLU H&T                                         | SBMO                    |
+| shellyblugw       | Shelly BLU Gateway                                     | SNGW-BT01               |
+| shellyblugw3      | Shelly BLU Gateway 3                                   | S3GW-1DBT001            |
 
 ### Special Thing Types
 
@@ -1395,6 +1398,14 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Pro 1CB (thing-type: shellypro1cb)
+
+| Group | Channel      | Type     | read-only | Description                                                                      |
+| ----- | ------------ | -------- | --------- | -------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                     |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
+| meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
+
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
 | Group  | Channel     | Type    | read-only | Description                                                                       |
@@ -1607,7 +1618,7 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-## Shelly BLU Gateway (thing-type: shellyblugw)
+## Shelly BLU Gateway (thing-type: shellyblugw,  shellyblugw3)
 
 There are no additional channels beside the device group.
 

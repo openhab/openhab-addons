@@ -8,7 +8,7 @@
 	<thing-type id="ethernetconnection">
 		<label>Sony Ethernet Connection</label>
 		<description>Ethernet connection to the Sony projector using PJ Talk</description>
-
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>

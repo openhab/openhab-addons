@@ -57,13 +57,6 @@ public interface SubscriptionDataCache<R> {
     void flush();
 
     /**
-     * Get the number of future prices in the cache.
-     *
-     * @return number of cached future prices
-     */
-    long getNumberOfFuturePrices();
-
-    /**
      * Check if all required historic values are cached, considering
      * {@link ElectricityPriceSubscriptionCache#NUMBER_OF_HISTORIC_HOURS}.
      *

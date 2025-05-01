@@ -7,6 +7,7 @@
 	<thing-type id="speedtest">
 		<label>Ookla Speedtest</label>
 		<description>Ookla Speedtest (https://www.speedtest.net/)</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="server" typeId="server"/>
 			<channel id="timestamp" typeId="timestamp"/>

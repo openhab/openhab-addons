@@ -51,6 +51,7 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -276,6 +277,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         this.capabilities = capabilities;
 
         updateDynamicChannels(capabilities, shade);
+
+        if (ShadeCapabilitiesDatabase.DRAPES_TYPES.contains(shade.type)) {
+            updateThing(editThing().withSemanticEquipmentTag(Equipment.DRAPES).build());
+        }
     }
 
     private Capabilities getCapabilitiesOrDefault() {

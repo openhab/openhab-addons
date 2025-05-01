@@ -8,6 +8,7 @@
 		<label>Broadlink A1</label>
 		<description>The Broadlink A1 is a multi sensor that can can detect temperature, humidity, illumination, background
 			noise and air quality.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>

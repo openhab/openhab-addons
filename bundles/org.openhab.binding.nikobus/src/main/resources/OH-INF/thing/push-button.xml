@@ -11,6 +11,7 @@
 
 		<label>Push Button</label>
 		<description>A single push button</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 
 		<channels>
 			<channel id="button" typeId="button"/>

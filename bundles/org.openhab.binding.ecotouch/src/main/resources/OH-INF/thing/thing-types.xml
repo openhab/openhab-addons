@@ -8,6 +8,7 @@
 		<label>Waterkotte EcoTouch Geo</label>
 		<description>Waterkotte EcoTouch Geo heat pump</description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature_outside" typeId="temperature_outside"/>
@@ -155,6 +156,7 @@
 		<label>Waterkotte EcoTouch Air</label>
 		<description>Waterkotte EcoTouch Air heat pump</description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature_outside" typeId="temperature_outside"/>

@@ -8,7 +8,7 @@
 	<thing-type id="project">
 		<label>Tuya Cloud Project</label>
 		<description>This thing represents a single cloud project. Needed for discovery.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>

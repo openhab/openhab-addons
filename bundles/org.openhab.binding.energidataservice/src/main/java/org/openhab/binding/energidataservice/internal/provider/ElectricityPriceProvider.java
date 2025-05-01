@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -142,26 +141,21 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            Set<ElectricityPriceListener> spotPricesUpdatedListeners = new HashSet<>();
             boolean spotPricesSubscribed = false;
-            long numberOfFutureSpotPrices = 0;
+            boolean arePricesFullyCached = true;
 
             for (Entry<Subscription, Set<ElectricityPriceListener>> subscriptionListener : subscriptionToListeners
                     .entrySet()) {
                 Subscription subscription = subscriptionListener.getKey();
                 Set<ElectricityPriceListener> listeners = subscriptionListener.getValue();
 
-                boolean pricesUpdated = downloadPrices(subscription, false);
+                downloadPrices(subscription, false);
                 if (subscription instanceof SpotPriceSubscription) {
                     spotPricesSubscribed = true;
-                    if (pricesUpdated) {
-                        spotPricesUpdatedListeners.addAll(listeners);
-                    }
-                    long numberOfFutureSpotPricesForSubscription = getSpotPriceSubscriptionDataCache(subscription)
-                            .getNumberOfFuturePrices();
-                    if (numberOfFutureSpotPrices == 0
-                            || numberOfFutureSpotPricesForSubscription < numberOfFutureSpotPrices) {
-                        numberOfFutureSpotPrices = numberOfFutureSpotPricesForSubscription;
+                    boolean arePricesFullyCachedForSubscription = getSpotPriceSubscriptionDataCache(subscription)
+                            .arePricesFullyCached();
+                    if (!arePricesFullyCachedForSubscription) {
+                        arePricesFullyCached = false;
                     }
                 }
                 updateCurrentPrices(subscription);
@@ -171,11 +165,7 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             reschedulePriceUpdateJob();
 
             if (spotPricesSubscribed) {
-                LocalTime now = LocalTime.now(NORD_POOL_TIMEZONE);
-
-                if (numberOfFutureSpotPrices >= 13 || (numberOfFutureSpotPrices == 12
-                        && now.isAfter(DAILY_REFRESH_TIME_CET.minusHours(1)) && now.isBefore(DAILY_REFRESH_TIME_CET))) {
-                    spotPricesUpdatedListeners.forEach(listener -> listener.onDayAheadAvailable());
+                if (arePricesFullyCached) {
                     retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
                 } else {
                     logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
@@ -295,6 +285,10 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             isUpdated = cache.put(spotPriceRecords);
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
+
+            if (isUpdated && cache.arePricesFullyCached()) {
+                getListeners(subscription).forEach(listener -> listener.onDayAheadAvailable());
+            }
         }
         return isUpdated;
     }

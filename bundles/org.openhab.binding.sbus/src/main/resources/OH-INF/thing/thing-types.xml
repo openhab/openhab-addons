@@ -12,6 +12,7 @@
 		</supported-bridge-type-refs>
 		<label>Sbus Switch</label>
 		<description>Sbus switch device</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
@@ -42,6 +43,7 @@
 		</supported-bridge-type-refs>
 		<label>Sbus Temperature Sensor</label>
 		<description>Sbus temperature sensor device</description>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
@@ -72,6 +74,7 @@
 		</supported-bridge-type-refs>
 		<label>Sbus RGBW Controller</label>
 		<description>Sbus RGBW lighting controller</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>

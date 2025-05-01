@@ -7,7 +7,7 @@
 	<thing-type id="Purifier">
 		<label>Holmes Air Purifier</label>
 		<description>Holmes Smart Air Purifier with WeMo</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="purifierMode" typeId="purifierMode"/>
 			<channel id="airQuality" typeId="airQuality"/>

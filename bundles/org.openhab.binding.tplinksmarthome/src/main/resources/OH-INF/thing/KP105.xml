@@ -8,7 +8,7 @@
 		<label>KP105</label>
 		<description>TP-Link KP105 Kasa Wi-Fi Smart Plug - Slim Edition</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>
