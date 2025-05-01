@@ -12,20 +12,26 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_TEMPERATURE;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 
 /**
  * {@link TemperatureLightHandler} for lights with brightness and color temperature
@@ -34,15 +40,19 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class TemperatureLightHandler extends DimmableLightHandler {
-    // default values of "standard IKEA lamps" from JSON
-    private int colorTemperatureMax = 2202;
-    private int colorTemperatureMin = 4000;
-    private int range = colorTemperatureMin - colorTemperatureMax;
     private PercentType currentColorTemp = new PercentType();
 
-    public TemperatureLightHandler(Thing thing, Map<String, String> mapping) {
+    protected final DirigeraStateDescriptionProvider stateProvider;
+    // default values of "standard IKEA lamps" from JSON
+    protected int colorTemperatureMin = 4000;
+    protected int colorTemperatureMax = 2202;
+    protected int range = colorTemperatureMin - colorTemperatureMax;
+
+    public TemperatureLightHandler(Thing thing, Map<String, String> mapping,
+            DirigeraStateDescriptionProvider stateProvider) {
         super(thing, mapping);
         super.setChildHandler(this);
+        this.stateProvider = stateProvider;
     }
 
     @Override
@@ -64,6 +74,11 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                     properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax));
                 }
             }
+            StateDescriptionFragment fragment = StateDescriptionFragmentBuilder.create()
+                    .withMinimum(BigDecimal.valueOf(colorTemperatureMax))
+                    .withMaximum(BigDecimal.valueOf(colorTemperatureMin)).withStep(BigDecimal.valueOf(100))
+                    .withPattern("%.0f K").withReadOnly(false).build();
+            stateProvider.setStateDescription(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS), fragment);
             updateProperties(properties);
             range = colorTemperatureMin - colorTemperatureMax;
             handleUpdate(values);
@@ -75,29 +90,38 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
-        if (targetProperty != null) {
-            switch (channel) {
-                case CHANNEL_LIGHT_TEMPERATURE:
-                    if (command instanceof PercentType percent) {
-                        /*
-                         * some color lights which inherit this temperature light don't have the temperature capability.
-                         * As workaround child class ColorLightHandler is handling color temperature
-                         */
-                        if (receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY)) {
-                            int kelvin = getKelvin(percent.intValue());
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, kelvin);
-                            super.changeProperty(LightCommand.Action.TEMPERATURE, attributes);
-                            if (!isPowered()) {
-                                // fake event for power OFF
-                                updateState(channelUID, percent);
-                            }
-                        }
-                    } else if (command instanceof OnOffType onOff) {
-                        super.addOnOffCommand(OnOffType.ON.equals(onOff));
+        switch (channel) {
+            case CHANNEL_LIGHT_TEMPERATURE_ABS:
+                targetProperty = "colorTemperature";
+            case CHANNEL_LIGHT_TEMPERATURE:
+                int kelvinValue = -1;
+                int percentValue = -1;
+                if (command instanceof PercentType percent) {
+                    percentValue = percent.intValue();
+                    kelvinValue = getKelvin(percent.intValue());
+                } else if (command instanceof QuantityType number) {
+                    kelvinValue = number.intValue();
+                    percentValue = getPercent(kelvinValue);
+                } else if (command instanceof OnOffType onOff) {
+                    super.addOnOffCommand(OnOffType.ON.equals(onOff));
+                }
+                /*
+                 * some color lights which inherit this temperature light don't have the temperature capability.
+                 * As workaround child class ColorLightHandler is handling color temperature
+                 */
+                if (receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY) && percentValue != -1
+                        && kelvinValue != -1) {
+                    JSONObject attributes = new JSONObject();
+                    attributes.put(targetProperty, kelvinValue);
+                    super.changeProperty(LightCommand.Action.TEMPERATURE, attributes);
+                    if (!isPowered()) {
+                        // fake event for power OFF
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE),
+                                new PercentType(percentValue));
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS),
+                                QuantityType.valueOf(kelvinValue, Units.KELVIN));
                     }
-                    break;
-            }
+                }
         }
     }
 
@@ -121,6 +145,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                             int percent = getPercent(kelvin);
                             currentColorTemp = new PercentType(percent);
                             updateState(new ChannelUID(thing.getUID(), targetChannel), currentColorTemp);
+                            updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS),
+                                    QuantityType.valueOf(kelvin, Units.KELVIN));
                             break;
                     }
                 }

@@ -52,7 +52,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPIImpl.class);
 
     private static final String GENREAL_LOCK = "lock";
-    private Set<String> activeCallers = new TreeSet();
+    private Set<String> activeCallers = new TreeSet<>();
     private HttpClient httpClient;
     private Gateway gateway;
 

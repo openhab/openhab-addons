@@ -149,6 +149,8 @@ public class Constants {
     // Light channels
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "brightness";
     public static final String CHANNEL_LIGHT_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_LIGHT_TEMPERATURE_ABS = "color-temperature-abs";
+
     public static final String CHANNEL_LIGHT_COLOR = "color";
     public static final String CHANNEL_LIGHT_PRESET = "light-preset";
 

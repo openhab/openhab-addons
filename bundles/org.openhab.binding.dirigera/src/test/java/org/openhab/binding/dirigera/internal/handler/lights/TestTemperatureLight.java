@@ -22,10 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -36,7 +38,9 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -67,7 +71,9 @@ class TestTemperatureLight {
                 false, List.of());
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        TemperatureLightHandler handler = new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);
+        TemperatureLightHandler handler = new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP,
+                new DirigeraStateDescriptionProvider(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
+                        mock(ChannelTypeI18nLocalizationService.class)));
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);

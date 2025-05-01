@@ -101,10 +101,10 @@ class TestGeneric {
         assertEquals(26, hsb.getHue().intValue(), "HSB Color Hue");
         assertEquals(19, hsb.getSaturation().intValue(), "HSB Saturation");
 
-        for (int i = 1000; i < 10000; i = i + 100) {
+        for (int i = 1000; i < 5000; i = i + 100) {
             HSBType selfHSB = ColorLightHandler.getHSBTemperature(i);
             HSBType utilHSB = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(i));
-            System.out.println(i + " : " + selfHSB + " : " + utilHSB);
+            System.out.println("Kelvin " + i + " RGB:" + selfHSB + " ColorUtil: " + utilHSB);
         }
     }
 

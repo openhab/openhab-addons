@@ -16,6 +16,7 @@
 			<channel id="power" typeId="system.power">
 				<label>Plug Powered</label>
 				<description>Power state of plug </description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="startup" typeId="startup"/>
 			<channel id="custom-name" typeId="custom-name"/>

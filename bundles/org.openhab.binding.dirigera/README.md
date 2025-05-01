@@ -327,22 +327,24 @@ Channel `brightness` can receive
 
 Light with color temperature support.
 
-| Channel               | Type                  | Read/Write | Description                                          |
-|-----------------------|-----------------------|------------|------------------------------------------------------|
-| `power`               | Switch                | RW         | Power state of light                                 |
-| `brightness`          | Dimmer                | RW         | Control brightness of light                          |
-| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of light                                 |          |
+| `brightness`              | Dimmer                | RW         | Control brightness of light                          |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |    X     |
 
 ## Color Lights
 
 Light with color support.
 
-| Channel               | Type                  | Read/Write | Description                                          |
-|-----------------------|-----------------------|------------|------------------------------------------------------|
-| `power`               | Switch                | RW         | Power state of light                                 |
-| `brightness`          | Dimmer                | RW         | Brightness of light in percent                       |
-| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |
-| `color`               | Color                 | RW         | Color of light with hue, saturation and brightness   |
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of light                                 |          |
+| `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |          |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |    X     |
 
 Channel `color` can receive
 

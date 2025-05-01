@@ -22,10 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -36,7 +38,9 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -66,7 +70,9 @@ class TestColorLight {
                 false, List.of());
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        ColorLightHandler handler = new ColorLightHandler(thing, COLOR_LIGHT_MAP);
+        ColorLightHandler handler = new ColorLightHandler(thing, COLOR_LIGHT_MAP,
+                new DirigeraStateDescriptionProvider(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
+                        mock(ChannelTypeI18nLocalizationService.class)));
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);

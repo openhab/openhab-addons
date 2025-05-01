@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
-import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
@@ -70,7 +69,7 @@ class TestDimmableLight {
                 false, List.of());
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        TemperatureLightHandler handler = new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);
+        DimmableLightHandler handler = new DimmableLightHandler(thing, TEMPERATURE_LIGHT_MAP);
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);
@@ -92,7 +91,6 @@ class TestDimmableLight {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE), RefreshType.REFRESH);
         logger.warn("Check");
         checkLightStates(callback);
     }

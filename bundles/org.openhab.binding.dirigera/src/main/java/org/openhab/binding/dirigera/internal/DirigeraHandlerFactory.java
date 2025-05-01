@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.dirigera", service = ThingHandlerFactory.class)
 public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandlerFactory.class);
+    private final DirigeraStateDescriptionProvider stateProvider;
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
     private final LocationProvider locationProvider;
@@ -78,10 +79,14 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference DirigeraDiscoveryService discovery, final @Reference LocationProvider locationProvider,
-            final @Reference DirigeraCommandProvider commandProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference DirigeraCommandProvider commandProvider,
+            final @Reference DirigeraStateDescriptionProvider stateProvider) {
         this.locationProvider = locationProvider;
         this.commandProvider = commandProvider;
         this.discoveryService = discovery;
+        this.stateProvider = stateProvider;
+        timezoneProvider = timeZoneProvider;
 
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         insecureClient.setUserAgentField(null);
@@ -118,9 +123,9 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryService,
                     locationProvider, commandProvider, bundleContext);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
-            return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
+            return new ColorLightHandler(thing, COLOR_LIGHT_MAP, stateProvider);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
-            return new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);
+            return new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP, stateProvider);
         } else if (THING_TYPE_DIMMABLE_LIGHT.equals(thingTypeUID)) {
             return new DimmableLightHandler(thing, TEMPERATURE_LIGHT_MAP);
         } else if (THING_TYPE_SWITCH_LIGHT.equals(thingTypeUID)) {
