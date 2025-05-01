@@ -79,14 +79,12 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference DirigeraDiscoveryService discovery, final @Reference LocationProvider locationProvider,
-            final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference DirigeraCommandProvider commandProvider,
             final @Reference DirigeraStateDescriptionProvider stateProvider) {
         this.locationProvider = locationProvider;
         this.commandProvider = commandProvider;
         this.discoveryService = discovery;
         this.stateProvider = stateProvider;
-        timezoneProvider = timeZoneProvider;
 
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         insecureClient.setUserAgentField(null);

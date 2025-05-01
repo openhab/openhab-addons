@@ -36,9 +36,8 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
     public HandlerFactoryMock(StorageService storageService) {
         super(storageService, new DicoveryServiceMock(), mock(LocationProvider.class),
-                DirigeraHandlerFactory.timezoneProvider, mock(DirigeraCommandProvider.class),
-                new DirigeraStateDescriptionProvider(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
-                        mock(ChannelTypeI18nLocalizationService.class)));
+                mock(DirigeraCommandProvider.class), new DirigeraStateDescriptionProvider(mock(EventPublisher.class),
+                        mock(ItemChannelLinkRegistry.class), mock(ChannelTypeI18nLocalizationService.class)));
     }
 
     @Override

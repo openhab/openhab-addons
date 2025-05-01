@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,9 @@ public class DirigeraStateDescriptionProvider extends BaseDynamicStateDescriptio
             StateDescriptionFragment old = stateDescriptionMap.get(channelUid);
             stateDescriptionMap.put(channelUid, stateDescriptionFragment);
             Set<String> linkedItems = null;
-            if (itemChannelLinkRegistry != null) {
-                linkedItems = itemChannelLinkRegistry.getLinkedItemNames(channelUid);
+            ItemChannelLinkRegistry compareRegistry = itemChannelLinkRegistry;
+            if (compareRegistry != null) {
+                linkedItems = compareRegistry.getLinkedItemNames(channelUid);
             }
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUid,
                     linkedItems != null ? linkedItems : Set.of(), stateDescriptionFragment, old));
