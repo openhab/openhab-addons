@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+
 @NonNullByDefault
 public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeListener {
 
@@ -137,9 +138,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
         exec.execute(() -> {
             try {
-                // Build a full HTTP URL from host + port
-                String httpBaseUrl = String.format("http://%s:%d", config.ipAddress, config.port);
-
                 // Call the instance connect(...) with the 5-arg signature
                 connection.connect(config.ipAddress, // String hostName
                         config.port, // int port
@@ -177,7 +175,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             } else {
                 logger.warn("Callback IP address is not set");
             }
-            if (config.api != null && !config.api.isEmpty()) {
+            if (!config.api.isEmpty()) {
                 this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
             }
             this.connection = new EmbyConnection(this, this.webSocketClient);
@@ -225,8 +223,14 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         }
     }
 
-    public void registerDeviceFoundListener(EmbyClientDiscoveryService embyClientDiscoverySerice) {
-        this.clientDiscoveryService = embyClientDiscoverySerice;
+    /** Called once by the factory right after it has created the discovery service. */
+    public void setClientDiscoveryService(@Nullable EmbyClientDiscoveryService discovery) {
+        this.clientDiscoveryService = discovery;
+    }
+
+    @Nullable
+    public EmbyClientDiscoveryService getClientDiscoveryService() {
+        return clientDiscoveryService;
     }
 
     @Override
@@ -255,23 +259,22 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private EmbyBridgeConfiguration checkConfiguration() throws ConfigValidationException {
         EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
 
-        if (embyConfig.api == null || embyConfig.api.isEmpty()) {
+        if (embyConfig.api.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "There is no API key configured for this bridge, please add an API key to enable communication");
             throwValidationError("api", "Missing value for: api");
 
         }
 
-        if (embyConfig.ipAddress == null || embyConfig.ipAddress.isEmpty()) {
+        if (embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No network address specified, please specify the network address for the EMBY server");
             throwValidationError("ipAddress", "Missing value for: ipAddress");
 
         }
 
-        if (this.httputils == null && config != null && config.api != null && !config.api.isEmpty()) {
-            this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
-        }
+        this.httputils = new EmbyHTTPUtils(30, config.api, getServerAddress());
+
         return embyConfig;
     }
 
@@ -298,15 +301,23 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void dispose() {
-        // 1) Cancel the periodic connection check
+        // 1 Stop the periodic connection-check task
         if (connectionCheckerFuture != null && !connectionCheckerFuture.isCancelled()) {
             connectionCheckerFuture.cancel(true);
         }
-        // 2) Close the Emby connection
+
+        // 2 Close the active Emby connection
         if (connection != null) {
             connection.close();
         }
-        // 3) Let the super class do its cleanup (threads, etc.)
+
+        // 3 Detach from the discovery service (if still wired)
+        if (clientDiscoveryService != null) {
+            clientDiscoveryService.clearBridge(this);
+            clientDiscoveryService = null;
+        }
+
+        // 4 Let the superclass clean up thread-pools, listeners, etc.
         super.dispose();
     }
 }

@@ -16,7 +16,6 @@ import java.util.EventListener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
-import org.openhab.binding.emby.internal.protocol.EmbyConnection;
 
 /**
  * Listener interface to receive status updates from an {@link EmbyConnection}.

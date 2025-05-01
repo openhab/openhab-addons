@@ -18,6 +18,7 @@ import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,8 +29,10 @@ import org.openhab.binding.emby.internal.protocol.EmbyDeviceEncoder;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,19 +43,38 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+@Component(service = DiscoveryService.class, factory = "emby:client", configurationPid = "discovery.embydevice", property = {
+        "discovery.interval:Integer=0", "thingTypeUIDs=emby:device" })
 @NonNullByDefault
 public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(EmbyClientDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_EMBY_DEVICE);
-    private final EmbyBridgeHandler embyBridgeHandler;
+    // DS will inject the one-and-only bridge handler whose thingUID matches
+    private @Nullable EmbyBridgeHandler embyBridgeHandler;
 
-    public EmbyClientDiscoveryService(EmbyBridgeHandler embyBridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 10, true);
-        this.embyBridgeHandler = embyBridgeHandler;
+    public EmbyClientDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, 0, true);
     }
 
-    public void activate() {
-        embyBridgeHandler.registerDeviceFoundListener(this);
+    /*
+     * ------------------------------------------------------------------
+     * Called once by EmbyHandlerFactory immediately after it creates the
+     * discovery service instance.
+     * ------------------------------------------------------------------
+     */
+    public void setBridge(EmbyBridgeHandler handler) {
+        this.embyBridgeHandler = handler;
+    }
+
+    /*
+     * ------------------------------------------------------------------
+     * Called by the factory just before it disposes the ComponentInstance.
+     * ------------------------------------------------------------------
+     */
+    public void clearBridge(EmbyBridgeHandler handler) {
+        if (Objects.equals(this.embyBridgeHandler, handler)) {
+            this.embyBridgeHandler = null;
+        }
     }
 
     @Override

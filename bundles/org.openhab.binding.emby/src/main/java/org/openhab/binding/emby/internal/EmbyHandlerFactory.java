@@ -20,6 +20,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,10 +41,12 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.ComponentFactory;
+import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.emby", service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.emby", configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
@@ -66,16 +69,18 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
     private @Nullable String callbackUrl = null;
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    @Reference(target = "(component.factory=emby:client)")
+    private @Nullable ComponentFactory<DiscoveryService> discoveryFactory;
+    private final Map<ThingUID, ComponentInstance<DiscoveryService>> discoveryInstances = new HashMap<>();
 
     @Activate
-    public EmbyHandlerFactory(final @Reference WebSocketFactory webSocketClientFactory,
-            final @Reference NetworkAddressService networkAddressService, final ComponentContext componentContext) {
+    public EmbyHandlerFactory(@Reference WebSocketFactory webSocketClientFactory,
+            @Reference NetworkAddressService networkAddressService, ComponentContext componentContext) {
         super.activate(componentContext);
         this.webSocketClientFactory = webSocketClientFactory;
         this.networkAddressService = networkAddressService;
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        this.callbackUrl = (String) properties.get("callbackUrl");
+        Dictionary<String, Object> props = componentContext.getProperties();
+        this.callbackUrl = (String) props.get("callbackUrl");
     }
 
     @Override
@@ -85,18 +90,59 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(THING_TYPE_EMBY_DEVICE)) {
+        if (THING_TYPE_EMBY_DEVICE.equals(thing.getThingTypeUID())) {
             logger.debug("Creating EMBY Device Handler for {}.", thing.getLabel());
             return new EmbyDeviceHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_EMBY_CONTROLLER)) {
-            logger.debug("Creating EMBY Bridge Handler for {}.", thing.getLabel());
+        }
+
+        if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
             EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, createCallbackUrl(),
                     createCallbackPort(), webSocketClientFactory.getCommonWebSocketClient());
-            registerEmbyClientDiscoveryService(bridgeHandler);
+            Dictionary<String, Object> cfg = new Hashtable<>();
+            cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
+
+            ComponentFactory<DiscoveryService> factory = Objects.requireNonNull(discoveryFactory,
+                    "discoveryFactory must be injected");
+
+            ComponentInstance<DiscoveryService> ci = factory.newInstance(cfg);
+            EmbyClientDiscoveryService discovery = (EmbyClientDiscoveryService) ci.getInstance();
+            discovery.setBridge(bridgeHandler);
+            bridgeHandler.setClientDiscoveryService(discovery);
+            discoveryInstances.put(bridgeHandler.getThing().getUID(), ci);
+
             return bridgeHandler;
         }
-        return null;
+
+        return null; // unknown thing-type
+    }
+
+    @Override
+    public void removeHandler(ThingHandler handler) {
+        ThingUID uid = handler.getThing().getUID();
+
+        /*
+         * --------------------------------------------------------------
+         * 1 — dispose the DS ComponentInstance that hosts the discovery
+         * --------------------------------------------------------------
+         */
+        ComponentInstance ci = discoveryInstances.remove(uid);
+        if (ci != null) {
+            EmbyClientDiscoveryService discovery = (EmbyClientDiscoveryService) ci.getInstance();
+
+            // undo the manual wiring done in createHandler(…)
+            if (handler instanceof EmbyBridgeHandler bridge) {
+                discovery.clearBridge(bridge);
+            }
+
+            ci.dispose(); // shuts the DS component down
+        }
+
+        /*
+         * --------------------------------------------------------------
+         * 2 — delegate to super so the rest of the framework is cleaned
+         * --------------------------------------------------------------
+         */
+        super.removeHandler(handler);
     }
 
     private @Nullable String createCallbackUrl() {
@@ -122,12 +168,5 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         return Integer.toString(port);
-    }
-
-    private synchronized void registerEmbyClientDiscoveryService(EmbyBridgeHandler bridgeHandler) {
-        EmbyClientDiscoveryService discoveryService = new EmbyClientDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 }
