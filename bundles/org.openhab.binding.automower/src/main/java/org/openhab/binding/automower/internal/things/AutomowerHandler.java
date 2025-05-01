@@ -34,15 +34,21 @@ import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Action;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Activity;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Headlight;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.InactiveReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Message;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerApp;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaAttributes;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Planner;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Position;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
@@ -339,7 +345,8 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (isValidResult(mowerState)) {
                     initializeProperties(mowerState);
 
-                    updateChannelState(mowerState, mowerMessages);
+                    updateMowerChannelState(mowerState);
+                    updateMessagesChannelState(mowerMessages);
 
                     if (isConnected(mowerState)) {
                         updateStatus(ThingStatus.ONLINE);
@@ -773,7 +780,7 @@ public class AutomowerHandler extends BaseThingHandler {
         return null;
     }
 
-    private synchronized void updateChannelState(@Nullable Mower mower, @Nullable MowerMessages mowerMessages) {
+    private synchronized void updateMowerChannelState(@Nullable Mower mower) {
         if (isValidResult(mower)) {
             Capabilities capabilities = mower.getAttributes().getCapabilities();
 
@@ -1167,7 +1174,9 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             }
         }
+    }
 
+    private void updateMessagesChannelState(@Nullable MowerMessages mowerMessages) {
         if (mowerMessages != null) {
             List<Message> messages = mowerMessages.getAttributes().getMessages();
             if (messages != null) {
@@ -1342,110 +1351,241 @@ public class AutomowerHandler extends BaseThingHandler {
 
     // https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=websocket%20api
     public void processWebSocketMessage(JsonObject event) {
-        if (!isConnected(mowerState)) {
-            logger.debug("Ignoring WebSocket message: {}", event);
-            return;
-        }
-        String type = event.has("type") ? event.get("type").getAsString() : null;
-        if (type == null) {
-            logger.warn("WebSocket event without type: {}", event);
-            return;
-        }
-
-        switch (type) {
-            case "position-event-v2":
-                if (event.has("attributes")) {
-                    JsonObject attributes = event.getAsJsonObject("attributes");
-                    if (attributes.has("position")) {
-                        JsonObject position = attributes.getAsJsonObject("position");
-                        if (position.has("latitude") && position.has("longitude")) {
-                            double latitude = position.get("latitude").getAsDouble();
-                            double longitude = position.get("longitude").getAsDouble();
-                            logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
-                            mowerState.getAttributes().getLastPosition().setLatitude(latitude);
-                            mowerState.getAttributes().getLastPosition().setLongitude(longitude);
-                            updateChannelState(mowerState, mowerMessages);
+        if (isValidResult(mowerState) && (mowerMessages != null)) {
+            String type = event.has("type") ? event.get("type").getAsString() : null;
+            if (type != null) {
+                switch (type) {
+                    case "battery-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("battery") && attributes.get("battery").isJsonObject()) {
+                                JsonObject batteryObj = attributes.getAsJsonObject("battery");
+                                if (batteryObj.has("batteryPercent")) {
+                                    byte batteryPercent = batteryObj.get("batteryPercent").getAsByte();
+                                    logger.debug("Received battery update: {}%", batteryPercent);
+                                    mowerState.getAttributes().getBattery().setBatteryPercent(batteryPercent);
+                                    updateMowerChannelState(mowerState);
+                                }
+                            }
                         }
-                    }
-                }
-                break;
-
-            case "battery-event-v2":
-                if (event.has("attributes")) {
-                    JsonObject attributes = event.getAsJsonObject("attributes");
-                    if (attributes.has("battery") && attributes.get("battery").isJsonObject()) {
-                        JsonObject batteryObj = attributes.getAsJsonObject("battery");
-                        if (batteryObj.has("batteryPercent")) {
-                            byte batteryPercent = batteryObj.get("batteryPercent").getAsByte();
-                            logger.debug("Received battery update: {}%", batteryPercent);
-                            mowerState.getAttributes().getBattery().setBatteryPercent(batteryPercent);
-                            updateChannelState(mowerState, mowerMessages);
+                        break;
+                    case "calendar-event-v2":
+                        /*
+                         * if (event.has("attributes")) {
+                         * JsonObject attributes = event.getAsJsonObject("attributes");
+                         * if (attributes.has("calendar") && attributes.get("calendar").isJsonObject()) {
+                         * JsonObject calendarObj = attributes.getAsJsonObject("calendar");
+                         * List<CalendarTask> calendarTasks = mowerState.getAttributes().getCalendarTasks();
+                         * if (calendarTasks != null) {
+                         * for (int i = 0; i < calendarTasks.size(); i++) {
+                         * CalendarTask task = calendarTasks.get(i);
+                         * if (calendarObj.has("start")) {
+                         * task.setStart(calendarObj.get("start").getAsInt());
+                         * }
+                         * if (calendarObj.has("duration")) {
+                         * task.setDuration(calendarObj.get("duration").getAsInt());
+                         * }
+                         * if (calendarObj.has("monday")) {
+                         * task.setMonday(calendarObj.get("monday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("tuesday")) {
+                         * task.setTuesday(calendarObj.get("tuesday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("wednesday")) {
+                         * task.setWednesday(calendarObj.get("wednesday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("thursday")) {
+                         * task.setThursday(calendarObj.get("thursday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("friday")) {
+                         * task.setFriday(calendarObj.get("friday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("saturday")) {
+                         * task.setSaturday(calendarObj.get("saturday").getAsBoolean());
+                         * }
+                         * if (calendarObj.has("sunday")) {
+                         * task.setSunday(calendarObj.get("sunday").getAsBoolean());
+                         * }
+                         * }
+                         * updateMowerChannelState(mowerState);
+                         * }
+                         * }
+                         * }
+                         */
+                        break;
+                    case "cuttingHeight-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("cuttingHeight") && attributes.get("cuttingHeight").isJsonObject()) {
+                                JsonObject cuttingHeightObj = attributes.getAsJsonObject("cuttingHeight");
+                                if (cuttingHeightObj.has("height")) {
+                                    mowerState.getAttributes().getSettings()
+                                            .setCuttingHeight(cuttingHeightObj.get("height").getAsByte());
+                                    logger.debug("Received cutting height update: {}",
+                                            cuttingHeightObj.get("height").getAsByte());
+                                    updateMowerChannelState(mowerState);
+                                }
+                            }
                         }
-                    }
-                }
-                break;
+                        break;
+                    case "headlights-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("headlight") && attributes.get("headlight").isJsonObject()) {
+                                JsonObject headlightObj = attributes.getAsJsonObject("headlight");
+                                if (headlightObj.has("mode")) {
+                                    mowerState.getAttributes().getSettings().getHeadlight().setHeadlightMode(
+                                            HeadlightMode.valueOf(headlightObj.get("mode").getAsString()));
+                                    logger.debug("Received headlight mode update: {}",
+                                            headlightObj.get("mode").getAsString());
+                                    updateMowerChannelState(mowerState);
+                                }
+                            }
+                        }
+                        break;
+                    case "message-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("message") && attributes.get("message").isJsonObject()) {
+                                JsonObject msgObj = attributes.getAsJsonObject("message");
+                                long time = msgObj.has("time") ? msgObj.get("time").getAsLong() : 0L;
+                                int code = msgObj.has("code") ? msgObj.get("code").getAsInt() : 0;
+                                String severity = msgObj.has("severity") ? msgObj.get("severity").getAsString() : "";
+                                Double latitude = msgObj.has("latitude") ? msgObj.get("latitude").getAsDouble() : null;
+                                Double longitude = msgObj.has("longitude") ? msgObj.get("longitude").getAsDouble()
+                                        : null;
+                                logger.debug("Received mower message: time={}, code={}, severity={}, lat={}, lon={}",
+                                        time, code, severity, latitude, longitude);
 
-            case "messages-event-v2":
-                if (event.has("attributes")) {
-                    JsonObject attributes = event.getAsJsonObject("attributes");
-                    if (attributes.has("message") && attributes.get("message").isJsonObject()) {
-                        JsonObject msgObj = attributes.getAsJsonObject("message");
-                        long time = msgObj.has("time") ? msgObj.get("time").getAsLong() : 0L;
-                        int code = msgObj.has("code") ? msgObj.get("code").getAsInt() : 0;
-                        String severity = msgObj.has("severity") ? msgObj.get("severity").getAsString() : "";
-                        Double latitude = msgObj.has("latitude") ? msgObj.get("latitude").getAsDouble() : null;
-                        Double longitude = msgObj.has("longitude") ? msgObj.get("longitude").getAsDouble() : null;
-                        logger.debug("Received mower message: time={}, code={}, severity={}, lat={}, lon={}", time,
-                                code, severity, latitude, longitude);
-                        // You can update channels here, e.g.:
-                        // updateState(CHANNEL_MESSAGE_TIME, new DateTimeType(Instant.ofEpochSecond(time)));
-                        // updateState(CHANNEL_MESSAGE_CODE, new DecimalType(code));
-                        // updateState(CHANNEL_MESSAGE_SEVERITY, new StringType(severity));
-                        // updateState(CHANNEL_MESSAGE_LOCATION, new PointType(new DecimalType(latitude), new
-                        // DecimalType(longitude)));
-                    }
-                }
-                break;
+                                List<Message> messages = mowerMessages.getAttributes().getMessages();
+                                if (messages != null) {
+                                    Message message = messages.get(0);
+                                    if (message != null) {
+                                        message.setTime(time);
+                                        message.setCode(code);
+                                        message.setSeverity(severity);
+                                        message.setLatitude(latitude);
+                                        message.setLongitude(longitude);
+                                        updateMessagesChannelState(mowerMessages);
+                                    }
+                                }
+                            }
+                        }
+                        break;
 
-            case "mower-event-v2":
-                if (event.has("attributes")) {
-                    JsonObject attributes = event.getAsJsonObject("attributes");
-                    if (attributes.has("mower") && attributes.get("mower").isJsonObject()) {
-                        JsonObject mowerObj = attributes.getAsJsonObject("mower");
-                        String mode = mowerObj.has("mode") ? mowerObj.get("mode").getAsString() : "";
-                        String activity = mowerObj.has("activity") ? mowerObj.get("activity").getAsString() : "";
-                        String inactiveReason = mowerObj.has("inactiveReason")
-                                ? mowerObj.get("inactiveReason").getAsString()
-                                : "";
-                        String state = mowerObj.has("state") ? mowerObj.get("state").getAsString() : "";
-                        int errorCode = mowerObj.has("errorCode") ? mowerObj.get("errorCode").getAsInt() : 0;
-                        boolean isErrorConfirmable = mowerObj.has("isErrorConfirmable")
-                                && mowerObj.get("isErrorConfirmable").getAsBoolean();
-                        long errorCodeTimestamp = mowerObj.has("errorCodeTimestamp")
-                                ? mowerObj.get("errorCodeTimestamp").getAsLong()
-                                : 0L;
-                        long workAreaId = mowerObj.has("workAreaId") ? mowerObj.get("workAreaId").getAsLong() : 0L;
-                        logger.debug(
-                                "Received mower event: mode={}, activity={}, inactiveReason={}, state={}, errorCode={}, isErrorConfirmable={}, errorCodeTimestamp={}, workAreaId={}",
-                                mode, activity, inactiveReason, state, errorCode, isErrorConfirmable,
-                                errorCodeTimestamp, workAreaId);
-                        // You can update channels here, e.g.:
-                        // updateState(CHANNEL_STATUS_MODE, new StringType(mode));
-                        // updateState(CHANNEL_STATUS_ACTIVITY, new StringType(activity));
-                        // updateState(CHANNEL_STATUS_INACTIVE_REASON, new StringType(inactiveReason));
-                        // updateState(CHANNEL_STATUS_STATE, new StringType(state));
-                        // updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(errorCode));
-                        // updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE, OnOffType.from(isErrorConfirmable));
-                        // updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new
-                        // DateTimeType(Instant.ofEpochSecond(errorCodeTimestamp)));
-                        // updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
-                    }
-                }
-                break;
+                    case "mower-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("mower") && attributes.get("mower").isJsonObject()) {
+                                JsonObject mowerObj = attributes.getAsJsonObject("mower");
+                                MowerApp mower = mowerState.getAttributes().getMower();
+                                if (mowerObj.has("mode")) {
+                                    mower.setMode(Mode.valueOf(mowerObj.get("mode").getAsString()));
+                                }
+                                if (mowerObj.has("activity")) {
+                                    mower.setActivity(Activity.valueOf(mowerObj.get("activity").getAsString()));
+                                }
+                                if (mowerObj.has("inactiveReason")) {
+                                    mower.setInactiveReason(
+                                            InactiveReason.valueOf(mowerObj.get("inactiveReason").getAsString()));
+                                }
+                                if (mowerObj.has("state")) {
+                                    mower.setState(State.valueOf(mowerObj.get("state").getAsString()));
+                                }
+                                if (mowerObj.has("errorCode")) {
+                                    mower.setErrorCode(mowerObj.get("errorCode").getAsInt());
+                                }
+                                if (mowerObj.has("isErrorConfirmable")) {
+                                    mower.setIsErrorConfirmable(mowerObj.get("isErrorConfirmable").getAsBoolean());
+                                }
+                                if (mowerObj.has("errorCodeTimestamp")) {
+                                    mower.setErrorCodeTimestamp(mowerObj.get("errorCodeTimestamp").getAsLong());
+                                }
+                                if (mowerObj.has("workAreaId")) {
+                                    mower.setWorkAreaId(mowerObj.get("workAreaId").getAsLong());
+                                }
 
-            default:
-                logger.debug("Unhandled WebSocket event type: {}", type);
-                break;
+                                logger.debug(
+                                        "Received mower event: mode={}, activity={}, inactiveReason={}, state={}, errorCode={}, isErrorConfirmable={}, errorCodeTimestamp={}, workAreaId={}",
+                                        mowerObj.get("mode").getAsString(), mowerObj.get("activity").getAsString(),
+                                        mowerObj.get("inactiveReason").getAsString(),
+                                        mowerObj.get("state").getAsString(), mowerObj.get("errorCode").getAsInt(),
+                                        mowerObj.get("isErrorConfirmable").getAsBoolean(),
+                                        mowerObj.get("errorCodeTimestamp").getAsLong(),
+                                        mowerObj.get("workAreaId").getAsLong());
+                                updateMowerChannelState(mowerState);
+                            }
+                        }
+                        break;
+                    case "planner-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("planner") && attributes.get("planner").isJsonObject()) {
+                                JsonObject plannerObj = attributes.getAsJsonObject("planner");
+                                Planner planner = mowerState.getAttributes().getPlanner();
+                                if (plannerObj.has("nextStartTimestamp")) {
+                                    planner.setNextStartTimestamp(plannerObj.get("nextStartTimestamp").getAsLong());
+                                }
+                                if (plannerObj.has("override") && plannerObj.get("override").isJsonObject()) {
+                                    JsonObject overrideObj = plannerObj.getAsJsonObject("override");
+                                    if (overrideObj.has("action")) {
+                                        planner.getOverride()
+                                                .setAction(Action.valueOf(overrideObj.get("action").getAsString()));
+                                    }
+                                }
+                                if (plannerObj.has("restrictedReason")) {
+                                    planner.setRestrictedReason(
+                                            RestrictedReason.valueOf(plannerObj.get("restrictedReason").getAsString()));
+                                }
+                                if (plannerObj.has("externalReason")) {
+                                    planner.setExternalReason(plannerObj.get("externalReason").getAsInt());
+                                }
+                                logger.debug(
+                                        "Received planner event: nextStartTimestamp={}, override.action={}, restrictedReason={}, externalReason={}",
+                                        plannerObj.has("nextStartTimestamp")
+                                                ? plannerObj.get("nextStartTimestamp").getAsLong()
+                                                : null,
+                                        plannerObj.has("override") && plannerObj.get("override").isJsonObject()
+                                                && plannerObj.getAsJsonObject("override").has("action")
+                                                        ? plannerObj.getAsJsonObject("override").get("action")
+                                                                .getAsString()
+                                                        : null,
+                                        plannerObj.has("restrictedReason")
+                                                ? plannerObj.get("restrictedReason").getAsString()
+                                                : null,
+                                        plannerObj.has("externalReason") ? plannerObj.get("externalReason").getAsInt()
+                                                : null);
+                                updateMowerChannelState(mowerState);
+                            }
+                        }
+                        break;
+                    case "position-event-v2":
+                        if (event.has("attributes")) {
+                            JsonObject attributes = event.getAsJsonObject("attributes");
+                            if (attributes.has("position")) {
+                                JsonObject position = attributes.getAsJsonObject("position");
+                                if (position.has("latitude") && position.has("longitude")) {
+                                    double latitude = position.get("latitude").getAsDouble();
+                                    double longitude = position.get("longitude").getAsDouble();
+                                    logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
+                                    mowerState.getAttributes().getLastPosition().setLatitude(latitude);
+                                    mowerState.getAttributes().getLastPosition().setLongitude(longitude);
+                                    updateMowerChannelState(mowerState);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        logger.debug("Unhandled WebSocket event type: {}", type);
+                        break;
+                }
+            } else {
+                logger.warn("Reveived WebSocket event without type: {}", event);
+                return;
+            }
+        } else {
+            logger.debug("Channels not yet intialized via REST - ignoring WebSocket message: {}", event);
+            return;
         }
     }
 }
