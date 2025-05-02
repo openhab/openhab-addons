@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
+import java.nio.channels.ClosedByInterruptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,17 +79,12 @@ public class SenseEnergyDatagram {
     }
 
     public void stop() {
-        connected = false;
-
-        try {
-            DatagramSocket localSocket = datagramSocket;
-            if (localSocket != null) {
-                localSocket.close();
-                datagramSocket = null;
-                logger.debug("Closing datagram listener");
-            }
-        } catch (Exception exception) {
-            logger.debug("closeConnection(): Error closing connection - {}", exception.getMessage());
+        logger.debug("datagram stop");
+        Thread localUdpThread = udpListener;
+        if (localUdpThread != null) {
+            connected = false;
+            localUdpThread.interrupt();
+            udpListener = null;
         }
     }
 
@@ -103,7 +99,6 @@ public class SenseEnergyDatagram {
     }
 
     private class UDPListener implements Runnable {
-
         /*
          * Run method. Runs the MessageListener thread
          */
@@ -121,41 +116,48 @@ public class SenseEnergyDatagram {
 
             DatagramPacket packet = new DatagramPacket(new byte[BUFFERSIZE], BUFFERSIZE);
 
-            while (connected) {
-                try {
-                    localSocket.receive(packet);
-                } catch (IOException e) {
-                    logger.debug("Exception during packet read - {}", e.getMessage());
+            try {
+                while (connected && !localSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
                     try {
+                        localSocket.receive(packet);
+                    } catch (ClosedByInterruptException e) {
+                        logger.debug("ClosedByInterruptExcepetion");
+                        throw e;
+                    } catch (IOException e) {
+                        logger.debug("Exception during packet read - {}", e.getMessage());
                         Thread.sleep(100); // allow CPU to breath
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
+                        continue;
                     }
-                    break;
-                }
 
-                // don't receive more than 1 request a second. Necessary to filter out receiving the same
-                // broadcast request packet on multiple interfaces (i.e. wi-fi and wired) at the same time
-                if (System.nanoTime() < nextPacketTime) {
-                    continue;
-                }
+                    // don't receive more than 1 request a second. Necessary to filter out receiving the same
+                    // broadcast request packet on multiple interfaces (i.e. wi-fi and wired) at the same time
+                    if (System.nanoTime() < nextPacketTime) {
+                        continue;
+                    }
 
-                JsonObject jsonResponse;
-                String decryptedPacket = new String(TpLinkEncryption.decrypt(packet.getData(), packet.getLength()));
-                try {
-                    jsonResponse = JsonParser.parseString(decryptedPacket).getAsJsonObject();
-                } catch (JsonSyntaxException jsonSyntaxException) {
-                    logger.trace("Invalid JSON received");
-                    continue;
-                }
+                    JsonObject jsonResponse;
+                    String decryptedPacket = new String(TpLinkEncryption.decrypt(packet.getData(), packet.getLength()));
+                    try {
+                        jsonResponse = JsonParser.parseString(decryptedPacket).getAsJsonObject();
+                    } catch (JsonSyntaxException jsonSyntaxException) {
+                        logger.trace("Invalid JSON received");
+                        continue;
+                    }
 
-                nextPacketTime = System.nanoTime() + 1000000000L;
-                if (jsonResponse.has("system") && jsonResponse.has("emeter")) {
-                    SenseEnergyDatagramListener localPacketListener = packetListener;
-                    if (localPacketListener != null) {
-                        localPacketListener.requestReceived(packet.getSocketAddress());
+                    nextPacketTime = System.nanoTime() + 1000000000L;
+                    if (jsonResponse.has("system") && jsonResponse.has("emeter")) {
+                        SenseEnergyDatagramListener localPacketListener = packetListener;
+                        if (localPacketListener != null) {
+                            localPacketListener.requestReceived(packet.getSocketAddress());
+                        }
                     }
                 }
+            } catch (InterruptedException | ClosedByInterruptException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                localSocket.close();
+                datagramSocket = null;
+                connected = false;
             }
         }
     }

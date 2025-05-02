@@ -37,6 +37,7 @@ import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.senseenergy.internal.api.SenseEnergyApiException.SEVERITY;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiAuthenticate;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDevice;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiGetTrends;
@@ -60,7 +61,6 @@ import com.google.gson.JsonSyntaxException;
  * implementation here: https://github.com/scottbonline/sense
  *
  * @author Jeff James - Initial contribution
- *
  */
 @NonNullByDefault
 public class SenseEnergyApi {
@@ -119,17 +119,8 @@ public class SenseEnergyApi {
      * @param password
      * 
      * @return a set of IDs for all the monitors associated with this account
-     * 
-     * @throws SenseEnergyApiException on authentication error
-     * 
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
      */
-    public Set<Long> initialize(String email, String password)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public Set<Long> initialize(String email, String password) throws SenseEnergyApiException {
         Fields fields = new Fields();
         fields.put("email", email);
         fields.put("password", password);
@@ -143,7 +134,7 @@ public class SenseEnergyApi {
                 SenseEnergyApiAuthenticate.class);
 
         if (data == null) {
-            throw new SenseEnergyApiException("@text/api.response-invalid", false);
+            throw new SenseEnergyApiException("@text/api.response-invalid", SenseEnergyApiException.SEVERITY.FATAL);
         }
 
         accessToken = data.accessToken;
@@ -157,17 +148,8 @@ public class SenseEnergyApi {
 
     /*
      * renew authentication credentials. Timeout of credentials is ~24 hours.
-     *
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
-     * 
-     * @throws SenseEnergyApiException
      */
-    public void refreshToken()
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public void refreshToken() throws SenseEnergyApiException {
         Fields fields = new Fields();
         fields.add("user_id", Long.toString(this.userID));
         fields.add("refresh_token", this.refreshToken);
@@ -181,7 +163,7 @@ public class SenseEnergyApi {
                 SenseEnergyApiRefreshToken.class);
 
         if (data == null) {
-            throw new SenseEnergyApiException("@text/api.response-invalid", false);
+            throw new SenseEnergyApiException("text/api.response-invalid", SenseEnergyApiException.SEVERITY.TRANSIENT);
         }
 
         logger.debug("Successful refreshToken {}", data.accessToken);
@@ -192,7 +174,7 @@ public class SenseEnergyApi {
         tokenExpiresAt = data.expires.minus(1, ChronoUnit.HOURS); // refresh an hour before token expires
     }
 
-    public void logout() throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public void logout() throws SenseEnergyApiException {
         Request request = httpClient.newRequest(APIURL_LOGOUT).method(HttpMethod.GET);
 
         sendRequest(request);
@@ -204,17 +186,8 @@ public class SenseEnergyApi {
      * @param id of the monitor
      * 
      * @return dto structure containing monitor info
-     *
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
-     * 
-     * @throws SenseEnergyApiException
      */
-    public SenseEnergyApiMonitor getMonitorOverview(long id)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public SenseEnergyApiMonitor getMonitorOverview(long id) throws SenseEnergyApiException {
         String url = String.format(APIURL_MONITOR_OVERVIEW, id);
         Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
@@ -222,17 +195,11 @@ public class SenseEnergyApi {
 
         try {
             JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            SenseEnergyApiMonitor monitor = gson.fromJson(
-                    jsonResponse.getAsJsonObject("monitor_overview").getAsJsonObject("monitor"),
-                    SenseEnergyApiMonitor.class);
-
-            if (monitor == null) {
-                throw new SenseEnergyApiException("@text/api.response-invalid", false);
-            }
-
-            return monitor;
+            return apiRequireNonNull(
+                    gson.fromJson(jsonResponse.getAsJsonObject("monitor_overview").getAsJsonObject("monitor"),
+                            SenseEnergyApiMonitor.class));
         } catch (JsonSyntaxException e) {
-            throw new SenseEnergyApiException("@text/api.response-invalid", false);
+            throw new SenseEnergyApiException("@text/api.response-invalid", SenseEnergyApiException.SEVERITY.TRANSIENT);
         }
     }
 
@@ -242,32 +209,18 @@ public class SenseEnergyApi {
      * @param id - id of monitor
      * 
      * @return dto structure containing monitor status
-     * 
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
-     * 
-     * @throws SenseEnergyApiException
      */
-    @Nullable
-    public SenseEnergyApiMonitorStatus getMonitorStatus(long id)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public SenseEnergyApiMonitorStatus getMonitorStatus(long id) throws SenseEnergyApiException {
         String url = String.format(APIURL_MONITOR_STATUS, id);
         Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
         ContentResponse response = sendRequest(request);
 
-        final SenseEnergyApiMonitorStatus data = gson.fromJson(response.getContentAsString(),
-                SenseEnergyApiMonitorStatus.class);
-
-        return data;
+        return apiRequireNonNull(gson.fromJson(response.getContentAsString(), SenseEnergyApiMonitorStatus.class));
     }
 
     @Nullable
-    public SenseEnergyApiGetTrends getTrendData(long id, TrendScale trendScale)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public SenseEnergyApiGetTrends getTrendData(long id, TrendScale trendScale) throws SenseEnergyApiException {
         return getTrendData(id, trendScale, Instant.now());
     }
 
@@ -281,27 +234,16 @@ public class SenseEnergyApi {
      * @param datetime a datetime within the scale of which to receive data. Does not need to be the start or end .
      * 
      * @return
-     * 
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
-     * 
-     * @throws SenseEnergyApiException
      */
     @Nullable
     public SenseEnergyApiGetTrends getTrendData(long id, TrendScale trendScale, Instant datetime)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+            throws SenseEnergyApiException {
         String url = String.format(APIURL_GET_TRENDS, id, trendScale.toString(), datetime.toString());
         Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
         ContentResponse response = sendRequest(request);
 
-        final SenseEnergyApiGetTrends data = gson.fromJson(response.getContentAsString(),
-                SenseEnergyApiGetTrends.class);
-
-        return data;
+        return gson.fromJson(response.getContentAsString(), SenseEnergyApiGetTrends.class);
     }
 
     /*
@@ -323,17 +265,8 @@ public class SenseEnergyApi {
      * @param id of the monitor device
      * 
      * @return Map of discovered devices with the ID of the device as key and the dto object SenseEnergyApiDevice
-     * 
-     * @throws InterruptedException
-     * 
-     * @throws TimeoutException
-     * 
-     * @throws ExecutionException
-     * 
-     * @throws SenseEnergyApiException
      */
-    public Map<String, SenseEnergyApiDevice> getDevices(long id)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public Map<String, SenseEnergyApiDevice> getDevices(long id) throws SenseEnergyApiException {
         String url = String.format(APIURL_GET_DEVICES, id);
         Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
@@ -341,9 +274,6 @@ public class SenseEnergyApi {
 
         JsonArray jsonDevices = JsonParser.parseString(response.getContentAsString()).getAsJsonArray();
 
-        @SuppressWarnings("null") // prevent this warning on d.tags - [WARNING] Potential null pointer access: this
-                                  // expression has
-                                  // a '@Nullable' type
         Map<String, SenseEnergyApiDevice> mapDevices = StreamSupport.stream(jsonDevices.spliterator(), false) //
                 .map(j -> jsonToSenseEnergyDevice(j)) //
                 .filter(Objects::nonNull) //
@@ -362,28 +292,34 @@ public class SenseEnergyApi {
         return request;
     }
 
-    public void verifyToken()
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    public void verifyToken() throws SenseEnergyApiException {
         if (tokenExpiresAt.isBefore(Instant.now())) {
             refreshToken();
         }
     }
 
-    ContentResponse sendRequest(Request request)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    ContentResponse sendRequest(Request request) throws SenseEnergyApiException {
         return sendRequest(request, true);
     }
 
-    ContentResponse sendRequest(Request request, boolean verifyToken)
-            throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
+    ContentResponse sendRequest(Request request, boolean verifyToken) throws SenseEnergyApiException {
         if (verifyToken) {
             verifyToken();
         }
 
         setHeaders(request);
 
-        logger.trace("REQUEST: {}", request.toString());
-        ContentResponse response = request.send();
+        ContentResponse response;
+        try {
+            logger.trace("REQUEST: {}", request.toString());
+            response = request.send();
+        } catch (InterruptedException e) {
+            throw new SenseEnergyApiException("@text/api.connection-closed", SEVERITY.FATAL, e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new SenseEnergyApiException("@text/api.connection-timeout", SEVERITY.TRANSIENT, e);
+        } catch (Exception e) {
+            throw new SenseEnergyApiException("@text/api.request-error", SenseEnergyApiException.SEVERITY.TRANSIENT, e);
+        }
         logger.trace("RESPONSE: {}", response.getContentAsString());
 
         switch (response.getStatus()) {
@@ -391,13 +327,24 @@ public class SenseEnergyApi {
                 break;
             case 400: // API responses with 400 when user credentials are invalid
             case 401:
-                throw new SenseEnergyApiException("@text/api.invalid-user-credentials", true);
+                throw new SenseEnergyApiException("@text/api.invalid-user-credentials",
+                        SenseEnergyApiException.SEVERITY.CONFIG);
             case 429:
-                throw new SenseEnergyApiException("@text/api.rate-limit-exceeded", false);
+                throw new SenseEnergyApiException("@text/api.rate-limit-exceeded",
+                        SenseEnergyApiException.SEVERITY.TRANSIENT);
             default:
-                throw new SenseEnergyApiException("Unexpected API error: " + response.getReason(), false);
+                throw new SenseEnergyApiException("Unexpected API error: " + response.getReason(),
+                        SenseEnergyApiException.SEVERITY.TRANSIENT);
         }
 
         return response;
+    }
+
+    private static <T> T apiRequireNonNull(@Nullable T obj) throws SenseEnergyApiException {
+        if (obj == null) {
+            throw new SenseEnergyApiException("@text/api.response-invalid", SenseEnergyApiException.SEVERITY.TRANSIENT);
+        } else {
+            return obj;
+        }
     }
 }
