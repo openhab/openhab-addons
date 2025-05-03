@@ -52,7 +52,7 @@
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
-/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft
+/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft @jlaur
 /bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
