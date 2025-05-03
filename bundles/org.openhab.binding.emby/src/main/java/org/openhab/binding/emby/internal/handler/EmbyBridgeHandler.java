@@ -72,8 +72,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     @Reference
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
 
-    public EmbyBridgeHandler(Bridge bridge, 
-            WebSocketClient webSocketClient) {
+    public EmbyBridgeHandler(Bridge bridge, WebSocketClient webSocketClient) {
         super(bridge);
         this.webSocketClient = requireNonNull(webSocketClient, "webSocketClient must not be null");
     }
