@@ -202,23 +202,27 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     @Override
     public void initialize() {
-        // do this asynchronous in case of token and other parameters needs to be
-        // obtained via Rest API calls
-        scheduler.execute(this::doInitialize);
+        config = getConfigAs(DirigeraConfiguration.class);
+        if (config.ipAddress.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/dirigera.device.status.missing-ip");
+        } else {
+            // do this asynchronous in case of token and other parameters needs to be
+            // obtained via Rest API calls
+            updateStatus(ThingStatus.UNKNOWN);
+            scheduler.execute(this::doInitialize);
+        }
     }
 
     private void doInitialize() {
-        config = getConfigAs(DirigeraConfiguration.class);
-
         // for discovery known device are stored in storage in order not to report them
-        // again and again through
-        // DiscoveryService
+        // again and again through DiscoveryService
         getKnownDevicesFromStorage();
         token = getTokenFromStorage();
-        // Step 1 - check if token is available or stored
+        // Step 1 - check if token is stored or pairing is needed
         if (token.isBlank()) {
+            // if token isn't recovered from storage begin pairing process
             logger.debug("DIRIGERA HANDLER no token in storage");
-            // Step 2.2 - if token wasn't recovered from storage begin pairing process
             String codeVerifier = generateCodeVerifier();
             String challenge = generateCodeChallenge(codeVerifier);
             String code = getCode(challenge);
@@ -237,54 +241,50 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                         return;
                     }
                     token = getToken(code, codeVerifier);
-                    if (token.isBlank()) {
-                        logger.debug("DIRIGERA HANDLER no token received");
-                    } else {
+                    if (!token.isBlank()) {
                         logger.debug("DIRIGERA HANDLER token {} received", token);
+                        storeToken(token);
                     }
-                }
-                if (token.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
-                            "@text/dirigera.gateway.status.pairing-retry");
-                    // stay in this state - user action required
-                    return;
-                } else {
-                    storeToken(token);
                 }
             }
         } else {
             logger.debug("DIRIGERA HANDLER obtained token {} from storage", token);
         }
 
-        // Step 2 - ip address and token fine, now start initializing
-        if (!config.ipAddress.isBlank() && !token.isBlank()) {
-            // looks good, ip and token fine, now create api and model
-            DirigeraAPI apiProviderInstance = null;
+        // Step 2 - if token is fine start initializing, else set status pairing retry
+        if (!token.isBlank()) {
+            // now create api and model
             try {
-                apiProviderInstance = (DirigeraAPI) apiProvider.getConstructor(HttpClient.class, Gateway.class)
-                        .newInstance(httpClient, this);
+                DirigeraAPI apiProviderInstance = (DirigeraAPI) apiProvider
+                        .getConstructor(HttpClient.class, Gateway.class).newInstance(httpClient, this);
+                if (apiProviderInstance != null) {
+                    api = Optional.of(apiProviderInstance);
+                } else {
+                    throw (new InstantiationException(apiProvider.descriptorString()));
+                }
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
-            }
-            if (apiProviderInstance != null) {
-                api = Optional.of(apiProviderInstance);
-            } else {
                 // this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
-                logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
+                logger.error("Error {}", apiProvider.descriptorString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "@text/dirigera.gateway.status.api-error" + " [\"" + apiProvider.descriptorString() + "\"]");
                 return;
             }
             Model houseModel = new DirigeraModel(this);
             model = Optional.of(houseModel);
             modelUpdate(); // initialize model
             websocket.initialize();
-            connectGateway(); // checks API access and starts websocket
+            // checks API access and starts websocket
+            // status will be set ONLINE / OFFLINE based on the connection result
+            connectGateway();
             // start watchdog to check gateway connection and start recovery if necessary
             watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS));
             // infrequent updates for gateway itself
             updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            // status "retry pairing" if token is still blank
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
+                    "@text/dirigera.gateway.status.pairing-retry");
         }
     }
 
