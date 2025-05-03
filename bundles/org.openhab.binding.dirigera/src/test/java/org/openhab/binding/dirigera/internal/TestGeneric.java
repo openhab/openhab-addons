@@ -31,14 +31,12 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.util.ColorUtil;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -88,26 +86,6 @@ class TestGeneric {
         assertFalse(lightRequestQueue.contains(color));
     }
 
-    void testKelvinToHSB() {
-        HSBType hsb = ColorLightHandler.getHSBTemperature(1000);
-        assertEquals(16, hsb.getHue().intValue(), "HSB Color Hue");
-        assertEquals(100, hsb.getSaturation().intValue(), "HSB Saturation");
-
-        hsb = ColorLightHandler.getHSBTemperature(3000);
-        assertEquals(27, hsb.getHue().intValue(), "HSB Color Hue");
-        assertEquals(56, hsb.getSaturation().intValue(), "HSB Saturation");
-
-        hsb = ColorLightHandler.getHSBTemperature(5000);
-        assertEquals(26, hsb.getHue().intValue(), "HSB Color Hue");
-        assertEquals(19, hsb.getSaturation().intValue(), "HSB Saturation");
-
-        for (int i = 1000; i < 5000; i = i + 100) {
-            HSBType selfHSB = ColorLightHandler.getHSBTemperature(i);
-            HSBType utilHSB = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(i));
-            System.out.println("Kelvin " + i + " RGB:" + selfHSB + " ColorUtil: " + utilHSB);
-        }
-    }
-
     @Test
     void testApiJsonException() {
         HttpClient httpMock = mock(HttpClient.class);
@@ -154,7 +132,7 @@ class TestGeneric {
 
     void printOutput() {
         if ("throw".equals(output)) {
-            throw new RuntimeException("crash");
+            throw new UnsupportedOperationException("crash");
         }
     }
 
