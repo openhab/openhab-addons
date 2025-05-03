@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="fenecon:home-device">
+		<instruction-set targetVersion="1">
+			<add-channel id="fems-version">
+				<type>fenecon:fems-version</type>
+			</add-channel>
+			<add-channel id="batt-tower-soh">
+				<type>fenecon:batt-tower-soh</type>
+			</add-channel>
+			<add-channel id="inverter-air-temperature">
+				<type>fenecon:inverter-air-temperature</type>
+			</add-channel>
+			<add-channel id="inverter-radiator-temperature">
+				<type>fenecon:inverter-radiator-temperature</type>
+			</add-channel>
+			<add-channel id="bms-pack-temperature">
+				<type>fenecon:bms-pack-temperature</type>
+			</add-channel>
+			<add-channel id="batt-tower-voltage">
+				<type>fenecon:batt-tower-voltage</type>
+			</add-channel>
+			<add-channel id="batt-tower-current">
+				<type>fenecon:batt-tower-current</type>
+			</add-channel>
+			<add-channel id="charger0-actual-power">
+				<type>fenecon:charger-actual-power</type>
+			</add-channel>
+			<add-channel id="charger0-voltage">
+				<type>fenecon:charger-voltage</type>
+			</add-channel>
+			<add-channel id="charger0-current">
+				<type>fenecon:charger-current</type>
+			</add-channel>
+			<add-channel id="charger1-actual-power">
+				<type>fenecon:charger-actual-power</type>
+			</add-channel>
+			<add-channel id="charger1-voltage">
+				<type>fenecon:charger-voltage</type>
+			</add-channel>
+			<add-channel id="charger1-current">
+				<type>fenecon:charger-current</type>
+			</add-channel>
+			<add-channel id="charger2-actual-power">
+				<type>fenecon:charger-actual-power</type>
+			</add-channel>
+			<add-channel id="charger2-voltage">
+				<type>fenecon:charger-voltage</type>
+			</add-channel>
+			<add-channel id="charger2-current">
+				<type>fenecon:charger-current</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

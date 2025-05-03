@@ -48,6 +48,10 @@
 			<channel id="charger2-current" typeId="charger-current"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
