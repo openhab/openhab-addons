@@ -29,7 +29,6 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 | Refrigerator Freezer       | fridgefreezer |
 | Coffee Machine             | coffeemaker   |
 
-
 > **INFO:** Currently the Home Connect API does not support all appliance programs. Please check if your desired program is available (e.g. <https://developer.home-connect.com/docs/washing-machine/supported_programs_and_options>).
 
 ## Discovery
