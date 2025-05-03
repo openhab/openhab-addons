@@ -130,6 +130,9 @@
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">
@@ -172,6 +175,9 @@
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">
