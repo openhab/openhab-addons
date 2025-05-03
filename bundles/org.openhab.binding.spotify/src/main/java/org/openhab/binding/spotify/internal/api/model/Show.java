@@ -12,21 +12,27 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-/**
- * Spotify Api Artist data class.
- *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
- */
-public class Artist {
+import java.util.List;
 
+/**
+ * Spotify Api Show data class : a Podcast entry.
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+public class Show {
+
+    private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
     private String id;
+    private List<Image> images;
     private String name;
     private String type;
     private String uri;
-    private Image[] images;
+
+    public List<String> getAvailableMarkets() {
+        return availableMarkets;
+    }
 
     public ExternalUrl getExternalUrls() {
         return externalUrls;
@@ -40,6 +46,10 @@ public class Artist {
         return id;
     }
 
+    public List<Image> getImages() {
+        return images;
+    }
+
     public String getName() {
         return name;
     }
@@ -50,9 +60,5 @@ public class Artist {
 
     public String getUri() {
         return uri;
-    }
-
-    public Image[] getImages() {
-        return images;
     }
 }
