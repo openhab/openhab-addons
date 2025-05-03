@@ -8,6 +8,10 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -17,7 +21,7 @@
 		<description>Current illuminance.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -26,6 +30,10 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -142,7 +150,8 @@
 		<label>Alert</label>
 		<description>The alert channel allows a temporary change to the bulb’s state.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -159,6 +168,10 @@
 		<label>Color Loop</label>
 		<description>The effect channel allows putting the bulb in a color looping mode.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- CLIP Sensor -->
@@ -179,6 +192,10 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- API v2 Channel Types -->
@@ -200,12 +217,20 @@
 		<item-type>Switch</item-type>
 		<label>Sensor Enabled</label>
 		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scene-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -215,12 +240,20 @@
 		<label>Last Updated</label>
 		<description>The date and time when the thing was last updated.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="alert-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Alert</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -228,6 +261,10 @@
 	<channel-type id="effect-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Effect</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -237,6 +274,10 @@
 		<label>Dynamics</label>
 		<description>The duration (ms) of dynamic transitions between light or scene states.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state min="0" step="100" pattern="%d ms"/>
 	</channel-type>
 
@@ -247,7 +288,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -259,7 +300,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -281,18 +322,30 @@
 		<item-type>Contact</item-type>
 		<label>Open/Closed</label>
 		<category>Lock</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="security-tamper">
 		<item-type>Contact</item-type>
 		<label>Normal/Tamper</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="automation-enable">
 		<item-type>Switch</item-type>
 		<label>Enable</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-group-type id="automation">
