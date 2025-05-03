@@ -205,7 +205,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         upnpEntryQueue = new UpnpEntryQueue(entries, "54321");
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
-                requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
+                requireNonNull(upnpService), requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
                 requireNonNull(upnpCommandDescriptionProvider), configuration));
 
         initHandler(requireNonNull(handler));
