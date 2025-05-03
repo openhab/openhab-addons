@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.emby.internal.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -84,7 +86,7 @@ public class EmbyNowPlayingItem {
         BigDecimal returnValue = new BigDecimal(0);
         switch (nowPlayingType) {
             case "TvChannel":
-                returnValue = currentProgram.getRunTimeTicks();
+                returnValue = requireNonNull(currentProgram, "currentProgram must not be null").getRunTimeTicks();
                 break;
             case "Recording":
                 break;

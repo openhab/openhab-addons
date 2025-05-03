@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -114,7 +115,10 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("The message is {}", message);
 
                 final Gson gson = new Gson();
+
+                @Nullable
                 JsonObject body = gson.fromJson(message, JsonObject.class);
+                body = Objects.requireNonNull(body, "EmbyBridgeDiscoveryService: response body was null");
 
                 String serverId = body.get("Id").getAsString();
                 String serverName = body.get("Name").getAsString();

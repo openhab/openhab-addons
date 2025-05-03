@@ -85,13 +85,6 @@ public interface EmbyEventListener extends EventListener {
     void updatePlayerState(EmbyState state);
 
     /**
-     * Called when the mute state changes.
-     *
-     * @param muted true if audio is muted, false otherwise
-     */
-    void updateMuted(boolean muted);
-
-    /**
      * Called when the media title changes.
      *
      * @param title the current title of the media

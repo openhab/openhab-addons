@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.emby.internal.discovery;
 
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_DEVICE_ID;
 import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_DEVICE;
 
@@ -90,7 +91,8 @@ public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
         EmbyDeviceEncoder encode = new EmbyDeviceEncoder();
         String modelId = encode.encodeDeviceID(playstate.getDeviceId());
         if (thingUID != null) {
-            ThingUID bridgeUID = embyBridgeHandler.getThing().getUID();
+            ThingUID bridgeUID = requireNonNull(embyBridgeHandler,
+                    "EmbyClientDiscoveryService: Bridge Handler Cannot be null").getThing().getUID();
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(CONFIG_DEVICE_ID, modelId);
             logger.debug("Disovered device {} with id {}", playstate.getDeviceName(), modelId);
@@ -105,12 +107,9 @@ public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
     }
 
     private @Nullable ThingUID getThingUID(EmbyPlayStateModel playstate) {
-        ThingUID bridgeUID = embyBridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = requireNonNull(embyBridgeHandler,
+                "EmbyClientDiscoveryService: Bridge Handler Cannot be null").getThing().getUID();
         ThingTypeUID thingTypeUID = THING_TYPE_EMBY_DEVICE;
-        if (playstate.getDeviceId() != null) {
-            return new ThingUID(thingTypeUID, bridgeUID, playstate.getDeviceId());
-        } else {
-            return null;
-        }
+        return new ThingUID(thingTypeUID, bridgeUID, playstate.getDeviceId());
     }
 }

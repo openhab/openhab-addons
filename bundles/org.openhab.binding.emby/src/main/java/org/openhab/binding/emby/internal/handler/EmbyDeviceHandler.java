@@ -12,30 +12,10 @@
  */
 package org.openhab.binding.emby.internal.handler;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CONTROL;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CURRENTTIME;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_DURATION;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_MAXWIDTH;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_CONFIG_TYPE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MEDIATYPE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SHOWTITLE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_STOP;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_TITLE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONFIG_DEVICE_ID;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_GENERALCOMMAND;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_MUTE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_PAUSE;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_PLAY;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SENDPLAY;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SESSION;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_STOP;
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_UNMUTE;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.measure.Unit;
 
@@ -67,7 +48,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -89,21 +69,24 @@ import com.google.gson.JsonParser;
  *
  * @author Zachary Christiansen - Initial contribution
  */
+
 @NonNullByDefault
 public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyDeviceHandler.class);
+
     private @Nullable EmbyDeviceConfiguration config;
-    private @Nullable EmbyPlayStateModel currentPlayState = null;
+    private @Nullable EmbyPlayStateModel currentPlayState;
     private @Nullable EmbyBridgeHandler bridgeHandler;
-    private static final long MIN_UPDATE_INTERVAL_MS = 1000; // 1 second
-    private final EmbyThrottle throttle = new EmbyThrottle(1000); // 1 second throttle for all events
-    private @Nullable String lastImageUrl = null;
-    private @Nullable String lastShowTitle = null;
-    private @Nullable String lastMediaType = null;
+    private @Nullable String lastImageUrl;
+    private @Nullable String lastShowTitle;
+    private @Nullable String lastMediaType;
     private boolean lastMuted = false;
     private long lastCurrentTime = -1;
     private long lastDuration = -1;
+
+    private final EmbyThrottle throttle = new EmbyThrottle(1000);
+
     @Reference
     private @Nullable TranslationProvider i18nProvider;
 
@@ -120,46 +103,36 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     }
 
     public void sendGeneralCommand(String commandName) {
-        if (bridgeHandler == null || currentPlayState == null) {
+        final EmbyBridgeHandler handler = bridgeHandler;
+        final EmbyPlayStateModel play = currentPlayState;
+        if (handler == null || play == null) {
             throw new IllegalStateException("Cannot send command: no bridge or no active session");
         }
-        String sessionId = currentPlayState.getId();
-        String url = CONTROL_SESSION + sessionId + CONTROL_GENERALCOMMAND + commandName;
-        bridgeHandler.sendCommand(url);
+        String url = CONTROL_SESSION + play.getId() + CONTROL_GENERALCOMMAND + commandName;
+        handler.sendCommand(url);
     }
 
-    /**
-     * Send a general Emby command with a JSON‐formatted arguments blob.
-     *
-     * @param commandName the generic command name (e.g. "SetVolume", "DisplayMessage", etc.)
-     * @param jsonArguments a JSON string of the form `{ "Name": "Value", … }`
-     */
     public void sendGeneralCommandWithArgs(String commandName, String jsonArguments) {
-        if (bridgeHandler == null || currentPlayState == null) {
+        final EmbyBridgeHandler handler = bridgeHandler;
+        final EmbyPlayStateModel play = currentPlayState;
+        if (handler == null || play == null) {
             throw new IllegalStateException("Cannot send command: no bridge or no active session");
         }
-        String sessionId = currentPlayState.getId();
-
-        // parse the user-supplied JSON into a JsonObject
         JsonObject args = JsonParser.parseString(jsonArguments).getAsJsonObject();
-
-        // envelope around arguments
         JsonObject envelope = new JsonObject();
         envelope.add("Arguments", args);
-
-        String url = CONTROL_SESSION + sessionId + CONTROL_GENERALCOMMAND + commandName;
-        bridgeHandler.sendCommand(url, envelope.toString());
+        String url = CONTROL_SESSION + play.getId() + CONTROL_GENERALCOMMAND + commandName;
+        handler.sendCommand(url, envelope.toString());
     }
 
     public void sendPlayWithParams(String itemIds, String playCommand, @Nullable Integer startPositionTicks,
             @Nullable String mediaSourceId, @Nullable Integer audioStreamIndex, @Nullable Integer subtitleStreamIndex,
             @Nullable Integer startIndex) {
-        // make sure we have a bridge + session
-        if (bridgeHandler == null || currentPlayState == null) {
+        final EmbyBridgeHandler handler = bridgeHandler;
+        final EmbyPlayStateModel play = currentPlayState;
+        if (handler == null || play == null) {
             throw new IllegalStateException("No bridge or active session available");
         }
-
-        String sessionId = currentPlayState.getId();
 
         JsonObject payload = new JsonObject();
         payload.addProperty("ItemIds", itemIds);
@@ -180,8 +153,8 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             payload.addProperty("StartIndex", startIndex);
         }
 
-        String url = CONTROL_SESSION + sessionId + CONTROL_SENDPLAY;
-        bridgeHandler.sendCommand(url, payload.toString());
+        String url = CONTROL_SESSION + play.getId() + CONTROL_SENDPLAY;
+        handler.sendCommand(url, payload.toString());
     }
 
     @Override
@@ -191,170 +164,284 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             return;
         }
 
-        Channel channel = this.thing.getChannel(channelUID.getId());
-        if (channel != null) {
-            if (bridgeHandler != null && config != null) {
-                EmbyBridgeHandler handler = bridgeHandler;
-                if (currentPlayState != null) {
-                    String currentSessionID = currentPlayState.getId();
-                    switch (channelUID.getId()) {
-                        case CHANNEL_CONTROL:
-                            if (command instanceof PlayPauseType) {
-                                if (PlayPauseType.PLAY.equals(command)) {
-                                    handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PLAY);
-                                } else {
-                                    handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PAUSE);
-                                }
-                            }
-                            break;
-                        case CHANNEL_MUTE:
-                            if (OnOffType.ON.equals(command)) {
-                                handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_MUTE);
-                            } else {
-                                handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_UNMUTE);
-                            }
-                            break;
-                        case CHANNEL_STOP:
-                            if (OnOffType.ON.equals(command)) {
-                                handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_STOP);
-                            }
-                            break;
+        final Channel channel = thing.getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("Unsupported channel: {}", channelUID);
+            return;
+        }
 
-                        default:
-                            logger.warn("Unsupported channel: {}", channelUID.getAsString());
-                            break;
-                    }
+        final EmbyBridgeHandler handler = bridgeHandler;
+        final EmbyDeviceConfiguration cfg = config;
+        if (handler == null || cfg == null) {
+            updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
+                    "No Emby server bridge linked or configuration invalid.");
+            return;
+        }
+
+        final EmbyPlayStateModel play = currentPlayState;
+        switch (channelUID.getId()) {
+            case CHANNEL_CONTROL:
+                if (play == null) {
+                    updateState(channelUID, UnDefType.UNDEF);
+                    return;
                 }
-            } else {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "No Emby server bridge linked or configuration invalid.");
-            }
+                if (command instanceof PlayPauseType) {
+                    String url = CONTROL_SESSION + play.getId()
+                            + (PlayPauseType.PLAY.equals(command) ? CONTROL_PLAY : CONTROL_PAUSE);
+                    handler.sendCommand(url);
+                }
+                break;
+
+            case CHANNEL_MUTE:
+                if (play == null) {
+                    updateState(channelUID, UnDefType.UNDEF);
+                    return;
+                }
+                String muteUrl = CONTROL_SESSION + play.getId()
+                        + (OnOffType.ON.equals(command) ? CONTROL_MUTE : CONTROL_UNMUTE);
+                handler.sendCommand(muteUrl);
+                break;
+
+            case CHANNEL_STOP:
+                if (play == null) {
+                    updateState(channelUID, UnDefType.UNDEF);
+                    return;
+                }
+                if (OnOffType.ON.equals(command)) {
+                    handler.sendCommand(CONTROL_SESSION + play.getId() + CONTROL_STOP);
+                }
+                break;
+
+            default:
+                logger.warn("Unsupported channel: {}", channelUID.getAsString());
+                break;
         }
     }
 
     private State pollCurrentValue(ChannelUID channelUID) {
-        String id = channelUID.getId();
-        switch (id) {
-            case CHANNEL_CONTROL:
-                if (currentPlayState == null) {
-                    return UnDefType.UNDEF;
+        final EmbyPlayStateModel play = currentPlayState;
+
+        return switch (channelUID.getId()) {
+            case CHANNEL_CONTROL -> {
+                if (play == null) {
+                    yield UnDefType.UNDEF;
                 }
-                Boolean paused = currentPlayState.getEmbyPlayStatePausedState();
-                return Boolean.TRUE.equals(paused) ? PlayPauseType.PAUSE : PlayPauseType.PLAY;
-            case CHANNEL_MUTE:
-                if (currentPlayState == null) {
-                    return UnDefType.UNDEF;
+                Boolean paused = play.getEmbyPlayStatePausedState();
+                yield Boolean.TRUE.equals(paused) ? PlayPauseType.PAUSE : PlayPauseType.PLAY;
+            }
+            case CHANNEL_MUTE -> {
+                if (play == null) {
+                    yield UnDefType.UNDEF;
                 }
-                Boolean muted = currentPlayState.getEmbyMuteSate();
-                return Boolean.TRUE.equals(muted) ? OnOffType.ON : OnOffType.OFF;
-            case CHANNEL_STOP:
-                if (currentPlayState == null) {
-                    return UnDefType.UNDEF;
+                Boolean muted = play.getEmbyMuteSate();
+                yield Boolean.TRUE.equals(muted) ? OnOffType.ON : OnOffType.OFF;
+            }
+            case CHANNEL_STOP -> {
+                if (play == null) {
+                    yield UnDefType.UNDEF;
                 }
-                Boolean stopped = currentPlayState.getEmbyPlayStatePausedState();
-                return Boolean.TRUE.equals(stopped) ? OnOffType.ON : OnOffType.OFF;
-            case CHANNEL_TITLE:
-                return createStringState(currentPlayState != null ? currentPlayState.getNowPlayingName() : null);
-            case CHANNEL_SHOWTITLE:
-                return createStringState(lastShowTitle);
-            case CHANNEL_MEDIATYPE:
-                return createStringState(lastMediaType);
-            case CHANNEL_CURRENTTIME:
-                return (lastCurrentTime < 0) ? UnDefType.UNDEF
-                        : createQuantityState(convertNanoTimeToSeconds(lastCurrentTime), Units.SECOND);
-            case CHANNEL_DURATION:
-                return (lastDuration < 0) ? UnDefType.UNDEF
-                        : createQuantityState(convertNanoTimeToSeconds(lastDuration), Units.SECOND);
-            case CHANNEL_IMAGEURL:
-                return createStringState(lastImageUrl);
-            default:
-                return UnDefType.UNDEF;
+                Boolean stopped = play.getEmbyPlayStatePausedState();
+                yield Boolean.TRUE.equals(stopped) ? OnOffType.ON : OnOffType.OFF;
+            }
+            case CHANNEL_TITLE -> createStringState(play != null ? play.getNowPlayingName() : null);
+            case CHANNEL_SHOWTITLE -> createStringState(lastShowTitle);
+            case CHANNEL_MEDIATYPE -> createStringState(lastMediaType);
+            case CHANNEL_CURRENTTIME -> (lastCurrentTime < 0) ? UnDefType.UNDEF
+                    : createQuantityState(convertTicksToSeconds(lastCurrentTime), Units.SECOND);
+            case CHANNEL_DURATION -> (lastDuration < 0) ? UnDefType.UNDEF
+                    : createQuantityState(convertTicksToSeconds(lastDuration), Units.SECOND);
+            case CHANNEL_IMAGEURL -> createStringState(lastImageUrl);
+            default -> UnDefType.UNDEF;
+        };
+    }
+
+    private void updateState(EmbyState state) {
+        updatePlayerState(state);
+
+        if (state == EmbyState.STOP || state == EmbyState.END) {
+            // reset all last-* fields
+            lastImageUrl = null;
+            lastShowTitle = null;
+            lastMediaType = null;
+            lastMuted = false;
+            lastCurrentTime = -1;
+            lastDuration = -1;
+
+            // restore original post-stop behavior
+            updatePlayerState(state); // sets CONTROL and STOP channels
+            updateState(CHANNEL_MUTE, OnOffType.from(false));
+
+            updateTitle("");
+            updateShowTitle("");
+            updatePrimaryImageURL("");
+            updateMediaType("");
+            updateCurrentTime(-1);
+            updateDuration(-1);
         }
     }
 
-    private String getOrDefault(Configuration config, String key, String defaultValue) {
-        String value = (String) config.get(key);
-        return value != null ? value : defaultValue;
+    @Override
+    public void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport) {
+        final EmbyDeviceConfiguration cfg = config;
+        if (cfg == null || !playstate.compareDeviceId(cfg.deviceID)) {
+            return;
+        }
+        this.currentPlayState = playstate;
+
+        try {
+            URI imageURI = playstate.getPrimaryImageURL(hostname, embyport, cfg.imageImageType, cfg.imageMaxWidth,
+                    cfg.imageMaxHeight);
+
+            if ("NotPlaying".equals(imageURI.getHost())) {
+                updateState(EmbyState.END);
+                updateState(EmbyState.STOP);
+                return;
+            }
+
+            if (playstate.getEmbyPlayStatePausedState()) {
+                logger.debug("Setting state to PAUSE for {}", playstate.getDeviceName());
+                updateState(EmbyState.PAUSE);
+            } else {
+                logger.debug("Setting state to PLAY for {}", playstate.getDeviceName());
+                updateState(EmbyState.PLAY);
+            }
+
+            // Image URL
+            String newImage = imageURI.toString();
+            if (!newImage.equals(lastImageUrl)) {
+                updatePrimaryImageURL(newImage);
+                logger.trace("Throttled updatePrimaryImageURL: {}", newImage);
+                lastImageUrl = newImage;
+            }
+
+            // Mute (instant)
+            boolean newMute = playstate.getEmbyMuteSate();
+            if (newMute != lastMuted) {
+                updateState(CHANNEL_MUTE, OnOffType.from(newMute));
+                logger.trace("updateMuted: {}", newMute);
+                lastMuted = newMute;
+            }
+
+            // Show Title
+            String newTitle = playstate.getNowPlayingName();
+            if (!newTitle.equals(lastShowTitle)) {
+                updateShowTitle(newTitle);
+                logger.trace("Throttled updateShowTitle: {}", newTitle);
+
+                lastShowTitle = newTitle;
+            }
+
+            // CurrentTime
+            long newTime = playstate.getNowPlayingTime().longValue();
+            if (newTime != lastCurrentTime) {
+                updateCurrentTime(newTime);
+                logger.trace("Throttled updateCurrentTime: {}", newTime);
+
+                lastCurrentTime = newTime;
+            }
+
+            // Duration
+            long newDur = playstate.getNowPlayingTotalTime().longValue();
+            if (newDur != lastDuration) {
+                updateDuration(newDur);
+                logger.trace("Throttled updateDuration: {}", newDur);
+
+                lastDuration = newDur;
+            }
+
+            // MediaType
+            String newType = playstate.getNowPlayingMediaType();
+            if (!newType.equals(lastMediaType)) {
+                updateMediaType(newType);
+                logger.trace("Throttled updateMediaType: {}", newType);
+                lastMediaType = newType;
+            }
+
+        } catch (URISyntaxException e) {
+            logger.debug("Unable to create image URL for {}: {}", playstate.getDeviceName(), e.getMessage());
+        }
     }
 
     private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
-        Object deviceId = this.thing.getConfiguration().get(CONFIG_DEVICE_ID);
-        if (deviceId == null || deviceId.toString().isEmpty()) {
+        Object deviceId = requireNonNull(thing.getConfiguration().get(CONFIG_DEVICE_ID));
+        if (deviceId.toString().isEmpty()) {
             throwValidationError(CONFIG_DEVICE_ID, "Missing value for key: " + CONFIG_DEVICE_ID);
         }
-        EmbyDeviceConfiguration embyDeviceConfig = new EmbyDeviceConfiguration(deviceId.toString());
+        EmbyDeviceConfiguration cfg = new EmbyDeviceConfiguration(deviceId.toString());
 
-        Configuration imgCfg = this.thing.getChannel(CHANNEL_IMAGEURL).getConfiguration();
+        final Channel imgChannel = thing.getChannel(CHANNEL_IMAGEURL);
+        if (imgChannel == null) {
+            throwValidationError(CHANNEL_IMAGEURL, "Missing channel: " + CHANNEL_IMAGEURL);
+        } else {
+            Configuration imgCfg = imgChannel.getConfiguration();
+            String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "");
+            if (!maxWidth.matches("\\d*")) {
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "Image max width must be a number");
+            } else {
+                cfg.imageMaxWidth = maxWidth;
+            }
+            String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "");
+            if (!maxHeight.matches("\\d*")) {
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "Image max height must be a number");
+            }
+            cfg.imageMaxHeight = maxHeight;
+            String pct = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "false");
+            if (!("true".equalsIgnoreCase(pct) || "false".equalsIgnoreCase(pct))) {
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED,
+                        "Image percent-played must be true or false");
+            }
+            cfg.imagePercentPlayed = Boolean.parseBoolean(pct);
 
-        String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "");
-        if (!maxWidth.matches("\\d*")) {
-            throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "Image max width must be a number");
+            String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_TYPE, "Primary");
+            if (!ALLOWED_IMAGE_TYPES.contains(imgType)) {
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_TYPE,
+                        "Invalid image type: " + imgType + ". Allowed: " + ALLOWED_IMAGE_TYPES);
+            }
+            cfg.imageImageType = imgType;
         }
-        embyDeviceConfig.imageMaxWidth = maxWidth;
-
-        String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "");
-        if (!maxHeight.matches("\\d*")) {
-            throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "Image max height must be a number");
-        }
-        embyDeviceConfig.imageMaxHeight = maxHeight;
-
-        String pctPlayed = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "false");
-        if (!("true".equalsIgnoreCase(pctPlayed) || "false".equalsIgnoreCase(pctPlayed))) {
-            throwValidationError(CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "Image percent-played must be true or false");
-        }
-        embyDeviceConfig.imagePercentPlayed = Boolean.parseBoolean(pctPlayed);
-
-        String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_TYPE, "Primary");
-        if (!ALLOWED_IMAGE_TYPES.contains(imgType)) {
-            throwValidationError(CHANNEL_IMAGEURL_CONFIG_TYPE,
-                    "Invalid image type: " + imgType + ". Allowed values: " + ALLOWED_IMAGE_TYPES);
-        }
-        embyDeviceConfig.imageImageType = imgType;
-
-        return embyDeviceConfig;
+        return cfg;
     }
 
     private void throwValidationError(String parameterName, String errorMessage) throws ConfigValidationException {
+        TranslationProvider provider = Objects.requireNonNull(i18nProvider,
+                "TranslationProvider must not be null for validation");
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        ConfigValidationMessage validationMessage = new ConfigValidationMessage(parameterName, "error", errorMessage);
-        throw new ConfigValidationException(bundle, i18nProvider, Collections.singletonList(validationMessage));
+        ConfigValidationMessage msg = new ConfigValidationMessage(parameterName, "error", errorMessage);
+        throw new ConfigValidationException(bundle, provider, Collections.singletonList(msg));
     }
 
-    public static double convertNanoTimeToSeconds(long nanoTime) {
-        return nanoTime / 1_000_000_000.0;
+    private String getOrDefault(Configuration config, String key, String defaultValue) {
+        String val = (String) config.get(key);
+        return val != null ? val : defaultValue;
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing Emby device");
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
-                EmbyDeviceConfiguration cfg = validateConfiguration();
-                this.config = cfg;
+                this.config = validateConfiguration();
 
-                Bridge bridge = getBridge();
-                if (bridge == null || bridge.getHandler() == null
-                        || !(bridge.getHandler() instanceof EmbyBridgeHandler)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                if (!(getBridge() instanceof Bridge bridge)
+                        || !(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
+                    updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
                             "You must choose an Emby Server for this Device");
                     return;
                 }
+                this.bridgeHandler = bridgeHandler;
 
-                if (bridge.getStatus() == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "The Emby Server is currently offline");
+                if (bridge.getStatus() == OFFLINE) {
+                    updateStatus(OFFLINE, BRIDGE_OFFLINE, "The Emby Server is currently offline");
                     return;
                 }
 
-                this.bridgeHandler = (EmbyBridgeHandler) bridge.getHandler();
                 updateStatus(ThingStatus.ONLINE);
-            } catch (ConfigValidationException cve) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration error: " + cve.getMessage());
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Initialization failed: " + e.getMessage());
-            }
 
+            } catch (ConfigValidationException e) {
+                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "Configuration error: " + e.getMessage());
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "Initialization failed: " + e.getMessage());
+            }
         });
     }
 
@@ -363,13 +450,13 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
+            updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "No connection established");
         }
     }
 
     @Override
     public void updateScreenSaverState(boolean screenSaveActive) {
-    }
+        /* no-op */ }
 
     @Override
     public void updatePlayerState(EmbyState state) {
@@ -399,37 +486,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     }
 
     @Override
-    public void updateMuted(boolean muted) {
-        if (muted) {
-            updateState(CHANNEL_MUTE, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_MUTE, OnOffType.OFF);
-        }
-    }
-
-    @Override
     public void updateTitle(String title) {
         if (throttle.shouldProceed("updateTitle")) {
             updateState(CHANNEL_TITLE, createStringState(title));
-        }
-    }
-
-    private void updateState(EmbyState state) {
-        updatePlayerState(state);
-        if (state == EmbyState.STOP) {
-            lastImageUrl = null;
-            lastShowTitle = null;
-            lastMediaType = null;
-            lastMuted = false;
-            lastCurrentTime = -1;
-            lastDuration = -1;
-
-            updateTitle("");
-            updateShowTitle("");
-            updatePrimaryImageURL("");
-            updateMediaType("");
-            updateDuration(-1);
-            updateCurrentTime(-1);
         }
     }
 
@@ -437,9 +496,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     public void updatePrimaryImageURL(String imageUrl) {
         if (throttle.shouldProceed("updatePrimaryImageURL")) {
             updateState(CHANNEL_IMAGEURL, createStringState(imageUrl));
-            logger.trace("Throttled updatePrimaryImageURL: {}", imageUrl);
-        } else {
-            logger.trace("Skipped updatePrimaryImageURL to throttle frequency");
         }
     }
 
@@ -447,9 +503,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     public void updateShowTitle(String title) {
         if (throttle.shouldProceed("updateShowTitle")) {
             updateState(CHANNEL_SHOWTITLE, createStringState(title));
-            logger.trace("Throttled updateShowTitle: {}", title);
-        } else {
-            logger.trace("Skipped updateShowTitle to throttle frequency");
         }
     }
 
@@ -457,106 +510,33 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     public void updateMediaType(String mediaType) {
         if (throttle.shouldProceed("updateMediaType")) {
             updateState(CHANNEL_MEDIATYPE, createStringState(mediaType));
-            logger.trace("Throttled updateMediaType: {}", mediaType);
-        } else {
-            logger.trace("Skipped updateMediaType to throttle frequency");
         }
     }
 
     @Override
     public void updateCurrentTime(long currentTime) {
         if (throttle.shouldProceed("updateCurrentTime")) {
-            updateState(CHANNEL_CURRENTTIME, createQuantityState(convertNanoTimeToSeconds(currentTime), Units.SECOND));
-            logger.trace("Throttled updateCurrentTime: {}", currentTime);
-        } else {
-            logger.trace("Skipped updateCurrentTime to throttle frequency");
+            updateState(CHANNEL_CURRENTTIME, createQuantityState(convertTicksToSeconds(currentTime), Units.SECOND));
         }
     }
 
     @Override
     public void updateDuration(long duration) {
         if (throttle.shouldProceed("updateDuration")) {
-            updateState(CHANNEL_DURATION, createQuantityState(convertNanoTimeToSeconds(duration), Units.SECOND));
+            updateState(CHANNEL_DURATION, createQuantityState(convertTicksToSeconds(duration), Units.SECOND));
         }
     }
 
     private State createStringState(@Nullable String string) {
-        if (string == null || string.isEmpty()) {
-            return UnDefType.UNDEF;
-        } else {
-            return new StringType(string);
-        }
+        return (string == null || string.isBlank()) ? UnDefType.UNDEF : new StringType(string);
     }
 
     private State createQuantityState(@Nullable Number value, Unit<?> unit) {
         return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
-    @Override
-    public void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport) {
-        if (config != null && playstate.compareDeviceId(config.deviceID)) {
-            this.currentPlayState = playstate;
-            logger.debug("the deviceId for: {} matches the deviceId of the thing so we will update stringUrl",
-                    playstate.getDeviceName());
-            try {
-                URI imageURI = playstate.getPrimaryImageURL(hostname, embyport, config.imageImageType,
-                        config.imageMaxWidth, config.imageMaxHeight);
-                if (imageURI.getHost().equals("NotPlaying")) {
-                    updateState(EmbyState.END);
-                    updateState(EmbyState.STOP);
-
-                } else {
-                    if (playstate.getEmbyPlayStatePausedState()) {
-                        logger.debug("The playstate for {} is being set to pause", playstate.getDeviceName());
-                        updateState(EmbyState.PAUSE);
-
-                    } else {
-                        logger.debug("The playstate for {} is being set to play", playstate.getDeviceName());
-                        updateState(EmbyState.PLAY);
-                    }
-                    String newImageUrl = imageURI.toString();
-                    if (!newImageUrl.equals(lastImageUrl)) {
-                        updatePrimaryImageURL(newImageUrl);
-                        lastImageUrl = newImageUrl;
-                    }
-
-                    boolean newMuteState = playstate.getEmbyMuteSate();
-                    if (newMuteState != lastMuted) {
-                        updateMuted(newMuteState);
-                        lastMuted = newMuteState;
-                    }
-
-                    String newShowTitle = playstate.getNowPlayingName();
-                    if (!newShowTitle.equals(lastShowTitle)) {
-                        updateShowTitle(newShowTitle);
-                        lastShowTitle = newShowTitle;
-                    }
-
-                    long newCurrentTime = playstate.getNowPlayingTime().longValue();
-                    if (newCurrentTime != lastCurrentTime) {
-                        updateCurrentTime(newCurrentTime);
-                        lastCurrentTime = newCurrentTime;
-                    }
-
-                    long newDuration = playstate.getNowPlayingTotalTime().longValue();
-                    if (newDuration != lastDuration) {
-                        updateDuration(newDuration);
-                        lastDuration = newDuration;
-                    }
-
-                    String newMediaType = playstate.getNowPlayingMediaType();
-                    if (!newMediaType.equals(lastMediaType)) {
-                        updateMediaType(newMediaType);
-                        lastMediaType = newMediaType;
-                    }
-                }
-            } catch (URISyntaxException e) {
-                logger.debug("unable to create image url for: {} due to exception: {} ", playstate.getDeviceName(),
-                        e.getMessage());
-            }
-        } else {
-            logger.trace("{} does not equal {} the event is for device named: {} ", playstate.getDeviceId(),
-                    config != null ? config.deviceID : "null", playstate.getDeviceName());
-        }
+    public static double convertTicksToSeconds(long ticks) {
+        double raw = ticks / 10_000_000.0;
+        return Math.round(raw * 10.0) / 10.0;
     }
 }

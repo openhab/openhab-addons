@@ -32,7 +32,6 @@ import org.openhab.binding.emby.internal.handler.EmbyBridgeHandler;
 import org.openhab.binding.emby.internal.handler.EmbyDeviceHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.WebSocketFactory;
-import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -63,12 +62,11 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
-    private NetworkAddressService networkAddressService;
     private WebSocketFactory webSocketClientFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
-    private @Nullable String callbackUrl = null;
+
     @Reference(target = "(component.factory=emby:client)")
     private @Nullable ComponentFactory<DiscoveryService> discoveryFactory;
     private final Map<ThingUID, ComponentInstance<DiscoveryService>> discoveryInstances = new HashMap<>();
@@ -78,9 +76,6 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             @Reference NetworkAddressService networkAddressService, ComponentContext componentContext) {
         super.activate(componentContext);
         this.webSocketClientFactory = webSocketClientFactory;
-        this.networkAddressService = networkAddressService;
-        Dictionary<String, Object> props = componentContext.getProperties();
-        this.callbackUrl = (String) props.get("callbackUrl");
     }
 
     @Override
@@ -96,14 +91,14 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
-            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, createCallbackUrl(),
-                    createCallbackPort(), webSocketClientFactory.getCommonWebSocketClient());
+            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing,
+                    webSocketClientFactory.getCommonWebSocketClient());
             Dictionary<String, Object> cfg = new Hashtable<>();
             cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
 
             ComponentFactory<DiscoveryService> factory = Objects.requireNonNull(discoveryFactory,
                     "discoveryFactory must be injected");
-
+            @SuppressWarnings("null")
             ComponentInstance<DiscoveryService> ci = factory.newInstance(cfg);
             EmbyClientDiscoveryService discovery = (EmbyClientDiscoveryService) ci.getInstance();
             discovery.setBridge(bridgeHandler);
@@ -120,12 +115,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     public void removeHandler(ThingHandler handler) {
         ThingUID uid = handler.getThing().getUID();
 
-        /*
-         * --------------------------------------------------------------
-         * 1 — dispose the DS ComponentInstance that hosts the discovery
-         * --------------------------------------------------------------
-         */
-        ComponentInstance ci = discoveryInstances.remove(uid);
+        ComponentInstance<DiscoveryService> ci = discoveryInstances.remove(uid);
         if (ci != null) {
             EmbyClientDiscoveryService discovery = (EmbyClientDiscoveryService) ci.getInstance();
 
@@ -137,36 +127,6 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             ci.dispose(); // shuts the DS component down
         }
 
-        /*
-         * --------------------------------------------------------------
-         * 2 — delegate to super so the rest of the framework is cleaned
-         * --------------------------------------------------------------
-         */
         super.removeHandler(handler);
-    }
-
-    private @Nullable String createCallbackUrl() {
-        if (callbackUrl != null) {
-            logger.debug("The callback url was set to {}", callbackUrl);
-            return callbackUrl;
-        } else {
-            final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
-                logger.warn("No network interface could be found.");
-                return null;
-            }
-            logger.debug("Callback URL not set; obtained IP address {} from network address service", ipAddress);
-            return ipAddress;
-        }
-    }
-
-    private @Nullable String createCallbackPort() {
-        // we do not use SSL as it can cause certificate validation issues.
-        final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-        if (port == -1) {
-            logger.warn("Cannot find port of the HTTP service.");
-            return null;
-        }
-        return Integer.toString(port);
     }
 }

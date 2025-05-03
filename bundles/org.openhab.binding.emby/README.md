@@ -162,4 +162,3 @@ emby.sendGeneralCommand("ToggleMute");
 # References
 
 - [Emby Remote Control API Documentation](https://github.com/MediaBrowser/Emby/wiki/Remote-control)
-

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.emby.internal.protocol;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -63,8 +65,6 @@ public class EmbyClientSocket {
     private @Nullable Session session;
     private int bufferSize;
 
-    private final int maxReconnectAttempts = 5;
-    private final long reconnectDelayMs = 5000;
     private volatile boolean shouldReconnect = true;
     private int reconnectAttempts = 0;
 
@@ -79,60 +79,74 @@ public class EmbyClientSocket {
 
     public synchronized void open() throws Exception {
         if (isConnected()) {
-            logger.warn("connect: connection is already open");
+            logger.debug("already open");
             return;
         }
         if (!client.isStarted()) {
-            client.start();
             client.setMaxTextMessageBufferSize(bufferSize);
         }
-
-        Future<Session> future = client.connect(socket, uri, request);
-        Session wsSession = future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Future<Session> future = requireNonNull(client.connect(socket, uri, request),
+                "WebSocketClient.connect returned null Future<Session>");
+        Session wsSession = requireNonNull(future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                "Future<Session>.get returned null Session");
+        requireNonNull(wsSession, "WebSocketClient.connect returned null Session");
         this.session = wsSession;
-
-        logger.info("EMBY client socket is Connected to emby server");
-        if (eventHandler != null) {
-            scheduler.submit(() -> eventHandler.onConnectionOpened());
-        }
+        logger.info("Connected to Emby");
+        // Reset retry counters
+        reconnectAttempts = 0;
+        // Fire the connection‐opened event
+        scheduler.submit(() -> eventHandler.onConnectionOpened());
     }
 
     public void close() {
         shouldReconnect = false;
         reconnectAttempts = 0;
-        if (session != null) {
+        Session s = session;
+        if (s != null) {
             try {
-                session.close();
+                s.close();
             } catch (Exception e) {
                 logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
             }
             session = null;
         }
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
-        }
     }
 
     public boolean isConnected() {
-        return session != null && session.isOpen();
+        Session s = session;
+        return s != null && s.isOpen();
+    }
+
+    public synchronized void attemptReconnect() {
+        if (!shouldReconnect) {
+            return;
+        }
+        reconnectAttempts++;
+        long delay = Math.min(60_000, (1 << Math.min(reconnectAttempts, 6)) * 1000L);
+        logger.info("Scheduling reconnect #{} in {}ms", reconnectAttempts, delay);
+        scheduler.schedule(() -> {
+            try {
+                open();
+            } catch (Exception e) {
+                logger.debug("Reconnect attempt #{} failed: {}", reconnectAttempts, e.getMessage());
+                attemptReconnect();
+            }
+        }, delay, TimeUnit.MILLISECONDS);
     }
 
     public void sendCommand(String methodName, String dataParams) {
         JsonObject payload = new JsonObject();
         payload.addProperty("MessageType", methodName);
         payload.addProperty("Data", dataParams);
-
         scheduler.submit(() -> {
             try {
-                if (session == null || !session.isOpen()) {
-                    logger.warn("Cannot send {}, session not open", methodName);
+                Session s = this.session;
+                if (s == null || !s.isOpen()) {
+                    logger.debug("Cannot send {}, session not open", methodName);
                     return;
                 }
-                String json = mapper.toJson(payload);
-                session.getRemote().sendString(json);
-                logger.debug("Sent command: {}", json);
+                s.getRemote().sendString(mapper.toJson(payload));
+                logger.debug("Sent command: {}", payload);
             } catch (IOException e) {
                 logger.error("Failed sending {}: {}", methodName, e.getMessage(), e);
             }
@@ -140,11 +154,9 @@ public class EmbyClientSocket {
     }
 
     @WebSocket
-    @NonNullByDefault
     public class EmbyWebSocketListener {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            logger.info("EMBY client socket connected (Jetty callback)");
         }
 
         @OnWebSocketMessage
@@ -158,7 +170,11 @@ public class EmbyClientSocket {
                 @SuppressWarnings("unchecked")
                 List<EmbyPlayStateModel> states = (List<EmbyPlayStateModel>) mapper.fromJson(dataArr, listType);
 
-                states.forEach(eventHandler::handleEvent);
+                if (states != null) {
+                    states.forEach(eventHandler::handleEvent);
+                } else {
+                    logger.trace("Parsed EmbyPlayStateModel list was null; skipping event handling");
+                }
             }
         }
 
@@ -166,30 +182,27 @@ public class EmbyClientSocket {
         public void onClose(int statusCode, @Nullable String reason) {
             logger.debug("WebSocket closed ({}): {}", statusCode, reason);
             session = null;
-            shouldReconnect = true;
             eventHandler.onConnectionClosed();
-            if (shouldReconnect && reconnectAttempts < maxReconnectAttempts) {
-                scheduler.schedule(EmbyClientSocket.this::attemptReconnect, reconnectDelayMs, TimeUnit.MILLISECONDS);
+            if (shouldReconnect) {
+                attemptReconnect();
             }
         }
 
         @OnWebSocketError
         public void onError(@Nullable Throwable error) {
-            onClose(0, error != null ? error.getMessage() : "unknown");
-        }
-    }
-
-    private synchronized void attemptReconnect() {
-        reconnectAttempts++;
-        logger.info("Attempting reconnect {}/{}", reconnectAttempts, maxReconnectAttempts);
-        try {
-            open();
-            reconnectAttempts = 0;
-            logger.info("Reconnection successful.");
-        } catch (Exception e) {
-            logger.error("Reconnect failed: {}", e.getMessage(), e);
-            if (reconnectAttempts < maxReconnectAttempts) {
-                scheduler.schedule(this::attemptReconnect, reconnectDelayMs, TimeUnit.MILLISECONDS);
+            logger.error("WebSocket error, scheduling reconnect", error);
+            Session current = session;
+            if (current != null) {
+                try {
+                    current.disconnect();
+                } catch (Exception e) {
+                    logger.error("Failed to cleanly disconnect WebSocket session: {}", e.getMessage(), e);
+                }
+                current = null;
+            }
+            eventHandler.onConnectionClosed();
+            if (shouldReconnect) {
+                attemptReconnect();
             }
         }
     }

@@ -23,101 +23,112 @@ import org.openhab.binding.emby.internal.protocol.EmbyDeviceEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The {@link EmbyPlayStateModelGson} is responsible to hold
- * data that models pin information which can be sent to a Konnected Module
+ * The {@link EmbyPlayStateModel} holds data about the current play state
+ * and provides safe getters that guard against missing playState or nowPlayingItem.
  *
  * @author Zachary Christiansen - Initial contribution
- *
  */
 @NonNullByDefault
 public class EmbyPlayStateModel {
 
-    @SerializedName("PlayState")
-    private @Nullable EmbyPlayState playState;
-    @SerializedName("RemoteEndPoint")
+    @Nullable
+    @com.google.gson.annotations.SerializedName("PlayState")
+    private EmbyPlayState playState;
+
+    @com.google.gson.annotations.SerializedName("RemoteEndPoint")
     private String remoteEndPoint = "";
-    @SerializedName("Id")
+
+    @com.google.gson.annotations.SerializedName("Id")
     private String id = "";
-    @SerializedName("UserId")
+
+    @com.google.gson.annotations.SerializedName("UserId")
     private String userId = "";
-    @SerializedName("UserName")
+
+    @com.google.gson.annotations.SerializedName("UserName")
     private String userName = "";
-    @SerializedName("Client")
+
+    @com.google.gson.annotations.SerializedName("Client")
     private String client = "";
-    @SerializedName("DeviceName")
+
+    @com.google.gson.annotations.SerializedName("DeviceName")
     private String deviceName = "";
-    @SerializedName("DeviceId")
+
+    @com.google.gson.annotations.SerializedName("DeviceId")
     private String deviceId = "";
-    @SerializedName("SupportsRemoteControl")
+
+    @com.google.gson.annotations.SerializedName("SupportsRemoteControl")
     private Boolean supportsRemoteControl = false;
-    @SerializedName("NowPlayingItem")
-    private @Nullable EmbyNowPlayingItem nowPlayingItem;
+
+    @Nullable
+    @com.google.gson.annotations.SerializedName("NowPlayingItem")
+    private EmbyNowPlayingItem nowPlayingItem;
+
     private final Logger logger = LoggerFactory.getLogger(EmbyPlayStateModel.class);
 
+    /** May be null if nothing is playing. */
     public @Nullable EmbyPlayState getPlayStates() {
         return playState;
     }
 
     public Boolean getEmbyPlayStatePausedState() {
-        return this.playState.getPaused();
+        final EmbyPlayState state = this.playState;
+        return (state != null) ? state.getPaused() : Boolean.FALSE;
     }
 
     public Boolean getEmbyMuteSate() {
-        return this.playState.getIsMuted();
+        final EmbyPlayState state = this.playState;
+        return (state != null) ? state.getIsMuted() : Boolean.FALSE;
     }
 
     public String getNowPlayingName() {
-        return this.nowPlayingItem.getName();
+        final EmbyNowPlayingItem item = this.nowPlayingItem;
+        return (item != null) ? item.getName() : "";
     }
 
     public BigDecimal getNowPlayingTime() {
-        return this.playState.getPositionTicks();
+        final EmbyPlayState state = this.playState;
+        return (state != null) ? state.getPositionTicks() : BigDecimal.ZERO;
     }
 
     public BigDecimal getNowPlayingTotalTime() {
-        return this.nowPlayingItem.getRunTimeTicks();
+        final EmbyNowPlayingItem item = this.nowPlayingItem;
+        return (item != null) ? item.getRunTimeTicks() : BigDecimal.ZERO;
     }
 
     public String getNowPlayingMediaType() {
-        return this.getNowPlayingItem().getNowPlayingType();
+        final EmbyNowPlayingItem item = this.nowPlayingItem;
+        return (item != null) ? item.getNowPlayingType() : "";
     }
 
     public Boolean compareDeviceId(String compareId) {
-        @Nullable
-        Boolean returnValue = getDeviceId().equals(compareId);
-
-        if (!(returnValue == null)) {
-            return returnValue;
-        } else {
-            return false;
-        }
+        // deviceId is never null; equals() handles null compareId safely
+        return getDeviceId().equals(compareId);
     }
 
     /**
-     * @return the BigInteger Value of the PlayState PositionTicks over the Total Run Time Position Ticks which is the
-     *         mathmatical representation of the percentage played
+     * Returns the fraction (0–1) of playback completed, rounded to 2 decimal places.
      */
     public BigDecimal getPercentPlayed() {
-        BigDecimal positionTicks = playState.getPositionTicks();
-        BigDecimal runTimeTicks = nowPlayingItem.getRunTimeTicks();
-        logger.debug("The play state position is {}", positionTicks.toString());
-        if (runTimeTicks.equals(BigDecimal.ZERO)) {
+        final EmbyPlayState state = this.playState;
+        final EmbyNowPlayingItem item = this.nowPlayingItem;
+
+        BigDecimal positionTicks = (state != null) ? state.getPositionTicks() : BigDecimal.ZERO;
+        BigDecimal runTimeTicks = (item != null) ? item.getRunTimeTicks() : BigDecimal.ZERO;
+
+        logger.debug("The play state position is {}", positionTicks);
+
+        if (BigDecimal.ZERO.equals(runTimeTicks)) {
             return BigDecimal.ZERO;
-        } else {
-            return (positionTicks.divide(runTimeTicks, 2, RoundingMode.HALF_UP));
         }
+        return positionTicks.divide(runTimeTicks, 2, RoundingMode.HALF_UP);
     }
 
     public @Nullable EmbyNowPlayingItem getNowPlayingItem() {
         return nowPlayingItem;
     }
 
-    /**
-     * @return the ip address of the user playing the meida
-     */
+    /** @return the IP address of the user playing the media */
     public String getRemoteEndPoint() {
         return remoteEndPoint;
     }
@@ -126,10 +137,7 @@ public class EmbyPlayStateModel {
         return id;
     }
 
-    /**
-     * @return the emby id of the user playing the media, this can be used to obtain the images in conjunction with the
-     *         media id
-     */
+    /** @return the Emby ID of the user */
     public String getuserId() {
         return userId;
     }
@@ -147,8 +155,8 @@ public class EmbyPlayStateModel {
     }
 
     public String getDeviceId() {
-        EmbyDeviceEncoder encode = new EmbyDeviceEncoder();
-        return encode.encodeDeviceID(deviceId);
+        EmbyDeviceEncoder encoder = new EmbyDeviceEncoder();
+        return encoder.encodeDeviceID(deviceId);
     }
 
     public Boolean getSupportsRemoteControl() {
@@ -157,37 +165,27 @@ public class EmbyPlayStateModel {
 
     public URI getPrimaryImageURL(String embyHost, int embyPort, String embyType, String maxWidth, String maxHeight)
             throws URISyntaxException {
-        String imagePath = "";
-        logger.debug(
-                "Received an image URL request for: {} , embyPort: {}, embyType: {}, maxWidth: {}, maxHeight: {}, percentPlayed: {}",
+        logger.debug("Received an image URL request for: {} , port: {}, type: {}, max: {}/{} , percentPlayed: {}",
                 embyHost, embyPort, embyType, maxWidth, maxHeight, getPercentPlayed());
 
-        if (this.nowPlayingItem == null) {
-            // If there is no nowPlayingItem this means the device has stopped so we will return
-            // a URI that will let us check for that, if any of this returns null
-            URI imageURI = new URI("http", null, "NotPlaying", 8096, null, null, null);
-            return imageURI;
-        } else {
-            if (this.nowPlayingItem.getNowPlayingType().equalsIgnoreCase("Episode")) {
-                // if its a TV Series use that instead of ID for image
-                imagePath = "/emby/items/" + this.nowPlayingItem.getSeasonId() + "/Images/" + embyType;
-            } else {
-                imagePath = "/emby/items/" + this.nowPlayingItem.getId() + "/Images/" + embyType;
-            }
-
-            String query = "";
-
-            if (!(maxWidth == null)) {
-                query = "MaxWidth=" + maxWidth + "&" + query;
-            }
-
-            if (!(maxHeight == null)) {
-                query = "MaxHeight=" + maxHeight + "&" + query;
-            }
-
-            // http://192.168.20.152:8096/emby/Items/%7BItemid%7D/Images/Primary?PercentPlayed=47
-            URI imageURI = new URI("http", null, embyHost, embyPort, imagePath, query, null);
-            return imageURI;
+        final EmbyNowPlayingItem item = this.nowPlayingItem;
+        if (item == null) {
+            // no media playing → special URI
+            return new URI("http", null, "NotPlaying", 8096, null, null, null);
         }
+
+        // build path based on media type
+        String imagePath = item.getNowPlayingType().equalsIgnoreCase("Episode")
+                ? "/emby/items/" + item.getSeasonId() + "/Images/" + embyType
+                : "/emby/items/" + item.getId() + "/Images/" + embyType;
+
+        // build query string
+        StringBuilder query = new StringBuilder();
+
+        query.append("MaxWidth=").append(maxWidth).append("&");
+
+        query.append("MaxHeight=").append(maxHeight).append("&");
+
+        return new URI("http", null, embyHost, embyPort, imagePath, query.toString(), null);
     }
 }
