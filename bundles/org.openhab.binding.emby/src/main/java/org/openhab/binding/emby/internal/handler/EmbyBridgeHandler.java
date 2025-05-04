@@ -182,14 +182,13 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             // We’ve gone offline: increment retry count and build new detail text
             reconnectionCount++;
-            String newDetailMsg = "@text/thing.status.bridge.connectionRetry" + reconnectionCount;
+            logger.debug("@text/thing.status.bridge.connectionRetry" + ": " + reconnectionCount)
 
             // Only emit a new OFFLINE event if status changed, or the message changed
             boolean statusChanged = currentStatus != ThingStatus.OFFLINE;
-            boolean detailChanged = !newDetailMsg.equals(prevDetailMsg);
 
-            if (statusChanged || detailChanged) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, newDetailMsg);
+            if (statusChanged) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing.status.bridge.connectionRetry");
             }
 
             ScheduledFuture<?> localConnectionCheckerFuture = this.connectionCheckerFuture 
