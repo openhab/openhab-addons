@@ -192,10 +192,10 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, newDetailMsg);
             }
 
-            // Cancel the old checker so it won’t keep spamming
-            if (connectionCheckerFuture != null) {
-                connectionCheckerFuture.cancel(false);
-                connectionCheckerFuture = null;
+            ScheduledFuture<?> localConnectionCheckerFuture = this.connectionCheckerFuture 
+            if (localConnectionCheckerFuture != null) {
+                localConnectionCheckerFuture.cancel(false);
+                this.connectionCheckerFuture = null;
             }
             // Schedule exactly one reconnect attempt in 60 seconds
             scheduler.schedule(this::establishConnection, 60, TimeUnit.SECONDS);
