@@ -68,17 +68,12 @@ public class EmbyConnection implements EmbyClientSocketEventListener, AutoClosea
 
         // local copy + guard for socket:
         final EmbyClientSocket sock = this.socket;
-        if (sock == null || !sock.isConnected()) {
-            // if we have a scheduler, reschedule; else give up silently
-            final ScheduledExecutorService sched = this.schedulerInstance;
-            if (sched != null) {
-                sched.schedule(this::onConnectionOpened, 50, TimeUnit.MILLISECONDS);
-            }
-            return;
+        // once the connection is open, start sessions (if connected)
+        if (sock != null && sock.isConnected()) {
+            sock.sendCommand("SessionsStart", "0," + refreshRate);
+        } else {
+            logger.warn("onConnectionOpened() called but socket is not yet connected");
         }
-
-        // now that we're sure it's connected, start sessions:
-        sock.sendCommand("SessionsStart", "0," + refreshRate);
     }
 
     public synchronized void connect(String setHostName, int port, String apiKey, ScheduledExecutorService scheduler,

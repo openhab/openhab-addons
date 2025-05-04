@@ -39,6 +39,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -168,15 +169,37 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void updateConnectionState(boolean connected) {
+        // Grab current status and the last detail message
+        ThingStatusInfo info = getThing().getStatusInfo();
+        ThingStatus currentStatus = info.getStatus();
+        String prevDetailMsg = info.getDescription();
+
         if (connected) {
-            updateStatus(ThingStatus.ONLINE);
-            reconnectionCount = 0;
+            // Only transition to ONLINE if we weren’t already
+            if (currentStatus != ThingStatus.ONLINE) {
+                reconnectionCount = 0;
+                updateStatus(ThingStatus.ONLINE);
+            }
         } else {
+            // We’ve gone offline: increment retry count and build new detail text
             reconnectionCount++;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection closed (" + reconnectionCount + " retry)");
-            final ScheduledExecutorService exec = requireNonNull(scheduler, "scheduler must not be null");
-            exec.schedule(this::establishConnection, 60, TimeUnit.SECONDS);
+            String newDetailMsg = "Connection closed (" + reconnectionCount + " retry)";
+
+            // Only emit a new OFFLINE event if status changed, or the message changed
+            boolean statusChanged = currentStatus != ThingStatus.OFFLINE;
+            boolean detailChanged = !newDetailMsg.equals(prevDetailMsg);
+
+            if (statusChanged || detailChanged) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, newDetailMsg);
+            }
+
+            // Cancel the old checker so it won’t keep spamming
+            if (connectionCheckerFuture != null) {
+                connectionCheckerFuture.cancel(false);
+                connectionCheckerFuture = null;
+            }
+            // Schedule exactly one reconnect attempt in 60 seconds
+            scheduler.schedule(this::establishConnection, 60, TimeUnit.SECONDS);
         }
     }
 
