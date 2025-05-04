@@ -173,8 +173,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         final EmbyBridgeHandler handler = bridgeHandler;
         final EmbyDeviceConfiguration cfg = config;
         if (handler == null || cfg == null) {
-            updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
-                    "No Emby server bridge linked or configuration invalid.");
+            
             return;
         }
 
@@ -365,37 +364,37 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
     private EmbyDeviceConfiguration validateConfiguration() throws ConfigValidationException {
         Object deviceId = requireNonNull(thing.getConfiguration().get(CONFIG_DEVICE_ID));
         if (deviceId.toString().isEmpty()) {
-            throwValidationError(CONFIG_DEVICE_ID, "Missing value for key: " + CONFIG_DEVICE_ID);
+            throwValidationError(CONFIG_DEVICE_ID, "@text/thing.status.device.config.noDeviceID");
         }
         EmbyDeviceConfiguration cfg = new EmbyDeviceConfiguration(deviceId.toString());
 
         final Channel imgChannel = thing.getChannel(CHANNEL_IMAGEURL);
         if (imgChannel == null) {
-            throwValidationError(CHANNEL_IMAGEURL, "Missing channel: " + CHANNEL_IMAGEURL);
+            throwValidationError(CHANNEL_IMAGEURL, "@text/thing.status.device.config.noChannelDefined: " + CHANNEL_IMAGEURL);
         } else {
             Configuration imgCfg = imgChannel.getConfiguration();
             String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "");
             if (!maxWidth.matches("\\d*")) {
-                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "Image max width must be a number");
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXWIDTH);
             } else {
                 cfg.imageMaxWidth = maxWidth;
             }
             String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "");
             if (!maxHeight.matches("\\d*")) {
-                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "Image max height must be a number");
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT);
             }
             cfg.imageMaxHeight = maxHeight;
             String pct = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "false");
             if (!("true".equalsIgnoreCase(pct) || "false".equalsIgnoreCase(pct))) {
                 throwValidationError(CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED,
-                        "Image percent-played must be true or false");
+                        "thing.status.device.config.booleanRequried" + CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED);
             }
             cfg.imagePercentPlayed = Boolean.parseBoolean(pct);
 
             String imgType = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_TYPE, "Primary");
             if (!ALLOWED_IMAGE_TYPES.contains(imgType)) {
                 throwValidationError(CHANNEL_IMAGEURL_CONFIG_TYPE,
-                        "Invalid image type: " + imgType + ". Allowed: " + ALLOWED_IMAGE_TYPES);
+                        "@text/thing.status.device.config.invalidImageType" + imgType);
             }
             cfg.imageImageType = imgType;
         }
@@ -425,22 +424,23 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                 if (!(getBridge() instanceof Bridge bridge)
                         || !(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
                     updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
-                            "You must choose an Emby Server for this Device");
+                            "@text/thing.status.device.noBridge");
                     return;
                 }
                 this.bridgeHandler = bridgeHandler;
 
                 if (bridge.getStatus() == OFFLINE) {
-                    updateStatus(OFFLINE, BRIDGE_OFFLINE, "The Emby Server is currently offline");
+                    updateStatus(OFFLINE, BRIDGE_OFFLINE, "@text/thing.status.device.bridgeOffline");
                     return;
                 }
 
                 updateStatus(ThingStatus.ONLINE);
 
             } catch (ConfigValidationException e) {
-                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "Configuration error: " + e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "@text/thing.status.device.configInValid " + e.getMessage());
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "Initialization failed: " + e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "@text/thing.status.device.initalizationFalied");
+                logger.error("Initialization failed: " + e.getMessage());
             }
         });
     }
@@ -450,7 +450,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "No connection established");
+            updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR);
         }
     }
 

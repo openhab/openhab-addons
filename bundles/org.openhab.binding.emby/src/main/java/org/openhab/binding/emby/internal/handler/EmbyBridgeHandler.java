@@ -116,19 +116,19 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
                 this.connectionCheckerFuture = exec.scheduleWithFixedDelay(() -> {
                     if (!conn.checkConnection()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing.status.bridge.connectionLost");
                     }
                 }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection attempt failed: " + e.getMessage());
+                        "@text/thing.status.bridge.connectionFailed" + e.getMessage());
             }
         });
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY, "Validating Configuration");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY);
 
         final ScheduledExecutorService exec = requireNonNull(scheduler, "scheduler must not be null");
 
@@ -136,13 +136,12 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             this.reconnectionCount = 0;
             try {
                 this.config = checkConfiguration();
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY, "Configuration Validated");
                 this.connection = new EmbyConnection(this, this.webSocketClient);
                 establishConnection();
                 updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException cve) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration error: " + cve.getMessage());
+                        "@text/thing.status.bridge.configurationFailed" + cve.getMessage());
             }
         });
     }
@@ -183,7 +182,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             // We’ve gone offline: increment retry count and build new detail text
             reconnectionCount++;
-            String newDetailMsg = "Connection closed (" + reconnectionCount + " retry)";
+            String newDetailMsg = "@text/thing.status.bridge.connectionRetry" + reconnectionCount;
 
             // Only emit a new OFFLINE event if status changed, or the message changed
             boolean statusChanged = currentStatus != ThingStatus.OFFLINE;
@@ -229,12 +228,12 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private EmbyBridgeConfiguration checkConfiguration() throws ConfigValidationException {
         EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
         if (embyConfig.api.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
-            throwValidationError("api", "Missing value for: api");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing.status.bridge.missingAPI");
+            throwValidationError("api", "@text/thing.status.bridge.missingAPI");
         }
         if (embyConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing server address");
-            throwValidationError("ipAddress", "Missing value for: ipAddress");
+            throwValidationError("ipAddress", "@text/thing.status.bridge.missingIP");
         }
         this.httputils = new EmbyHTTPUtils(30, embyConfig.api, embyConfig.ipAddress + ":" + embyConfig.port);
         return embyConfig;
