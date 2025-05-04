@@ -553,6 +553,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double pf; // 3EM
         public Double current; // 3EM
+        public Double frequency; // Gen3
     }
 
     public static class ShellyEMNCurrentSettings {
