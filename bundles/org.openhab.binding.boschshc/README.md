@@ -409,7 +409,9 @@ The system password is set by you during your initial registration steps in the 
 A keystore file with a self-signed certificate is created automatically.
 This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
-_Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing_.
+On the Smart Home Controller Bridge, paring mode must be enabled after the `shc` Thing was created:
+- Smart Home Controller: _Press and hold the button until the LED starts blinking to enable pairing mode_.
+- Smart Home Controller II: _Press the button briefly to enable pairing mode_.
 
 ## Getting the device IDs
 
