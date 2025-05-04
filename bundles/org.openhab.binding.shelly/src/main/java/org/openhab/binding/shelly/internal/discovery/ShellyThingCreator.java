@@ -123,18 +123,19 @@ public class ShellyThingCreator {
 
     // Shelly Plus Mini Series
     // Mini Generation 2
-    public static final String SHELLYDT_MINI1 = "SNSW-001X8EU";
-    public static final String SHELLYDT_MINIPM = "SNPM-001PCEU16";
-    public static final String SHELLYDT_MINI1PM = "SNSW-001P8EU";
+    public static final String SHELLYDT_MINI_1 = "SNSW-001X8EU";
+    public static final String SHELLYDT_MINI_1PM = "SNSW-001P8EU";
+    public static final String SHELLYDT_MINI_PM = "SNPM-001PCEU16";
+
     // Mini Generation 3
-    public static final String SHELLYDT_MINIG3_1 = "S3SW-001X8EU";
-    public static final String SHELLYDT_MINIG3_PM = "S3PM-001PCEU16";
-    public static final String SHELLYDT_MINIG3_1PM = "S3SW-001P8EU";
+    public static final String SHELLYDT_MINI_1G3 = "S3SW-001X8EU";
+    public static final String SHELLYDT_MINI_1PMG3 = "S3SW-001P8EU";
+    public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
     // Mini Generation 4
-    public static final String SHELLYDT_MINIG4_1 = "S4SW-001X8EU";
-    public static final String SHELLYDT_MINIG4_PM = "S4EM-001PXCEU16";
-    public static final String SHELLYDT_MINIG4_1PM = "S4SW-001P8EU";
-    public static final String SHELLYDT_MINIG4_EM = "S4EM-001PXCEU16";
+    public static final String SHELLYDT_MINI_1G4 = "S4SW-001X8EU";
+    public static final String SHELLYDT_MINI_PMG4 = "S4EM-001PXCEU16";
+    public static final String SHELLYDT_MINI_1PMG4 = "S4SW-001P8EU";
+    public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16";
 
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
@@ -213,16 +214,17 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellywalldisplay";
 
     // Shelly Plus Mini Series
-    public static final String THING_TYPE_SHELLY1MINI_STR = "shelly1mini";
-    public static final String THING_TYPE_SHELLYMINI1G3_STR = "shelly1minig3";
-    public static final String THING_TYPE_SHELLYMINI1G4_STR = "shelly1minig4";
-    public static final String THING_TYPE_SHELLYPMMINI_STR = "shellypmmini";
-    public static final String THING_TYPE_SHELLYPMMINIG3_STR = "shellypmminig3";
-    public static final String THING_TYPE_SHELLYPMMINIG4_STR = "shellypmminig4";
-    public static final String THING_TYPE_SHELLY1PMMINI_STR = "shelly1pmmini";
-    public static final String THING_TYPE_SHELLY1PMMINIG3_STR = "shelly1pmminig3";
-    public static final String THING_TYPE_SHELLY1PMMINIG4_STR = "shelly1pmminig4";
-    public static final String THING_TYPE_SHELLYEMMINI_STR = "shellyemmini";
+    public static final String THING_TYPE_SHELLYMINI_1_STR = "shelly1mini";
+    public static final String THING_TYPE_SHELLYMINI_1G3_STR = "shelly1minig3";
+    public static final String THING_TYPE_SHELLYMINI_1G4_STR = "shelly1minig4";
+
+    public static final String THING_TYPE_SHELLYMINI_PM_STR = "shellypmmini";
+    public static final String THING_TYPE_SHELLYMINI_PMG3_STR = "shellypmminig3";
+    public static final String THING_TYPE_SHELLYMINI_EM_STR = "shellyemmini"; // G4 device was renamed to EM
+
+    public static final String THING_TYPE_SHELLYMINI_1PM_STR = "shelly1pmmini";
+    public static final String THING_TYPE_SHELLYMINI_1PMG3_STR = "shelly1pmminig3";
+    public static final String THING_TYPE_SHELLYMINI_1PMG4_STR = "shelly1pmminig4";
 
     // Shelly Pro Series
     public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
@@ -341,13 +343,13 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
 
     // Shelly Plus Mini Series
-    public static final ThingTypeUID THING_TYPE_SHELLY1MINI = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY1MINI_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLY1MINI = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYMINI_1_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPMMINI = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPMMINI_STR);
+            THING_TYPE_SHELLYMINI_PM_STR);
     public static final ThingTypeUID THING_TYPE_SHELLY1PMMINI = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLY1PMMINI_STR);
+            THING_TYPE_SHELLYMINI_1PM_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYEMMINI = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYEMMINI_STR);
+            THING_TYPE_SHELLYMINI_EM_STR);
 
     // Shelly Pro
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO1_STR);
@@ -441,15 +443,15 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM_STR),
 
             // Plus Mini Series
-            Map.entry(SHELLYDT_MINI1, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(SHELLYDT_MINIG3_1, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(SHELLYDT_MINIG4_1, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(SHELLYDT_MINIPM, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(SHELLYDT_MINIG3_PM, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(SHELLYDT_MINIG4_PM, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(SHELLYDT_MINI1PM, THING_TYPE_SHELLY1PMMINI_STR),
-            Map.entry(SHELLYDT_MINIG3_1PM, THING_TYPE_SHELLY1PMMINI_STR),
-            Map.entry(SHELLYDT_MINIG4_1PM, THING_TYPE_SHELLY1PMMINI_STR),
+            Map.entry(SHELLYDT_MINI_1, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(SHELLYDT_MINI_1G3, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(SHELLYDT_MINI_1G4, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(SHELLYDT_MINI_PM, THING_TYPE_SHELLYMINI_PM_STR),
+            Map.entry(SHELLYDT_MINI_PMG3, THING_TYPE_SHELLYMINI_PM_STR),
+            Map.entry(SHELLYDT_MINI_PMG4, THING_TYPE_SHELLYMINI_PM_STR),
+            Map.entry(SHELLYDT_MINI_1PM, THING_TYPE_SHELLYMINI_1PM_STR),
+            Map.entry(SHELLYDT_MINI_1PMG3, THING_TYPE_SHELLYMINI_1PM_STR),
+            Map.entry(SHELLYDT_MINI_1PMG4, THING_TYPE_SHELLYMINI_1PM_STR),
 
             // Pro Series
             Map.entry(SHELLYDT_PRO1, THING_TYPE_SHELLYPRO1_STR), //
@@ -512,7 +514,6 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYBUTTON2_STR, THING_TYPE_SHELLYBUTTON2_STR),
             Map.entry(THING_TYPE_SHELLYUNI_STR, THING_TYPE_SHELLYUNI_STR),
             Map.entry(THING_TYPE_SHELLYMOTION2_STR, THING_TYPE_SHELLYMOTION_STR),
-
             Map.entry(THING_TYPE_SHELLYPLUS1_STR, THING_TYPE_SHELLYPLUS1_STR),
             Map.entry(THING_TYPE_SHELLYPLUS1G3_STR, THING_TYPE_SHELLYPLUS1_STR),
             Map.entry(THING_TYPE_SHELLYPLUS1G4_STR, THING_TYPE_SHELLYPLUS1_STR),
@@ -535,16 +536,15 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYPLUSDIMMER0110VG3_STR, THING_TYPE_SHELLYPLUSDIMMER10V_STR),
             Map.entry(THING_TYPE_SHELLYPLUSRGBWPM_STR, THING_TYPE_SHELLYPLUSRGBWPM_STR),
             Map.entry(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, THING_TYPE_SHELLYPLUSWALLDISPLAY_STR),
-            Map.entry(THING_TYPE_SHELLY1MINI_STR, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(THING_TYPE_SHELLYMINI1G3_STR, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(THING_TYPE_SHELLYMINI1G4_STR, THING_TYPE_SHELLY1MINI_STR),
-            Map.entry(THING_TYPE_SHELLYPMMINI_STR, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(THING_TYPE_SHELLYPMMINIG3_STR, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(THING_TYPE_SHELLYPMMINIG4_STR, THING_TYPE_SHELLYPMMINI_STR),
-            Map.entry(THING_TYPE_SHELLY1PMMINI_STR, THING_TYPE_SHELLY1PMMINI_STR),
-            Map.entry(THING_TYPE_SHELLY1PMMINIG3_STR, THING_TYPE_SHELLY1PMMINIG3_STR),
-            Map.entry(THING_TYPE_SHELLY1PMMINIG4_STR, THING_TYPE_SHELLY1PMMINIG4_STR),
-
+            Map.entry(THING_TYPE_SHELLYMINI_1_STR, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_1G3_STR, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_1G4_STR, THING_TYPE_SHELLYMINI_1_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_PM_STR, THING_TYPE_SHELLYMINI_PM_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_PMG3_STR, THING_TYPE_SHELLYMINI_PMG3_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_EM_STR, THING_TYPE_SHELLYMINI_EM_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_1PM_STR, THING_TYPE_SHELLYMINI_1PM_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_1PMG3_STR, THING_TYPE_SHELLYMINI_1PM_STR),
+            Map.entry(THING_TYPE_SHELLYMINI_1PMG4_STR, THING_TYPE_SHELLYMINI_1PM_STR),
             Map.entry(THING_TYPE_SHELLYPRO1_STR, THING_TYPE_SHELLYPRO1_STR),
             Map.entry(THING_TYPE_SHELLYPRO1PM_STR, THING_TYPE_SHELLYPRO1PM_STR),
             Map.entry(THING_TYPE_SHELLYPRO1CB_STR, THING_TYPE_SHELLYPRO1CB_STR),
@@ -555,14 +555,12 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYPRO3EM_STR, THING_TYPE_SHELLYPRO3EM_STR),
             Map.entry(THING_TYPE_SHELLYPRO3_STR, THING_TYPE_SHELLYPRO3_STR),
             Map.entry(THING_TYPE_SHELLYPRO4PM_STR, THING_TYPE_SHELLYPRO4PM_STR),
-
             Map.entry(THING_TYPE_SHELLYBLUBUTTON_STR, THING_TYPE_SHELLYBLUBUTTON_STR),
             Map.entry(THING_TYPE_SHELLYBLUDW_STR, THING_TYPE_SHELLYBLUDW_STR),
             Map.entry(THING_TYPE_SHELLYBLUMOTION_STR, THING_TYPE_SHELLYBLUMOTION_STR),
             Map.entry(THING_TYPE_SHELLYBLUHT_STR, THING_TYPE_SHELLYBLUHT_STR),
             Map.entry(THING_TYPE_SHELLYBLUGW_STR, THING_TYPE_SHELLYBLUGW_STR),
             Map.entry(THING_TYPE_SHELLYBLUGWG3_STR, THING_TYPE_SHELLYBLUGW_STR),
-
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR));
 
     public static ThingUID getThingUID(String serviceName) {

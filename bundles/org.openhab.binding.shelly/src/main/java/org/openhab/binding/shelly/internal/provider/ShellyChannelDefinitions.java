@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -513,6 +513,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.reactive != null, group, CHANNEL_EMETER_REACTWATTS);
         addChannel(thing, newChannels, emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, emeter.current != null, group, CHANNEL_EMETER_CURRENT);
+        addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
         ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
