@@ -322,6 +322,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs.current != null) {
             emeter.current = rs.current;
         }
+        if (rs.frequency != null) {
+            emeter.frequency = rs.frequency;
+        }
         if (rs.pf != null) {
             emeter.pf = rs.pf;
         }
