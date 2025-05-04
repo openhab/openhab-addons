@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="color-light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Color Light</label>
+		<description>Light with color support</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="brightness" typeId="system.brightness">
+				<label>Brightness</label>
+				<description>Brightness of light in percent</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="color-temperature" typeId="system.color-temperature">
+				<label>Color Temperature</label>
+				<description>Color temperature from cold (0 %) to warm (100 %)</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs">
+				<label>Color Temperature Kelvin</label>
+				<description>Color temperature of a bulb in Kelvin</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="color" typeId="system.color">
+				<label>Color</label>
+				<description>Color of light with hue, saturation and brightness</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="startup" typeId="startup"/>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:color-light"/>
+	</thing-type>
+</thing:thing-descriptions>

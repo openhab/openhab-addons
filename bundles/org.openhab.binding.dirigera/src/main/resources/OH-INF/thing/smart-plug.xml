@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="smart-plug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Power Plug</label>
+		<description>Power plug with electricity measurements</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Plug Powered</label>
+				<description>Power state of plug </description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="disable-status-light" typeId="disable-status-light"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="electric-power" typeId="system.electric-power">
+				<label>Electric Power</label>
+				<description>Electric power delivered by plug</description>
+			</channel>
+			<channel id="energy-total" typeId="system.electric-energy">
+				<label>Total Energy</label>
+				<description>Total energy consumption</description>
+			</channel>
+			<channel id="energy-reset" typeId="system.electric-energy">
+				<label>Energy since Reset</label>
+				<description>Energy consumption since last reset</description>
+			</channel>
+			<channel id="reset-date" typeId="datetime-reset">
+				<label>Reset Date Time</label>
+				<description>Date and time of last reset</description>
+			</channel>
+			<channel id="electric-current" typeId="system.electric-current">
+				<label>Plug Current</label>
+				<description>Electric current measured by plug</description>
+			</channel>
+			<channel id="electric-voltage" typeId="system.electric-voltage">
+				<label>Plug Voltage</label>
+				<description>Electric potential of plug</description>
+			</channel>
+			<channel id="startup" typeId="startup"/>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>
