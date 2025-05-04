@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -141,39 +142,20 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            boolean spotPricesSubscribed = false;
-            boolean arePricesFullyCached = true;
-
             for (Entry<Subscription, Set<ElectricityPriceListener>> subscriptionListener : subscriptionToListeners
                     .entrySet()) {
                 Subscription subscription = subscriptionListener.getKey();
                 Set<ElectricityPriceListener> listeners = subscriptionListener.getValue();
 
                 downloadPrices(subscription, false);
-                if (subscription instanceof SpotPriceSubscription) {
-                    spotPricesSubscribed = true;
-                    boolean arePricesFullyCachedForSubscription = getSpotPriceSubscriptionDataCache(subscription)
-                            .arePricesFullyCached();
-                    if (!arePricesFullyCachedForSubscription) {
-                        arePricesFullyCached = false;
-                    }
-                }
+
                 updateCurrentPrices(subscription);
                 publishPricesFromCache(subscription, listeners);
             }
 
             reschedulePriceUpdateJob();
 
-            if (spotPricesSubscribed) {
-                if (arePricesFullyCached) {
-                    retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
-                } else {
-                    logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
-                    retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing();
-                }
-            } else {
-                retryPolicy = RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
-            }
+            retryPolicy = determineRetryPolicy();
         } catch (DataServiceException e) {
             if (e.getHttpStatus() != 0) {
                 listenerToSubscriptions.keySet().forEach(
@@ -192,6 +174,33 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         }
 
         reschedulePriceRefreshJob(retryPolicy);
+    }
+
+    private RetryStrategy determineRetryPolicy() {
+        if (!hasAnySpotPriceSubscriptions()) {
+            return RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
+        }
+
+        if (areSpotPricesFullyCachedForAllSubscriptions()) {
+            return RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
+        }
+
+        logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
+        return RetryPolicyFactory.whenExpectedSpotPriceDataMissing();
+    }
+
+    private boolean hasAnySpotPriceSubscriptions() {
+        return getSpotPriceSubscriptions().findAny().isPresent();
+    }
+
+    private boolean areSpotPricesFullyCachedForAllSubscriptions() {
+        return getSpotPriceSubscriptions()
+                .allMatch(subscription -> getSpotPriceSubscriptionDataCache(subscription).arePricesFullyCached());
+    }
+
+    private Stream<SpotPriceSubscription> getSpotPriceSubscriptions() {
+        return subscriptionToListeners.keySet().stream().filter(SpotPriceSubscription.class::isInstance)
+                .map(SpotPriceSubscription.class::cast);
     }
 
     /**
