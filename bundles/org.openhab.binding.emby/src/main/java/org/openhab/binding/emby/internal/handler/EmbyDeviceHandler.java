@@ -56,7 +56,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,14 +86,14 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
     private final EmbyThrottle throttle = new EmbyThrottle(1000);
 
-    @Reference
-    private @Nullable TranslationProvider i18nProvider;
+    private TranslationProvider i18nProvider;
 
     private static final List<String> ALLOWED_IMAGE_TYPES = Collections.unmodifiableList(Arrays.asList("Primary", "Art",
             "Backdrop", "Banner", "Logo", "Thumb", "Disc", "Box", "Screenshot", "Menu", "Chapter"));
 
-    public EmbyDeviceHandler(Thing thing) {
+    public EmbyDeviceHandler(Thing thing, TranslationProvider i18nProvider) {
         super(thing);
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -173,7 +172,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         final EmbyBridgeHandler handler = bridgeHandler;
         final EmbyDeviceConfiguration cfg = config;
         if (handler == null || cfg == null) {
-            
+
             return;
         }
 
@@ -370,18 +369,21 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
         final Channel imgChannel = thing.getChannel(CHANNEL_IMAGEURL);
         if (imgChannel == null) {
-            throwValidationError(CHANNEL_IMAGEURL, "@text/thing.status.device.config.noChannelDefined: " + CHANNEL_IMAGEURL);
+            throwValidationError(CHANNEL_IMAGEURL,
+                    "@text/thing.status.device.config.noChannelDefined: " + CHANNEL_IMAGEURL);
         } else {
             Configuration imgCfg = imgChannel.getConfiguration();
             String maxWidth = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "");
             if (!maxWidth.matches("\\d*")) {
-                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH, "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXWIDTH);
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXWIDTH,
+                        "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXWIDTH);
             } else {
                 cfg.imageMaxWidth = maxWidth;
             }
             String maxHeight = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "");
             if (!maxHeight.matches("\\d*")) {
-                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT, "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT);
+                throwValidationError(CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT,
+                        "@text/thing.status.device.config.notNumber" + CHANNEL_IMAGEURL_CONFIG_MAXHEIGHT);
             }
             cfg.imageMaxHeight = maxHeight;
             String pct = getOrDefault(imgCfg, CHANNEL_IMAGEURL_CONFIG_PERCENTPLAYED, "false");
@@ -423,8 +425,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
                 if (!(getBridge() instanceof Bridge bridge)
                         || !(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
-                    updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
-                            "@text/thing.status.device.noBridge");
+                    updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "@text/thing.status.device.noBridge");
                     return;
                 }
                 this.bridgeHandler = bridgeHandler;
@@ -435,9 +436,9 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                 }
 
                 updateStatus(ThingStatus.ONLINE);
-
             } catch (ConfigValidationException e) {
-                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "@text/thing.status.device.configInValid " + e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
+                        "@text/thing.status.device.configInValid " + e.getMessage());
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "@text/thing.status.device.initalizationFalied");
                 logger.error("Initialization failed: " + e.getMessage());

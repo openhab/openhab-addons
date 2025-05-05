@@ -134,7 +134,7 @@ public class EmbyConnection implements EmbyClientSocketEventListener, AutoClosea
         }
 
         listener.updateConnectionState(false);
-        logger.info("Disposed EmbyConnection for {}:{}", hostname, embyport);
+        logger.debug("Disposed EmbyConnection for {}:{}", hostname, embyport);
     }
 
     @Override

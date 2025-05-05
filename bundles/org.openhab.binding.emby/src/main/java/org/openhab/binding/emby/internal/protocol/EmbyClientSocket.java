@@ -91,7 +91,7 @@ public class EmbyClientSocket {
                 "Future<Session>.get returned null Session");
         requireNonNull(wsSession, "WebSocketClient.connect returned null Session");
         this.session = wsSession;
-        logger.info("Connected to Emby");
+        logger.debug("Connected to Emby");
         // Reset retry counters
         reconnectAttempts = 0;
         // Fire the connection‐opened event
@@ -123,7 +123,7 @@ public class EmbyClientSocket {
         }
         reconnectAttempts++;
         long delay = Math.min(60_000, (1 << Math.min(reconnectAttempts, 6)) * 1000L);
-        logger.info("Scheduling reconnect #{} in {}ms", reconnectAttempts, delay);
+        logger.debug("Scheduling reconnect #{} in {}ms", reconnectAttempts, delay);
         scheduler.schedule(() -> {
             try {
                 open();

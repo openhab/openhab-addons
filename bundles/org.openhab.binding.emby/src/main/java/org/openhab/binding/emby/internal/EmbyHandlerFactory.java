@@ -31,8 +31,8 @@ import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
 import org.openhab.binding.emby.internal.handler.EmbyBridgeHandler;
 import org.openhab.binding.emby.internal.handler.EmbyDeviceHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.WebSocketFactory;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -63,6 +63,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
     private WebSocketFactory webSocketClientFactory;
+    private TranslationProvider i18nProvider;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
@@ -72,10 +73,11 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ComponentInstance<DiscoveryService>> discoveryInstances = new HashMap<>();
 
     @Activate
-    public EmbyHandlerFactory(@Reference WebSocketFactory webSocketClientFactory,
-            @Reference NetworkAddressService networkAddressService, ComponentContext componentContext) {
+    public EmbyHandlerFactory(@Reference WebSocketFactory webSocketClientFactory, ComponentContext componentContext,
+            @Reference TranslationProvider i18nProvider) {
         super.activate(componentContext);
         this.webSocketClientFactory = webSocketClientFactory;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -87,12 +89,12 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_EMBY_DEVICE.equals(thing.getThingTypeUID())) {
             logger.debug("Creating EMBY Device Handler for {}.", thing.getLabel());
-            return new EmbyDeviceHandler(thing);
+            return new EmbyDeviceHandler(thing, this.i18nProvider);
         }
 
         if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
             EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing,
-                    webSocketClientFactory.getCommonWebSocketClient());
+                    webSocketClientFactory.getCommonWebSocketClient(), this.i18nProvider);
             Dictionary<String, Object> cfg = new Hashtable<>();
             cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
 

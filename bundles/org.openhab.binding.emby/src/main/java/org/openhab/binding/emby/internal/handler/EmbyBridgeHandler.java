@@ -47,7 +47,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,12 +69,12 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private @Nullable EmbyBridgeConfiguration config;
     private int reconnectionCount;
     private @Nullable String lastDiscoveryStatus;
-    @Reference
-    private @NonNullByDefault({}) TranslationProvider i18nProvider;
+    private TranslationProvider i18nProvider;
 
-    public EmbyBridgeHandler(Bridge bridge, WebSocketClient webSocketClient) {
+    public EmbyBridgeHandler(Bridge bridge, WebSocketClient webSocketClient, TranslationProvider i18nProvider) {
         super(bridge);
         this.webSocketClient = requireNonNull(webSocketClient, "webSocketClient must not be null");
+        this.i18nProvider = requireNonNull(i18nProvider, "translation provider must not be null");
     }
 
     public void sendCommand(String commandURL) {
@@ -116,7 +115,8 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
                 this.connectionCheckerFuture = exec.scheduleWithFixedDelay(() -> {
                     if (!conn.checkConnection()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing.status.bridge.connectionLost");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/thing.status.bridge.connectionLost");
                     }
                 }, CONNECTION_CHECK_INTERVAL_MS, CONNECTION_CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
@@ -171,7 +171,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         // Grab current status and the last detail message
         ThingStatusInfo info = getThing().getStatusInfo();
         ThingStatus currentStatus = info.getStatus();
-        String prevDetailMsg = info.getDescription();
 
         if (connected) {
             // Only transition to ONLINE if we weren’t already
@@ -182,16 +181,17 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             // We’ve gone offline: increment retry count and build new detail text
             reconnectionCount++;
-            logger.debug("@text/thing.status.bridge.connectionRetry" + ": " + reconnectionCount)
+            logger.debug("@text/thing.status.bridge.connectionRetry" + ": " + reconnectionCount);
 
             // Only emit a new OFFLINE event if status changed, or the message changed
             boolean statusChanged = currentStatus != ThingStatus.OFFLINE;
 
             if (statusChanged) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing.status.bridge.connectionRetry");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/thing.status.bridge.connectionRetry");
             }
 
-            ScheduledFuture<?> localConnectionCheckerFuture = this.connectionCheckerFuture 
+            ScheduledFuture<?> localConnectionCheckerFuture = this.connectionCheckerFuture;
             if (localConnectionCheckerFuture != null) {
                 localConnectionCheckerFuture.cancel(false);
                 this.connectionCheckerFuture = null;
@@ -227,7 +227,8 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private EmbyBridgeConfiguration checkConfiguration() throws ConfigValidationException {
         EmbyBridgeConfiguration embyConfig = getConfigAs(EmbyBridgeConfiguration.class);
         if (embyConfig.api.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing.status.bridge.missingAPI");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing.status.bridge.missingAPI");
             throwValidationError("api", "@text/thing.status.bridge.missingAPI");
         }
         if (embyConfig.ipAddress.isEmpty()) {
