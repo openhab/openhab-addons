@@ -365,7 +365,6 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.sagercaster</module>
-    <module>org.openhab.binding.saicismart</module>
     <module>org.openhab.binding.salus</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
