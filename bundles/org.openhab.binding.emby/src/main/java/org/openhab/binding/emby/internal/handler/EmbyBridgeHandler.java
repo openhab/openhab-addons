@@ -180,7 +180,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             // We’ve gone offline: increment retry count and build new detail text
             reconnectionCount++;
-            logger.debug("@text/thing.status.bridge.connectionRetry" + ": " + reconnectionCount);
+            logger.debug("@text/thing.status.bridge.connectionRetry{}", reconnectionCount);
 
             // Only emit a new OFFLINE event if status changed, or the message changed
             boolean statusChanged = currentStatus != ThingStatus.OFFLINE;

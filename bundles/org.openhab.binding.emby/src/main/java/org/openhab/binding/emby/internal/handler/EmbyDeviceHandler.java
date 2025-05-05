@@ -440,7 +440,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                         "@text/thing.status.device.configInValid " + e.getMessage());
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "@text/thing.status.device.initalizationFalied");
-                logger.error("Initialization failed: " + e.getMessage());
+                logger.error("Initialization failed: {}", e.getMessage());
             }
         });
     }
