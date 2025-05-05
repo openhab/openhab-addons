@@ -65,6 +65,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DIMMABLE_LIGHT_BIT = 1 << 16; // Bit 16
     protected static final int COLOR_LIGHT_BIT = 1 << 17; // Bit 17
     protected static final int HAN_FUN_BLINDS_BIT = 1 << 18; // Bit 18
+    protected static final int HAN_FUN_SENSOR_BATTERY_BIT = 1 << 19; // Bit 19 - undocumented
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -211,6 +212,10 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
 
     public boolean isHANFUNBlinds() {
         return (bitmask & HAN_FUN_BLINDS_BIT) > 0;
+    }
+
+    public boolean isHANFUNSensorBattery() {
+        return (bitmask & HAN_FUN_SENSOR_BATTERY_BIT) > 0;
     }
 
     public String getFirmwareVersion() {

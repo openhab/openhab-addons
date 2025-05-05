@@ -61,6 +61,7 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_HAN_FUN_COLOR_BULB = "HAN_FUN_COLOR_BULB";
     public static final String DEVICE_HAN_FUN_DIMMABLE_BULB = "HAN_FUN_DIMMABLE_BULB";
     public static final String DEVICE_HAN_FUN_SENSOR = "HAN_FUN_SENSOR";
+    public static final String DEVICE_HAN_FUN_SENSOR_BATTERY = "HAN_FUN_SENSOR_BATTERY";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -93,6 +94,8 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
     public static final ThingTypeUID HAN_FUN_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SENSOR);
+    public static final ThingTypeUID HAN_FUN_SENSOR_BATTERY_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            DEVICE_HAN_FUN_SENSOR_BATTERY);
 
     // List of all Thing config ids
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
@@ -195,8 +198,8 @@ public class AVMFritzBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, DECT350_THING_TYPE,
-            HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE,
-            HAN_FUN_SENSOR_THING_TYPE);
+            HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE,
+            HAN_FUN_SENSOR_BATTERY_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);
