@@ -59,7 +59,6 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_HAN_FUN_BLINDS = "HAN_FUN_BLINDS";
     public static final String DEVICE_HAN_FUN_COLOR_BULB = "HAN_FUN_COLOR_BULB";
     public static final String DEVICE_HAN_FUN_DIMMABLE_BULB = "HAN_FUN_DIMMABLE_BULB";
-    public static final String DEVICE_HAN_FUN_SENSOR = "HAN_FUN_SENSOR";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -90,7 +89,6 @@ public class AVMFritzBindingConstants {
             DEVICE_HAN_FUN_DIMMABLE_BULB);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
-    public static final ThingTypeUID HAN_FUN_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SENSOR);
 
     // List of all Thing config ids
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
@@ -193,7 +191,7 @@ public class AVMFritzBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,
-            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE);
+            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);
@@ -213,7 +211,6 @@ public class AVMFritzBindingConstants {
             "FRITZ_SMART_THERMO_300", DEVICE_DECT300, //
             "FRITZ_SMART_THERMO_301", DEVICE_DECT301, //
             "FRITZ_SMART_THERMO_302", DEVICE_DECT302, //
-            "FRITZ_SMART_CONTROL_350", DEVICE_HAN_FUN_CONTACT, // TODO need a user to confirm this mapping
             "FRITZ_SMART_CONTROL_400", DEVICE_DECT400, //
             "FRITZ_SMART_CONTROL_440", DEVICE_DECT440 //
     );
