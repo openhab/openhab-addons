@@ -63,17 +63,15 @@ public class EmbyClientSocket {
 
     private @Nullable URI uri;
     private @Nullable Session session;
-    private int bufferSize;
 
     private volatile boolean shouldReconnect = true;
     private int reconnectAttempts = 0;
 
     public EmbyClientSocket(EmbyClientSocketEventListener handler, @Nullable URI setUri,
-            ScheduledExecutorService setScheduler, int setBufferSize, WebSocketClient sharedWebSocketClient) {
+            ScheduledExecutorService setScheduler, WebSocketClient sharedWebSocketClient) {
         this.eventHandler = handler;
         this.uri = setUri;
         this.scheduler = setScheduler;
-        this.bufferSize = setBufferSize;
         this.client = sharedWebSocketClient;
     }
 
@@ -82,9 +80,7 @@ public class EmbyClientSocket {
             logger.debug("already open");
             return;
         }
-        if (!client.isStarted()) {
-            client.setMaxTextMessageBufferSize(bufferSize);
-        }
+
         Future<Session> future = requireNonNull(client.connect(socket, uri, request),
                 "WebSocketClient.connect returned null Future<Session>");
         Session wsSession = requireNonNull(future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS),

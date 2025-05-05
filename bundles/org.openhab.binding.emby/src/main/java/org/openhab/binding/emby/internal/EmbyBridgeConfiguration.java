@@ -19,7 +19,6 @@ import org.openhab.core.config.core.Configuration;
  * The {@link EmbyBridgeConfiguration} class contains fields mapping thing configuration parameters.
  * 
  * @param api - This is the API key generated from EMBY used for Authorization.
- * @param bufferSize - Custom size for the websocket buffer. Default is 10,000.
  * @param ipAddress - IP address of the EMBY Server.
  * @param port - Port of the EMBY Server. Default is 8096.
  * @param refreshInterval - Refresh interval in milliseconds. Default is 10,000.
@@ -31,7 +30,6 @@ import org.openhab.core.config.core.Configuration;
 public class EmbyBridgeConfiguration extends Configuration {
 
     public String api = "";
-    public int bufferSize = 10000; // Default websocket buffer size
     public String ipAddress = "";
     public int port = 8096; // Default server port
     public int refreshInterval = 10000; // Default refresh interval

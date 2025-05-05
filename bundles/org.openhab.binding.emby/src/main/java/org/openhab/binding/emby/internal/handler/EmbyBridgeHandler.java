@@ -108,10 +108,9 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                 final String apiKey = requireNonNull(cfg.api, "config.api must not be null");
                 final Integer refreshInterval = requireNonNull(cfg.refreshInterval,
                         "config.refreshInterval must not be null");
-                final Integer bufferSize = requireNonNull(cfg.bufferSize, "config.bufferSize must not be null");
                 final Integer port = requireNonNull(cfg.port, "config.port must not be null");
 
-                conn.connect(ipAddress, port, apiKey, exec, refreshInterval, bufferSize);
+                conn.connect(ipAddress, port, apiKey, exec, refreshInterval);
 
                 this.connectionCheckerFuture = exec.scheduleWithFixedDelay(() -> {
                     if (!conn.checkConnection()) {

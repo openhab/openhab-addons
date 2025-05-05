@@ -77,7 +77,7 @@ public class EmbyConnection implements EmbyClientSocketEventListener, AutoClosea
     }
 
     public synchronized void connect(String setHostName, int port, String apiKey, ScheduledExecutorService scheduler,
-            int refreshRate, int bufferSize) {
+            int refreshRate) {
         this.schedulerInstance = scheduler;
         this.hostname = setHostName;
         this.embyport = port;
@@ -91,11 +91,10 @@ public class EmbyConnection implements EmbyClientSocketEventListener, AutoClosea
 
             // create and start the socket
             EmbyClientSocket localSocket = requireNonNull(
-                    new EmbyClientSocket(this, wsUri, scheduler, bufferSize, sharedWebSocketClient),
+                    new EmbyClientSocket(this, wsUri, scheduler, sharedWebSocketClient),
                     "EmbyClientSocket constructor returned null");
             localSocket.attemptReconnect();
             this.socket = localSocket;
-
         } catch (URISyntaxException e) {
             logger.error("Exception constructing URI host={}, port={}", hostname, embyport, e);
         }

@@ -13,12 +13,6 @@
 				<label>API Key</label>
 				<description>This is the API key generated from EMBY used for Authorization.</description>
 			</parameter>
-			<parameter name="bufferSize" type="integer" min="1024">
-				<label>WebSocket Buffer Size</label>
-				<description>Size of the WebSocket buffer in bytes.</description>
-				<default>10000</default>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Server Host</label>
 				<description>IP address or hostname of the EMBY server.</description>

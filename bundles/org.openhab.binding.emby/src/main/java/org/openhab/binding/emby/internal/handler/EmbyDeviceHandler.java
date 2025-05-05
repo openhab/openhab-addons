@@ -172,7 +172,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         final EmbyBridgeHandler handler = bridgeHandler;
         final EmbyDeviceConfiguration cfg = config;
         if (handler == null || cfg == null) {
-
             return;
         }
 

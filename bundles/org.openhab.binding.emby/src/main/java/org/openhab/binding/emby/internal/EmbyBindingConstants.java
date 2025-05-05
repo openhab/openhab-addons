@@ -53,7 +53,6 @@ public class EmbyBindingConstants {
 
     public static final String CONFIG_HOST_PARAMETER = "ipAddress";
     public static final String CONFIG_WS_PORT_PARAMETER = "port";
-    public static final String CONFIG_WS_BUFFER_SIZE = "bufferSize";
     public static final String CONFIG_REFRESH_PARAMETER = "refreshInterval";
     public static final String CONFIG_API_KEY = "api";
     public static final String CONFIG_DEVICE_ID = "deviceID";
