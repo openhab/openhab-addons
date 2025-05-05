@@ -93480,5 +93480,37 @@
 			"min": 0,
 			"max": 480
 		}
+	},
+	"eaxvkhtzxmqlnvqv": {
+		"switch_led": {
+			"id": 20,
+			"type": "bool"
+		},
+		"work_mode": {
+			"id": 21,
+			"type": "enum",
+			"range": [
+				"white",
+				"colour",
+				"scene",
+				"music"
+			]
+		},
+		"bright_value": {
+			"id": 22,
+			"type": "value",
+			"min": 10,
+			"max": 1000,
+			"scale": 0,
+			"step": 1
+		},
+		"countdown": {
+			"id": 26,
+			"type": "value",
+			"min": 0,
+			"max": 86400,
+			"scale": 0,
+			"step": 1
+		}
 	}
 }
