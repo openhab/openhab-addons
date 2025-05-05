@@ -1020,8 +1020,6 @@ public class AVMFritzDeviceListModelTest {
         AVMFritzDiscoveryService discoveryService = mock(AVMFritzDiscoveryService.class);
         bridgeHandler.registerStatusListener(discoveryService);
 
-        // doCallRealMethod().when(thingHandler0).onDeviceUpdated(any(), any());
-
         bridgeHandler.onDeviceListAdded(devices.getDevicelist());
 
         verify(thingHandler0, times(1)).onDeviceUpdated(any(), any());
