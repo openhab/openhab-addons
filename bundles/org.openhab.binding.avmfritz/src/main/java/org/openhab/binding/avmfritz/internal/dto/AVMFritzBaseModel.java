@@ -47,6 +47,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0

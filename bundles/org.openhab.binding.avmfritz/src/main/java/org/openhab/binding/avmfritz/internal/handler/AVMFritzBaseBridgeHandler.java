@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
@@ -345,7 +346,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return DEVICE_HAN_FUN_SENSOR;
             }
         } else if (device instanceof DeviceModel && device.isHANFUNDevice() && device.isHANFUNBattery()) {
-            // offer the host device as a potential thing -- only if would have channels (for the battery)
+            // offer the host device as a potential thing -- only if will have (battery) channels
             return DEVICE_HAN_FUN_HOST;
         }
         String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");

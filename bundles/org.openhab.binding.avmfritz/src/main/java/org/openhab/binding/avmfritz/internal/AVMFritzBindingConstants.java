@@ -29,6 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added support for groups
  * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 @NonNullByDefault
 public class AVMFritzBindingConstants {
@@ -44,7 +45,6 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_DECT500 = "FRITZ_DECT_500";
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
     public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
-    public static final String DEVICE_DECT350 = "FRITZ_DECT_350";
     public static final String DEVICE_DECT302 = "FRITZ_DECT_302";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
@@ -72,7 +72,6 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID DECT500_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT500);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
     public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
-    public static final ThingTypeUID DECT350_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT350);
     public static final ThingTypeUID DECT302_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT302);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
     public static final ThingTypeUID DECT300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT300);
@@ -196,9 +195,8 @@ public class AVMFritzBindingConstants {
             DECT301_THING_TYPE, COMETDECT_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
-            DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, DECT350_THING_TYPE,
-            HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE,
-            HAN_FUN_HOST_THING_TYPE);
+            DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,
+            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);
@@ -218,7 +216,6 @@ public class AVMFritzBindingConstants {
             "FRITZ_SMART_THERMO_300", DEVICE_DECT300, //
             "FRITZ_SMART_THERMO_301", DEVICE_DECT301, //
             "FRITZ_SMART_THERMO_302", DEVICE_DECT302, //
-            "FRITZ_SMART_CONTROL_350", DEVICE_DECT350, //
             "FRITZ_SMART_CONTROL_400", DEVICE_DECT400, //
             "FRITZ_SMART_CONTROL_440", DEVICE_DECT440 //
     );

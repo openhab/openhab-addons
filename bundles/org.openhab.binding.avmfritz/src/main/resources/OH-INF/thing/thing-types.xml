@@ -562,28 +562,9 @@
 		</supported-bridge-type-refs>
 
 		<label>HAN-FUN Host</label>
-		<description>HAN-FUN device hosting one or more HAN-FUN units</description>
+		<description>HAN-FUN device (Gerät) hosting one or more HAN-FUN units</description>
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channels>
-			<channel id="battery_level" typeId="system.battery-level"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
-		</channels>
-
-		<representation-property>ain</representation-property>
-
-		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
-	</thing-type>
-
-	<thing-type id="FRITZ_DECT_350">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="fritzbox"/>
-		</supported-bridge-type-refs>
-
-		<label>FRITZ!DECT 350</label>
-		<description>FRITZ!DECT350 contact sensor.</description>
-		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
-		<channels>
-			<channel typeId="contact_state" id="contact_state"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
