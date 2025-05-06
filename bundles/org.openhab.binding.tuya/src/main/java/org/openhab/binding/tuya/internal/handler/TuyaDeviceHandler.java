@@ -67,6 +67,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -255,6 +256,14 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("Channel '{}' received a command but device is not ONLINE. Discarding command.", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = channelStateCache.get(channelUID.getId());
+            if (state != null) {
+                updateState(channelUID, state);
+            }
             return;
         }
 
