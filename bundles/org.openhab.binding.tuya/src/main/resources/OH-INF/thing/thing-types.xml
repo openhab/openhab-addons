@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="dataCenter" type="text" required="true">
 				<label>Data Center</label>
-				<description>The data center for for your Tuya account</description>
+				<description>The data center for your Tuya account</description>
 				<options>
 					<option value="https://openapi.tuyacn.com">China</option>
 					<option value="https://openapi.tuyaus.com">Western America</option>
