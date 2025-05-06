@@ -555,14 +555,14 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
 	</thing-type>
 
-	<thing-type id="HAN_FUN_SENSOR_BATTERY">
+	<thing-type id="HAN_FUN_HOST">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
 			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
 		</supported-bridge-type-refs>
 
-		<label>HAN-FUN Sensor Battery</label>
-		<description>HAN-FUN Sensor Battery</description>
+		<label>HAN-FUN Host</label>
+		<description>HAN-FUN device hosting one or more HAN-FUN units</description>
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
@@ -584,6 +584,7 @@
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="contact_state" id="contact_state"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 

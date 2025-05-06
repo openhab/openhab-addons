@@ -344,10 +344,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             if (device.isHumiditySensor() || device.isTemperatureSensor()) {
                 return DEVICE_HAN_FUN_SENSOR;
             }
-        } else if (device instanceof DeviceModel deviceModel && device.isHANFUNDevice()) {
-            if (device.isHANFUNSensorBattery()) {
-                return DEVICE_HAN_FUN_SENSOR_BATTERY;
-            }
+        } else if (device instanceof DeviceModel && device.isHANFUNDevice() && device.isHANFUNBattery()) {
+            // offer the host device as a potential thing -- only if would have channels (for the battery)
+            return DEVICE_HAN_FUN_HOST;
         }
         String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
         String productAlias = ALIAS_PRODUCT_NAME_MAP.get(productName.toUpperCase());
