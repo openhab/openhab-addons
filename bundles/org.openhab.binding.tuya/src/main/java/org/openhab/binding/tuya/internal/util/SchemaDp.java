@@ -33,6 +33,7 @@ public class SchemaDp {
             "Boolean", "bool", //
             "Enum", "enum", //
             "Integer", "value", //
+            "String", "string", //
             "Json", "string");
 
     public int id = 0;
