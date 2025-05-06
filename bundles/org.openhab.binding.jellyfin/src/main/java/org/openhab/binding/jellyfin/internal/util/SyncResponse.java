@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.jellyfin.internal.exceptions.ApiClientException;
 
 /**
  * The {@link SyncResponse} util to consume sdk api calls.
