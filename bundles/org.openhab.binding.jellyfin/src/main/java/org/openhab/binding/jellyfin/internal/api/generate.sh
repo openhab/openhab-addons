@@ -83,7 +83,7 @@ for i in "${VERSIONS[@]}"; do
         --env-file environment.ini              \
         $DOCKER_IMAGE_OPENAPI generate                  \
           --generator-name java                 \
-          --global-property apis,models,apiDocs=false,modelDocs=false,apiTests=false,modelTests=false \
+          --global-property apiDocs=false,modelDocs=false,apiTests=false,modelTests=false \
           --api-package   ${PACKAGE_API}   \
           --model-package ${PACKAGE_MODEL} \
           --config src/main/java/org/openhab/binding/jellyfin/internal/api/java.config.json \
@@ -100,4 +100,4 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 MVN_OPT=""
 
 mvn spotless:apply $MVN_OPT
-mvn compile $MVN_OPT
+# mvn compile $MVN_OPT
