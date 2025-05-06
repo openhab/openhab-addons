@@ -13,10 +13,13 @@
 package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
@@ -25,9 +28,19 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseThingHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link DeviceListModel}.
@@ -963,5 +976,56 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(model.getNextchange());
         assertEquals(1484341200, model.getNextchange().getEndperiod());
         assertEquals(new BigDecimal(28), model.getNextchange().getTchange());
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testCallbacks() {
+        AVMFritzBaseThingHandler thingHandler0 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler1 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler2 = mock(AVMFritzHeatingDeviceHandler.class);
+
+        Thing thing0 = mock(Thing.class);
+        Thing thing1 = mock(Thing.class);
+        Thing thing2 = mock(Thing.class);
+
+        when(thing0.getUID()).thenReturn(new ThingUID("fritz:thing:thing0"));
+        when(thing1.getUID()).thenReturn(new ThingUID("fritz:thing:thing1"));
+        when(thing2.getUID()).thenReturn(new ThingUID("fritz:thing:thing2"));
+
+        when(thing0.getHandler()).thenReturn(thingHandler0);
+        when(thing1.getHandler()).thenReturn(thingHandler1);
+        when(thing2.getHandler()).thenReturn(thingHandler2);
+
+        when(thingHandler0.getIdentifier()).thenReturn("087610000437");
+        when(thingHandler1.getIdentifier()).thenReturn("087610000436");
+        when(thingHandler2.getIdentifier()).thenReturn("087610000435");
+
+        when(thingHandler0.getThing()).thenReturn(thing0);
+        when(thingHandler1.getThing()).thenReturn(thing1);
+        when(thingHandler2.getThing()).thenReturn(thing2);
+
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("fritz:box:aardvark"));
+        when(bridge.getThings()).thenReturn(List.of(thing0, thing1, thing2));
+
+        HttpClient httpClient = mock(HttpClient.class);
+        AVMFritzDynamicCommandDescriptionProvider cDP = mock(AVMFritzDynamicCommandDescriptionProvider.class);
+        AVMFritzBaseBridgeHandler bridgeHandler = new BoxHandler(bridge, httpClient, cDP);
+
+        bridgeHandler.childHandlerInitialized(thingHandler0, thing0);
+        bridgeHandler.childHandlerInitialized(thingHandler1, thing1);
+        bridgeHandler.childHandlerInitialized(thingHandler2, thing2);
+
+        AVMFritzDiscoveryService discoveryService = mock(AVMFritzDiscoveryService.class);
+        bridgeHandler.registerStatusListener(discoveryService);
+
+        bridgeHandler.onDeviceListAdded(devices.getDevicelist());
+
+        verify(thingHandler0, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler1, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler2, times(1)).onDeviceUpdated(any(), any());
+
+        verify(discoveryService, times(devices.getDevicelist().size() - 3)).onDeviceAdded(any());
     }
 }
