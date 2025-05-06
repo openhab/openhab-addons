@@ -36,6 +36,7 @@ public class DeviceSchema {
     public static class Description {
         public String code = "";
         public int dp_id = 0;
+        public String label = "";
         public String type = "";
         public String values = "";
 
