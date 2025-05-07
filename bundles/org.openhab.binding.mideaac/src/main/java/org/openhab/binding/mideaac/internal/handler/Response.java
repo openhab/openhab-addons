@@ -37,8 +37,6 @@ public class Response {
     private Logger logger = LoggerFactory.getLogger(Response.class);
 
     private final int version;
-    String responseType;
-    byte bodyType;
 
     private int getVersion() {
         return version;
@@ -49,14 +47,10 @@ public class Response {
      * 
      * @param data byte array from device
      * @param version version of the device
-     * @param responseType response type
-     * @param bodyType Body type
      */
-    public Response(byte[] data, int version, String responseType, byte bodyType) {
+    public Response(byte[] data, int version) {
         this.data = data;
         this.version = version;
-        this.bodyType = bodyType;
-        this.responseType = responseType;
 
         if (logger.isDebugEnabled()) {
             logger.debug("Power State: {}", getPowerState());
@@ -80,29 +74,6 @@ public class Response {
             logger.trace("Auxiliary Heat: {}", getAuxHeat());
             logger.trace("Fahrenheit: {}", getFahrenheit());
             logger.trace("Humidity: {}", getHumidity());
-            logger.trace("Alternate Target Temperature {}", getAlternateTargetTemperature());
-        }
-
-        /**
-         * Trace Log Response and Body Type for V3. V2 set at "" and 0x00
-         * This was for future development
-         */
-        if (version == 3) {
-            logger.trace("Response and Body Type: {}, {}", responseType, bodyType);
-            if ("notify2".equals(responseType) && bodyType == -95) { // 0xA0 = -95
-                logger.trace("Response Handler: XA0Message");
-            } else if ("notify1".equals(responseType) && bodyType == -91) { // 0xA1 = -91
-                logger.trace("Response Handler: XA1Message");
-            } else if (("notify2".equals(responseType) || "set".equals(responseType) || "query".equals(responseType))
-                    && (bodyType == 0xB0 || bodyType == 0xB1 || bodyType == 0xB5)) {
-                logger.trace("Response Handler: XBXMessage");
-            } else if (("set".equals(responseType) || "query".equals(responseType)) && bodyType == -64) { // 0xC0 = -64
-                logger.trace("Response Handler: XCOMessage");
-            } else if ("query".equals(responseType) && bodyType == 0xC1) {
-                logger.trace("Response Handler: XC1Message");
-            } else {
-                logger.trace("Response Handler: _general_");
-            }
         }
     }
 
@@ -277,62 +248,22 @@ public class Response {
         double indoorTempInteger;
         double indoorTempDecimal;
 
-        if (data[0] == (byte) 0xc0) {
-            if (((Byte.toUnsignedInt(data[11]) - 50) / 2.0) < -19) {
-                return (float) -19;
-            }
-            if (((Byte.toUnsignedInt(data[11]) - 50) / 2.0) > 50) {
-                return (float) 50;
-            } else {
-                indoorTempInteger = (float) ((Byte.toUnsignedInt(data[11]) - 50f) / 2.0f);
-            }
-
-            indoorTempDecimal = (float) ((data[15] & 0x0F) * 0.1f);
-
-            if (Byte.toUnsignedInt(data[11]) > 49) {
-                return (float) (indoorTempInteger + indoorTempDecimal);
-            } else {
-                return (float) (indoorTempInteger - indoorTempDecimal);
-            }
+        if (((Byte.toUnsignedInt(data[11]) - 50) / 2.0) < -19) {
+            return (float) -19;
+        }
+        if (((Byte.toUnsignedInt(data[11]) - 50) / 2.0) > 50) {
+            return (float) 50;
+        } else {
+            indoorTempInteger = (float) ((Byte.toUnsignedInt(data[11]) - 50f) / 2.0f);
         }
 
-        /**
-         * Not observed or tested, but left in from original author
-         * This was for future development since only 0xC0 is currently used
-         */
-        if (data[0] == (byte) 0xa0 || data[0] == (byte) 0xa1) {
-            if (data[0] == (byte) 0xa0) {
-                if ((data[1] >> 2) - 4 == 0) {
-                    indoorTempInteger = -1;
-                } else {
-                    indoorTempInteger = (data[1] >> 2) + 12;
-                }
+        indoorTempDecimal = (float) ((data[15] & 0x0F) * 0.1f);
 
-                if (((data[1] >> 1) & 0x01) == 1) {
-                    indoorTempDecimal = 0.5f;
-                } else {
-                    indoorTempDecimal = 0;
-                }
-            }
-            if (data[0] == (byte) 0xa1) {
-                if (((Byte.toUnsignedInt(data[13]) - 50) / 2.0f) < -19) {
-                    return (float) -19;
-                }
-                if (((Byte.toUnsignedInt(data[13]) - 50) / 2.0f) > 50) {
-                    return (float) 50;
-                } else {
-                    indoorTempInteger = (float) (Byte.toUnsignedInt(data[13]) - 50f) / 2.0f;
-                }
-                indoorTempDecimal = (data[18] & 0x0f) * 0.1f;
-
-                if (Byte.toUnsignedInt(data[13]) > 49) {
-                    return (float) (indoorTempInteger + indoorTempDecimal);
-                } else {
-                    return (float) (indoorTempInteger - indoorTempDecimal);
-                }
-            }
+        if (Byte.toUnsignedInt(data[11]) > 49) {
+            return (float) (indoorTempInteger + indoorTempDecimal);
+        } else {
+            return (float) (indoorTempInteger - indoorTempDecimal);
         }
-        return empty;
     }
 
     /**
@@ -356,20 +287,9 @@ public class Response {
     }
 
     /**
-     * Returns the Alternative Target Temperature (not used)
-     * 
-     * @return Alternate target Temperature
-     */
-    public Float getAlternateTargetTemperature() {
-        if ((data[13] & 0x1f) != 0) {
-            return (data[13] & 0x1f) + 12.0f + (((data[0x02] & 0x10) > 0) ? 0.5f : 0.0f);
-        } else {
-            return 0.0f;
-        }
-    }
-
-    /**
      * Returns status of Device LEDs
+     * This is not affected when the IR controller turns
+     * them off
      * 
      * @return LEDs on (true) or (false)
      */

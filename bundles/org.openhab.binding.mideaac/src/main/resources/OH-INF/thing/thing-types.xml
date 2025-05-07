@@ -29,8 +29,10 @@
 			<channel id="appliance-error" typeId="appliance-error"/>
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="kilowatt-hours" typeId="kilowatt-hours"/>
+			<channel id="amperes" typeId="amperes"/>
+			<channel id="watts" typeId="watts"/>
 			<channel id="screen-display" typeId="screen-display"/>
-			<channel id="alternate-target-temperature" typeId="alternate-target-temperature"/>
 		</channels>
 
 		<representation-property>ipAddress</representation-property>
@@ -96,6 +98,12 @@
 				<description>Polling time in seconds. Minimum time is 30 seconds, default 60 seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="s">
+				<context>energyPoll</context>
+				<label>Energy Poll</label>
+				<description>Energy poll when AC is On, default 0 to disable (if not supported).</description>
+				<default>0</default>
+			</parameter>
 			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
 				<context>keyTokenUpdate</context>
 				<label>Key Token Update</label>
@@ -119,6 +127,12 @@
 				<label>AC Version</label>
 				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't.</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="energyDecode" type="boolean" required="true">
+				<context>energyDecode</context>
+				<label>Alternative Energy Method</label>
+				<description>Devices decode Energy reports differently. Confirm with other measurements what to use.</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 
@@ -253,10 +267,25 @@
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
-	<channel-type id="alternate-target-temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Alt. Target Temperature</label>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+	<channel-type id="kilowatt-hours" advanced="true">
+		<item-type>Number</item-type>
+		<label>Kilowatt Hours</label>
+		<description>kilowatt Hours reported by the indoor unit.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d%%"/>
+	</channel-type>
+	<channel-type id="amperes" advanced="true">
+		<item-type>Number</item-type>
+		<label>Amperes</label>
+		<description>Amperes (current) reported by the indoor unit.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d%%"/>
+	</channel-type>
+	<channel-type id="watts" advanced="true">
+		<item-type>Number</item-type>
+		<label>Watts</label>
+		<description>Watts reported by the indoor unit.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 </thing:thing-descriptions>

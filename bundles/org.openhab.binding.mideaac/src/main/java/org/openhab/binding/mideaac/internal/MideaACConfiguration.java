@@ -69,6 +69,12 @@ public class MideaACConfiguration {
     public int pollingTime = 60;
 
     /**
+     * Energy Update Frequency while running
+     * (if supported)
+     */
+    public int energyPoll = 0;
+
+    /**
      * Key and Token Update Frequency
      */
     public int keyTokenUpdate = 0;
@@ -87,6 +93,12 @@ public class MideaACConfiguration {
      * AC Version
      */
     public int version = 0;
+
+    /**
+     * Choose between Energy Decoding methods
+     * true = BCD, false = binary
+     */
+    public boolean energyDecode = true;
 
     /**
      * Check during initialization that the params are valid

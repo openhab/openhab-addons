@@ -60,9 +60,10 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_INDOOR_TEMPERATURE = "indoor-temperature";
     public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
-    public static final String CHANNEL_ALTERNATE_TARGET_TEMPERATURE = "alternate-target-temperature";
     public static final String CHANNEL_SCREEN_DISPLAY = "screen-display";
-    public static final String DROPPED_COMMANDS = "dropped-commands";
+    public static final String CHANNEL_KILOWATT_HOURS = "kilowatt-hours";
+    public static final String CHANNEL_AMPERES = "amperes";
+    public static final String CHANNEL_WATTS = "watts";
 
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
 
@@ -84,16 +85,18 @@ public class MideaACBindingConstants {
     public static final String CONFIG_KEY = "key";
     public static final String CONFIG_POLLING_TIME = "pollingTime";
     public static final String CONFIG_KEY_TOKEN_UPDATE = "keyTokenUpdate";
+    public static final String CONFIG_ENERGY_POLL = "energyPoll";
     public static final String CONFIG_CONNECTING_TIMEOUT = "timeout";
     public static final String CONFIG_PROMPT_TONE = "promptTone";
     public static final String CONFIG_VERSION = "version";
+    public static final String CONFIG_ENERGY_DECODE = "energyDecode";
 
     // Properties from LAN Discovery
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
     public static final String PROPERTY_TYPE = "type";
 
-    // Capabilities properties
+    // Capabilities properties discoverable
     public static final String PROPERTY_ANION = "anion";
     public static final String PROPERTY_AUX_ELECTRIC_HEAT = "auxElectricHeat";
     public static final String PROPERTY_BREEZE_AWAY = "breezeAway";

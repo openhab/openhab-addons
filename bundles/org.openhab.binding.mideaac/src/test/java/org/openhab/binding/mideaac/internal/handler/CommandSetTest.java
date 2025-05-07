@@ -223,8 +223,8 @@ public class CommandSetTest {
         assertEquals((byte) 0x20, commandSet.data[0x01]);
         assertEquals((byte) 0x03, commandSet.data[0x09]);
         assertEquals((byte) 0x41, commandSet.data[0x0a]);
-        assertEquals((byte) 0x02, commandSet.data[0x0b] & 0x02); // Check if bit 1 is set
-        assertEquals((byte) 0x00, commandSet.data[0x0b] & 0x80); // Check if bit 7 is cleared
+        assertEquals((byte) 0x02, commandSet.data[0x0b] & 0x02); // Check if bit 2 is set
+        assertEquals((byte) 0x00, commandSet.data[0x0b] & 0x80); // Check if bit 8 is cleared
         assertEquals((byte) 0x00, commandSet.data[0x0c]);
         assertEquals((byte) 0xff, commandSet.data[0x0d]);
         assertEquals((byte) 0x02, commandSet.data[0x0e]);
@@ -237,5 +237,74 @@ public class CommandSetTest {
 
         // Check the length of the data array
         assertEquals(31, commandSet.data.length);
+    }
+
+    /**
+     * Energy poll command Test
+     * 
+     */
+    @Test
+    public void testEnergyPoll() {
+        CommandSet commandSet = new CommandSet();
+        commandSet.energyPoll();
+
+        // Check the modified bytes
+        assertEquals((byte) 0x20, commandSet.data[0x01]);
+        assertEquals((byte) 0x03, commandSet.data[0x09]);
+        assertEquals((byte) 0x41, commandSet.data[0x0a]);
+        assertEquals((byte) 0x21, commandSet.data[0x0b]);
+        assertEquals((byte) 0x01, commandSet.data[0x0c]);
+        assertEquals((byte) 0x44, commandSet.data[0x0d]);
+        assertEquals((byte) 0x00, commandSet.data[0x0e]);
+        assertEquals((byte) 0x00, commandSet.data[0x0f]);
+        assertEquals((byte) 0x00, commandSet.data[0x10]);
+        assertEquals((byte) 0x00, commandSet.data[0x11]);
+        assertEquals((byte) 0x00, commandSet.data[0x12]);
+        assertEquals((byte) 0x00, commandSet.data[0x13]);
+        assertEquals((byte) 0x00, commandSet.data[0x14]);
+
+        // Check the length of the data array
+        assertEquals(31, commandSet.data.length);
+    }
+
+    /**
+     * Capabilities Command Test
+     * 
+     */
+    @Test
+    public void testCapabilities() {
+        CommandSet commandSet = new CommandSet();
+        commandSet.getCapabilities();
+
+        // Check the modified bytes
+        assertEquals((byte) 0x0e, commandSet.data[0x01]);
+        assertEquals((byte) 0x03, commandSet.data[0x09]);
+        assertEquals((byte) 0xB5, commandSet.data[0x0a]);
+        assertEquals((byte) 0x01, commandSet.data[0x0b]);
+        assertEquals((byte) 0x00, commandSet.data[0x0c]);
+
+        // Check the length of the data array
+        assertEquals(13, commandSet.data.length);
+    }
+
+    /**
+     * Additional Capabilities Command Test
+     * 
+     */
+    @Test
+    public void testAdditionalCapabilities() {
+        CommandSet commandSet = new CommandSet();
+        commandSet.getAdditionalCapabilities();
+
+        // Check the modified bytes
+        assertEquals((byte) 0x0f, commandSet.data[0x01]);
+        assertEquals((byte) 0x03, commandSet.data[0x09]);
+        assertEquals((byte) 0xB5, commandSet.data[0x0a]);
+        assertEquals((byte) 0x01, commandSet.data[0x0b]);
+        assertEquals((byte) 0x01, commandSet.data[0x0c]);
+        assertEquals((byte) 0x01, commandSet.data[0x0d]);
+
+        // Check the length of the data array
+        assertEquals(14, commandSet.data.length);
     }
 }

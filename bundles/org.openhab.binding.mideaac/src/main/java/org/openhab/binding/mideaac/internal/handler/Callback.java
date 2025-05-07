@@ -37,4 +37,11 @@ public interface Callback {
      * @param capabilitiesResponse The capabilities response from the device used to update properties.
      */
     void updateChannels(CapabilitiesResponse capabilitiesResponse);
+
+    /**
+     * Updates channels with a Energy response.
+     *
+     * @param capabilitiesResponse The capabilities response from the device used to update properties.
+     */
+    void updateChannels(EnergyResponse energyResponse);
 }
