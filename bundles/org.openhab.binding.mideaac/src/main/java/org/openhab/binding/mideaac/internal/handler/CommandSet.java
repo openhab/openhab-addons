@@ -248,7 +248,7 @@ public class CommandSet extends CommandBase {
     public void setScreenDisplay(boolean screenDisplayToggle) {
         modifyBytesForDisplayOff();
         removeExtraBytes();
-        logger.trace("Set Bytes before crypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Display Bytes before encrypt {}", Utils.bytesToHex(data));
     }
 
     private void modifyBytesForDisplayOff() {
@@ -275,15 +275,14 @@ public class CommandSet extends CommandBase {
     }
 
     /**
-     * Creates the Get capability message
+     * Creates the Initial Get capability message
      * 
-     * @param getCapabilities
-     * @return
+     * @return Capability message
      */
     public void getCapabilities() {
         modifyBytesForCapabilities();
         removeExtraCapabilityBytes();
-        logger.debug("Set Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Capability Bytes before encrypt {}", Utils.bytesToHex(data));
     }
 
     private void modifyBytesForCapabilities() {
@@ -296,6 +295,32 @@ public class CommandSet extends CommandBase {
 
     private void removeExtraCapabilityBytes() {
         byte[] newData = new byte[data.length - 21];
+        System.arraycopy(data, 0, newData, 0, newData.length);
+        data = newData;
+    }
+
+    /**
+     * Creates the Additional Get capability message
+     * 
+     * @return Additional Capability message
+     */
+    public void getAdditionalCapabilities() {
+        modifyBytesForAdditionalCapabilities();
+        removeExtraAdditionalCapabilityBytes();
+        logger.trace("Set Additional Capability Bytes before encrypt {}", Utils.bytesToHex(data));
+    }
+
+    private void modifyBytesForAdditionalCapabilities() {
+        data[0x01] = (byte) 0x0F;
+        data[0x09] = (byte) 0x03;
+        data[0x0a] = (byte) 0xB5;
+        data[0x0b] = (byte) 0x01;
+        data[0x0c] = (byte) 0x01;
+        data[0x0d] = (byte) 0x01;
+    }
+
+    private void removeExtraAdditionalCapabilityBytes() {
+        byte[] newData = new byte[data.length - 20];
         System.arraycopy(data, 0, newData, 0, newData.length);
         data = newData;
     }
@@ -421,5 +446,38 @@ public class CommandSet extends CommandBase {
      */
     public int getOffTimer2() {
         return ((data[0x10] & (byte) 0x0f)) & 0x0f;
+    }
+
+    /**
+     * Energy detail polling
+     * Response will be C1, not C0
+     * 
+     */
+    public void energyPoll() {
+        modifyBytesForEnergyPoll();
+        removeExtraEnergyPollBytes();
+        logger.trace("Set Energy Bytes before encrypt {}", Utils.bytesToHex(data));
+    }
+
+    private void modifyBytesForEnergyPoll() {
+        data[0x01] = (byte) 0x20;
+        data[0x09] = (byte) 0x03;
+        data[0x0a] = (byte) 0x41;
+        data[0x0b] = (byte) 0x21;
+        data[0x0c] = (byte) 0x01;
+        data[0x0d] = (byte) 0x44;
+        data[0x0e] = (byte) 0x00;
+        data[0x0f] = (byte) 0x00;
+        data[0x10] = (byte) 0x00;
+        data[0x11] = (byte) 0x00;
+        data[0x12] = (byte) 0x00;
+        data[0x13] = (byte) 0x00;
+        data[0x14] = (byte) 0x00;
+    }
+
+    private void removeExtraEnergyPollBytes() {
+        byte[] newData = new byte[data.length - 3];
+        System.arraycopy(data, 0, newData, 0, newData.length);
+        data = newData;
     }
 }

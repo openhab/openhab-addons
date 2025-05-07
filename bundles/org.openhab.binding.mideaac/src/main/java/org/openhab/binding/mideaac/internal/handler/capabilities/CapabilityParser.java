@@ -92,8 +92,13 @@ public class CapabilityParser {
             offset += 3 + size; // Advance to the next capability
         }
 
-        // Check if additional capability flag exists without interference from CRC
-        additionalCapabilities = offset < payload.length - trailingBytes;
+        // Check for additional capability without interference from CRC8 and chksum
+        if (offset + 2 <= payload.length - trailingBytes) {
+            // Extract the two-byte additional capability flag
+            int additionalCapabilityFlag = ((payload[offset] & 0xFF) << 8) | (payload[offset + 1] & 0xFF);
+            // Check if the flag matches 0x0100
+            additionalCapabilities = (additionalCapabilityFlag == 0x0100);
+        }
         logger.debug("Additional capabilities {}", additionalCapabilities);
     }
 
