@@ -17,9 +17,9 @@
 		</channel-groups>
 
 		<properties>
-			<property name="modelinfo"></property>
-			<property name="softwareversion"></property>
-			<property name="eepromversion"></property>
+			<property name="modelInfo"></property>
+			<property name="softwareVersion"></property>
+			<property name="eepromVersion"></property>
 		</properties>
 
 		<representation-property>unitID</representation-property>
@@ -36,29 +36,29 @@
 		<label>Basic</label>
 		<description>BasicGroup related information</description>
 		<channels>
-			<channel id="isdrykeepsetting" typeId="idu-drykeepsetting"/>
-			<channel id="deltadvalue" typeId="idu-deltadvalue"/>
-			<channel id="fanmotorratationspeed" typeId="idu-fanmotorratationspeed"/>
-			<channel id="heatexchangertemp" typeId="idu-heatexchangertemp"/>
-			<channel id="suctiontemp" typeId="idu-suctiontemp"/>
+			<channel id="is-drykeep-setting" typeId="idu-is-drykeep-setting"/>
+			<channel id="deltad-value" typeId="idu-deltad-value"/>
+			<channel id="fanmotor-rotation-speed" typeId="idu-fanmotor-rotation-speed"/>
+			<channel id="heat-exchanger-temp" typeId="idu-heat-exchanger-temp"/>
+			<channel id="suction-temp" typeId="idu-suction-temp"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="idu-drykeepsetting">
+	<channel-type id="idu-is-drykeep-setting">
 		<item-type>Switch</item-type>
 		<label>Dry keep setting</label>
 		<description>Dry keep setting</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="idu-deltadvalue">
+	<channel-type id="idu-deltad-value">
 		<item-type>Number:Temperature</item-type>
 		<label>DeltaD temperature</label>
 		<description>DeltaD temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="idu-fanmotorratationspeed">
+	<channel-type id="idu-fanmotor-rotation-speed">
 		<item-type>Number:Frequency</item-type>
 		<label>Fanmotor rotation speed</label>
 		<description>Fanmotor rotation speed</description>
@@ -66,14 +66,14 @@
 		<state readOnly="true" pattern="%.1f RPM"/>
 	</channel-type>
 
-	<channel-type id="idu-heatexchangertemp">
+	<channel-type id="idu-heat-exchanger-temp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heatexchanger temperature</label>
 		<description>Heatexchanger temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="idu-suctiontemp">
+	<channel-type id="idu-suction-temp">
 		<item-type>Number:Temperature</item-type>
 		<label>Suction temperature</label>
 		<description>Suction temperature</description>

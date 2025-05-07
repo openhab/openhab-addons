@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
@@ -72,8 +70,6 @@ public class OnectaBridgeHandlerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        bridgeProperties.put(CONFIG_PAR_USERID, USERID);
-        bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
         bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
 
@@ -95,44 +91,11 @@ public class OnectaBridgeHandlerTest {
     }
 
     @Test
-    public void initializeShouldCallTheCallbackOfflineTest() throws DaikinCommunicationException, InterruptedException {
-        when(onectaConnectionClientMock.isOnline()).thenReturn(false);
-        handler.initialize();
-
-        Thread.sleep(500);
-        verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
-    }
-
-    @Test
-    public void initializeShouldCallTheCallbackOfflineByExceptionTest()
-            throws DaikinCommunicationException, InterruptedException {
-        doThrow(new DaikinCommunicationException("Connection failed")).when(onectaConnectionClientMock)
-                .startConnecton(anyString(), anyString());
-
-        handler.initialize();
-        Thread.sleep(500);
-        verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
-    }
-
-    @Test
-    public void initializeShouldCallTheCallbackOnlineTest() throws DaikinCommunicationException, InterruptedException {
-        when(onectaConnectionClientMock.isOnline()).thenReturn(true);
-        handler.initialize();
-        Thread.sleep(500);
-        verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
-    }
-
-    @Test
     public void pollDevicesOnlineTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
             DaikinCommunicationException, NoSuchFieldException {
 
         Method privateMethod = OnectaBridgeHandler.class.getDeclaredMethod("pollDevices");
         privateMethod.setAccessible(true);
-
-        // when(onectaConnectionClientMock.isOnline()).thenReturn(true);
 
         List<Thing> things = new java.util.ArrayList<>(List.of());
 
@@ -146,8 +109,6 @@ public class OnectaBridgeHandlerTest {
 
         privateMethod.invoke(handler);
 
-        // verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg ->
-        // arg.getStatus().equals(ThingStatus.ONLINE)));
         verify(onectaConnectionClientMock).refreshUnitsData();
         verify(onectaDeviceHandlerMock).refreshDevice();
         verify(onectaGatewayHandlerMock).refreshDevice();
@@ -162,7 +123,6 @@ public class OnectaBridgeHandlerTest {
         Method privateMethod = OnectaBridgeHandler.class.getDeclaredMethod("pollDevices");
         privateMethod.setAccessible(true);
 
-        // when(onectaConnectionClientMock.isOnline()).thenReturn(false);
         when(handler.getThing().getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         List<Thing> things = new java.util.ArrayList<>(List.of());

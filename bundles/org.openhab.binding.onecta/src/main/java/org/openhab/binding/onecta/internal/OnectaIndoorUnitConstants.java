@@ -23,12 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OnectaIndoorUnitConstants {
 
-    public static final String PROPERTY_IDU_MODELINFO = "modelinfo";
-    public static final String PROPERTY_IDU_SOFTWAREVERSION = "softwareversion";
-    public static final String PROPERTY_IDU_EEPROMVERSION = "eepromversion";
-    public static final String CHANNEL_IDU_ISKEEPDRY = "basic#isdrykeepsetting";
-    public static final String CHANNEL_IDU_FANSPEED = "basic#fanmotorratationspeed";
-    public static final String CHANNEL_IDU_DELTAD = "basic#deltadvalue";
-    public static final String CHANNEL_IDU_HEATEXCHANGETEMP = "basic#heatexchangertemp";
-    public static final String CHANNEL_IDU_SUCTIONTEMP = "basic#suctiontemp";
+    public static final String PROPERTY_IDU_MODELINFO = "modelInfo";
+    public static final String PROPERTY_IDU_SOFTWAREVERSION = "softwareVersion";
+    public static final String PROPERTY_IDU_EEPROMVERSION = "eepromVersion";
+    public static final String CHANNEL_IDU_ISKEEPDRY = "basic#is-drykeep-setting";
+    public static final String CHANNEL_IDU_FANSPEED = "basic#fanmotor-rotation-speed";
+    public static final String CHANNEL_IDU_DELTAD = "basic#deltad-value";
+    public static final String CHANNEL_IDU_HEATEXCHANGETEMP = "basic#heat-exchanger-temp";
+    public static final String CHANNEL_IDU_SUCTIONTEMP = "basic#suction-temp";
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.openhab.binding.onecta.internal.OnectaDeviceConstants.*;
+import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

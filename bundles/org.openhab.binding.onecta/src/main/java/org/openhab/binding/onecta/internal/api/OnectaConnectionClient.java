@@ -73,11 +73,6 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         return onectaUnitsData;
     }
 
-    public void startConnecton(String userId, String password) throws DaikinCommunicationException {
-        logger.debug("refreshlistener set");
-        logger.debug("Login successful");
-    }
-
     public void restoreConnecton() throws DaikinCommunicationException {
         this.fetchAccessToken();
     }
@@ -94,10 +89,6 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
 
     public Boolean isOnline() {
         return onectaSignInClient.isOnline();
-    }
-
-    public String getLastError() {
-        return onectaSignInClient.getLastError();
     }
 
     private Response doBearerRequestGet(Boolean refreshed) throws DaikinCommunicationException {

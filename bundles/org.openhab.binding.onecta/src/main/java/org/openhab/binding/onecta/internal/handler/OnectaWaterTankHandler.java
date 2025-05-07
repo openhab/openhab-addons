@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.openhab.binding.onecta.internal.OnectaDeviceConstants.*;
 import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
@@ -113,8 +112,8 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_POWER)) {
                 updateState(CHANNEL_HWT_POWER, getCurrentOnOff());
             }
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE)) {
-                updateState(CHANNEL_AC_OPERATIONMODE, getCurrentOperationMode());
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_OPERATION_MODE)) {
+                updateState(CHANNEL_HWT_OPERATION_MODE, getCurrentOperationMode());
             }
 
             updateState(CHANNEL_HWT_ERRORCODE, getErrorState());

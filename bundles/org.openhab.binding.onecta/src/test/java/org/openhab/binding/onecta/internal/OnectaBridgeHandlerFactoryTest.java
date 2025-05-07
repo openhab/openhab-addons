@@ -74,8 +74,6 @@ public class OnectaBridgeHandlerFactoryTest {
     @BeforeEach
     public void setUp() {
         handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, openHabOAuthTokenRefresher);
-        bridgeProperties.put(CONFIG_PAR_USERID, USERID);
-        bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
         bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
         thingConfiguration.setProperties(bridgeProperties);

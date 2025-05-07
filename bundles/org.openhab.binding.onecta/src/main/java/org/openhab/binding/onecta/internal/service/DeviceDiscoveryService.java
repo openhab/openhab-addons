@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DeviceDiscoveryService extends AbstractDiscoveryService {
+    public static final String PROPERTY_DISCOVERED = "discovered";
+
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     @Nullable
     private OnectaBridgeHandler bridgeHandler = null;
@@ -96,7 +98,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             logger.info("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
                     unitName);
             bridgeHandler.getThing().setProperty(
-                    String.format("%s %s (%s)", PROPERTY_GW_DISCOVERED, onectaManagementPoint.getValue(), unitName),
+                    String.format("%s %s (%s)", PROPERTY_DISCOVERED, onectaManagementPoint.getValue(), unitName),
                     unitId);
         }
     }

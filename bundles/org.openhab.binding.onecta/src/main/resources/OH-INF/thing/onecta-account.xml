@@ -9,18 +9,10 @@
 		<description>This is the account for which your device(s) are registered at Diakin Onecta.</description>
 
 		<config-description>
-			<parameter name="userId" type="text" required="true">
-				<label>Userid</label>
-				<description>Onecta Userid (Email) </description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>Onecta password</description>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="5">
 				<label>Refresh Interval.</label>
 				<description>Interval the device is polled in seconds.</description>
-				<default>60</default>
+				<default>600</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

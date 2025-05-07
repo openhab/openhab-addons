@@ -33,8 +33,6 @@ public class OnectaBridgeConstants {
     public static final String DEVICE_TYPE_INDOORUNIT = "indoor-unit";
 
     // List of config parameters
-    public static final String CONFIG_PAR_PASSWORD = "password";
-    public static final String CONFIG_PAR_USERID = "userId";
     public static final String CONFIG_PAR_REFRESHINTERVAL = "refreshInterval";
     public static final String CONFIG_PAR_UNITID = "unitID";
     public static final String CHANNEL_OPENHAB_HOST = "openhabHost";

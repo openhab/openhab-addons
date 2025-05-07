@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class OnectaGatewayConstants {
-
+    public static final String PROPERTY_GW_NAME = "name";
     // List of all Channel ids
     public static final String CHANNEL_GW_DAYLIGHTSAVINGENABLED = "basic#daylight-savingtime-enabled";
     public static final String CHANNEL_GW_FIRMWAREVERSION = "basic#firmware-version";
@@ -35,6 +35,4 @@ public class OnectaGatewayConstants {
     public static final String CHANNEL_GW_TIME_ZONE = "basic#timezone";
     public static final String CHANNEL_GW_WIFICONNENTION_SSID = "basic#wifi-connection-ssid";
     public static final String CHANNEL_GW_WIFICONNENTION_STRENGTH = "basic#wifi-connection-strength";
-    public static final String PROPERTY_GW_NAME = "name";
-    public static final String PROPERTY_GW_DISCOVERED = "discovered";
 }

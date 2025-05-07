@@ -32,7 +32,6 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(OnectaSignInClient.class);
 
     private @Nullable OAuthTokenRefresher oAuthTokenRefresher;
-    private Throwable throwable = new Throwable("");
 
     public OnectaSignInClient() {
         super();
@@ -44,7 +43,6 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
             oAuthTokenRefresher.unsetRefreshListener(OAUTH2_SERVICE_HANDLE);
             oAuthTokenRefresher.setRefreshListener(this, OAUTH2_SERVICE_HANDLE);
         } catch (Throwable e) {
-            this.throwable = e;
             throw new DaikinCommunicationException(e);
         }
     }
@@ -54,7 +52,6 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
         try {
             oAuthTokenRefresher.refreshToken(OAUTH2_SERVICE_HANDLE);
         } catch (Throwable e) {
-            this.throwable = e;
             throw new DaikinCommunicationException(e);
         }
     }
@@ -68,7 +65,6 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
         try {
             return oAuthTokenRefresher.getAccessTokenFromStorage(OAUTH2_SERVICE_HANDLE).get();
         } catch (Throwable e) {
-            this.throwable = e;
             throw new DaikinCommunicationException(e);
         }
     }
@@ -79,13 +75,5 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
         } catch (Throwable e) {
             return false;
         }
-    }
-
-    public String getLastError() {
-        String message = throwable.getMessage();
-        if (message == null) {
-            return "";
-        }
-        return message;
     }
 }

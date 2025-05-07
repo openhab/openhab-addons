@@ -22,23 +22,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class OnectaWaterTankConstants {
-
-    // List of all Channel ids
-
-    public static final String CHANNEL_HWT_POWER = "basic#power";
-    public static final String CHANNEL_HWT_ERRORCODE = "basic#errorcode";
-    public static final String CHANNEL_HWT_IS_HOLIDAY_MODE_ACTIVE = "basic#isholidaymodeactive";
-    public static final String CHANNEL_HWT_IS_IN_ERROR_STATE = "basic#isinerrorstate";
-    public static final String CHANNEL_HWT_IS_IN_WARNING_STATE = "basic#isinwarningstate";
-    public static final String CHANNEL_HWT_IS_IN_INSTALLER_STATE = "basic#isininstallerstate";
-    public static final String CHANNEL_HWT_IS_IN_EMERGENCY_STATE = "basic#isinemergencystate";
-    public static final String CHANNEL_HWT_POWERFUL_MODE = "basic#powerfulmode";
-    public static final String CHANNEL_HWT_HEATUP_MODE = "basic#heatupmode";
-    public static final String CHANNEL_HWT_TANK_TEMPERATURE = "basic#tanktemperature";
-    public static final String CHANNEL_HWT_SETPOINT_MODE = "basic#setpointmode";
-    public static final String CHANNEL_HWT_SETTEMP = "basic#settemp";
-    public static final String CHANNEL_HWT_SETTEMP_MIN = "basic#settempmin";
-    public static final String CHANNEL_HWT_SETTEMP_MAX = "basic#settempmax";
-    public static final String CHANNEL_HWT_SETTEMP_STEP = "basic#settempstep";
     public static final String PROPERTY_HWT_NAME = "name";
+    // List of all Channel ids
+    public static final String CHANNEL_HWT_POWER = "basic#power";
+    public static final String CHANNEL_HWT_ERRORCODE = "basic#error-code";
+    public static final String CHANNEL_HWT_IS_HOLIDAY_MODE_ACTIVE = "basic#is-holiday-mode-active";
+    public static final String CHANNEL_HWT_IS_IN_ERROR_STATE = "basic#is-in-error-state";
+    public static final String CHANNEL_HWT_IS_IN_WARNING_STATE = "basic#is-in-warning-state";
+    public static final String CHANNEL_HWT_IS_IN_INSTALLER_STATE = "basic#is-in-installer-state";
+    public static final String CHANNEL_HWT_IS_IN_EMERGENCY_STATE = "basic#is-in-emergency-state";
+    public static final String CHANNEL_HWT_POWERFUL_MODE = "basic#powerful-mode";
+    public static final String CHANNEL_HWT_HEATUP_MODE = "basic#heatup-mode";
+    public static final String CHANNEL_HWT_TANK_TEMPERATURE = "basic#tank-temperature";
+    public static final String CHANNEL_HWT_OPERATION_MODE = "basic#operation-mode";
+    public static final String CHANNEL_HWT_SETPOINT_MODE = "basic#setpoint-mode";
+    public static final String CHANNEL_HWT_SETTEMP = "basic#settemp";
+    public static final String CHANNEL_HWT_SETTEMP_MIN = "basic#settemp-min";
+    public static final String CHANNEL_HWT_SETTEMP_MAX = "basic#settemp-max";
+    public static final String CHANNEL_HWT_SETTEMP_STEP = "basic#settemp-step";
 }

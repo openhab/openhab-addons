@@ -80,18 +80,12 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(OnectaConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-        try {
-            onectaConnectionClient.startConnecton(thing.getConfiguration().get(CONFIG_PAR_USERID).toString(),
-                    thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString());
 
-            if (onectaConnectionClient.isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error connecting to Daikin Onecta. See log for info");
-            }
-        } catch (DaikinCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        if (onectaConnectionClient.isOnline()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error connecting to Daikin Onecta. See log for more info");
         }
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 10,
