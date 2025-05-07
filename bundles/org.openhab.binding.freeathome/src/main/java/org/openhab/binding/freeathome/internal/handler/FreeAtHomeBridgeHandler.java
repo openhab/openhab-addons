@@ -161,7 +161,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             String configString = new String(response.getContent());
 
             JsonReader reader = new JsonReader(new StringReader(configString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for backward compatibility with older library versions.
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -313,7 +314,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             String deviceString = new String(response.getContent());
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for backward compatibility with older library versions.
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -393,7 +395,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             String deviceString = new String(response.getContent());
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for backward compatibility with older library versions.
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -484,7 +487,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     public void setDatapointOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for backward compatibility with older library versions.
+        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                 // backward compatibility with older library versions.
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
@@ -520,7 +524,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     public void markDeviceRemovedOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for backward compatibility with older library versions.
+        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                 // backward compatibility with older library versions.
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
