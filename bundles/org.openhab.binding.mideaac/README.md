@@ -41,9 +41,11 @@ No binding configuration is required.
 | key           | Yes for V.3 | Secret Key - Retrieved from Cloud                                 |                           |
 | pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60                        |
 | keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0                         |
+| energyPoll    | Yes         | Frequency to poll running energy stats (if supported-disable = 0) | 0                         |
 | timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4                         |
-| promptTone    | Yes         | "Ding" tone when command is received and executed.                | False                     |
+| promptTone    | Yes         | "Ding" tone when command is received and executed.                | false                     |
 | version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0                         |
+| energyDecode  | Yes         | Devices use two different methods to report energy. Compare.      | true
 
 ## Channels
 
@@ -66,16 +68,18 @@ Following channels are available:
 | off-timer                    | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
 | screen-display               | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
 | humidity                     | Number             | If device supports, the indoor humidity.                                                               | Yes       | Yes      |
+| kilowatt-hours               | Number             | If device supports, cumulative KWH usage                                                               | Yes       | Yes      |
+| amperes                      | Number             | If device supports, current amperage usage                                                             | Yes       | Yes      |
+| watts                        | Number             | If device supports, wattage                                                                            | Yes       | Yes      |
 | appliance-error              | Switch             | If device supports, appliance error                                                                    | Yes       | Yes      |
 | auxiliary-heat               | Switch             | If device supports, auxiliary heat                                                                     | Yes       | Yes      |
-| alternate-target-temperature | Number:Temperature | Alternate Target Temperature - not currently used                                                      | Yes       | Yes      |
 
 ## Examples
 
 ### `demo.things` Examples
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", energyDecode="true"] 
 ```
 
 Minimal IP Address Option to use the built-in defaults.

@@ -82,9 +82,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private Map<String, String> properties = new HashMap<>();
     // Default parameters are the same as in the MideaACConfiguration class
     private ConnectionManager connectionManager = new ConnectionManager("", 6444, 4, "", "", "", "", "", "", 0, false);
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
     private @Nullable ScheduledFuture<?> scheduledTask;
     private @Nullable ScheduledFuture<?> scheduledKeyTokenUpdate;
+    private @Nullable ScheduledFuture<?> scheduledEnergyUpdate;
 
     private final Callback callbackLambda = new Callback() {
         @Override
@@ -95,6 +96,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         @Override
         public void updateChannels(CapabilitiesResponse capabilitiesResponse) {
             MideaACHandler.this.updateChannels(capabilitiesResponse);
+        }
+
+        @Override
+        public void updateChannels(EnergyResponse energyUpdate) {
+            MideaACHandler.this.updateChannels(energyUpdate);
         }
     };
 
@@ -248,6 +254,18 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "AC capabilities not returned");
             }
+            CapabilityParser parser = new CapabilityParser();
+            logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+            if (parser.hasAdditionalCapabilities()) {
+                try {
+                    CommandSet initializationCommand = new CommandSet();
+                    initializationCommand.getAdditionalCapabilities();
+                    connectionManager.sendCommand(initializationCommand, this);
+                } catch (Exception e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "AC additional capabilities not returned");
+                }
+            }
         }
 
         // Establish routine polling per configuration or defaults
@@ -265,7 +283,39 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                     config.keyTokenUpdate, TimeUnit.DAYS);
             logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
         } else {
-            logger.debug("Token Key Scheduler already running");
+            logger.debug("Token Key Scheduler already running or disabled");
+        }
+
+        // Establish Energy polling, if not disabled. Online AC only
+        if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
+            scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 30, config.energyPoll,
+                    TimeUnit.SECONDS);
+            logger.debug("Scheduled Energy Update started, Poll Time {} seconds", config.energyPoll);
+        } else {
+            logger.debug("Energy Scheduler already running or disabled");
+        }
+    }
+
+    private void energyUpdate() {
+        ConnectionManager connectionManager = this.connectionManager;
+        Response response = connectionManager.getLastResponse();
+
+        if (response.getPowerState()) {
+            try {
+                CommandSet energyUpdate = new CommandSet();
+                energyUpdate.energyPoll();
+                connectionManager.sendCommand(energyUpdate, this);
+            } catch (MideaAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (MideaConnectionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (MideaException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        } else {
+            logger.trace("AC is off, skipping energy update.");
         }
     }
 
@@ -315,8 +365,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         QuantityType<Temperature> targetTemperature = new QuantityType<Temperature>(response.getTargetTemperature(),
                 SIUnits.CELSIUS);
-        QuantityType<Temperature> alternateTemperature = new QuantityType<Temperature>(
-                response.getAlternateTargetTemperature(), SIUnits.CELSIUS);
         QuantityType<Temperature> outdoorTemperature = new QuantityType<Temperature>(response.getOutdoorTemperature(),
                 SIUnits.CELSIUS);
         QuantityType<Temperature> indoorTemperature = new QuantityType<Temperature>(response.getIndoorTemperature(),
@@ -324,13 +372,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         if (imperialUnits) {
             targetTemperature = Objects.requireNonNull(targetTemperature.toUnit(ImperialUnits.FAHRENHEIT));
-            alternateTemperature = Objects.requireNonNull(alternateTemperature.toUnit(ImperialUnits.FAHRENHEIT));
             indoorTemperature = Objects.requireNonNull(indoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
             outdoorTemperature = Objects.requireNonNull(outdoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
         }
 
         updateChannel(CHANNEL_TARGET_TEMPERATURE, targetTemperature);
-        updateChannel(CHANNEL_ALTERNATE_TARGET_TEMPERATURE, alternateTemperature);
         updateChannel(CHANNEL_INDOOR_TEMPERATURE, indoorTemperature);
         updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
     }
@@ -387,6 +433,20 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateProperties(properties);
 
         logger.debug("Capabilities and temperature settings parsed and stored in properties: {}", properties);
+    }
+
+    // Handle Energy response update
+    @Override
+    public void updateChannels(EnergyResponse energyUpdate) {
+        if (config.energyDecode) {
+            updateChannel(CHANNEL_KILOWATT_HOURS, new DecimalType(energyUpdate.getKilowattHoursBCD()));
+            updateChannel(CHANNEL_AMPERES, new DecimalType(energyUpdate.getAmperesBCD()));
+            updateChannel(CHANNEL_WATTS, new DecimalType(energyUpdate.getWattsBCD()));
+        } else {
+            updateChannel(CHANNEL_KILOWATT_HOURS, new DecimalType(energyUpdate.getKilowattHours()));
+            updateChannel(CHANNEL_AMPERES, new DecimalType(energyUpdate.getAmperes()));
+            updateChannel(CHANNEL_WATTS, new DecimalType(energyUpdate.getWatts()));
+        }
     }
 
     @Override
@@ -472,10 +532,21 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
     }
 
+    private void stopEnergyUpdate() {
+        ScheduledFuture<?> localScheduledTask = this.scheduledEnergyUpdate;
+
+        if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
+            localScheduledTask.cancel(true);
+            logger.debug("Scheduled Energy Update cancelled.");
+            scheduledEnergyUpdate = null;
+        }
+    }
+
     @Override
     public void dispose() {
         stopScheduler();
         stopTokenKeyUpdate();
+        stopEnergyUpdate();
         connectionManager.dispose(true);
     }
 }

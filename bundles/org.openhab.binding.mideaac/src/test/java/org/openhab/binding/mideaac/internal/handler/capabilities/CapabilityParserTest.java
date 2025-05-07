@@ -121,6 +121,7 @@ public class CapabilityParserTest {
                 0x16, 0x02, 0x01, 0x01, // Capability 5 (0x0216 = ENERGY, value = 1)
                 0x17, 0x02, 0x01, 0x00, // Capability 6 (0x0217 = FILTER_REMIND, value = 0)
                 0x1A, 0x02, 0x01, 0x01, // Capability 7 (0x021A = PRESET_TURBO, value = 1)
+                0x01, 0x00, // extra capabilities - run command
                 (byte) 0xDE, (byte) 0xDF // CRC Check (trailing bytes)
         };
 
@@ -143,7 +144,7 @@ public class CapabilityParserTest {
                 .ifPresent(value -> assertEquals(true, value));
 
         // Ensure CRC did not cause parsing issues
-        assertFalse(parser.hasAdditionalCapabilities());
+        assertTrue(parser.hasAdditionalCapabilities());
     }
 
     @Test

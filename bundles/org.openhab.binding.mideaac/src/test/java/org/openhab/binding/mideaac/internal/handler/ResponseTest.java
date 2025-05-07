@@ -31,9 +31,7 @@ public class ResponseTest {
 
     byte[] data = HexFormat.of().parseHex("C00042668387123C00000460FF0C7000000000320000F9ECDB");
     private int version = 3;
-    String responseType = "query";
-    byte bodyType = (byte) 0xC0;
-    Response response = new Response(data, version, responseType, bodyType);
+    Response response = new Response(data, version);
 
     /**
      * Power State Test
@@ -185,13 +183,5 @@ public class ResponseTest {
     @Test
     public void testGetHumidity() {
         assertEquals(50, response.getHumidity());
-    }
-
-    /**
-     * Alternate Target temperature Test
-     */
-    @Test
-    public void testAlternateTargetTemperature() {
-        assertEquals(24, response.getAlternateTargetTemperature());
     }
 }
