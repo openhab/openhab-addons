@@ -87,7 +87,8 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             if (onectaConnectionClient.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error connecting to Daikin Onecta. See log for info");
             }
         } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

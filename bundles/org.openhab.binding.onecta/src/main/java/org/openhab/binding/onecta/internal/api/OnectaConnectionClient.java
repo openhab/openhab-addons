@@ -21,7 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpContentResponse;
+import org.eclipse.jetty.client.api.*;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
@@ -39,11 +41,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.*;
+import com.google.gson.JsonArray;
 
 /**
  * @author Alexander Drent - Initial contributionF
  */
-public class OnectaConnectionClient {
+@NonNullByDefault
+public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
 
     private static final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
     private static final String HTTPHEADER_X_API_KEY = "x-api-key";
@@ -54,12 +58,14 @@ public class OnectaConnectionClient {
 
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
-    private static OnectaSignInClient onectaSignInClient;
+    private OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
     private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     public OnectaConnectionClient() {
-        if (onectaSignInClient == null) {
-            onectaSignInClient = new OnectaSignInClient();
+        try {
+            onectaSignInClient.SignIn();
+        } catch (DaikinCommunicationException e) {
+            logger.error("Error in OnectaConnectionClient", e);
         }
     }
 
@@ -68,43 +74,56 @@ public class OnectaConnectionClient {
     }
 
     public void startConnecton(String userId, String password) throws DaikinCommunicationException {
-        onectaSignInClient.signIn(userId, password);
+        logger.debug("refreshlistener set");
+        logger.debug("Login successful");
     }
 
     public void restoreConnecton() throws DaikinCommunicationException {
-        onectaSignInClient.fetchAccessToken();
+        this.fetchAccessToken();
+    }
+
+    public void fetchAccessToken() throws DaikinCommunicationException {
+        logger.debug("Refresh token.");
+
+        try {
+            onectaSignInClient.refreshToken();
+        } catch (Throwable e) {
+            throw new DaikinCommunicationException(e);
+        }
     }
 
     public Boolean isOnline() {
         return onectaSignInClient.isOnline();
     }
 
+    public String getLastError() {
+        return onectaSignInClient.getLastError();
+    }
+
     private Response doBearerRequestGet(Boolean refreshed) throws DaikinCommunicationException {
         Response response = null;
         logger.debug("doBearerRequestGet : Accesstoken refreshed {}", refreshed.toString());
         try {
-            /*
-             * if (!onectaSignInClient.isOnline()) {
-             * onectaSignInClient.signIn();
-             * }
-             */
-            String testUrl = OnectaProperties.getBaseUrl("");
+            String testUrl = getBaseUrl("");
             response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                     .send();
 
+            logger.trace("Resonse : {}", ((HttpContentResponse) response).getContentAsString());
+            logger.debug("Headers : {}", response.getHeaders().toString());
+
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 && !refreshed) {
-                onectaSignInClient.fetchAccessToken();
-                response = doBearerRequestGet(true);
+                this.fetchAccessToken();
+                return doBearerRequestGet(true);
             }
 
         } catch (DaikinCommunicationException | ExecutionException | InterruptedException | TimeoutException e) {
             if (!refreshed) {
                 try {
-                    onectaSignInClient.fetchAccessToken();
-                    response = doBearerRequestGet(true);
+                    this.fetchAccessToken();
+                    return doBearerRequestGet(true);
                 } catch (DaikinCommunicationException ex) {
                     throw new DaikinCommunicationException(ex);
                 }
@@ -123,11 +142,6 @@ public class OnectaConnectionClient {
     private Response doBearerRequestPatch(String url, Object body, Boolean refreshed) {
         Response response = null;
         try {
-            /*
-             * if (!onectaSignInClient.isOnline()) {
-             * onectaSignInClient.signIn();
-             * }
-             */
             response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
@@ -138,21 +152,24 @@ public class OnectaConnectionClient {
             logger.trace("Request : {}", response.getRequest().getURI().toString());
             logger.trace("Body    : {}", new Gson().toJson(body));
             logger.trace("Resonse : {}", ((HttpContentResponse) response).getContentAsString());
+            logger.debug("Headers : {}", response.getHeaders().toString());
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 && !refreshed) {
-                onectaSignInClient.fetchAccessToken();
-                response = doBearerRequestPatch(url, body, true);
+                this.fetchAccessToken();
+                return doBearerRequestPatch(url, body, true);
             }
-            return response;
         } catch (DaikinCommunicationException | ExecutionException | InterruptedException | TimeoutException e) {
             if (!refreshed) {
                 try {
-                    onectaSignInClient.fetchAccessToken();
-                    response = doBearerRequestPatch(url, body, true);
+                    this.fetchAccessToken();
+                    return doBearerRequestPatch(url, body, true);
                 } catch (DaikinCommunicationException ex) {
                     throw new RuntimeException(ex);
                 }
             }
+        }
+        if (response == null) {
+            throw new RuntimeException("Response is null");
         }
         return response;
     }
@@ -220,32 +237,30 @@ public class OnectaConnectionClient {
             Enums.OperationMode operationMode) {
         logger.debug("setCurrentOperationMode : {}, {}, {}", unitId, managementPointType.getValue(),
                 operationMode.getValue());
-        doBearerRequestPatch(OnectaProperties.getOperationModeUrl(unitId, managementPointType),
-                OnectaProperties.getOperationModeCommand(operationMode));
+        doBearerRequestPatch(getOperationModeUrl(unitId, managementPointType), getOperationModeCommand(operationMode));
     }
 
     public void setCurrentTemperatureRoomSet(String unitId, String embeddedId, Enums.OperationMode currentMode,
             float value) {
         logger.debug("setCurrentTemperatureRoomSet : {}, {}, {}", unitId, embeddedId, currentMode.getValue());
-        doBearerRequestPatch(OnectaProperties.getTemperatureControlUrl(unitId, embeddedId),
-                OnectaProperties.getTemperatureRoomControlCommand(value, currentMode));
+        doBearerRequestPatch(getTemperatureControlUrl(unitId, embeddedId),
+                getTemperatureRoomControlCommand(value, currentMode));
     }
 
     public void setCurrentTemperatureHotWaterSet(String unitId, String embeddedId, Enums.OperationMode currentMode,
             float value) {
         logger.debug("setCurrentTemperatureHotWaterSet : {}, {}, {}", unitId, embeddedId, currentMode.getValue());
-        doBearerRequestPatch(OnectaProperties.getTemperatureControlUrl(unitId, embeddedId),
-                OnectaProperties.getTemperatureHotWaterControlCommand(value, currentMode));
+        doBearerRequestPatch(getTemperatureControlUrl(unitId, embeddedId),
+                getTemperatureHotWaterControlCommand(value, currentMode));
     }
 
     public void setFanSpeed(String unitId, String embeddedId, Enums.OperationMode currentMode,
             Enums.FanSpeed fanspeed) {
         logger.debug("setFanSpeed : {}, {}, {}", unitId, embeddedId, currentMode.getValue());
-        doBearerRequestPatch(OnectaProperties.getTFanControlUrl(unitId, embeddedId),
-                getTFanSpeedCurrentCommand(currentMode, fanspeed));
+        doBearerRequestPatch(getTFanControlUrl(unitId, embeddedId), getTFanSpeedCurrentCommand(currentMode, fanspeed));
         if (fanspeed.getValueMode().equals(Enums.FanSpeedMode.FIXED.getValue())) {
-            doBearerRequestPatch(OnectaProperties.getTFanControlUrl(unitId, embeddedId),
-                    OnectaProperties.getTFanSpeedFixedCommand(currentMode, fanspeed));
+            doBearerRequestPatch(getTFanControlUrl(unitId, embeddedId),
+                    getTFanSpeedFixedCommand(currentMode, fanspeed));
         }
     }
 
@@ -255,32 +270,24 @@ public class OnectaConnectionClient {
         String url = getTFanControlUrl(unitId, embeddedId);
         switch (fanMovement) {
             case STOPPED:
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
+                doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
 
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
+                doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
                 break;
             case VERTICAL:
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
+                doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
 
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
+                doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
                 break;
             case HORIZONTAL:
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
+                doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
 
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
+                doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
                 break;
             case VERTICAL_AND_HORIZONTAL:
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
+                doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
 
-                doBearerRequestPatch(url,
-                        OnectaProperties.getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
+                doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
                 break;
             default:
                 break;
@@ -291,14 +298,14 @@ public class OnectaConnectionClient {
             Enums.FanMovementHor fanMovement) {
         logger.debug("setCurrentFanDirectionHor : {}, {}, {}", unitId, embeddedId, currentMode.getValue());
         String url = getTFanControlUrl(unitId, embeddedId);
-        doBearerRequestPatch(url, OnectaProperties.getTFanDirectionHorCommand(currentMode, fanMovement));
+        doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, fanMovement));
     }
 
     public void setCurrentFanDirectionVer(String unitId, String embeddedId, Enums.OperationMode currentMode,
             Enums.FanMovementVer fanMovement) {
         logger.debug("setCurrentFanDirectionVer : {}, {}, {}", unitId, embeddedId, currentMode.getValue());
         String url = getTFanControlUrl(unitId, embeddedId);
-        doBearerRequestPatch(url, OnectaProperties.getTFanDirectionVerCommand(currentMode, fanMovement));
+        doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, fanMovement));
     }
 
     public void setStreamerMode(String unitId, String embeddedId, Enums.OnOff value) {
@@ -315,24 +322,22 @@ public class OnectaConnectionClient {
 
     public void setDemandControl(String unitId, String embeddedId, Enums.DemandControl value) {
         logger.debug("setDemandControl: {}, {}, {}", unitId, embeddedId, value);
-        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId),
-                OnectaProperties.getTDemandControlCommand(value));
+        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId), getTDemandControlCommand(value));
     }
 
     public void setDemandControlFixedValue(String unitId, String embeddedId, Integer value) {
         logger.debug("setDemandControlFixedValue: {}, {}, {}", unitId, embeddedId, value);
 
-        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId),
-                OnectaProperties.getTDemandControlFixedValueCommand(value));
+        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId), getTDemandControlFixedValueCommand(value));
     }
 
-    public String getRefreshToken() {
-        return onectaSignInClient.getRefreshToken();
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        onectaSignInClient.setRefreshToken(refreshToken);
-    }
+    // public String getRefreshToken() {
+    // return onectaSignInClient.getRefreshToken();
+    // }
+    //
+    // public void setRefreshToken(String refreshToken) {
+    // onectaSignInClient.setRefreshToken(refreshToken);
+    // }
 
     public void setTargetTemperatur(String unitId, String embeddedId, Float value) {
         logger.debug("setRefreshToken: {}, {}, {}", unitId, embeddedId, value);
@@ -342,14 +347,14 @@ public class OnectaConnectionClient {
     public void setSetpointLeavingWaterOffset(String unitId, String embeddedId, Enums.OperationMode operationMode,
             Float value) {
         logger.debug("setRefreshToken: {}, {}, {}. {}", unitId, embeddedId, operationMode, value);
-        doBearerRequestPatch(OnectaProperties.getTemperatureControlUrl(unitId, embeddedId),
-                OnectaProperties.getSetpointLeavingWaterOffsetCommand(value, operationMode));
+        doBearerRequestPatch(getTemperatureControlUrl(unitId, embeddedId),
+                getSetpointLeavingWaterOffsetCommand(value, operationMode));
     }
 
     public void setSetpointLeavingWaterTemperature(String unitId, String embeddedId, Enums.OperationMode operationMode,
             Float value) {
         logger.debug("setRefreshToken: {}, {}, {}, {}", unitId, embeddedId, operationMode, value);
-        doBearerRequestPatch(OnectaProperties.getTemperatureControlUrl(unitId, embeddedId),
-                OnectaProperties.getSetpointLeavingWaterTemperatureCommand(value, operationMode));
+        doBearerRequestPatch(getTemperatureControlUrl(unitId, embeddedId),
+                getSetpointLeavingWaterTemperatureCommand(value, operationMode));
     }
 }

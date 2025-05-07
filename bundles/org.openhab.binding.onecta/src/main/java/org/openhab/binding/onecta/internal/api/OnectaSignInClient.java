@@ -31,73 +31,61 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(OnectaSignInClient.class);
 
-    private String refreshToken = "";
-    private String userId = "";
-    private String password = "";
-
-    private String accessToken = "";
-
     private @Nullable OAuthTokenRefresher oAuthTokenRefresher;
+    private Throwable throwable = new Throwable("");
 
     public OnectaSignInClient() {
         super();
-        this.oAuthTokenRefresher = OnectaConfiguration.getOAuthTokenRefresher();
     }
 
-    public String getToken() {
-        return accessToken;
+    public void SignIn() throws DaikinCommunicationException {
+        try {
+            this.oAuthTokenRefresher = OnectaConfiguration.getOAuthTokenRefresher();
+            oAuthTokenRefresher.unsetRefreshListener(OAUTH2_SERVICE_HANDLE);
+            oAuthTokenRefresher.setRefreshListener(this, OAUTH2_SERVICE_HANDLE);
+        } catch (Throwable e) {
+            this.throwable = e;
+            throw new DaikinCommunicationException(e);
+        }
     }
 
-    protected void signIn() throws DaikinCommunicationException {
-        signIn(this.userId, this.password);
-    }
-
-    protected void signIn(String userId, String password, String refreshToken) throws DaikinCommunicationException {
-        this.userId = userId;
-        this.password = password;
-        signIn(userId, password);
-    }
-
-    protected void signIn(String userId, String password) throws DaikinCommunicationException {
-        this.userId = userId;
-        this.password = password;
-
-        logger.debug("signIn(String userId, String password)");
-
-        oAuthTokenRefresher.unsetRefreshListener(OAUTH2_SERVICE_HANDLE);
-        oAuthTokenRefresher.setRefreshListener(this, OAUTH2_SERVICE_HANDLE);
-        logger.debug("refreshlistener set");
-
-        logger.debug("Login successful");
-    }
-
-    public void fetchAccessToken() throws DaikinCommunicationException {
+    public void refreshToken() throws DaikinCommunicationException {
         logger.debug("Refresh token.");
-        accessToken = "";
-
         try {
             oAuthTokenRefresher.refreshToken(OAUTH2_SERVICE_HANDLE);
         } catch (Throwable e) {
+            this.throwable = e;
+            throw new DaikinCommunicationException(e);
+        }
+    }
+
+    @Override
+    public void onNewAccessToken(String accessToken) {
+        logger.debug("new access token: {}", accessToken);
+    }
+
+    public String getToken() throws DaikinCommunicationException {
+        try {
+            return oAuthTokenRefresher.getAccessTokenFromStorage(OAUTH2_SERVICE_HANDLE).get();
+        } catch (Throwable e) {
+            this.throwable = e;
             throw new DaikinCommunicationException(e);
         }
     }
 
     public Boolean isOnline() {
-        return !this.accessToken.isEmpty();
+        try {
+            return !getToken().isEmpty();
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    @Override
-    public void onNewAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-
-        logger.debug("new access token: {}", accessToken);
+    public String getLastError() {
+        String message = throwable.getMessage();
+        if (message == null) {
+            return "";
+        }
+        return message;
     }
 }
