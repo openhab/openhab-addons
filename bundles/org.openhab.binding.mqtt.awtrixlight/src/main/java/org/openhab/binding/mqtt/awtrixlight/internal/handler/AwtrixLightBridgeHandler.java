@@ -81,6 +81,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private String channelPrefix = "";
     private String currentApp = "";
     private boolean discoverDefaultApps = false;
+    private boolean deviceOnline = false;
     private int lowBatteryThreshold = 25;
 
     private Map<String, AwtrixLightAppHandler> appHandlers = new HashMap<String, AwtrixLightAppHandler>();
@@ -187,10 +188,16 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     public void processMessage(String topic, byte[] payload) {
         String payloadString = new String(payload, StandardCharsets.UTF_8);
         if (topic.endsWith(TOPIC_STATS)) {
-            if (thing.getStatus() != ThingStatus.ONLINE) {
+            ThingStatusInfo statusInfo = getThing().getStatusInfo();
+            if (ThingStatus.UNKNOWN == statusInfo.getStatus()
+                    && ThingStatusDetail.CONFIGURATION_PENDING == statusInfo.getStatusDetail()) {
+                // Obviously the device is online. We just haven't received a LWT message yet.
+                this.deviceOnline = true;
                 updateStatus(ThingStatus.ONLINE);
             }
             handleStatsMessage(payloadString);
+        } else if (topic.endsWith(TOPIC_LWT)) {
+            handleLwtMessage(payloadString);
         } else if (topic.endsWith(TOPIC_STATS_CURRENT_APP)) {
             handleCurrentAppMessage(payloadString);
         } else if (topic.endsWith(TOPIC_SCREEN)) {
@@ -236,6 +243,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         }
         ThingHandler handler = localBridge.getHandler();
         if (handler instanceof AbstractBrokerHandler abh) {
+            @Nullable
             final MqttBrokerConnection connection;
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
@@ -245,8 +253,12 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                 return;
             }
             this.connection = connection;
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting for first MQTT message to be received.");
+            if (this.deviceOnline) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for LWT message.");
+            }
+            connection.subscribe(this.basetopic + TOPIC_LWT, this);
             connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);
             connection.subscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
             connection.subscribe(this.basetopic + TOPIC_SCREEN + "/#", this);
@@ -263,6 +275,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         leaveAppControlMode();
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
+            localConnection.unsubscribe(this.basetopic + TOPIC_LWT, this);
             localConnection.unsubscribe(this.basetopic + TOPIC_STATS + "/#", this);
             localConnection.unsubscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
             localConnection.unsubscribe(this.basetopic + TOPIC_SCREEN + "/#", this);
@@ -633,5 +646,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     break;
             }
         }
+    }
+
+    private void handleLwtMessage(String lwtMessage) {
+        this.deviceOnline = "online".equals(lwtMessage);
+        updateStatus(this.deviceOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 }
