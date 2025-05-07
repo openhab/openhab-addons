@@ -132,9 +132,13 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     private void initHelperLib() {
         try {
+            String resourceSeparator = "/";
             String pathSeparator = FileSystems.getDefault().getSeparator();
             String resourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
                     .substring(PYTHON_DEFAULT_PATH.toString().length()) + pathSeparator;
+            if (!resourceSeparator.equals(pathSeparator)) {
+                resourceLibPath = resourceLibPath.replace(pathSeparator, resourceSeparator);
+            }
 
             if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
                 try (Stream<Path> files = Files.list(PYTHON_OPENHAB_LIB_PATH)) {
@@ -190,6 +194,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
             Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
                     .findEntries(resourceLibPath, "*.py", true);
+
             while (resourceFiles.hasMoreElements()) {
                 URL resourceFile = resourceFiles.nextElement();
                 String resourcePath = resourceFile.getPath();
@@ -197,7 +202,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
                         .getResourceAsStream(resourcePath)) {
                     Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
-                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(pathSeparator) + 1));
+                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(resourceSeparator) + 1));
 
                     Files.copy(is, target);
                     File file = target.toFile();
