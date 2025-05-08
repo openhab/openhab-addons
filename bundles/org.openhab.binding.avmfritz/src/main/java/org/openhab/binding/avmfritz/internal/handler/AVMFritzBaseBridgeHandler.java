@@ -268,23 +268,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
         final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
-        getThing().getThings().forEach(childThing -> {
-            final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
-            if (childHandler != null) {
-                final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
-                if (device != null) {
-                    deviceList.remove(device);
-                    listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
-                } else {
-                    listeners.forEach(listener -> listener.onDeviceGone(childThing.getUID()));
-                }
-            } else {
-                logger.debug("Handler missing for thing '{}'", childThing.getUID());
-            }
-        });
-        deviceList.forEach(device -> {
-            listeners.forEach(listener -> listener.onDeviceAdded(device));
-        });
+
+        listeners.stream().filter(listener -> listener instanceof AVMFritzBaseThingHandler)
+                .map(listener -> (AVMFritzBaseThingHandler) listener).forEach(handler -> {
+                    if (deviceIdentifierMap.get(handler.getIdentifier()) instanceof AVMFritzBaseModel device) {
+                        device.isLinked = true;
+                        scheduler.submit(() -> handler.onDeviceUpdated(handler.getThing().getUID(), device));
+                    } else {
+                        scheduler.submit(() -> handler.onDeviceGone(handler.getThing().getUID()));
+                    }
+                });
+
+        deviceIdentifierMap.values().stream().filter(device -> !device.isLinked)
+                .forEach(device -> listeners.stream().filter(listener -> listener instanceof AVMFritzDiscoveryService)
+                        .map(listener -> (AVMFritzDiscoveryService) listener)
+                        .forEach(service -> scheduler.submit(() -> service.onDeviceAdded(device))));
     }
 
     /**
@@ -344,7 +342,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return DEVICE_HAN_FUN_ON_OFF;
             }
         }
-        return device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productAlias = ALIAS_PRODUCT_NAME_MAP.get(productName.toUpperCase());
+        return productAlias != null ? productAlias : productName;
     }
 
     /**
