@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mideaac.internal;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -54,33 +56,33 @@ public class MideaACConfiguration {
     public String cloud = "NetHome Plus";
 
     /**
-     * Token
+     * Token 128 hex length
      */
     public String token = "";
 
     /**
-     * Key
+     * Key 64 hex length
      */
     public String key = "";
 
     /**
-     * Poll Frequency
+     * Poll Frequency - seconds
      */
     public int pollingTime = 60;
 
     /**
      * Energy Update Frequency while running
-     * (if supported)
+     * (if supported) in minutes
      */
     public int energyPoll = 0;
 
     /**
-     * Key and Token Update Frequency
+     * Key and Token Update Frequency in days
      */
     public int keyTokenUpdate = 0;
 
     /**
-     * Socket Timeout
+     * Socket Timeout in seconds
      */
     public int timeout = 4;
 
@@ -135,6 +137,10 @@ public class MideaACConfiguration {
      * @return true (Valid, all items are present) false (key, token and/or provider missing)
      */
     public boolean isV3ConfigValid() {
-        return (!key.isBlank() && !token.isBlank() && !cloud.isBlank());
+        return isHexString(key, 64) && isHexString(token, 128) && !cloud.isBlank();
+    }
+
+    private boolean isHexString(String str, int length) {
+        return str.length() == length && Pattern.matches("[0-9a-fA-F]{" + length + "}", str);
     }
 }

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MideaACDiscoveryService} service for Midea AC.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - OH naming conventions
+ * @author Bob Eckhoff - OH naming conventions and Capabilities capture
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mideaac")

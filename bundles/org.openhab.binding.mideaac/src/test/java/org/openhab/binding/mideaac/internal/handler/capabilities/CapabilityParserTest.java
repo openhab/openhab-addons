@@ -23,7 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser.CapabilityId;
 
 /**
- * The {@link CapabilityParser} parses the capability Response.
+ * The {@link CapabilityParserTest} tests the methods in the
+ * CapabilityParser against test payloads.
  *
  * @author Bob Eckhoff - Initial contribution
  */
@@ -112,7 +113,7 @@ public class CapabilityParserTest {
 
     @Test
     void testParseWithTrailingCRC() {
-        // Arrange: Create a payload with trailing CRC
+        // Arrange: Create a payload with extra capabilities
         byte[] payload = new byte[] { (byte) 0xB5, 0x07, // Header and count (7 capabilities)
                 0x12, 0x02, 0x01, 0x01, // Capability 1 (0x0212 = PRESET_ECO, value = 1)
                 0x13, 0x02, 0x01, 0x01, // Capability 2 (0x0213 = PRESET_FREEZE_PROTECTION, value = 1)
@@ -149,7 +150,7 @@ public class CapabilityParserTest {
 
     @Test
     void testParseWithtemperature() {
-        // Arrange: Create a payload with trailing CRC
+        // Arrange: Create a payload with Temperature bytes
         byte[] payload = new byte[] { (byte) 0xB5, 0x08, // Header and count (7 capabilities)
                 0x12, 0x02, 0x01, 0x01, // Capability 1 (0x0212 = PRESET_ECO, value = 1)
                 0x13, 0x02, 0x01, 0x01, // Capability 2 (0x0213 = PRESET_FREEZE_PROTECTION, value = 1)

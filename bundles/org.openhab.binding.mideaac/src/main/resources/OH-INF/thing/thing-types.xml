@@ -94,26 +94,26 @@
 			</parameter>
 			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
 				<context>pollingTime</context>
-				<label>Polling time</label>
-				<description>Polling time in seconds. Minimum time is 30 seconds, default 60 seconds.</description>
+				<label>Polling time in seconds</label>
+				<description>Polling time. Minimum time is 30, default 60.</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="s">
+			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="m">
 				<context>energyPoll</context>
-				<label>Energy Poll</label>
-				<description>Energy poll when AC is On, default 0 to disable (if not supported).</description>
+				<label>Energy Poll in minutes</label>
+				<description>Energy poll when AC is On, default 0 (disabled in case not supported).</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
 				<context>keyTokenUpdate</context>
-				<label>Key Token Update</label>
-				<description>Frequency to update the Key and Token in Days, default 0 to disable.</description>
+				<label>Key Token Update in Days</label>
+				<description>Frequency to update the Key and Token, default 0 to disable.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="timeout" type="decimal" required="true" min="2" max="10" unit="s">
 				<context>timeout</context>
-				<label>Timeout</label>
-				<description>Connecting timeout. Minimum time is 2 second, maximum 10 seconds (4 seconds default).</description>
+				<label>Socket timeout in seconds</label>
+				<description>Connecting socket timeout. Minimum is 2, maximum is 10 (4 is default).</description>
 				<default>4</default>
 			</parameter>
 			<parameter name="promptTone" type="boolean" required="true">

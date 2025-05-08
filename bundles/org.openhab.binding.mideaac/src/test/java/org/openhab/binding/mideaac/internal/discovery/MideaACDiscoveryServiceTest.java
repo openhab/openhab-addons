@@ -26,7 +26,7 @@ import org.openhab.binding.mideaac.internal.Utils;
 /**
  * The {@link MideaACDiscoveryServiceTest} tests the discovery byte arrays
  * (reply string already decrypted - See SecurityTest)
- * to extract the correct device information
+ * against the methods in the MideaACDiscoveryService for correctness
  *
  * @author Robert Eckhoff - Initial contribution
  */
@@ -41,7 +41,7 @@ public class MideaACDiscoveryServiceTest {
             mSmartType = "";
 
     /**
-     * Test Version
+     * Test AC Version
      */
     @Test
     public void testVersion() {
@@ -54,7 +54,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test Id
+     * Test AC Id
      */
     @Test
     public void testId() {
@@ -68,7 +68,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test IP address of device
+     * Test IP address of AC device
      */
     @Test
     public void testIPAddress() {
@@ -78,7 +78,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test Device Port
+     * Test AC Device Port
      */
     @Test
     public void testPort() {
@@ -88,7 +88,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test serial Number
+     * Test AC serial Number
      */
     @Test
     public void testSN() {
@@ -97,7 +97,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test SSID - SN converted
+     * Test AC response SSID Conversion
      */
     @Test
     public void testSSID() {
@@ -106,7 +106,7 @@ public class MideaACDiscoveryServiceTest {
     }
 
     /**
-     * Test Type - ac
+     * Test Type - Only ac supported
      */
     @Test
     public void testType() {

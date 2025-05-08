@@ -21,7 +21,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * The {@link EnergyResponseTest} tests the Energy response methods
- * from the device from a test string
+ * from the device using test strings. There are two decoding
+ * algorithms supported by different Midea ACs.
  *
  * @author Bob Eckhoff - Initial contribution
  */
@@ -33,7 +34,7 @@ public class EnergyResponseTest {
     EnergyResponse responseEnergy2 = new EnergyResponse(dataEnergy2);
 
     /**
-     * Test Energy Kilowatt Hours
+     * Test Energy Kilowatt Hours 3 tests
      */
     @Test
     public void testGetKilowattHours() {
@@ -54,7 +55,7 @@ public class EnergyResponseTest {
     }
 
     /**
-     * Test amperes
+     * Test amperes 2 tests
      */
     @Test
     public void testAmperes() {
@@ -69,7 +70,7 @@ public class EnergyResponseTest {
     }
 
     /**
-     * Test watts
+     * Test watts 2 tests
      */
     @Test
     public void testGetWatts() {

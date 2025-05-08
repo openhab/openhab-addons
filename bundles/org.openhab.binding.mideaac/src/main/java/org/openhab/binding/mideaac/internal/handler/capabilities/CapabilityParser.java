@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CapabilityParser} parses the capability Response.
+ * The {@link CapabilityParser} parses the capability Response into
+ * boolean and number responses. Decodes and reads the number responses (Temps)
+ * and decodes the boolean responses for the {@link CapabilityReaders}
  *
  * @author Bob Eckhoff - Initial contribution
  */

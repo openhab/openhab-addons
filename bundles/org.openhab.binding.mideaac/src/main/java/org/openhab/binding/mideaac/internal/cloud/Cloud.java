@@ -46,6 +46,7 @@ import com.google.gson.JsonObject;
  *
  * @author Jacek Dobrowolski - Initial contribution
  * @author Bob Eckhoff - JavaDoc and changed getQueryString for special characters
+ *         to allow for default email with a "+"
  */
 @NonNullByDefault
 public class Cloud {
@@ -241,8 +242,8 @@ public class Cloud {
         logger.trace("Using loginId: {}", loginId);
         logger.trace("Using password: {}", password);
 
-        // This is for the MSmartHome (proxied)
         if (!cloudProvider.proxied().isBlank()) {
+            // This is for the MSmartHome (proxied) cloud
             JsonObject newData = new JsonObject();
 
             JsonObject data = new JsonObject();
@@ -263,15 +264,13 @@ public class Cloud {
 
             @Nullable
             JsonObject response = apiRequest("/mj/user/login", null, newData);
-
             if (response == null) {
                 return false;
             }
 
             accessToken = response.getAsJsonObject("mdata").get("accessToken").getAsString();
-
-            // This for the non-proxied cloud providers
         } else {
+            // This for the non-proxied cloud providers
             String passwordEncrypted = security.encryptPassword(loginId, password);
 
             JsonObject data = new JsonObject();
@@ -295,7 +294,7 @@ public class Cloud {
      * Gets token and key with the device Id modified to udpid
      * after SessionId (non-proxied) accessToken is established
      * 
-     * @param deviceId The discovered Device Id
+     * @param deviceId The AC Device ID to be modified
      * @return token and key
      */
     public TokenKey getToken(String deviceId) {

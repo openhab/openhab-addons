@@ -25,8 +25,8 @@ import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link SecurityTest} tests methods and
- * compares them to the expected result.
+ * The {@link SecurityTest} tests methods and compares
+ * them to the expected result with sample data.
  *
  * @author Bob Eckhoff - Initial contribution
  */
