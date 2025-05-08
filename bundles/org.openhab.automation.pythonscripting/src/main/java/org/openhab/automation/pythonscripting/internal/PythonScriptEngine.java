@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -73,6 +74,8 @@ public class PythonScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalPythonScriptEngine>
         implements Lock {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
+
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
 
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
@@ -163,6 +166,10 @@ public class PythonScriptEngine
 
         lifecycleTracker = new LifecycleTracker();
         scriptExtensionModuleProvider = new ScriptExtensionModuleProvider();
+
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        Properties props = System.getProperties();
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
 
         Context.Builder contextConfig = Context.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID) //
                 .out(scriptOutputStream) //
