@@ -63,7 +63,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     private final Logger logger = LoggerFactory.getLogger(FroniusWattpilotHandler.class);
     private final WattpilotClient client;
 
-    private @Nullable CompletableFuture<?> awaitDisconnect;
+    private @Nullable CompletableFuture<@Nullable Void> awaitDisconnect;
 
     private @Nullable FroniusWattpilotConfiguration config;
 
@@ -182,11 +182,11 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     @Override
     public void dispose() {
         if (client.isConnected()) {
+            CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
             if (awaitDisconnect != null) {
                 awaitDisconnect.cancel(true);
-                awaitDisconnect = null;
             }
-            awaitDisconnect = new CompletableFuture<>();
+            awaitDisconnect = this.awaitDisconnect = new CompletableFuture<>();
             client.disconnect();
             try {
                 awaitDisconnect.get(3, TimeUnit.SECONDS);
@@ -204,6 +204,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
+        CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
         if (awaitDisconnect != null) {
             awaitDisconnect.complete(null);
         }
