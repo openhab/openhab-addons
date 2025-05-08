@@ -14,17 +14,17 @@ The other app (and/or tuya-mqtt) must be closed in order for this binding to ope
 
 ## Supported Things
 
-There are two things: `project` and `tuyadevice`.
+There are two things: `project` and `tuyaDevice`.
 
 The `project` thing represents a Tuya developer portal cloud project (see below).
 `project` things must be configured manually and are needed for discovery only.
 
-`tuyadevice` things represent a single device.
+`tuyaDevice` things represent a single device.
 They can be configured manually or by discovery.
 
 ## Discovery
 
-Discovery is supported for `tuyadevice` things.
+Discovery is supported for `tuyaDevice` things.
 By using discovery all necessary setting of the device are retrieved from your cloud account.
 
 ## Thing Configuration
