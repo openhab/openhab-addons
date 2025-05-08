@@ -35,7 +35,7 @@ public record CloudProvider(String name, String appkey, String appid, String api
         String hmackey, String proxied) {
 
     /**
-     * Cloud provider information for record
+     * Cloud provider information
      * All providers use the same signkey for AES encryption and Decryption.
      * V2 Devices do not require a Cloud Provider entry as they only use AES
      * 
@@ -50,8 +50,8 @@ public record CloudProvider(String name, String appkey, String appid, String api
             case "Midea Air":
                 return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
-            // Reported in HA version that this cloud has been shutdown.
-            // There is a possible v2 version of security down the road
+            // Reported in HA version of the Midea binding that this cloud has been shutdown.
+            // There is a possible v2 version of security down the road?
             case "MSmartHome":
                 return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",

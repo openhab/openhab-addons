@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Bob Eckhoff - Revised logic to reconnect with security before each poll or command
  * 
  *         This gets around the issue that any command needs to be within 30 seconds of the authorization
- *         in testing this only adds 50 ms, but allows polls at longer intervals
+ *         in testing this only adds 50 ms, but allows Scheduled polls at longer intervals.
  */
 @NonNullByDefault
 public class ConnectionManager {

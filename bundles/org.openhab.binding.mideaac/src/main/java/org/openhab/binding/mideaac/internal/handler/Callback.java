@@ -18,9 +18,10 @@ import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesRes
 /**
  * The {@link Response} performs the polling byte data stream decoding
  * The {@link CapabilitiesResponse} performs the capability byte data stream decoding
- *
+ * The {@link EnergyResponse} performs the energy byte stream data decoding
+ * 
  * @author Leo Siepel - Initial contribution
- * @author Bob Eckhoff - added Capabilities Callback
+ * @author Bob Eckhoff - added Capabilities and Energy Callbacks
  */
 @NonNullByDefault
 public interface Callback {
@@ -41,7 +42,7 @@ public interface Callback {
     /**
      * Updates channels with a Energy response.
      *
-     * @param capabilitiesResponse The capabilities response from the device used to update properties.
+     * @param energyResponse The Energy response from the device used to update properties.
      */
     void updateChannels(EnergyResponse energyResponse);
 }

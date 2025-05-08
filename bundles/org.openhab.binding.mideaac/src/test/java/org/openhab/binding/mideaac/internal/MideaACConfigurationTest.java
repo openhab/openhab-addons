@@ -21,7 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mideaac.internal.security.TokenKey;
 
 /**
- * Testing of the {@link MideaACConfigurationTest} Configuration
+ * Testing of the {@link MideaACConfigurationTest} Midea AC
+ * Configuration methods
  *
  * @author Robert Eckhoff - Initial contribution
  */
