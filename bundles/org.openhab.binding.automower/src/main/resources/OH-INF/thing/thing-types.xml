@@ -50,7 +50,6 @@
 			<channel-group id="setting" typeId="settingsType"/>
 			<channel-group id="statistic" typeId="statisticsType"/>
 			<channel-group id="calendartask" typeId="calendarTasksType"/>
-			<channel-group id="position" typeId="positionsType"/>
 			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
 			<channel-group id="workarea" typeId="workAreasType"/>
 			<channel-group id="command" typeId="commandsType"/>
@@ -67,7 +66,7 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -114,6 +113,9 @@
 			<channel id="override-action" typeId="overrideActionType"/>
 			<channel id="restricted-reason" typeId="restrictedReasonType"/>
 			<channel id="external-reason" typeId="externalReasonType"/>
+			<!-- channels created on demand
+				<channel id="position" typeId="positionType"/>
+			-->
 		</channels>
 	</channel-group-type>
 
@@ -168,18 +170,6 @@
 		-->
 	</channel-group-type>
 
-	<!-- Positions -->
-	<channel-group-type id="positionsType">
-		<label>Positions</label>
-		<!-- channels created on demand
-			<channels>
-			<channel id="last" typeId="lastPositionType"/>
-			<channel id="<xx>" typeId="positionType"/>
-			...
-			</channels>
-		-->
-	</channel-group-type>
-
 	<!-- Stayout Zones -->
 	<channel-group-type id="stayoutZonesType">
 		<label>Stayout Zones</label>
@@ -213,16 +203,13 @@
 	<!-- Messages -->
 	<channel-group-type id="messagesType">
 		<label>Messages</label>
-		<!-- channels created dynamically (1...50)
-			<channels>
-			<channel id="<xx>-time" typeId="messageTimeType"/>
-			<channel id="<xx>-code" typeId="messageCodeType"/>
-			<channel id="<xx>-text" typeId="messageType"/>
-			<channel id="<xx>-severity" typeId="messageSeverityType"/>
-			<channel id="<xx>-position" typeId="messagePositionType"/>
-			...
-			</channels>
-		-->
+		<channels>
+			<channel id="msg-timestamp" typeId="messageTimeType"/>
+			<channel id="msg-code" typeId="messageCodeType"/>
+			<channel id="msg-text" typeId="messageType"/>
+			<channel id="msg-severity" typeId="messageSeverityType"/>
+			<channel id="msg-gps-position" typeId="messagePositionType"/>
+		</channels>
 	</channel-group-type>
 
 	<!-- Commands -->
@@ -429,6 +416,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="positionType" advanced="false">
+		<item-type>Location</item-type>
+		<label>Last GPS Position</label>
+		<description>Last GPS position of the mower</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="settingCuttingHeightType">
 		<item-type>Number</item-type>
 		<label>Cutting Height</label>
@@ -523,20 +517,6 @@
 		<label>Up Time</label>
 		<description>The time the mower has been connected to the cloud</description>
 		<state readOnly="true" pattern="%1$tHh:%1$tMm:%1$tSs"/>
-	</channel-type>
-
-	<channel-type id="lastPositionType" advanced="false">
-		<item-type>Location</item-type>
-		<label>Last GPS Position</label>
-		<description>Last GPS position of the mower</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="positionType" advanced="true">
-		<item-type>Location</item-type>
-		<label>GPS Position</label>
-		<description>A waypoint of the mower's activity</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Calendar Tasks -->
@@ -668,14 +648,14 @@
 	<!-- Messages -->
 	<channel-type id="messageTimeType" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Timestamp</label>
+		<label>Message Timestamp</label>
 		<description>Timestamp when the event occurred</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="messageCodeType" advanced="true">
 		<item-type>Number</item-type>
-		<label>Code</label>
+		<label>Message Code</label>
 		<description>(Error) code of the event</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -689,14 +669,14 @@
 
 	<channel-type id="messageSeverityType" advanced="true">
 		<item-type>String</item-type>
-		<label>Severity</label>
+		<label>Message Severity</label>
 		<description>The severity of the event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="messagePositionType" advanced="true">
 		<item-type>Location</item-type>
-		<label>GPS Position</label>
+		<label>Message GPS Position</label>
 		<description>GPS Position of the event (if available)</description>
 		<state readOnly="true"/>
 	</channel-type>

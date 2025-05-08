@@ -24,8 +24,8 @@ Once the bridge is created and configured, openHAB will automatically discover a
 - pollingInterval (optional): How often the bridge state should be queried in seconds. Default is 1h (3600s)
 
 Keep in mind that the status of the bridge should not be queried too often.
-According to the Husqvarna documentation not more than 10000 requests per month / 1 request per second and application key are allowed.
-With the default value of 1h this would mean ~720 requests per month for the bridge state
+According to the Husqvarna documentation not more than 10.000 requests per month / 1 request per second and application key are allowed.
+With the default value of 1h this would mean ~720 requests per month for the bridge state.
 
 `automower:`
 
@@ -33,8 +33,9 @@ With the default value of 1h this would mean ~720 requests per month for the bri
 - pollingInterval (optional): How often the current Automower® state should be polled in seconds. Default is 10min (600s)
 
 Keep in mind that the status of the Automower® should not be queried too often.
-According to the Husqvarna documentation not more than 10000 requests per month / 1 request per second and application key are allowed.
-With the default value of 10min this would mean ~4300 requests per month per single Automower®
+According to the Husqvarna documentation not more than 10.000 requests per month / 1 request per second and application key are allowed.
+With the default value of 10min this would mean ~4300 requests per month per single Automower®.
+In addition to polling of the Automower® Connect API for changes, the binding receives notifications when the status, position, setting or message of the Automower® changes (event triggered).
 
 ## Channels
 
@@ -51,19 +52,21 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active work area                                                                                   | false |
 | status#last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                | false |
 | status#last-poll-update               | DateTime             | R   | The time when the binding polled the last update from the cloud                                                | true  |
-| status#poll-update                    | Switch               | R   | Poll Automower® status update from the cloud                                                                   | true  |
+| status#poll-update                    | Switch               | R/W | Poll Automower® status update from the cloud (`sendCommand(ON)`)                                               | true  |
 | status#battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
 | status#error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
 | status#error-message                  | String               | R   | The current error message                                                                                      | false |
 | status#error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
-| status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the mower has an Error Code this attribute states if the error is confirmable                               | true  |
-| status#next-start                     | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL                                                                                                               | false |
+| status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the Automower® has an Error Code this attribute states if the error is confirmable                          | true  |
+| status#next-start                     | DateTime             | R   | The time for the next auto start. If the Automower® is charging then the value is the estimated time when it will leave the charging station                                                                                                                                                                               | false |
 | status#override-action                | String               | R   | The action that overrides current planner operation                                                            | true  |
 | status#restricted-reason              | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
 | status#external-reason                | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
-
+| status#position                       | Location             | R   | Last GPS Position of the Automower®                                                                            | false |
 
 ### Settings Channels
+
+These channels hold Automower® settings.
 
 | channel                                           | type   | access mode | description                                                             | advanced |
 |---------------------------------------------------|--------|-------------|-------------------------------------------------------------------------|----------|
@@ -72,10 +75,12 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 ### Statistics Channels
 
+These channels hold different Automower® statistics.
+
 | channel                             | type                 | access mode | description                                                                                 | advanced |
 |-------------------------------------|----------------------|-------------|---------------------------------------------------------------------------------------------|----------|
 | statistic#cutting-blade-usage-time  | Number:Time          | R/W         | The time since the last reset of the cutting blade usage counter. `sendCommand(0)` to reset | false    |
-| statistic#down-time                 | Number:Time          | R           | The time the mower has been disconnected from the cloud                                     | true     |
+| statistic#down-time                 | Number:Time          | R           | The time the Automower® has been disconnected from the cloud                                | true     |
 | statistic#number-of-charging-cycles | Number               | R           | Number of charging cycles                                                                   | false    |
 | statistic#number-of-collisions      | Number               | R           | The total number of collisions                                                              | false    |
 | statistic#total-charging-time       | Number:Time          | R           | Total charging time                                                                         | false    |
@@ -85,7 +90,7 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | statistic#total-running-time        | Number:Time          | R           | The total running time (the wheel motors have been running)                                 | false    |
 | statistic#total-searching-time      | Number:Length        | R           | The total searching time                                                                    | false    |
 | statistic#total-searching-percent   | Number:Dimensionless | R           | The total searching time in percent                                                         | false    |
-| statistic#up-time                   | Number:Time          | R           | The time the mower has been connected to the cloud                                          | true     |
+| statistic#up-time                   | Number:Time          | R           | The time the Automower® has been connected to the cloud                                     | true     |
 
 ### Calendar Tasks Channels
 
@@ -106,19 +111,6 @@ These channels hold the different Calendar Task configurations.
 | calendartask#\<x\>-task-workArea<sup id="a1">[1](#f1)</sup>   | String      | R           | Name of the Work Area mapped to this calendar | true     |
 
 \<x\> ... 01-#calendartasks
-
-### Position Channels
-
-These channels hold the last 50 GPS positions recorded by the Automower®, thus describing the path it followed.
-Position 01 is the latest recorded position, the other positions are pushed back, thus removing the previous position 50 from the list because it is replaced by the previous position 49.
-Channel `last-position` is always identical with channel `position01` and thus provides more convenient access if only the latest GPS information is required by the user.
-
-| channel                                       | type     | access mode | description                                             | advanced |
-|-----------------------------------------------|----------|-------------|---------------------------------------------------------|----------|
-| position#last<sup id="a1">[1](#f1)</sup>      | Location | R           | Last GPS Position (identical with positions#position01) | false    |
-| position#\<x\>-pos<sup id="a1">[1](#f1)</sup> | Location | R           | GPS Position \<x\>                                      | true     |
-
-\<x\> ... 01-50
 
 ### Stayout Zones Channels
 
@@ -150,16 +142,15 @@ These channels hold the different Work Area configurations.
 
 ### Messages
 
-These channels hold the last 50 messages recorded by the Automower®.
-Message 01 is the latest recorded message, the other messages are pushed back, thus removing the previous message 50 from the list because it is replaced by the previous message 49.
+These channels hold the last message recorded by the Automower®.
 
-| channel                 | type     | access mode | description                              | advanced |
-|-------------------------|----------|-------------|------------------------------------------|----------|
-| message#\<x\>-time      | DateTime | R           | Timestamp when the event occurred        | true     |
-| message#\<x\>-code      | Number   | R           | (Error) code of the event                | true     |
-| message#\<x\>-text      | String   | R           | The message                              | true     |
-| message#\<x\>-severity  | String   | R           | The severity of the event                | true     |
-| message#\<x\>-position  | Location | R           | GPS Position of the event (if available) | true     |
+| channel               | type     | access mode | description                              | advanced |
+|-----------------------|----------|-------------|------------------------------------------|----------|
+| message#msg-timestamp | DateTime | R           | Timestamp when the event occurred        | true     |
+| message#msg-code      | Number   | R           | (Error) code of the event                | true     |
+| message#msg-text      | String   | R           | The message                              | true     |
+| message#msg-severity  | String   | R           | The severity of the event                | true     |
+| message#msg-position  | Location | R           | GPS Position of the event (if available) | true     |
 
 \<x\> ... 01-50
 
@@ -219,6 +210,7 @@ Number      Automower_Error_Code                    "Error Code [%d]"           
 DateTime    Automower_Error_Time                    "Error Time"                            { channel="automower:automower:mybridge:myAutomower:status#error-timestamp" }
 String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:status#override-action" }
 DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:status#next-start" }
+Location    Automower_Position                      "Last Position"                         { channel="automower:automower:mybridge:myAutomower:status#position" }
 
 Number      Automower_Command_Start                 "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:command#start" }
 Switch      Automower_Command_Resume                "Resume the schedule"                   { channel="automower:automower:mybridge:myAutomower:command#resume_schedule" }
@@ -226,8 +218,6 @@ Switch      Automower_Command_Pause                 "Pause the automower"       
 Number      Automower_Command_Park                  "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:command#park" }
 Switch      Automower_Command_Park_Next_Schedule    "Park until next schedule"              { channel="automower:automower:mybridge:myAutomower:command#park_until_next_schedule" }
 Switch      Automower_Command_Park_Notice           "Park until further notice"             { channel="automower:automower:mybridge:myAutomower:command#park_until_further_notice" }
-
-Location    Automower_Last_Position                 "Last Position"                         { channel="automower:automower:mybridge:myAutomower:position#last-position" }
 ```
 
 ### automower.sitemap
@@ -245,7 +235,7 @@ sitemap demo label="Automower"
         Text        item=Automower_Error_Time
         Text        item=Automower_Override_Action
         Text        item=Automower_Next_Start_Time
-        Text        item=Automower_Calendar_Tasks
+        Text        item=Automower_Position
     }
 }
 ```
