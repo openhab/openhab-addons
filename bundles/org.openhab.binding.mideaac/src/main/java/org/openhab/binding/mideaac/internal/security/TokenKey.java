@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param key For coding/decoding messages
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - JavaDoc and OH addons review
+ * @author Bob Eckhoff - JavaDoc and convert to record
  */
 @NonNullByDefault
 public record TokenKey(String token, String key) {
