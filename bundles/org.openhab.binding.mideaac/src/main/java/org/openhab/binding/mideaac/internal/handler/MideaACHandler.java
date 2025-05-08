@@ -123,6 +123,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * The command set is formed using the previous command to only
      * change the item requested and leave the others the same.
      * The command set which is then sent to the device via the connectionManager.
+     * For a Refresh both regular and energy polls are triggerred.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -132,6 +133,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (command instanceof RefreshType) {
             try {
                 connectionManager.getStatus(callbackLambda);
+                // Read only Energy channels not updated with routine poll
+                CommandSet energyUpdate = new CommandSet();
+                energyUpdate.energyPoll();
+                connectionManager.sendCommand(energyUpdate, this);
             } catch (MideaAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (MideaConnectionException | MideaException e) {
@@ -190,7 +195,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * hard-coded encryption. Next the Connection Manager is established. Then a command
      * is formed and sent to retrieve the AC capabilities if they have not been
      * discovered. Capabilities are not returned in the initial LAN Discovery.
-     * Lastly the routine polling and token key update frequency are set.
+     * Lastly the routine polling, token key update and Energy polling frequency are set.
      * 
      */
     @Override
@@ -286,10 +291,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Token Key Scheduler already running or disabled");
         }
 
-        // Establish Energy polling, if not disabled. Online AC only
+        // Establish Energy polling, if not disabled.
         if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
-            scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 30, config.energyPoll,
-                    TimeUnit.SECONDS);
+            scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 1, config.energyPoll,
+                    TimeUnit.MINUTES);
             logger.debug("Scheduled Energy Update started, Poll Time {} seconds", config.energyPoll);
         } else {
             logger.debug("Energy Scheduler already running or disabled");
@@ -300,6 +305,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         ConnectionManager connectionManager = this.connectionManager;
         Response response = connectionManager.getLastResponse();
 
+        // Only runs if device is ON to reduce traffic
         if (response.getPowerState()) {
             try {
                 CommandSet energyUpdate = new CommandSet();
@@ -435,7 +441,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         logger.debug("Capabilities and temperature settings parsed and stored in properties: {}", properties);
     }
 
-    // Handle Energy response update
+    // Handle Energy response updates - Config flags sets what decoding to use
     @Override
     public void updateChannels(EnergyResponse energyUpdate) {
         if (config.energyDecode) {

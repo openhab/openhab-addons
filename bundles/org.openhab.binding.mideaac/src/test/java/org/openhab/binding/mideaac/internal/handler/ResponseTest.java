@@ -20,8 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * The {@link ResponseTest} extracts the AC device response and
- * compares them to the expected result.
+ * The {@link ResponseTest} tests the methods in the Response class
+ * against an example response string.
  *
  * @author Bob Eckhoff - Initial contribution
  */

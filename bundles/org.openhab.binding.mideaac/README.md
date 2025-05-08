@@ -39,10 +39,10 @@ No binding configuration is required.
 | password      | No          | Password for cloud account chosen in Cloud Provider.              | password1                 |
 | token         | Yes for V.3 | Secret Token - Retrieved from Cloud                               |                           |
 | key           | Yes for V.3 | Secret Key - Retrieved from Cloud                                 |                           |
-| pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60                        |
-| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0                         |
-| energyPoll    | Yes         | Frequency to poll running energy stats (if supported-disable = 0) | 0                         |
-| timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4                         |
+| pollingTime   | Yes         | Polling frequency. Minimum is 30.                                 | 60 seconds                |
+| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0 days                    |
+| energyPoll    | Yes         | Frequency to poll running energy stats (if supported-disable = 0) | 0 minutes                 |
+| timeout       | Yes         | Connecting timeout. Minimum time is 2, maximum 10.                | 4 seconds                 |
 | promptTone    | Yes         | "Ding" tone when command is received and executed.                | false                     |
 | version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0                         |
 | energyDecode  | Yes         | Devices use two different methods to report energy. Compare.      | true
