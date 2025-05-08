@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.io.EofException;
+import org.eclipse.jetty.util.Utf8Appendable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -210,7 +211,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
-                || cause instanceof EofException) {
+                || cause instanceof EofException || cause instanceof Utf8Appendable.NotUtf8Exception) {
             this.logger.debug("Connection to Wattpilot lost, scheduling reconnection attempt.");
             this.scheduler.schedule(this::initialize, 30L, TimeUnit.SECONDS);
         }
