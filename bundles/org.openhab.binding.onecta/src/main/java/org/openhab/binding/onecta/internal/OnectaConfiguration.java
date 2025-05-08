@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.onecta.internal;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_OPENHAB_HOST;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -43,10 +41,6 @@ public class OnectaConfiguration {
     public static void setBridgeThing(Thing bridgeThing) {
         OnectaConfiguration.bridgeThing = bridgeThing;
     }
-
-    public static String getHost() {
-        return OnectaConfiguration.bridgeThing.getConfiguration().get(CHANNEL_OPENHAB_HOST).toString();
-    };
 
     public static @Nullable HttpClient getHttpClient() {
         return httpClient;

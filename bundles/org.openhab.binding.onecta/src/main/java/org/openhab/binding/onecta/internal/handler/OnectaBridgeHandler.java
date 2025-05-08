@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
@@ -44,8 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OnectaBridgeHandler.class);
-
-    private @Nullable OnectaConfiguration config;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -81,7 +78,6 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize.");
-        config = getConfigAs(OnectaConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         if (onectaConnectionClient.isOnline()) {
