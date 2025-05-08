@@ -12,76 +12,105 @@
  */
 package org.openhab.binding.onecta.internal.service;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-import static org.openhab.binding.onecta.internal.OnectaGatewayConstants.*;
-import static org.openhab.binding.onecta.internal.api.Enums.*;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
-import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
+import static org.openhab.binding.onecta.internal.api.Enums.ManagementPoint;
 
 /**
  *
  * @author Alexander Drent - Initial contribution
  *
  */
-public class DeviceDiscoveryService extends AbstractDiscoveryService {
+@Component(scope = ServiceScope.PROTOTYPE, service = DeviceDiscoveryService.class)
+@NonNullByDefault
+public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<OnectaBridgeHandler> {
+    private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
+    private static final int REFRESH_MINUTES = 1;
     public static final String PROPERTY_DISCOVERED = "discovered";
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     @Nullable
-    private OnectaBridgeHandler bridgeHandler = null;
     private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
+    private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
-    public DeviceDiscoveryService(OnectaBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(20);
-        this.bridgeHandler = bridgeHandler;
+    public DeviceDiscoveryService() {
+        super(OnectaBridgeHandler.class, SUPPORTED_THING_TYPES, 10);
+    }
+
+    @Override
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
+    }
+
+    @Override
+    public void activate() {
+        super.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
     }
 
     @Override
     public void startScan() {
-        logger.debug("startScan.");
-        if (bridgeHandler == null) {
-            return;
-        }
-        // Trigger no scan if offline
-        if (bridgeHandler.getThing().getStatus() == ThingStatus.OFFLINE) {
-            return;
-        }
+        logger.debug("Start discovery.");
+        scheduler.execute(this::scan);
+    }
 
-        try {
-            onectaConnectionClient.refreshUnitsData();
-            List<Unit> units = onectaConnectionClient.getUnits().getAll();
-            for (Unit unit : units) {
-                thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
-                thingDiscover(unit, ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
-                thingDiscover(unit, ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
-                thingDiscover(unit, ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
-            }
-        } catch (DaikinCommunicationException e) {
-            logger.error("Error in DiscoveryService", e);
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Starting background discovery");
+        ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
+        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
+            backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, REFRESH_MINUTES,
+                    TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stopping background discovery");
+
+        ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
+        if (localDiscoveryFuture != null) {
+            localDiscoveryFuture.cancel(true);
+            backgroundDiscoveryFuture = null;
+        }
+    }
+
+    protected void scan() {
+        logger.debug("Scanning for devices");
+
+        List<Unit> units = onectaConnectionClient.getUnits().getAll();
+        for (Unit unit : units) {
+            thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
+            thingDiscover(unit, ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
+            thingDiscover(unit, ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
+            thingDiscover(unit, ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
         }
     }
 
     protected void thingDiscover(Unit unit, Enums.ManagementPoint onectaManagementPoint, ThingTypeUID thingTypeUID) {
-
         if (unit.findManagementPointsByType(onectaManagementPoint.getValue()) != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            ThingUID bridgeUID = this.thingHandler.getThing().getUID();
             String unitId = unit.getId();
             String unitName = unit.findManagementPointsByType(ManagementPoint.CLIMATECONTROL.getValue()).getNameValue();
             unitName = !unitName.isEmpty() ? unitName : unitId;
@@ -90,14 +119,14 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeHandler.getThing().getUID())
+                    .withBridge(bridgeUID)
                     .withLabel(String.format("Daikin Onecta (%s) (%s)", onectaManagementPoint.getValue(), unitName))
                     .build();
 
             thingDiscovered(discoveryResult);
-            logger.info("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
+            logger.debug("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
                     unitName);
-            bridgeHandler.getThing().setProperty(
+            this.thingHandler.getThing().setProperty(
                     String.format("%s %s (%s)", PROPERTY_DISCOVERED, onectaManagementPoint.getValue(), unitName),
                     unitId);
         }

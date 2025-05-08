@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
@@ -27,9 +21,18 @@ import org.openhab.binding.onecta.internal.exception.DaikinCommunicationExceptio
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 /**
  * The {@link OnectaBridgeHandler} is responsible for handling commands, which are
@@ -80,7 +83,6 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(OnectaConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-
         if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -88,12 +90,9 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
                     "Error connecting to Daikin Onecta. See log for more info");
         }
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 10,
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
                 Integer.parseInt(thing.getConfiguration().get(CONFIG_PAR_REFRESHINTERVAL).toString()),
                 TimeUnit.SECONDS);
-
-        // Trigger discovery of Devices
-        scheduler.submit(runnable);
     }
 
     @Override
@@ -109,34 +108,15 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     private void pollDevices() {
         logger.debug("pollDevices.");
 
-        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-            try {
-                logger.debug("Try to restore connection ");
-                onectaConnectionClient.restoreConnecton();
-
-                if (onectaConnectionClient.isOnline()) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (DaikinCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Try to restore connection. See log for more information. ");
-            }
-        }
-
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
 
             try {
                 onectaConnectionClient.refreshUnitsData();
-            } catch (DaikinCommunicationException e) {
-                logger.debug("DaikinCommunicationException: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+                updateStatus(ThingStatus.ONLINE);
 
-            List<Thing> things = getThing().getThings();
-            for (Thing t : things) {
-                // BaseThingHandler handler;
-                if (t.getStatus().equals(ThingStatus.ONLINE)) {
-
+                List<Thing> things = getThing().getThings();
+                for (Thing t : things) {
+                    // BaseThingHandler handler;
                     if (t.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)) {
                         OnectaDeviceHandler onectaDeviceHandler = (OnectaDeviceHandler) t.getHandler();
                         onectaDeviceHandler.refreshDevice();
@@ -149,14 +129,21 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
                     } else if (t.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)) {
                         OnectaIndoorUnitHandler onectaIndoorUnitHandler = (OnectaIndoorUnitHandler) t.getHandler();
                         onectaIndoorUnitHandler.refreshDevice();
-                    } else
-                        continue;
+                    }
                 }
+            } catch (DaikinCommunicationException e) {
+                logger.debug("DaikinCommunicationException: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
 
-    public void setDiscovery(DeviceDiscoveryService deviceDiscoveryService) {
+    public void setDiscoveryService(DeviceDiscoveryService deviceDiscoveryService) {
         this.deviceDiscoveryService = deviceDiscoveryService;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(DeviceDiscoveryService.class);
     }
 }

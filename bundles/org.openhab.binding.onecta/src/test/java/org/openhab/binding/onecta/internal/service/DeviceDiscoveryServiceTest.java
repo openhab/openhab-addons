@@ -12,16 +12,9 @@
  */
 package org.openhab.binding.onecta.internal.service;
 
-import static org.mockito.Mockito.*;
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Objects;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +31,15 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Objects;
+
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 /**
  *
@@ -84,7 +83,7 @@ public class DeviceDiscoveryServiceTest {
                     .add(Objects.requireNonNull(new Gson().fromJson(rawData.get(i).getAsJsonObject(), Unit.class)));
         }
 
-        deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
+        deviceDiscoveryService = new DeviceDiscoveryService();
         when(bridgeHandler.getThing()).thenReturn(bridgeMock);
         when(bridgeHandler.getThing().getStatus()).thenReturn(ThingStatus.ONLINE);
         when(bridgeHandler.getThing().getUID()).thenReturn(thingUIDMock);

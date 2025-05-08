@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.onecta.internal;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -21,17 +19,16 @@ import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_OPENHAB_HOST;
+
 /**
- * The {@link OnectaConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link OnectaConfiguration} class contains global static variables, which are used across the whole binding.
  *
  * @author Alexander Drent - Initial contribution
  */
 @NonNullByDefault
 public class OnectaConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     private @Nullable static Thing bridgeThing = null;
     private @Nullable static HttpClientFactory httpClientFactory = null;
 

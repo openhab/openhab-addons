@@ -12,23 +12,10 @@
  */
 package org.openhab.binding.onecta.internal;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
-import org.openhab.binding.onecta.internal.handler.OnectaDeviceHandler;
-import org.openhab.binding.onecta.internal.handler.OnectaGatewayHandler;
-import org.openhab.binding.onecta.internal.handler.OnectaIndoorUnitHandler;
-import org.openhab.binding.onecta.internal.handler.OnectaWaterTankHandler;
+import org.openhab.binding.onecta.internal.handler.*;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
-import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -41,6 +28,12 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 /**
  * The {@link OnectaBridgeHandlerFactory} is responsible for creating things and thing
@@ -78,11 +71,11 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
             onectaConfiguration.setBridgeThing((Bridge) thing);
 
-            DeviceDiscoveryService deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
-            bridgeHandler.setDiscovery(deviceDiscoveryService);
+            // DeviceDiscoveryService deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
+            // bridgeHandler.setDiscovery(deviceDiscoveryService);
 
-            this.discoveryServiceRegs.put(thing.getUID(), bundleContext.registerService(
-                    DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
+            // this.discoveryServiceRegs.put(thing.getUID(), bundleContext.registerService(
+            // DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
 
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
