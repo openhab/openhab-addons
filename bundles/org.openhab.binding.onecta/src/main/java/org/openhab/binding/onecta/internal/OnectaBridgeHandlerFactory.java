@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.onecta.internal;
 
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.handler.*;
@@ -28,12 +34,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 /**
  * The {@link OnectaBridgeHandlerFactory} is responsible for creating things and thing

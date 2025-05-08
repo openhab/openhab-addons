@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.onecta.internal;
 
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_OPENHAB_HOST;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
-
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_OPENHAB_HOST;
 
 /**
  * The {@link OnectaConfiguration} class contains global static variables, which are used across the whole binding.

@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
@@ -25,14 +33,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 /**
  * The {@link OnectaBridgeHandler} is responsible for handling commands, which are

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.onecta.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-
-import java.util.Set;
 
 /**
  * The {@link OnectaBridgeConstants} class defines common constants, which are
