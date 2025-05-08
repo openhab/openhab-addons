@@ -297,7 +297,7 @@
 		<description>@text/channel-type.mielecloud.ventilation_power.description</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Ventilation</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -308,7 +308,7 @@
 		<description>@text/channel-type.mielecloud.ventilation_power_raw.description</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Ventilation</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -519,7 +519,7 @@
 		<description>@text/channel-type.mielecloud.plate_power_step.description</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -530,7 +530,7 @@
 		<description>@text/channel-type.mielecloud.plate_power_step_raw.description</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
