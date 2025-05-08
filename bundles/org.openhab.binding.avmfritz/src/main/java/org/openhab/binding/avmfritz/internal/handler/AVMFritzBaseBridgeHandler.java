@@ -302,6 +302,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         String thingName = getThingName(device);
 
         if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
@@ -345,8 +346,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             if (device.isHumiditySensor() || device.isTemperatureSensor()) {
                 return DEVICE_HAN_FUN_SENSOR;
             }
-        } else if (device instanceof DeviceModel && device.isHANFUNDevice() && device.isHANFUNBattery()) {
-            // offer the host device as a potential thing -- only if will have (battery) channels
+        } else if (device instanceof DeviceModel && device.isHANFUNDevice()
+                && (device.isHANFUNBattery() || (device.getBattery() != null) || (device.getBatterylow() != null))) {
+            // offer the host device as a potential thing -- but only if it should support battery channels
             return DEVICE_HAN_FUN_HOST;
         }
         String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
