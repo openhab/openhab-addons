@@ -28,7 +28,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Drent - Initial contribution
  */
 @NonNullByDefault
-public class OnectaIndoorUnitHandler extends BaseThingHandler {
+public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
 
     public static final String DOES_NOT_EXISTS = "Unit not registered at Onecta, unitID does not exists.";
     private final Logger logger = LoggerFactory.getLogger(OnectaIndoorUnitHandler.class);
@@ -69,6 +68,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    @Override
     public void refreshDevice() {
         logger.debug("refreshIndoorUnit : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();

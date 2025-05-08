@@ -16,6 +16,7 @@ import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -116,20 +117,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
                 List<Thing> things = getThing().getThings();
                 for (Thing t : things) {
-                    // BaseThingHandler handler;
-                    if (t.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)) {
-                        OnectaDeviceHandler onectaDeviceHandler = (OnectaDeviceHandler) t.getHandler();
-                        onectaDeviceHandler.refreshDevice();
-                    } else if (t.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
-                        OnectaGatewayHandler onectaGatewayHandler = (OnectaGatewayHandler) t.getHandler();
-                        onectaGatewayHandler.refreshDevice();
-                    } else if (t.getThingTypeUID().equals(THING_TYPE_WATERTANK)) {
-                        OnectaWaterTankHandler onectaWaterTankHandler = (OnectaWaterTankHandler) t.getHandler();
-                        onectaWaterTankHandler.refreshDevice();
-                    } else if (t.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)) {
-                        OnectaIndoorUnitHandler onectaIndoorUnitHandler = (OnectaIndoorUnitHandler) t.getHandler();
-                        onectaIndoorUnitHandler.refreshDevice();
-                    }
+                    ((AbstractOnectaHandler) Objects.requireNonNull(t.getHandler())).refreshDevice();
                 }
             } catch (DaikinCommunicationException e) {
                 logger.debug("DaikinCommunicationException: {}", e.getMessage());

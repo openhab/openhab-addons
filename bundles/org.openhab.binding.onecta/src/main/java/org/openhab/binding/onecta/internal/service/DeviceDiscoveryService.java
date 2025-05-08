@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<OnectaBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
-    private static final int REFRESH_MINUTES = 1;
+    private static final int REFRESH_MINUTES = 5;
     public static final String PROPERTY_DISCOVERED = "discovered";
 
     @Nullable
