@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link Decryption8370Result} Protocol. V3 Only
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - JavaDoc additions
  */
 @NonNullByDefault
 public class Decryption8370Result {

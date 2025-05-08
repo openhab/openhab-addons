@@ -31,8 +31,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 
 /**
- * The {@link CloudTest} creates messages and
- * compares them to the expected result.
+ * The {@link CloudTest} tests the methods in the Cloud
+ * class with mock responses.
  *
  * @author Bob Eckhoff - Initial contribution
  */
