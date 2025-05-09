@@ -234,7 +234,7 @@
 		<description>The Current Audio Track Type</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>SoundVolume</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
