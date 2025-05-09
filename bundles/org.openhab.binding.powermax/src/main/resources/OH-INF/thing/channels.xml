@@ -28,9 +28,6 @@
 		<item-type>String</item-type>
 		<label>Active Alarms and Alerts</label>
 		<description>List of active alarms and alerts</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
@@ -38,9 +35,6 @@
 		<item-type>Switch</item-type>
 		<label>Trouble Detected</label>
 		<description>Whether or not a trouble is detected</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -55,9 +49,6 @@
 		<item-type>Switch</item-type>
 		<label>Ringing</label>
 		<description>Whether or not the alarm siren is currently ringing</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -86,9 +77,6 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Active</label>
 		<description>Whether or not an alarm is active</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -96,19 +84,11 @@
 		<item-type>Switch</item-type>
 		<label>System Armed</label>
 		<description>Whether or not the system is armed</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="arm_mode">
 		<item-type>String</item-type>
 		<label>System Arm Mode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="Disarmed">Disarmed</option>
@@ -139,10 +119,6 @@
 		<item-type>DateTime</item-type>
 		<label>Zone Last Trip</label>
 		<description>Timestamp when the zone was last tripped</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
@@ -150,10 +126,6 @@
 		<item-type>Switch</item-type>
 		<label>Zone Bypassed</label>
 		<description>Whether or not the zone is bypassed</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="alarmed">
@@ -161,9 +133,6 @@
 		<label>Zone Alarmed</label>
 		<description>Whether or not the zone has an active alarm condition, or has had an active alarm since the memory was
 			last cleared</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -172,10 +141,6 @@
 		<label>Zone Tamper Alarm</label>
 		<description>Whether or not the zone's sensor has an active tamper condition, or has had an active tamper condition
 			since the memory was last cleared</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -190,10 +155,6 @@
 		<item-type>Switch</item-type>
 		<label>Zone Tampered</label>
 		<description>Whether or not the zone's sensor is reporting a tamper condition</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -208,10 +169,6 @@
 		<item-type>Contact</item-type>
 		<label>Zone Armed (Contact)</label>
 		<description>Whether or not the zone is armed (CLOSED when armed)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -226,10 +183,6 @@
 		<item-type>DateTime</item-type>
 		<label>Zone Last Status Time</label>
 		<description>Timestamp when Zone Last Status Message was received</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
