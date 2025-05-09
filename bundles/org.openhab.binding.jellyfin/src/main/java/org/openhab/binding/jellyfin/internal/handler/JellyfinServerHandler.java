@@ -24,31 +24,25 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jellyfin.sdk.Jellyfin;
-import org.jellyfin.sdk.JellyfinOptions;
-import org.jellyfin.sdk.api.client.ApiClient;
-import org.jellyfin.sdk.api.client.exception.ApiClientException;
-import org.jellyfin.sdk.api.client.exception.InvalidStatusException;
-import org.jellyfin.sdk.api.client.exception.MissingUserIdException;
-import org.jellyfin.sdk.api.operations.ItemsApi;
-import org.jellyfin.sdk.api.operations.SessionApi;
-import org.jellyfin.sdk.api.operations.SystemApi;
-import org.jellyfin.sdk.api.operations.TvShowsApi;
-import org.jellyfin.sdk.api.operations.UserApi;
-import org.jellyfin.sdk.model.ClientInfo;
-import org.jellyfin.sdk.model.api.AuthenticateUserByName;
-import org.jellyfin.sdk.model.api.AuthenticationResult;
-import org.jellyfin.sdk.model.api.BaseItemDto;
-import org.jellyfin.sdk.model.api.BaseItemDtoQueryResult;
-import org.jellyfin.sdk.model.api.BaseItemKind;
-import org.jellyfin.sdk.model.api.ItemFields;
-import org.jellyfin.sdk.model.api.MessageCommand;
-import org.jellyfin.sdk.model.api.PlayCommand;
-import org.jellyfin.sdk.model.api.PlaystateCommand;
-import org.jellyfin.sdk.model.api.SessionInfo;
-import org.jellyfin.sdk.model.api.SystemInfo;
 import org.openhab.binding.jellyfin.internal.JellyfinServerConfiguration;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.ItemsApi;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.SessionApi;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.SystemApi;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.TvShowsApi;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.UserApi;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.AuthenticateUserByName;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.DeviceInfo;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ItemFields;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MessageCommand;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlaystateCommand;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SessionInfo;
 import org.openhab.binding.jellyfin.internal.discovery.JellyfinClientDiscoveryService;
+import org.openhab.binding.jellyfin.internal.exceptions.ApiClientException;
 import org.openhab.binding.jellyfin.internal.util.EmptySyncResponse;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.binding.jellyfin.internal.util.SyncResponse;
@@ -64,9 +58,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.ktor.http.URLBuilder;
-import io.ktor.http.URLProtocol;
 
 /**
  * The {@link JellyfinServerHandler} is responsible for handling commands, which are
@@ -87,7 +78,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         super(bridge);
         var options = new JellyfinOptions.Builder();
         options.setClientInfo(new ClientInfo("openHAB", OpenHAB.getVersion()));
-        options.setDeviceInfo(new org.jellyfin.sdk.model.DeviceInfo(getThing().getUID().getId(), "openHAB"));
+        options.setDeviceInfo(new DeviceInfo(getThing().getUID().getId(), "openHAB"));
         jellyApiClient = new Jellyfin(options.build()).createApi();
     }
 
