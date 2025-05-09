@@ -142,7 +142,6 @@ public class BoschSslUtil {
                 return keyStore;
             }
         } catch (OperatorCreationException | GeneralSecurityException | IOException e) {
-            logger.debug("Exception during keystore creation {}", e.getMessage());
             throw new PairingFailedException("Can not create or load keystore file: " + keystorePath
                     + ". Check path, write access and JKS content.", e);
         }
@@ -154,7 +153,7 @@ public class BoschSslUtil {
         logger.debug("Creating a new self signed certificate: {}", dirName);
         final Instant now = Instant.now();
         final Date notBefore = Date.from(now);
-        final Date notAfter = Date.from(now.plus(Duration.ofDays(365 * 10)));
+        final Date notAfter = Date.from(now.plus(Duration.ofDays(365 * 10l)));
         X500Name name = new X500Name(dirName);
 
         // create the certificate

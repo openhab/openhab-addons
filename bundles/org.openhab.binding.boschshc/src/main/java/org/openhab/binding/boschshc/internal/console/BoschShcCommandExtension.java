@@ -182,13 +182,15 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("  deviceID: %1s%n", device.id));
         builder.append(String.format("      type: %1s -> ", device.deviceModel));
-        if (DEVICEMODEL_TO_THINGTYPE_MAP.containsKey(device.deviceModel)) {
-            builder.append(DEVICEMODEL_TO_THINGTYPE_MAP.get(device.deviceModel).getId());
+
+        ThingTypeUID thingTypeUID = DEVICEMODEL_TO_THINGTYPE_MAP.get(device.deviceModel);
+        if (thingTypeUID != null) {
+            builder.append(thingTypeUID.getId());
         } else {
             builder.append("!UNSUPPORTED!");
         }
-        builder.append(String.format("%n"));
 
+        builder.append(String.format("%n"));
         builder.append(buildDeviceServices(device.deviceServiceIds));
         return builder.toString();
     }
@@ -260,9 +262,7 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
 
     @Override
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
-        if (cursorArgumentIndex <= 0) {
-            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
-        }
-        return false;
+        return cursorArgumentIndex <= 0
+                && SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
     }
 }
