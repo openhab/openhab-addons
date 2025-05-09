@@ -15,14 +15,13 @@ package org.openhab.binding.onecta.internal.service;
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 import static org.openhab.binding.onecta.internal.api.Enums.ManagementPoint;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
@@ -33,7 +32,9 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +49,16 @@ import org.slf4j.LoggerFactory;
 public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<OnectaBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     private static final int REFRESH_MINUTES = 5;
-    public static final String PROPERTY_DISCOVERED = "discovered";
 
+    private final OnectaTranslationProvider translation;
     @Nullable
     private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
-    public DeviceDiscoveryService() {
+    @Activate
+    public DeviceDiscoveryService(final @Reference OnectaTranslationProvider translation) {
         super(OnectaBridgeHandler.class, SUPPORTED_THING_TYPES, 10);
+        this.translation = translation;
     }
 
     @Override
@@ -100,6 +103,7 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
         logger.debug("Scanning for devices");
 
         List<Unit> units = onectaConnectionClient.getUnits().getAll();
+
         for (Unit unit : units) {
             thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
             thingDiscover(unit, ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
@@ -120,14 +124,11 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(bridgeUID)
-                    .withLabel(String.format("Daikin Onecta (%s) (%s)", onectaManagementPoint.getValue(), unitName))
+                    .withLabel(translation.getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
                     .build();
 
             thingDiscovered(discoveryResult);
-            logger.debug("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
-                    unitName);
-            this.thingHandler.getThing().setProperty(
-                    String.format("%s %s (%s)", PROPERTY_DISCOVERED, onectaManagementPoint.getValue(), unitName),
+            logger.debug("Discovered a onecta {} unit '{}' with ID '{}'", onectaManagementPoint.getValue(), unitName,
                     unitId);
         }
     }

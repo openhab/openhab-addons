@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.onecta.internal;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.onecta.internal.api.OnectaSignInClient;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -32,6 +34,8 @@ public class OnectaConfiguration {
 
     private @Nullable static HttpClient httpClient = null;
     private @Nullable static OAuthTokenRefresher openHabOAuthTokenRefresher = null;
+
+    private @NonNull static OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
 
     public static void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         OnectaConfiguration.httpClientFactory = httpClientFactory;
@@ -52,6 +56,10 @@ public class OnectaConfiguration {
 
     public static void setOAuthTokenRefresher(OAuthTokenRefresher openHabOAuthTokenRefresher) {
         OnectaConfiguration.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
+    }
+
+    public static OnectaSignInClient getOnectaSignInClient() {
+        return onectaSignInClient;
     }
 
     public static @Nullable OAuthTokenRefresher getOAuthTokenRefresher() {

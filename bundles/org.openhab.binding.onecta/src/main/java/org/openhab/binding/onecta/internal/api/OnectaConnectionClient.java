@@ -23,7 +23,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpContentResponse;
-import org.eclipse.jetty.client.api.*;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
@@ -58,12 +57,12 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
 
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
-    private OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
+    // private OnectaSignInClient onectaSignInClient = OnectaConfiguration.getOnectaSignInClient();
     private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     public OnectaConnectionClient() {
         try {
-            onectaSignInClient.SignIn();
+            OnectaConfiguration.getOnectaSignInClient().SignIn();
         } catch (DaikinCommunicationException e) {
             logger.error("Error in OnectaConnectionClient", e);
         }
@@ -81,14 +80,14 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         logger.debug("Refresh token.");
 
         try {
-            onectaSignInClient.refreshToken();
+            OnectaConfiguration.getOnectaSignInClient().refreshToken();
         } catch (Throwable e) {
             throw new DaikinCommunicationException(e);
         }
     }
 
     public Boolean isOnline() {
-        return onectaSignInClient.isOnline();
+        return OnectaConfiguration.getOnectaSignInClient().isOnline();
     }
 
     private Response doBearerRequestGet(Boolean refreshed) throws DaikinCommunicationException {
@@ -97,7 +96,8 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         try {
             String testUrl = getBaseUrl("");
             response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
+                    .header(HttpHeader.AUTHORIZATION,
+                            String.format(HTTPHEADER_BEARER, OnectaConfiguration.getOnectaSignInClient().getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                     .send();
@@ -135,7 +135,8 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         try {
             response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
-                    .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
+                    .header(HttpHeader.AUTHORIZATION,
+                            String.format(HTTPHEADER_BEARER, OnectaConfiguration.getOnectaSignInClient().getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                     .send();

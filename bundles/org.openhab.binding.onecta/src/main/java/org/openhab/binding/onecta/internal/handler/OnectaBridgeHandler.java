@@ -47,7 +47,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private Units units = new Units();
-    private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
+    private OnectaConnectionClient onectaConnectionClient;
 
     public Units getUnits() {
         return units;
@@ -69,6 +69,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     public OnectaBridgeHandler(Bridge bridge) {
         super(bridge);
+        onectaConnectionClient = new OnectaConnectionClient();
     }
 
     @Override
@@ -78,13 +79,12 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize.");
-
         updateStatus(ThingStatus.UNKNOWN);
         if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error connecting to Daikin Onecta. See log for more info");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
         }
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
@@ -118,6 +118,9 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             } catch (DaikinCommunicationException e) {
                 logger.debug("DaikinCommunicationException: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (NullPointerException e) {
+                logger.debug("NullPointerException: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, e.getMessage());
             }
         }
     }

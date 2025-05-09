@@ -70,13 +70,6 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
             OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
             onectaConfiguration.setBridgeThing((Bridge) thing);
-
-            // DeviceDiscoveryService deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
-            // bridgeHandler.setDiscovery(deviceDiscoveryService);
-
-            // this.discoveryServiceRegs.put(thing.getUID(), bundleContext.registerService(
-            // DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
-
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
             return new OnectaDeviceHandler(thing);
