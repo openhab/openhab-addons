@@ -66,6 +66,8 @@ import org.slf4j.LoggerFactory;
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
 
+    private static final String RESOURCE_SEPARATOR = "/";
+
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
     public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
 
@@ -132,12 +134,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     private void initHelperLib() {
         try {
-            String resourceSeparator = "/";
             String pathSeparator = FileSystems.getDefault().getSeparator();
             String resourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
                     .substring(PYTHON_DEFAULT_PATH.toString().length()) + pathSeparator;
-            if (!resourceSeparator.equals(pathSeparator)) {
-                resourceLibPath = resourceLibPath.replace(pathSeparator, resourceSeparator);
+            if (!RESOURCE_SEPARATOR.equals(pathSeparator)) {
+                resourceLibPath = resourceLibPath.replace(pathSeparator, RESOURCE_SEPARATOR);
             }
 
             if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
@@ -202,7 +203,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
                         .getResourceAsStream(resourcePath)) {
                     Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
-                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(resourceSeparator) + 1));
+                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(RESOURCE_SEPARATOR) + 1));
 
                     Files.copy(is, target);
                     File file = target.toFile();
