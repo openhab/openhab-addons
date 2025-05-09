@@ -262,6 +262,9 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);
             connection.subscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
             connection.subscribe(this.basetopic + TOPIC_SCREEN + "/#", this);
+            for (Map.Entry<String, AwtrixLightAppHandler> entry : this.appHandlers.entrySet()) {
+                connection.subscribe(this.basetopic + "/custom/" + entry.getKey(), entry.getValue());
+            }
         }
         return;
     }
