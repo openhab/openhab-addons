@@ -41,14 +41,12 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.Compon
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.test.java.JavaOSGiTest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * Tests the {@link DiscoverComponents} class.
@@ -66,6 +64,8 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
     private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
+    private static final HomeAssistantPythonBridge python = new HomeAssistantPythonBridge();
+
     @BeforeEach
     public void beforeEach() {
         CompletableFuture<@Nullable Void> voidFutureComplete = new CompletableFuture<>();
@@ -82,13 +82,12 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
-        Jinjava jinjava = new Jinjava();
+        Gson gson = new Gson();
         UnitProvider unitProvider = mock(UnitProvider.class);
 
         DiscoverComponents discover = spy(
                 new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
-                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, python, unitProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

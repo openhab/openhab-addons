@@ -43,7 +43,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
 
     @Test
     public void testRgb() throws InterruptedException {
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
                 {
                     "availability": [
                     {
@@ -76,7 +76,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
+        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "light", ColorValue.class);
 
         linkAllChannels(component);
 
@@ -95,7 +95,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
 
     @Test
     public void testBrightnessAndOnOff() throws InterruptedException {
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
                 {
                     "name": "light",
                     "schema": "template",
@@ -111,7 +111,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "Brightness", PercentageValue.class);
+        assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "light", PercentageValue.class);
 
         linkAllChannels(component);
 
@@ -128,7 +128,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
 
     @Test
     public void testBrightnessAndCCT() throws InterruptedException {
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                         {
                             "schema": "template",
@@ -169,13 +169,13 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, OnOffType.OFF);
         assertPublished("shellies/bulb/color/0/set", "{\"turn\":\"off\", \"mode\": \"white\"}");
 
-        sendCommand(component, Light.COLOR_TEMP_CHANNEL_ID, new QuantityType(200, Units.MIRED));
+        sendCommand(component, Light.COLOR_TEMP_CHANNEL_ID, QuantityType.valueOf(200, Units.MIRED));
         assertPublished("shellies/bulb/color/0/set", "{\"turn\": \"on\", \"mode\": \"white\", \"temp\": 5000}");
     }
 
     @Test
     public void testOnOffOnly() throws InterruptedException {
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
                 {
                     "name": "light",
                     "schema": "template",
@@ -190,7 +190,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.SWITCH_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID, "", "dummy", "light", OnOffValue.class);
 
         linkAllChannels(component);
 

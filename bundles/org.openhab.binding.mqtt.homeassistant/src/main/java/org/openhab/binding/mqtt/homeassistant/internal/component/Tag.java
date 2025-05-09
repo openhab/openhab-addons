@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 
 /**
  * A MQTT Tag scanner, following the https://www.home-assistant.io/integrations/tag.mqtt/ specification.
@@ -23,31 +27,30 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Tag extends AbstractComponent<Tag.ChannelConfiguration> {
+public class Tag extends AbstractComponent<Tag.Configuration> {
     public static final String TAG_CHANNEL_ID = "tag";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    public static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Tag Scanner");
+    public static class Configuration extends AbstractComponentConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "Tag Scanner"); // Technically tag scanners don't have a name
         }
 
-        protected String topic = "";
+        String getTopic() {
+            return getString("topic");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Tag(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Tag(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        buildChannel(TAG_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
+        buildChannel(TAG_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), "Tag",
+                componentContext.getUpdateListener()).stateTopic(config.getTopic(), config.getValueTemplate())
+                .trigger(true).build();
         finalizeChannels();
-    }
-
-    @Override
-    protected void addJsonAttributesChannel() {
-        // json_attributes are not supported
     }
 }
