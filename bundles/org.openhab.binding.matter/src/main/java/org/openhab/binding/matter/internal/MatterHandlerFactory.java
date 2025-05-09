@@ -51,15 +51,18 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
     private final MatterStateDescriptionOptionProvider stateDescriptionProvider;
     private final MatterWebsocketService websocketService;
     private final MatterChannelTypeProvider channelGroupTypeProvider;
+    private final MatterConfigDescriptionProvider configDescriptionProvider;
     private final Set<ControllerHandler> controllers = new HashSet<>();
 
     @Activate
     public MatterHandlerFactory(@Reference MatterWebsocketService websocketService,
             @Reference MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            @Reference MatterChannelTypeProvider channelGroupTypeProvider) {
+            @Reference MatterChannelTypeProvider channelGroupTypeProvider,
+            @Reference MatterConfigDescriptionProvider configDescriptionProvider) {
         this.websocketService = websocketService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelGroupTypeProvider = channelGroupTypeProvider;
+        this.configDescriptionProvider = configDescriptionProvider;
     }
 
     @Override
@@ -82,11 +85,13 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID derivedTypeUID = baseTypeUID != null ? baseTypeUID : thingTypeUID;
 
         if (THING_TYPE_NODE.equals(derivedTypeUID)) {
-            return new NodeHandler((Bridge) thing, this, stateDescriptionProvider, channelGroupTypeProvider);
+            return new NodeHandler((Bridge) thing, this, stateDescriptionProvider, channelGroupTypeProvider,
+                    configDescriptionProvider);
         }
 
         if (THING_TYPE_ENDPOINT.equals(derivedTypeUID)) {
-            return new EndpointHandler(thing, this, stateDescriptionProvider, channelGroupTypeProvider);
+            return new EndpointHandler(thing, this, stateDescriptionProvider, channelGroupTypeProvider,
+                    configDescriptionProvider);
         }
 
         return null;

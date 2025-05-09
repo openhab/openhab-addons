@@ -190,7 +190,6 @@ For nodes that contain a Thread Border Router Management Cluster, the following 
 A Thread operational data set is a hex encoded string which contains a Thread border router's configuration.
 Using the same operational data set across multiple Thread border routers allows those routers to form a single network where Thread devices can roam from router to router.
 Some Thread border routers allow a "pending" operational dataset to be configured, this allows routers to coordinate the configuration change with current Thread devices without requiring those devices to be reconfigured (live migration).
-Note that activating a pending operational dataset is manufacturer specific can not be controlled or initiated through the Matter addon.
 
 ## Channels
 

@@ -32,7 +32,8 @@ public class MatterBindingConstants {
     public static final ThingTypeUID THING_TYPE_NODE = new ThingTypeUID(BINDING_ID, "node");
     public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");
 
-    // This was borrowed from the zigbee binding as Matter uses the same cluster API model
+    public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing";
+
     // List of Channel UIDs
     public static final String CHANNEL_LABEL_ONOFF_ONOFF = "On Off";
     public static final String CHANNEL_ID_ONOFF_ONOFF = "onoffcontrol-onoff";
@@ -282,4 +283,82 @@ public class MatterBindingConstants {
             BINDING_ID, CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_ACTIVEDATASET);
     public static final ChannelTypeUID CHANNEL_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET);
+
+    // Thread Border Router Configuration Keys
+    public static final String CONFIG_THREAD_CHANNEL = "channel";
+    public static final String CONFIG_THREAD_ALLOWED_CHANNELS = "allowedChannels";
+    public static final String CONFIG_THREAD_EXTENDED_PAN_ID = "extendedPanId";
+    public static final String CONFIG_THREAD_MESH_LOCAL_PREFIX = "meshLocalPrefix";
+    public static final String CONFIG_THREAD_NETWORK_NAME = "networkName";
+    public static final String CONFIG_THREAD_NETWORK_KEY = "networkKey";
+    public static final String CONFIG_THREAD_PAN_ID = "panId";
+    public static final String CONFIG_THREAD_PSKC = "pskc";
+    public static final String CONFIG_THREAD_ACTIVE_TIMESTAMP_SECONDS = "activeTimestampSeconds";
+    public static final String CONFIG_THREAD_ACTIVE_TIMESTAMP_TICKS = "activeTimestampTicks";
+    public static final String CONFIG_THREAD_ACTIVE_TIMESTAMP_AUTHORITATIVE = "activeTimestampAuthoritative";
+    public static final String CONFIG_THREAD_DELAY_TIMER = "delayTimer";
+    public static final String CONFIG_THREAD_ROTATION_TIME = "rotationTime";
+    public static final String CONFIG_THREAD_OBTAIN_NETWORK_KEY = "obtainNetworkKey";
+    public static final String CONFIG_THREAD_NATIVE_COMMISSIONING = "nativeCommissioning";
+    public static final String CONFIG_THREAD_ROUTERS = "routers";
+    public static final String CONFIG_THREAD_EXTERNAL_COMMISSIONING = "externalCommissioning";
+    public static final String CONFIG_THREAD_COMMERCIAL_COMMISSIONING = "commercialCommissioning";
+    public static final String CONFIG_THREAD_AUTONOMOUS_ENROLLMENT = "autonomousEnrollment";
+    public static final String CONFIG_THREAD_NETWORK_KEY_PROVISIONING = "networkKeyProvisioning";
+    public static final String CONFIG_THREAD_TOBLE_LINK = "tobleLink";
+    public static final String CONFIG_THREAD_NON_CCM_ROUTERS = "nonCcmRouters";
+
+    // Thread Border Router Configuration Labels
+    public static final String CONFIG_LABEL_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET = "Thread Border Router Operational Dataset";
+    public static final String CONFIG_LABEL_THREAD_NETWORK_CHANNEL_NUMBER = "Thread network channel number";
+    public static final String CONFIG_LABEL_THREAD_NETWORK_ALLOWED_CHANNELS = "Thread network allowed channels";
+    public static final String CONFIG_LABEL_THREAD_EXTENDED_PAN_ID = "Thread extended PAN ID";
+    public static final String CONFIG_LABEL_THREAD_MESH_LOCAL_PREFIX = "Thread mesh-local prefix";
+    public static final String CONFIG_LABEL_THREAD_NETWORK_NAME = "Thread network name";
+    public static final String CONFIG_LABEL_THREAD_NETWORK_KEY = "Thread network key";
+    public static final String CONFIG_LABEL_THREAD_PAN_ID = "Thread PAN ID";
+    public static final String CONFIG_LABEL_THREAD_PSKC = "Thread PSKC";
+    public static final String CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_SECONDS = "Thread active timestamp seconds";
+    public static final String CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_TICKS = "Thread active timestamp ticks";
+    public static final String CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE = "Thread active timestamp is authoritative";
+    public static final String CONFIG_LABEL_THREAD_DATASET_SECURITY_POLICY = "Thread Dataset Security Policy";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_ROTATION_TIME = "Security Policy Rotation Time";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_OBTAIN_NETWORK_KEY = "Security Policy: Obtain Network Key";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_NATIVE_COMMISSIONING = "Security Policy: Native Commissioning";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_ROUTERS = "Security Policy: Routers";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_EXTERNAL_COMMISSIONING = "Security Policy: External Commissioning";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_COMMERCIAL_COMMISSIONING = "Security Policy: Commercial Commissioning";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT = "Security Policy: Autonomous Enrollment";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_NETWORK_KEY_PROVISIONING = "Security Policy: Network Key Provisioning";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_TO_BLE_LINK = "Security Policy: TO BLE Link";
+    public static final String CONFIG_LABEL_SECURITY_POLICY_NON_CCM_ROUTERS = "Security Policy: Non-CCM Routers";
+
+    // Thread Border Router Configuration Descriptions
+    public static final String CONFIG_DESC_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET = "Thread border router operational dataset values. Use actions to push changes to the device after saving.";
+    public static final String CONFIG_DESC_THREAD_NETWORK_CHANNEL_NUMBER = "The thread network channel number to set (11-26)";
+    public static final String CONFIG_DESC_THREAD_NETWORK_ALLOWED_CHANNELS = "A comma separated list of channel numbers allowed on the Thread network (ex: 11,12,13).  Recommended to include all channels (11-26)";
+    public static final String CONFIG_DESC_THREAD_EXTENDED_PAN_ID = "The thread extended PAN ID to set (ex: 11111111222222AB)";
+    public static final String CONFIG_DESC_THREAD_MESH_LOCAL_PREFIX = "The thread mesh-local prefix to set (ex: fd11:22::/64)";
+    public static final String CONFIG_DESC_THREAD_NETWORK_NAME = "The thread network name to set (ex: openHAB-Thread)";
+    public static final String CONFIG_DESC_THREAD_NETWORK_KEY = "The thread network key to set, leave blank to use a random secure key (ex: 00112233445566778899aabbccddeeff)";
+    public static final String CONFIG_DESC_THREAD_PAN_ID = "The thread PAN ID to set (ex: 1234)";
+    public static final String CONFIG_DESC_THREAD_PSKC = "The thread PSKC to set (hex)";
+    public static final String CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_SECONDS = "The thread encoded active timestamp seconds";
+    public static final String CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_TICKS = "The thread encoded active timestamp ticks";
+    public static final String CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE = "The thread encoded active timestamp is authoritative (GPS, NTP, Cellular, etc.)";
+    public static final String CONFIG_DESC_THREAD_DATASET_SECURITY_POLICY = "Thread dataset security policy values. Default values recommended for most use cases.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_ROTATION_TIME = "Security Policy Rotation Time (hours). Defaults to 672.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_OBTAIN_NETWORK_KEY = "Security Policy: Obtain Network Key. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_NATIVE_COMMISSIONING = "Security Policy: Native Commissioning. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_ROUTERS = "Security Policy: Routers Enabled. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_EXTERNAL_COMMISSIONING = "Security Policy: External Commissioning. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_COMMERCIAL_COMMISSIONING = "Security Policy: Commercial Commissioning. Defaults to false.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT = "Security Policy: Autonomous Enrollment. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_NETWORK_KEY_PROVISIONING = "Security Policy: Network Key Provisioning. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_TO_BLE_LINK = "Security Policy: TO BLE Link. Defaults to true.";
+    public static final String CONFIG_DESC_SECURITY_POLICY_NON_CCM_ROUTERS = "Security Policy: Non-CCM Routers. Defaults to false.";
+
+    // Thread Border Router Configuration Group Names
+    public static final String CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE = "threadBorderRouterCore";
+    public static final String CONFIG_GROUP_SECURITY_POLICY = "securityPolicy";
 }

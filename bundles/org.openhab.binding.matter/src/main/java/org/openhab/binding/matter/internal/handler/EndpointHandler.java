@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
+import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
@@ -47,8 +48,10 @@ public class EndpointHandler extends MatterBaseThingHandler {
 
     public EndpointHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            MatterChannelTypeProvider channelGroupTypeProvider) {
-        super(thing, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider);
+            MatterChannelTypeProvider channelGroupTypeProvider,
+            MatterConfigDescriptionProvider configDescriptionProvider) {
+        super(thing, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider,
+                configDescriptionProvider);
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
+import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
@@ -38,9 +39,9 @@ public class TestMatterBaseThingHandler extends MatterBaseThingHandler {
 
     public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            MatterChannelTypeProvider channelTypeProvider) {
+            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider) {
         super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), thingHandlerFactory, stateDescriptionProvider,
-                channelTypeProvider);
+                channelTypeProvider, configDescriptionProvider);
         this.mockClient = new MatterControllerClient();
     }
 

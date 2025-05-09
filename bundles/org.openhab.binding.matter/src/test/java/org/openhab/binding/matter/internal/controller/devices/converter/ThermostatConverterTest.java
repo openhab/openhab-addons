@@ -24,11 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
-import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
-import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
@@ -38,7 +33,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
@@ -48,34 +42,18 @@ import org.openhab.core.types.StateDescription;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-class ThermostatConverterTest {
+class ThermostatConverterTest extends BaseMatterConverterTest {
 
     @Mock
     @NonNullByDefault({})
     private ThermostatCluster mockCluster;
-    @Mock
-    @NonNullByDefault({})
-    private MatterBridgeClient mockBridgeClient;
-    @Mock
-    @NonNullByDefault({})
-    private BaseThingHandlerFactory mockThingHandlerFactory;
-    @Mock
-    @NonNullByDefault({})
-    private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
-    @Mock
-    @NonNullByDefault({})
-    private MatterChannelTypeProvider mockChannelTypeProvider;
-    @NonNullByDefault({})
-    private TestMatterBaseThingHandler mockHandler;
     @NonNullByDefault({})
     private ThermostatConverter converter;
 
+    @Override
     @BeforeEach
-    @SuppressWarnings("null")
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
-                mockStateDescriptionProvider, mockChannelTypeProvider));
+        super.setUp();
         mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, false, false, true, false, false,
                 false);
         mockCluster.absMinHeatSetpointLimit = 500; // 5°C

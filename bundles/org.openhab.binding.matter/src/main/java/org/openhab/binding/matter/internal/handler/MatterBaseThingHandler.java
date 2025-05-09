@@ -14,9 +14,11 @@ package org.openhab.binding.matter.internal.handler;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -28,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
+import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.client.AttributeListener;
 import org.openhab.binding.matter.internal.client.EventTriggeredListener;
@@ -47,6 +50,8 @@ import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceTypeRegistry;
 import org.openhab.binding.matter.internal.util.MatterLabelUtils;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
+import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -89,17 +94,19 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final BaseThingHandlerFactory thingHandlerFactory;
     protected final MatterStateDescriptionOptionProvider stateDescriptionProvider;
     protected final MatterChannelTypeProvider channelTypeProvider;
+    protected final MatterConfigDescriptionProvider configDescriptionProvider;
     protected HashMap<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private @Nullable ScheduledFuture<?> pollingTask;
 
     public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            MatterChannelTypeProvider channelTypeProvider) {
+            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider) {
         super(thing);
         this.thingHandlerFactory = thingHandlerFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeProvider = channelTypeProvider;
+        this.configDescriptionProvider = configDescriptionProvider;
     }
 
     public abstract BigInteger getNodeId();
@@ -333,6 +340,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
     }
 
+    public synchronized void updateConfiguration(Map<String, Object> entries) {
+        Configuration config = editConfiguration();
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            config.put(entry.getKey(), entry.getValue());
+        }
+        updateConfiguration(config);
+    }
+
     /**
      * Registers a service with the thing handler factory.
      *
@@ -358,6 +373,22 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
             }
         }
         return null;
+    }
+
+    public void addConfigDescription(ConfigDescription configDescription) {
+        logger.debug("addConfigDescription {}", configDescription.getUID());
+        configDescriptionProvider.addConfigDescription(configDescription);
+    }
+
+    public @Nullable ConfigDescription getConfigDescription() {
+        return configDescriptionProvider.getConfigDescription(getConfigDescriptionURI(), Locale.getDefault());
+    }
+
+    public URI getConfigDescriptionURI() {
+        logger.debug("getConfigDescriptionURI {}:{}", MatterBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
+                getThing().getUID().getAsString());
+        return URI.create(
+                MatterBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX + ":" + getThing().getUID().getAsString());
     }
 
     protected @Nullable ControllerHandler controllerHandler() {

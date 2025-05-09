@@ -24,15 +24,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
-import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
-import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.RoutingRoleEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 
 /**
  * Test class for ThreadNetworkDiagnosticsConverter
@@ -40,34 +35,18 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-class ThreadNetworkDiagnosticsConverterTest {
+class ThreadNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
 
     @Mock
     @NonNullByDefault({})
     private ThreadNetworkDiagnosticsCluster mockCluster;
-    @Mock
-    @NonNullByDefault({})
-    private MatterBridgeClient mockBridgeClient;
-    @Mock
-    @NonNullByDefault({})
-    private BaseThingHandlerFactory mockThingHandlerFactory;
-    @Mock
-    @NonNullByDefault({})
-    private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
-    @Mock
-    @NonNullByDefault({})
-    private MatterChannelTypeProvider mockChannelTypeProvider;
-    @NonNullByDefault({})
-    private TestMatterBaseThingHandler mockHandler;
     @NonNullByDefault({})
     private ThreadNetworkDiagnosticsConverter converter;
 
+    @Override
     @BeforeEach
-    @SuppressWarnings("null")
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
-                mockStateDescriptionProvider, mockChannelTypeProvider));
+        super.setUp();
         mockCluster.channel = 15;
         mockCluster.routingRole = ThreadNetworkDiagnosticsCluster.RoutingRoleEnum.LEADER;
         mockCluster.networkName = "TestNetwork";

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ConverterRegistry {
-    private static final Logger logger = LoggerFactory.getLogger(ConverterRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConverterRegistry.class);
     private static final Map<Integer, Class<? extends GenericConverter<? extends BaseCluster>>> CONVERTERS = new HashMap<>();
 
     static {
@@ -97,7 +97,7 @@ public class ConverterRegistry {
                         .getConstructor(constructorParameterTypes);
                 return constructor.newInstance(cluster, handler, endpointNumber, labelPrefix);
             } catch (Exception e) {
-                logger.error("Error creating converter for cluster {}", cluster.id, e);
+                LOGGER.error("Error creating converter for cluster {}", cluster.id, e);
             }
         }
         return null;

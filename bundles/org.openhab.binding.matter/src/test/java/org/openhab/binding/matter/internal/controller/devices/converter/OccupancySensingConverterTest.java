@@ -25,17 +25,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
-import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
-import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -44,34 +39,19 @@ import org.openhab.core.types.StateDescription;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-class OccupancySensingConverterTest {
+class OccupancySensingConverterTest extends BaseMatterConverterTest {
 
     @Mock
     @NonNullByDefault({})
     private OccupancySensingCluster mockCluster;
-    @Mock
-    @NonNullByDefault({})
-    private MatterBridgeClient mockBridgeClient;
-    @Mock
-    @NonNullByDefault({})
-    private BaseThingHandlerFactory mockThingHandlerFactory;
-    @Mock
-    @NonNullByDefault({})
-    private MatterStateDescriptionOptionProvider mockStateDescriptionProvider;
-    @Mock
-    @NonNullByDefault({})
-    private MatterChannelTypeProvider mockChannelTypeProvider;
-    @NonNullByDefault({})
-    private TestMatterBaseThingHandler mockHandler;
     @NonNullByDefault({})
     private OccupancySensingConverter converter;
 
+    @Override
     @BeforeEach
     @SuppressWarnings("null")
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
-                mockStateDescriptionProvider, mockChannelTypeProvider));
+        super.setUp();
         OccupancySensingCluster.OccupancyBitmap bitmap = Mockito.mock(OccupancySensingCluster.OccupancyBitmap.class);
         bitmap.occupied = true;
         mockCluster.occupancy = bitmap;
