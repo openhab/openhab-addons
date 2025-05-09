@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.simple.JSONObject;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.RingAccount;
@@ -24,6 +25,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
+@NonNullByDefault
 public interface RingDevice {
 
     /**

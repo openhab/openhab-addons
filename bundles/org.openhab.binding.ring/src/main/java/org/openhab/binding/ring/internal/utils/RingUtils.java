@@ -27,7 +27,7 @@ public class RingUtils {
     public static String sanitizeData(@Nullable String sensitive) {
         if (sensitive == null) {
             return "NULL";
-        } else if (sensitive.equals("")) {
+        } else if ("".equals(sensitive)) {
             return "STRINGEMPTY";
         } else {
             return "NOTEMPTY";

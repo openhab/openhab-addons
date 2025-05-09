@@ -20,7 +20,7 @@ import org.openhab.binding.ring.internal.ApiConstants;
  */
 
 public class DataFactory {
-    public static String getOAUTH_DATA(String username, String password) {
+    public static String getOauthData(String username, String password) {
         /*
          * Map<String, String> map = new HashMap<String, String>();
          *

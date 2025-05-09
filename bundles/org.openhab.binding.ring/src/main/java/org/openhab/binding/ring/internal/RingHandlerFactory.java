@@ -84,7 +84,6 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {

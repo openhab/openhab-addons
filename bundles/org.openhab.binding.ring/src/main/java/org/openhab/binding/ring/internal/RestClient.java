@@ -96,9 +96,9 @@ public class RestClient {
      *
      */
 
-    private String postRequest(String resourceUrl, String data, String oauth_token) throws AuthenticationException {
+    private String postRequest(String resourceUrl, String data, String oauthToken) throws AuthenticationException {
         String result = null;
-        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauth_token);
+        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauthToken);
         try {
             byte[] postData = data.getBytes(StandardCharsets.UTF_8);
             StringBuilder output = new StringBuilder();
@@ -107,7 +107,7 @@ public class RestClient {
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setRequestProperty("Authorization", "Bearer " + oauth_token);
+            conn.setRequestProperty("Authorization", "Bearer " + oauthToken);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -266,7 +266,6 @@ public class RestClient {
      */
     public Profile getAuthenticatedProfile(String username, String password, String refreshToken, String twofactorCode,
             String hardwareId) throws AuthenticationException, ParseException {
-
         String refToken = refreshToken;
 
         logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
@@ -274,12 +273,12 @@ public class RestClient {
                 RingUtils.sanitizeData(refreshToken), RingUtils.sanitizeData(twofactorCode),
                 RingUtils.sanitizeData(hardwareId));
 
-        if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
+        if ((twofactorCode != null) && (!"".equals(twofactorCode))) {
             logger.debug("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
 
-        JSONObject oauthToken = get_oauth_token(username, password, refToken);
+        JSONObject oauthToken = getOauthToken(username, password, refToken);
         String jsonResult = postRequest(ApiConstants.URL_SESSION, DataFactory.getSessionParams(hardwareId),
                 oauthToken.get("access_token").toString());
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
@@ -296,28 +295,27 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    private JSONObject get_oauth_token(String username, String password, String refreshToken)
+    private JSONObject getOauthToken(String username, String password, String refreshToken)
             throws AuthenticationException, ParseException {
-
-        logger.debug("RestClient - get_oauth_token {} - {} - {}", RingUtils.sanitizeData(username),
+        logger.debug("RestClient - getOauthToken {} - {} - {}", RingUtils.sanitizeData(username),
                 RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
 
         String result = null;
-        JSONObject oauth_token = null;
+        JSONObject oauthToken = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
             Map<String, String> map = new HashMap<String, String>();
 
             map.put("client_id", "ring_official_android");
             map.put("scope", "client");
-            if (refreshToken == null || refreshToken.equals("")) {
-                logger.debug("RestClient - get_oauth_token - refreshToken null or empty {}",
+            if (refreshToken == null || "".equals(refreshToken)) {
+                logger.debug("RestClient - getOauthToken - refreshToken null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "password");
                 map.put("username", username);
                 map.put("password", password);
             } else {
-                logger.debug("RestClient - get_oauth_token - refreshToken NOT null or empty {}",
+                logger.debug("RestClient - getOauthToken - refreshToken NOT null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "refresh_token");
                 map.put("refresh_token", refreshToken);
@@ -368,7 +366,7 @@ public class RestClient {
             OutputStream os = conn.getOutputStream();
             os.write(out);
 
-            logger.debug("RestClient get_oauth_token: {}, response code: {}, message {}.", resourceUrl,
+            logger.debug("RestClient getOauthToken: {}, response code: {}, message {}.", resourceUrl,
                     conn.getResponseCode(), conn.getResponseMessage());
 
             switch (conn.getResponseCode()) {
@@ -391,13 +389,13 @@ public class RestClient {
             result = readFullyAsString(conn.getInputStream(), "UTF-8");
             conn.disconnect();
 
-            oauth_token = (JSONObject) new JSONParser().parse(result);
+            oauthToken = (JSONObject) new JSONParser().parse(result);
             logger.debug("RestClient response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
-            logger.error("RestApi: Error in get_oauth_token!", ex);
+            logger.error("RestApi: Error in getOauthToken!", ex);
             // ex.printStackTrace();
         }
-        return oauth_token;
+        return oauthToken;
     }
 
     public String readFullyAsString(InputStream inputStream, String encoding) throws IOException {
@@ -414,8 +412,8 @@ public class RestClient {
         return baos;
     }
 
-    public Boolean refresh_session(String refreshToken) {
-        logger.debug("RestClient - refresh_session {}", RingUtils.sanitizeData(refreshToken));
+    public Boolean refreshSession(String refreshToken) {
+        logger.debug("RestClient - refreshSession {}", RingUtils.sanitizeData(refreshToken));
         String result = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
@@ -561,7 +559,6 @@ public class RestClient {
             conn.setConnectTimeout(CONNECTION_TIMEOUT);
 
             byte[] out = pb.toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
 
             conn.connect();
             OutputStream os = conn.getOutputStream();
@@ -569,7 +566,6 @@ public class RestClient {
 
             logger.info("RestApi getAuthCode: {}, response code: {}, message {}.", resourceUrl, conn.getResponseCode(),
                     conn.getResponseMessage());
-            String tmp = conn.getResponseMessage();
 
             switch (conn.getResponseCode()) {
                 case 200:
@@ -630,7 +626,6 @@ public class RestClient {
      */
     public synchronized List<RingEvent> getHistory(Profile profile, int limit)
             throws AuthenticationException, ParseException {
-
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
         if (jsonResult != null) {
             JSONArray obj = (JSONArray) new JSONParser().parse(jsonResult);
@@ -645,7 +640,6 @@ public class RestClient {
     }
 
     public String getRecordingURL(String eventId, Profile profile) {
-
         try {
             StringBuilder vidUrl = new StringBuilder();
             vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId).append(ApiConstants.URL_RECORDING_END);
@@ -676,10 +670,10 @@ public class RestClient {
                 // get FileSystem object
                 FileSystem fs = path.getFileSystem();
                 String sep = fs.getSeparator();
-                String FILE_NAME = event.getDoorbot().getDescription().replace(" ", "") + "-" + event.getKind() + "-"
+                String filename = event.getDoorbot().getDescription().replace(" ", "") + "-" + event.getKind() + "-"
                         + event.getCreatedAt().replace(":", "-") + ".mp4";
-                String FULL_FILE_PATH = filePath + (filePath.endsWith(sep) ? "" : sep) + FILE_NAME;
-                path = Paths.get(FULL_FILE_PATH);
+                String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
+                path = Paths.get(fullfilepath);
                 boolean urlFound = false;
                 if (Files.notExists(path)) {
                     String eventId = event.getEventId();
@@ -692,9 +686,9 @@ public class RestClient {
                             JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
                             if (obj.get("url").toString().startsWith("http")) {
                                 InputStream in = new URL(obj.get("url").toString()).openStream();
-                                Files.copy(in, Paths.get(FULL_FILE_PATH), StandardCopyOption.REPLACE_EXISTING);
+                                Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();
-                                if (FULL_FILE_PATH.length() > 0) {
+                                if (fullfilepath.length() > 0) {
                                     urlFound = true;
                                     break;
                                 }
@@ -725,7 +719,7 @@ public class RestClient {
                             oldestFile.delete();
                         }
                     }
-                    return FILE_NAME;
+                    return filename;
                 } else {
                     return "Video not available on ring.com";
                 }

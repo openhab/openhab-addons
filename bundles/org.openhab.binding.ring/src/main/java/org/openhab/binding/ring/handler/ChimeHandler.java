@@ -33,8 +33,6 @@ import org.openhab.core.types.Command;
  */
 
 public class ChimeHandler extends RingDeviceHandler {
-    private Integer lastBattery = -1;
-
     public ChimeHandler(Thing thing) {
         super(thing);
     }

@@ -74,7 +74,6 @@ public class RingVideoServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
             String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
             if (ipAddress == null) {
@@ -95,8 +94,8 @@ public class RingVideoServlet extends HttpServlet {
 
             logger.debug("RingVideo: {} video '{}' requested", request.getMethod(), uri);
 
-            String FILE_NAME = videoStoragePath + uri;
-            File toBeCopied = new File(FILE_NAME);
+            String filename = videoStoragePath + uri;
+            File toBeCopied = new File(filename);
             String mimeType = URLConnection.guessContentTypeFromName(toBeCopied.getName());
             String contentDisposition = String.format("attachment; filename=%s", toBeCopied.getName());
             int fileSize = Long.valueOf(toBeCopied.length()).intValue();
@@ -114,7 +113,6 @@ public class RingVideoServlet extends HttpServlet {
                 // handle exception
                 logger.error("RingVideo: Unable to process request: {}", e.getMessage());
             }
-
         } catch (Exception e) {
             logger.error("RingVideo: Unable to process request: {}", e.getMessage());
         }

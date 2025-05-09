@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -21,28 +22,29 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
+@NonNullByDefault
 public class RingBindingConstants {
 
     public static final String BINDING_ID = "ring";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public final static ThingTypeUID THING_TYPE_DOORBELL = new ThingTypeUID(BINDING_ID, "doorbell");
-    public final static ThingTypeUID THING_TYPE_CHIME = new ThingTypeUID(BINDING_ID, "chime");
-    public final static ThingTypeUID THING_TYPE_STICKUPCAM = new ThingTypeUID(BINDING_ID, "stickupcam");
-    public final static ThingTypeUID THING_TYPE_OTHER = new ThingTypeUID(BINDING_ID, "other");
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_DOORBELL = new ThingTypeUID(BINDING_ID, "doorbell");
+    public static final ThingTypeUID THING_TYPE_CHIME = new ThingTypeUID(BINDING_ID, "chime");
+    public static final ThingTypeUID THING_TYPE_STICKUPCAM = new ThingTypeUID(BINDING_ID, "stickupcam");
+    public static final ThingTypeUID THING_TYPE_OTHER = new ThingTypeUID(BINDING_ID, "other");
 
     // List of all Channel ids
-    public final static String CHANNEL_CONTROL_STATUS = "control#status";
-    public final static String CHANNEL_CONTROL_ENABLED = "control#enabled";
+    public static final String CHANNEL_CONTROL_STATUS = "control#status";
+    public static final String CHANNEL_CONTROL_ENABLED = "control#enabled";
 
-    public final static String CHANNEL_STATUS_BATTERY = "status#battery";
+    public static final String CHANNEL_STATUS_BATTERY = "status#battery";
 
-    public final static String CHANNEL_EVENT_URL = "event#url";
-    public final static String CHANNEL_EVENT_CREATED_AT = "event#createdAt";
-    public final static String CHANNEL_EVENT_KIND = "event#kind";
-    public final static String CHANNEL_EVENT_DOORBOT_ID = "event#doorbotId";
-    public final static String CHANNEL_EVENT_DOORBOT_DESCRIPTION = "event#doorbotDescription";
+    public static final String CHANNEL_EVENT_URL = "event#url";
+    public static final String CHANNEL_EVENT_CREATED_AT = "event#createdAt";
+    public static final String CHANNEL_EVENT_KIND = "event#kind";
+    public static final String CHANNEL_EVENT_DOORBOT_ID = "event#doorbotId";
+    public static final String CHANNEL_EVENT_DOORBOT_DESCRIPTION = "event#doorbotDescription";
 
     public static final String SERVLET_VIDEO_PATH = "/ring/video";
 }

@@ -220,9 +220,9 @@ public class Profile {
     @SuppressWarnings("unchecked")
     public boolean isFeatureEnabled(Feature feature) {
         String result = jsonFeatures.getOrDefault(feature.getJsonName(), "?").toString();
-        if (result.equals("?")) {
+        if ("?".equals(result)) {
             throw new IllegalArgumentException("No value found for feature: " + feature);
         }
-        return result.equalsIgnoreCase("true");
+        return "true".equalsIgnoreCase(result);
     }
 }

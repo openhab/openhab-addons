@@ -278,7 +278,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     public void doLogin(String username, String password, String twofactorCode) {
         logger.debug("doLogin U:{} P:{} 2:{}", RingUtils.sanitizeData(username), RingUtils.sanitizeData(password),
                 RingUtils.sanitizeData(twofactorCode));
-        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         String hardwareId = getHardwareId();
         String refreshToken = getRefreshTokenFromFile();
         logger.debug("doLogin H:{} RT:{}", hardwareId, RingUtils.sanitizeData(refreshToken));

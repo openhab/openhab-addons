@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * AuthenticationException will be thrown if an invalid username or
  * password is used to get access to the Ring account.
@@ -20,6 +22,7 @@ package org.openhab.binding.ring.internal.errors;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class AuthenticationException extends Exception {
 
     private static final long serialVersionUID = -2630294607218363771L;

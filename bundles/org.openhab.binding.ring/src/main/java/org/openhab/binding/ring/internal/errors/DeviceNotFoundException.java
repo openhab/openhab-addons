@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * DeviceNotFoundException will be thrown if an device is requested from
  * the device registry with an id that is not registered.
@@ -20,6 +22,7 @@ package org.openhab.binding.ring.internal.errors;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class DeviceNotFoundException extends Exception {
 
     private static final long serialVersionUID = -463646377949508962L;

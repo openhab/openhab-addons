@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * IllegalDeviceClassException will be thrown if an device is retrieved
  * from the RingDeviceRegistry and the class is not as expected.
@@ -21,6 +23,7 @@ package org.openhab.binding.ring.internal.errors;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class IllegalDeviceClassException extends Exception {
 
     private static final long serialVersionUID = -4010587859949508962L;

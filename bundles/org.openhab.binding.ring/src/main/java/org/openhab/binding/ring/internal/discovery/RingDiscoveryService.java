@@ -42,19 +42,11 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
     private ScheduledFuture<?> discoveryJob;
 
-    private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
-    private static final int INTERVAL = 120;
-
-    public static Set<ThingTypeUID> getSupportedTypes() {
-        if (SUPPORTED_THING_TYPES_UIDS == null) {
-            SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
-                    THING_TYPE_STICKUPCAM);
-        }
-        return SUPPORTED_THING_TYPES_UIDS;
-    }
+    private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL,
+            THING_TYPE_CHIME, THING_TYPE_STICKUPCAM);
 
     public RingDiscoveryService() {
-        super(getSupportedTypes(), 5, true);
+        super(SUPPORTED_THING_TYPES_UIDS, 5, true);
     }
 
     public void activate() {
@@ -90,7 +82,7 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         };
-        discoveryJob = scheduler.scheduleAtFixedRate(runnable, 0, INTERVAL, TimeUnit.SECONDS);
+        discoveryJob = scheduler.scheduleWithFixedDelay(runnable, 0, 120, TimeUnit.SECONDS);
     }
 
     @Override
@@ -116,7 +108,5 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
-        if (!isBackgroundDiscoveryEnabled()) {
-        }
     }
 }
