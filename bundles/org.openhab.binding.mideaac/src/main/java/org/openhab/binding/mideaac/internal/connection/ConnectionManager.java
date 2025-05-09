@@ -381,20 +381,30 @@ public class ConnectionManager {
 
                     // Handle the capabilities response
                     if (bodyType == (byte) 0xB5) {
-                        logger.debug("Capabilities response detected with bodyType 0xB5.");
-                        CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
-                        if (callback != null) {
-                            callback.updateChannels(capabilitiesResponse);
+                        try {
+                            logger.debug("Capabilities response detected with bodyType 0xB5.");
+                            CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
+                            if (callback != null) {
+                                callback.updateChannels(capabilitiesResponse);
+                            }
+                        } catch (Exception ex) {
+                            logger.debug("Capability response exception: {}", ex.getMessage());
+                            throw new MideaException(ex);
                         }
                         return;
                     }
 
                     // Handle the Energy Response
                     if (bodyType == (byte) 0xC1) {
-                        logger.debug("Energy response detected with bodyType 0xC1.");
-                        EnergyResponse energyUpdate = new EnergyResponse(data);
-                        if (callback != null) {
-                            callback.updateChannels(energyUpdate);
+                        try {
+                            logger.debug("Energy response detected with bodyType 0xC1.");
+                            EnergyResponse energyUpdate = new EnergyResponse(data);
+                            if (callback != null) {
+                                callback.updateChannels(energyUpdate);
+                            }
+                        } catch (Exception ex) {
+                            logger.debug("Energy response exception: {}", ex.getMessage());
+                            throw new MideaException(ex);
                         }
                         return;
                     }
@@ -420,7 +430,7 @@ public class ConnectionManager {
                             callback.updateChannels(lastResponse);
                         }
                     } catch (Exception ex) {
-                        logger.debug("Processing response exception: {}", ex.getMessage());
+                        logger.debug("Poll response exception: {}", ex.getMessage());
                         throw new MideaException(ex);
                     }
                     return;

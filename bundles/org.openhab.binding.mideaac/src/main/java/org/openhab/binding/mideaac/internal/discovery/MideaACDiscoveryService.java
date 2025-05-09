@@ -129,9 +129,9 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (SocketTimeoutException e) {
-            logger.debug("Discovering poller timeout...");
+            logger.debug("Discovery poll timeout");
         } catch (IOException e) {
-            logger.debug("Error during discovery: {}", e.getMessage());
+            logger.debug("Exception during discovery - no issue if socket closed: {}", e.getMessage());
         } finally {
             closeDiscoverSocket();
             removeOlderResults(getTimestampOfLastScan());
