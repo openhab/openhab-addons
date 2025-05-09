@@ -42,6 +42,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Head
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.InactiveReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Message;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Metadata;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerApp;
@@ -975,7 +976,7 @@ public class AutomowerHandler extends BaseThingHandler {
             long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
             // If next start timestamp is 0 it means the mower should start now, so using current timestamp
             if (nextStartTimestamp == 0L) {
-                updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
+                updateState(CHANNEL_STATUS_NEXT_START, new DateTimeType());
             } else {
                 updateState(CHANNEL_STATUS_NEXT_START,
                         new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
@@ -1323,6 +1324,8 @@ public class AutomowerHandler extends BaseThingHandler {
             String type = event.has("type") ? event.get("type").getAsString() : null;
             if ((type != null) && event.has("attributes") && event.get("attributes").isJsonObject()) {
                 JsonObject attributes = event.getAsJsonObject("attributes");
+                Metadata metaData = mower.getAttributes().getMetadata();
+                long nowMs = ZonedDateTime.now(mowerZoneId).toInstant().toEpochMilli();
                 switch (type) {
                     case "battery-event-v2":
                         if (attributes.has("battery") && attributes.get("battery").isJsonObject()) {
@@ -1331,6 +1334,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                 byte batteryPercent = batteryObj.get("batteryPercent").getAsByte();
                                 logger.debug("Received battery update: {}%", batteryPercent);
                                 mower.getAttributes().getBattery().setBatteryPercent(batteryPercent);
+                                metaData.setStatusTimestamp(nowMs);
                                 updateMowerChannelState(mower);
                             }
                         }
@@ -1359,8 +1363,9 @@ public class AutomowerHandler extends BaseThingHandler {
                                     }
                                     calendarTasks.add(task);
                                 }
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
                             }
-                            updateMowerChannelState(mower);
                         }
                         break;
                     case "cuttingHeight-event-v2":
@@ -1371,6 +1376,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                         .setCuttingHeight(cuttingHeightObj.get("height").getAsByte());
                                 logger.debug("Received cutting height update: {}",
                                         cuttingHeightObj.get("height").getAsByte());
+                                metaData.setStatusTimestamp(nowMs);
                                 updateMowerChannelState(mower);
                             }
                         }
@@ -1383,6 +1389,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                         HeadlightMode.valueOf(headlightObj.get("mode").getAsString()));
                                 logger.debug("Received headlight mode update: {}",
                                         headlightObj.get("mode").getAsString());
+                                metaData.setStatusTimestamp(nowMs);
                                 updateMowerChannelState(mower);
                             }
                         }
@@ -1447,6 +1454,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                     mowerObj.get("isErrorConfirmable").getAsBoolean(),
                                     mowerObj.get("errorCodeTimestamp").getAsLong(),
                                     mowerObj.get("workAreaId").getAsLong());
+                            metaData.setStatusTimestamp(nowMs);
                             updateMowerChannelState(mower);
                         }
                         break;
@@ -1485,6 +1493,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                             : null,
                                     plannerObj.has("externalReason") ? plannerObj.get("externalReason").getAsInt()
                                             : null);
+                            metaData.setStatusTimestamp(nowMs);
                             updateMowerChannelState(mower);
                         }
                         break;
@@ -1497,6 +1506,7 @@ public class AutomowerHandler extends BaseThingHandler {
                                 logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
                                 mower.getAttributes().getLastPosition().setLatitude(latitude);
                                 mower.getAttributes().getLastPosition().setLongitude(longitude);
+                                metaData.setStatusTimestamp(nowMs);
                                 updateMowerChannelState(mower);
                             }
                         }
