@@ -167,6 +167,7 @@
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>
     <module>org.openhab.binding.fronius</module>
+    <module>org.openhab.binding.froniuswattpilot</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
