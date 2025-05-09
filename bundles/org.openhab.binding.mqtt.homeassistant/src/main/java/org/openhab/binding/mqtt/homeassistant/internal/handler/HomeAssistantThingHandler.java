@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,13 +39,13 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.Compon
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
+import org.openhab.binding.mqtt.homeassistant.internal.actions.HomeAssistantUpdateThingActions;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
@@ -56,6 +55,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
@@ -88,10 +88,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private static final Comparator<AbstractComponent<?>> COMPONENT_COMPARATOR = Comparator
             .comparing((AbstractComponent<?> component) -> component.hasGroup())
             .thenComparing(AbstractComponent::getName);
-    private static final URI UPDATABLE_CONFIG_DESCRIPTION_URI = URI.create("thing-type:mqtt:homeassistant-updatable");
 
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantThingHandler.class);
 
+    protected final BaseThingHandlerFactory thingHandlerFactory;
     protected final MqttChannelTypeProvider channelTypeProvider;
     protected final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     protected final ChannelTypeRegistry channelTypeRegistry;
@@ -122,11 +122,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      * @param subscribeTimeout Timeout for the entire tree parsing and subscription. In milliseconds.
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      */
-    public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
-            MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-            Jinjava jinjava, UnitProvider unitProvider, int subscribeTimeout, int attributeReceiveTimeout) {
+    public HomeAssistantThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
+            MqttChannelTypeProvider channelTypeProvider, MqttChannelStateDescriptionProvider stateDescriptionProvider,
+            ChannelTypeRegistry channelTypeRegistry, Jinjava jinjava, UnitProvider unitProvider, int subscribeTimeout,
+            int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
         this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        this.thingHandlerFactory = thingHandlerFactory;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
@@ -344,11 +346,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         return null;
                     });
                 }
-
-                if (discovered instanceof Update) {
-                    updateComponent = (Update) discovered;
-                    updateComponent.setReleaseStateUpdateListener(this::releaseStateUpdated);
-                }
             }
             updateThingType(typeID);
         }
@@ -369,11 +366,26 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     haComponents.remove(known.getComponentId());
                     haComponentsByHaId.remove(removed);
                     componentActuallyRemoved = true;
+
+                    if (known.equals(updateComponent)) {
+                        updateComponent = null;
+                    }
                 }
             }
             if (componentActuallyRemoved) {
                 updateThingType(getThing().getThingTypeUID());
             }
+        }
+    }
+
+    public void doUpdate() {
+        Update updateComponent = this.updateComponent;
+        if (updateComponent == null) {
+            logger.warn(
+                    "Received update command for Home Assistant device {}, but it does not have an update component.",
+                    getThing().getUID());
+        } else {
+            updateComponent.doUpdate();
         }
     }
 
@@ -384,26 +396,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         }
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
-            throws ConfigValidationException {
-        if (configurationParameters.containsKey("doUpdate")) {
-            configurationParameters = new HashMap<>(configurationParameters);
-            Object value = configurationParameters.remove("doUpdate");
-            if (value instanceof Boolean doUpdate && doUpdate) {
-                Update updateComponent = this.updateComponent;
-                if (updateComponent == null) {
-                    logger.warn(
-                            "Received update command for Home Assistant device {}, but it does not have an update component.",
-                            getThing().getUID());
-                } else {
-                    updateComponent.doUpdate();
-                }
-            }
-        }
-        super.handleConfigurationUpdate(configurationParameters);
     }
 
     private boolean updateThingType(ThingTypeUID typeID) {
@@ -434,10 +426,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 var channelDefs = sortedComponents.stream().map(AbstractComponent::getChannelDefinitions)
                         .flatMap(List::stream).toList();
                 thingTypeBuilder.withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
-                Update updateComponent = this.updateComponent;
-                if (updateComponent != null && updateComponent.isUpdatable()) {
-                    thingTypeBuilder.withConfigDescriptionURI(UPDATABLE_CONFIG_DESCRIPTION_URI);
-                }
 
                 channelTypeProvider.putThingType(thingTypeBuilder.build());
 
@@ -511,6 +499,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         haComponents.put(component.getComponentId(), component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
         haComponentsByHaId.put(component.getHaID(), component);
+
+        if (component instanceof Update updateComponent) {
+            this.updateComponent = updateComponent;
+            updateComponent.setReleaseStateUpdateListener(this::releaseStateUpdated);
+            if (updateComponent.isUpdatable()) {
+                thingHandlerFactory.registerService(this, HomeAssistantUpdateThingActions.class);
+            }
+        }
         return true;
     }
 

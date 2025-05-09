@@ -81,8 +81,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (supportsThingType(thingTypeUID)) {
-            return new HomeAssistantThingHandler(thing, typeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    jinjava, unitProvider, 10000, 2000);
+            return new HomeAssistantThingHandler(thing, this, typeProvider, stateDescriptionProvider,
+                    channelTypeRegistry, jinjava, unitProvider, 10000, 2000);
         }
         return null;
     }
