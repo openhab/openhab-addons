@@ -379,9 +379,10 @@
 
 	<channel-type id="nextStartType">
 		<item-type>DateTime</item-type>
-		<label>Next Auto Start</label>
-		<description>The channel providing the time for the next auto start. If the mower is charging then the value is the
-			estimated time when it will be leaving the charging station</description>
+		<label>Next Start</label>
+		<description>The time for the next scheduled start. If the mower is charging then the value is the
+			estimated time when
+			it will be leaving the charging station</description>
 		<state readOnly="true"/>
 	</channel-type>
 
