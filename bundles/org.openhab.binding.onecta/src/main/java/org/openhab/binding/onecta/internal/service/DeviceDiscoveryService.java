@@ -122,9 +122,9 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
             properties.put("unitID", unitId);
 
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID)
-                    .withLabel(translation.getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(thingUID).withProperties(properties).withBridge(bridgeUID).withLabel(translation
+                            .getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
                     .build();
 
             thingDiscovered(discoveryResult);
