@@ -195,8 +195,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                 localConnectionCheckerFuture.cancel(false);
                 this.connectionCheckerFuture = null;
             }
-            // Schedule exactly one reconnect attempt in 60 seconds
-            scheduler.schedule(this::establishConnection, 60, TimeUnit.SECONDS);
         }
     }
 
