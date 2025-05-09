@@ -68,10 +68,10 @@
 	<channel-type id="system_status">
 		<item-type>String</item-type>
 		<label>System Status</label>
+		<description>A short status summary of the system</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<description>A short status summary of the system</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
