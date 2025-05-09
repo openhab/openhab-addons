@@ -19,9 +19,9 @@ This binding supports one Thing type `ac`.
 ## Discovery
 
 Once the Air Conditioner is on your network activating the Inbox scan with this binding will send an IP broadcast message.
-Every responding unit gets added to the Inbox. When adding each thing, the required parameters of will be populated with either
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters will be populated with either
 discovered values or the default settings. For a V.3 device, in the unlikely event the defaults did not get the token and key,
-enter your cloud provider, email and password. The thing properties will show supported AC functions.
+enter your cloud provider, email and password. The thing properties dropdown on the Thing UI page will show supported AC functions.
 
 ## Binding Configuration
 
@@ -29,23 +29,23 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter     | Required ?  | Comment                                                           | Default                   |
-|---------------|-------------|-------------------------------------------------------------------|---------------------------|
-| ipAddress     | Yes         | IP Address of the device.                                         |                           |
-| ipPort        | Yes         | IP port of the device                                             | 6444                      |
-| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0                         |
-| cloud         | Yes for V.3 | Cloud Provider name for email and password                        | NetHome Plus              |
-| email         | No          | Email for cloud account chosen in Cloud Provider.                 | nethome+us@mailinator.com |
-| password      | No          | Password for cloud account chosen in Cloud Provider.              | password1                 |
-| token         | Yes for V.3 | Secret Token - Retrieved from Cloud                               |                           |
-| key           | Yes for V.3 | Secret Key - Retrieved from Cloud                                 |                           |
-| pollingTime   | Yes         | Polling frequency. Minimum is 30.                                 | 60 seconds                |
-| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0 days                    |
-| energyPoll    | Yes         | Frequency to poll running energy stats (if supported-disable = 0) | 0 minutes                 |
-| timeout       | Yes         | Connecting timeout. Minimum time is 2, maximum 10.                | 4 seconds                 |
-| promptTone    | Yes         | "Ding" tone when command is received and executed.                | false                     |
-| version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0                         |
-| energyDecode  | Yes         | Devices use two different methods to report energy. Compare.      | true
+| Parameter     | Required ?  | Comment                                                      | Default                   |
+|---------------|-------------|--------------------------------------------------------------|---------------------------|
+| ipAddress     | Yes         | IP Address of the device.                                    |                           |
+| ipPort        | Yes         | IP port of the device                                        | 6444                      |
+| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery.                | 0                         |
+| cloud         | Yes for V.3 | Your Cloud Provider name (or default).                       | NetHome Plus              |
+| email         | No          | Email for your cloud account (or default).                   | nethome+us@mailinator.com |
+| password      | No          | Password for your cloud account (or default).                | password1                 |
+| token         | Yes for V.3 | Secret Token - Retrieved from cloud                          |                           |
+| key           | Yes for V.3 | Secret Key - Retrieved from cloud                            |                           |
+| pollingTime   | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.       | 60 seconds                |
+| keyTokenUpdate| No          | Frequency to update key and token from cloud in days         | 0 days (disabled)         |
+| energyPoll    | Yes         | Frequency to poll energy data (if supported)                 | 0 minutes (disabled)      |
+| timeout       | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.    | 4 seconds                 |
+| promptTone    | Yes         | "Ding" tone when command is received and executed.           | false                     |
+| version       | Yes         | Version 3 has token, key and cloud requirements.             | 0                         |
+| energyDecode  | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.       | true
 
 ## Channels
 

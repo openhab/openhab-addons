@@ -230,12 +230,18 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         // Check for valid token and key and/or contact cloud account to get them
         if (config.version == 3 && !config.isV3ConfigValid()) {
             if (config.isTokenKeyObtainable()) {
-                CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
-                getTokenKeyCloud(cloudProvider);
-                return;
+                try {
+                    CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
+                    getTokenKeyCloud(cloudProvider);
+                    return;
+                } catch (Exception e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Token and key could not be obtained from Cloud");
+                    return;
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration invalid and no account info to retrieve from cloud");
+                        "No account info to retrieve from cloud");
                 return;
             }
         } else {
@@ -295,7 +301,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
             scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 1, config.energyPoll,
                     TimeUnit.MINUTES);
-            logger.debug("Scheduled Energy Update started, Poll Time {} seconds", config.energyPoll);
+            logger.debug("Scheduled Energy Update started, Poll Time {} minutes", config.energyPoll);
         } else {
             logger.debug("Energy Scheduler already running or disabled");
         }
