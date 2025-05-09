@@ -1,0 +1,14 @@
+POST https://api.iot.the-mspa.com/api/mesh/network HTTP/2.0
+push_type: Android
+authorization: token bla
+appid: e1c8e068f9ca11eba4dc0242ac120002
+nonce: YOFL1rh8nz8pMkNXwP1HSyoDUw9T96Hu
+ts: 1746733248
+lan_code: de
+sign: 0BDD7F523A095A27805EEBCECEBF0E2B
+content-type: application/json; charset=UTF-8
+content-length: 19
+accept-encoding: gzip
+user-agent: okhttp/4.9.0
+
+{"is_default":true}
