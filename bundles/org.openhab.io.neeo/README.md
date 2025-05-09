@@ -14,10 +14,10 @@ This integration compliments the NEEO binding by exposing a brain's devices to a
 
 The openHAB NEEO Integration will provide the following:
 
-* Automatic discovery of NEEO brains on the network and automatic registering of the openHAB as an SDK.
-* A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
-* Discovery of openHAB things on the NEEO app.
-* Full two-way communcation between openHAB and brain.
+- Automatic discovery of NEEO brains on the network and automatic registering of the openHAB as an SDK.
+- A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
+- Discovery of openHAB things on the NEEO app.
+- Full two-way communcation between openHAB and brain.
 
 Item changes in openHAB will appear in NEEO and vice-versa.
 
@@ -25,10 +25,10 @@ Item changes in openHAB will appear in NEEO and vice-versa.
 
 If searching for openHAB devices on the NEEO Brain is always returning nothing, here are a few tips to solve the issue:
 
-1.  Read sections IP Address and openHAB Primary Address below.
-2.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
-3.  Make sure your firewall is not blocking access to the openHAB server
-4.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
+1. Read sections IP Address and openHAB Primary Address below.
+2. Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
+3. Make sure your firewall is not blocking access to the openHAB server
+4. Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
 
 The NEEO brain has an (unknown) size limit to the amount of items that can be returned for a search and you may be going beyond that limit.
 Narrow your search to a specific item to see if you were hitting that search limit.
@@ -178,7 +178,6 @@ The properties page (accessible via the gear icon) will present properties speci
 The only 'officially' supported custom icon is "sonos" however you can assign any variety of icons available on the brain.
 A list of some of the icons that can be assigned: ![Configuration](doc/icons.png)
 
-
 ##### Device Timings
 
 You can specify three device timings for any non ACCESSORIE and non LIGHT thing:
@@ -193,7 +192,7 @@ If the device does not have power state or doesn't support input switching, the 
 
 This following device capabilities are available:
 
-1.  "Always On" - check if there is no power management for the device.
+1. "Always On" - check if there is no power management for the device.
 
 You do NOT need to specify any POWER buttons or POWER STATE sensor nor will the device be marked as 'stupid'.
 
@@ -201,8 +200,8 @@ You do NOT need to specify any POWER buttons or POWER STATE sensor nor will the 
 
 In the example screen shown above:
 
-1.  The Russound AM/FM tuner was mapped to an "ACCESSORIE" NEEO type.
-2.  The Russound Great Room zone was mapped to an "AUDIO" device (to allow volume keys to work).
+1. The Russound AM/FM tuner was mapped to an "ACCESSORIE" NEEO type.
+2. The Russound Great Room zone was mapped to an "AUDIO" device (to allow volume keys to work).
 
 Any device type that is marked with any type will be visible to the NEEO App when searching for devices.
 
@@ -213,7 +212,6 @@ You can use any standard java string format for the value.
 You may also provide a transformation format (in the same format as in .items file).
 Example: "MAP(stuff.map):%s" will use the MAP tranformation file "stuff.map" to convert the value to a string.
 
-
 #### Items to Capabilities
 
 The second step is to map openHAB items to one or more NEEO capabilities.
@@ -221,31 +219,31 @@ A NEEO capability can either be a virtual item on the screen or a hard button on
 
 For each item, you may:
 
-1.  Press the ADD icon to add a new mapping from the openHAB item (or DELETE icon to delete the mapping).
-2.  Specify or choose the NEEO capability type for the openHAB item.
-3.  Specify the NEEO label (or hard button) for the mapping.
-4.  Optionally set the format or command for the mapping.
+1. Press the ADD icon to add a new mapping from the openHAB item (or DELETE icon to delete the mapping).
+2. Specify or choose the NEEO capability type for the openHAB item.
+3. Specify the NEEO label (or hard button) for the mapping.
+4. Optionally set the format or command for the mapping.
 
 At the time of this writing, the following NEEO capability types are supported:
 
-1.  Text Label - this will simply take the toString() of the item value and optionally format via the Java String Format found in the "Format/Command" field before sending it to the NEEO brain.
-2.  Button - this will create virtual button with the text from the "NEEO Label".
+1. Text Label - this will simply take the toString() of the item value and optionally format via the Java String Format found in the "Format/Command" field before sending it to the NEEO brain.
+2. Button - this will create virtual button with the text from the "NEEO Label".
 Upon pressing the button, the specified command in the "Format/Command" will be sent to the item (or ON will be sent if nothing has been specified).
 Please note that you can also specify a hard button in the "NEEO Label" - in which case nothing will appear on the NEEO remote screen and the action will occur from the NEEO remote hard button.
 You must specify all the hard buttons for a capability (as specified in the NEEO SDK documentation) for the button to work.
 Example: if you only defined VOLUME DOWN but not VOLUME UP - the button will not work on the remote.
 Likewise, which hard buttons are active or not additionally depends on the NEEO device type.
-3.  Switch - this will create a virtual switch with the text from the "NEEO Label" and will send an ON or OFF command to the associated item.
+3. Switch - this will create a virtual switch with the text from the "NEEO Label" and will send an ON or OFF command to the associated item.
 Additionally, a switch can be bound to hard button pairs (the VOLUME keys, the POWER ON/OFF, the CHANNELS, etc).
 The command that is sent is dependent on the KEYS chosen (POWER ON/OFF will send ON/OFF to the underlying item, all others will send an INCREASE/DECREASE).
 Similar to the "Button" type - please review the NEEO SDK documentation.
-4.  Slider - this will create a virtual slider that will send the associated value to the item.
+4. Slider - this will create a virtual slider that will send the associated value to the item.
 The value sent will always be between 0 and 100.
-5.  ImageURL - this will create an image on the remote from the toString() of the item value (assuming it is a URL to an image).
-6.  Sensor - this will create a sensor (non-visual) that can be used in recipes on the brain.
-7.  Power - this will create a powerstate sensor on the brain that can be used to stop/start the device.
+5. ImageURL - this will create an image on the remote from the toString() of the item value (assuming it is a URL to an image).
+6. Sensor - this will create a sensor (non-visual) that can be used in recipes on the brain.
+7. Power - this will create a powerstate sensor on the brain that can be used to stop/start the device.
 NOTE: you MUST also assign a POWER OFF/POWER ON for this to work.
-8.  List - this will create a directory on the brain that can be used to show a list.
+8. List - this will create a directory on the brain that can be used to show a list.
 
 The label assigned will show up on the remote to start the list processing.
 When a user selects a list item on the remote, the command that will be sent will be the value associated with the list item selected.
@@ -269,18 +267,18 @@ The following chart shows what openHAB command types are supported for each NEEO
 HSBType has three attributes - Hue, Brightness and Saturation.
 This type is special in that the integration will create 4 capabilities for it:
 
-1.  The first capability will you to control the on/off and will be named simply "item".
-2.  The second capability will allow you to control the HUE and will be named "item (Hue)".
-3.  The third capability will allow you to control the brightness and will be named "item (Bri)".
-4.  The forth capability will allow you to control the saturation and will be named "item (Sat)".
+1. The first capability will you to control the on/off and will be named simply "item".
+2. The second capability will allow you to control the HUE and will be named "item (Hue)".
+3. The third capability will allow you to control the brightness and will be named "item (Bri)".
+4. The forth capability will allow you to control the saturation and will be named "item (Sat)".
 
 If you are trying to bind a LIFX or HUE bulb, here are the following channels you need to create to enable the NEEO Light capability:
 
-1.  Set the device type to "LIGHT".
-2.  Set the overall (HSBType) item to a NEEO type of "Power".
-3.  Duplicate the overall item and on the duplicate, set the NEEO Type to "Switch" with the label "POWERONOFF".
-4.  Duplicate the overall item (again) and on the duplicate, set the NEEO Type to "Switch" with a label of "power".
-5.  Set the HUE/SATURATION/TEMPERATURE to a NEEO type of "Slider" (you can set the BRIGHTNESS as well - but NEEO will automatically assign that for you).
+1. Set the device type to "LIGHT".
+2. Set the overall (HSBType) item to a NEEO type of "Power".
+3. Duplicate the overall item and on the duplicate, set the NEEO Type to "Switch" with the label "POWERONOFF".
+4. Duplicate the overall item (again) and on the duplicate, set the NEEO Type to "Switch" with a label of "power".
+5. Set the HUE/SATURATION/TEMPERATURE to a NEEO type of "Slider" (you can set the BRIGHTNESS as well - but NEEO will automatically assign that for you).
 
 Please note that NEEO will automatically combine all your "LIGHT" types into a single light on the remote (not ideal).
 You will get a single screen with all lights listed with a power toggle and slider for brightness.
@@ -297,9 +295,9 @@ Sending ON to the power state item will start the device (similar to POWER ON bu
 When you press the "+" icon (on the device) to add new items to the virtual device.
 You will be presented with a screen that will allow you to:
 
-1.  Add a new item by pressing the "Add Item" button.
-2.  Delete all your items by pressing the "Delete All" button.
-3.  Import OH1 items from an .item files by pressing the "Import Item" button.
+1. Add a new item by pressing the "Add Item" button.
+2. Delete all your items by pressing the "Delete All" button.
+3. Import OH1 items from an .item files by pressing the "Import Item" button.
 
 The items section then provide a list of the items you have specified.
 To specify a new item, simply click on the line in question - and then enter the item name.
@@ -321,13 +319,13 @@ You can use the RULES icon (on the device) to download an example .rules file wi
 
 In the example screen above:
 
-1.  The "KeyRelease Event" item was duplicated 3 times and bound to the hard buttons "CURSOR LEFT", "CURSOR RIGHT", "CURSOR UP" and "CURSOR DOWN".
+1. The "KeyRelease Event" item was duplicated 3 times and bound to the hard buttons "CURSOR LEFT", "CURSOR RIGHT", "CURSOR UP" and "CURSOR DOWN".
 Furthermore the command string "MenuLeft" will be sent to the "KeyRelease Event" item when the "CURSOR LEFT" hard button is pressed on the remote (right/up/down for the other buttons).
-2.  The "Source" item was duplicated once and will create two virtual buttons on the NEEO screen labeled "AM/FM" and "PANDORA".
+2. The "Source" item was duplicated once and will create two virtual buttons on the NEEO screen labeled "AM/FM" and "PANDORA".
 Pressing the "AM/FM" button the remote screen will send the value 1 to the "Source" item (2 if pressing the "PANDORA" button).
-3.  The "Status" item was bound to both the power state and a switch assigned to the POWER ON/OFF hard buttons.
+3. The "Status" item was bound to both the power state and a switch assigned to the POWER ON/OFF hard buttons.
 Pressing the POWER ON/OFF will send ON/OFF to the "Status" item.
-4.  The "Volume" item was duplicated once.
+4. The "Volume" item was duplicated once.
 
 The first instance is assigned to a text label that will then be formatted with the "VOLUME % of %%".
 The second instance binds the item to a switch that uses the hard volume buttons on the remote.
@@ -341,16 +339,15 @@ If you restore the directory, you will likely need to restart openHAB for the ne
 
 There are two files being stored by the integration:
 
-1.  discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.
+1. discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.
 As brains are discovered, manually added or removed, this file will be updated.
-2.  neeodefinitions.json will contain the device mappings defined on the 'things' tab.
+2. neeodefinitions.json will contain the device mappings defined on the 'things' tab.
 
 As definitions are saved, this file will be updated.
 
 ## Firmware
 
 The following are notes on some of the NEEO Firmwares:
-
 
 ### 52.10
 
@@ -388,11 +385,10 @@ The following changes have occurred:
 
 1. SKIP BACKWARD should be changed to PREVIOUS.
 2. SKIP FORWARD should be changed to NEXT.
-3. ENTER should be changed to CURSOR ENTER. 
+3. ENTER should be changed to CURSOR ENTER.
 4. Added support for 'specificname' (allowing you to override the name shown in NEEO).
 5. Added support for HSBType channels (creates 4 channels: overall, hue, brightness and saturation).
 6. Added NEEO Brain name to the Brain tab.
-
 
 ## Configuration
 
@@ -400,7 +396,7 @@ After installing this add-on, you can configure the integration using the "NEEO 
 
 Alternatively, you can configure the settings in the file `conf/services/neeo.cfg`:
 
-```
+```ini
 ############################## openHAB NEEO Integration #############################
 
 # A boolean value describing whether to expose all things/items
@@ -412,14 +408,13 @@ Alternatively, you can configure the settings in the file `conf/services/neeo.cf
 # Default is 'true'
 #exposeNeeoBinding=true|false
 
-# The maximum number of search results to return to the brain for any given 
-# search request. 
-# Default is 10 
+# The maximum number of search results to return to the brain for any given
+# search request.
+# Default is 10
 #searchLimit=10
 
 # The interval (in seconds) to check the status of the brain to determine if the
 # brain is reachable or not
-# Default is 10 
+# Default is 10
 #checkStatusInterval=10
 ```
-

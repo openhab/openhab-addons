@@ -1,0 +1,20 @@
+<updates deviceID="5065834D198B">
+    <nowPlayingUpdated>
+        <nowPlaying deviceID="5065834D198B" source="BLUETOOTH" sourceAccount="">
+            <ContentItem source="BLUETOOTH" location="" sourceAccount="" isPresetable="false">
+                <itemName>iPhone</itemName>
+            </ContentItem>
+            <track>Sweet Child O&apos; Mine</track>
+            <artist>Guns N&apos; Roses</artist>
+            <album>&quot;Appetite for Destruction&quot;</album>
+            <stationName>Jammin&apos;</stationName>
+            <stationLocation>All o&apos;er the world</stationLocation>
+            <art artImageStatus="SHOW_DEFAULT_IMAGE" />
+            <skipEnabled />
+            <playStatus>PLAY_STATE</playStatus>
+            <skipPreviousEnabled />
+            <genre>Rock &apos;n&apos; Roll</genre>
+            <connectionStatusInfo status="CONNECTED" deviceName="iPhone" />
+        </nowPlaying>
+    </nowPlayingUpdated>
+</updates>

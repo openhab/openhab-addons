@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -36,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwattarHandlerFactory} is responsible for creating things and thing
+ * The {@link AwattarHandlerFactory} is responsible for creating things and
+ * thing
  * handlers.
  *
  * @author Wolfgang Klimt - Initial contribution
@@ -44,18 +46,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.awattar", service = ThingHandlerFactory.class)
 public class AwattarHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(AwattarHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AwattarHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
     private final HttpClient httpClient;
-    private final TimeZoneProvider timeZoneProvider;
+    private final AwattarTimeProvider timeProvider;
 
     @Activate
     public AwattarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.timeZoneProvider = timeZoneProvider;
+        this.timeProvider = new AwattarTimeProvider(timeZoneProvider);
     }
 
     @Override
@@ -68,13 +70,11 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new AwattarBridgeHandler((Bridge) thing, httpClient, timeZoneProvider);
-        }
-        if (THING_TYPE_PRICE.equals(thingTypeUID)) {
-            return new AwattarPriceHandler(thing, timeZoneProvider);
-        }
-        if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
-            return new AwattarBestpriceHandler(thing, timeZoneProvider);
+            return new AwattarBridgeHandler((Bridge) thing, httpClient, timeProvider);
+        } else if (THING_TYPE_PRICE.equals(thingTypeUID)) {
+            return new AwattarPriceHandler(thing, timeProvider);
+        } else if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
+            return new AwattarBestPriceHandler(thing, timeProvider);
         }
 
         logger.warn("Unknown thing type {}, not creating handler!", thingTypeUID);

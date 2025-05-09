@@ -11,7 +11,7 @@ There are two supported things:
  - `target` for SNMP v1/v2c agents
  - `target3` for SNMP v3 agents
 
-Both represent a single network device. 
+Both represent a single network device.
 Things can be extended with `number`, `string` and `switch` channels.
 
 ## Binding Configuration
@@ -46,7 +46,7 @@ port=8162
 
 ### Common parameters for all thing-types
 
-The `hostname` is mandatory and can be set as FQDN or IP address. 
+The `hostname` is mandatory and can be set as FQDN or IP address.
 
 An optional configuration parameter is `refresh`.
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
@@ -77,20 +77,15 @@ The default is `v1`.
 
 ### `target3`
 
-The `target3` thing has additional mandatory parameters: `engineId` and `user`.
-
-The `engineId` must be given in hexadecimal notation (case-insensitive) without separators (e.g. `80000009035c710dbcd9e6`).
-The allowed length is 11 to 32 bytes (22 to 64 hex characters).
-If you encounter problems, please check if your agent prefixes the set engine id (e.g. Mikrotik uses `80003a8c04` and appends the set value to that).
-
-The `user` parameter is named "securityName" or "userName" in most agents.
+The `target3` thing has an additional mandatory parameter: `user`.
+This value of this parameter is named "securityName" or "userName" in most agents.
 
 Optional configuration parameters are: `securityModel`, `authProtocol`, `authPassphrase`, `privProtocol` and `privPassphrase`.
 
 The `securityModel` can be set to
 
 - `NO_AUTH_NO_PRIV` (default) - no encryption on authentication data, no encryption on transmitted data
-- `AUTH_NO_PRIV` - encryption on authentication data, no encryption on transmitted data 
+- `AUTH_NO_PRIV` - encryption on authentication data, no encryption on transmitted data
 - `AUTH_PRIV` - encryption on authentication data, encryption on transmitted data
 
 Depending on the `securityModel` some of the other parameters are also mandatory.
@@ -99,7 +94,7 @@ If authentication encryption is required, at least `authPassphrase` needs to be 
 Other possible values for `authProtocol` are `SHA`, `HMAC128SHA224`, `HMAC192SHA256`, `HMAC256SHA384` and `HMAC384SHA512`.
 
 If encryption of transmitted data (privacy encryption) is required, at least `privPassphrase` needs to be set, while `privProtocol` defaults to `DES`.
-Other possible values for `privProtocol` are `AES128`, `AES192` and `AES256`.
+Other possible values for `privProtocol` are `DES3`, `AES128`, `AES192` and `AES256`.
 
 ## Channels
 
@@ -135,14 +130,13 @@ The `datatype` parameter is used to convert the configuration strings to the nee
 
 `number`-type channels have a `unit` parameter.
 The unit is added to the received value before it is passed to the channel.
-For commands (i.e. sending), the value is first converted to the configured unit. 
+For commands (i.e. sending), the value is first converted to the configured unit.
 
 | type     | item   | description                     |
 |----------|--------|---------------------------------|
 | number   | Number | a channel with a numeric value  |
 | string   | String | a channel with a string value   |
 | switch   | Switch | a channel that has two states   |
-
 
 ### SNMP Exception (Error) Handling
 
@@ -160,7 +154,7 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 
 demo.things:
 
-```
+```java
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
         Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]

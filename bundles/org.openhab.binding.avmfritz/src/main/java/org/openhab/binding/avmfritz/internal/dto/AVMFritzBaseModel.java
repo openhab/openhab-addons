@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -261,4 +261,6 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
                 .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
     }
+
+    public transient boolean isLinked;
 }

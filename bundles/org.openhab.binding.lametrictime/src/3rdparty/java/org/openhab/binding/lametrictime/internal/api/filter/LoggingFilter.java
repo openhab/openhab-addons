@@ -93,7 +93,7 @@ public final class LoggingFilter implements ContainerRequestFilter, ClientReques
     private static final String ENTITY_LOGGER_PROPERTY = LoggingFilter.class.getName() + ".entityLogger";
     private static final String LOGGING_ID_PROPERTY = LoggingFilter.class.getName() + ".id";
 
-    private static final Comparator<Map.Entry<String, List<String>>> COMPARATOR = new Comparator<Map.Entry<String, List<String>>>() {
+    private static final Comparator<Map.Entry<String, List<String>>> COMPARATOR = new Comparator<>() {
 
         @Override
         public int compare(final Map.Entry<String, List<String>> o1, final Map.Entry<String, List<String>> o2) {
@@ -194,7 +194,7 @@ public final class LoggingFilter implements ContainerRequestFilter, ClientReques
     }
 
     private Set<Map.Entry<String, List<String>>> getSortedHeaders(final Set<Map.Entry<String, List<String>>> headers) {
-        final TreeSet<Map.Entry<String, List<String>>> sortedHeaders = new TreeSet<Map.Entry<String, List<String>>>(
+        final TreeSet<Map.Entry<String, List<String>>> sortedHeaders = new TreeSet<>(
                 COMPARATOR);
         sortedHeaders.addAll(headers);
         return sortedHeaders;

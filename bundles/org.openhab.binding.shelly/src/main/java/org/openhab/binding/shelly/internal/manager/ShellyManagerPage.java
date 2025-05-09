@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -345,7 +345,6 @@ public class ShellyManagerPage {
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                         break;
                     default:
-                        value = getTimestamp(dateTimeState);
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                 }
             } else {
@@ -414,7 +413,7 @@ public class ShellyManagerPage {
             fw = fromJson(gson, entry, FwRepoEntry.class);
 
             // Special case: RGW2 has a split firmware - xxx-white.zip vs. xxx-color.zip
-            if (!mode.isEmpty() && deviceType.equalsIgnoreCase(SHELLYDT_RGBW2)) {
+            if (SHELLYDT_RGBW2.equalsIgnoreCase(deviceType) && !mode.isEmpty()) {
                 // check for spilt firmware
                 String url = substringBefore(fw.url, ".zip") + "-" + mode + ".zip";
                 if (testUrl(url)) {
@@ -457,7 +456,7 @@ public class ShellyManagerPage {
             // no files available for this device type
             logger.info("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
             list = new FwArchList();
-            list.versions = new ArrayList<FwArchEntry>();
+            list.versions = new ArrayList<>();
         } else {
             // Create selection list
             json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
@@ -563,6 +562,9 @@ public class ShellyManagerPage {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
+        }
+        if (name.isEmpty()) {
+            name = getString(properties.get(PROPERTY_MAC_ADDRESS));
         }
         return name;
     }

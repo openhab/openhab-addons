@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solarforecast:fs-plane">
+		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Forecast Refresh Interval</label>
+			<description>Data refresh rate of forecast data in minutes</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="declination" type="integer" min="0" max="90" required="true">
+			<label>Plane Declination</label>
+			<description>0 for horizontal till 90 for vertical declination</description>
+		</parameter>
+		<parameter name="azimuth" type="integer" min="-180" max="180" required="true">
+			<label>Plane Azimuth</label>
+			<description>-180 = north, -90 = east, 0 = south, 90 = west, 180 = north</description>
+		</parameter>
+		<parameter name="kwp" type="decimal" step="0.001" required="true">
+			<label>Installed Kilowatt Peak</label>
+			<description>Installed module power of this plane</description>
+		</parameter>
+		<parameter name="dampAM" type="decimal" step="0.01" min="0" max="1">
+			<label>Morning Damping Factor</label>
+			<description>Damping factor of morning hours</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="dampPM" type="decimal" step="0.01" min="0" max="1">
+			<label>Evening Damping Factor</label>
+			<description>Damping factor of evening hours</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="horizon" type="text">
+			<label>Horizon</label>
+			<description>Horizon definition as comma-separated integer values</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="rwtype-switch">
+		<item-type>Switch</item-type>
+		<label>Generic Switch</label>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rwtype-command" advanced="true">
+		<item-type>String</item-type>
+		<label>Generic Command</label>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rwtype-mode">
+		<item-type>String</item-type>
+		<label>Generic Command</label>
+		<state readOnly="false">
+			<options>
+				<option value="Default">Default</option>
+				<option value="Normal">Normal</option>
+				<option value="Away">Away</option>
+				<option value="Vacation">Vacation</option>
+				<option value="Home">Home</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="Default">Default</option>
+				<option value="Normal">Normal</option>
+				<option value="Away">Away</option>
+				<option value="Vacation">Vacation</option>
+				<option value="Home">Home</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>

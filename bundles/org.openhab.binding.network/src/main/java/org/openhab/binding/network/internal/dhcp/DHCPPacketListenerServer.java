@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.dhcp.DHCPPacket.BadPacketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,7 @@ public class DHCPPacketListenerServer extends Thread {
     private int currentPort = PRIVILEGED_PORT;
 
     DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException {
+        super(String.format("OH-binding-%s-%s", NetworkBindingConstants.BINDING_ID, "DHCPPacketListener"));
         this.listener = listener;
         try {
             bindSocketTo(currentPort);
@@ -64,7 +65,7 @@ public class DHCPPacketListenerServer extends Thread {
     }
 
     protected void receivePacket(DHCPPacket request, @Nullable InetAddress udpRemote)
-            throws BadPacketException, UnknownHostException, IOException {
+            throws BadPacketException, IOException {
         if (request.getOp() != DHCPPacket.BOOTREQUEST) {
             return; // skipping non BOOTREQUEST message types
         }

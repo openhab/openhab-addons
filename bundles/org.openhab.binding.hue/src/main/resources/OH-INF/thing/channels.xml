@@ -207,6 +207,7 @@
 		<label>Scene</label>
 		<category>MediaControl</category>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="last-updated-v2" advanced="true">
@@ -221,12 +222,14 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="effect-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Effect</label>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="dynamics" advanced="true">
@@ -242,6 +245,10 @@
 		<label>Color XY Only</label>
 		<description>Set the color xy parameter of the light without changing other state parameters.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -250,7 +257,11 @@
 		<label>Dimming Only</label>
 		<description>Set the dimming parameter of the light without changing other state parameters.</description>
 		<category>Light</category>
-		<state pattern="%.1f %%"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state min="0" max="100" pattern="%.1f %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -259,6 +270,10 @@
 		<label>On/Off Only</label>
 		<description>Set the on/off parameter of the light without changing other state parameters.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -273,5 +288,15 @@
 		<label>Normal/Tamper</label>
 		<category>Siren</category>
 	</channel-type>
+
+	<channel-type id="automation-enable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-group-type id="automation">
+		<label>Automations</label>
+	</channel-group-type>
 
 </thing:thing-descriptions>

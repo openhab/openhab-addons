@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:tapo:bridge">
+		<parameter name="username" type="text" required="true">
+			<context>email</context>
+			<label>Username</label>
+			<description>Tapo-Cloud Login User (e-Mail)</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
+			<label>Password</label>
+			<description>Tapo-Cloud Login Password</description>
+		</parameter>
+		<parameter name="cloudDiscovery" type="boolean" required="false">
+			<label>Cloud Discovery</label>
+			<description>Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address
+				and Encryption has to set manually if device is not found via udpDiscovery</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="udpDiscovery" type="boolean" required="false">
+			<label>UDP Discovery</label>
+			<description>Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and
+				IP-Address</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="onlyLocalOnlineDevices" type="boolean" required="false">
+			<label>Discover only online devices</label>
+			<description>Uses Cloud and UPD-Discovery to get more informations but will only discover online devices via UDP</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="broadcastAddress" type="text" required="false">
+			<context>network-address</context>
+			<label>Broadcast Address</label>
+			<description>Broadcast-Address UDP-requests are sent to. Change it to the broadcast-address of your ip-range (e.g.
+				'192.168.1.255') if you have problems with
+				default (255.255.255.255)</description>
+			<default>255.255.255.255</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="discoveryInterval" type="integer" min="1" max="10080" required="false">
+			<label>Background Discovery Interval</label>
+			<description>Interval background discovery in minutes (default 60)</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

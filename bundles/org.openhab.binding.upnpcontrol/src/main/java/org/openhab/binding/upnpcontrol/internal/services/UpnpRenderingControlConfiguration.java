@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,12 +53,16 @@ public class UpnpRenderingControlConfiguration {
         if (rcService != null) {
             volume = (rcService.getStateVariable("Volume") != null);
             if (volume) {
-                maxvolume = rcService.getStateVariable("Volume").getTypeDetails().getAllowedValueRange().getMaximum();
+                long maxVolumeValue = rcService.getStateVariable("Volume").getTypeDetails().getAllowedValueRange()
+                        .getMaximum();
+                if (maxVolumeValue > 0) {
+                    maxvolume = maxVolumeValue;
+                }
             }
             mute = (rcService.getStateVariable("Mute") != null);
             loudness = (rcService.getStateVariable("Loudness") != null);
             if (rcService.getStateVariable("A_ARG_TYPE_Channel") != null) {
-                audioChannels = new HashSet<String>(Arrays
+                audioChannels = new HashSet<>(Arrays
                         .asList(rcService.getStateVariable("A_ARG_TYPE_Channel").getTypeDetails().getAllowedValues()));
             }
         }

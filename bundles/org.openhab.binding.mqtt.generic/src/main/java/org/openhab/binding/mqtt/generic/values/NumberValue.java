@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,21 +48,33 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NumberValue extends Value {
     private static final String NAN = "NaN";
+    private static final String NEGATIVE_NAN = "-NaN";
 
     private final Logger logger = LoggerFactory.getLogger(NumberValue.class);
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
-    private final Unit<?> unit;
+    private final @Nullable Unit<?> unit;
 
     public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
             @Nullable Unit<?> unit) {
-        super(CoreItemFactory.NUMBER,
-                List.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class, StringType.class));
+        super(getItemType(unit), List.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
+                UpDownType.class, StringType.class));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
-        this.unit = unit != null ? unit : Units.ONE;
+        this.unit = unit;
+    }
+
+    private static String getItemType(@Nullable Unit<?> unit) {
+        if (unit == null) {
+            return CoreItemFactory.NUMBER;
+        }
+        String dimension = Units.MIRED.equals(unit) ? "Temperature" : UnitUtils.getDimensionName(unit);
+        if (dimension == null) {
+            return CoreItemFactory.NUMBER;
+        }
+        return CoreItemFactory.NUMBER + ":" + dimension;
     }
 
     protected boolean checkConditions(BigDecimal newValue) {
@@ -83,7 +96,11 @@ public class NumberValue extends Value {
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
-            formatPattern = "%s";
+            if (command instanceof DecimalType || command instanceof QuantityType<?>) {
+                formatPattern = "%.0f";
+            } else {
+                formatPattern = "%s";
+            }
         }
 
         return command.format(formatPattern);
@@ -111,7 +128,8 @@ public class NumberValue extends Value {
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
-        if (!Units.ONE.equals(unit)) {
+        Unit<?> unit = this.unit;
+        if (unit != null) {
             return new QuantityType<>(newValue, unit);
         } else {
             return new DecimalType(newValue);
@@ -120,8 +138,12 @@ public class NumberValue extends Value {
 
     @Override
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType && command.toString().equalsIgnoreCase(NAN)) {
-            return UnDefType.UNDEF;
+        if (command instanceof StringType) {
+            if (command.toString().equalsIgnoreCase(NAN) || command.toString().equalsIgnoreCase(NEGATIVE_NAN)) {
+                return UnDefType.UNDEF;
+            } else if (command.toString().isEmpty()) {
+                return UnDefType.NULL;
+            }
         }
         return parseCommand(command);
     }
@@ -138,7 +160,8 @@ public class NumberValue extends Value {
 
     private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
         BigDecimal val = qType.toBigDecimal();
-        if (!qType.getUnit().isCompatible(Units.ONE)) {
+        Unit<?> unit = this.unit;
+        if (unit != null) {
             QuantityType<?> convertedType = qType.toInvertibleUnit(unit);
             if (convertedType != null) {
                 val = convertedType.toBigDecimal();
@@ -158,10 +181,10 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        if (!unit.equals(Units.ONE)) {
-            builder.withPattern("%s " + unit);
+        if (unit != null) {
+            builder.withPattern("%.0f %unit%");
         } else {
-            builder.withPattern("%s %unit%");
+            builder.withPattern("%.0f");
         }
         return builder.withStep(step);
     }

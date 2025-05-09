@@ -10,7 +10,7 @@
 		<description>
 			Grand Concerto or Essentia G Amplifier System
 		</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="system" typeId="system">
 				<label>System</label>
@@ -121,6 +121,10 @@
 				<description>The Display Information for Source 6</description>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="false">
@@ -380,6 +384,7 @@
 			<channel id="button_press" typeId="button_press"/>
 			<channel id="art_url" typeId="art_url"/>
 			<channel id="album_art" typeId="album_art"/>
+			<channel id="source_menu" typeId="source_menu"/>
 		</channels>
 	</channel-group-type>
 
@@ -387,6 +392,7 @@
 		<item-type>Switch</item-type>
 		<label>All Off</label>
 		<description>Turn All Zones Off</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="page">
@@ -399,6 +405,7 @@
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Send a command to the amplifier</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="source">
@@ -411,6 +418,7 @@
 		<item-type>Number</item-type>
 		<label>Favorite</label>
 		<description>Select a Preset Favorite for the Zone</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">
@@ -506,14 +514,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
 		<description>The Total Running Time of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="track_position">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>The Running Time Elapsed of the Current Playing Track</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="button_press">
@@ -527,6 +535,7 @@
 		<item-type>String</item-type>
 		<label>Album Art URL</label>
 		<description>The URL of the Album Art JPG for this source that is displayed on a CTP-36</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="album_art">
@@ -534,6 +543,13 @@
 		<label>Album Art</label>
 		<description>The Album Art loaded from the art_url channel for display in a UI widget</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="source_menu">
+		<item-type>String</item-type>
+		<label>Source Menu</label>
+		<description>A selection containing the custom menu tree options for this source</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

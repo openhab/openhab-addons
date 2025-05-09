@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -95,11 +93,8 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         if (!config.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
-
-                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
-
                 IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress,
-                        config.port, readerThreadName);
+                        config.port, "OH-binding-" + getThing().getUID());
                 intesisLocalApi.addIntesisBoxChangeListener(this);
                 try {
                     intesisLocalApi.openConnection();
@@ -238,14 +233,14 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_TARGETTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "AMBTEMP":
                 if (Double.valueOf(value).isNaN()) {
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_AMBIENTTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "MODE":
                 updateState(CHANNEL_TYPE_MODE, new StringType(value));

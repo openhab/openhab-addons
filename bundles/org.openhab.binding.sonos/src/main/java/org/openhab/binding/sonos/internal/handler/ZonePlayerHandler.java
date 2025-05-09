@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.sonos.internal.handler;
 import static org.openhab.binding.sonos.internal.SonosBindingConstants.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -741,10 +741,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 try {
                     URL serviceDescrUrl = service.getDescriptorURL(this);
                     if (serviceDescrUrl != null) {
-                        url = new URL(serviceDescrUrl.getProtocol(), serviceDescrUrl.getHost(),
-                                serviceDescrUrl.getPort(), albumArtURI).toExternalForm();
+                        url = serviceDescrUrl.toURI().resolve(albumArtURI).toString();
                     }
-                } catch (MalformedURLException e) {
+                } catch (URISyntaxException e) {
                     logger.debug("Failed to build a valid album art URL from {}: {}", albumArtURI, e.getMessage());
                 }
             }
@@ -1495,6 +1494,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "84934721":
                     codec = "DTS51";
                     break;
+                case "118489148":
+                    codec = "TrueHD71";
+                    break;
                 default:
                     codec = "Unknown - " + codec;
             }
@@ -1686,11 +1688,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     protected void saveState() {
         synchronized (stateLock) {
-            savedState = new SonosZonePlayerState();
-            String currentURI = getCurrentURI();
-
+            SonosZonePlayerState savedState = new SonosZonePlayerState();
             savedState.transportState = getTransportState();
             savedState.volume = getVolume();
+            this.savedState = savedState;
+
+            String currentURI = getCurrentURI();
 
             if (currentURI != null) {
                 if (isPlayingStreamOrRadio(currentURI)) {
@@ -2520,7 +2523,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
         if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())
@@ -2533,7 +2535,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 for (String player : group.getMembers()) {
                     try {
                         ZonePlayerHandler somePlayer = getHandlerByName(player);
-                        if (somePlayer != this) {
+                        if (!somePlayer.equals(this)) {
                             somePlayer.becomeStandAlonePlayer();
                             somePlayer.stop();
                             addMember(StringType.valueOf(somePlayer.getUDN()));
@@ -3265,13 +3267,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     @Override
     public void onStatusChanged(boolean status) {
         if (status) {
-            logger.info("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.execute(this::poll);
             }
         } else {
-            logger.info("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
     }

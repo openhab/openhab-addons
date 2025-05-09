@@ -72,7 +72,7 @@ A.C. device and Heatpump device configuration:
 |-----------------|-----------|---------------------------------------------------------------------------------------|
 | deviceID        | x         | MELCloud device ID.                                                                   |
 | buildingID      |           | MELCloud building ID. If not defined, binding tries to find matching id by device ID. |
-| pollingInterval |           | Refresh time interval in seconds for updates from MELCloud.  Defaults to 60 seconds.  |
+| pollingInterval |           | Refresh time interval in seconds for updates from MELCloud. Minimum is 180, defaults to 360 seconds. Mitsubishi Electric introduced limits on their API so changing default value may cause excessive traffic and lock you out for several hours. |
 
 ## Channels
 
@@ -112,8 +112,8 @@ Heatpump device channels
 
 ```java
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
- Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=60 ]
- Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=60 ]
+ Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=360 ]
+ Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=360 ]
 }
 ```
 

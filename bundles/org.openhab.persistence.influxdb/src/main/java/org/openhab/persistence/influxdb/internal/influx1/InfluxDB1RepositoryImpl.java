@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.persistence.influxdb.internal.influx1;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -75,12 +72,17 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean connect() {
-        final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
-                configuration.getPassword());
-        createdClient.setDatabase(configuration.getDatabaseName());
-        createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
-        createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
-        this.client = createdClient;
+        try {
+            final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
+                    configuration.getPassword());
+            createdClient.setDatabase(configuration.getDatabaseName());
+            createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
+            createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
+            this.client = createdClient;
+        } catch (InfluxException | InfluxDBException e) {
+            logger.debug("Connection failed", e);
+            return false;
+        }
         return checkConnectionStatus();
     }
 
@@ -163,11 +165,11 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy, @Nullable String alias) {
         try {
             final InfluxDB currentClient = client;
             if (currentClient != null) {
-                String query = queryCreator.createQuery(filter, retentionPolicy);
+                String query = queryCreator.createQuery(filter, retentionPolicy, alias);
                 logger.trace("Query {}", query);
                 Query parsedQuery = new Query(query, configuration.getDatabaseName());
                 List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();

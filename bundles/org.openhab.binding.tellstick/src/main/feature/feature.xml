@@ -6,9 +6,8 @@
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-serial</feature>
 		<feature dependency="true">openhab.tp-netty</feature>
-		<feature dependency="true">openhab.tp-jaxb</feature>
-		<bundle dependency="true">mvn:net.java.dev.jna/jna/4.5.2</bundle>
-		<bundle dependency="true">mvn:net.java.dev.jna/jna-platform/4.5.2</bundle>
+		<bundle dependency="true">mvn:net.java.dev.jna/jna/${jna.version}</bundle>
+		<bundle dependency="true">mvn:net.java.dev.jna/jna-platform/${jna.version}</bundle>
 		<bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.2.1/1.2.1_3</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tellstick/${project.version}</bundle>
 	</feature>

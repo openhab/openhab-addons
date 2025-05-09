@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     private final HttpService httpService;
     public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
-    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
+    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<>(2);
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> pollCameraGroupJob = null;
     private @Nullable GroupServlet servlet;
@@ -114,7 +114,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             String file = handle.cameraConfig.getFfmpegOutput() + "ipcamera.m3u8";
             camerasm3u8 = new String(Files.readAllBytes(Paths.get(file)));
         } catch (IOException e) {
-            logger.warn("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
+            logger.warn("Error occurred fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
         }
         return camerasm3u8;
     }

@@ -40,7 +40,7 @@ You will have to look it up in your documentation or in the 'Luxom Plusconfig' s
 Sometimes a device does not send back a confirmation over the bus having set the correct state.
 Some dimmers do the dimming, but do not send back the set brightness level.
 To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately sets the item's state and does not wait for confirmation.
-  
+
 #### Dimmers
 
 Dimmers support the optional advanced parameters `onLevel`, `onToLast` and `stepPercentage`:

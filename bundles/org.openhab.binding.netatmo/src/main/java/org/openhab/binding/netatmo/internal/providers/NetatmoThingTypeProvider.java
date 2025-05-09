@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                         .withExtensibleChannelTypeIds(moduleType.getExtensions())
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion))
-                        .withConfigDescriptionURI(moduleType.getConfigDescription());
+                        .withConfigDescriptionURI(moduleType.configDescription);
 
                 ThingTypeUID bridgeType = moduleType.getBridge().thingTypeUID;
                 if (!ModuleType.UNKNOWN.thingTypeUID.equals(bridgeType)) {
@@ -87,7 +87,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                 return localizationService.createLocalizedThingType(bundle,
                         moduleType.isABridge() ? thingTypeBuilder.buildBridge() : thingTypeBuilder.build(), locale);
             } catch (IllegalArgumentException e) {
-                logger.warn("Unable to define ModuleType for thingType {} : {}", thingTypeUID.getId(), e.getMessage());
+                logger.warn("Unable to define ModuleType for thingType {}: {}", thingTypeUID.getId(), e.getMessage());
             }
         }
         return null;

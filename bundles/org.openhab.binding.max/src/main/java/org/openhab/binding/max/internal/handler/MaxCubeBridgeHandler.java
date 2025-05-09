@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** maximum queue size that we're allowing */
     private static final int MAX_COMMANDS = 50;
     private static final int MAX_DUTY_CYCLE = 80;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
     private final List<Device> devices = new ArrayList<>();
@@ -340,7 +340,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, TimeUnit.SECONDS);
         }
         if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
-            queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
+            queueConsumerThread = new Thread(new QueueConsumer(commandQueue),
+                    "OH-binding-" + getThing().getUID() + "-max-queue-consumer");
             queueConsumerThread.setDaemon(true);
             queueConsumerThread.start();
         }
@@ -1025,7 +1026,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void backup() {
         this.backup = BackupState.REQUESTED;
         this.backupUtil = new MaxBackupUtils(
-                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(FORMATTER));
         socketClose();
     }
 }

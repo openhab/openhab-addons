@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class RRMapDraw {
      */
     private void drawMap(Graphics2D g2d, float scale) {
         Stroke stroke = new BasicStroke(1.1f * scale);
-        Set<Integer> roomIds = new HashSet<Integer>();
+        Set<Integer> roomIds = new HashSet<>();
         g2d.setStroke(stroke);
         for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
             for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
@@ -417,7 +417,7 @@ public class RRMapDraw {
         g2d.drawString(message, textPos, height - offset * scale - stringHeight / 2);
     }
 
-    private @Nullable String getAvailableFont(String[] preferedFonts) {
+    private @Nullable String getAvailableFont(String[] preferredFonts) {
         final GraphicsEnvironment gEv = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (gEv == null) {
             return null;
@@ -426,10 +426,10 @@ public class RRMapDraw {
         if (fonts.length == 0) {
             return null;
         }
-        for (int j = 0; j < preferedFonts.length; j++) {
+        for (int j = 0; j < preferredFonts.length; j++) {
             for (int i = 0; i < fonts.length; i++) {
-                if (fonts[i].equalsIgnoreCase(preferedFonts[j])) {
-                    return preferedFonts[j];
+                if (fonts[i].equalsIgnoreCase(preferredFonts[j])) {
+                    return preferredFonts[j];
                 }
             }
         }

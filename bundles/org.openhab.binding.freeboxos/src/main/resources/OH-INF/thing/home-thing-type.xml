@@ -10,10 +10,37 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Home Basic Shutter</label>
-		<description>The Basic Shutter (UP,DOWN,STOP) configured in your Freebox Delta Server</description>
+		<description>A basic shutter (UP,DOWN,STOP) configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="state" typeId="basic-shutter"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
+	</thing-type>
+
+	<thing-type id="pir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Home PIR</label>
+		<description>A motion Sensor</description>
+
+		<channels>
+			<channel id="trigger" typeId="pir-trigger"/>
+			<channel id="trigger-timestamp" typeId="timestamp">
+				<label>Trigger Timestamp</label>
+				<description>Timestamp of the last state change</description>
+			</channel>
+			<channel id="tamper" typeId="pir-tamper"/>
+			<channel id="tamper-timestamp" typeId="timestamp">
+				<label>Tamper Timestamp</label>
+				<description>Timestamp of the last cover tampered state change</description>
+			</channel>
+			<channel id="battery" typeId="system.battery-level"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -27,9 +54,10 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Alarm</label>
-		<description>The Alarm system configured in your Freebox Delta Server</description>
+		<description>The Alarm system configured in your Freebox Server</description>
 
 		<channels>
+			<channel id="state" typeId="alarm-state"/>
 			<channel id="pin" typeId="alarm-pin"/>
 			<channel id="sound" typeId="alarm-volume">
 				<label>Bips Volume</label>
@@ -61,9 +89,14 @@
 
 
 		<label>Freebox Keyfob</label>
-		<description>A keyfob configured for your Freebox Security system</description>
+		<description>A keyfob configured in your Freebox Server</description>
 
 		<channels>
+			<channel id="pushed" typeId="kfb-pushed"/>
+			<channel id="pushed-timestamp" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Timestamp of the last action on the keyfob</description>
+			</channel>
 			<channel id="enable" typeId="keyfob-enable"/>
 			<channel id="battery" typeId="system.battery-level"/>
 		</channels>
@@ -79,7 +112,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Home Shutter</label>
-		<description>The Shutter configured in your Freebox Delta Server</description>
+		<description>An IO Home Control shutter configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="position-set" typeId="shutter"/>

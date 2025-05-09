@@ -161,14 +161,6 @@
          }
       },
       {
-         "name": "Redbox",
-         "config": {
-            "APP_ID": "41",
-            "NAME_SPACE": 4,
-            "MESSAGE": null
-         }
-      },
-      {
          "name": "Starz",
          "config": {
             "APP_ID": "151",

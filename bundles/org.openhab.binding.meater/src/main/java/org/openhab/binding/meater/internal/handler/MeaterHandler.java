@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,16 +15,12 @@ package org.openhab.binding.meater.internal.handler;
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Cook;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -51,11 +47,9 @@ import org.openhab.core.types.UnDefType;
 public class MeaterHandler extends BaseThingHandler {
 
     private String deviceId = "";
-    private TimeZoneProvider timeZoneProvider;
 
-    public MeaterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public MeaterHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -107,17 +101,17 @@ public class MeaterHandler extends BaseThingHandler {
         Cook cook = meaterProbe.cook;
         switch (channelId) {
             case CHANNEL_INTERNAL_TEMPERATURE:
-                return new QuantityType<Temperature>(meaterProbe.temperature.internal, SIUnits.CELSIUS);
+                return new QuantityType<>(meaterProbe.temperature.internal, SIUnits.CELSIUS);
             case CHANNEL_AMBIENT_TEMPERATURE:
-                return new QuantityType<Temperature>(meaterProbe.temperature.ambient, SIUnits.CELSIUS);
+                return new QuantityType<>(meaterProbe.temperature.ambient, SIUnits.CELSIUS);
             case CHANNEL_COOK_TARGET_TEMPERATURE:
                 if (cook != null) {
-                    return new QuantityType<Temperature>(cook.temperature.target, SIUnits.CELSIUS);
+                    return new QuantityType<>(cook.temperature.target, SIUnits.CELSIUS);
                 }
                 break;
             case CHANNEL_COOK_PEAK_TEMPERATURE:
                 if (cook != null) {
-                    return new QuantityType<Temperature>(cook.temperature.peak, SIUnits.CELSIUS);
+                    return new QuantityType<>(cook.temperature.peak, SIUnits.CELSIUS);
                 }
                 break;
             case CHANNEL_COOK_ELAPSED_TIME:
@@ -149,14 +143,13 @@ public class MeaterHandler extends BaseThingHandler {
             case CHANNEL_LAST_CONNECTION:
                 Instant instant = meaterProbe.getLastConnection();
                 if (instant != null) {
-                    return new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
+                    return new DateTimeType(instant);
                 }
                 break;
             case CHANNEL_COOK_ESTIMATED_END_TIME:
                 if (cook != null) {
                     if (cook.time.remaining > -1) {
-                        return new DateTimeType(
-                                ZonedDateTime.now(timeZoneProvider.getTimeZone()).plusSeconds(cook.time.remaining));
+                        return new DateTimeType(Instant.now().plusSeconds(cook.time.remaining));
                     }
                 }
         }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 
 /**
  * {@link ShellyManagerCache} implements a cache with expiring times of the entries
@@ -29,7 +30,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<K, Long> timeMap = new ConcurrentHashMap<K, Long>();
+    private Map<K, Long> timeMap = new ConcurrentHashMap<>();
     private long expiryInMillis = ShellyManagerConstants.CACHE_TIMEOUT_DEF_MIN * 60 * 1000; // Default 1h
 
     public ShellyManagerCache() {
@@ -46,7 +47,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     @Override
-    public @Nullable V put(K key, V value) {
+    public V put(K key, V value) {
         Date date = new Date();
         timeMap.put(key, date.getTime());
         return super.put(key, value);
@@ -58,15 +59,16 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             throw new IllegalArgumentException();
         }
         for (K key : m.keySet()) {
+            @Nullable
             V value = m.get(key);
-            if (value != null) { // don't allow null values
+            if (key != null && value != null) { // don't allow null values
                 put(key, value);
             }
         }
     }
 
     @Override
-    public @Nullable V putIfAbsent(K key, V value) {
+    public V putIfAbsent(K key, V value) {
         if (!containsKey(key)) {
             return put(key, value);
         } else {
@@ -75,6 +77,11 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     class CleanerThread extends Thread {
+
+        public CleanerThread() {
+            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "Cleaner"));
+        }
+
         @Override
         public void run() {
             while (true) {
@@ -86,11 +93,11 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             }
         }
 
-        @SuppressWarnings("null")
         private void cleanMap() {
             long currentTime = new Date().getTime();
             for (K key : timeMap.keySet()) {
-                if (currentTime > (timeMap.get(key) + expiryInMillis)) {
+                Long timeValue = timeMap.get(key);
+                if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
                     remove(key);
                     timeMap.remove(key);
                 }

@@ -3,10 +3,54 @@
 
 # JRuby Scripting
 
-This add-on provides [JRuby](https://www.jruby.org/) scripting language for automation rules.
-Also included is [openhab-scripting](https://openhab.github.io/openhab-jruby/), a fairly high-level Ruby gem to support automation in openHAB.
-It provides native Ruby access to common openHAB functionality within rules including items, things, actions, logging and more.
+This add-on provides Ruby scripting language for automation rules.
+It includes the [openhab-scripting](https://openhab.github.io/openhab-jruby/) helper library, a comprehensive Ruby gem designed to enhance automation in openHAB.
+This library offers a streamlined syntax for writing file-based and UI-based rules, making it easier and more intuitive than Rules DSL, while delivering the full features of the Ruby language.
+
 If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.github.io/openhab-jruby/main/file.ruby-basics.html).
+
+Example file-based rules:
+
+```ruby
+rule "Turn on light when sensor changed to open" do
+  changed Door_Sensor # a Contact item
+  run do |event|
+    if event.open?
+      Cupboard_Light.on for: 3.minutes # Automatically turn it off after 3 minutes
+    else
+      Cupboard_Light.off # This will automatically cancel the timer set above
+    end
+  end
+end
+```
+
+```ruby
+rule "Door open reminder" do
+  changed Doors.members, to: OPEN
+  run do |event|
+    # Create a timer using the triggering item as the timer id
+    # If a timer with the given id already exists, it will be rescheduled
+    after 5.minutes, id: event.item do |timer|
+      next if timer.cancelled? || event.item.closed?
+
+      Voice.say "The #{event.item} is open"
+
+      timer.reschedule # Use the original duration by default
+    end
+  end
+end
+```
+
+Example UI-based rules:
+
+```ruby
+only_every(2.minutes) do # apply rate-limiting
+  Audio.play_sound("doorbell.mp3")
+  Notification.send("Someone pressed the doorbell")
+end
+```
+
+Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from Rules DSL, JavaScript, and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
 
 - [Why Ruby?](#why-ruby)
 - [Installation](#installation)
@@ -27,6 +71,7 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
     - [Linked Things](#linked-things)
     - [Item Builder](#item-builder)
   - [Things](#things)
+    - [Thing Builder](#thing-builder)
   - [Actions](#actions)
   - [Logging](#logging)
   - [Timers](#timers)
@@ -34,7 +79,7 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
   - [Time](#time)
   - [Ephemeris](#ephemeris)
   - [Rules, Scripts, and Scenes](#rules-scripts-and-scenes)
-  - [Gems](#gems)
+  - [Gems with Inline Bundler](#gems-with-inline-bundler)
   - [Shared Code](#shared-code)
   - [Transformations](#transformations)
   - [Profile](#profile)
@@ -49,6 +94,8 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
     - [Script is Loaded](#script-is-loaded)
     - [openHAB System Started](#openhab-system-started)
     - [Cron Trigger](#cron-trigger)
+    - [DateTimeItem Trigger](#datetimeitem-trigger)
+    - [File and Directory Change Trigger](#file-and-directory-change-trigger)
     - [Other Triggers](#other-triggers)
     - [Combining Multiple Triggers](#combining-multiple-triggers)
     - [Combining Multiple Conditions](#combining-multiple-conditions)
@@ -60,18 +107,18 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
   - [Terse Rules](#terse-rules)
   - [Early Exit From a Rule](#early-exit-from-a-rule)
   - [Dynamic Generation of Rules](#dynamic-generation-of-rules)
+  - [Scenes and Scripts](#scenes-and-scripts)
   - [Hooks](#hooks)
+- [Console Commands](#console-commands)
 - [Calling Java From JRuby](#calling-java-from-jruby)
 - [Full Documentation](#full-documentation)
-
-Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from DSL and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
 
 ## Why Ruby?
 
 - Ruby is designed for programmers' productivity with the idea that programming should be fun for programmers.
 - Ruby emphasizes the necessity for software to be understood by humans first and computers second.
-- Ruby makes writing automation enjoyable without having to fight with compilers and interpreters.
-- Rich ecosystem of tools, including things like Rubocop to help developers write clean code and RSpec to test the libraries.
+- Ruby makes writing automation enjoyable with its readable syntax and a rich collection of useful methods in its built-in classes.
+- Rich ecosystem of tools and libraries, including things like Rubocop to help developers write clean code and RSpec to test the libraries.
 - Ruby is really good at letting one express intent and create a DSL to make that expression easier.
 
 ### Design points
@@ -86,39 +133,21 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
   - Designed and tested using [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) with [RSpec](https://rspec.info/)
 - Extensible.
   - Anyone should be able to customize and add/remove core language features
-- Easy access to the Ruby ecosystem in rules through Ruby gems.
+- Easy access to the Ruby ecosystem in rules through [Ruby Gems](https://rubygems.org/).
 
 ## Installation
 
-### Prerequisites
-
-1. openHAB 3.4+
-1. The JRuby Scripting Language Addon
-
 ### From the User Interface
 
-1. Go to `Settings -> Add-ons -> Automation` and install the jrubyscripting automation addon following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
-   In openHAB 4.0+ the defaults are set so the next step can be skipped.
-1. Go to `Settings -> Other Services -> JRuby Scripting`:
-   - **Ruby Gems**: `openhab-scripting=~>5.0`
-   - **Require Scripts**: `openhab/dsl` (not required, but recommended)
+- Go to `Settings -> Add-ons -> Automation` and install the jrubyscripting automation addon following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
 
 ### Using Files
 
-1. Edit `<OPENHAB_CONF>/services/addons.cfg` and ensure that `jrubyscripting` is included in an uncommented `automation=` list of automations to install.
-   In openHAB 4.0+ the defaults are set so the next step can be skipped.
-1. Configure JRuby openHAB services
-
-   Create a file called `jruby.cfg` in `<OPENHAB_CONF>/services/` with the following content:
-
-   ```ini
-   org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>5.0
-   org.openhab.automation.jrubyscripting:require=openhab/dsl
-   ```
+- Edit `<OPENHAB_CONF>/services/addons.cfg` and ensure that `jrubyscripting` is included in an uncommented `automation=` list of automations to install.
 
 ## Configuration
 
-After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Other Services -> JRuby Scripting_.
+After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Add-on Settings -> JRuby Scripting_.
 Alternatively, JRuby configuration parameters may be set by creating a `jruby.cfg` file in `conf/services/`.
 
 By default this add-on includes the [openhab-scripting](https://github.com/openhab/openhab-jruby) Ruby gem and automatically `require`s it.
@@ -126,16 +155,18 @@ This allows the use of [items](https://openhab.github.io/openhab-jruby/main/Open
 This functionality can be disabled for users who prefer to manage their own gems and `require`s via the add-on configuration options.
 Simply change the `gems` and `require` configuration settings.
 
-| Parameter             | Description                                                                                              |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION` |
-| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                  |
-| `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`            |
-| `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                           |
-| `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                   |
-| `dependency_tracking` | Enable dependency tracking. <br/><br/>Default: `true`                                                    |
-| `local_context`       | See notes below. <br/><br/>Default: `singlethread`                                                       |
-| `local_variables`     | See notes below. <br/><br/>Default: `transient`                                                          |
+| Parameter             | Description                                                                                                |
+|-----------------------|------------------------------------------------------------------------------------------------------------|
+| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}` |
+| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                    |
+| `bundle_gemfile`      | The path to your Gemfile relative to `$OPENHAB_CONF/automation/ruby`. <br/><br/>Default: `Gemfile`         |
+| `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`              |
+| `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                             |
+| `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                     |
+| `dependency_tracking` | Enable dependency tracking. <br/><br/>Default: `true`                                                      |
+| `local_context`       | See notes below. <br/><br/>Default: `singlethread`                                                         |
+| `local_variables`     | See notes below. <br/><br/>Default: `transient`                                                            |
+| `console`             | The default script used by `jrubyscripting console` Karaf console command. <br/><br/>Default: `irb`        |
 
 When using file-based configuration, these parameters must be prefixed with `org.openhab.automation.jrubyscripting:`, for example:
 
@@ -148,7 +179,7 @@ org.openhab.automation.jrubyscripting:require=openhab/dsl
 
 Path to where Ruby Gems will be installed to and loaded from.
 The directory will be created if necessary.
-You can use `RUBY_ENGINE_VERSION`, `RUBY_ENGINE` and/or `RUBY_VERSION` replacements in this value to automatically point to a new directory when the addon is updated with a new version of JRuby.
+You can use `{RUBY_ENGINE_VERSION}`, `{RUBY_ENGINE}` and/or `{RUBY_VERSION}` replacements in this value to automatically point to a new directory when the addon is updated with a new version of JRuby.
 
 ### gems
 
@@ -163,17 +194,33 @@ Multiple version specifiers can be added by separating them with a semicolon.
 Examples:
 
 | gem setting                                      | Description                                                                                              |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+|--------------------------------------------------|----------------------------------------------------------------------------------------------------------|
 | `openhab-scripting`                              | install the latest version of `openhab-scripting` gem                                                    |
 | `openhab-scripting=~>5.0.0`                      | install the latest version 5.0.x but not 5.1.x                                                           |
-| `openhab-scripting=~>5.0`                        | install the latest version 5.x but not 6.x                                                               |
+| `openhab-scripting=~>5.0`                        | install the latest version 5.x but not 6.x. **This is the default/recommended setting.**                 |
 | `openhab-scripting=~>5.0, faraday=~>2.7;>=2.7.4` | install `openhab-scripting` gem version 5.x and `faraday` gem version 2.7.4 or higher, but less than 3.0 |
 | `gem1= >= 2.2.1; <= 2.2.5`                       | install `gem1` gem version 2.2.1 or above, but less than or equal to version 2.2.5                       |
+
+### bundle_gemfile
+
+A path to your Gemfile, including the file name.
+It can be an absolute path, or just the file-name portion, in which case it will be resolved to `$OPENHAB_CONF/automation/ruby`.
+The default is `Gemfile`.
+
+If the Gemfile doesn't exist, the [gems](#gems) setting will take effect, and bundler will not be used.
+
+The [bundler init console command](#console-commands) can be used to create a new Gemfile, or you can create it manually.
+When this Gemfile exists, the [gems](#gems) setting will be ignored, and only the gems specified in your Gemfile will be installed and used.
+
+Note that by default, the gems listed in the Gemfile will also be required, so it's not necessary to require them again in the [require](#require) setting.
+To disable this behavior for a specific gem, add a `require: false` argument to the `gem` command within the Gemfile.
 
 ### check_update
 
 Check RubyGems for updates to the above gems when openHAB starts or JRuby settings are changed.
 Otherwise it will try to fulfil the requirements with locally installed gems, and you can manage them yourself with an external Ruby by setting the same GEM_HOME.
+
+This setting equally applies whether you're using bundler with [Gemfile](#bundle_gemfile) or the [gems](#gems) way of installing Ruby gems.
 
 ### require
 
@@ -237,7 +284,7 @@ logger.info("Kitchen Light State: #{KitchenLight.state}")
 Sending a notification:
 
 ```ruby
-notify("romeo@montague.org", "Balcony door is open")
+Notification.send("romeo@montague.org", "Balcony door is open")
 ```
 
 Querying the status of a thing:
@@ -250,8 +297,8 @@ Theoretically you could even use a system start trigger with a UI rule, and then
 
 ### File Based Scripts
 
-The JRuby Scripting addon will load scripts from `automation/ruby` in the user configuration directory.
-The system will automatically reload scripts when changes are detected to files.
+The JRuby Scripting addon will load Ruby script files with `.rb` extension from `automation/ruby` in the user configuration directory.
+The system will automatically reload scripts when changes to files are detected.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 See [File Based Rules](#file-based-rules) for examples of creating rules within your scripts.
 
@@ -262,12 +309,13 @@ When you use "Item event" as trigger (i.e. "[item] received a command", "[item] 
 This tables gives an overview of the `event` object for most common trigger types.
 For full details, explore [OpenHAB::Core::Events](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Events.html).
 
-| Property Name | Type                                                                                         | Trigger Types                          | Description                                          | Rules DSL Equivalent   |
-| ------------- | -------------------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------- | ---------------------- |
-| `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated` | State that triggered event                           | `triggeringItem.state` |
-| `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                       | Previous state of Item or Group that triggered event | `previousState`        |
-| `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`            | Command that triggered event                         | `receivedCommand`      |
-| `item`        | [Item](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)            | all                                    | Item that triggered event                            | `triggeringItem`       |
+| Property Name | Type                                                                                         | Trigger Types                                                                                        | Description                                          | Rules DSL Equivalent   |
+|---------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|------------------------------------------------------|------------------------|
+| `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated`                                                               | State that triggered event                           | `triggeringItem.state` |
+| `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                                                                                     | Previous state of Item or Group that triggered event | `previousState`        |
+| `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`                                                                          | Command that triggered event                         | `receivedCommand`      |
+| `item`        | [Item](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)            | All item related triggers                                                                            | Item that triggered event                            | `triggeringItem`       |
+| `group`       | [GroupItem](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)       | `Member of [group] changed`, `Member of [group] was updated`, `Member of [group] received a command` | Group whose member triggered the event               | `triggeringGroup`      |
 
 ```ruby
 logger.info(event.state == ON)
@@ -473,6 +521,9 @@ My_Item.ensure << ON
 logger.info("Turning off the light") if My_Item.ensure.off
 ```
 
+See [ensure_states](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#ensure_states-class_method), [ensure_states!](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#ensure_states!-class_method),
+[ensure](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Items/Ensure/Ensurable.html#ensure-instance_method).
+
 ##### Timed Commands
 
 A [Timed Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Items/TimedCommand.html) is similar to the openHAB Item's [expire parameter](https://www.openhab.org/docs/configuration/items.html#parameter-expire) but it offers more flexibility.
@@ -664,7 +715,7 @@ items.build do
 
   # dimension Temperature inferred
   number_item OutdoorTemp, format: "%.1f %unit%", unit: "°F"
-    
+
   # unit lx, dimension Illuminance, format "%s %unit%" inferred
   number_item OutdoorBrightness, state: 10_000 | "lx"
 end
@@ -721,6 +772,29 @@ model_id = things["fronius:meter:mybridge:mymeter"].properties["modelId"]
 logger.info "Fronius Smart Meter model: #{model_id}"
 ```
 
+#### Thing Builder
+
+New Things can be created via [things.build](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Things/Registry.html#build-instance_method).
+
+```ruby
+thing_config = {
+  availabilityTopic: "my-switch/status",
+  payloadAvailable: "online",
+  payloadNotAvailable: "offline"
+}
+things.build do
+  # Use an existing bridge "mqtt:broker:mosquitto"
+  thing "mqtt:topic:my-switch", "My Switch", bridge: "mqtt:broker:mosquitto", config: thing_config do
+    channel "switch1", "switch", config: {
+      stateTopic: "stat/my-switch/switch1/state", commandTopic: "cmnd/my-switch/switch1/command"
+    }
+    channel "button1", "string", config: {
+      stateTopic: "stat/my-switch/button1/state", commandTopic: "cmnd/my-switch/button1/command"
+    }
+  end
+end
+```
+
 ### Actions
 
 [openHAB built-in actions](https://www.openhab.org/docs/configuration/actions.html) are available as children of the [Actions](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html) module.
@@ -760,8 +834,9 @@ To log a message on `INFO` log level:
 logger.info("The current time is #{Time.now}")
 ```
 
-The default logger name for UI rules is `org.openhab.automation.jrubyscripting.script`.
-For file-based rules, it's based on the rule's ID, such as `org.openhab.automation.jrubyscripting.rule.myrule.rb:15`.
+The main logger prefix is `org.openhab.automation.jrubyscripting`.
+The default logger name for UI rules includes the rule ID: `org.openhab.automation.jrubyscripting.script.<RULE_ID>`.
+The logger name for file-based rules includes the rule's filename and the rule ID: `org.openhab.automation.jrubyscripting.<filename>.rule.<RULE_ID>`.
 
 To use a custom logger name:
 
@@ -770,7 +845,7 @@ logger = OpenHAB::Log.logger("org.openhab.custom")
 ```
 
 Please be aware that messages might not appear in the logs if the logger name does not start with `org.openhab`.
-This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
+This behavior is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
 
 The [logger](https://openhab.github.io/openhab-jruby/main/OpenHAB/Logger.html) is similar to a standard [Ruby Logger](https://docs.ruby-lang.org/en/master/Logger.html).
 Supported logging functions include:
@@ -809,7 +884,7 @@ end
 ```
 
 Alternatively a timer can be used in either a file-based rule or in a UI based rule using [after](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#after-class_method).
-After takes a [Duration](#durations), e.g. `10.minutes` instead of using [ZonedDateTime](https://openhab.github.io/openhab-jruby/main/OpenHAB/CoreExt/Java/ZonedDateTime.html).
+After takes a [Duration](#durations) relative to `now`, e.g. `10.minutes`, or an absolute time with [ZonedDateTime](https://openhab.github.io/openhab-jruby/main/OpenHAB/CoreExt/Java/ZonedDateTime.html) or [Time](https://openhab.github.io/openhab-jruby/main/Time.html).
 
 ```ruby
 rule "simple timer" do
@@ -911,7 +986,7 @@ Furthermore, you can manipulate the managed timers using the built-in [timers](h
 ```ruby
 # timers is a special object to access the timers created with an id
 rule "cancel all timers" do
-  received_command Cancel_All_Timers, to: ON # Send a command to this item to cancel all timers
+  received_command Cancel_All_Timers, command: ON # Send a command to this item to cancel all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.cancel(item_as_timer_id)
@@ -920,7 +995,7 @@ rule "cancel all timers" do
 end
 
 rule "reschedule all timers" do
-  received_command Reschedule_All_Timers, to: ON # Send a command to this item to restart all timers
+  received_command Reschedule_All_Timers, command: ON # Send a command to this item to restart all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.reschedule(item_as_timer_id)
@@ -1059,6 +1134,10 @@ end
 start_of_day = ZonedDateTime.now.with(LocalTime::MIDNIGHT)
 # or
 start_of_day = LocalTime::MIDNIGHT.to_zoned_date_time
+# or
+start_of_day = LocalDate.now.to_zoned_date_time
+# or using Ruby Date
+start_of_day = Date.today.to_zoned_date_time
 
 # Comparing ZonedDateTime against LocalTime with `<`
 max = Solar_Power.maximum_since(24.hours.ago)
@@ -1099,7 +1178,22 @@ Time.at(1669684403)
 # Convert Epoch second to ZonedDateTime
 Time.at(1669684403).to_zoned_date_time
 # or
-java.time.Instant.of_epoch_second(1669684403).at_zone(ZoneId.system_default)
+Instant.of_epoch_second(1669684403).at_zone(ZoneId.system_default)
+```
+
+##### Time-based QuantityType
+
+QuantityType objects with time dimension work like a Duration in arithmetic operations.
+They can be compared, added, and subtracted against Duration objects, and added/subtracted from Ruby and Java Date/Time-like objects.
+
+```java
+Number:Time Pump_Total_Runtime "Total Pump runtime today"
+```
+
+```ruby
+if Pump_Total_Runtime.state >= 8.hours
+  logger.info "The Pump has been running for 8 hours or more today"
+end
 ```
 
 #### Ranges
@@ -1148,7 +1242,7 @@ Time.now.between?("5am".."11pm")
 Time.now.holiday? # => false
 MonthDay.parse("12-25").holiday # => :christmas
 1.day.from_now.next_holiday # => :thanksgiving
-notify("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
+Notification.send("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
 
 Date.today.weekend? # => true
 Date.today.in_dayset?(:school) # => false
@@ -1247,7 +1341,7 @@ The above script can be executed, passing it the `maxTemperature` argument from 
 rules["check_temp"].trigger(maxTemperature: 80 | "°C")
 ```
 
-### Gems
+### Gems with Inline Bundler
 
 [Bundler](https://bundler.io/) is integrated, enabling any [Ruby gem](https://rubygems.org/) compatible with JRuby to be used within rules.
 This permits easy access to the vast ecosystem of libraries within the Ruby community.
@@ -1306,10 +1400,6 @@ This add-on also provides the necessary infrastructure to use Ruby for writing [
 
 The main value to be transformed is given to the script in a variable called `input`.
 Note that the values are passed to the transformation as Strings even for numeric items and data types.
-
-**Note**: In openHAB 3.4, due to an [issue](https://github.com/jruby/jruby/issues/5876) in the current version of JRuby, you will need to begin your script with `input ||= nil` (and `a ||= nil` etc. for additional query variables) so that JRuby will recognize the variables as variables--rather than method calls--when it's parsing the script.
-Otherwise you will get errors like `(NameError) undefined local variable or method 'input' for main:Object`.
-This is not necessary in openHAB 4.0+.
 
 #### File Based Transformations
 
@@ -1462,9 +1552,9 @@ See [#updated](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Bu
 
 ```ruby
 rule "Received a command" do
-  received_command DoorBell, to: ON
+  received_command DoorBell, command: ON
   run do |event|
-    notify "Someone pressed the door bell"
+    Notification.send "Someone pressed the door bell"
     play_sound "doorbell.mp3"
   end
 end
@@ -1555,6 +1645,44 @@ end
 ```
 
 See [#every](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method)
+
+#### DateTimeItem Trigger
+
+To trigger based on the date and time stored in a DateTime item, use [at ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#at-instance_method):
+
+```ruby
+rule "DateTime Trigger" do
+  at My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
+
+To trigger based on only the _time_ part of a DateTime item, use [every :day, at: ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method):
+
+```ruby
+rule "TimeOnly Trigger" do
+  every :day, at: My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
+
+#### File and Directory Change Trigger
+
+To trigger a rule when a file or directory was created, modified, or deleted, use [watch path](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#watch-instance_method).
+
+```ruby
+rule "Send notification when a new image was created" do
+  watch OpenHAB::Core.config_folder / "html/snapshots/*.jpg", for: :created
+  run do |event|
+    Snapshot_Image_Item.update_from_file(event.path)
+    Notification.send "A new snapshot was created!", title: "New Snapshot!", attachment: Snapshot_Image_Item
+  end
+end
+```
 
 #### Other Triggers
 
@@ -1656,7 +1784,7 @@ rule "Check for offline things 15 minutes after openHAB had started" do
   delay 15.minutes
   run do
     offline_things = things.select(&:offline?).map(&:uid).join(", ")
-    notify("Things that are still offline: #{offline_things}")
+    Notification.send("Things that are still offline: #{offline_things}")
   end
 end
 ```
@@ -1668,7 +1796,7 @@ See [Execution Blocks](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/
 A rule with a trigger and an execution block can be created with just one line.
 
 ```ruby
-received_command(My_Switch, to: ON) { My_Light.on }
+received_command(My_Switch, command: ON) { My_Light.on }
 ```
 
 See [Terse Rules](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Terse.html) for full details.
@@ -1740,6 +1868,24 @@ virtual_switches.each do |switch|
 end
 ```
 
+### Scenes and Scripts
+
+A `scene` can be created using the [.scene](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#scene-class_method) method.
+
+```ruby
+scene "Movie", id: "movie", description: "Set up the theatre for movie watching" do
+  Theatre_Window_Blinds.down
+  Theatre_Screen_Curtain.up
+  Theatre_Mood_Light.on
+  Theatre_Light.off
+  Theatre_Projector.on
+  Theatre_Receiver.on
+end
+```
+
+To create a `script`, use the [.script](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#script-class_method) method.
+Note that scripts can be executed with additional contexts.
+
 ### Hooks
 
 File based scripts can also register [hooks](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/ScriptHandling.html) that will be called when the script has completed loading (`script_loaded`) and when it gets unloaded (`script_unloaded`).
@@ -1758,6 +1904,19 @@ script_unloaded do
   logger.info("script unloaded")
 end
 ```
+
+## Console Commands
+
+Karaf Console commands are provided for performing maintenance and troubleshooting tasks.
+The commands are prefixed with `openhab:jrubyscripting` or just `jrubyscripting` followed by the sub-commands listed below:
+
+| Command   | Description                                                                                                      |
+|-----------|------------------------------------------------------------------------------------------------------------------|
+| `info`    | Displays information about JRuby Scripting add-on                                                                |
+| `console` | Starts an interactive JRuby REPL console which allows you to interact directly with the current openHAB runtime. |
+| `bundle`  | Runs Ruby bundler with your Gemfile as configured with [bundle_gemfile](#bundle_gemfile) setting                 |
+| `gem`     | Runs Ruby gem command to install, upgrade, or uninstall gems that are located in your [gem_home](#gem_home)      |
+| `prune`   | Removes gem files and directories from older openhab installations.                                              |
 
 ## Calling Java From JRuby
 

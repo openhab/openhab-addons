@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,12 +51,12 @@ public class DummyThing implements Thing {
 
     @Override
     public List<@NonNull Channel> getChannels() {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<@NonNull Channel> getChannelsOfGroup(String channelGroupId) {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -117,7 +118,7 @@ public class DummyThing implements Thing {
 
     @Override
     public Map<@NonNull String, @NonNull String> getProperties() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     @Override
@@ -141,5 +142,18 @@ public class DummyThing implements Thing {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    @Override
+    public void setSemanticEquipmentTag(@Nullable SemanticTag semanticEquipmentTag) {
+    }
+
+    @Override
+    public void setSemanticEquipmentTag(@Nullable String semanticEquipmentTag) {
+    }
+
+    @Override
+    public @Nullable String getSemanticEquipmentTag() {
+        return null;
     }
 }

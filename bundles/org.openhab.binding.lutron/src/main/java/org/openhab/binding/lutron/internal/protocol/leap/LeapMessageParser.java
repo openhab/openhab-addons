@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,12 +20,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ExceptionDetail;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneExpanded;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +98,7 @@ public class LeapMessageParser {
                     handleReadResponseMessage(message);
                     break;
                 case "UpdateResponse":
+                    handleReadResponseMessage(message);
                     break;
                 case "SubscribeResponse":
                     // Subscribe responses can contain bodies with data
@@ -188,6 +191,9 @@ public class LeapMessageParser {
                 case "OneDeviceDefinition":
                     parseOneDeviceDefinition(body);
                     break;
+                case "OneButtonStatusEvent":
+                    parseOneButtonStatusEvent(body);
+                    break;
                 case "MultipleAreaDefinition":
                     parseMultipleAreaDefinition(body);
                     break;
@@ -207,6 +213,9 @@ public class LeapMessageParser {
                     break;
                 case "MultipleZoneStatus":
                     parseMultipleZoneStatus(body);
+                    break;
+                case "MultipleZoneExpandedStatus":
+                    parseMultipleZoneExpandedStatus(body);
                     break;
                 default:
                     logger.debug("Unknown MessageBodyType received: {}", messageBodyType);
@@ -238,7 +247,7 @@ public class LeapMessageParser {
 
     private <T extends AbstractMessageBody> List<T> parseBodyMultiple(JsonObject messageBody, String memberName,
             Class<T> type) {
-        List<T> objList = new LinkedList<T>();
+        List<T> objList = new LinkedList<>();
         try {
             if (messageBody.has(memberName)) {
                 JsonArray jsonArray = messageBody.get(memberName).getAsJsonArray();
@@ -270,6 +279,16 @@ public class LeapMessageParser {
         ZoneStatus zoneStatus = parseBodySingle(messageBody, "ZoneStatus", ZoneStatus.class);
         if (zoneStatus != null) {
             callback.handleZoneUpdate(zoneStatus);
+        }
+    }
+
+    /**
+     * Parses a OneButtonStatusEvent message body. Calls handleButtonStatusEvent() to dispatch button events.
+     */
+    private void parseOneButtonStatusEvent(JsonObject messageBody) {
+        ButtonStatus buttonStatus = parseBodySingle(messageBody, "ButtonStatus", ButtonStatus.class);
+        if (buttonStatus != null) {
+            callback.handleButtonStatus(buttonStatus);
         }
     }
 
@@ -313,6 +332,12 @@ public class LeapMessageParser {
             logger.debug("Setting zone {} to level: {}", status.href, status.level);
             callback.handleZoneUpdate(status);
         }
+    }
+
+    private void parseMultipleZoneExpandedStatus(JsonObject messageBody) {
+        List<ZoneExpanded> zoneExpandedList = parseBodyMultiple(messageBody, "ZoneExpandedStatuses",
+                ZoneExpanded.class);
+        callback.handleMultipleZoneExpandedUpdate(zoneExpandedList);
     }
 
     /**

@@ -1,0 +1,128 @@
+ {
+  "id": "TapoStrip_5NiN0Y8GAUD78p4neKk9EL",
+  "name": "Sunset",
+  "brightness": 100,
+  "display_colors": [
+    [
+      0,
+      100,
+      100
+    ],
+    [
+      30,
+      95,
+      100
+    ],
+    [
+      30,
+      0,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 1,
+  "duration": 600,
+  "expansion_strategy": 2,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 1,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      30,
+      0,
+      100
+    ],
+    [
+      30,
+      20,
+      100
+    ],
+    [
+      30,
+      50,
+      99
+    ],
+    [
+      30,
+      60,
+      98
+    ],
+    [
+      30,
+      70,
+      97
+    ],
+    [
+      30,
+      75,
+      95
+    ],
+    [
+      30,
+      80,
+      93
+    ],
+    [
+      30,
+      90,
+      90
+    ],
+    [
+      30,
+      95,
+      85
+    ],
+    [
+      30,
+      100,
+      80
+    ],
+    [
+      20,
+      100,
+      70
+    ],
+    [
+      20,
+      100,
+      60
+    ],
+    [
+      15,
+      100,
+      50
+    ],
+    [
+      10,
+      100,
+      40
+    ],
+    [
+      0,
+      100,
+      30
+    ],
+    [
+      0,
+      100,
+      0
+    ]
+  ],
+  "spread": 1,
+  "transition": 60000,
+  "transition_range": null,
+  "type": "pulse",
+  "trans_sequence": [],
+  "run_time": 0
+}

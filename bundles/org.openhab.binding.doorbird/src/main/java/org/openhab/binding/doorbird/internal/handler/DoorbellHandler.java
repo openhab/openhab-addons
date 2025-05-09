@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,13 +38,13 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.doorbird.internal.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
 import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
+import org.openhab.binding.doorbird.internal.api.DoorbirdSession;
 import org.openhab.binding.doorbird.internal.api.SipStatus;
 import org.openhab.binding.doorbird.internal.audio.DoorbirdAudioSink;
 import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -94,17 +94,16 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private DoorbirdAPI api = new DoorbirdAPI();
 
+    private @Nullable DoorbirdSession session;
+
     private BundleContext bundleContext;
 
     private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
 
-    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
-    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
-            BundleContext bundleContext) {
+    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
         this.bundleContext = bundleContext;
         udpListener = new DoorbirdUdpListener(this);
@@ -130,6 +129,7 @@ public class DoorbellHandler extends BaseThingHandler {
         }
         api.setAuthorization(host, user, password);
         api.setHttpClient(httpClient);
+        session = api.getSession();
         startImageRefreshJob();
         startUDPListenerJob();
         startAudioSink();
@@ -187,6 +187,11 @@ public class DoorbellHandler extends BaseThingHandler {
         updateState(CHANNEL_MOTION, OnOffType.ON);
         startMotionOffJob();
         updateMotionMontage();
+    }
+
+    // Callback used by listener to get session object
+    public @Nullable DoorbirdSession getSession() {
+        return session;
     }
 
     @Override
@@ -573,6 +578,6 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private DateTimeType getLocalDateTimeType(long dateTimeSeconds) {
-        return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds).atZone(timeZoneProvider.getTimeZone()));
+        return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds));
     }
 }

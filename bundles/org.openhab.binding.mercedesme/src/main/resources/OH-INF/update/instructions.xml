@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="mercedesme:bev">
+		<instruction-set targetVersion="1">
+			<update-channel id="aux-heat" groupIds="hvac">
+				<type>mercedesme:aux-heat</type>
+				<label>Auxiliary Heating Control</label>
+				<description>Switch on/off auxiliary heating</description>
+			</update-channel>
+			<add-channel id="aux-status" groupIds="hvac">
+				<type>mercedesme:aux-status</type>
+				<label>Auxiliary Heating Status</label>
+				<description>Auxiliary heating status</description>
+			</add-channel>
+			<update-channel id="active-hvac" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Control</label>
+				<description>Switch on/off precondition air conditioning</description>
+			</update-channel>
+			<update-channel id="temperature-hvac" groupIds="hvac">
+				<type>mercedesme:temperature-hvac</type>
+				<label> AC Setpoint Temperature</label>
+			</update-channel>
+			<add-channel id="ac-status" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Status</label>
+				<description>Status of precondition air conditioning</description>
+			</add-channel>
+			<add-channel id="status-charge" groupIds="charge">
+				<type>mercedesme:status-charge</type>
+				<label>Charge Status</label>
+				<description>Actual charging status</description>
+			</add-channel>
+			<add-channel id="error-charge" groupIds="charge">
+				<type>mercedesme:error-charge</type>
+				<label>Charge Error</label>
+				<description>Actual charging error if available</description>
+			</add-channel>
+			<add-channel id="accel" groupIds="eco">
+				<type>mercedesme:accel</type>
+				<label>Acceleration Score</label>
+				<description>Score for smooth acceleration</description>
+			</add-channel>
+			<add-channel id="coasting" groupIds="eco">
+				<type>mercedesme:coasting</type>
+				<label>Coasting Score</label>
+				<description>Score for driving without braking</description>
+			</add-channel>
+			<add-channel id="constant" groupIds="eco">
+				<type>mercedesme:constant</type>
+				<label>Constant Score</label>
+				<description>Score for driving with constant speed</description>
+			</add-channel>
+			<add-channel id="bonus" groupIds="eco">
+				<type>mercedesme:bonus</type>
+				<label>Bonus Range</label>
+				<description>Additional range vs. very sportive driver</description>
+			</add-channel>
+			<add-channel id="status-pos" groupIds="position">
+				<type>mercedesme:status-pos</type>
+				<label>Status Positioning</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="mercedesme:hybrid">
+		<instruction-set targetVersion="1">
+			<update-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="aux-heat" groupIds="hvac">
+				<type>mercedesme:aux-heat</type>
+				<label>Auxiliary Heating Control</label>
+				<description>Switch on/off auxiliary heating</description>
+			</update-channel>
+			<add-channel id="aux-status" groupIds="hvac">
+				<type>mercedesme:aux-status</type>
+				<label>Auxiliary Heating Status</label>
+				<description>Auxiliary heating status</description>
+			</add-channel>
+			<update-channel id="active-hvac" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Control</label>
+				<description>Switch on/off precondition air conditioning</description>
+			</update-channel>
+			<update-channel id="temperature-hvac" groupIds="hvac">
+				<type>mercedesme:temperature-hvac</type>
+				<label> AC Setpoint Temperature</label>
+			</update-channel>
+			<add-channel id="ac-status" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Status</label>
+				<description>Status of precondition air conditioning</description>
+			</add-channel>
+			<add-channel id="status-charge" groupIds="charge">
+				<type>mercedesme:status-charge</type>
+				<label>Charge Status</label>
+				<description>Actual charging status</description>
+			</add-channel>
+			<add-channel id="error-charge" groupIds="charge">
+				<type>mercedesme:error-charge</type>
+				<label>Charge Error</label>
+				<description>Actual charging error if available</description>
+			</add-channel>
+			<add-channel id="accel" groupIds="eco">
+				<type>mercedesme:accel</type>
+				<label>Acceleration Score</label>
+				<description>Score for smooth acceleration</description>
+			</add-channel>
+			<add-channel id="coasting" groupIds="eco">
+				<type>mercedesme:coasting</type>
+				<label>Coasting Score</label>
+				<description>Score for driving without braking</description>
+			</add-channel>
+			<add-channel id="constant" groupIds="eco">
+				<type>mercedesme:constant</type>
+				<label>Constant Score</label>
+				<description>Score for driving with constant speed</description>
+			</add-channel>
+			<add-channel id="bonus" groupIds="eco">
+				<type>mercedesme:bonus</type>
+				<label>Bonus Range</label>
+				<description>Additional range vs. very sportive driver</description>
+			</add-channel>
+			<add-channel id="status-pos" groupIds="position">
+				<type>mercedesme:status-pos</type>
+				<label>Status Positioning</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="mercedesme:combustion">
+		<instruction-set targetVersion="1">
+			<update-channel id="distance" groupIds="trip">
+				<type>mercedesme:distance</type>
+			</update-channel>
+			<update-channel id="time" groupIds="trip">
+				<type>mercedesme:driven-time</type>
+			</update-channel>
+			<update-channel id="avg-speed" groupIds="trip">
+				<type>mercedesme:avg-speed</type>
+			</update-channel>
+			<update-channel id="cons-conv" groupIds="trip">
+				<type>mercedesme:consumption-conv</type>
+			</update-channel>
+			<update-channel id="distance-reset" groupIds="trip">
+				<type>mercedesme:distance-reset</type>
+			</update-channel>
+			<update-channel id="time-reset" groupIds="trip">
+				<type>mercedesme:driven-time-reset</type>
+			</update-channel>
+			<update-channel id="avg-speed-reset" groupIds="trip">
+				<type>mercedesme:avg-speed-reset</type>
+			</update-channel>
+			<update-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</update-channel>
+			<update-channel id="cons-conv-unit" groupIds="trip">
+				<type>mercedesme:consumption-conv-unit</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="aux-heat" groupIds="hvac">
+				<type>mercedesme:aux-heat</type>
+				<label>Auxiliary Heating Control</label>
+				<description>Switch on/off auxiliary heating</description>
+			</update-channel>
+			<add-channel id="aux-status" groupIds="hvac">
+				<type>mercedesme:aux-status</type>
+				<label>Auxiliary Heating Status</label>
+				<description>Auxiliary heating status</description>
+			</add-channel>
+			<update-channel id="active-hvac" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Control</label>
+				<description>Switch on/off precondition air conditioning</description>
+			</update-channel>
+			<update-channel id="temperature-hvac" groupIds="hvac">
+				<type>mercedesme:temperature-hvac</type>
+				<label> AC Setpoint Temperature</label>
+			</update-channel>
+			<add-channel id="ac-status" groupIds="hvac">
+				<type>mercedesme:ac-status</type>
+				<label>AC Precondition Status</label>
+				<description>Status of precondition air conditioning</description>
+			</add-channel>
+			<add-channel id="accel" groupIds="eco">
+				<type>mercedesme:accel</type>
+				<label>Acceleration Score</label>
+				<description>Score for smooth acceleration</description>
+			</add-channel>
+			<add-channel id="coasting" groupIds="eco">
+				<type>mercedesme:coasting</type>
+				<label>Coasting Score</label>
+				<description>Score for driving without braking</description>
+			</add-channel>
+			<add-channel id="constant" groupIds="eco">
+				<type>mercedesme:constant</type>
+				<label>Constant Score</label>
+				<description>Score for driving with constant speed</description>
+			</add-channel>
+			<add-channel id="bonus" groupIds="eco">
+				<type>mercedesme:bonus</type>
+				<label>Bonus Range</label>
+				<description>Additional range vs. very sportive driver</description>
+			</add-channel>
+			<add-channel id="status-pos" groupIds="position">
+				<type>mercedesme:status-pos</type>
+				<label>Status Positioning</label>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="adblue-level" groupIds="range">
+				<type>mercedesme:adblue-level</type>
+				<label>AdBlue Level</label>
+				<description>AdBlue tank level in percent </description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

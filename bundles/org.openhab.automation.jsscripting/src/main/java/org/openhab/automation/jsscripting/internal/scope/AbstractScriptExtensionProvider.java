@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.jsscripting.internal.scope;
 
 import java.util.Collection;
@@ -33,8 +32,8 @@ import org.osgi.service.component.annotations.Activate;
  * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
-    private Map<String, Function<String, Object>> types = new HashMap<>();
-    private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
+    protected final Map<String, Function<String, Object>> types = new HashMap<>();
+    protected final Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
 
     protected abstract String getPresetName();
 

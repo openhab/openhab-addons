@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,11 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneExpanded;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 
 /**
@@ -40,6 +42,8 @@ public interface LeapMessageParserCallbacks {
 
     void handleZoneUpdate(ZoneStatus zoneStatus);
 
+    void handleMultipleZoneExpandedUpdate(List<ZoneExpanded> expandedZones);
+
     void handleGroupUpdate(int groupNumber, String occupancyStatus);
 
     void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
@@ -49,4 +53,6 @@ public interface LeapMessageParserCallbacks {
     void handleMultipleAreaDefinition(List<Area> areaList);
 
     void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList);
+
+    void handleButtonStatus(ButtonStatus buttonStatus);
 }

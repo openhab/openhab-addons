@@ -7,6 +7,7 @@
 	<thing-type id="omnik">
 		<label>OmnikInverter Binding Thing</label>
 		<description>Thing for OmnikInverter Binding</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 
@@ -102,6 +103,12 @@
 			<parameter name="serial" type="integer" required="true">
 				<label>Serial</label>
 				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="5">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

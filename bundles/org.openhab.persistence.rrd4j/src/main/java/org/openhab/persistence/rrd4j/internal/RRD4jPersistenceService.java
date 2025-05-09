@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -33,6 +34,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,12 +65,14 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistedItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceCronStrategy;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -77,6 +81,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.DsType;
+import org.rrd4j.core.Archive;
 import org.rrd4j.core.FetchData;
 import org.rrd4j.core.FetchRequest;
 import org.rrd4j.core.RrdDb;
@@ -95,11 +100,22 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  * @author Jan N. Klug - some improvements
  * @author Karel Goderis - remove TimerThread dependency
+ * @author Mark Herwege - restore on startup, retrieve persistedItem
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL, property = Constants.SERVICE_PID
+                + "=org.openhab.rrd4j")
 public class RRD4jPersistenceService implements QueryablePersistenceService {
+
+    private record Key(long timestamp, String name) implements Comparable<Key> {
+        @Override
+        public int compareTo(Key other) {
+            int c = Long.compare(timestamp, other.timestamp);
+
+            return (c == 0) ? Objects.compare(name, other.name, String::compareTo) : c;
+        }
+    }
 
     public static final String SERVICE_ID = "rrd4j";
 
@@ -115,7 +131,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
-    private final ConcurrentSkipListMap<Long, Map<String, Double>> storageMap = new ConcurrentSkipListMap<>();
+    private final ConcurrentSkipListMap<Key, Double> storageMap = new ConcurrentSkipListMap<>(Key::compareTo);
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -317,23 +333,23 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long now = System.currentTimeMillis() / 1000;
-        Double oldValue = storageMap.computeIfAbsent(now, t -> new ConcurrentHashMap<>()).put(name, value);
+        Double oldValue = storageMap.put(new Key(now, name), value);
         if (oldValue != null && !oldValue.equals(value)) {
             logger.debug(
                     "Discarding value {} for item {} with timestamp {} because a new value ({}) arrived with the same timestamp.",
-                    oldValue, name, now, value);
+                    oldValue, item.getName(), now, value);
         }
     }
 
     private void doStore(boolean force) {
+        long now = System.currentTimeMillis() / 1000;
         while (!storageMap.isEmpty()) {
-            long timestamp = storageMap.firstKey();
-            long now = System.currentTimeMillis() / 1000;
-            if (now > timestamp || force) {
+            Key key = storageMap.firstKey();
+            if (now > key.timestamp || force) {
                 // no new elements can be added for this timestamp because we are already past that time or the service
                 // requires forced storing
-                Map<String, Double> values = storageMap.pollFirstEntry().getValue();
-                values.forEach((name, value) -> writePointToDatabase(name, value, timestamp));
+                Double value = storageMap.pollFirstEntry().getValue();
+                writePointToDatabase(key.name, value, key.timestamp);
             } else {
                 return;
             }
@@ -360,9 +376,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (timestamp - 1 > db.getLastUpdateTime()) {
                     // only do it if there is not already a value
                     double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                    if (!Double.isNaN(lastValue)) {
-                        Sample sample = db.createSample();
-                        sample.setTime(timestamp - 1);
+                    if (!Double.isNaN(lastValue) && lastValue != value) {
+                        Sample sample = db.createSample(timestamp - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
                         logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
@@ -374,12 +389,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
         }
         try {
-            Sample sample = db.createSample();
-            sample.setTime(timestamp);
+            Sample sample = db.createSample(timestamp);
             double storeValue = value;
             if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) {
                 // counter values must be adjusted by stepsize
-                storeValue = value * db.getRrdDef().getStep();
+                storeValue = value * db.getHeader().getStep();
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
             sample.update();
@@ -401,8 +415,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         ZonedDateTime filterBeginDate = filter.getBeginDate();
         ZonedDateTime filterEndDate = filter.getEndDate();
+        Ordering ordering = filter.getOrdering();
         if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
             throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
         }
@@ -414,9 +434,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
         logger.trace("Querying rrd4j database for item '{}'", itemName);
 
+        String localAlias = alias != null ? alias : itemName;
         RrdDb db = null;
         try {
-            db = getDB(itemName, false);
+            db = getDB(localAlias, false);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();
@@ -430,6 +451,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
+            if (item instanceof GroupItem groupItem) {
+                item = groupItem.getBaseItem();
+            }
             if (item instanceof NumberItem numberItem) {
                 // we already retrieve the unit here once as it is a very costly operation,
                 // see https://github.com/openhab/openhab-addons/issues/8928
@@ -443,31 +467,32 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         long end = filterEndDate == null ? System.currentTimeMillis() / 1000
                 : filterEndDate.toInstant().getEpochSecond();
 
+        DoubleFunction<State> toState = toStateMapper(item, unit);
+
         try {
             if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more inaccurate, we only support descending order
-                // and a single return value if no begin date is given - this case is required specifically for the
-                // historicState() query, which we want to support
-                if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
-                        && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
-                            .getRrdDef().getStep()) {
+                // and only return values from the most granular archive of the end date - this case is required
+                // specifically for the persistedState() and previousChange() queries, which we want to support
+                if (ordering == Ordering.DESCENDING) {
+                    if (filter.getPageSize() == 1 && filter.getPageNumber() == 0 && (filterEndDate == null || Duration
+                            .between(filterEndDate, ZonedDateTime.now()).getSeconds() < db.getHeader().getStep())) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
-                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item, unit),
-                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
-                                            ZoneId.systemDefault()));
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
+                                    Instant.ofEpochSecond(db.getLastArchiveUpdateTime()));
                             return List.of(rrd4jItem);
-                        } else {
-                            return List.of();
                         }
                     } else {
-                        start = end;
+                        ConsolFun consolFun = getConsolidationFunction(db);
+                        FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
+                        Archive archive = db.findMatchingArchive(request);
+                        start = archive.getStartTime() - archive.getArcStep();
                     }
                 } else {
                     throw new UnsupportedOperationException(
-                            "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
+                            "rrd4j does not allow querys without a begin date, unless order is descending");
                 }
             } else {
                 start = filterBeginDate.toInstant().getEpochSecond();
@@ -487,10 +512,27 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             List<HistoricItem> items = new ArrayList<>();
             long ts = result.getFirstTimestamp();
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
-            for (double value : result.getValues(DATASOURCE_STATE)) {
+
+            double prevValue = Double.NaN;
+            State prevState = null;
+            double[] values = result.getValues(DATASOURCE_STATE);
+            step = (ordering == Ordering.DESCENDING) ? -1 * step : step;
+            int startIndex = (ordering == Ordering.DESCENDING) ? values.length - 1 : 0;
+            int endIndex = (ordering == Ordering.DESCENDING) ? -1 : values.length;
+            int indexStep = (ordering == Ordering.DESCENDING) ? -1 : 1;
+            for (int i = startIndex; i != endIndex; i = i + indexStep) {
+                double value = values[i];
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
-                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+                    State state;
+
+                    if (prevValue == value) {
+                        state = prevState;
+                    } else {
+                        prevState = state = toState.apply(value);
+                        prevValue = value;
+                    }
+
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, Instant.ofEpochSecond(ts));
                     items.add(rrd4jItem);
                 }
                 ts += step;
@@ -506,6 +548,147 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 logger.debug("Error closing rrd4j database: {}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Returns a {@link PersistedItem} representing the persisted state, last update and change timestamps and previous
+     * persisted state. This can be used to restore the full state of an item.
+     * The default implementation queries the service and iterates backward to find the last change and previous
+     * persisted state. Persistence services can override this default implementation with a more specific or efficient
+     * algorithm.
+     *
+     * This method overrides the default implementation in the interface as queries without a begin date are not allowed
+     * in the rrd4j database. If the last change cannot be found in the archive containing the last update, a null value
+     * for the last change and previous persisted state will be returned with {@link PersistedItem}.
+     *
+     * @param itemName name of item
+     * @param alias alias of item
+     *
+     * @return a {@link PersistedItem} or null if the item has not been persisted
+     */
+    @Override
+    public @Nullable PersistedItem persistedItem(String itemName, @Nullable String alias) {
+        double currentValue = Double.NaN;
+        double previousValue = Double.NaN;
+        long lastUpdate = System.currentTimeMillis() / 1000;
+        long lastChange = 0L;
+
+        String localAlias = alias != null ? alias : itemName;
+
+        RrdDb db = null;
+        try {
+            db = getDB(localAlias, false);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
+            return null;
+        }
+        if (db == null) {
+            logger.debug("Could not find item '{}' in rrd4j database", itemName);
+            return null;
+        }
+
+        try {
+            // First get the last update state and time
+            currentValue = db.getLastDatasourceValue(DATASOURCE_STATE);
+            lastUpdate = db.getLastArchiveUpdateTime();
+            if (Double.isNaN(currentValue)) {
+                logger.debug("Could not find persisted value for item '{}' in rrd4j database", itemName);
+                return null;
+            }
+
+            // Then query backwards in the archive that contains the last update. Don't go beyond as the aggregation
+            // function may make comparison impossible, and we want to keep the performance impact low. If there is no
+            // change found in this archive, don't update last change.
+            ConsolFun consolFun = getConsolidationFunction(db);
+            FetchRequest request = db.createFetchRequest(consolFun, lastUpdate, lastUpdate, 1);
+            Archive archive = db.findMatchingArchive(request);
+            long archiveStart = archive.getStartTime() - archive.getArcStep();
+            if (archiveStart > lastUpdate) {
+                logger.debug("rrd4j for item '{}': archive start ({}) > last update ({}), only restore last update",
+                        itemName, archiveStart, lastUpdate);
+                archiveStart = lastUpdate;
+            }
+            request = db.createFetchRequest(consolFun, archiveStart, lastUpdate, 1);
+            FetchData result = request.fetchData();
+
+            long ts = result.getLastTimestamp();
+            long step = result.getRowCount() > 1 ? result.getStep() : 0;
+            double[] values = result.getValues(DATASOURCE_STATE);
+            for (int i = values.length - 1; i >= 0; i--) {
+                double value = values[i];
+                if (value != currentValue) {
+                    previousValue = value;
+                    lastChange = ts;
+                    break;
+                }
+                ts -= step;
+            }
+        } catch (IOException e) {
+            logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
+            return null;
+        } finally {
+            try {
+                db.close();
+            } catch (IOException e) {
+                logger.debug("Error closing rrd4j database: {}", e.getMessage());
+            }
+        }
+
+        Item item = null;
+        Unit<?> unit = null;
+        try {
+            item = itemRegistry.getItem(itemName);
+            if (item instanceof GroupItem groupItem) {
+                item = groupItem.getBaseItem();
+            }
+            if (item instanceof NumberItem numberItem) {
+                unit = numberItem.getUnit();
+            }
+        } catch (ItemNotFoundException e) {
+            logger.debug("Could not find item '{}' in registry", itemName);
+        }
+
+        DoubleFunction<State> toState = toStateMapper(item, unit);
+
+        final State state = toState.apply(currentValue);
+        final ZonedDateTime lastStateUpdate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastUpdate),
+                ZoneId.systemDefault());
+        final State lastState = !Double.isNaN(previousValue) ? toState.apply(previousValue) : null;
+        // If we don't find a previous state in the archive we queried, we also don't know when it last changed
+        final ZonedDateTime lastStateChange = !Double.isNaN(previousValue)
+                ? ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastChange), ZoneId.systemDefault())
+                : null;
+
+        logger.trace(
+                "Restore from rrd4 item '{}', state '{}', lastStateUpdate '{}', lastState '{}', lastStateChange'{}'",
+                itemName, state, lastStateUpdate, lastState, lastStateChange);
+        return new PersistedItem() {
+
+            @Override
+            public ZonedDateTime getTimestamp() {
+                return lastStateUpdate;
+            }
+
+            @Override
+            public State getState() {
+                return state;
+            }
+
+            @Override
+            public String getName() {
+                return itemName;
+            }
+
+            @Override
+            public @Nullable ZonedDateTime getLastStateChange() {
+                return lastStateChange;
+            }
+
+            @Override
+            public @Nullable State getLastState() {
+                return lastState;
+            }
+        };
     }
 
     @Override
@@ -597,31 +780,33 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     public ConsolFun getConsolidationFunction(RrdDb db) {
         try {
-            return db.getRrdDef().getArcDefs()[0].getConsolFun();
+            return db.getArchive(0).getConsolFun();
         } catch (IOException e) {
             return ConsolFun.MAX;
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
-        if (item instanceof GroupItem groupItem) {
-            item = groupItem.getBaseItem();
-        }
-
+    /**
+     * Get the state Mapper for a given item
+     *
+     * @param item the item (in case of a group item, the base item has to be supplied)
+     * @param unit the unit to use
+     * @return the state mapper
+     */
+    private <Q extends Quantity<Q>> DoubleFunction<State> toStateMapper(@Nullable Item item, @Nullable Unit<Q> unit) {
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return OnOffType.from(value != 0.0d);
+            return (value) -> OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
-            return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            return (value) -> value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
             // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-            return new PercentType((int) Math.round(value * 100));
+            return (value) -> new PercentType((int) Math.round(value * 100));
         } else if (item instanceof NumberItem) {
             if (unit != null) {
-                return new QuantityType(value, unit);
+                return (value) -> new QuantityType<>(value, unit);
             }
         }
-        return new DecimalType(value);
+        return DecimalType::new;
     }
 
     private boolean isSupportedItemType(Item item) {

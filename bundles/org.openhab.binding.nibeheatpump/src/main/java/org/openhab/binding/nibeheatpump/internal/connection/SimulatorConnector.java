@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.MessageFactory;
@@ -48,7 +49,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private static final Random RANDOM = new Random();
 
-    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
+    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<>() {
         {
             add(new ModbusValue(43009, 287));
             add(new ModbusValue(43008, 100));
@@ -124,6 +125,10 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private class Reader extends Thread {
         boolean interrupted = false;
+
+        public Reader() {
+            super(String.format("OH-binding-%s-%s", NibeHeatPumpBindingConstants.BINDING_ID, "SimulatorReader"));
+        }
 
         @Override
         public void interrupt() {

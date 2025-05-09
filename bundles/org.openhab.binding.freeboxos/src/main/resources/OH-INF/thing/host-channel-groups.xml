@@ -13,7 +13,7 @@
 			</channel>
 			<channel id="ip-address" typeId="ip-address">
 				<label>IP Address</label>
-				<description>IPv4 Address of the host</description>
+				<description>IPv4 Address of the network device</description>
 			</channel>
 		</channels>
 	</channel-group-type>

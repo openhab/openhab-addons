@@ -8,4 +8,20 @@
 	<description>This binding is compatible with Epson projectors which support the ESC/VP21 protocol</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>sddp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*epson.*</regex>
+				</match-property>
+				<match-property>
+					<name>type</name>
+					<regex>(?i).*projector.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

@@ -29,6 +29,8 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `confirm`               | integer | Integer 10-10800 (10s steps) Time in seconds after which a message should be sent again before it is confirmed. (default: `0`). **advanced**          |
 | `time2live`             | integer | Time in minutes, after a message automatically gets purged (default: `0`). **advanced**                                                               |
 | `answer`                | integer | 1 = enables reply to push notifications (default: `0`). **advanced**                                                                                  |
+| `answeroptions`         | text    |  specify predefined answer options divided by a pipe character, e.g. Yes\|No\|Maybe **advanced**                                                      |
+| `answerforce`           | integer | 1 = force an answer. The user will be prompted to answer, the message will be open directly. (default: `0`). **advanced**                             |
 
 The `retry` and `expire` parameters are only used for emergency-priority notifications.
 

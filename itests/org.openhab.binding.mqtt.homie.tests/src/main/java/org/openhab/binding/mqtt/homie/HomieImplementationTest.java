@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -165,6 +165,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
                 "Connection " + homieConnection.getClientId() + " not retrieving all topics ");
     }
 
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12667")
     @Test
     public void retrieveOneAttribute() throws Exception {
         WaitForTopicValue watcher = new WaitForTopicValue(homieConnection, DEVICE_TOPIC + "/$homie");
@@ -281,8 +282,8 @@ public class HomieImplementationTest extends MqttOSGiTest {
         assertThat(property.attributes.format, is("-100:100"));
         verify(property).attributesReceived();
         assertNotNull(property.getChannelState());
-        assertThat(property.getType().getState().getMinimum().intValue(), is(-100));
-        assertThat(property.getType().getState().getMaximum().intValue(), is(100));
+        assertThat(property.getStateDescription().getMinimum().intValue(), is(-100));
+        assertThat(property.getStateDescription().getMaximum().intValue(), is(100));
 
         // Check property and property attributes
         Property propertyBell = node.properties.get("doorbell");

@@ -6,7 +6,7 @@ A binding for D-Link Smart Home devices.
 
 ### DCH-S150 (WiFi motion sensor)
 
-The binding has been tested with hardware revisions A1 and A2 running firmware version 1.22. 
+The binding has been tested with hardware revisions A1 and A2 running firmware version 1.22.
 The mydlink Home service is now end of life and the device requires a daily reboot (performed by the binding) to keep it responsive.
 
 ## Discovery

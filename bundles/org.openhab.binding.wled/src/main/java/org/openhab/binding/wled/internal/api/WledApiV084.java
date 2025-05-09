@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -428,7 +428,7 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setUdpRecieve(boolean bool) throws ApiException {
+    public void setUdpReceive(boolean bool) throws ApiException {
         postState("{\"udpn\":{\"recv\":" + bool + "}}");
     }
 
@@ -537,5 +537,11 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setSleepTargetBrightness(PercentType percent) throws ApiException {
         postState("{\"nl\":{\"tbri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}}");
+    }
+
+    @Override
+    public void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException {
+        // only API>0.9.0 supports segments, so we have to set the value for all stripes here
+        sendGetRequest(whiteChannel + brightness.toBigDecimal().multiply(BIG_DECIMAL_2_55));
     }
 }

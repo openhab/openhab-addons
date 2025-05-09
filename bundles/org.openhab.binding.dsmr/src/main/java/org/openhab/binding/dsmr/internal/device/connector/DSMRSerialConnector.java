@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.dsmr.internal.device.connector;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -172,6 +172,10 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 logger.warn("Possible bug because a new serial port value was set during opening new port.");
                 errorStatus = DSMRErrorStatus.PORT_INTERNAL_ERROR;
             }
+        } catch (final IllegalStateException ise) {
+            logger.debug("Failed communicating, probably time out", ise);
+
+            errorStatus = DSMRErrorStatus.PORT_PORT_TIMEOUT;
         } catch (final IOException ioe) {
             logger.debug("Failed to get inputstream for serialPort", ioe);
 
@@ -245,7 +249,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                             "Port does {} not support requested port settings (invalid dsmr:portsettings parameter?): {}",
                             serialPortName, portSettings);
                     dsmrConnectorListener.handleError(DSMRErrorStatus.PORT_NOT_COMPATIBLE,
-                            Optional.ofNullable(e.getMessage()).orElse(""));
+                            Objects.requireNonNullElse(e.getMessage(), ""));
                 }
             } else {
                 restart(portSettings);

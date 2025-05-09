@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This class handles the JSON communication with the Wifi Modul of the Stove
@@ -39,118 +41,77 @@ public class HaasSohnpelletstoveJSONCommunication {
     private HaasSohnpelletstoveConfiguration config;
 
     private Gson gson;
-    private @Nullable String xhspin;
+    private String xhspin = "";
     private @Nullable HaasSohnpelletstoveJsonDataDTO ovenData;
 
     public HaasSohnpelletstoveJSONCommunication() {
         gson = new Gson();
         ovenData = new HaasSohnpelletstoveJsonDataDTO();
-        xhspin = "";
         config = new HaasSohnpelletstoveConfiguration();
     }
 
     /**
      * Refreshes the oven Connection with the internal oven token.
      *
-     * @param message Message object to pass errors to the calling method.
-     * @param thingUID Thing UID for logging purposes
-     * @return true if no error occurred, false otherwise.
+     * @return an empty string if no error occurred, the error message otherwise.
      */
-    public boolean refreshOvenConnection(Helper message, String thingUID) {
-        if (config.hostIP == null || config.hostPIN == null) {
-            message.setStatusDescription("Error in configuration. Please recreate Thing.");
-            return false;
-        }
-        HaasSohnpelletstoveJsonDataDTO result = null;
-        boolean resultOk = false;
-        String error = "", errorDetail = "", statusDescr = "";
+    public String refreshOvenConnection() {
+        String result = "";
+        HaasSohnpelletstoveJsonDataDTO responseObject = null;
         String urlStr = "http://" + config.hostIP + "/status.cgi";
 
         String response = null;
         try {
             response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("OvenData = {}", response);
-            result = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
-            resultOk = true;
-        } catch (IOException e) {
+            responseObject = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
+            ovenData = responseObject;
+            xhspin = getValidXHSPIN(ovenData);
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error processiong Get request {}", urlStr);
-            statusDescr = "Timeout error with" + config.hostIP
-                    + ". Cannot find service on give IP. Please verify the IP-Address!";
-            errorDetail = e.getMessage();
-            resultOk = false;
+            result = "Timeout error with " + config.hostIP
+                    + ". Cannot find service on given IP. Please verify the IP-Address!";
+            logger.debug("Error in establishing connection: {}", e.getMessage());
         } catch (Exception e) {
             logger.debug("Unknwon Error: {}", e.getMessage());
-            errorDetail = e.getMessage();
-            resultOk = false;
-        }
-        if (resultOk) {
-            ovenData = result;
-            xhspin = getValidXHSPIN(ovenData);
-        } else {
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
             ovenData = new HaasSohnpelletstoveJsonDataDTO();
         }
-        message.setStatusDescription(statusDescr);
-        return resultOk;
+        return result;
     }
 
     /**
      * Gets the status of the oven
      *
-     * @return true if success or false in case of error
+     * @return an empty string if no error occurred, the error message otherwise.
      */
-    public boolean updateOvenData(@Nullable String postData, Helper helper, String thingUID) {
-        String statusDescr = "";
-        boolean resultOk = false;
-        String error = "", errorDetail = "";
-        if (config.hostIP == null || config.hostPIN == null) {
-            return false;
-        }
+    public String updateOvenData(@Nullable String postData) {
+        String error = "";
         String urlStr = "http://" + config.hostIP + "/status.cgi";
-
         // Run the HTTP POST request and get the JSON response from Oven
         String response = null;
-
         Properties httpHeader = new Properties();
 
-        if (postData != null) {
-            try {
-                InputStream targetStream = new ByteArrayInputStream(postData.getBytes(StandardCharsets.UTF_8));
-                refreshOvenConnection(helper, thingUID);
-                httpHeader = createHeader(postData);
-                response = HttpUtil.executeUrl("POST", urlStr, httpHeader, targetStream, "application/json", 10000);
-                resultOk = true;
-                logger.debug("Execute POST request with content to {} with header: {}", urlStr, httpHeader.toString());
-            } catch (IOException e) {
-                logger.debug("Error processiong POST request {}", urlStr);
-                statusDescr = "Cannot execute command on Stove. Please verify connection and Thing Status";
-                resultOk = false;
+        try {
+            InputStream targetStream = null;
+            if (postData != null) {
+                targetStream = new ByteArrayInputStream(postData.getBytes(StandardCharsets.UTF_8));
             }
-        } else {
-            try {
-                refreshOvenConnection(helper, thingUID);
-                httpHeader = createHeader(null);
-                response = HttpUtil.executeUrl("POST", urlStr, httpHeader, null, "", 10000);
-                resultOk = true;
-                logger.debug("Execute POST request to {} with header: {}", urlStr, httpHeader.toString());
-            } catch (IOException e) {
-                logger.debug("Error processiong POST request {}", e.getMessage());
-                String message = e.getMessage();
-                if (message != null && message.contains("Authentication challenge without WWW-Authenticate ")) {
-                    statusDescr = "Cannot connect to stove. Given PIN: " + config.hostPIN + " is incorrect!";
-                }
-                resultOk = false;
-            }
-        }
-        if (resultOk) {
-            logger.debug("OvenData = {}", response);
+            refreshOvenConnection();
+            httpHeader = createHeader(postData != null ? postData : null);
+            response = HttpUtil.executeUrl("POST", urlStr, httpHeader, targetStream != null ? targetStream : null,
+                    "application/json", 10000);
+            logger.debug("Execute POST request with content to {} with header: {}", urlStr, httpHeader.toString());
             ovenData = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
-        } else {
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
-            ovenData = new HaasSohnpelletstoveJsonDataDTO();
+            logger.debug("OvenData = {}", response);
+        } catch (IOException e) {
+            logger.debug("Error processiong POST request {}", urlStr);
+            error = "Cannot execute command on Stove. Please verify connection or PIN";
+
+        } catch (JsonSyntaxException e) {
+            logger.debug("Error in establishing connection: {}", e.getMessage());
+            error = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
         }
-        helper.setStatusDescription(statusDescr);
-        return resultOk;
+        return error;
     }
 
     /**
@@ -160,7 +121,7 @@ public class HaasSohnpelletstoveJSONCommunication {
      */
     private Properties createHeader(@Nullable String postData) {
         Properties httpHeader = new Properties();
-        httpHeader.setProperty("Host", config.hostIP);
+        httpHeader.setProperty("Host", Objects.requireNonNull(config.hostIP));
         httpHeader.setProperty("Accept", "*/*");
         httpHeader.setProperty("Proxy-Connection", "keep-alive");
         httpHeader.setProperty("X-BACKEND-IP", "https://app.haassohn.com");
@@ -182,16 +143,16 @@ public class HaasSohnpelletstoveJSONCommunication {
      * Generate the valid encrypted string to communicate with the oven.
      *
      * @param ovenData
-     * @return
+     * @return XHSPIN or empty when it cannot be determined
      */
-    private @Nullable String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonDataDTO ovenData) {
+    private String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonDataDTO ovenData) {
         if (ovenData != null && config.hostPIN != null) {
             String nonce = ovenData.getNonce();
             String hostPIN = config.hostPIN;
             String ePin = MD5Utils.getMD5String(hostPIN);
             return MD5Utils.getMD5String(nonce + ePin);
         } else {
-            return null;
+            return "";
         }
     }
 

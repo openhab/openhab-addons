@@ -8,13 +8,14 @@
 
 		<label>Energi Data Service</label>
 		<description>This Thing represents the Energi Data Service API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="electricity" typeId="electricity"/>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:energidataservice:service"/>

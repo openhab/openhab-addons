@@ -20,6 +20,7 @@
 	<thing-type id="shelly1l">
 		<label>Shelly 1L</label>
 		<description>@text/thing-type.shelly.shelly1l.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -34,6 +35,7 @@
 	<thing-type id="shelly1pm">
 		<label>Shelly 1PM</label>
 		<description>@text/thing-type.shelly.shelly1pm.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -48,6 +50,7 @@
 	<thing-type id="shellyem">
 		<label>Shelly EM</label>
 		<description>@text/thing-type.shelly.shellyem.description</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>
@@ -67,6 +70,7 @@
 	<thing-type id="shellyem3">
 		<label>Shelly EM3</label>
 		<description>@text/thing-type.shelly.shellyem3.description</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>
@@ -77,6 +81,7 @@
 			<channel-group id="meter3" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -88,7 +93,7 @@
 	<thing-type id="shelly2-relay">
 		<label>Shelly 2 Relay</label>
 		<description>@text/thing-type.shelly.shelly2-relay.description</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -108,6 +113,7 @@
 		<label>Shelly 2 Roller</label>
 		<description>@text/thing-type.shelly.shelly2-roller.description</description>
 		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -121,6 +127,7 @@
 	<thing-type id="shelly25-relay">
 		<label>Shelly 2.5 Relay</label>
 		<description>@text/thing-type.shelly.shelly25-relay.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -145,6 +152,7 @@
 		<label>Shelly 2.5 Roller</label>
 		<description>@text/thing-type.shelly.shelly25-roller.description</description>
 		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -158,7 +166,7 @@
 	<thing-type id="shelly4pro">
 		<label>Shelly 4 Pro Relay</label>
 		<description>@text/thing-type.shelly.shelly4pro.description</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -195,6 +203,7 @@
 		<label>Shelly Plug</label>
 		<description>@text/thing-type.shelly.shellyplug.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -209,6 +218,7 @@
 		<label>Shelly Plug-S</label>
 		<description>@text/thing-type.shelly.shellyplugs.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -223,6 +233,7 @@
 		<label>Shelly Plug US</label>
 		<description>@text/thing-type.shelly.shellyplugu1.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -255,6 +266,7 @@
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer</label>
 		<description>@text/thing-type.shelly.shellydimmer.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -268,6 +280,7 @@
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2</label>
 		<description>@text/thing-type.shelly.shellydimmer2.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -326,6 +339,11 @@
 	<channel-group-type id="meter">
 		<label>@text/channel-group-type.shelly.meter.label</label>
 		<description>@text/channel-group-type.shelly.meter.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="nmeter">
+		<label>@text/channel-group-type.shelly.nmeter.label</label>
+		<description>@text/channel-group-type.shelly.nmeter.description</description>
 	</channel-group-type>
 
 	<channel-group-type id="externalSensors">
@@ -522,6 +540,19 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="totalKWH">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.totalKWH.label</label>
+		<description>@text/channel-type.shelly.totalKWH.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>
@@ -602,6 +633,51 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.meterResetTotals.label</label>
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+	</channel-type>
+
+	<channel-type id="ncurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.ncurrent.label</label>
+		<description>@text/channel-type.shelly.ncurrent.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="ixsum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.ixsum.label</label>
+		<description>@text/channel-type.shelly.ixsum.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="nmTreshhold">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.nmTreshhold.label</label>
+		<description>@text/channel-type.shelly.nmTreshhold.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="nmismatch">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.nmismatch.label</label>
+		<description>@text/channel-type.shelly.nmismatch.description</description>
 	</channel-type>
 
 	<channel-type id="timestamp">

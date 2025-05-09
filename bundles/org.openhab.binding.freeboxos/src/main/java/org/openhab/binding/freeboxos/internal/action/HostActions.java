@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = HostActions.class)
 @ThingActionsScope(name = "freeboxos")
 @NonNullByDefault
 public class HostActions implements ThingActions {
@@ -45,7 +48,7 @@ public class HostActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "wol host", description = "Awakes a lan host")
+    @RuleAction(label = "@text/action.wol.label", description = "@text/action.wol.description")
     public void wol() {
         logger.debug("Host WOL called");
         HostHandler hostHandler = this.handler;
@@ -53,6 +56,14 @@ public class HostActions implements ThingActions {
             hostHandler.wol();
         } else {
             logger.warn("LanHost Action service ThingHandler is null");
+        }
+    }
+
+    public static void wol(ThingActions actions) {
+        if (actions instanceof HostActions hostActions) {
+            hostActions.wol();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a HostHandler class.");
         }
     }
 }

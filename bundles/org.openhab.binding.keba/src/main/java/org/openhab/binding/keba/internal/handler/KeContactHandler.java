@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,18 +20,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Power;
-import javax.measure.quantity.Time;
 
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
@@ -48,6 +43,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -126,6 +122,11 @@ public class KeContactHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception during initialization of binding: " + e.toString());
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(KeContactActions.class);
     }
 
     private boolean isKebaReachable() throws IOException {
@@ -333,14 +334,14 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr HW": {
                         int state = entry.getValue().getAsInt();
                         maxSystemCurrent = state;
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + maxSystemCurrent, this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
-                                        new QuantityType<ElectricCurrent>(maxSystemCurrent / 1000.0, Units.AMPERE));
-                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                                        new QuantityType<>(maxSystemCurrent / 1000.0, Units.AMPERE));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
                                         (maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000), Units.PERCENT));
                             }
                         } else {
@@ -351,30 +352,30 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr user": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
-                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<Dimensionless>(
+                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
                                     Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
                         }
                         break;
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
                     case "Max curr": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_PILOT_CURRENT, newState);
                         break;
                     }
                     case "Max curr %": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
+                        State newState = new QuantityType<>(state / 10.0, Units.PERCENT);
                         updateState(CHANNEL_PILOT_PWM, newState);
                         break;
                     }
@@ -408,67 +409,67 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Sec": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new QuantityType<Time>(state, Units.SECOND);
+                        State newState = new QuantityType<>(state, Units.SECOND);
                         updateState(CHANNEL_UPTIME, newState);
                         break;
                     }
                     case "U1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
+                        State newState = new QuantityType<>(state, Units.VOLT);
                         updateState(CHANNEL_U1, newState);
                         break;
                     }
                     case "U2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
+                        State newState = new QuantityType<>(state, Units.VOLT);
                         updateState(CHANNEL_U2, newState);
                         break;
                     }
                     case "U3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricPotential>(state, Units.VOLT);
+                        State newState = new QuantityType<>(state, Units.VOLT);
                         updateState(CHANNEL_U3, newState);
                         break;
                     }
                     case "I1": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I1, newState);
                         break;
                     }
                     case "I2": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I2, newState);
                         break;
                     }
                     case "I3": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<ElectricCurrent>(state / 1000.0, Units.AMPERE);
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_I3, newState);
                         break;
                     }
                     case "P": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new QuantityType<Power>(state / 1000.0, Units.WATT);
+                        State newState = new QuantityType<>(state / 1000.0, Units.WATT);
                         updateState(CHANNEL_POWER, newState);
                         break;
                     }
                     case "PF": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<Dimensionless>(state / 10.0, Units.PERCENT);
+                        State newState = new QuantityType<>(state / 10.0, Units.PERCENT);
                         updateState(CHANNEL_POWER_FACTOR, newState);
                         break;
                     }
                     case "E pres": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SESSION_CONSUMPTION, newState);
                         break;
                     }
                     case "E total": {
                         long state = entry.getValue().getAsLong();
-                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_TOTAL_CONSUMPTION, newState);
                         break;
                     }
@@ -504,7 +505,7 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Setenergy": {
                         int state = entry.getValue().getAsInt();
-                        State newState = new QuantityType<Energy>(state / 10.0, Units.WATT_HOUR);
+                        State newState = new QuantityType<>(state / 10.0, Units.WATT_HOUR);
                         updateState(CHANNEL_SETENERGY, newState);
                         break;
                     }
@@ -578,13 +579,7 @@ public class KeContactHandler extends BaseThingHandler {
                 }
                 case CHANNEL_DISPLAY: {
                     if (command instanceof StringType) {
-                        if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
-                            String cmd = command.toString();
-                            int maxLength = (cmd.length() < 23) ? cmd.length() : 23;
-                            transceiver.send("display 0 0 0 0 " + cmd.substring(0, maxLength), this);
-                        } else {
-                            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
-                        }
+                        setDisplay(command.toString(), -1, -1);
                     }
                     break;
                 }
@@ -607,6 +602,23 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
             }
+        }
+    }
+
+    public void setDisplay(String text, int durationMin, int durationMax) {
+        if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
+            int maxLength = (text.length() < 23) ? text.length() : 23;
+            int a = 1;
+            if (durationMax < 0 || durationMax < 0) {
+                a = 0;
+                durationMin = 0;
+                durationMax = 0;
+            }
+            transceiver.send(
+                    "display " + a + " " + durationMin + " " + durationMax + " 0 " + text.substring(0, maxLength),
+                    this);
+        } else {
+            logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
         }
     }
 }

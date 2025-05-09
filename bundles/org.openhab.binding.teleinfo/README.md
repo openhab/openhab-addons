@@ -105,7 +105,7 @@ Channel availability depends on the electricity connection (single or three-phas
 | bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | All    | Tempo |
 | bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | All    | Tempo |
 | bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | All    | Tempo |
-| pejp     | `Number:Duration`         | Prior notice to EJP start                                | All    | EJP   |
+| pejp     | `Number:Time`             | Prior notice to EJP start                                | All    | EJP   |
 | demain   | `String`                  | Following day color                                      | All    | Tempo |
 
 ### Standard TIC mode
@@ -194,7 +194,7 @@ These channels are available on the following telemeters:
 
 ### Historical TIC mode
 
-The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289` :
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289`:
 
 ```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
@@ -220,7 +220,7 @@ String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_h
 
 ### Standard TIC mode
 
-The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289` :
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289`:
 
 ```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMode="STANDARD" ]{
@@ -253,5 +253,4 @@ The Teleinfo binding has been successfully validated with below hardware configu
 | GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Linky | Single-phase HCHP | Standard |
 | Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky | Three-phase TEMPO | Standard |
 
-On Linky telemeters, only _historical_ TIC mode is currently supported.
 The method for changing the TIC mode of a Linky telemeter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).

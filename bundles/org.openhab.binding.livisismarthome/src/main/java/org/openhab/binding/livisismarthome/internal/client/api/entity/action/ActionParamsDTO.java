@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ public class ActionParamsDTO {
     private IntegerActionParamDTO shutterLevel;
     private StringActionParamDTO operationMode;
     private StringActionParamDTO rampDirection;
+    private StringActionParamDTO activeChannel;
+    private StringActionParamDTO reason;
 
     /**
      * @return the onState
@@ -125,5 +127,33 @@ public class ActionParamsDTO {
      */
     public void setRampDirection(StringActionParamDTO rampDirection) {
         this.rampDirection = rampDirection;
+    }
+
+    /**
+     * @return the activeChannel
+     */
+    public StringActionParamDTO getActiveChannel() {
+        return activeChannel;
+    }
+
+    /**
+     * @param activeChannel the operationMode to set
+     */
+    public void setActiveChannel(StringActionParamDTO activeChannel) {
+        this.activeChannel = activeChannel;
+    }
+
+    /**
+     * @return the reason (for example the reason to restart the controller)
+     */
+    public StringActionParamDTO getReason() {
+        return reason;
+    }
+
+    /**
+     * @param reason the reason (for example the reason to restart the controller)
+     */
+    public void setReason(StringActionParamDTO reason) {
+        this.reason = reason;
     }
 }

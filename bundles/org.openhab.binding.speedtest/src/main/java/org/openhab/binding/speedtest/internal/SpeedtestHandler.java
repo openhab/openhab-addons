@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.speedtest.internal;
 
 import java.io.BufferedReader;
@@ -366,13 +365,19 @@ public class SpeedtestHandler extends BaseThingHandler {
                 isp = tmpCont.getIsp();
                 interfaceInternalIp = tmpCont.getInterface().getInternalIp();
                 interfaceExternalIp = tmpCont.getInterface().getExternalIp();
-                resultUrl = tmpCont.getResult().getUrl();
-                String url = String.valueOf(resultUrl) + ".png";
-                logger.debug("Downloading result image from: {}", url);
-                RawType image = HttpUtil.downloadImage(url);
-                if (image != null) {
-                    resultImage = image;
+                if (tmpCont.getResult().isPersisted()) {
+                    resultUrl = tmpCont.getResult().getUrl();
+                    String url = String.valueOf(resultUrl) + ".png";
+                    logger.debug("Downloading result image from: {}", url);
+                    RawType image = HttpUtil.downloadImage(url);
+                    if (image != null) {
+                        resultImage = image;
+                    } else {
+                        resultImage = UnDefType.NULL;
+                    }
                 } else {
+                    logger.debug("Result image not persisted");
+                    resultUrl = "";
                     resultImage = UnDefType.NULL;
                 }
 

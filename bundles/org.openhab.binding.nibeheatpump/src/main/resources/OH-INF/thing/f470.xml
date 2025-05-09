@@ -6,6 +6,7 @@
 
 	<thing-type id="f470-udp">
 		<label>UDP Connected Nibe F470 Heat Pumps</label>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="f470-sensor-group-channels" id="sensor"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 
 /**
  * Implements a datetime value.
@@ -44,10 +47,17 @@ public class DateTimeValue extends Value {
 
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+        ZonedDateTime zonedDateTime = ((DateTimeType) command).getZonedDateTime(ZoneId.systemDefault());
         String formatPattern = pattern;
         if (formatPattern == null || "%s".contentEquals(formatPattern)) {
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) command).getZonedDateTime());
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(zonedDateTime);
         }
-        return String.format(formatPattern, ((DateTimeType) command).getZonedDateTime());
+        return String.format(formatPattern, zonedDateTime);
+    }
+
+    @Override
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        return StateDescriptionFragmentBuilder.create().withReadOnly(readOnly)
+                .withPattern("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS");
     }
 }

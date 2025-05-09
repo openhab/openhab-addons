@@ -90,6 +90,24 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="mainZoneType6">
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="recordSource" typeId="recordSource"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="zone2type1">
 		<label>@text/channel-group.zone2.label</label>
 		<description>@text/channel-group.zone2.description</description>

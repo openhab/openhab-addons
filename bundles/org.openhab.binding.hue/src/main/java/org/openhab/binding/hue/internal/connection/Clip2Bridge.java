@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,7 @@ public class Clip2Bridge implements Closeable {
      * <li>onHeaders() HTTP unauthorized codes</li>
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
-        protected final CompletableFuture<T> completable = new CompletableFuture<T>();
+        protected final CompletableFuture<T> completable = new CompletableFuture<>();
         private String contentType = "UNDEFINED";
         private int status;
 
@@ -396,8 +396,9 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
-            if (http2Session == session) {
-                Thread recreateThread = new Thread(() -> recreateSession());
+            if (session.equals(http2Session)) {
+                Thread recreateThread = new Thread(() -> recreateSession(),
+                        "OH-binding-" + bridgeHandler.getThing().getUID() + "-RecreateSession");
                 Clip2Bridge.this.recreateThread = recreateThread;
                 recreateThread.start();
             }
@@ -412,7 +413,7 @@ public class Clip2Bridge implements Closeable {
         public void onPing(@Nullable Session session, @Nullable PingFrame frame) {
             Objects.requireNonNull(session);
             Objects.requireNonNull(frame);
-            if (http2Session == session) {
+            if (session.equals(http2Session)) {
                 checkAliveOk();
                 if (!frame.isReply()) {
                     session.ping(new PingFrame(true), Callback.NOOP);
@@ -485,9 +486,9 @@ public class Clip2Bridge implements Closeable {
             long delay;
             synchronized (Clip2Bridge.this) {
                 Instant now = Instant.now();
-                delay = lastRequestTime
+                delay = Objects.requireNonNull(lastRequestTime
                         .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
-                        .orElse(0L);
+                        .orElse(0L));
                 lastRequestTime = Optional.of(now.plusMillis(delay));
             }
             Thread.sleep(delay);
@@ -921,12 +922,15 @@ public class Clip2Bridge implements Closeable {
             return;
         }
         List<Resource> resources = new ArrayList<>();
-        events.forEach(event -> resources.addAll(event.getData()));
+        events.forEach(event -> {
+            List<Resource> eventResources = event.getData();
+            eventResources.forEach(resource -> resource.setContentType(event.getContentType()));
+            resources.addAll(eventResources);
+        });
         if (resources.isEmpty()) {
             LOGGER.debug("onEventData() resource list is empty");
             return;
         }
-        resources.forEach(resource -> resource.markAsSparse());
         bridgeHandler.onResourcesEvent(resources);
     }
 

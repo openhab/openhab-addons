@@ -130,5 +130,24 @@
 				<description>Energy consumed for the day</description>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+
+			<add-channel id="inverter-temperature1">
+				<type>solax:inverter-temperature</type>
+				<label>Inverter Temperature 1</label>
+				<description>Temperature 1 of the inverter</description>
+			</add-channel>
+			<add-channel id="inverter-temperature2">
+				<type>solax:inverter-temperature</type>
+				<label>Inverter Temperature 2</label>
+				<description>Temperature 2 of the inverter</description>
+			</add-channel>
+			<add-channel id="inverter-workmode">
+				<type>solax:inverter-workmode</type>
+				<label>Inverter Workmode</label>
+				<description>Inverter Workmode</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

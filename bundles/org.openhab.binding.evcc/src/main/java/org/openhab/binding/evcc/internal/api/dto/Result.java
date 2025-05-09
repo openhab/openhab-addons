@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.evcc.internal.api.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Daniel Kötting - update to evcc version 0.133.0
+ * @author Marcel Goerentz - Replace invalid chars with hyphens in vehicles map
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -29,8 +36,8 @@ public class Result {
     @SerializedName("batteryCapacity")
     private float batteryCapacity;
 
-    @SerializedName("batteryConfigured")
-    private boolean batteryConfigured;
+    @SerializedName("battery")
+    private Battery[] battery;
 
     @SerializedName("batteryPower")
     private float batteryPower;
@@ -38,11 +45,20 @@ public class Result {
     @SerializedName("batterySoc")
     private float batterySoC;
 
-    @SerializedName("gridConfigured")
-    private boolean gridConfigured;
+    @SerializedName("batteryDischargeControl")
+    private boolean batteryDischargeControl;
+
+    @SerializedName("batteryMode")
+    private String batteryMode;
 
     @SerializedName("gridPower")
-    private float gridPower;
+    private Float gridPower;
+
+    @SerializedName("grid")
+    private Grid grid;
+
+    @SerializedName("gridConfigured")
+    private boolean gridConfigured;
 
     @SerializedName("homePower")
     private float homePower;
@@ -51,10 +67,19 @@ public class Result {
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoc")
-    private float batteryPrioritySoC;
+    private float prioritySoC;
 
-    @SerializedName("pvConfigured")
-    private boolean pvConfigured;
+    @SerializedName("bufferSoc")
+    private float bufferSoC;
+
+    @SerializedName("bufferStartSoc")
+    private float bufferStartSoC;
+
+    @SerializedName("residualPower")
+    private float residualPower;
+
+    @SerializedName("pv")
+    private PV[] pv;
 
     @SerializedName("pvPower")
     private float pvPower;
@@ -62,18 +87,27 @@ public class Result {
     @SerializedName("siteTitle")
     private String siteTitle;
 
+    @SerializedName("vehicles")
+    private Map<String, Vehicle> vehicles;
+
+    @SerializedName("version")
+    private String version;
+
+    @SerializedName("availableVersion")
+    private String availableVersion;
+
+    /**
+     * @return all configured batteries
+     */
+    public Battery[] getBattery() {
+        return battery;
+    }
+
     /**
      * @return battery's capacity
      */
     public float getBatteryCapacity() {
         return batteryCapacity;
-    }
-
-    /**
-     * @return whether battery is configured
-     */
-    public boolean getBatteryConfigured() {
-        return batteryConfigured;
     }
 
     /**
@@ -86,8 +120,29 @@ public class Result {
     /**
      * @return battery's priority state of charge
      */
-    public float getBatteryPrioritySoC() {
-        return batteryPrioritySoC;
+    public float getPrioritySoC() {
+        return prioritySoC;
+    }
+
+    /**
+     * @return Battery Buffer SoC
+     */
+    public float getBufferSoC() {
+        return bufferSoC;
+    }
+
+    /**
+     * @return Battery Buffer Start SoC
+     */
+    public float getBufferStartSoC() {
+        return bufferStartSoC;
+    }
+
+    /**
+     * @return Grid Residual Power
+     */
+    public float getResidualPower() {
+        return residualPower;
     }
 
     /**
@@ -98,17 +153,38 @@ public class Result {
     }
 
     /**
-     * @return whether grid is configured
+     * @return battery discharge control
      */
-    public boolean getGridConfigured() {
-        return gridConfigured;
+    public boolean getBatteryDischargeControl() {
+        return batteryDischargeControl;
     }
 
     /**
-     * @return grid's power
+     * @return battery mode
      */
-    public float getGridPower() {
+    public String getBatteryMode() {
+        return batteryMode;
+    }
+
+    /**
+     * @return gridPower (before evcc version 0.133.0)
+     */
+    public Float getGridPower() {
         return gridPower;
+    }
+
+    /**
+     * @return all grid related values (since evcc version 0.133.0)
+     */
+    public Grid getGrid() {
+        return grid;
+    }
+
+    /**
+     * @return is grid configured (since evcc version 0.133.0)
+     */
+    public boolean getGridConfigured() {
+        return gridConfigured;
     }
 
     /**
@@ -126,10 +202,10 @@ public class Result {
     }
 
     /**
-     * @return whether pv is configured
+     * @return all configured PVs
      */
-    public boolean getPvConfigured() {
-        return pvConfigured;
+    public PV[] getPV() {
+        return pv;
     }
 
     /**
@@ -144,5 +220,33 @@ public class Result {
      */
     public String getSiteTitle() {
         return siteTitle;
+    }
+
+    public Map<String, Vehicle> getVehicles() {
+        Map<String, Vehicle> correctedMap = new HashMap<>();
+        for (Entry<String, Vehicle> entry : vehicles.entrySet()) {
+            // The key from the vehicles map is used as uid, so it should not contain any disallowed chars
+            // If necessary replace the forbidden chars with hyphens
+            String key = entry.getKey();
+            if (!key.matches("[a-zA-Z0-9_-]+")) {
+                key = key.replaceAll("[^a-zA-Z0-9_-]", "-");
+            }
+            correctedMap.put(key, entry.getValue());
+        }
+        return correctedMap;
+    }
+
+    /**
+     * @return evcc version
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * @return evcc available version
+     */
+    public String getAvailableVersion() {
+        return availableVersion;
     }
 }

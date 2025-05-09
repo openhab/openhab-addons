@@ -18,6 +18,10 @@ The `prices` Thing provides todays and (after 14:00) tomorrows net and gross pri
 
 The `bestprice` Thing identifies the hours with the cheapest prices based on the given parameters.
 
+Note: The Thing will schedule updates of the aWATTar API at 15:00, 18:00 and 21:00.
+If late updates occur, e.g. after 21:00, there is a chance that consecutive best prices will be rescheduled.
+As a consequence, a time schedule spanning over an update slot might be interrupted and rescheduled.
+
 ## Discovery
 
 Auto discovery is not supported.
@@ -26,12 +30,13 @@ Auto discovery is not supported.
 
 ### aWATTar Bridge
 
-| Parameter      | Description                                                                                                                |
-|-------------|-------------------------------------------------------------------------------------------------------------------------------|
-| vatPercent  | Percentage of the value added tax to apply to net prices. Optional, defaults to 19.                                           |
-| basePrice   | The net(!) base price you have to pay for every kWh. Optional, but you most probably want to set it based on you delivery contract.  |
-| timeZone    | The time zone the hour definitions of the things below refer to. Default is `CET`, as it corresponds to the aWATTar API. It is strongly recommended not to change this. However, if you do so, be aware that the prices delivered by the API will not cover a whole calendar day in this timezone. **Advanced** |
-| country     | The country prices should be received for. Use `DE` for Germany or `AT` for Austria. `DE` is the default. |
+| Parameter  | Description                                                                                                                                                                                                                                                                                                     |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| vatPercent | Percentage of the value added tax to apply to net prices. Optional, defaults to 19.                                                                                                                                                                                                                             |
+| basePrice  | The net(!) base price you have to pay for every kWh. Optional, but you most probably want to set it based on you delivery contract.                                                                                                                                                                             |
+| timeZone   | The time zone the hour definitions of the things below refer to. Default is `CET`, as it corresponds to the aWATTar API. It is strongly recommended not to change this. However, if you do so, be aware that the prices delivered by the API will not cover a whole calendar day in this timezone. **Advanced** |
+| country    | The country prices should be received for. Use `DE` for Germany or `AT` for Austria. `DE` is the default.                                                                                                                                                                                                       |
+| serviceFee | The service fee in percent. Will be added to the total price. Will be calculated on top of the absolute price per hour. Default is `0`.                                                                                                                                                                         |
 
 ### Prices Thing
 
@@ -39,12 +44,13 @@ The prices thing does not need any configuration.
 
 ### Bestprice Thing
 
-| Parameter      | Description                                                                                                                |
-|-------------|-------------------------------------------------------------------------------------------------------------------------------|
-| rangeStart  | First hour of the time range the binding should search for the best prices. Default: `0`                                     |
-| rangeDuration  | The duration of the time range the binding should search for best prices. Default: `24`   |
-| length      | number of best price hours to find within the range. This value has to be at least `1` and below `rangeDuration` Default: `1` |
-| consecutive | if `true`, the thing identifies the cheapest consecutive range of `length` hours within the lookup range. Otherwise, the thing contains the cheapest `length` hours within the lookup range. Default: `true` |
+| Parameter     | Description                                                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| rangeStart    | First hour of the time range the binding should search for the best prices. Default: `0`                                                                                                                     |
+| rangeDuration | The duration of the time range the binding should search for best prices. Default: `24`                                                                                                                      |
+| length        | number of best price hours to find within the range. This value has to be at least `1` and below `rangeDuration` Default: `1`                                                                                |
+| consecutive   | if `true`, the thing identifies the cheapest consecutive range of `length` hours within the lookup range. Otherwise, the thing contains the cheapest `length` hours within the lookup range. Default: `true` |
+| inverted      | if `true`, the worst prices will be searched instead of the best. Does currently not work in combination with 'consecutive'. Default: `false`                                                                |
 
 #### Limitations
 
@@ -55,35 +61,46 @@ Also, due to the time the aWATTar API delivers the data for the next day, it doe
 
 ## Channels
 
+### Bridge
+
+The bridge has two channels which support a time-series:
+
+| channel      | type               | description                                                                                                                             |
+| ------------ |--------------------| --------------------------------------------------------------------------------------------------------------------------------------- |
+| market-net   | Number:EnergyPrice | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
+| total-net    | Number:EnergyPrice | Sum of net market price and configured base price                                                                                       |
+
+If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
+
 ### Prices Thing
 
 For every hour, the `prices` thing provides the following prices:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| market-net  | Number | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.  |
-| market-gross  | Number | The market price including VAT, using the defined VAT percentage.  |
-| total-net | Number | Sum of net market price and configured base price |
-| total-gross | Number | Sum of market and base price with VAT applied. Most probably this is the final price you will have to pay for one kWh in a certain hour |
+| channel      | type   | description                                                                                                                             |
+| ------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| market-net   | Number | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
+| market-gross | Number | The market price including VAT, using the defined VAT percentage.                                                                       |
+| total-net    | Number | Sum of net market price and configured base price                                                                                       |
+| total-gross  | Number | Sum of market and base price with VAT applied. Most probably this is the final price you will have to pay for one kWh in a certain hour |
 
 All prices are available in each of the following channel groups:
 
-| channel group | description                  |
-|----------|--------------------------------|
-| current | The prices for the current hour |
-| today00, today01, today02 ... today23 |  Hourly prices for today. `today00` provides the price from 0:00 to 1:00, `today01` from 1:00 to 02:00 and so on. As long as the API is working, this data should always be available |
-| tomorrow00, tomorrow01, ... tomorrow23 | Hourly prices for the next day. They should be available starting at  14:00. |
+| channel group                          | description                                                                                                                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| current                                | The prices for the current hour                                                                                                                                                      |
+| today00, today01, today02 ... today23  | Hourly prices for today. `today00` provides the price from 0:00 to 1:00, `today01` from 1:00 to 02:00 and so on. As long as the API is working, this data should always be available |
+| tomorrow00, tomorrow01, ... tomorrow23 | Hourly prices for the next day. They should be available starting at  14:00.                                                                                                         |
 
 ### Bestprice Thing
 
-| channel  | type        | description                                                                                                                                                                                              |
-|----------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| active | Switch      | `ON` if the current time is within the bestprice period, `OFF` otherwise. If `consecutive` was set to `false`, this channel may change between `ON` and `OFF` multiple times within the bestprice period. |
-| start  | DateTime    | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first hour found.                                                                                 |
-| end  | DateTime    | The exact end time of the bestprice range. If `consecutive` was `false`, it is the end time of the last hour found.                                                                                      |
-| countdown  | Number:Time | The time in minutes until start of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                   |
-| remaining | Number:Time | The time in minutes until end of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                      |
-| hours | String      | A comma separated list of hours this bestprice period contains.                                                                                                                                          |
+| channel   | type        | description                                                                                                                                                                                               |
+| --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| active    | Switch      | `ON` if the current time is within the bestprice period, `OFF` otherwise. If `consecutive` was set to `false`, this channel may change between `ON` and `OFF` multiple times within the bestprice period. |
+| start     | DateTime    | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first hour found.                                                                                  |
+| end       | DateTime    | The exact end time of the bestprice range. If `consecutive` was `false`, it is the end time of the last hour found.                                                                                       |
+| countdown | Number:Time | The time in minutes until start of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                     |
+| remaining | Number:Time | The time in minutes until end of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                       |
+| hours     | String      | A comma separated list of hours this bestprice period contains.                                                                                                                                           |
 
 ## Full Example
 
@@ -92,8 +109,8 @@ All prices are available in each of the following channel groups:
 awattar.things:
 
 ```java
-Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22"] {
- Thing prices price1 "aWATTar Price" [] 
+Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22", serviceFee="3" ] {
+ Thing prices price1 "aWATTar Price" []
 // The car should be loaded for 4 hours during the night
  Thing bestprice carloader "Car Loader" [ rangeStart="22", rangeDuration="8", length="4", consecutive="true" ]
 // In the cheapest hour of the night the garden should be watered

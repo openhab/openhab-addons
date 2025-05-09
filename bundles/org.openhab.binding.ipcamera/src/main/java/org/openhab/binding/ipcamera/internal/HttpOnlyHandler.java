@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
                     try {
                         ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
                     } catch (NumberFormatException e) {
-                        logger.warn("Audio Threshold recieved an unexpected command, was it a number?");
+                        logger.warn("Audio Threshold received an unexpected command, was it a number?");
                     }
                 }
                 ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
@@ -81,6 +81,6 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list and sends 1 every 8 seconds.
     public ArrayList<String> getLowPriorityRequests() {
-        return new ArrayList<String>(0);
+        return new ArrayList<>(0);
     }
 }

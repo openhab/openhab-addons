@@ -29,7 +29,7 @@ Bridge dominoswiss:egate:myeGate "My eGate Server" @ "Home" [ ipAddres="localhos
 ```
 
 The thing blind represents one blind on the eGate. Each blind is represented by an id set on your eGate.
-  
+
 ```java
 Thing blind officeBlind "Office" @ "1stFloor" [ id="1"]
 ```
@@ -83,9 +83,9 @@ This example moves the blind of the office up as the sun passed 110 azimuth (so 
 
 ```java
 rule "OneSide up"
-when 
-    Item Azimuth changed 
-then 
+when
+    Item Azimuth changed
+then
     val azimuth = Math::round((Azimuth.state as DecimalType).intValue)
     if (azimuth == 110)
     {

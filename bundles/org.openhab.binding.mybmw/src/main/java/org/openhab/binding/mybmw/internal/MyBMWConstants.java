@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,7 +59,24 @@ public interface MyBMWConstants {
 
     static final int DEFAULT_IMAGE_SIZE_PX = 1024;
 
-    static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
+    static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 60;
+
+    // Captcha servlet constants
+    static final String LOCAL_OPENHAB_BASE_PATH = "/" + BINDING_ID + "/";
+    static final String CAPTCHA_URL_ROOT = "captcha/";
+    static final String NORTH_AMERICA = "NORTH_AMERICA";
+    static final String ROW = "ROW";
+    static final Map<String, String> CAPTCHA_HTML = Map.of(NORTH_AMERICA, CAPTCHA_URL_ROOT + "north_america_form.html",
+            ROW, CAPTCHA_URL_ROOT + "rest_of_world_form.html");
+
+    // Thing status detail messages
+    static final String STATUS_AUTH_NEEDED = "@text/mybmw.status.authorization-needed";
+    static final String STATUS_USER_DETAILS_MISSING = "@text/mybmw.status.user-details-missing";
+    static final String STATUS_REGION_MISSING = "@text/mybmw.status.region-missing";
+    static final String STATUS_IP_MISSING = "@text/mybmw.status.ip-missing";
+    static final String STATUS_VEHICLE_RETRIEVAL_ERROR = "@text/mybmw.status.vehicle-retrieval-error";
+    static final String STATUS_NETWORK_ERROR = "@text/mybmw.status.network-error";
+    static final String STATUS_QUOTA_ERROR = "@text/mybmw.status.quota-error";
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
@@ -107,6 +125,7 @@ public interface MyBMWConstants {
             THING_TYPE_PHEV, THING_TYPE_BEV_REX, THING_TYPE_BEV);
 
     // Thing Group definitions
+    static final String CHANNEL_GROUP_UPDATE = "update";
     static final String CHANNEL_GROUP_STATUS = "status";
     static final String CHANNEL_GROUP_SERVICE = "service";
     static final String CHANNEL_GROUP_CHECK_CONTROL = "check";
@@ -119,6 +138,11 @@ public interface MyBMWConstants {
     static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
     static final String CHANNEL_GROUP_TIRES = "tires";
     static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+
+    // types of updates
+    static final String STATE_UPDATE = "state-update";
+    static final String CHARGING_UPDATE = "charging-update";
+    static final String IMAGE_UPDATE = "image-update";
 
     // Charge Statistics & Sessions
     static final String SESSIONS = "sessions";
@@ -214,7 +238,8 @@ public interface MyBMWConstants {
     static final String REMOTE_SERVICE_HORN = "horn-blow";
     static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
     static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
-    static final String REMOTE_SERVICE_CHARGE = "charge-now";
+    static final String REMOTE_SERVICE_START_CHARGING = "start-charging";
+    static final String REMOTE_SERVICE_STOP_CHARGING = "stop-charging";
 
     static final String REMOTE_SERVICE_COMMAND = "command";
     static final String REMOTE_STATE = "state";

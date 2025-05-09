@@ -112,8 +112,7 @@ Black Ink displayed as a whole percentage - `60 %`
 Text item=hpprinter_printer_djprinter_ink_blackLevel label="Black [%.0f %unit%]"
 ```
 
-Black Marker displayed in millilitres - `21 ml`  
-_Default_
+Black Marker displayed in millilitres - `21 ml` _Default_
 
 ```perl
 Text item=hpprinter_printer_djprinter_usage_blackMarker label="Black Marker [%.0f %unit%]"

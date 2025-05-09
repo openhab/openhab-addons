@@ -6,6 +6,7 @@
 
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
@@ -189,6 +190,17 @@
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
 		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="mop_mode">
+		<item-type>Number</item-type>
+		<label>Water Box Mode</label>
+		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
+			<options>
+				<option value="300">Standard</option>
+				<option value="301">Deep</option>
+				<option value="303">Deep+</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>

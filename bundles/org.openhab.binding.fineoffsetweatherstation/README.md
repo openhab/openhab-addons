@@ -19,7 +19,7 @@ Here is a product picture of how this Weather Station looks like:
 
 ![WH2650](doc/WH2650.png)
 
-This binding works offline by [implementing the wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) of the WiFi gateway device.
+This binding works offline by [implementing the wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) of the WiFi gateway device.
 
 ## Discussion
 
@@ -27,7 +27,7 @@ If you have any issues or feedback, please feel free to [get in touch via the co
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) e.g.:
   - HP2550
   - HP3500
   - GW1000
@@ -265,7 +265,7 @@ Valid sensors:
 | sensor-co2-pm25-24-hour-average       | Number:Density       | R          | PM2.5 Air Quality 24 Hour Average (CO2-Sensor) |
 | sensor-co2-co2                        | Number:Dimensionless | R          | CO2                                            |
 | sensor-co2-co2-24-hour-average        | Number:Dimensionless | R          | CO2 24 Hour Average                            |
-| leaf-wetness-channel-1                | Number:Dimensionless | R          | Leaf Moisture Channel 1                        |  
+| leaf-wetness-channel-1                | Number:Dimensionless | R          | Leaf Moisture Channel 1                        |
 | leaf-wetness-channel-2                | Number:Dimensionless | R          | Leaf Moisture Channel 2                        |
 | leaf-wetness-channel-3                | Number:Dimensionless | R          | Leaf Moisture Channel 3                        |
 | leaf-wetness-channel-4                | Number:Dimensionless | R          | Leaf Moisture Channel 4                        |
@@ -280,6 +280,7 @@ Valid sensors:
 | piezo-rain-week                       | Number:Length        | R          | Piezo - Rainfall this Week                     |
 | piezo-rain-month                      | Number:Length        | R          | Piezo - Rainfall this Month                    |
 | piezo-rain-year                       | Number:Length        | R          | Piezo - Rainfall this Year                     |
+| free-heap-size                        | Number:DataAmount    | R          | Free Heap Size                                 |
 
 NOTE: Not every gateway provides all available data, even if they are displayed in the WS-View app.
 Especially the channels `temperature-dew-point` or `temperature-wind-chill` are derived from other measured values.
@@ -302,7 +303,7 @@ _weatherstation.things_:
 ```java
 Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
      ip="192.168.1.42",
-     port="45000", 
+     port="45000",
      discoverInterval="900",
      pollingInterval="16",
      protocol="DEFAULT"

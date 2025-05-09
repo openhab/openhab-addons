@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -318,7 +318,7 @@ public class WolfSmartsetApi {
     private String getSystemDescriptionString(Integer systemId, Integer gatewayId) {
         String resp = "";
         try {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("SystemId", systemId.toString());
             params.put("GatewayId", gatewayId.toString());
             resp = requestGET("api/portal/GetGuiDescriptionForGateway", params).get();
@@ -406,7 +406,7 @@ public class WolfSmartsetApi {
     }
 
     private CompletableFuture<String> requestGET(String url) throws WolfSmartsetCloudException {
-        return requestGET(url, new HashMap<String, String>());
+        return requestGET(url, new HashMap<>());
     }
 
     private CompletableFuture<String> requestGET(String url, Map<String, String> params)
@@ -483,7 +483,7 @@ public class WolfSmartsetApi {
     }
 
     private void processQueue() {
-        // No new Requests until blockRequestsUntil, is set when recieved HttpStatus.TOO_MANY_REQUESTS_429
+        // No new Requests until blockRequestsUntil, is set when received HttpStatus.TOO_MANY_REQUESTS_429
         if (blockRequestsUntil.isBefore(Instant.now())) {
             RequestQueueEntry queueEntry = requestQueue.poll();
             if (queueEntry != null) {

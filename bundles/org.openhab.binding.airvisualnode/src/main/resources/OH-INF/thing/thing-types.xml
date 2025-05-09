@@ -7,6 +7,7 @@
 	<thing-type id="avnode">
 		<label>AirVisual Node</label>
 		<description>AirVisual Node air quality monitor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<!-- Channels -->
 
@@ -71,7 +72,7 @@
 	</channel-type>
 
 	<channel-type id="Humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity, %</description>
 		<category>Humidity</category>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -37,6 +39,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.services.binaryswitch.dto.BinarySwitchServiceState;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 import org.slf4j.Logger;
 
 /**
@@ -92,6 +95,19 @@ class BoschHttpClientTest {
     void getServiceStateUrl() {
         assertEquals("https://127.0.0.1:8444/smarthome/devices/testDevice/services/testService/state",
                 httpClient.getServiceStateUrl("testService", "testDevice"));
+    }
+
+    @Test
+    void getServiceStateUrlForUserState() {
+        assertEquals("https://127.0.0.1:8444/smarthome/userdefinedstates/testDevice/state",
+                httpClient.getServiceStateUrl("testService", "testDevice", UserStateServiceState.class));
+    }
+
+    @Test
+    void getServiceStateUrlForChildDevice() {
+        assertEquals(
+                "https://127.0.0.1:8444/smarthome/devices/hdm:ZigBee:70ac08fffe5294ea%233/services/PowerSwitch/state",
+                httpClient.getServiceStateUrl("PowerSwitch", "hdm:ZigBee:70ac08fffe5294ea#3"));
     }
 
     @Test
@@ -165,6 +181,15 @@ class BoschHttpClientTest {
 
     @Test
     void createRequestWithObject() {
+        UserStateServiceState userState = new UserStateServiceState();
+        userState.setState(true);
+        Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, userState);
+        assertNotNull(request);
+        assertEquals("true", StandardCharsets.UTF_8.decode(request.getContent().iterator().next()).toString());
+    }
+
+    @Test
+    void createRequestForUserDefinedState() {
         BinarySwitchServiceState binarySwitchState = new BinarySwitchServiceState();
         binarySwitchState.on = true;
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, binarySwitchState);
@@ -254,8 +279,7 @@ class BoschHttpClientTest {
         when(response.getContentAsString()).thenReturn("{\"@type\": \"JsonRestExceptionResponseEntity}");
         ExecutionException e = assertThrows(ExecutionException.class,
                 () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> false, null));
-        assertEquals(
-                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult: com.google.gson.stream.MalformedJsonException: Unterminated string at line 1 column 44 path $.@type",
-                e.getMessage());
+        assertThat(e.getMessage(), startsWith(
+                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult:"));
     }
 }

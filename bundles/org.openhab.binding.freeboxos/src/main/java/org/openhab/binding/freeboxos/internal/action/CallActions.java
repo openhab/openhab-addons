@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = CallActions.class)
 @ThingActionsScope(name = "freeboxos")
 @NonNullByDefault
 public class CallActions implements ThingActions {
@@ -45,14 +48,22 @@ public class CallActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "clear call queue", description = "Delete all call logged in the queue")
-    public void reset() {
+    @RuleAction(label = "@text/action.resetCalls.label", description = "@text/action.resetCalls.description")
+    public void resetCalls() {
         logger.debug("Call log clear called");
         CallHandler localHandler = handler;
         if (localHandler != null) {
             localHandler.emptyQueue();
         } else {
             logger.warn("Call Action service ThingHandler is null");
+        }
+    }
+
+    public static void resetCalls(ThingActions actions) {
+        if (actions instanceof CallActions callActions) {
+            callActions.resetCalls();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a CallActions class.");
         }
     }
 }

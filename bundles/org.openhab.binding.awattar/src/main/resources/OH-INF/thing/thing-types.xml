@@ -7,6 +7,31 @@
 	<bridge-type id="bridge">
 		<label>aWATTar Bridge</label>
 		<description>Provides price data from the aWATTar API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="market-net" typeId="uom-price">
+				<label>Net Market Price</label>
+				<description>Price without VAT and network charge</description>
+			</channel>
+			<channel id="market-gross" typeId="uom-price">
+				<label>Gross Market Price</label>
+				<description>Price with VAT but without network charge</description>
+			</channel>
+			<channel id="total-net" typeId="uom-price">
+				<label>Net Total Price</label>
+				<description>Price with network charge but without VAT</description>
+			</channel>
+			<channel id="total-gross" typeId="uom-price">
+				<label>Gross Total Price</label>
+				<description>Price with network charge and VAT</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="bridge-type:awattar:bridge"/>
 	</bridge-type>
 
@@ -17,6 +42,7 @@
 
 		<label>Hourly Price</label>
 		<description>Prices for one kilowatt-hour at the given hour in Cent</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="hourly-prices">
@@ -232,11 +258,10 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>
-			Best Price
-		</label>
-
+		<label>Best Price</label>
 		<description>Evaluates the lowest price period for the given settings</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
 		<channels>
 			<channel id="active" typeId="switch-type">
 				<label>Active</label>
@@ -249,6 +274,12 @@
 		</channels>
 		<config-description-ref uri="thing-type:awattar:bestprice"/>
 	</thing-type>
+
+	<channel-type id="uom-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Price</label>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
 
 	<channel-type id="price">
 		<item-type>Number</item-type>
@@ -275,6 +306,13 @@
 		<item-type>Switch</item-type>
 		<label>Consecutive</label>
 		<description>Consecutive range needed?</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="input-inverted">
+		<item-type>Switch</item-type>
+		<label>Inverted</label>
+		<description>Return highest prices?</description>
 		<state readOnly="false"/>
 	</channel-type>
 

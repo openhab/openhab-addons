@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="haywardomnilogic:chlorinator">
+		<instruction-set targetVersion="1">
+			<update-channel id="chlorError">
+				<type>haywardomnilogic:chlorError</type>
+			</update-channel>
+			<update-channel id="chlorStatus">
+				<type>haywardomnilogic:chlorStatus</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="haywardomnilogic:filter">
+		<instruction-set targetVersion="1">
+			<update-channel id="filterSpeedRpm">
+				<type>haywardomnilogic:filterSpeedRpm</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="haywardomnilogic:pump">
+		<instruction-set targetVersion="1">
+			<update-channel id="pumpSpeedRpm">
+				<type>haywardomnilogic:pumpSpeedRpm</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

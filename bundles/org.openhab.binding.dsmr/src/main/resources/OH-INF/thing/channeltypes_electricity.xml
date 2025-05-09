@@ -153,6 +153,12 @@
 		<description>The current power delivery.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="actualDeliveryBelgiumType">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Demand</label>
+		<description>The current power delivery demand.</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="actualProductionType" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Actual Power Production</label>

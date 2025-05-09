@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmb1dm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1DM</label>
+		<description>Dimmer module for inductive/resistive and capacitive load</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
+	</thing-type>
+
+	<thing-type id="vmb1led">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1LED</label>
+		<description>1-channel 0-10V controlled PWM dimmer for led strips</description>
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
+	</thing-type>
+
+	<thing-type id="vmb4dc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4DC</label>
+		<description>4-channel 0/1-10V dimmer controller</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+			<channel id="CH2" typeId="brightness"/>
+			<channel id="CH3" typeId="brightness"/>
+			<channel id="CH4" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:4channelDeviceWithDimspeed"/>
+	</thing-type>
+
+	<thing-type id="vmb4ledpwm-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4LEDPWM-20</label>
+		<description>4 channel led PWM dimmer module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
+			<channel-group id="fade-mode" typeId="4channelFadeModule"/>
+			<channel-group id="scene" typeId="4channelSceneModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:4channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb8dc-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB8DC-20</label>
+		<description>8 channel 0 to 10 V dimmer control module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="brightness" typeId="8channelBrightnessModule"/>
+			<channel-group id="fade-mode" typeId="8channelFadeModule"/>
+			<channel-group id="scene" typeId="8channelSceneModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbdali">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDALI</label>
+		<description>DALI gateway module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="81channelInputModule"/>
+			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
+			<channel-group id="color" typeId="81channelColorModule"/>
+			<channel-group id="brightness" typeId="81channelBrightnessModule"/>
+			<channel-group id="white" typeId="81channelWhiteColorModule"/>
+			<channel-group id="scene" typeId="81channelSceneModule"/>
+			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbdali-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDALI-20</label>
+		<description>DALI gateway module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="81channelInputModule"/>
+			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
+			<channel-group id="color" typeId="81channelColorModule"/>
+			<channel-group id="brightness" typeId="81channelBrightnessModule"/>
+			<channel-group id="white" typeId="81channelWhiteColorModule"/>
+			<channel-group id="scene" typeId="81channelSceneModule"/>
+			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbdme">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDME</label>
+		<description>Dimmer for electronic/resistive load</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
+	</thing-type>
+
+	<thing-type id="vmbdmi">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
+	</thing-type>
+
+	<thing-type id="vmbdmir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDMI-R</label>
+		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="brightness"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
+	</thing-type>
+
+</thing:thing-descriptions>

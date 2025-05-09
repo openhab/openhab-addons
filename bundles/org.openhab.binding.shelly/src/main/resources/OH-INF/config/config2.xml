@@ -8,7 +8,6 @@
 		<parameter name="deviceIp" type="text" required="true">
 			<label>@text/thing-type.config.shelly.deviceIp.label</label>
 			<description>@text/thing-type.config.shelly.deviceIp.description</description>
-			<context>network-address</context>
 		</parameter>
 		<parameter name="password" type="text" required="false">
 			<label>@text/thing-type.config.shelly.password.label</label>
@@ -25,6 +24,11 @@
 		<parameter name="enableBluGateway" type="boolean" required="false">
 			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
 			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableRangeExtender" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableRangeExtender.label</label>
+			<description>@text/thing-type.config.shelly.enableRangeExtender.description</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -112,6 +116,11 @@
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="enableBluGateway" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
+			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>false</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

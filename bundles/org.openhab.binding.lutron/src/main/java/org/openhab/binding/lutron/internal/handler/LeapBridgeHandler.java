@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,12 +30,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -55,6 +57,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.config.LeapBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LeapDeviceDiscoveryService;
+import org.openhab.binding.lutron.internal.protocol.DeviceCommand;
 import org.openhab.binding.lutron.internal.protocol.FanSpeedType;
 import org.openhab.binding.lutron.internal.protocol.GroupCommand;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandNew;
@@ -65,9 +68,11 @@ import org.openhab.binding.lutron.internal.protocol.leap.LeapMessageParserCallba
 import org.openhab.binding.lutron.internal.protocol.leap.Request;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneExpanded;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.StringType;
@@ -129,7 +134,13 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private final Map<Integer, Integer> deviceToZone = new HashMap<>();
     private final Object zoneMapsLock = new Object();
 
+    private final Object zoneIdToNameLock = new Object();
+    private final Map<Integer, String> zoneIdToName = new HashMap<>();
+    public final Object areaIdToNameLock = new Object();
+    public final Map<Integer, String> areaIdToName = new HashMap<>();
+
     private @Nullable Map<Integer, List<Integer>> deviceButtonMap;
+    private Map<Integer, Integer> buttonToDevice = new HashMap<>();
     private final Object deviceButtonMapLock = new Object();
 
     private volatile boolean deviceDataLoaded = false;
@@ -299,12 +310,12 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
 
-        Thread readerThread = new Thread(this::readerThreadJob, "Lutron reader");
+        Thread readerThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeReader");
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "Lutron sender");
+        Thread senderThread = new Thread(this::senderThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeSender");
         senderThread.setDaemon(true);
         senderThread.start();
         this.senderThread = senderThread;
@@ -320,12 +331,14 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Called by connect() and discovery service to request fresh discovery data
      */
     public void queryDiscoveryData() {
+        sendCommand(new LeapCommand(Request.getAreas()));
+
         if (!isRadioRA3) {
             sendCommand(new LeapCommand(Request.getDevices()));
         } else {
+            sendCommand(new LeapCommand(Request.getZoneStatuses()));
             sendCommand(new LeapCommand(Request.getDevices(false)));
         }
-        sendCommand(new LeapCommand(Request.getAreas()));
         sendCommand(new LeapCommand(Request.getOccupancyGroups()));
     }
 
@@ -475,6 +488,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         logger.debug("No content in button group definition. Creating empty deviceButtonMap.");
         Map<Integer, List<Integer>> deviceButtonMap = new HashMap<>();
         synchronized (deviceButtonMapLock) {
+            buttonToDevice.clear();
             this.deviceButtonMap = deviceButtonMap;
             buttonDataLoaded = true;
         }
@@ -582,15 +596,21 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     @Override
     public void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList) {
         Map<Integer, List<Integer>> deviceButtonMap = new HashMap<>();
+        Map<Integer, Integer> buttonToDevice = new HashMap<>();
 
         for (ButtonGroup buttonGroup : buttonGroupList) {
             int parentDevice = buttonGroup.getParentDevice();
             logger.trace("Found ButtonGroup: {} parent device: {}", buttonGroup.getButtonGroup(), parentDevice);
             List<Integer> buttonList = buttonGroup.getButtonList();
             deviceButtonMap.put(parentDevice, buttonList);
+            for (Integer buttonId : buttonList) {
+                buttonToDevice.put(buttonId, parentDevice);
+                sendCommand(new LeapCommand(Request.subscribeButtonStatus(buttonId)));
+            }
         }
         synchronized (deviceButtonMapLock) {
             this.deviceButtonMap = deviceButtonMap;
+            this.buttonToDevice = buttonToDevice;
             buttonDataLoaded = true;
         }
         checkInitialized();
@@ -616,7 +636,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
-            discoveryService.processDeviceDefinitions(Arrays.asList(device));
+            discoveryService.processDeviceDefinitions(Arrays.asList(device), zoneIdToName, areaIdToName);
         }
     }
 
@@ -643,12 +663,36 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
-            discoveryService.processDeviceDefinitions(deviceList);
+            discoveryService.processDeviceDefinitions(deviceList, zoneIdToName, areaIdToName);
+        }
+    }
+
+    @Override
+    public void handleMultipleZoneExpandedUpdate(List<ZoneExpanded> expandedZones) {
+        synchronized (zoneIdToNameLock) {
+            zoneIdToName.clear();
+            for (ZoneExpanded zone : expandedZones) {
+                int zoneId = zone.zone.getZone();
+                if (zoneId > 0) {
+                    zoneIdToName.put(zoneId, zone.zone.name);
+                }
+            }
         }
     }
 
     @Override
     public void handleMultipleAreaDefinition(List<Area> areaList) {
+        synchronized (areaIdToNameLock) {
+            areaIdToName.clear();
+            for (Area area : areaList) {
+                int areaId = area.getArea();
+                if (areaId > 0) {
+                    logger.debug("area[{}] == {}", areaId, area.name);
+                    areaIdToName.put(areaId, area.name);
+                }
+            }
+        }
+
         LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setAreas(areaList);
@@ -681,6 +725,49 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             sendCommand(new LeapCommand(Request.subscribeZoneStatus()));
         }
         sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
+    }
+
+    /**
+     * Notify child thing handler of a button update.
+     */
+    @Override
+    public void handleButtonStatus(ButtonStatus buttonStatus) {
+        int buttonId = buttonStatus.getButton();
+        logger.trace("Button: {} eventType: {}", buttonId, buttonStatus.buttonEvent.eventType);
+        Entry<Integer, Integer> entry = buttonToDeviceAndIndex(buttonId);
+
+        if (entry == null) {
+            logger.debug("Unable to map button {} to device", buttonId);
+            return;
+        }
+        int integrationId = entry.getKey();
+        int index = entry.getValue();
+        logger.trace("Button {} mapped to device id {}, index {}", buttonId, integrationId, index);
+
+        int action;
+        if ("Press".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_PRESS;
+        } else if ("Release".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_RELEASE;
+        } else {
+            logger.warn("Unrecognized button event {} for button {} on device {}", buttonStatus.buttonEvent.eventType,
+                    index, integrationId);
+            return;
+        }
+
+        // dispatch update to proper thing handler
+        LutronHandler handler = findThingHandler(integrationId);
+        if (handler != null) {
+            try {
+                handler.handleUpdate(LutronCommandType.DEVICE, String.valueOf(index), String.valueOf(action));
+            } catch (NumberFormatException e) {
+                logger.warn("Number format exception parsing update");
+            } catch (RuntimeException e) {
+                logger.warn("Runtime exception while processing update");
+            }
+        } else {
+            logger.debug("No thing configured for integration ID {}", integrationId);
+        }
     }
 
     @Override
@@ -774,6 +861,22 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         }
         synchronized (zoneMapsLock) {
             return deviceToZone.get(device);
+        }
+    }
+
+    private @Nullable Entry<Integer, Integer> buttonToDeviceAndIndex(int buttonId) {
+        synchronized (deviceButtonMapLock) {
+            Integer deviceId = buttonToDevice.get(buttonId);
+            if (deviceId == null) {
+                return null;
+            }
+            List<Integer> buttonList = deviceButtonMap.get(deviceId);
+            int buttonIndex = buttonList.indexOf(buttonId);
+            if (buttonIndex == -1) {
+                return null;
+            }
+
+            return new SimpleEntry(deviceId, buttonIndex + 1);
         }
     }
 

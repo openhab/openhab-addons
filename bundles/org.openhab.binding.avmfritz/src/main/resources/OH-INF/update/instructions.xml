@@ -166,6 +166,11 @@
 				<type>system:color-temperature-abs</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="color_temperature_abs">
+				<type>avmfritz:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="avmfritz:HAN_FUN_COLOR_BULB">
@@ -176,6 +181,11 @@
 			<add-channel id="color_temperature_abs">
 				<type>system:color-temperature-abs</type>
 			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="color_temperature_abs">
+				<type>avmfritz:color-temperature-abs</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
