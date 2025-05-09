@@ -30,6 +30,10 @@
 		<label>Button Press</label>
 		<description>Sends a button event to the controller.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="button_activated">

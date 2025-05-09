@@ -6,11 +6,19 @@
 	<channel-type id="profile-climate-channel">
 		<item-type>Switch</item-type>
 		<label>A/C at Departure Time</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="profile-mode-channel">
 		<item-type>String</item-type>
 		<label>Charge Mode</label>
-		<description>Mode for selecting immediate or delyed charging</description>
+		<description>Mode for selecting immediate or delayed charging</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="immediateCharging">Immediate Charging</option>
@@ -33,6 +41,10 @@
 		<item-type>String</item-type>
 		<label>Charging Plan</label>
 		<description>Charging plan selection</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="weeklyPlanner">Weekly Schedule</option>
@@ -54,196 +66,348 @@
 		<item-type>DateTime</item-type>
 		<label>Window Start Time</label>
 		<description>Start time of charging window</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="window-end-channel">
 		<item-type>DateTime</item-type>
 		<label>Window End Time</label>
 		<description>End time of charging window</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T1 Departure Time</label>
 		<description>Departure time for regular schedule timer 1</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer1-day-mon-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Monday</label>
 		<description>Monday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-tue-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Tuesday</label>
 		<description>Tuesday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-wed-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Wednesday</label>
 		<description>Wednesday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-thu-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Thursday</label>
 		<description>Thursday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-fri-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Friday</label>
 		<description>Friday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-sat-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Saturday</label>
 		<description>Saturday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-day-sun-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Sunday</label>
 		<description>Sunday scheduled for timer 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer1-enabled-channel">
 		<item-type>Switch</item-type>
 		<label>T1 Enabled</label>
 		<description>Timer 1 enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T2 Departure Time</label>
 		<description>Departure time for regular schedule timer 2</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer2-day-mon-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Monday</label>
 		<description>Monday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-tue-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Tuesday</label>
 		<description>Tuesday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-wed-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Wednesday</label>
 		<description>Wednesday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-thu-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Thursday</label>
 		<description>Thursday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-fri-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Friday</label>
 		<description>Friday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-sat-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Saturday</label>
 		<description>Saturday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-day-sun-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Sunday</label>
 		<description>Sunday scheduled for timer 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer2-enabled-channel">
 		<item-type>Switch</item-type>
 		<label>T2 Enabled</label>
 		<description>Timer 2 enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T3 Departure Time</label>
 		<description>Departure time for regular schedule timer 3</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer3-day-mon-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Monday</label>
 		<description>Monday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-tue-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Tuesday</label>
 		<description>Tuesday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-wed-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Wednesday</label>
 		<description>Wednesday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-thu-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Thursday</label>
 		<description>Thursday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-fri-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Friday</label>
 		<description>Friday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-sat-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Saturday</label>
 		<description>Saturday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-day-sun-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Sunday</label>
 		<description>Sunday scheduled for timer 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer3-enabled-channel">
 		<item-type>Switch</item-type>
 		<label>T3 Enabled</label>
 		<description>Timer 3 enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T4 Departure Time</label>
 		<description>Departure time for regular schedule timer 4</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tH:%1$tM" readOnly="false"/>
 	</channel-type>
 	<channel-type id="timer4-day-mon-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Monday</label>
 		<description>Monday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-tue-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Tuesday</label>
 		<description>Tuesday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-wed-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Wednesday</label>
 		<description>Wednesday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-thu-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Thursday</label>
 		<description>Thursday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-fri-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Friday</label>
 		<description>Friday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-sat-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Saturday</label>
 		<description>Saturday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-day-sun-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Sunday</label>
 		<description>Sunday scheduled for timer 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="timer4-enabled-channel">
 		<item-type>Switch</item-type>
 		<label>T4 Enabled</label>
 		<description>Timer 4 enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

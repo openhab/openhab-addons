@@ -9,6 +9,10 @@
 		<label>Volume</label>
 		<description>Volume of an audio item in percent</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
@@ -16,6 +20,10 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mutes the device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="state" advanced="true">
 		<item-type>String</item-type>
