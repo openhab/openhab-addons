@@ -114,7 +114,8 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Instant.class,
                     v -> v.hasMember("ctime") && v.hasMember("isoformat") && v.hasMember("tzinfo")
                             && v.getMember("tzinfo").isNull(),
-                    v -> Instant.parse(v.invokeMember("isoformat").asString()), HostAccess.TargetMappingPrecedence.LOW)
+                    v -> Instant.parse(v.invokeMember("isoformat").asString() + "Z"),
+                    HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python timedelta to java.time.Duration
             .targetTypeMapping(Value.class, Duration.class,
