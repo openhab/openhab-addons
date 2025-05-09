@@ -84,30 +84,30 @@
 				<context>token</context>
 				<label>Token</label>
 				<description>Secret Token (length 128 HEX) used for secure connection authentication used with devices v3 (if not
-					known, enter email and password for Cloud to retrieve it).</description>
+					known, enter email, password for Cloud account to retrieve it).</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
 				<context>key</context>
 				<label>Key</label>
 				<description>Secret Key (length 64 HEX) used for secure connection authentication used with devices v3 (if not
-					known, enter email and password for Cloud to retrieve it).</description>
+					known, enter email, password for Cloud account to retrieve it).</description>
 			</parameter>
 			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
 				<context>pollingTime</context>
-				<label>Polling time in seconds</label>
-				<description>Polling time. Minimum time is 30, default 60.</description>
+				<label>Poll frequency in seconds</label>
+				<description>Poll device status. Minimum is 30, default 60.</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="m">
 				<context>energyPoll</context>
-				<label>Energy Poll in minutes</label>
-				<description>Energy poll when AC is On, default 0 (disabled in case not supported).</description>
+				<label>Energy poll frequency in minutes</label>
+				<description>Energy poll (when AC is On), default 0, disabled. (in case not supported).</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
 				<context>keyTokenUpdate</context>
-				<label>Key Token Update in Days</label>
-				<description>Frequency to update the Key and Token, default 0 to disable.</description>
+				<label>Key token update frequency in days</label>
+				<description>Update the Key and Token from the cloud, default 0 to disable.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="timeout" type="decimal" required="true" min="2" max="10" unit="s">
@@ -130,8 +130,8 @@
 			</parameter>
 			<parameter name="energyDecode" type="boolean" required="true">
 				<context>energyDecode</context>
-				<label>Alternative Energy Method</label>
-				<description>Devices decode Energy reports differently. Confirm with other measurements what to use.</description>
+				<label>Energy response decode method</label>
+				<description>Binary-Coded Decimal (BCD) = true. Big-endian = false.</description>
 				<default>true</default>
 			</parameter>
 		</config-description>
