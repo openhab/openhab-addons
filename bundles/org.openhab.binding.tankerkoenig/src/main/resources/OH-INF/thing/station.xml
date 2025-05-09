@@ -46,6 +46,10 @@
 		<item-type>Contact</item-type>
 		<label>Opening State</label>
 		<description>The reported opening-state of that Station.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

@@ -41,6 +41,10 @@
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -48,6 +52,10 @@
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -55,6 +63,10 @@
 		<item-type>Number</item-type>
 		<label>Dimmer Switch State</label>
 		<description>The Button that was last pressed on the dimmer switch.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="1000">On (Initial Press)</option>
@@ -185,6 +197,10 @@
 		<item-type>Switch</item-type>
 		<label>Flag</label>
 		<description>Flag of CLIP sensor.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Scene Channel -->
