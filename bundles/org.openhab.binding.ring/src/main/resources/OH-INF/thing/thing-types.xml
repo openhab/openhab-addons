@@ -6,7 +6,7 @@
 
 	<!-- Account Bridge Type -->
 	<bridge-type id="account">
-		<label>Ring Account Binding Bridge</label>
+		<label>Binding Bridge</label>
 		<description>Account with ring.com to access the devices</description>
 
 		<channel-groups>
@@ -15,12 +15,12 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="username" type="text" required="false">
-				<label>The Ring account's user name</label>
+				<label>User Name</label>
 				<description>Enter the user name you used to subscribe to the Ring services. If using 2 factor authentication, leave
 					this blank and enter the refresh token instead.</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
-				<label>The Ring account's password</label>
+				<label>Account's Password</label>
 				<description>Enter the password you used to subscribe to the Ring services. If using 2 factor authentication, leave
 					this blank and enter the refresh token instead.</description>
 				<context>password</context>
@@ -36,17 +36,17 @@
 				<default></default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>The refresh interval</label>
+				<label>Refresh interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
 			</parameter>
 			<parameter name="videoStoragePath" type="text">
-				<label>MP4 video download path</label>
+				<label>Video Download Path</label>
 				<description>The folder path to save video .mp4 files in when downloaded from ring.com. Note: the openhab user must
 					have rights to save to this location</description>
 			</parameter>
 			<parameter name="videoRetentionCount" type="integer">
-				<label>The number of video files to keep</label>
+				<label>Number of videos to keep</label>
 				<description>The number of video files to keep when automatically downloading the latest event video, or 0 to
 					disable auto downloading</description>
 				<default>10</default>
@@ -70,12 +70,12 @@
 		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
-				<label>Offset in minutes to switch off</label>
+				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>The refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
 			</parameter>
@@ -96,12 +96,12 @@
 		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
-				<label>Offset in minutes to switch off</label>
+				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>The refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
 			</parameter>
@@ -123,12 +123,12 @@
 		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
-				<label>Offset in minutes to switch off</label>
+				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>The refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
 			</parameter>
@@ -150,12 +150,12 @@
 		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
-				<label>Offset in minutes to switch off</label>
+				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>The refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
 			</parameter>
@@ -199,29 +199,29 @@
 	</channel-type>
 	<channel-type id="doorbotId">
 		<item-type>String</item-type>
-		<label>The id of the Ring device</label>
+		<label>Event Device ID</label>
 		<description>The id of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
 	</channel-type>
 	<channel-type id="doorbotDescription">
 		<item-type>String</item-type>
-		<label>The description of the Ring device</label>
+		<label>Event Device Name</label>
 		<description>The description of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
 	</channel-type>
 	<channel-type id="createdAt">
 		<item-type>DateTime</item-type>
-		<label>When the event was created</label>
+		<label>Event DateTime</label>
 		<description>The date and time the event was created</description>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 	<channel-type id="kind">
 		<item-type>String</item-type>
-		<label>The kind of event</label>
+		<label>Event Type</label>
 		<description>The kind of event, usually 'motion' or 'ding'</description>
 	</channel-type>
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
-		<label>Account Polling Enabled (on=yes, off=no)</label>
-		<description>On or off</description>
+		<label>Enable Polling</label>
+		<description>Account Polling Enabled (on=yes, off=no)</description>
 	</channel-type>
 	<channel-type id="battery">
 		<item-type>Number</item-type>
