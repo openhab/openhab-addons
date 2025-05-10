@@ -50,7 +50,7 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
     private static final int REFRESH_MINUTES = 5;
 
     @Nullable
-    private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
+    private final OnectaConnectionClient onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate

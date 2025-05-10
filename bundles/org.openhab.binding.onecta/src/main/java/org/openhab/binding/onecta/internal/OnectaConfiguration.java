@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.onecta.internal.api.OnectaSignInClient;
+import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -37,13 +37,8 @@ public class OnectaConfiguration {
     private @Nullable static HttpClient httpClient = null;
     private @Nullable static OAuthTokenRefresher openHabOAuthTokenRefresher = null;
 
-    private @NonNull static OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
+    private @NonNull static OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
     private @Nullable static OnectaTranslationProvider translation;
-
-    // @Activate
-    // public OnectaConfiguration(final @Reference OnectaTranslationProvider translationa) {
-    // translation = translationa;
-    // }
 
     public static void setTranslation(OnectaTranslationProvider translationPar) {
         translation = translationPar;
@@ -75,8 +70,12 @@ public class OnectaConfiguration {
         OnectaConfiguration.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
     }
 
-    public static OnectaSignInClient getOnectaSignInClient() {
-        return onectaSignInClient;
+    // public static OnectaSignInClient getOnectaSignInClient() {
+    // return onectaSignInClient;
+    // }
+
+    public static OnectaConnectionClient getOnectaConnectionClient() {
+        return onectaConnectionClient;
     }
 
     public static @Nullable OAuthTokenRefresher getOAuthTokenRefresher() {

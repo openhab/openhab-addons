@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
@@ -69,7 +70,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     public OnectaBridgeHandler(Bridge bridge) {
         super(bridge);
-        onectaConnectionClient = new OnectaConnectionClient();
+        onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();
     }
 
     @Override

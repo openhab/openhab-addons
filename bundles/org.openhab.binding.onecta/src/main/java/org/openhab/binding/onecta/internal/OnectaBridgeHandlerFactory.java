@@ -59,6 +59,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         OnectaConfiguration.setTranslation(translation);
         OnectaConfiguration.setHttpClientFactory(httpClientFactory);
         OnectaConfiguration.setOAuthTokenRefresher(openHabOAuthTokenRefresher);
+        OnectaConfiguration.getOnectaConnectionClient().openConnecttion();
     }
 
     @Override
