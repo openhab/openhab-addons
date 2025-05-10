@@ -11,6 +11,7 @@
 
 		<label>Wifi Repeater</label>
 		<description>Provides informations and control over a Wifi Repeater</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="connectivity" id="connectivity"/>
