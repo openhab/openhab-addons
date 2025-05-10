@@ -89,7 +89,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private @Nullable Profile userProfile;
+    private @NonNullByDefault({}) Profile userProfile;
     /**
      * The registry.
      */
@@ -117,7 +117,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /*
      * The path of where to save video files
      */
-    private @Nullable String videoStoragePath;
+    private String videoStoragePath = "";
 
     private NetworkAddressService networkAddressService;
 
@@ -318,7 +318,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    public @Nullable String getHardwareId() {
+    public @NonNullByDefault({}) String getHardwareId() {
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         String hardwareId = (config.hardwareId != null) ? config.hardwareId : "";
         logger.debug("getHardwareId H:{}", hardwareId);
@@ -437,8 +437,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             String refreshToken = getRefreshTokenFromFile();
             if ((!refreshToken.isEmpty()) || !(username.isEmpty() && password.isEmpty())) {
                 try {
-                    userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, null,
-                            hardwareId);
+                    userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, "", hardwareId);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
                 } catch (AuthenticationException ex) {
                     logger.debug("RestClient reported AuthenticationException trying getAuthenticatedProfile: {}",
@@ -553,8 +552,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         // restClient.refresh_session(userProfile.getRefreshToken());
                         Configuration config = getThing().getConfiguration();
                         String hardwareId = (String) config.get("hardwareId");
-                        userProfile = restClient.getAuthenticatedProfile(null, null, userProfile.getRefreshToken(),
-                                null, hardwareId);
+                        userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "",
+                                hardwareId);
                     }
                 } catch (Exception e) {
                     logger.debug(

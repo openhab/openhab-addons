@@ -13,7 +13,6 @@
 package org.openhab.binding.ring.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AccountConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,11 +21,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AccountConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
-    public @Nullable String hardwareId;
-    public @Nullable String twofactorCode;
+    public String username = "";
+    public String password = "";
+    public String hardwareId = "";
+    public String twofactorCode = "";
     public int videoRetentionCount;
-    public @Nullable String videoStoragePath;
+    public String videoStoragePath = "";
     public int refreshInterval;
 }

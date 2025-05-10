@@ -43,6 +43,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -64,6 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class RestClient {
 
     private static final int CONNECTION_TIMEOUT = 12000;
@@ -96,7 +99,8 @@ public class RestClient {
      *
      */
 
-    private String postRequest(String resourceUrl, String data, String oauthToken) throws AuthenticationException {
+    private @Nullable String postRequest(String resourceUrl, String data, String oauthToken)
+            throws AuthenticationException {
         String result = null;
         logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauthToken);
         try {
@@ -110,7 +114,7 @@ public class RestClient {
             conn.setRequestProperty("Authorization", "Bearer " + oauthToken);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                     return true;
                 }
             });
@@ -118,16 +122,18 @@ public class RestClient {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
             } }, null);
             conn.setSSLSocketFactory(context.getSocketFactory());
@@ -178,7 +184,7 @@ public class RestClient {
      * @return the servers response
      * @throws AuthenticationException
      */
-    private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
+    private @Nullable String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
         String result = null;
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
@@ -190,7 +196,7 @@ public class RestClient {
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                     return true;
                 }
             });
@@ -198,16 +204,18 @@ public class RestClient {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
             } }, null);
             conn.setSSLSocketFactory(context.getSocketFactory());
@@ -296,7 +304,7 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    private JSONObject getOauthToken(String username, String password, String refreshToken)
+    private @Nullable JSONObject getOauthToken(String username, String password, String refreshToken)
             throws AuthenticationException, ParseException {
         logger.debug("RestClient - getOauthToken {} - {} - {}", RingUtils.sanitizeData(username),
                 RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
@@ -328,7 +336,7 @@ public class RestClient {
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                     return true;
                 }
             });
@@ -336,16 +344,18 @@ public class RestClient {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
             } }, null);
             conn.setSSLSocketFactory(context.getSocketFactory());
@@ -430,7 +440,7 @@ public class RestClient {
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                     return true;
                 }
             });
@@ -438,16 +448,18 @@ public class RestClient {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
             } }, null);
             conn.setSSLSocketFactory(context.getSocketFactory());
@@ -532,7 +544,7 @@ public class RestClient {
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
+                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                     return true;
                 }
             });
@@ -540,16 +552,18 @@ public class RestClient {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {
+                public X509Certificate @Nullable [] getAcceptedIssuers() {
                     return null;
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
 
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
+                        throws CertificateException {
                 }
             } }, null);
 
@@ -639,7 +653,7 @@ public class RestClient {
         }
     }
 
-    public String getRecordingURL(String eventId, Profile profile) {
+    public @Nullable String getRecordingURL(String eventId, Profile profile) {
         try {
             StringBuilder vidUrl = new StringBuilder();
             vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId).append(ApiConstants.URL_RECORDING_END);
@@ -656,7 +670,7 @@ public class RestClient {
         }
     }
 
-    public String downloadEventVideo(RingEvent event, Profile profile, String filePath, int retentionCount) {
+    public @Nullable String downloadEventVideo(RingEvent event, Profile profile, String filePath, int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 

@@ -51,7 +51,7 @@ public class RingVideoServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(RingVideoServlet.class);
 
-    private @Nullable String videoStoragePath;
+    private String videoStoragePath = "";
     /**
      * The RestClient is used to connect to the Ring Account.
      */
