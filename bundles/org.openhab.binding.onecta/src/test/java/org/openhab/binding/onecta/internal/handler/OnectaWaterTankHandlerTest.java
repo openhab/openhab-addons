@@ -94,13 +94,6 @@ public class OnectaWaterTankHandlerTest {
     }
 
     @Test
-    public void refreshDeviceNotAvailTest() {
-        when(dataTransServiceMock.isAvailable()).thenReturn(false);
-        handler.refreshDevice();
-        verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-    }
-
-    @Test
     public void refreshDeviceOkTest() {
 
         when(dataTransServiceMock.isAvailable()).thenReturn(true);

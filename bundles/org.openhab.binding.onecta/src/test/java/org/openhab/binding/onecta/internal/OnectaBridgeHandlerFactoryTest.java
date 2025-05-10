@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.onecta.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,15 +41,9 @@ import org.osgi.framework.BundleContext;
 @ExtendWith(MockitoExtension.class)
 public class OnectaBridgeHandlerFactoryTest {
 
-    public static final String USERID = "Userid";
-    public static final String PASSWORD = "Password";
     public static final String UNITID = "ThisIsAUnitID";
 
-    private Map<String, Object> bridgeProperties = new HashMap<>();
-    private Configuration thingConfiguration = new Configuration();
-
-    private OnectaBridgeHandlerFactory handler;
-
+    private OnectaBridgeHandlerFactory handler ;
     @Mock
     private HttpClientFactory httpClientFactoryMock;
     @Mock
@@ -77,9 +69,6 @@ public class OnectaBridgeHandlerFactoryTest {
     public void setUp() {
         handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, openHabOAuthTokenRefresher,
                 onectaTranslationProvider);
-        bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
-        bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
-        thingConfiguration.setProperties(bridgeProperties);
     }
 
     @Test
@@ -100,29 +89,29 @@ public class OnectaBridgeHandlerFactoryTest {
 
         Thing bridgeThing = new DummyBridge(THING_TYPE_BRIDGE, onectaBridgeHandlerMock, ThingStatus.ONLINE);
         ThingHandler thingHandler = handler.createHandler(bridgeThing);
-        assertEquals(true, thingHandler instanceof OnectaBridgeHandler);
+        assertInstanceOf(OnectaBridgeHandler.class, thingHandler);
 
         Configuration configuration = new Configuration();
         configuration.put(CONFIG_PAR_UNITID, UNITID);
 
-        Thing dummyThing = new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE);
-        ((DummyThing) dummyThing).setConfiguration(configuration);
+        DummyThing dummyThing = new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE);
+        dummyThing.setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
-        assertEquals(true, thingHandler instanceof OnectaDeviceHandler);
+        assertInstanceOf(OnectaDeviceHandler.class, thingHandler);
 
         dummyThing = new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.ONLINE);
-        ((DummyThing) dummyThing).setConfiguration(configuration);
+        dummyThing.setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
-        assertEquals(true, thingHandler instanceof OnectaGatewayHandler);
+        assertInstanceOf(OnectaGatewayHandler.class, thingHandler);
 
         dummyThing = new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.ONLINE);
-        ((DummyThing) dummyThing).setConfiguration(configuration);
+        dummyThing.setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
-        assertEquals(true, thingHandler instanceof OnectaWaterTankHandler);
+        assertInstanceOf(OnectaWaterTankHandler.class, thingHandler);
 
         dummyThing = new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE);
-        ((DummyThing) dummyThing).setConfiguration(configuration);
+        dummyThing.setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
-        assertEquals(true, thingHandler instanceof OnectaIndoorUnitHandler);
+        assertInstanceOf(OnectaIndoorUnitHandler.class, thingHandler);
     }
 }

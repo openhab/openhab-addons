@@ -50,11 +50,6 @@ public class OnectaConfiguration {
     }
 
     public static OnectaTranslationProvider getTranslation() {
-        // if (translation == null) {
-        // throw new RuntimeException("Translation provider is not available");
-        // }
-        // return translation;
-
         Optional<OnectaTranslationProvider> optionalTranslation = Optional.ofNullable(translation);
         return optionalTranslation.orElseThrow(() -> new RuntimeException("Translation provider is not available"));
     }

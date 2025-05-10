@@ -43,8 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
 
-    public static final String DOES_NOT_EXISTS = OnectaConfiguration.getTranslation()
-            .getText("unknown.unitid-not-exists");
     private final Logger logger = LoggerFactory.getLogger(OnectaIndoorUnitHandler.class);
 
     private @Nullable OnectaConfiguration config;
@@ -85,7 +83,8 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_IDU_HEATEXCHANGETEMP, getHeatExchangerTemperature());
             updateState(CHANNEL_IDU_SUCTIONTEMP, getSuctionTemperature());
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, DOES_NOT_EXISTS);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, OnectaConfiguration.getTranslation()
+                    .getText("unknown.unitid-not-exists"));
         }
     }
 

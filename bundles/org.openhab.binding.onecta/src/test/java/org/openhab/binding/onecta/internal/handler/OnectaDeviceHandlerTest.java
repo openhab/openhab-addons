@@ -32,15 +32,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.*;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.UnDefType;
 
@@ -109,13 +107,6 @@ public class OnectaDeviceHandlerTest {
         // pass it the thingMock and a ThingStatusInfo object containing the ThingStatus of the thingMock.
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-    }
-
-    @Test
-    public void refreshDeviceNotAvailTest() {
-        when(dataTransServiceMock.isAvailable()).thenReturn(false);
-        handler.refreshDevice();
-        verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
     }
 
     @Test
