@@ -146,14 +146,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             Request req = client.newRequest(url);
 
             if (req == null) {
-                logger.error("Invalid request object in fetchSysapVersion with the URL [ {} ]", url);
+                logger.warn("Invalid request object in fetchSysapVersion with the URL [ {} ]", url);
                 return false;
             }
 
             ContentResponse response = req.send();
 
             if (response.getStatus() != 200) {
-                logger.error("HTTP request failed in fetchSysapVersion with status [{}] and reason [{}]",
+                logger.warn("HTTP request failed in fetchSysapVersion with status [{}] and reason [{}]",
                         response.getStatus(), response.getReason());
                 return false;
             }
@@ -166,7 +166,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
-                logger.error("Invalid jsonObject in fetchSysapVersion with the URL [ {} ]", url);
+                logger.warn("Invalid jsonObject in fetchSysapVersion with the URL [ {} ]", url);
                 return false;
             }
 
@@ -174,38 +174,37 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             JsonObject sysapObject = jsonObject.getAsJsonObject(sysApUID);
 
             if (sysapObject == null) {
-                logger.error("SysAP object not found in fetchSysapVersion with the URL [ {} ]", url);
+                logger.warn("SysAP object not found in fetchSysapVersion with the URL [ {} ]", url);
                 return false;
             }
 
             JsonObject sysapDetails = sysapObject.getAsJsonObject("sysap");
             if (sysapDetails == null) {
-                logger.error("SysAP details not found in fetchSysapVersion with the URL [ {} ]", url);
+                logger.warn("SysAP details not found in fetchSysapVersion with the URL [ {} ]", url);
                 return false;
             }
 
             JsonElement versionElement = sysapDetails.get("version");
             if (versionElement == null || !versionElement.isJsonPrimitive()) {
-                logger.error("Version not found or invalid in fetchSysapVersion with the URL [ {} ]", url);
+                logger.warn("Version not found or invalid in fetchSysapVersion with the URL [ {} ]", url);
                 return false;
             }
 
             sysapVersion = versionElement.getAsString();
             logger.debug("SysAP version fetched: {}", sysapVersion);
             return true;
-
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Http communication interrupted in fetchSysapVersion: {}", e.getMessage());
+            logger.warn("Http communication interrupted in fetchSysapVersion: {}", e.getMessage());
             return false;
         } catch (ExecutionException | TimeoutException e) {
-            logger.error("Http communication interrupted in fetchSysapVersion: {}", e.getMessage());
+            logger.warn("Http communication exception in fetchSysapVersion: {}", e.getMessage());
             return false;
         } catch (JsonParseException e) {
-            logger.error("Invalid JSON in fetchSysapVersion: {}", e.getMessage());
+            logger.warn("Invalid JSON in fetchSysapVersion: {}", e.getMessage());
             return false;
         } catch (Exception e) {
-            logger.error("Unexpected error in fetchSysapVersion: {}", e.getMessage());
+            logger.warn("Unexpected error in fetchSysapVersion: {}", e.getMessage());
             return false;
         }
     }
@@ -214,7 +213,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      * Method to get the device list
      */
     public List<String> getDeviceDeviceList() throws FreeAtHomeHttpCommunicationException {
-
         fetchSysapVersion();
 
         List<String> listOfComponentId = new ArrayList<String>();
@@ -585,10 +583,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             // Check the response status
             int statusCode = response.getStatus();
-            logger.debug("HTTP response status code: {}", statusCode);
 
             if (statusCode == HttpStatus.OK_200) {
-                logger.info("HTTP connection to free@home system established successfully");
+                logger.debug("HTTP connection to free@home system established successfullystatus code: {}", statusCode);
                 httpConnectionOK.set(true);
                 return true;
             } else {
@@ -596,18 +593,17 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 httpConnectionOK.set(false);
                 return false;
             }
-
         } catch (URISyntaxException e) {
-            logger.error("Invalid URI syntax for base URL: {}", baseUrl, e);
+            logger.warn("Invalid URI syntax for base URL: {}", baseUrl, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("HTTP connection attempt was interrupted", e);
+            logger.warn("HTTP connection attempt was interrupted", e);
         } catch (TimeoutException e) {
-            logger.error("HTTP connection attempt timed out", e);
+            logger.warn("HTTP connection attempt timed out", e);
         } catch (ExecutionException e) {
-            logger.error("Error executing HTTP request", e);
+            logger.warn("Error executing HTTP request", e);
         } catch (Exception e) {
-            logger.error("Unexpected error while opening HTTP connection", e);
+            logger.warn("Unexpected error while opening HTTP connection", e);
         }
 
         httpConnectionOK.set(false);
@@ -667,7 +663,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
                 logger.debug("WebSocket connection attempt initiated, timeout: {} seconds", BRIDGE_WEBSOCKET_TIMEOUT);
                 ret = true;
-
             } else {
                 ret = false;
             }
@@ -781,7 +776,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 }
             }
         } catch (Exception e) {
-            logger.error("Error in openWebSocketConnection: {}", e.getMessage());
+            logger.warn("Error in openWebSocketConnection: {}", e.getMessage());
             ret = false;
         }
 
@@ -869,7 +864,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 logger.debug("Stopping Jetty thread pool");
                 jettyThreadPool.stop();
             } catch (Exception e) {
-                logger.error("Error stopping Jetty thread pool: {}", e.getMessage());
+                logger.warn("Error stopping Jetty thread pool: {}", e.getMessage());
             } finally {
                 jettyThreadPool = null;
             }
@@ -961,7 +956,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                     logger.debug("WebSocket monitor thread interrupted as expected during shutdown");
                 } catch (IOException e) {
                     // Handle IO errors (e.g., from sendWebsocketKeepAliveMessage or sendWebsocketPing)
-                    logger.error("Error in WebSocket communication: {}", e.getMessage());
+                    logger.warn("Error in WebSocket communication: {}", e.getMessage());
                     try {
                         // Delay before retrying after an IO error
                         logger.debug("Retrying after IO error in {} seconds", BRIDGE_WEBSOCKET_RECONNECT_DELAY);
@@ -1001,7 +996,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 if (websocketSession == null) {
                     boolean established = websocketSessionEstablished.await(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.SECONDS);
                     if (!established || websocketSession == null) {
-                        logger.debug("WebSocket connection timed out or failed during establishment");
+                        logger.trace("WebSocket connection timed out or failed during establishment");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/comm-error.general-websocket-issue");
                         reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
@@ -1057,7 +1052,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         } else if (lastReceivedTime != 0) {
             long timeSinceLastReceived = System.currentTimeMillis() - lastReceivedTime;
             if (timeSinceLastReceived > BRIDGE_WEBSOCKET_TIMEOUT * 1000) {
-                logger.error("No data received for {} ms, assuming connection is dead", timeSinceLastReceived);
+                logger.warn("No data received for {} ms, assuming connection is dead", timeSinceLastReceived);
                 localSession.close(StatusCode.ABNORMAL, "No data received");
                 return false;
             }
@@ -1073,7 +1068,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         websocketSession = null;
         lastReceivedTime = 0;
-        logger.error("Socket Closed: [ {} ] {}", statusCode, reason);
+        logger.warn("Socket Closed: [ {} ] {}", statusCode, reason);
     }
 
     /**
@@ -1127,9 +1122,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
         // Log the error with details if available
         if (cause != null) {
-            logger.error("WebSocket error occurred: {}", cause.getLocalizedMessage());
+            logger.warn("WebSocket error occurred: {}", cause.getLocalizedMessage());
         } else {
-            logger.error("WebSocket error occurred: unknown cause");
+            logger.warn("WebSocket error occurred: unknown cause");
         }
 
         // Check and close the session if it is still open
@@ -1138,7 +1133,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 localSession.close(StatusCode.ABNORMAL, "Closed due to error");
                 logger.debug("WebSocket session closed due to error");
             } catch (Exception e) {
-                logger.error("Failed to close WebSocket session: {}", e.getMessage());
+                logger.warn("Failed to close WebSocket session: {}", e.getMessage());
             }
         }
 
