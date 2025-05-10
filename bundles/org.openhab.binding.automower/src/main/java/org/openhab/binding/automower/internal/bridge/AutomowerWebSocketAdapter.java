@@ -28,6 +28,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
@@ -95,23 +96,23 @@ public class AutomowerWebSocketAdapter {
 
     @OnWebSocketMessage
     public void onMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            logger.trace("Received empty message from WebSocket");
-            return;
-        }
         try {
-            JsonObject event = JsonParser.parseString(message).getAsJsonObject();
-            String id = ((event.has("id") && !event.get("id").isJsonNull()) ? event.get("id").getAsString() : null);
-            if (id != null) {
-                AutomowerHandler automowerHandler = handler.getAutomowerHandlerByThingId(id);
-                if (automowerHandler != null) {
-                    logger.trace("Message from WebSocket for known AutomowerHandler: {}", message);
-                    automowerHandler.processWebSocketMessage(event);
+            if ((message != null) && !message.isBlank()) {
+                JsonObject event = JsonParser.parseString(message).getAsJsonObject();
+                if (event.has("id")) {
+                    String id = event.get("id").getAsString();
+                    AutomowerHandler automowerHandler = handler.getAutomowerHandlerByThingId(id);
+                    if (automowerHandler != null) {
+                        logger.debug("Message from WebSocket for known AutomowerHandler: {}", message);
+                        automowerHandler.processWebSocketMessage(event);
+                    } else {
+                        logger.debug("Message from WebSocket for unknown AutomowerHandler: {}", message);
+                    }
                 } else {
-                    logger.trace("Message from WebSocket for unknown AutomowerHandler: {}", message);
+                    logger.trace("Message from WebSocket without Id: {}", message);
                 }
             } else {
-                logger.trace("Message from WebSocket without Id: {}", message);
+                logger.trace("Received empty message from WebSocket");
             }
         } catch (Exception e) {
             logger.error("Failed to process WebSocket message: {}", e.getMessage());
@@ -120,7 +121,7 @@ public class AutomowerWebSocketAdapter {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        logger.info("WebSocket closed: {} - {}", statusCode, reason);
+        logger.debug("WebSocket closed: {} - {}", statusCode, reason);
 
         // Cancel ping task on disconnect
         final ScheduledFuture<?> connectionTracker = this.connectionTracker;
@@ -149,19 +150,25 @@ public class AutomowerWebSocketAdapter {
      */
     private synchronized void sendKeepAlivePing() {
         try {
-            String accessToken = bridge.authenticate().getAccessToken();
-            if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null) {
-                handler.getWebSocketSession().close(1000, "Timeout: manually closing dead connection");
-            } else {
-                if (handler.getWebSocketSession().isOpen()) {
-                    try {
-                        // logger.trace("Sending ping ...");
-                        handler.getWebSocketSession().getRemote().sendPing(pingPayload);
-                        ++unansweredPings;
-                    } catch (IOException ex) {
-                        logger.debug("Error while sending ping: {}", ex.getMessage());
+            WebSocketSession webSocketSession = handler.getWebSocketSession();
+            if (webSocketSession != null) {
+
+                String accessToken = bridge.authenticate().getAccessToken();
+                if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null) {
+                    webSocketSession.close(1000, "Timeout: manually closing dead connection");
+                } else {
+                    if (webSocketSession.isOpen()) {
+                        try {
+                            // logger.trace("Sending ping ...");
+                            webSocketSession.getRemote().sendPing(pingPayload);
+                            ++unansweredPings;
+                        } catch (IOException ex) {
+                            logger.warn("Error while sending ping: {}", ex.getMessage());
+                        }
                     }
                 }
+            } else {
+                logger.warn("WebSocket session is null, cannot send ping");
             }
         } catch (AutomowerCommunicationException e) {
             logger.error("Failed to authenticate while sending keep-alive ping: {}", e.getMessage());

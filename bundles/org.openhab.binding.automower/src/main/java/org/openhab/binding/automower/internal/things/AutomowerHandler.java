@@ -345,14 +345,14 @@ public class AutomowerHandler extends BaseThingHandler {
                         logger.debug("Initial polling of mower");
                     } else {
                         // consecutive query
-                        logger.trace("Polling mower inline with maxQueryFrequency: '{} > {}'", timeDiff / 1000.0,
+                        logger.debug("Polling mower inline with maxQueryFrequency: '{} > {}'", timeDiff / 1000.0,
                                 maxQueryFrequencyMs / 1000.0);
                     }
                     mowerState = automowerBridge.getAutomowerStatus(id);
                     mowerMessages = automowerBridge.getAutomowerMessages(id);
                     this.lastQueryTime = now;
                 } else {
-                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timeDiff / 1000.0,
+                    logger.debug("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timeDiff / 1000.0,
                             maxQueryFrequencyMs / 1000.0);
                 }
                 if (isValidResult(mowerState)) {
@@ -1199,7 +1199,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void initializeProperties(@Nullable Mower mower) {
-        if (isValidResult(mower)) {
+        if ((mower != null) && isValidResult(mower)) {
             Map<String, String> properties = editProperties();
             properties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
 

@@ -223,16 +223,20 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     public void connectWebSocket(AutomowerWebSocketAdapter webSocketAdapter) {
         try {
-            String accessToken = bridge.authenticate().getAccessToken();
-            if (accessToken == null) {
-                logger.error("No OAuth2 access token available for WebSocket connection");
-                return;
+            if (this.bridge != null) {
+                String accessToken = this.bridge.authenticate().getAccessToken();
+                if (accessToken == null) {
+                    logger.error("No OAuth2 access token available for WebSocket connection");
+                    return;
+                }
+                String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
+                ClientUpgradeRequest request = new ClientUpgradeRequest();
+                request.setHeader("Authorization", "Bearer " + accessToken);
+                webSocketSession = (WebSocketSession) webSocketClient
+                        .connect(webSocketAdapter, URI.create(wsUrl), request).get();
+            } else {
+                logger.error("Bridge is null, cannot connect WebSocket");
             }
-            String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
-            ClientUpgradeRequest request = new ClientUpgradeRequest();
-            request.setHeader("Authorization", "Bearer " + accessToken);
-            webSocketSession = (WebSocketSession) webSocketClient.connect(webSocketAdapter, URI.create(wsUrl), request)
-                    .get();
         } catch (Exception e) {
             logger.error("Failed to start WebSocket client: {}", e.getMessage());
         }
