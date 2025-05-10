@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.simple.JSONObject;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -20,6 +21,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * @author Ben Rosenblum - Initial contribution
  */
+@NonNullByDefault
 public class Other extends AbstractRingDevice {
 
     /**

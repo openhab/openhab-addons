@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.parser.ParseException;
 import org.openhab.binding.ring.internal.RestClient;
@@ -65,13 +66,14 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
-    private ScheduledFuture<?> jobTokenRefresh = null;
-    private ScheduledFuture<?> eventRefresh = null;
-    private Runnable runnableToken = null;
-    private Runnable runnableEvent = null;
-    private Runnable runnableVideo = null;
+    private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
+    private @Nullable ScheduledFuture<?> eventRefresh = null;
+    private @Nullable Runnable runnableToken = null;
+    private @Nullable Runnable runnableEvent = null;
+    private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private @Nullable HttpService httpService;
     private final String thingId;
@@ -82,24 +84,24 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     protected final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
 
     // Scheduler
-    protected ScheduledFuture<?> refreshJob;
+    protected @Nullable ScheduledFuture<?> refreshJob;
 
     /**
      * The user profile retrieved when authenticating.
      */
-    private Profile userProfile;
+    private @Nullable Profile userProfile;
     /**
      * The registry.
      */
-    private RingDeviceRegistry registry;
+    private @Nullable RingDeviceRegistry registry;
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private RestClient restClient;
+    private @Nullable RestClient restClient;
     /**
      * The list with events.
      */
-    private List<RingEvent> lastEvents;
+    private @Nullable List<RingEvent> lastEvents;
     /**
      * The index to the current event.
      */
@@ -115,12 +117,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /*
      * The path of where to save video files
      */
-    private String videoStoragePath;
+    private @Nullable String videoStoragePath;
 
     private NetworkAddressService networkAddressService;
 
     private int httpPort;
 
+    @NonNullByDefault
     public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
             int httpPort) {
         super(bridge);
@@ -316,7 +319,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    public String getHardwareId() {
+    public @Nullable String getHardwareId() {
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         String hardwareId = (config.hardwareId != null) ? config.hardwareId : "";
         logger.debug("getHardwareId H:{}", hardwareId);
@@ -617,12 +620,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     @Override
-    public RestClient getRestClient() {
+    public @Nullable RestClient getRestClient() {
         return restClient;
     }
 
     @Override
-    public Profile getProfile() {
+    public @Nullable Profile getProfile() {
         return userProfile;
     }
 
@@ -632,7 +635,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     /**
-     * Dispose off the refreshJob nicely.
+     * Dispose of the refreshJob nicely.
      */
     @Override
     public void dispose() {

@@ -14,8 +14,6 @@ package org.openhab.binding.ring.internal;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.handler.ChimeHandler;
@@ -51,11 +49,9 @@ import org.slf4j.LoggerFactory;
         RingHandlerFactory.class }, immediate = true, configurationPid = "binding.ring")
 public class RingHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(RingHandlerFactory.class);
-    private final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
 
     private NetworkAddressService networkAddressService;
 
-    @Nullable
     private HttpService httpService;
     private int httpPort;
     private ComponentContext componentContext;
@@ -72,9 +68,6 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = networkAddressService;
 
         logger.debug("Using OH HTTP port {}", httpPort);
-
-        SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
-                THING_TYPE_STICKUPCAM, THING_TYPE_OTHER);
     }
 
     @Override
@@ -83,7 +76,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(final Thing thing) {
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.ring.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class ApiConstants {
     public static final int API_VERSION = 11;
 

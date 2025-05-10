@@ -14,7 +14,6 @@ package org.openhab.binding.ring.internal.discovery;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +21,6 @@ import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.ThingTypeUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +39,6 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
     private ScheduledFuture<?> discoveryJob;
-
-    private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL,
-            THING_TYPE_CHIME, THING_TYPE_STICKUPCAM);
 
     public RingDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 5, true);

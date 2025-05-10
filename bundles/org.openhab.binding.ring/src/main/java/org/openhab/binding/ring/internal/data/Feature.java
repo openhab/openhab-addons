@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
+@NonNullByDefault
 public enum Feature {
 
     REMOTE_LOGGING_FORMAT_STORING,
