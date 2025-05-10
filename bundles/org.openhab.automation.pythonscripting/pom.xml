@@ -80,7 +80,7 @@
             <configuration>
               <connectionUrl>scm:git:https://github.com/openhab/openhab-python</connectionUrl>
               <checkoutDirectory>${project.build.directory}/python</checkoutDirectory>
-              <scmVersion>v1.0.0-rc1</scmVersion>
+              <scmVersion>v1.0.0-rc2</scmVersion>
               <scmVersionType>tag</scmVersionType>
             </configuration>
           </execution>
