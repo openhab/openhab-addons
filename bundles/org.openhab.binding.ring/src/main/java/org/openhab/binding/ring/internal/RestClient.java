@@ -152,7 +152,7 @@ public class RestClient {
                     throw new AuthenticationException("Invalid username or password");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                    throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
@@ -230,7 +230,7 @@ public class RestClient {
                     throw new AuthenticationException("Invalid request");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                    throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
             if (conn.getResponseCode() != 200) {
@@ -384,7 +384,7 @@ public class RestClient {
                     throw new AuthenticationException("Invalid username or password.");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                    throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
             result = readFullyAsString(conn.getInputStream(), "UTF-8");
@@ -582,7 +582,7 @@ public class RestClient {
                     throw new AuthenticationException("Invalid username or password.");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                    throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
             result = readFullyAsString(conn.getInputStream(), "UTF-8");

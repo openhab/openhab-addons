@@ -13,7 +13,6 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.JSONObject;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -30,7 +29,7 @@ public class Chime extends AbstractRingDevice {
      *
      * @param jsonChime the JSON Chime retrieved from the Ring API.
      */
-    public Chime(@Nullable JSONObject jsonChime) {
+    public Chime(JSONObject jsonChime) {
         super(jsonChime);
     }
 

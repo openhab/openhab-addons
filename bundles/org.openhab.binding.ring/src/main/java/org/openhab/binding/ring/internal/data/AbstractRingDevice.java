@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.simple.JSONObject;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.ApiConstants;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public abstract class AbstractRingDevice implements RingDevice {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractRingDevice.class);
@@ -35,19 +37,19 @@ public abstract class AbstractRingDevice implements RingDevice {
      * The JSONObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    protected JSONObject jsonObject;
+    protected JSONObject jsonObject = new JSONObject();
     /**
      * The registration status.
      */
-    private RingDeviceRegistry.Status registrationStatus;
+    private @NonNullByDefault({}) RingDeviceRegistry.Status registrationStatus;
     /**
      * The linked Ring account.
      */
-    private RingAccount ringAccount;
+    private @NonNullByDefault({}) RingAccount ringAccount;
     /**
      * The linked RingDeviceHandler.
      */
-    private RingDeviceHandler ringDeviceHandler;
+    private @NonNullByDefault({}) RingDeviceHandler ringDeviceHandler;
 
     public AbstractRingDevice(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
