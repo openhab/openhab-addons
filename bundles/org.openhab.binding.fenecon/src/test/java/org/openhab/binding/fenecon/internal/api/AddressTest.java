@@ -55,16 +55,16 @@ public class AddressTest {
 
     @Test
     void testCompareSameAddress() {
-        String adress1 = "component/channel";
-        String adress2 = "component/channel";
+        Address adress1 = new Address("component/channel");
+        Address adress2 = new Address("component/channel");
 
         assertEquals(adress1, adress2);
     }
 
     @Test
     void testCompareNotSameAddress() {
-        String adress1 = "component/channel1";
-        String adress2 = "component/channel2";
+        Address adress1 = new Address("component/channel1");
+        Address adress2 = new Address("component/channel2");
 
         assertNotEquals(adress1, adress2);
     }
