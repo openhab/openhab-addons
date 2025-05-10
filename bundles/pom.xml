@@ -137,6 +137,7 @@
     <module>org.openhab.binding.electroluxappliance</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emby</module>
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
