@@ -9,6 +9,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power on/off your device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>Number</item-type>
@@ -50,11 +54,19 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute/unmute your device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -163,12 +175,20 @@
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="album" advanced="true">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="albumArt" advanced="true">
@@ -181,12 +201,20 @@
 		<item-type>String</item-type>
 		<label>Album Art Url</label>
 		<description>Url to the image of cover art of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="artist" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="menuItem" advanced="true">

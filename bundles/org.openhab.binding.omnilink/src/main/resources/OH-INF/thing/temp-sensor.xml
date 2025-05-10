@@ -43,6 +43,10 @@
 		<label>Low SetPoint</label>
 		<description>The current low setpoint of this temperature sensor.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -51,6 +55,10 @@
 		<label>High SetPoint</label>
 		<description>The current high setpoint of this temperature sensor.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
