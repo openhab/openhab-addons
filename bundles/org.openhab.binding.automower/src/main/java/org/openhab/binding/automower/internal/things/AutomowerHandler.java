@@ -18,6 +18,7 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -106,12 +107,11 @@ public class AutomowerHandler extends BaseThingHandler {
     private ZoneId mowerZoneId;
 
     private AtomicReference<String> automowerId = new AtomicReference<>(NO_ID);
-    private long lastQueryTimeMs = 0L;
+    private @Nullable ZonedDateTime lastQueryTime = null;
 
     private @Nullable ScheduledFuture<?> automowerPollingJob;
     // Max 1 request per second and appKey.
-    private long maxQueryFrequencyNanos = TimeUnit.SECONDS.toNanos(1);
-
+    private long maxQueryFrequencyMs = TimeUnit.SECONDS.toMillis(1);
     private @Nullable Mower mowerState;
     private @Nullable MowerMessages mowerMessages;
 
@@ -331,16 +331,29 @@ public class AutomowerHandler extends BaseThingHandler {
         try {
             AutomowerBridge automowerBridge = getAutomowerBridge();
             if (automowerBridge != null) {
-                long timediff = System.nanoTime() - lastQueryTimeMs;
-                if ((mowerState == null) || (timediff > maxQueryFrequencyNanos)) {
-                    logger.trace("Polling mower due to maxQueryFrequency: '{} > {}'", timediff / 1000000000.0,
-                            maxQueryFrequencyNanos / 1000000000.0);
+                long timeDiff;
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                if (this.lastQueryTime != null) {
+                    timeDiff = ChronoUnit.MILLIS.between(this.lastQueryTime, now);
+                } else {
+                    timeDiff = 0L;
+                }
+                if ((mowerState == null) || (timeDiff == 0L) || (timeDiff > maxQueryFrequencyMs)) {
+                    if ((mowerState == null) || (timeDiff == 0L)) {
+                        // first query
+                        logger.debug("Initial polling of mower");
+                    } else {
+                        // consecutive query
+                        logger.trace("Polling mower inline with maxQueryFrequency: '{} > {}'", timeDiff / 1000.0,
+                                maxQueryFrequencyMs / 1000.0);
+                    }
                     mowerState = automowerBridge.getAutomowerStatus(id);
                     mowerMessages = automowerBridge.getAutomowerMessages(id);
-                    lastQueryTimeMs = System.nanoTime();
+                    this.lastQueryTime = now;
                 } else {
-                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timediff / 1000000000.0,
-                            maxQueryFrequencyNanos / 1000000000.0);
+                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timeDiff / 1000.0,
+                            maxQueryFrequencyMs / 1000.0);
                 }
                 if (isValidResult(mowerState)) {
                     initializeProperties(mowerState);
@@ -947,7 +960,12 @@ public class AutomowerHandler extends BaseThingHandler {
 
             updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
                     toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
-            updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType());
+            ZonedDateTime lastQuery = this.lastQueryTime;
+            if (lastQuery != null) {
+                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType(lastQuery));
+            } else {
+                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, UnDefType.NULL);
+            }
             updateState(CHANNEL_STATUS_BATTERY,
                     new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
@@ -974,9 +992,9 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
-            // If next start timestamp is 0 it means the mower should start now, so using current timestamp
+            // If next start timestamp is 0 it means the mower should start now
             if (nextStartTimestamp == 0L) {
-                updateState(CHANNEL_STATUS_NEXT_START, new DateTimeType());
+                updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
             } else {
                 updateState(CHANNEL_STATUS_NEXT_START,
                         new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));

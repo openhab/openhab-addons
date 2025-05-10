@@ -6,25 +6,26 @@
 
 	<!-- Automower Bridge Thing Type -->
 	<bridge-type id="bridge">
-		<label>Automower Connect Bridge</label>
-		<description>The bridge to communicate with the Automower Connect API</description>
+		<label>Automower® Connect Bridge</label>
+		<description>The bridge to communicate with the Automower® Connect API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
-				<description>The Application Key is required to communicate with the Automower Connect API.
+				<description>The Application Key is required to communicate with the Automower® Connect API.
 					It can be obtained by
 					registering an Application on https://developer.husqvarnagroup.cloud/.
 					This application needs to be connected to the
-					"Authentication API" and the "Automower Connect
+					"Authentication API" and the "Automower® Connect
 					API". https://developer.husqvarnagroup.cloud/docs/getting-started
 				</description>
 			</parameter>
 			<parameter name="appSecret" type="text" required="true">
 				<label>Application Secret</label>
-				<description>The Application Secret is required to communicate with the Automower Connect API. See "Application Key"
+				<description>The Application Secret is required to communicate with the Automower® Connect API. See "Application
+					Key"
 					for further details</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
@@ -42,7 +43,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Automower</label>
+		<label>Automower®</label>
 		<description>An automatic lawn mower</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
@@ -72,18 +73,19 @@
 
 		<config-description>
 			<parameter name="mowerId" type="text" required="true">
-				<label>Automower Id</label>
-				<description>The Id of an Automower as used by the Automower Connect API to identify a mower. This is automatically
+				<label>Automower® Id</label>
+				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
+					automatically
 					filled when the thing is discovered.</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
 				<default>600</default>
-				<description>How often the current Automower state should be polled</description>
+				<description>How often the current Automower® state should be polled</description>
 			</parameter>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
-				<description>Time zone of the mower (e.g. Europe/Berlin). Default is the time zone of the system</description>
+				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -229,8 +231,8 @@
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
-		<label>Automower Name</label>
-		<description>The name of the Automower</description>
+		<label>Automower® Name</label>
+		<description>The name of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -274,7 +276,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="NONE">No inactive reason</option>
-				<option value="PLANNING">The mower is planning a path or a work area</option>
+				<option value="PLANNING">The Automower® is planning a path or a work area</option>
 				<option value="SEARCHING_FOR_SATELLITES">Waiting for fix when using EPOS</option>
 			</options>
 		</state>
@@ -291,7 +293,7 @@
 				<option value="PAUSED">Paused by user</option>
 				<option value="IN_OPERATION">Working</option>
 				<option value="WAIT_UPDATING">Downloading new firmware</option>
-				<option value="WAIT_POWER_UP">Booting mower</option>
+				<option value="WAIT_POWER_UP">Booting Automower®</option>
 				<option value="RESTRICTED_NONE">No restricted reason</option>
 				<option value="RESTRICTED_WEEK_SCHEDULE">Restricted by week schedule</option>
 				<option value="RESTRICTED_PARK_OVERRIDE">Forced to park</option>
@@ -327,7 +329,7 @@
 	<channel-type id="lastUpdateType">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>The time when the Automower sent the last update</description>
+		<description>The time when the Automower® sent the last update</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -341,7 +343,7 @@
 	<channel-type id="pollUpdateType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Poll Update</label>
-		<description>Poll mower status update from the cloud</description>
+		<description>Poll Automower® status update from the cloud</description>
 	</channel-type>
 
 	<channel-type id="batteryType">
@@ -373,16 +375,17 @@
 	<channel-type id="errorConfirmableType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Error Confirmable</label>
-		<description>If the Automower has an error, this attribute states if the error is confirmable</description>
+		<description>If the Automower® has an error, this attribute states if the error is confirmable</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nextStartType">
 		<item-type>DateTime</item-type>
 		<label>Next Start</label>
-		<description>The time for the next scheduled start. If the mower is charging then the value is the
-			estimated time when
-			it will be leaving the charging station</description>
+		<description>The time for the next scheduled start.
+			If the Automower® is charging then the value is the estimated time
+			when it will be leaving the charging station.
+			If the Automower® is about to start now, the value is NULL</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -423,7 +426,7 @@
 	<channel-type id="positionType" advanced="false">
 		<item-type>Location</item-type>
 		<label>Last GPS Position</label>
-		<description>Last GPS position of the Automower</description>
+		<description>Last GPS position of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -449,7 +452,7 @@
 	<channel-type id="statDownTimeType" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Down Time</label>
-		<description>The time the Automower has been disconnected from the cloud</description>
+		<description>The time the Automower® has been disconnected from the cloud</description>
 		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
 	</channel-type>
 
@@ -519,7 +522,7 @@
 	<channel-type id="statUpTimeType" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Up Time</label>
-		<description>The time the mower has been connected to the cloud</description>
+		<description>The time the Automower® has been connected to the cloud</description>
 		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
 	</channel-type>
 
@@ -604,7 +607,7 @@
 	<channel-type id="zoneEnabledType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stayout Zone Enabled</label>
-		<description>If the Stayout zone is enabled, the Automower will not access the zone</description>
+		<description>If the Stayout zone is enabled, the Automower® will not access the zone</description>
 	</channel-type>
 
 	<!-- Work Areas -->
@@ -638,14 +641,14 @@
 	<channel-type id="workareaProgressType" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Work Area Progress</label>
-		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only</description>
+		<description>The progress on a work area. EPOS Automower® and systematic mowing work areas only</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareaLastTimeCompletedType" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Time Completed</label>
-		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only</description>
+		<description>Timestamp when the work area was last completed. EPOS Automower® and systematic mowing work areas only</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -689,20 +692,20 @@
 	<channel-type id="start">
 		<item-type>Number</item-type>
 		<label>Start with Duration</label>
-		<description>Start the Automower for the given duration, overriding the schedule</description>
+		<description>Start the Automower® for the given duration, overriding the schedule</description>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
 	<channel-type id="resumeSchedule">
 		<item-type>Switch</item-type>
 		<label>Resume Schedule</label>
-		<description>Resume the schedule of the Automower</description>
+		<description>Resume the schedule of the Automower®</description>
 	</channel-type>
 
 	<channel-type id="pause">
 		<item-type>Switch</item-type>
 		<label>Pause</label>
-		<description>Pause the Automower at the current location until manual resume</description>
+		<description>Pause the Automower® at the current location until manual resume</description>
 	</channel-type>
 
 	<channel-type id="park">

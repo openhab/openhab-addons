@@ -1,7 +1,7 @@
 # Automower Binding
 
 This is the binding for [Husqvarna Automower® robotic lawn mowers](https://www.husqvarna.com/uk/products/robotic-lawn-mowers/).
-This binding allows you to integrate, view and control Automower® lawn mowers in the openHAB environment.
+This binding allows you to integrate, view and control Husqvarna Automower® lawn mowers in the openHAB environment.
 
 ## Supported Things
 
@@ -29,9 +29,9 @@ With the default value of 1h this would mean ~720 requests per month for the bri
 
 `automower:`
 
-- mowerId (mandatory): The Id of an Automower® as used by the Automower® Connect API to identify a mower. This is automatically filled when the thing is discovered
+- mowerId (mandatory): The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is automatically filled when the thing is discovered
 - pollingInterval (optional): How often the current Automower® state should be polled in seconds. Default is 10min (600s)
-- mowerZoneId (optional): Time zone of the mower (e.g. Europe/Berlin). Default is the time zone of the system
+- mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system
 
 Keep in mind that the status of the Automower® should not be queried too often.
 According to the Husqvarna documentation not more than 10.000 requests per month / 1 request per second and application key are allowed.
@@ -59,7 +59,7 @@ In addition to polling of the Automower® Connect API for changes, the binding r
 | status#error-message                  | String               | R   | The current error message                                                                                      | false |
 | status#error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
 | status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the Automower® has an error, this attribute states if the error is confirmable                              | true  |
-| status#next-start                     | DateTime             | R   | The time for the next scheduled start. If the Automower® is charging then the value is the estimated time when it will leave the charging station                                                                                                                                                                               | false |
+| status#next-start                     | DateTime             | R   | The time for the next scheduled start. If the Automower® is charging then the value is the estimated time when it will leave the charging station. If the Automower® is about to start now, the value is NULL                                                                                                                                   | false |
 | status#override-action                | String               | R   | The action that overrides the current planner operation                                                        | true  |
 | status#restricted-reason              | String               | R   | The reason that restrics the current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
 | status#external-reason                | String               | R   | An external reason set by i.e. Google Assistant or Amazon Alexa that restrics the current planner operation    | true  |
@@ -185,7 +185,7 @@ The following actions are available for `automower` things:
 | setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                         |
 | setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                          |
 | setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone                    |
-| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per work area) |
+| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the Automower® doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per work area) |
 | poll                       | -                | Poll Automower® status update from the cloud                                                           |
 
 ## Full Example
