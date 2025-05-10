@@ -318,10 +318,10 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_AC_ENERGY_COOLING_CURRENT_YEAR, getEnergyCoolingCurrentYear());
 
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
-            getThing().setProperty(PROPERTY_AC_NAME, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+            getThing().setProperty(PROPERTY_AC_NAME,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

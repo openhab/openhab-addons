@@ -43,7 +43,7 @@ public class OnectaBridgeHandlerFactoryTest {
 
     public static final String UNITID = "ThisIsAUnitID";
 
-    private OnectaBridgeHandlerFactory handler ;
+    private OnectaBridgeHandlerFactory handler;
     @Mock
     private HttpClientFactory httpClientFactoryMock;
     @Mock

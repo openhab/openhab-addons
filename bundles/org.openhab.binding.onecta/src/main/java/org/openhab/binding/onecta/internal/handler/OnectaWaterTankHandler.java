@@ -142,10 +142,10 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_HWT_SETPOINT_MODE, getSetpointMode());
 
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
-            getThing().setProperty(PROPERTY_HWT_NAME, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+            getThing().setProperty(PROPERTY_HWT_NAME,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

@@ -83,8 +83,8 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_IDU_HEATEXCHANGETEMP, getHeatExchangerTemperature());
             updateState(CHANNEL_IDU_SUCTIONTEMP, getSuctionTemperature());
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

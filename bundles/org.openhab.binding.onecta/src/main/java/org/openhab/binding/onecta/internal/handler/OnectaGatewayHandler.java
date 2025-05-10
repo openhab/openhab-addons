@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
-
     private final Logger logger = LoggerFactory.getLogger(OnectaGatewayHandler.class);
 
     private @Nullable OnectaConfiguration config;
@@ -88,10 +87,10 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_GW_WIFICONNENTION_STRENGTH, getWifiConnectionStrength());
 
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
-            getThing().setProperty(PROPERTY_GW_NAME, OnectaConfiguration.getTranslation()
-                    .getText("unknown.unitid-not-exists"));
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+            getThing().setProperty(PROPERTY_GW_NAME,
+                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 
