@@ -594,7 +594,6 @@ public class RestClient {
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
             logger.error("Error getting auth code!", ex);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             logger.error("Error parsing refToken", e);
         }
         return result;

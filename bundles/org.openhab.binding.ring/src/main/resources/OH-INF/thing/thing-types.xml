@@ -56,6 +56,9 @@
 	</bridge-type>
 	<!-- Other Thing Type -->
 	<thing-type id="other">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
 		<label>Other Binding Thing</label>
 		<description>A Ring Other device</description>
 
@@ -83,6 +86,9 @@
 	</thing-type>
 	<!-- Ring Chime Thing Type -->
 	<thing-type id="chime">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
 		<label>Chime Binding Thing</label>
 		<description>Ring Chime connected to the system</description>
 
@@ -109,6 +115,9 @@
 	</thing-type>
 	<!-- Doorbell Thing Type -->
 	<thing-type id="doorbell">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
 		<label>Video Doorbell Binding Thing</label>
 		<description>A Ring Video Doorbell device</description>
 
@@ -136,6 +145,9 @@
 	</thing-type>
 	<!-- StickupCam Thing Type -->
 	<thing-type id="stickupcam">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
 		<label>Stickup Cam Binding Thing</label>
 		<description>A Ring Stickup Cam device</description>
 

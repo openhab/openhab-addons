@@ -85,12 +85,12 @@ public class StickupcamHandler extends RingDeviceHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        // Do Nothing
     }
 
     @Override
     protected void refreshState() {
-        // TODO Auto-generated method stub
+        // Do Nothing
     }
 
     @Override
