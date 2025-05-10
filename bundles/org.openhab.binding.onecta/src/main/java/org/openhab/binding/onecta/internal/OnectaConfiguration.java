@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.onecta.internal;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +38,26 @@ public class OnectaConfiguration {
     private @Nullable static OAuthTokenRefresher openHabOAuthTokenRefresher = null;
 
     private @NonNull static OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
+    private @Nullable static OnectaTranslationProvider translation;
+
+    // @Activate
+    // public OnectaConfiguration(final @Reference OnectaTranslationProvider translationa) {
+    // translation = translationa;
+    // }
+
+    public static void setTranslation(OnectaTranslationProvider translationPar) {
+        translation = translationPar;
+    }
+
+    public static OnectaTranslationProvider getTranslation() {
+        // if (translation == null) {
+        // throw new RuntimeException("Translation provider is not available");
+        // }
+        // return translation;
+
+        Optional<OnectaTranslationProvider> optionalTranslation = Optional.ofNullable(translation);
+        return optionalTranslation.orElseThrow(() -> new RuntimeException("Translation provider is not available"));
+    }
 
     public static void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         OnectaConfiguration.httpClientFactory = httpClientFactory;

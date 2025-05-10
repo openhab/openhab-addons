@@ -58,7 +58,6 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
     // private OnectaSignInClient onectaSignInClient = OnectaConfiguration.getOnectaSignInClient();
-    private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     public OnectaConnectionClient() {
         try {
@@ -95,7 +94,7 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         logger.debug("doBearerRequestGet : Accesstoken refreshed {}", refreshed.toString());
         try {
             String testUrl = getBaseUrl("");
-            response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
+            response = OnectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION,
                             String.format(HTTPHEADER_BEARER, OnectaConfiguration.getOnectaSignInClient().getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
@@ -133,7 +132,7 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
     private Response doBearerRequestPatch(String url, Object body, Boolean refreshed) {
         Response response = null;
         try {
-            response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
+            response = OnectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION,
                             String.format(HTTPHEADER_BEARER, OnectaConfiguration.getOnectaSignInClient().getToken()))

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
+import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
@@ -34,7 +34,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +49,13 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     private static final int REFRESH_MINUTES = 5;
 
-    private final OnectaTranslationProvider translation;
     @Nullable
     private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
-    public DeviceDiscoveryService(final @Reference OnectaTranslationProvider translation) {
+    public DeviceDiscoveryService() {
         super(OnectaBridgeHandler.class, SUPPORTED_THING_TYPES, 10);
-        this.translation = translation;
     }
 
     @Override
@@ -122,8 +119,8 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
             properties.put("unitID", unitId);
 
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(thingUID).withProperties(properties).withBridge(bridgeUID).withLabel(translation
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(bridgeUID).withLabel(OnectaConfiguration.getTranslation()
                             .getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
                     .build();
 

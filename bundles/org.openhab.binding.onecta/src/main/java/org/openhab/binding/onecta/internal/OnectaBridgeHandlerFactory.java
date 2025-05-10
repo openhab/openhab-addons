@@ -49,12 +49,15 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK, THING_TYPE_INDOORUNIT);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
+    private final OnectaTranslationProvider translation;
 
     @Activate
     public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference OAuthTokenRefresher openHabOAuthTokenRefresher) {
-        onectaConfiguration.setHttpClientFactory(httpClientFactory);
+            @Reference OAuthTokenRefresher openHabOAuthTokenRefresher,
+            @Reference OnectaTranslationProvider translation) {
+        this.translation = translation;
+        OnectaConfiguration.setTranslation(translation);
+        OnectaConfiguration.setHttpClientFactory(httpClientFactory);
         OnectaConfiguration.setOAuthTokenRefresher(openHabOAuthTokenRefresher);
     }
 
@@ -69,7 +72,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
             OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
-            onectaConfiguration.setBridgeThing((Bridge) thing);
+            OnectaConfiguration.setBridgeThing((Bridge) thing);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
             return new OnectaDeviceHandler(thing);

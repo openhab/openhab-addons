@@ -57,6 +57,8 @@ public class OnectaBridgeHandlerFactoryTest {
     @Mock
     private OAuthTokenRefresher openHabOAuthTokenRefresher;
     @Mock
+    private OnectaTranslationProvider onectaTranslationProvider;
+    @Mock
     private TimeZoneProvider timeZoneProviderMock;
     @Mock
     private OnectaBridgeHandler onectaBridgeHandlerMock;
@@ -73,7 +75,8 @@ public class OnectaBridgeHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, openHabOAuthTokenRefresher);
+        handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, openHabOAuthTokenRefresher,
+                onectaTranslationProvider);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
         bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
         thingConfiguration.setProperties(bridgeProperties);

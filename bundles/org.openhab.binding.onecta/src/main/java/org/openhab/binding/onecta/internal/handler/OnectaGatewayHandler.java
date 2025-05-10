@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
-    public static final String DOES_NOT_EXISTS = "Unit not registered at Onecta, unitID does not exists.";
+    public static final String DOES_NOT_EXISTS = OnectaConfiguration.getTranslation()
+            .getText("unknown.unitid-not-exists");
     private final Logger logger = LoggerFactory.getLogger(OnectaGatewayHandler.class);
 
     private @Nullable OnectaConfiguration config;
