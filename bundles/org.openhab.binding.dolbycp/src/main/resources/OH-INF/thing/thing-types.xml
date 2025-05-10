@@ -62,11 +62,19 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Current Input</label>
 		<description>Handles the state of INPUT_MODE</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="analog">Analog</option>
@@ -84,35 +92,63 @@
 		<item-type>Switch</item-type>
 		<label>Analog Input</label>
 		<description>Handles the state of INPUT_MODE=analog</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-dig1">
 		<item-type>Switch</item-type>
 		<label>Digital Input 1</label>
 		<description>Handles the state of INPUT_MODE=dig_1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-dig2">
 		<item-type>Switch</item-type>
 		<label>Digital Input 2</label>
 		<description>Handles the state of INPUT_MODE=dig_3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-dig3">
 		<item-type>Switch</item-type>
 		<label>Digital Input 3</label>
 		<description>Handles the state of INPUT_MODE=dig_3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-dig4">
 		<item-type>Switch</item-type>
 		<label>Digital Input 4</label>
 		<description>Handles the state of INPUT_MODE=dig_4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-non_sync">
 		<item-type>Switch</item-type>
 		<label>Non-Sync Input</label>
 		<description>Handles the state of INPUT_MODE=non_sync</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="input-mic">
 		<item-type>Switch</item-type>
 		<label>Mic Input</label>
 		<description>Handles the state of INPUT_MODE=mic</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

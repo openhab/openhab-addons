@@ -357,6 +357,10 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<category>Fan</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -375,6 +379,10 @@
 		<item-type>Switch</item-type>
 		<label>Eco Mode</label>
 		<category>Vacation</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -382,6 +390,10 @@
 		<item-type>Switch</item-type>
 		<label>Turbo Mode</label>
 		<category>Party</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -396,6 +408,10 @@
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
 		<category>Moon</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -467,6 +483,10 @@
 		<item-type>Switch</item-type>
 		<label>Use iFeel Temperature</label>
 		<category>Network</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -474,6 +494,10 @@
 		<item-type>Switch</item-type>
 		<label>Device Lights</label>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

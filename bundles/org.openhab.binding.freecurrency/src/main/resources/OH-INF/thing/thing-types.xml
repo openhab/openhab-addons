@@ -20,6 +20,10 @@
 		<label>Last Update</label>
 		<description>The timestamp of the last retrieved set of exchange rates.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -126,6 +126,10 @@
 		<item-type>Number</item-type>
 		<label>Power Failures</label>
 		<description>This channel provides the number of power failures detected by meter.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="p1-total-gas">
@@ -144,6 +148,10 @@
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 
