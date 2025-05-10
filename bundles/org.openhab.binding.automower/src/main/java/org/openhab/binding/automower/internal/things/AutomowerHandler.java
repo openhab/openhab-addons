@@ -18,6 +18,7 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,16 +35,22 @@ import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Action;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Activity;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Headlight;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.InactiveReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Message;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Metadata;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerApp;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaAttributes;
-import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Position;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Planner;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.State;
@@ -78,6 +85,9 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * The {@link AutomowerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -97,12 +107,11 @@ public class AutomowerHandler extends BaseThingHandler {
     private ZoneId mowerZoneId;
 
     private AtomicReference<String> automowerId = new AtomicReference<>(NO_ID);
-    private long lastQueryTimeMs = 0L;
+    private @Nullable ZonedDateTime lastQueryTime = null;
 
     private @Nullable ScheduledFuture<?> automowerPollingJob;
     // Max 1 request per second and appKey.
-    private long maxQueryFrequencyNanos = TimeUnit.SECONDS.toNanos(1);
-
+    private long maxQueryFrequencyMs = TimeUnit.SECONDS.toMillis(1);
     private @Nullable Mower mowerState;
     private @Nullable MowerMessages mowerMessages;
 
@@ -122,7 +131,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             // not implemented as it would causes >100 channel updates in a row during setup (performance)
         } else {
@@ -322,22 +331,35 @@ public class AutomowerHandler extends BaseThingHandler {
         try {
             AutomowerBridge automowerBridge = getAutomowerBridge();
             if (automowerBridge != null) {
-                long timediff = System.nanoTime() - lastQueryTimeMs;
-                if ((mowerState == null) || (timediff > maxQueryFrequencyNanos)) {
-                    logger.trace("Polling mower due to maxQueryFrequency: '{} > {}'", timediff / 1000000000.0,
-                            maxQueryFrequencyNanos / 1000000000.0);
-                    mowerState = automowerBridge.getAutomowerStatus(id);
-                    Thread.sleep(maxQueryFrequencyNanos / 1000000L);
-                    mowerMessages = automowerBridge.getAutomowerMessages(id);
-                    lastQueryTimeMs = System.nanoTime();
+                long timeDiff;
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                if (this.lastQueryTime != null) {
+                    timeDiff = ChronoUnit.MILLIS.between(this.lastQueryTime, now);
                 } else {
-                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timediff / 1000000000.0,
-                            maxQueryFrequencyNanos / 1000000000.0);
+                    timeDiff = 0L;
+                }
+                if ((mowerState == null) || (timeDiff == 0L) || (timeDiff > maxQueryFrequencyMs)) {
+                    if ((mowerState == null) || (timeDiff == 0L)) {
+                        // first query
+                        logger.debug("Initial polling of mower");
+                    } else {
+                        // consecutive query
+                        logger.trace("Polling mower inline with maxQueryFrequency: '{} > {}'", timeDiff / 1000.0,
+                                maxQueryFrequencyMs / 1000.0);
+                    }
+                    mowerState = automowerBridge.getAutomowerStatus(id);
+                    mowerMessages = automowerBridge.getAutomowerMessages(id);
+                    this.lastQueryTime = now;
+                } else {
+                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timeDiff / 1000.0,
+                            maxQueryFrequencyMs / 1000.0);
                 }
                 if (isValidResult(mowerState)) {
                     initializeProperties(mowerState);
 
-                    updateChannelState(mowerState, mowerMessages);
+                    updateMowerChannelState(mowerState);
+                    updateMessagesChannelState(mowerMessages);
 
                     if (isConnected(mowerState)) {
                         updateStatus(ThingStatus.ONLINE);
@@ -356,8 +378,6 @@ public class AutomowerHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error-query-mower-failed");
             logger.warn("Unable to query automower status for: {}. Error: {}", id, e.getMessage());
-        } catch (InterruptedException e) {
-            logger.warn("An exception occurred while putting updateAutomowerState() to sleep: '{}'", e.getMessage());
         }
     }
 
@@ -771,7 +791,7 @@ public class AutomowerHandler extends BaseThingHandler {
         return null;
     }
 
-    private void updateChannelState(@Nullable Mower mower, @Nullable MowerMessages mowerMessages) {
+    private synchronized void updateMowerChannelState(@Nullable Mower mower) {
         if (isValidResult(mower)) {
             Capabilities capabilities = mower.getAttributes().getCapabilities();
 
@@ -797,21 +817,16 @@ public class AutomowerHandler extends BaseThingHandler {
             } else {
                 removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE);
             }
+            if (capabilities.hasPosition()) {
+                createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, "Location");
+            } else {
+                removeChannel(CHANNEL_STATUS_POSITION);
+            }
 
             if (capabilities.hasHeadlights()) {
                 createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, "String");
             } else {
                 removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE);
-            }
-
-            if (capabilities.hasPosition()) {
-                createChannel(CHANNEL_POSITION_LAST, CHANNEL_TYPE_POSITION_LAST, "Location");
-                for (int i = 0; i < 50; i++) {
-                    createIndexedChannel(GROUP_POSITION, i + 1, CHANNEL_POSITION, CHANNEL_TYPE_POSITION, "Location");
-                }
-            } else {
-                removeChannel(CHANNEL_POSITION_LAST);
-                removeConsecutiveIndexedChannels(GROUP_POSITION, 1, CHANNEL_POSITION);
             }
 
             List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
@@ -903,26 +918,14 @@ public class AutomowerHandler extends BaseThingHandler {
                 removeConsecutiveIndexedChannels(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j));
             }
 
-            for (i = 0; i < 50; i++) {
-                int j = 0;
-                createIndexedChannel(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j), CHANNEL_TYPE_MESSAGE.get(j++),
-                        "DateTime");
-                createIndexedChannel(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j), CHANNEL_TYPE_MESSAGE.get(j++),
-                        "Number");
-                createIndexedChannel(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j), CHANNEL_TYPE_MESSAGE.get(j++),
-                        "String");
-                createIndexedChannel(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j), CHANNEL_TYPE_MESSAGE.get(j++),
-                        "String");
-                createIndexedChannel(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j), CHANNEL_TYPE_MESSAGE.get(j++),
-                        "Location");
-            }
-
             // remove channels that are now longer required and add new once
             updateThing(editThing().withChannels(channelAdd).withoutChannels(channelRemove).build());
 
             /*
              * Now update the state of the channels
              */
+
+            /* Update Status channels */
             updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
             updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
@@ -957,7 +960,12 @@ public class AutomowerHandler extends BaseThingHandler {
 
             updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
                     toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
-            updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType());
+            ZonedDateTime lastQuery = this.lastQueryTime;
+            if (lastQuery != null) {
+                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType(lastQuery));
+            } else {
+                updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, UnDefType.NULL);
+            }
             updateState(CHANNEL_STATUS_BATTERY,
                     new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
@@ -984,7 +992,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
-            // If next start timestamp is 0 it means the mower should start now, so using current timestamp
+            // If next start timestamp is 0 it means the mower should start now
             if (nextStartTimestamp == 0L) {
                 updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
             } else {
@@ -1006,6 +1014,13 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_SETTING_CUTTING_HEIGHT,
                     new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
 
+            if (capabilities.hasPosition()) {
+                updateState(CHANNEL_STATUS_POSITION,
+                        new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
+                                new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
+            }
+
+            /* Update Settings channels */
             if (capabilities.hasHeadlights()) {
                 Headlight headlight = mower.getAttributes().getSettings().getHeadlight();
                 if (headlight != null) {
@@ -1015,6 +1030,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             }
 
+            /* Update Statistics channels */
             updateState(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME,
                     new QuantityType<>(mower.getAttributes().getStatistics().getCuttingBladeUsageTime(), Units.SECOND));
             updateState(CHANNEL_STATISTIC_DOWN_TIME,
@@ -1052,22 +1068,7 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STATISTIC_UP_TIME,
                     new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
 
-            if (capabilities.hasPosition()) {
-                updateState(CHANNEL_POSITION_LAST,
-                        new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
-                                new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
-                List<Position> positions = mower.getAttributes().getPositions();
-                i = 0;
-                for (; i < positions.size(); i++) {
-                    updateIndexedState(GROUP_POSITION, i + 1, CHANNEL_POSITION,
-                            new PointType(new DecimalType(positions.get(i).getLatitude()),
-                                    new DecimalType(positions.get(i).getLongitude())));
-                }
-                for (; i < 50; i++) {
-                    updateIndexedState(GROUP_POSITION, i + 1, CHANNEL_POSITION, UnDefType.NULL);
-                }
-            }
-
+            /* Update CalendarTasks channels */
             i = 0;
             for (; i < calendarTasks.size(); i++) {
                 int j = 0;
@@ -1107,6 +1108,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             }
 
+            /* Update StayOutZones channels */
             i = 0;
             if (capabilities.hasStayOutZones()) {
                 updateState(CHANNEL_STAYOUTZONE_DIRTY,
@@ -1128,6 +1130,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             }
 
+            /* Update WorkAreas channels */
             i = 0;
             if (capabilities.hasWorkAreas()) {
                 List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
@@ -1165,42 +1168,32 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             }
         }
+    }
 
+    private void updateMessagesChannelState(@Nullable MowerMessages mowerMessages) {
         if (mowerMessages != null) {
-            List<Message> messages = mowerMessages.getAttributes().getMessages();
-            if (messages != null) {
-                int i;
-                for (i = 0; i < messages.size(); i++) {
-                    int j = 0;
-                    Message message = messages.get(i);
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++),
-                            new DateTimeType(toZonedDateTime(message.getTime() * 1000, mowerZoneId)));
-                    int code = message.getCode();
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), new DecimalType(code));
-                    String errorMessage = getErrorMessage(code);
-                    if (errorMessage != null) {
-                        updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++),
-                                new StringType(errorMessage));
-                    } else {
-                        updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    }
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++),
-                            new StringType(message.getSeverity()));
-                    if ((message.getLatitude() != null) && (message.getLatitude() != null)) {
-                        updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), new PointType(
-                                new DecimalType(message.getLatitude()), new DecimalType(message.getLongitude())));
-                    } else {
-                        updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    }
-                }
-                for (; i < 50; i++) {
-                    int j = 0;
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                    updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
-                }
+            Message message = mowerMessages.getAttributes().getMessages().get(0);
+            updateState(CHANNEL_MESSAGE_TIMESTAMP,
+                    new DateTimeType(toZonedDateTime(message.getTime() * 1000, mowerZoneId)));
+
+            int code = message.getCode();
+            updateState(CHANNEL_MESSAGE_CODE, new DecimalType(code));
+
+            String errorMessage = getErrorMessage(code);
+            if (errorMessage != null) {
+                updateState(CHANNEL_MESSAGE_TEXT, new StringType(errorMessage));
+            } else {
+                updateState(CHANNEL_MESSAGE_TEXT, UnDefType.NULL);
+            }
+
+            updateState(CHANNEL_MESSAGE_SEVERITY, new StringType(message.getSeverity()));
+            Double latitude = message.getLatitude();
+            Double longitude = message.getLongitude();
+            if ((latitude != null) && (longitude != null)) {
+                updateState(CHANNEL_MESSAGE_GPS_POSITION,
+                        new PointType(new DecimalType(latitude), new DecimalType(longitude)));
+            } else {
+                updateState(CHANNEL_MESSAGE_GPS_POSITION, UnDefType.NULL);
             }
         }
     }
@@ -1335,6 +1328,216 @@ public class AutomowerHandler extends BaseThingHandler {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /*
+     * Process WebSocket messages according to
+     * https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=websocket%20api
+     */
+    public void processWebSocketMessage(JsonObject event) {
+        Mower mower = this.mowerState;
+        MowerMessages mowerMessages = this.mowerMessages;
+        if (mower != null && (mowerMessages != null)) {
+            String type = event.has("type") ? event.get("type").getAsString() : null;
+            if ((type != null) && event.has("attributes") && event.get("attributes").isJsonObject()) {
+                JsonObject attributes = event.getAsJsonObject("attributes");
+                Metadata metaData = mower.getAttributes().getMetadata();
+                long nowMs = ZonedDateTime.now(mowerZoneId).toInstant().toEpochMilli();
+                switch (type) {
+                    case "battery-event-v2":
+                        if (attributes.has("battery") && attributes.get("battery").isJsonObject()) {
+                            JsonObject batteryObj = attributes.getAsJsonObject("battery");
+                            if (batteryObj.has("batteryPercent")) {
+                                byte batteryPercent = batteryObj.get("batteryPercent").getAsByte();
+                                logger.debug("Received battery update: {}%", batteryPercent);
+                                mower.getAttributes().getBattery().setBatteryPercent(batteryPercent);
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
+                            }
+                        }
+                        break;
+                    case "calendar-event-v2":
+                        if (attributes.has("calendar") && attributes.get("calendar").isJsonObject()) {
+                            JsonObject calendarObj = attributes.getAsJsonObject("calendar");
+                            if (calendarObj.has("tasks")) {
+                                List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
+                                calendarTasks.clear();
+                                JsonArray tasks = calendarObj.getAsJsonArray("tasks");
+                                for (int i = 0; i < tasks.size(); i++) {
+                                    JsonObject taskObj = tasks.get(i).getAsJsonObject();
+                                    CalendarTask task = new CalendarTask();
+                                    task.setStart(taskObj.get("start").getAsShort());
+                                    task.setDuration(taskObj.get("duration").getAsShort());
+                                    task.setMonday(taskObj.get("monday").getAsBoolean());
+                                    task.setTuesday(taskObj.get("tuesday").getAsBoolean());
+                                    task.setWednesday(taskObj.get("wednesday").getAsBoolean());
+                                    task.setThursday(taskObj.get("thursday").getAsBoolean());
+                                    task.setFriday(taskObj.get("friday").getAsBoolean());
+                                    task.setSaturday(taskObj.get("saturday").getAsBoolean());
+                                    task.setSunday(taskObj.get("sunday").getAsBoolean());
+                                    if (taskObj.has("workAreaId")) {
+                                        task.setWorkAreaId(taskObj.get("workAreaId").getAsLong());
+                                    }
+                                    calendarTasks.add(task);
+                                }
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
+                            }
+                        }
+                        break;
+                    case "cuttingHeight-event-v2":
+                        if (attributes.has("cuttingHeight") && attributes.get("cuttingHeight").isJsonObject()) {
+                            JsonObject cuttingHeightObj = attributes.getAsJsonObject("cuttingHeight");
+                            if (cuttingHeightObj.has("height")) {
+                                mower.getAttributes().getSettings()
+                                        .setCuttingHeight(cuttingHeightObj.get("height").getAsByte());
+                                logger.debug("Received cutting height update: {}",
+                                        cuttingHeightObj.get("height").getAsByte());
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
+                            }
+                        }
+                        break;
+                    case "headlights-event-v2":
+                        if (attributes.has("headlight") && attributes.get("headlight").isJsonObject()) {
+                            JsonObject headlightObj = attributes.getAsJsonObject("headlight");
+                            if (headlightObj.has("mode")) {
+                                mower.getAttributes().getSettings().getHeadlight().setHeadlightMode(
+                                        HeadlightMode.valueOf(headlightObj.get("mode").getAsString()));
+                                logger.debug("Received headlight mode update: {}",
+                                        headlightObj.get("mode").getAsString());
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
+                            }
+                        }
+                        break;
+                    case "message-event-v2":
+                        if (attributes.has("message") && attributes.get("message").isJsonObject()) {
+                            JsonObject msgObj = attributes.getAsJsonObject("message");
+                            long time = msgObj.has("time") ? msgObj.get("time").getAsLong() : 0L;
+                            int code = msgObj.has("code") ? msgObj.get("code").getAsInt() : 0;
+                            String severity = msgObj.has("severity") ? msgObj.get("severity").getAsString() : "";
+                            Double latitude = msgObj.has("latitude") ? msgObj.get("latitude").getAsDouble() : null;
+                            Double longitude = msgObj.has("longitude") ? msgObj.get("longitude").getAsDouble() : null;
+                            logger.debug("Received mower message: time={}, code={}, severity={}, lat={}, lon={}", time,
+                                    code, severity, latitude, longitude);
+
+                            Message message = mowerMessages.getAttributes().getMessages().get(0);
+                            if (message != null) {
+                                message.setTime(time);
+                                message.setCode(code);
+                                message.setSeverity(severity);
+                                message.setLatitude(latitude);
+                                message.setLongitude(longitude);
+                                updateMessagesChannelState(mowerMessages);
+                            }
+                        }
+                        break;
+                    case "mower-event-v2":
+                        if (attributes.has("mower") && attributes.get("mower").isJsonObject()) {
+                            JsonObject mowerObj = attributes.getAsJsonObject("mower");
+                            MowerApp mowerApp = mower.getAttributes().getMower();
+                            if (mowerObj.has("mode")) {
+                                mowerApp.setMode(Mode.valueOf(mowerObj.get("mode").getAsString()));
+                            }
+                            if (mowerObj.has("activity")) {
+                                mowerApp.setActivity(Activity.valueOf(mowerObj.get("activity").getAsString()));
+                            }
+                            if (mowerObj.has("inactiveReason")) {
+                                mowerApp.setInactiveReason(
+                                        InactiveReason.valueOf(mowerObj.get("inactiveReason").getAsString()));
+                            }
+                            if (mowerObj.has("state")) {
+                                mowerApp.setState(State.valueOf(mowerObj.get("state").getAsString()));
+                            }
+                            if (mowerObj.has("errorCode")) {
+                                mowerApp.setErrorCode(mowerObj.get("errorCode").getAsInt());
+                            }
+                            if (mowerObj.has("isErrorConfirmable")) {
+                                mowerApp.setIsErrorConfirmable(mowerObj.get("isErrorConfirmable").getAsBoolean());
+                            }
+                            if (mowerObj.has("errorCodeTimestamp")) {
+                                mowerApp.setErrorCodeTimestamp(mowerObj.get("errorCodeTimestamp").getAsLong());
+                            }
+                            if (mowerObj.has("workAreaId")) {
+                                mowerApp.setWorkAreaId(mowerObj.get("workAreaId").getAsLong());
+                            }
+
+                            logger.debug(
+                                    "Received mower event: mode={}, activity={}, inactiveReason={}, state={}, errorCode={}, isErrorConfirmable={}, errorCodeTimestamp={}, workAreaId={}",
+                                    mowerObj.get("mode").getAsString(), mowerObj.get("activity").getAsString(),
+                                    mowerObj.get("inactiveReason").getAsString(), mowerObj.get("state").getAsString(),
+                                    mowerObj.get("errorCode").getAsInt(),
+                                    mowerObj.get("isErrorConfirmable").getAsBoolean(),
+                                    mowerObj.get("errorCodeTimestamp").getAsLong(),
+                                    mowerObj.get("workAreaId").getAsLong());
+                            metaData.setStatusTimestamp(nowMs);
+                            updateMowerChannelState(mower);
+                        }
+                        break;
+                    case "planner-event-v2":
+                        if (attributes.has("planner") && attributes.get("planner").isJsonObject()) {
+                            JsonObject plannerObj = attributes.getAsJsonObject("planner");
+                            Planner planner = mower.getAttributes().getPlanner();
+                            if (plannerObj.has("nextStartTimestamp")) {
+                                planner.setNextStartTimestamp(plannerObj.get("nextStartTimestamp").getAsLong());
+                            }
+                            if (plannerObj.has("override") && plannerObj.get("override").isJsonObject()) {
+                                JsonObject overrideObj = plannerObj.getAsJsonObject("override");
+                                if (overrideObj.has("action")) {
+                                    planner.getOverride()
+                                            .setAction(Action.valueOf(overrideObj.get("action").getAsString()));
+                                }
+                            }
+                            if (plannerObj.has("restrictedReason")) {
+                                planner.setRestrictedReason(
+                                        RestrictedReason.valueOf(plannerObj.get("restrictedReason").getAsString()));
+                            }
+                            if (plannerObj.has("externalReason")) {
+                                planner.setExternalReason(plannerObj.get("externalReason").getAsInt());
+                            }
+                            logger.debug(
+                                    "Received planner event: nextStartTimestamp={}, override.action={}, restrictedReason={}, externalReason={}",
+                                    plannerObj.has("nextStartTimestamp")
+                                            ? plannerObj.get("nextStartTimestamp").getAsLong()
+                                            : null,
+                                    plannerObj.has("override") && plannerObj.get("override").isJsonObject()
+                                            && plannerObj.getAsJsonObject("override").has("action")
+                                                    ? plannerObj.getAsJsonObject("override").get("action").getAsString()
+                                                    : null,
+                                    plannerObj.has("restrictedReason")
+                                            ? plannerObj.get("restrictedReason").getAsString()
+                                            : null,
+                                    plannerObj.has("externalReason") ? plannerObj.get("externalReason").getAsInt()
+                                            : null);
+                            metaData.setStatusTimestamp(nowMs);
+                            updateMowerChannelState(mower);
+                        }
+                        break;
+                    case "position-event-v2":
+                        if (attributes.has("position")) {
+                            JsonObject position = attributes.getAsJsonObject("position");
+                            if (position.has("latitude") && position.has("longitude")) {
+                                double latitude = position.get("latitude").getAsDouble();
+                                double longitude = position.get("longitude").getAsDouble();
+                                logger.debug("Received position update: lat={}, lon={}", latitude, longitude);
+                                mower.getAttributes().getLastPosition().setLatitude(latitude);
+                                mower.getAttributes().getLastPosition().setLongitude(longitude);
+                                metaData.setStatusTimestamp(nowMs);
+                                updateMowerChannelState(mower);
+                            }
+                        }
+                        break;
+                    default:
+                        logger.debug("Unhandled WebSocket event type: {}", type);
+                        break;
+                }
+            } else {
+                logger.warn("Reveived WebSocket event without type: {}", event);
+            }
+        } else {
+            logger.debug("Channels not yet intialized via REST - ignoring WebSocket message: {}", event);
         }
     }
 }
