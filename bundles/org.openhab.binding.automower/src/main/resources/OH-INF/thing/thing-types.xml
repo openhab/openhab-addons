@@ -593,7 +593,7 @@
 	<channel-type id="zoneIdType" advanced="true">
 		<item-type>String</item-type>
 		<label>Stayout Zone Id</label>
-		<description>Id of the Stayout zone</description>
+		<description>Id of the stay-out zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -607,7 +607,7 @@
 	<channel-type id="zoneEnabledType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stayout Zone Enabled</label>
-		<description>If the Stayout zone is enabled, the Automower® will not access the zone</description>
+		<description>If the stay-out zone is enabled, the Automower® will not access the zone</description>
 	</channel-type>
 
 	<!-- Work Areas -->

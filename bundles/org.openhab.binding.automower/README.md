@@ -120,9 +120,9 @@ These channels hold the different Stayout Zone configurations.
 | channel                                                   | type   | access mode | description                                                                                                                        | advanced |
 |-----------------------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
 | stayoutzone#dirty<sup id="a1">[1](#f1)</sup>              | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
-| stayoutzone#\<x\>-zone-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the stay-out zone                                                                                                             | true     |
-| stayoutzone#\<x\>-zone-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the Stayout zone                                                                                                       | true     |
-| stayoutzone#\<x\>-zone-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the stay-out zone is enabled, the Automower® will not access the zone                                                            | true     |
+| stayoutzone#\<x\>-zone-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the stay-out zone                                                                                                            | true     |
+| stayoutzone#\<x\>-zone-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the stay-out zone                                                                                                      | true     |
+| stayoutzone#\<x\>-zone-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the stay-out zone is enabled, the Automower® will not access the zone                                                           | true     |
 
 \<x\> ... 01-#stayoutzones
 
@@ -134,7 +134,7 @@ These channels hold the different Work Area configurations.
 |-----------------------------------------------------------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
 | workarea#\<x\>-area-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the work area                                 | false    |
 | workarea#\<x\>-area-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the work area                               | false    |
-| workarea#\<x\>-area-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height of the work area in percent. 0-100                    | false    |
+| workarea#\<x\>-area-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height of the work area in percent. 0-100   | false    |
 | workarea#\<x\>-area-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the work area is enabled or disabled             | false    |
 | workarea#\<x\>-area-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a work area                         | true     |
 | workarea#\<x\>-area-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the work area was last completed     | true     |
