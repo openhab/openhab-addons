@@ -123,7 +123,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private int httpPort;
 
-    @NonNullByDefault
     public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
             int httpPort) {
         super(bridge);

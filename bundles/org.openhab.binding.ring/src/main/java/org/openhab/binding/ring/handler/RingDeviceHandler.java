@@ -16,6 +16,8 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -38,12 +40,13 @@ import org.openhab.core.types.RefreshType;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public abstract class RingDeviceHandler extends AbstractRingHandler {
 
     /**
      * The RingDevice instance linked to this thing.
      */
-    protected RingDevice device;
+    protected @Nullable RingDevice device;
 
     public RingDeviceHandler(Thing thing) {
         super(thing);

@@ -281,6 +281,7 @@ public class RestClient {
         JSONObject oauthToken = getOauthToken(username, password, refToken);
         String jsonResult = postRequest(ApiConstants.URL_SESSION, DataFactory.getSessionParams(hardwareId),
                 oauthToken.get("access_token").toString());
+
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
         return new Profile((JSONObject) obj.get("profile"), oauthToken.get("refresh_token").toString(),
                 oauthToken.get("access_token").toString());

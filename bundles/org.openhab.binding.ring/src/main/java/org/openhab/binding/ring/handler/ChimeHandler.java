@@ -14,6 +14,7 @@ package org.openhab.binding.ring.handler;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.Chime;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -32,6 +33,7 @@ import org.openhab.core.types.Command;
  *
  */
 
+@NonNullByDefault
 public class ChimeHandler extends RingDeviceHandler {
     public ChimeHandler(Thing thing) {
         super(thing);

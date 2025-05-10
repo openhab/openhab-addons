@@ -14,6 +14,7 @@ package org.openhab.binding.ring.internal;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.handler.ChimeHandler;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 @Component(service = { ThingHandlerFactory.class,
         RingHandlerFactory.class }, immediate = true, configurationPid = "binding.ring")
+@NonNullByDefault
 public class RingHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(RingHandlerFactory.class);
 
@@ -54,7 +56,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
     private HttpService httpService;
     private int httpPort;
-    private ComponentContext componentContext;
+    private @Nullable ComponentContext componentContext;
 
     @Activate
     public RingHandlerFactory(@Reference NetworkAddressService networkAddressService,

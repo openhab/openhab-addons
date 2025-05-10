@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.data.Profile;
 
 /**
@@ -21,6 +23,7 @@ import org.openhab.binding.ring.internal.data.Profile;
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
+@NonNullByDefault
 public interface RingAccount {
 
     /**
@@ -28,14 +31,14 @@ public interface RingAccount {
      *
      * @return the REST client.
      */
-    public RestClient getRestClient();
+    public @Nullable RestClient getRestClient();
 
     /**
      * Get the linked user profile.
      *
      * @return the user profile.
      */
-    public Profile getProfile();
+    public @Nullable Profile getProfile();
 
     /**
      * Get the Account Handler Thing ID

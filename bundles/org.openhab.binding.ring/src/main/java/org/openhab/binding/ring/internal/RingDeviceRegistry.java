@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
@@ -30,12 +32,13 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class RingDeviceRegistry {
 
     /**
      * static Singleton instance.
      */
-    private static volatile RingDeviceRegistry instance;
+    private static volatile RingDeviceRegistry instance = new RingDeviceRegistry();
     /**
      * The logger.
      */
@@ -123,7 +126,7 @@ public class RingDeviceRegistry {
      * @return the RingDevice instance from the registry.
      * @throws DeviceNotFoundException
      */
-    public RingDevice getRingDevice(String id) throws DeviceNotFoundException {
+    public @Nullable RingDevice getRingDevice(String id) throws DeviceNotFoundException {
         if (devices.containsKey(id)) {
             return devices.get(id);
         } else {

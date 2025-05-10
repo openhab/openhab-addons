@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.ring.internal.ApiConstants;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class RingEvent {
 
     /**

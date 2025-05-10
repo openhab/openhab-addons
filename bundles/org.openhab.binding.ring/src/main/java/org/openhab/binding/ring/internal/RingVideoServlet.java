@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.HttpService;
@@ -42,22 +44,23 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 @Component(service = HttpServlet.class)
+@NonNullByDefault
 public class RingVideoServlet extends HttpServlet {
 
     private static final long serialVersionUID = -5592161948589682812L;
 
     private final Logger logger = LoggerFactory.getLogger(RingVideoServlet.class);
 
-    private String videoStoragePath;
+    private @Nullable String videoStoragePath;
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private RestClient restClient;
+    private @Nullable RestClient restClient;
 
     public RingVideoServlet() {
     }
 
-    public RingVideoServlet(HttpService httpService, String videoStoragePath) {
+    public RingVideoServlet(@Nullable HttpService httpService, @Nullable String videoStoragePath) {
         Path path = Paths.get(videoStoragePath);
         FileSystem fs = path.getFileSystem();
         String sep = fs.getSeparator();

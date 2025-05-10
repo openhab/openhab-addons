@@ -17,6 +17,8 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -35,10 +37,11 @@ import org.slf4j.LoggerFactory;
  */
 
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ring")
+@NonNullByDefault
 public class RingDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
-    private ScheduledFuture<?> discoveryJob;
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     public RingDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 5, true);

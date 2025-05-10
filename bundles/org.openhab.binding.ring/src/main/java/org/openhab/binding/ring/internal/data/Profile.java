@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
 
@@ -80,10 +82,11 @@ import org.openhab.binding.ring.internal.ApiConstants;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class Profile {
     // ADD REFRESH TOKEN
-    private JSONObject jsonProfile;
-    private JSONObject jsonFeatures;
+    private @Nullable JSONObject jsonProfile;
+    private @Nullable JSONObject jsonFeatures;
     private String refreshToken;
     private String accessToken;
 
@@ -94,7 +97,7 @@ public class Profile {
      * @param refreshToken needed for the refresh token so we aren't logging in every time.
      *            Needed as a separate parameter because it's not part of the jsonProfile object.
      */
-    public Profile(JSONObject jsonProfile, String refreshToken, String accessToken) {
+    public Profile(@Nullable JSONObject jsonProfile, String refreshToken, String accessToken) {
         this.jsonProfile = jsonProfile;
         this.jsonFeatures = (JSONObject) jsonProfile.get("features");
         this.refreshToken = refreshToken;

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.ApiConstants;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.ring.internal.ApiConstants;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class DataFactory {
     public static String getOauthData(String username, String password) {
         /*

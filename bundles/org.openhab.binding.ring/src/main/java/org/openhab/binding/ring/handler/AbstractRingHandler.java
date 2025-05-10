@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.core.library.types.OnOffType;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public abstract class AbstractRingHandler extends BaseThingHandler {
 
     // Current status
@@ -41,7 +44,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(AbstractRingHandler.class);
 
     // Scheduler
-    protected ScheduledFuture<?> refreshJob;
+    protected @Nullable ScheduledFuture<?> refreshJob;
 
     /**
      * There is no default constructor. We have to define a

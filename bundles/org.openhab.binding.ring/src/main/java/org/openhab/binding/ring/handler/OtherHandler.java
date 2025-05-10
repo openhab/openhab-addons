@@ -16,6 +16,7 @@ import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTE
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.Other;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -35,6 +36,7 @@ import org.openhab.core.types.Command;
  *
  */
 
+@NonNullByDefault
 public class OtherHandler extends RingDeviceHandler {
     private Integer lastBattery = -1;
 

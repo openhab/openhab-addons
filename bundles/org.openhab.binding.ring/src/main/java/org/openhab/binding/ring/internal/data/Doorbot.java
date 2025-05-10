@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
 
@@ -19,13 +21,14 @@ import org.openhab.binding.ring.internal.ApiConstants;
  * @author Wim Vissers - Initial contribution
  */
 
+@NonNullByDefault
 public class Doorbot {
 
     /**
      * The JSONObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    protected JSONObject jsonObject;
+    protected @Nullable JSONObject jsonObject;
 
     /**
      * Create from a JSONObject, example:
@@ -36,7 +39,7 @@ public class Doorbot {
      *
      * @param jsonObject
      */
-    public Doorbot(JSONObject jsonObject) {
+    public Doorbot(@Nullable JSONObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 

@@ -17,6 +17,9 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Builder for http request or post parameters.
  *
@@ -24,6 +27,7 @@ import java.util.Map;
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
+@NonNullByDefault
 public class ParamBuilder {
 
     /**
@@ -62,6 +66,7 @@ public class ParamBuilder {
      * @param input the input String.
      * @return the (possibly encode) result.
      */
+    @Nullable
     private String encode(String input) {
         try {
             return urlEncode ? URLEncoder.encode(input, URL_ENCODING) : input;
