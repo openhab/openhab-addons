@@ -116,6 +116,11 @@
 				<label>Device Name</label>
 				<description>The name allocated to the device by the app. (Must be unique if used)</description>
 			</parameter>
+			<parameter name="enableAlerts" type="boolean" required="false">
+				<label>Auto Enable Alerts</label>
+				<description>If enabled, during device initialisation all alerts are enabled</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
