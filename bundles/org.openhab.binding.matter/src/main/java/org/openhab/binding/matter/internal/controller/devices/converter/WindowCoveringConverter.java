@@ -36,7 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link WindowCoveringConverter}
+ * A converter for translating {@link WindowCoveringCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

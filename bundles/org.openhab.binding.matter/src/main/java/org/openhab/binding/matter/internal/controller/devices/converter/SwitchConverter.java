@@ -50,7 +50,7 @@ import org.openhab.core.types.StateOption;
 import com.google.gson.Gson;
 
 /**
- * The {@link SwitchConverter}
+ * A converter for translating {@link SwitchCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

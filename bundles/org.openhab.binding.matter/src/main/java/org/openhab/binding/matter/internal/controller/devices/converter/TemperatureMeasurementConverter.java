@@ -32,7 +32,8 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link TemperatureMeasurementConverter}
+ * A converter for translating {@link TemperatureMeasurementCluster} events and attributes to openHAB channels and back
+ * again.
  *
  * @author Dan Cunningham - Initial contribution
  */

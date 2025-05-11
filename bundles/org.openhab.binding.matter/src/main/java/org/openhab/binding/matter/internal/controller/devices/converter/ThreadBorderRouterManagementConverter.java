@@ -50,7 +50,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link ThreadBorderRouterManagementConverter}
+ * A converter for translating {@link ThreadBorderRouterManagementCluster} events and attributes to openHAB channels and
+ * back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

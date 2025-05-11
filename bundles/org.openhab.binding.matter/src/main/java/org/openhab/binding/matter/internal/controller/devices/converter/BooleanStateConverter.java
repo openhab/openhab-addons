@@ -32,7 +32,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link BooleanStateConverter}
+ * A converter for translating {@link BooleanStateCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

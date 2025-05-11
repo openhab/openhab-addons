@@ -27,7 +27,8 @@ import org.openhab.core.types.StateDescription;
 import com.google.gson.Gson;
 
 /**
- * The {@link ThreadNetworkDiagnosticsConverter}
+ * A converter for translating {@link ThreadNetworkDiagnosticsCluster} events and attributes to openHAB channels and
+ * back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

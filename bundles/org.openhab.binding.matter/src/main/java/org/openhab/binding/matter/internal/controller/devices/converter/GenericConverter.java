@@ -34,12 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GenericConverter}
+ * A generic abstract converter for translating Matter clusters to openHAB channels.
  *
+ * Converters are responsible for converting Matter cluster commands and attributes into openHAB commands and vice
+ * versa.
+ * 
  * @author Dan Cunningham - Initial contribution
- *
- *         Converters are responsible for converting Matter cluster commands and attributes into openHAB commands and
- *         vice versa.
  */
 @NonNullByDefault
 public abstract class GenericConverter<T extends BaseCluster> implements AttributeListener, EventTriggeredListener {

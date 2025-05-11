@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FanControlConverter}
+ * A converter for translating {@link FanControlCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

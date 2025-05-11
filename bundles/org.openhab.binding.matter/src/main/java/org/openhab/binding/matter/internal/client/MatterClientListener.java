@@ -20,7 +20,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 
 /**
- * The {@link MatterClientListener}
+ * A listener for Matter client events
  *
  * @author Dan Cunningham - Initial contribution
  */

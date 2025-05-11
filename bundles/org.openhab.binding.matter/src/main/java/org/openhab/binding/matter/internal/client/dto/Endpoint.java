@@ -18,7 +18,7 @@ import java.util.Map;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 
 /**
- * The {@link Endpoint}
+ * Represents a Matter endpoint
  *
  * @author Dan Cunningham - Initial contribution
  */

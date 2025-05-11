@@ -43,7 +43,8 @@ import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link TemperatureMeasurementConverter}
+ * A converter for translating {@link ElectricalPowerMeasurementCluster} events and attributes to openHAB channels and
+ * back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

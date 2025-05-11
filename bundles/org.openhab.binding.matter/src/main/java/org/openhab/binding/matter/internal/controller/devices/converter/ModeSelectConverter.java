@@ -38,7 +38,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 
 /**
- * The {@link ModeSelectConverter}
+ * A converter for translating {@link ModeSelectCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

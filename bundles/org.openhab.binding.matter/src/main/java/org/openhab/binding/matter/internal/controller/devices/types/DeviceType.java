@@ -38,24 +38,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * An abstract class that represents a Matter Device type
+ * 
+ * A Matter Device type is a grouping of clusters that represent a single device, like a thermostat, Light,
+ * etc. This classification specifies which clusters are mandatory and which are optional for a given device
+ * type, although devices can have any number or type of Matter clusters. This is suppose to ease client
+ * development by providing a common interface for interacting with common devices types.
+ *
+ * The DeviceType class coordinates sending openHAB commands to Matter clusters and updating openHAB channels
+ * based on Matter cluster events. Some device types like lighting devices require coordination among their
+ * clusters, others do not. A DeviceType Class depends on one or more GenericConverter classes to handle the
+ * conversion of Matter cluster events to openHAB channel updates and openHAB channel commands to Matter cluster
+ * commands.
+ *
+ * Typically, we map a single openHAB channel or item type, like Color, which accepts multiple command types:
+ * HSB,Percent, and OnOff to multiple Matter clusters, like ColorControl and LevelControl and OnOffControl
+ *
+ * Most Device types need little coordination so the default logic (and GenericType instance) will suffice, but
+ * this can be overridden to provide custom logic for more complex devices (like lighting)
+ * 
  * @author Dan Cunningham - Initial contribution
- *
- *         A Matter Device type is a grouping of clusters that represent a single device, like a thermostat, Light,
- *         etc. This classification specifies which clusters are mandatory and which are optional for a given device
- *         type, although devices can have any number or type of Matter clusters. This is suppose to ease client
- *         development by providing a common interface for interacting with common devices types.
- *
- *         The DeviceType class coordinates sending openHAB commands to Matter clusters and updating openHAB channels
- *         based on Matter cluster events. Some device types like lighting devices require coordination among their
- *         clusters, others do not. A DeviceType Class depends on one or more GenericConverter classes to handle the
- *         conversion of Matter cluster events to openHAB channel updates and openHAB channel commands to Matter cluster
- *         commands.
- *
- *         Typically, we map a single openHAB channel or item type, like Color, which accepts multiple command types:
- *         HSB,Percent, and OnOff to multiple Matter clusters, like ColorControl and LevelControl and OnOffControl
- *
- *         Most Device types need little coordination so the default logic (and GenericType instance) will suffice, but
- *         this can be overridden to provide custom logic for more complex devices (like lighting)
  */
 @NonNullByDefault
 public abstract class DeviceType implements AttributeListener, EventTriggeredListener {

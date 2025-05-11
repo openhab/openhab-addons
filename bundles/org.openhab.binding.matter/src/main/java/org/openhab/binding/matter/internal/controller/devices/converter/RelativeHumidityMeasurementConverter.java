@@ -36,7 +36,8 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link RelativeHumidityMeasurementConverter}
+ * A converter for translating {@link RelativeHumidityMeasurementCluster} events and attributes to openHAB channels and
+ * back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

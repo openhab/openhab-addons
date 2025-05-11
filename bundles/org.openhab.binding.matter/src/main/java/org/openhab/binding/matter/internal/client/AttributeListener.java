@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 
 /**
- * The {@link AttributeListener}
+ * A listener for attribute changes
  *
  * @author Dan Cunningham - Initial contribution
  */

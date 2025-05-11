@@ -49,6 +49,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 /**
+ * Manages the Node.js runtime for the Matter binding
+ * 
+ * This class provides methods for checking the system installed version of Node.js,
+ * downloading and extracting the latest version of Node.js, and finding the Node.js
+ * executable.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault

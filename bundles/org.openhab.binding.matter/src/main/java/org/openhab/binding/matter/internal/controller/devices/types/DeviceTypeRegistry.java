@@ -22,7 +22,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DeviceTypes;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 
 /**
- * The {@link DeviceTypeRegistry}
+ * The {@link DeviceTypeRegistry} is a registry of device types that are supported by the Matter binding.
  *
  * @author Dan Cunningham - Initial contribution
  */

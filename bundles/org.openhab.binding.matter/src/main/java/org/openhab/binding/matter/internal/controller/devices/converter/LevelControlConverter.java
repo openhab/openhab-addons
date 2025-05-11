@@ -37,7 +37,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link LevelControlConverter}
+ * A converter for translating {@link LevelControlCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

@@ -13,7 +13,7 @@
 package org.openhab.binding.matter.internal.client.dto;
 
 /**
- * The {@link PairingCodes}
+ * Represents the pairing codes for a Matter device
  *
  * @author Dan Cunningham - Initial contribution
  */

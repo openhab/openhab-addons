@@ -42,7 +42,7 @@ import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link PowerSourceConverter}
+ * A converter for translating {@link PowerSourceCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

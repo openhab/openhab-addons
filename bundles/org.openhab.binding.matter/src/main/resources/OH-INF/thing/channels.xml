@@ -116,6 +116,7 @@
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -138,7 +139,6 @@
 		<label>Switched Latched Trigger</label>
 		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. after
 			the move.</description>
-		<event/>
 	</channel-type>
 
 	<channel-type id="switch-initialpress">
@@ -146,7 +146,6 @@
 		<label>Initial Press Trigger</label>
 		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while
 			pressed.</description>
-		<event/>
 	</channel-type>
 
 	<channel-type id="switch-longpress">
@@ -154,23 +153,20 @@
 		<label>Long Press Trigger</label>
 		<description>This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while
 			long pressed.</description>
-		<event/>
 	</channel-type>
 
 	<channel-type id="switch-shortrelease">
 		<kind>trigger</kind>
 		<label>Short Release Trigger</label>
 		<description>This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e.
-			just prior to release.</description>
-		<event/>
+			just prior to a short release.</description>
 	</channel-type>
 
 	<channel-type id="switch-longrelease">
 		<kind>trigger</kind>
 		<label>Long Release Trigger</label>
 		<description>This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e.
-			just prior to release.</description>
-		<event/>
+			just prior to a long release.</description>
 	</channel-type>
 
 	<channel-type id="switch-multipressongoing">
@@ -180,7 +176,6 @@
 			CurrentPosition attribute, i.e. while pressed. The second is the multi press code with a value of N when the Nth
 			press of a multi-press sequence has been detected.
 		</description>
-		<event/>
 	</channel-type>
 
 	<channel-type id="switch-multipresscomplete">
@@ -190,7 +185,6 @@
 			CurrentPosition attribute, i.e. while pressed. The second is how many times the momentary switch has been pressed in
 			a multi-press sequence.
 		</description>
-		<event/>
 	</channel-type>
 
 	<channel-type id="thermostat-localtemperature">
@@ -212,40 +206,39 @@
 	<channel-type id="thermostat-occupiedheating">
 		<item-type>Number:Temperature</item-type>
 		<label>Occupied Heating Setpoint</label>
-		<description>Set the heating temperature when the room is occupied</description>
-		<category>HVAC</category>
+		<description>Sets the heating temperature when the room is occupied</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="thermostat-occupiedcooling">
 		<item-type>Number:Temperature</item-type>
 		<label>Occupied Cooling Setpoint</label>
-		<description>Set the cooling temperature when the room is occupied</description>
-		<category>HVAC</category>
+		<description>Sets the cooling temperature when the room is occupied</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="thermostat-unoccupiedheating">
 		<item-type>Number:Temperature</item-type>
 		<label>Unoccupied Heating Setpoint</label>
-		<description>Set the heating temperature when the room is unoccupied</description>
-		<category>HVAC</category>
+		<description>Sets the heating temperature when the room is unoccupied</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="thermostat-unoccupiedcooling">
 		<item-type>Number:Temperature</item-type>
 		<label>Unoccupied Cooling Setpoint</label>
-		<description>Set the cooling temperature when the room is unoccupied</description>
-		<category>HVAC</category>
+		<description>Sets the cooling temperature when the room is unoccupied</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="thermostat-systemmode">
 		<item-type>Number</item-type>
 		<label>System Mode</label>
-		<description>Set the system mode of the thermostat</description>
-		<category>HVAC</category>
+		<description>Sets the system mode of the thermostat</description>
 		<state>
 			<options>
 				<option value="0">Off</option>
@@ -265,7 +258,6 @@
 		<item-type>Number</item-type>
 		<label>Running Mode</label>
 		<description>The running mode of the thermostat</description>
-		<category>HVAC</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -273,22 +265,6 @@
 				<option value="4">Heat</option>
 			</options>
 		</state>
-	</channel-type>
-
-	<channel-type id="thermostat-heatingdemand" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Heating Demand</label>
-		<description>The level of heating currently demanded by the thermostat</description>
-		<category>HVAC</category>
-		<state pattern="%.0f %%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="thermostat-coolingdemand" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Cooling Demand</label>
-		<description>The level of cooling currently demanded by the thermostat</description>
-		<category>HVAC</category>
-		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="windowcovering-lift">
@@ -302,8 +278,8 @@
 	<channel-type id="fancontrol-fanmode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>
-		<description>Set the fan mode</description>
-		<category>HVAC</category>
+		<description>Sets the fan mode</description>
+		<category>Fan</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -324,7 +300,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Fan Speed</label>
 		<description>The current fan speed percentage </description>
-		<category>HVAC</category>
+		<category>Fan</category>
+		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="temperaturemeasurement-measuredvalue">
@@ -355,7 +332,7 @@
 		<item-type>Switch</item-type>
 		<label>Occupancy</label>
 		<description>Indicates if an occupancy sensor is triggered</description>
-		<category>Motion</category>
+		<category>Presence</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
@@ -367,7 +344,6 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illumination</label>
 		<description>Indicates the brightness in Lux.</description>
-		<category>Illumination</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 

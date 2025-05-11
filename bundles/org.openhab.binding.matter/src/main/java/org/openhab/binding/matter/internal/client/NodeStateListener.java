@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 
 /**
- * The {@link MatterWebsocketClient}
+ * A listener for node state changes
  *
  * @author Dan Cunningham - Initial contribution
  */

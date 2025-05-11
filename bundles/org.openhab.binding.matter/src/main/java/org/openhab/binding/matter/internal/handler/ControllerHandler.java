@@ -62,6 +62,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ControllerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
+ * 
+ * A Controller is a Matter client that is used to discover and link devices to
+ * the Matter network, as well as to send commands to devices and receive events
+ * from them.
  *
  * @author Dan Cunningham - Initial contribution
  */

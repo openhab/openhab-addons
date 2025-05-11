@@ -41,7 +41,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCovering
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 
 /**
- * The {@link ConverterRegistry}
+ * A registry of converters for translating Matter clusters to openHAB channels.
  *
  * @author Dan Cunningham - Initial contribution
  */

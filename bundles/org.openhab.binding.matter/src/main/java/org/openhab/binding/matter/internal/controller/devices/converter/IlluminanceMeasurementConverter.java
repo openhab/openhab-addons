@@ -33,7 +33,8 @@ import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link IlluminanceMeasurementConverter}
+ * A converter for translating {@link IlluminanceMeasurementCluster} events and attributes to openHAB channels and back
+ * again.
  *
  * @author Dan Cunningham - Initial contribution
  */

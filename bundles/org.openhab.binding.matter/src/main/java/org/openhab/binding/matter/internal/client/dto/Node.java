@@ -15,7 +15,7 @@ package org.openhab.binding.matter.internal.client.dto;
 import java.math.BigInteger;
 
 /**
- * The {@link Node}
+ * Represents a Matter node
  *
  * @author Dan Cunningham - Initial contribution
  */

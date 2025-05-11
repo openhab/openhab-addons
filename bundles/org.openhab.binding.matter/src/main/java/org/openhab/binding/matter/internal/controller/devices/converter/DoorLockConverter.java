@@ -34,7 +34,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
 /**
- * The {@link SwitchConverter}
+ * A converter for translating {@link DoorLockCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

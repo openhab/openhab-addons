@@ -35,13 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A DeviceType for lighting devices.
+ * 
+ * Lighting requires special handling for the OnOff, ColorControl and LevelControl clusters.
+ * For example, the Matter specification mandates Switches also must have a LevelControl cluster, even though
+ * they do not support dimming. We will filter those clusters out as well as coordinate commands among required
+ * clusters.
+ * 
  * @author Dan Cunningham - Initial contribution
- *
- *         Lighting requires special handling for the OnOff, ColorControl and LevelControl clusters.
- *         For example, the Matter specification mandates Switches also must have a LevelControl cluster, even though
- *         they do not support dimming. We will filter those clusters out as well as coordinate commands among required
- *         clusters.
- *
  */
 @NonNullByDefault
 public class LightingType extends DeviceType {

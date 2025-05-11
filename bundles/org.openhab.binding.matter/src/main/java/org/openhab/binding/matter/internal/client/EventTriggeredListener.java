@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 
 /**
- * The {@link EventTriggeredListener}
+ * A listener for event triggered messages
  *
  * @author Dan Cunningham - Initial contribution
  */

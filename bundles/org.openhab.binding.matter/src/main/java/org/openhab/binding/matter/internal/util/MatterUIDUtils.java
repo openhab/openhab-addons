@@ -30,8 +30,8 @@ public class MatterUIDUtils {
     /**
      * Node thing types will have a UUID like matter:node_1234567890
      *
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID of the Node
+     * @return a ThingTypeUID for a Node
      */
     public static ThingTypeUID nodeThingTypeUID(BigInteger nodeId) {
         return new ThingTypeUID(MatterBindingConstants.BINDING_ID,
@@ -41,9 +41,9 @@ public class MatterUIDUtils {
     /**
      * Bridge Endpoint thing types will have a UUID like matter matter:endpoint_1234567890_1
      *
-     * @param nodeId
-     * @param endpointNumber
-     * @return
+     * @param nodeId the node ID of the Node
+     * @param endpointNumber the endpoint number of the Bridge Endpoint
+     * @return a ThingTypeUID for a Bridge Endpoint
      */
     public static ThingTypeUID endpointThingTypeUID(BigInteger nodeId, Integer endpointNumber) {
         return new ThingTypeUID(MatterBindingConstants.BINDING_ID,
@@ -53,8 +53,8 @@ public class MatterUIDUtils {
     /**
      * Returns the base Thing type (node, etc...) for a dynamic thing
      *
-     * @param thingTypeUID
-     * @return
+     * @param thingTypeUID the ThingTypeUID to get the base type for
+     * @return the base ThingTypeUID
      */
     public static @Nullable ThingTypeUID baseTypeForThingType(ThingTypeUID thingTypeUID) {
         String type = thingTypeUID.getId().split("_", 2)[0];

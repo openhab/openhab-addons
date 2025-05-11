@@ -78,7 +78,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link MatterWebsocketClient}
+ * A client for the Matter WebSocket API for communicating with a Matter controller
  *
  * @author Dan Cunningham - Initial contribution
  */

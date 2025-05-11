@@ -54,7 +54,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 
 /**
- * The {@link ThermostatConverter}
+ * A converter for translating {@link ThermostatCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  */

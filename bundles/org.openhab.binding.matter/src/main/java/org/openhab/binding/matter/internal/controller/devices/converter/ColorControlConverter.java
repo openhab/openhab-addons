@@ -57,7 +57,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 
 /**
- * The {@link ColorControlConverter}
+ * A converter for translating {@link ColorControlCluster} events and attributes to openHAB channels and back again.
  *
  * @author Dan Cunningham - Initial contribution
  * @author Chris Jackson - Original Zigbee binding color logic functions borrowed here

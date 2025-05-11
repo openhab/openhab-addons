@@ -34,7 +34,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link MatterControllerClient}
+ * The {@link MatterControllerClient} is a client for the Matter Controller.
  *
  * @author Dan Cunningham - Initial contribution
  */

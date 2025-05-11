@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A service for managing the Matter Node.js process
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @Component(service = MatterWebsocketService.class, scope = ServiceScope.SINGLETON)
