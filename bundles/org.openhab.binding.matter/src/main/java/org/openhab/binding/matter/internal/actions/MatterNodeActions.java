@@ -54,7 +54,9 @@ public class MatterNodeActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (NodeHandler) handler;
+        if (handler instanceof NodeHandler nodeHandler) {
+            this.handler = nodeHandler;
+        }
     }
 
     @Override

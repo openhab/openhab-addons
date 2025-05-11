@@ -45,7 +45,9 @@ public class MatterControllerActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (ControllerHandler) handler;
+        if (handler instanceof ControllerHandler controllerHandler) {
+            this.handler = controllerHandler;
+        }
     }
 
     @Override
