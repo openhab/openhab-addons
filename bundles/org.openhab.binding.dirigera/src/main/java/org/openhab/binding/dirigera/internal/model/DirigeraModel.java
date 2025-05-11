@@ -245,18 +245,6 @@ public class DirigeraModel implements Model {
         return false;
     }
 
-    private String getStringAttribute(String id, String attribute) {
-        String attributeValue = "";
-        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
-        if (deviceObject.has(ATTRIBUTES)) {
-            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
-            if (attributes.has(attribute)) {
-                attributeValue = attributes.getString(attribute);
-            }
-        }
-        return attributeValue;
-    }
-
     @Override
     public synchronized JSONObject getAllFor(String id, String type) {
         JSONObject returnObject = new JSONObject();
