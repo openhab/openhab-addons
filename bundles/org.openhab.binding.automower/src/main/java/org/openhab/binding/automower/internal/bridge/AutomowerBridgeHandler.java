@@ -169,7 +169,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
                 this.bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
-                
+
                 connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));
             }
             updateStatus(ThingStatus.UNKNOWN);
