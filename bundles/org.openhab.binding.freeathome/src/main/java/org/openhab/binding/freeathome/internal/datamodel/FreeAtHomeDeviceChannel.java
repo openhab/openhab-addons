@@ -562,7 +562,6 @@ public class FreeAtHomeDeviceChannel {
                 addDatapointGroup(newDatapointGroup);
 
                 break;
-
             }
             case FID_SCENE_SENSOR: {
                 this.channelId = channelId;
@@ -571,7 +570,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             default: {
                 logger.debug("Unknown channel found - Channel FID: 0x{}", channelFunctionID);
 
