@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,24 +39,31 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MetadataOptions {
     public static final String JSON_PROPERTY_ITEM_TYPE = "ItemType";
+    @javax.annotation.Nullable
     private JsonNullable<String> itemType = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_SAVERS = "DisabledMetadataSavers";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> disabledMetadataSavers = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> localMetadataReaderOrder = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_FETCHERS = "DisabledMetadataFetchers";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> disabledMetadataFetchers = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> metadataFetcherOrder = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_IMAGE_FETCHERS = "DisabledImageFetchers";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> disabledImageFetchers = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> imageFetcherOrder = JsonNullable.<List<String>> undefined();
 
     public MetadataOptions() {
@@ -66,6 +71,7 @@ public class MetadataOptions {
 
     public MetadataOptions itemType(@javax.annotation.Nullable String itemType) {
         this.itemType = JsonNullable.<String> of(itemType);
+
         return this;
     }
 
@@ -76,6 +82,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getItemType() {
         return itemType.orElse(null);
     }
@@ -98,6 +105,7 @@ public class MetadataOptions {
 
     public MetadataOptions disabledMetadataSavers(@javax.annotation.Nullable List<String> disabledMetadataSavers) {
         this.disabledMetadataSavers = JsonNullable.<List<String>> of(disabledMetadataSavers);
+
         return this;
     }
 
@@ -120,6 +128,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getDisabledMetadataSavers() {
         return disabledMetadataSavers.orElse(null);
     }
@@ -142,6 +151,7 @@ public class MetadataOptions {
 
     public MetadataOptions localMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
         this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
+
         return this;
     }
 
@@ -164,6 +174,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder.orElse(null);
     }
@@ -186,6 +197,7 @@ public class MetadataOptions {
 
     public MetadataOptions disabledMetadataFetchers(@javax.annotation.Nullable List<String> disabledMetadataFetchers) {
         this.disabledMetadataFetchers = JsonNullable.<List<String>> of(disabledMetadataFetchers);
+
         return this;
     }
 
@@ -208,6 +220,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getDisabledMetadataFetchers() {
         return disabledMetadataFetchers.orElse(null);
     }
@@ -230,6 +243,7 @@ public class MetadataOptions {
 
     public MetadataOptions metadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
         this.metadataFetcherOrder = JsonNullable.<List<String>> of(metadataFetcherOrder);
+
         return this;
     }
 
@@ -252,6 +266,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getMetadataFetcherOrder() {
         return metadataFetcherOrder.orElse(null);
     }
@@ -274,6 +289,7 @@ public class MetadataOptions {
 
     public MetadataOptions disabledImageFetchers(@javax.annotation.Nullable List<String> disabledImageFetchers) {
         this.disabledImageFetchers = JsonNullable.<List<String>> of(disabledImageFetchers);
+
         return this;
     }
 
@@ -296,6 +312,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getDisabledImageFetchers() {
         return disabledImageFetchers.orElse(null);
     }
@@ -318,6 +335,7 @@ public class MetadataOptions {
 
     public MetadataOptions imageFetcherOrder(@javax.annotation.Nullable List<String> imageFetcherOrder) {
         this.imageFetcherOrder = JsonNullable.<List<String>> of(imageFetcherOrder);
+
         return this;
     }
 
@@ -340,6 +358,7 @@ public class MetadataOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getImageFetcherOrder() {
         return imageFetcherOrder.orElse(null);
     }
@@ -360,9 +379,6 @@ public class MetadataOptions {
         this.imageFetcherOrder = JsonNullable.<List<String>> of(imageFetcherOrder);
     }
 
-    /**
-     * Return true if this MetadataOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -425,101 +441,6 @@ public class MetadataOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ItemType` to the URL query string
-        if (getItemType() != null) {
-            joiner.add(String.format("%sItemType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemType()))));
-        }
-
-        // add `DisabledMetadataSavers` to the URL query string
-        if (getDisabledMetadataSavers() != null) {
-            for (int i = 0; i < getDisabledMetadataSavers().size(); i++) {
-                joiner.add(String.format("%sDisabledMetadataSavers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMetadataSavers().get(i)))));
-            }
-        }
-
-        // add `LocalMetadataReaderOrder` to the URL query string
-        if (getLocalMetadataReaderOrder() != null) {
-            for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
-                joiner.add(String.format("%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
-            }
-        }
-
-        // add `DisabledMetadataFetchers` to the URL query string
-        if (getDisabledMetadataFetchers() != null) {
-            for (int i = 0; i < getDisabledMetadataFetchers().size(); i++) {
-                joiner.add(String.format("%sDisabledMetadataFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMetadataFetchers().get(i)))));
-            }
-        }
-
-        // add `MetadataFetcherOrder` to the URL query string
-        if (getMetadataFetcherOrder() != null) {
-            for (int i = 0; i < getMetadataFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetcherOrder().get(i)))));
-            }
-        }
-
-        // add `DisabledImageFetchers` to the URL query string
-        if (getDisabledImageFetchers() != null) {
-            for (int i = 0; i < getDisabledImageFetchers().size(); i++) {
-                joiner.add(String.format("%sDisabledImageFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledImageFetchers().get(i)))));
-            }
-        }
-
-        // add `ImageFetcherOrder` to the URL query string
-        if (getImageFetcherOrder() != null) {
-            for (int i = 0; i < getImageFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sImageFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetcherOrder().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlaybackStopInfo {
     public static final String JSON_PROPERTY_ITEM = "Item";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItemDto> item = JsonNullable.<BaseItemDto> undefined();
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
@@ -51,18 +50,23 @@ public class PlaybackStopInfo {
     private UUID itemId;
 
     public static final String JSON_PROPERTY_SESSION_ID = "SessionId";
+    @javax.annotation.Nullable
     private JsonNullable<String> sessionId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
+    @javax.annotation.Nullable
     private JsonNullable<String> mediaSourceId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> positionTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
+    @javax.annotation.Nullable
     private JsonNullable<String> liveStreamId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playSessionId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_FAILED = "Failed";
@@ -70,12 +74,15 @@ public class PlaybackStopInfo {
     private Boolean failed;
 
     public static final String JSON_PROPERTY_NEXT_MEDIA_TYPE = "NextMediaType";
+    @javax.annotation.Nullable
     private JsonNullable<String> nextMediaType = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
+    @javax.annotation.Nullable
     private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>> undefined();
 
     public PlaybackStopInfo() {
@@ -83,6 +90,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo item(@javax.annotation.Nullable BaseItemDto item) {
         this.item = JsonNullable.<BaseItemDto> of(item);
+
         return this;
     }
 
@@ -93,6 +101,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItemDto getItem() {
         return item.orElse(null);
     }
@@ -114,6 +123,7 @@ public class PlaybackStopInfo {
     }
 
     public PlaybackStopInfo itemId(@javax.annotation.Nullable UUID itemId) {
+
         this.itemId = itemId;
         return this;
     }
@@ -126,6 +136,7 @@ public class PlaybackStopInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -138,6 +149,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo sessionId(@javax.annotation.Nullable String sessionId) {
         this.sessionId = JsonNullable.<String> of(sessionId);
+
         return this;
     }
 
@@ -148,6 +160,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSessionId() {
         return sessionId.orElse(null);
     }
@@ -170,6 +183,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
         this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
+
         return this;
     }
 
@@ -180,6 +194,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMediaSourceId() {
         return mediaSourceId.orElse(null);
     }
@@ -202,6 +217,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo positionTicks(@javax.annotation.Nullable Long positionTicks) {
         this.positionTicks = JsonNullable.<Long> of(positionTicks);
+
         return this;
     }
 
@@ -212,6 +228,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getPositionTicks() {
         return positionTicks.orElse(null);
     }
@@ -234,6 +251,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
         this.liveStreamId = JsonNullable.<String> of(liveStreamId);
+
         return this;
     }
 
@@ -244,6 +262,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLiveStreamId() {
         return liveStreamId.orElse(null);
     }
@@ -266,6 +285,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo playSessionId(@javax.annotation.Nullable String playSessionId) {
         this.playSessionId = JsonNullable.<String> of(playSessionId);
+
         return this;
     }
 
@@ -276,6 +296,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaySessionId() {
         return playSessionId.orElse(null);
     }
@@ -297,6 +318,7 @@ public class PlaybackStopInfo {
     }
 
     public PlaybackStopInfo failed(@javax.annotation.Nullable Boolean failed) {
+
         this.failed = failed;
         return this;
     }
@@ -309,6 +331,7 @@ public class PlaybackStopInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FAILED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getFailed() {
         return failed;
     }
@@ -321,6 +344,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo nextMediaType(@javax.annotation.Nullable String nextMediaType) {
         this.nextMediaType = JsonNullable.<String> of(nextMediaType);
+
         return this;
     }
 
@@ -331,6 +355,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getNextMediaType() {
         return nextMediaType.orElse(null);
     }
@@ -353,6 +378,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo playlistItemId(@javax.annotation.Nullable String playlistItemId) {
         this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+
         return this;
     }
 
@@ -363,6 +389,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
     }
@@ -385,6 +412,7 @@ public class PlaybackStopInfo {
 
     public PlaybackStopInfo nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
+
         return this;
     }
 
@@ -407,6 +435,7 @@ public class PlaybackStopInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue.orElse(null);
     }
@@ -427,9 +456,6 @@ public class PlaybackStopInfo {
         this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
     }
 
-    /**
-     * Return true if this PlaybackStopInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -499,111 +525,6 @@ public class PlaybackStopInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Item` to the URL query string
-        if (getItem() != null) {
-            joiner.add(getItem().toUrlQueryString(prefix + "Item" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `SessionId` to the URL query string
-        if (getSessionId() != null) {
-            joiner.add(String.format("%sSessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
-        }
-
-        // add `MediaSourceId` to the URL query string
-        if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `LiveStreamId` to the URL query string
-        if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `Failed` to the URL query string
-        if (getFailed() != null) {
-            joiner.add(String.format("%sFailed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFailed()))));
-        }
-
-        // add `NextMediaType` to the URL query string
-        if (getNextMediaType() != null) {
-            joiner.add(String.format("%sNextMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNextMediaType()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `NowPlayingQueue` to the URL query string
-        if (getNowPlayingQueue() != null) {
-            for (int i = 0; i < getNowPlayingQueue().size(); i++) {
-                if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,18 +46,23 @@ public class VersionInfo {
     private String versionNumber;
 
     public static final String JSON_PROPERTY_CHANGELOG = "changelog";
+    @javax.annotation.Nullable
     private JsonNullable<String> changelog = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
+    @javax.annotation.Nullable
     private JsonNullable<String> targetAbi = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> sourceUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHECKSUM = "checksum";
+    @javax.annotation.Nullable
     private JsonNullable<String> checksum = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
+    @javax.annotation.Nullable
     private JsonNullable<String> timestamp = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
@@ -73,6 +76,9 @@ public class VersionInfo {
     public VersionInfo() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public VersionInfo(@JsonProperty(JSON_PROPERTY_VERSION_NUMBER) String versionNumber) {
         this();
@@ -80,6 +86,7 @@ public class VersionInfo {
     }
 
     public VersionInfo version(@javax.annotation.Nullable String version) {
+
         this.version = version;
         return this;
     }
@@ -92,6 +99,7 @@ public class VersionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -110,12 +118,14 @@ public class VersionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersionNumber() {
         return versionNumber;
     }
 
     public VersionInfo changelog(@javax.annotation.Nullable String changelog) {
         this.changelog = JsonNullable.<String> of(changelog);
+
         return this;
     }
 
@@ -126,6 +136,7 @@ public class VersionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChangelog() {
         return changelog.orElse(null);
     }
@@ -148,6 +159,7 @@ public class VersionInfo {
 
     public VersionInfo targetAbi(@javax.annotation.Nullable String targetAbi) {
         this.targetAbi = JsonNullable.<String> of(targetAbi);
+
         return this;
     }
 
@@ -158,6 +170,7 @@ public class VersionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTargetAbi() {
         return targetAbi.orElse(null);
     }
@@ -180,6 +193,7 @@ public class VersionInfo {
 
     public VersionInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
         this.sourceUrl = JsonNullable.<String> of(sourceUrl);
+
         return this;
     }
 
@@ -190,6 +204,7 @@ public class VersionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSourceUrl() {
         return sourceUrl.orElse(null);
     }
@@ -212,6 +227,7 @@ public class VersionInfo {
 
     public VersionInfo checksum(@javax.annotation.Nullable String checksum) {
         this.checksum = JsonNullable.<String> of(checksum);
+
         return this;
     }
 
@@ -222,6 +238,7 @@ public class VersionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChecksum() {
         return checksum.orElse(null);
     }
@@ -244,6 +261,7 @@ public class VersionInfo {
 
     public VersionInfo timestamp(@javax.annotation.Nullable String timestamp) {
         this.timestamp = JsonNullable.<String> of(timestamp);
+
         return this;
     }
 
@@ -254,6 +272,7 @@ public class VersionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTimestamp() {
         return timestamp.orElse(null);
     }
@@ -275,6 +294,7 @@ public class VersionInfo {
     }
 
     public VersionInfo repositoryName(@javax.annotation.Nullable String repositoryName) {
+
         this.repositoryName = repositoryName;
         return this;
     }
@@ -287,6 +307,7 @@ public class VersionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRepositoryName() {
         return repositoryName;
     }
@@ -298,6 +319,7 @@ public class VersionInfo {
     }
 
     public VersionInfo repositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
+
         this.repositoryUrl = repositoryUrl;
         return this;
     }
@@ -310,6 +332,7 @@ public class VersionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getRepositoryUrl() {
         return repositoryUrl;
     }
@@ -320,9 +343,6 @@ public class VersionInfo {
         this.repositoryUrl = repositoryUrl;
     }
 
-    /**
-     * Return true if this VersionInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -388,95 +408,6 @@ public class VersionInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `VersionNumber` to the URL query string
-        if (getVersionNumber() != null) {
-            joiner.add(String.format("%sVersionNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersionNumber()))));
-        }
-
-        // add `changelog` to the URL query string
-        if (getChangelog() != null) {
-            joiner.add(String.format("%schangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
-        }
-
-        // add `targetAbi` to the URL query string
-        if (getTargetAbi() != null) {
-            joiner.add(String.format("%stargetAbi%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTargetAbi()))));
-        }
-
-        // add `sourceUrl` to the URL query string
-        if (getSourceUrl() != null) {
-            joiner.add(String.format("%ssourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
-        }
-
-        // add `checksum` to the URL query string
-        if (getChecksum() != null) {
-            joiner.add(String.format("%schecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
-        }
-
-        // add `timestamp` to the URL query string
-        if (getTimestamp() != null) {
-            joiner.add(String.format("%stimestamp%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
-        }
-
-        // add `repositoryName` to the URL query string
-        if (getRepositoryName() != null) {
-            joiner.add(String.format("%srepositoryName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryName()))));
-        }
-
-        // add `repositoryUrl` to the URL query string
-        if (getRepositoryUrl() != null) {
-            joiner.add(String.format("%srepositoryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryUrl()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

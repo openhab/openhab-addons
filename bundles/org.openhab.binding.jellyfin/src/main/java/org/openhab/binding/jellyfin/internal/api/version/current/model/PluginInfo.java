@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -48,6 +46,7 @@ public class PluginInfo {
     private String version;
 
     public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
+    @javax.annotation.Nullable
     private JsonNullable<String> configurationFileName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
@@ -74,6 +73,7 @@ public class PluginInfo {
     }
 
     public PluginInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -86,6 +86,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -97,6 +98,7 @@ public class PluginInfo {
     }
 
     public PluginInfo version(@javax.annotation.Nullable String version) {
+
         this.version = version;
         return this;
     }
@@ -109,6 +111,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVersion() {
         return version;
     }
@@ -121,6 +124,7 @@ public class PluginInfo {
 
     public PluginInfo configurationFileName(@javax.annotation.Nullable String configurationFileName) {
         this.configurationFileName = JsonNullable.<String> of(configurationFileName);
+
         return this;
     }
 
@@ -131,6 +135,7 @@ public class PluginInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getConfigurationFileName() {
         return configurationFileName.orElse(null);
     }
@@ -152,6 +157,7 @@ public class PluginInfo {
     }
 
     public PluginInfo description(@javax.annotation.Nullable String description) {
+
         this.description = description;
         return this;
     }
@@ -164,6 +170,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -175,6 +182,7 @@ public class PluginInfo {
     }
 
     public PluginInfo id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -187,6 +195,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -198,6 +207,7 @@ public class PluginInfo {
     }
 
     public PluginInfo canUninstall(@javax.annotation.Nullable Boolean canUninstall) {
+
         this.canUninstall = canUninstall;
         return this;
     }
@@ -210,6 +220,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanUninstall() {
         return canUninstall;
     }
@@ -221,6 +232,7 @@ public class PluginInfo {
     }
 
     public PluginInfo hasImage(@javax.annotation.Nullable Boolean hasImage) {
+
         this.hasImage = hasImage;
         return this;
     }
@@ -233,6 +245,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasImage() {
         return hasImage;
     }
@@ -244,6 +257,7 @@ public class PluginInfo {
     }
 
     public PluginInfo status(@javax.annotation.Nullable PluginStatus status) {
+
         this.status = status;
         return this;
     }
@@ -256,6 +270,7 @@ public class PluginInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PluginStatus getStatus() {
         return status;
     }
@@ -266,9 +281,6 @@ public class PluginInfo {
         this.status = status;
     }
 
-    /**
-     * Return true if this PluginInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -328,89 +340,6 @@ public class PluginInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `ConfigurationFileName` to the URL query string
-        if (getConfigurationFileName() != null) {
-            joiner.add(String.format("%sConfigurationFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getConfigurationFileName()))));
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `CanUninstall` to the URL query string
-        if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
-        }
-
-        // add `HasImage` to the URL query string
-        if (getHasImage() != null) {
-            joiner.add(String.format("%sHasImage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasImage()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

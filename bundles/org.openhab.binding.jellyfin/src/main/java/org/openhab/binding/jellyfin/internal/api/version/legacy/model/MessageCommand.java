@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MessageCommand {
     public static final String JSON_PROPERTY_HEADER = "Header";
+    @javax.annotation.Nullable
     private JsonNullable<String> header = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TEXT = "Text";
@@ -44,6 +43,7 @@ public class MessageCommand {
     private String text;
 
     public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
+    @javax.annotation.Nullable
     private JsonNullable<Long> timeoutMs = JsonNullable.<Long> undefined();
 
     public MessageCommand() {
@@ -51,6 +51,7 @@ public class MessageCommand {
 
     public MessageCommand header(@javax.annotation.Nullable String header) {
         this.header = JsonNullable.<String> of(header);
+
         return this;
     }
 
@@ -61,6 +62,7 @@ public class MessageCommand {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getHeader() {
         return header.orElse(null);
     }
@@ -82,6 +84,7 @@ public class MessageCommand {
     }
 
     public MessageCommand text(@javax.annotation.Nonnull String text) {
+
         this.text = text;
         return this;
     }
@@ -94,6 +97,7 @@ public class MessageCommand {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_TEXT)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getText() {
         return text;
     }
@@ -106,6 +110,7 @@ public class MessageCommand {
 
     public MessageCommand timeoutMs(@javax.annotation.Nullable Long timeoutMs) {
         this.timeoutMs = JsonNullable.<Long> of(timeoutMs);
+
         return this;
     }
 
@@ -116,6 +121,7 @@ public class MessageCommand {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getTimeoutMs() {
         return timeoutMs.orElse(null);
     }
@@ -136,9 +142,6 @@ public class MessageCommand {
         this.timeoutMs = JsonNullable.<Long> of(timeoutMs);
     }
 
-    /**
-     * Return true if this MessageCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -189,59 +192,6 @@ public class MessageCommand {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Header` to the URL query string
-        if (getHeader() != null) {
-            joiner.add(String.format("%sHeader%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeader()))));
-        }
-
-        // add `Text` to the URL query string
-        if (getText() != null) {
-            joiner.add(String.format("%sText%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getText()))));
-        }
-
-        // add `TimeoutMs` to the URL query string
-        if (getTimeoutMs() != null) {
-            joiner.add(String.format("%sTimeoutMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeoutMs()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

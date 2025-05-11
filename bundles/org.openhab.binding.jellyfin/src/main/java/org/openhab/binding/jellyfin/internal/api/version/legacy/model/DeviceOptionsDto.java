@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,15 +39,18 @@ public class DeviceOptionsDto {
     private Integer id;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
+    @javax.annotation.Nullable
     private JsonNullable<String> customName = JsonNullable.<String> undefined();
 
     public DeviceOptionsDto() {
     }
 
     public DeviceOptionsDto id(@javax.annotation.Nullable Integer id) {
+
         this.id = id;
         return this;
     }
@@ -62,6 +63,7 @@ public class DeviceOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getId() {
         return id;
     }
@@ -74,6 +76,7 @@ public class DeviceOptionsDto {
 
     public DeviceOptionsDto deviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = JsonNullable.<String> of(deviceId);
+
         return this;
     }
 
@@ -84,6 +87,7 @@ public class DeviceOptionsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceId() {
         return deviceId.orElse(null);
     }
@@ -106,6 +110,7 @@ public class DeviceOptionsDto {
 
     public DeviceOptionsDto customName(@javax.annotation.Nullable String customName) {
         this.customName = JsonNullable.<String> of(customName);
+
         return this;
     }
 
@@ -116,6 +121,7 @@ public class DeviceOptionsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCustomName() {
         return customName.orElse(null);
     }
@@ -136,9 +142,6 @@ public class DeviceOptionsDto {
         this.customName = JsonNullable.<String> of(customName);
     }
 
-    /**
-     * Return true if this DeviceOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -189,59 +192,6 @@ public class DeviceOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `CustomName` to the URL query string
-        if (getCustomName() != null) {
-            joiner.add(String.format("%sCustomName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -21,10 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,6 +59,7 @@ public class GroupInfoDto {
     }
 
     public GroupInfoDto groupId(@javax.annotation.Nullable UUID groupId) {
+
         this.groupId = groupId;
         return this;
     }
@@ -74,6 +72,7 @@ public class GroupInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -85,6 +84,7 @@ public class GroupInfoDto {
     }
 
     public GroupInfoDto groupName(@javax.annotation.Nullable String groupName) {
+
         this.groupName = groupName;
         return this;
     }
@@ -97,6 +97,7 @@ public class GroupInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GROUP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getGroupName() {
         return groupName;
     }
@@ -108,6 +109,7 @@ public class GroupInfoDto {
     }
 
     public GroupInfoDto state(@javax.annotation.Nullable GroupStateType state) {
+
         this.state = state;
         return this;
     }
@@ -120,6 +122,7 @@ public class GroupInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupStateType getState() {
         return state;
     }
@@ -131,6 +134,7 @@ public class GroupInfoDto {
     }
 
     public GroupInfoDto participants(@javax.annotation.Nullable List<String> participants) {
+
         this.participants = participants;
         return this;
     }
@@ -151,6 +155,7 @@ public class GroupInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PARTICIPANTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getParticipants() {
         return participants;
     }
@@ -162,6 +167,7 @@ public class GroupInfoDto {
     }
 
     public GroupInfoDto lastUpdatedAt(@javax.annotation.Nullable OffsetDateTime lastUpdatedAt) {
+
         this.lastUpdatedAt = lastUpdatedAt;
         return this;
     }
@@ -174,6 +180,7 @@ public class GroupInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LAST_UPDATED_AT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastUpdatedAt() {
         return lastUpdatedAt;
     }
@@ -184,9 +191,6 @@ public class GroupInfoDto {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    /**
-     * Return true if this GroupInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -230,74 +234,6 @@ public class GroupInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `GroupName` to the URL query string
-        if (getGroupName() != null) {
-            joiner.add(String.format("%sGroupName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupName()))));
-        }
-
-        // add `State` to the URL query string
-        if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-        }
-
-        // add `Participants` to the URL query string
-        if (getParticipants() != null) {
-            for (int i = 0; i < getParticipants().size(); i++) {
-                joiner.add(String.format("%sParticipants%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParticipants().get(i)))));
-            }
-        }
-
-        // add `LastUpdatedAt` to the URL query string
-        if (getLastUpdatedAt() != null) {
-            joiner.add(String.format("%sLastUpdatedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUpdatedAt()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

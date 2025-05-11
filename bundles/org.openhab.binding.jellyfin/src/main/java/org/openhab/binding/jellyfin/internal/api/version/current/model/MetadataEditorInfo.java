@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -57,6 +55,7 @@ public class MetadataEditorInfo {
     private List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
+    @javax.annotation.Nullable
     private JsonNullable<CollectionType> contentType = JsonNullable.<CollectionType> undefined();
 
     public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
@@ -68,6 +67,7 @@ public class MetadataEditorInfo {
 
     public MetadataEditorInfo parentalRatingOptions(
             @javax.annotation.Nullable List<ParentalRating> parentalRatingOptions) {
+
         this.parentalRatingOptions = parentalRatingOptions;
         return this;
     }
@@ -88,6 +88,7 @@ public class MetadataEditorInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ParentalRating> getParentalRatingOptions() {
         return parentalRatingOptions;
     }
@@ -99,6 +100,7 @@ public class MetadataEditorInfo {
     }
 
     public MetadataEditorInfo countries(@javax.annotation.Nullable List<CountryInfo> countries) {
+
         this.countries = countries;
         return this;
     }
@@ -119,6 +121,7 @@ public class MetadataEditorInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_COUNTRIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CountryInfo> getCountries() {
         return countries;
     }
@@ -130,6 +133,7 @@ public class MetadataEditorInfo {
     }
 
     public MetadataEditorInfo cultures(@javax.annotation.Nullable List<CultureDto> cultures) {
+
         this.cultures = cultures;
         return this;
     }
@@ -150,6 +154,7 @@ public class MetadataEditorInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CULTURES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CultureDto> getCultures() {
         return cultures;
     }
@@ -161,6 +166,7 @@ public class MetadataEditorInfo {
     }
 
     public MetadataEditorInfo externalIdInfos(@javax.annotation.Nullable List<ExternalIdInfo> externalIdInfos) {
+
         this.externalIdInfos = externalIdInfos;
         return this;
     }
@@ -181,6 +187,7 @@ public class MetadataEditorInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ExternalIdInfo> getExternalIdInfos() {
         return externalIdInfos;
     }
@@ -193,6 +200,7 @@ public class MetadataEditorInfo {
 
     public MetadataEditorInfo contentType(@javax.annotation.Nullable CollectionType contentType) {
         this.contentType = JsonNullable.<CollectionType> of(contentType);
+
         return this;
     }
 
@@ -203,6 +211,7 @@ public class MetadataEditorInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public CollectionType getContentType() {
         return contentType.orElse(null);
     }
@@ -224,6 +233,7 @@ public class MetadataEditorInfo {
     }
 
     public MetadataEditorInfo contentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
+
         this.contentTypeOptions = contentTypeOptions;
         return this;
     }
@@ -244,6 +254,7 @@ public class MetadataEditorInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getContentTypeOptions() {
         return contentTypeOptions;
     }
@@ -254,9 +265,6 @@ public class MetadataEditorInfo {
         this.contentTypeOptions = contentTypeOptions;
     }
 
-    /**
-     * Return true if this MetadataEditorInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -315,100 +323,6 @@ public class MetadataEditorInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ParentalRatingOptions` to the URL query string
-        if (getParentalRatingOptions() != null) {
-            for (int i = 0; i < getParentalRatingOptions().size(); i++) {
-                if (getParentalRatingOptions().get(i) != null) {
-                    joiner.add(getParentalRatingOptions().get(i).toUrlQueryString(String.format(
-                            "%sParentalRatingOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Countries` to the URL query string
-        if (getCountries() != null) {
-            for (int i = 0; i < getCountries().size(); i++) {
-                if (getCountries().get(i) != null) {
-                    joiner.add(getCountries().get(i).toUrlQueryString(String.format("%sCountries%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Cultures` to the URL query string
-        if (getCultures() != null) {
-            for (int i = 0; i < getCultures().size(); i++) {
-                if (getCultures().get(i) != null) {
-                    joiner.add(getCultures().get(i).toUrlQueryString(String.format("%sCultures%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ExternalIdInfos` to the URL query string
-        if (getExternalIdInfos() != null) {
-            for (int i = 0; i < getExternalIdInfos().size(); i++) {
-                if (getExternalIdInfos().get(i) != null) {
-                    joiner.add(getExternalIdInfos().get(i).toUrlQueryString(String.format("%sExternalIdInfos%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ContentType` to the URL query string
-        if (getContentType() != null) {
-            joiner.add(String.format("%sContentType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContentType()))));
-        }
-
-        // add `ContentTypeOptions` to the URL query string
-        if (getContentTypeOptions() != null) {
-            for (int i = 0; i < getContentTypeOptions().size(); i++) {
-                if (getContentTypeOptions().get(i) != null) {
-                    joiner.add(getContentTypeOptions().get(i).toUrlQueryString(String.format("%sContentTypeOptions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

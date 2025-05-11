@@ -20,10 +20,7 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,6 +50,7 @@ public class RemoveFromPlaylistRequestDto {
     }
 
     public RemoveFromPlaylistRequestDto playlistItemIds(@javax.annotation.Nullable List<UUID> playlistItemIds) {
+
         this.playlistItemIds = playlistItemIds;
         return this;
     }
@@ -73,6 +71,7 @@ public class RemoveFromPlaylistRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getPlaylistItemIds() {
         return playlistItemIds;
     }
@@ -84,6 +83,7 @@ public class RemoveFromPlaylistRequestDto {
     }
 
     public RemoveFromPlaylistRequestDto clearPlaylist(@javax.annotation.Nullable Boolean clearPlaylist) {
+
         this.clearPlaylist = clearPlaylist;
         return this;
     }
@@ -96,6 +96,7 @@ public class RemoveFromPlaylistRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CLEAR_PLAYLIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getClearPlaylist() {
         return clearPlaylist;
     }
@@ -107,6 +108,7 @@ public class RemoveFromPlaylistRequestDto {
     }
 
     public RemoveFromPlaylistRequestDto clearPlayingItem(@javax.annotation.Nullable Boolean clearPlayingItem) {
+
         this.clearPlayingItem = clearPlayingItem;
         return this;
     }
@@ -120,6 +122,7 @@ public class RemoveFromPlaylistRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CLEAR_PLAYING_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getClearPlayingItem() {
         return clearPlayingItem;
     }
@@ -130,9 +133,6 @@ public class RemoveFromPlaylistRequestDto {
         this.clearPlayingItem = clearPlayingItem;
     }
 
-    /**
-     * Return true if this RemoveFromPlaylistRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -172,64 +172,6 @@ public class RemoveFromPlaylistRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlaylistItemIds` to the URL query string
-        if (getPlaylistItemIds() != null) {
-            for (int i = 0; i < getPlaylistItemIds().size(); i++) {
-                if (getPlaylistItemIds().get(i) != null) {
-                    joiner.add(String.format("%sPlaylistItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemIds().get(i)))));
-                }
-            }
-        }
-
-        // add `ClearPlaylist` to the URL query string
-        if (getClearPlaylist() != null) {
-            joiner.add(String.format("%sClearPlaylist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlaylist()))));
-        }
-
-        // add `ClearPlayingItem` to the URL query string
-        if (getClearPlayingItem() != null) {
-            joiner.add(String.format("%sClearPlayingItem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlayingItem()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

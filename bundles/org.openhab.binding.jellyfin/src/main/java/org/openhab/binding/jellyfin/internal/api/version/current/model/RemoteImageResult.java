@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteImageResult {
     public static final String JSON_PROPERTY_IMAGES = "Images";
+    @javax.annotation.Nullable
     private JsonNullable<List<RemoteImageInfo>> images = JsonNullable.<List<RemoteImageInfo>> undefined();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
@@ -46,6 +45,7 @@ public class RemoteImageResult {
     private Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_PROVIDERS = "Providers";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> providers = JsonNullable.<List<String>> undefined();
 
     public RemoteImageResult() {
@@ -53,6 +53,7 @@ public class RemoteImageResult {
 
     public RemoteImageResult images(@javax.annotation.Nullable List<RemoteImageInfo> images) {
         this.images = JsonNullable.<List<RemoteImageInfo>> of(images);
+
         return this;
     }
 
@@ -75,6 +76,7 @@ public class RemoteImageResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<RemoteImageInfo> getImages() {
         return images.orElse(null);
     }
@@ -96,6 +98,7 @@ public class RemoteImageResult {
     }
 
     public RemoteImageResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
         this.totalRecordCount = totalRecordCount;
         return this;
     }
@@ -108,6 +111,7 @@ public class RemoteImageResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -120,6 +124,7 @@ public class RemoteImageResult {
 
     public RemoteImageResult providers(@javax.annotation.Nullable List<String> providers) {
         this.providers = JsonNullable.<List<String>> of(providers);
+
         return this;
     }
 
@@ -142,6 +147,7 @@ public class RemoteImageResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getProviders() {
         return providers.orElse(null);
     }
@@ -162,9 +168,6 @@ public class RemoteImageResult {
         this.providers = JsonNullable.<List<String>> of(providers);
     }
 
-    /**
-     * Return true if this RemoteImageResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -216,66 +219,6 @@ public class RemoteImageResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Images` to the URL query string
-        if (getImages() != null) {
-            for (int i = 0; i < getImages().size(); i++) {
-                if (getImages().get(i) != null) {
-                    joiner.add(getImages().get(i).toUrlQueryString(String.format("%sImages%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        // add `Providers` to the URL query string
-        if (getProviders() != null) {
-            for (int i = 0; i < getProviders().size(); i++) {
-                joiner.add(String.format("%sProviders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviders().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

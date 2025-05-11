@@ -20,11 +20,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -52,6 +50,7 @@ public class SendCommand {
     private OffsetDateTime when;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> positionTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_COMMAND = "Command";
@@ -66,6 +65,7 @@ public class SendCommand {
     }
 
     public SendCommand groupId(@javax.annotation.Nullable UUID groupId) {
+
         this.groupId = groupId;
         return this;
     }
@@ -78,6 +78,7 @@ public class SendCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -89,6 +90,7 @@ public class SendCommand {
     }
 
     public SendCommand playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+
         this.playlistItemId = playlistItemId;
         return this;
     }
@@ -101,6 +103,7 @@ public class SendCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
@@ -112,6 +115,7 @@ public class SendCommand {
     }
 
     public SendCommand when(@javax.annotation.Nullable OffsetDateTime when) {
+
         this.when = when;
         return this;
     }
@@ -124,6 +128,7 @@ public class SendCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WHEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getWhen() {
         return when;
     }
@@ -136,6 +141,7 @@ public class SendCommand {
 
     public SendCommand positionTicks(@javax.annotation.Nullable Long positionTicks) {
         this.positionTicks = JsonNullable.<Long> of(positionTicks);
+
         return this;
     }
 
@@ -146,6 +152,7 @@ public class SendCommand {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getPositionTicks() {
         return positionTicks.orElse(null);
     }
@@ -167,6 +174,7 @@ public class SendCommand {
     }
 
     public SendCommand command(@javax.annotation.Nullable SendCommandType command) {
+
         this.command = command;
         return this;
     }
@@ -179,6 +187,7 @@ public class SendCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_COMMAND)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SendCommandType getCommand() {
         return command;
     }
@@ -190,6 +199,7 @@ public class SendCommand {
     }
 
     public SendCommand emittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
+
         this.emittedAt = emittedAt;
         return this;
     }
@@ -202,6 +212,7 @@ public class SendCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_EMITTED_AT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEmittedAt() {
         return emittedAt;
     }
@@ -212,9 +223,6 @@ public class SendCommand {
         this.emittedAt = emittedAt;
     }
 
-    /**
-     * Return true if this SendCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -272,77 +280,6 @@ public class SendCommand {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `When` to the URL query string
-        if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `Command` to the URL query string
-        if (getCommand() != null) {
-            joiner.add(String.format("%sCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
-        }
-
-        // add `EmittedAt` to the URL query string
-        if (getEmittedAt() != null) {
-            joiner.add(String.format("%sEmittedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEmittedAt()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

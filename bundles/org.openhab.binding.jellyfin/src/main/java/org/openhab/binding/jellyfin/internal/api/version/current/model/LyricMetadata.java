@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,33 +37,43 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LyricMetadata {
     public static final String JSON_PROPERTY_ARTIST = "Artist";
+    @javax.annotation.Nullable
     private JsonNullable<String> artist = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
+    @javax.annotation.Nullable
     private JsonNullable<String> album = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TITLE = "Title";
+    @javax.annotation.Nullable
     private JsonNullable<String> title = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_AUTHOR = "Author";
+    @javax.annotation.Nullable
     private JsonNullable<String> author = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LENGTH = "Length";
+    @javax.annotation.Nullable
     private JsonNullable<Long> length = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_BY = "By";
+    @javax.annotation.Nullable
     private JsonNullable<String> by = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_OFFSET = "Offset";
+    @javax.annotation.Nullable
     private JsonNullable<Long> offset = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_CREATOR = "Creator";
+    @javax.annotation.Nullable
     private JsonNullable<String> creator = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isSynced = JsonNullable.<Boolean> undefined();
 
     public LyricMetadata() {
@@ -73,6 +81,7 @@ public class LyricMetadata {
 
     public LyricMetadata artist(@javax.annotation.Nullable String artist) {
         this.artist = JsonNullable.<String> of(artist);
+
         return this;
     }
 
@@ -83,6 +92,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getArtist() {
         return artist.orElse(null);
     }
@@ -105,6 +115,7 @@ public class LyricMetadata {
 
     public LyricMetadata album(@javax.annotation.Nullable String album) {
         this.album = JsonNullable.<String> of(album);
+
         return this;
     }
 
@@ -115,6 +126,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAlbum() {
         return album.orElse(null);
     }
@@ -137,6 +149,7 @@ public class LyricMetadata {
 
     public LyricMetadata title(@javax.annotation.Nullable String title) {
         this.title = JsonNullable.<String> of(title);
+
         return this;
     }
 
@@ -147,6 +160,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTitle() {
         return title.orElse(null);
     }
@@ -169,6 +183,7 @@ public class LyricMetadata {
 
     public LyricMetadata author(@javax.annotation.Nullable String author) {
         this.author = JsonNullable.<String> of(author);
+
         return this;
     }
 
@@ -179,6 +194,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAuthor() {
         return author.orElse(null);
     }
@@ -201,6 +217,7 @@ public class LyricMetadata {
 
     public LyricMetadata length(@javax.annotation.Nullable Long length) {
         this.length = JsonNullable.<Long> of(length);
+
         return this;
     }
 
@@ -211,6 +228,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getLength() {
         return length.orElse(null);
     }
@@ -233,6 +251,7 @@ public class LyricMetadata {
 
     public LyricMetadata by(@javax.annotation.Nullable String by) {
         this.by = JsonNullable.<String> of(by);
+
         return this;
     }
 
@@ -243,6 +262,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getBy() {
         return by.orElse(null);
     }
@@ -265,6 +285,7 @@ public class LyricMetadata {
 
     public LyricMetadata offset(@javax.annotation.Nullable Long offset) {
         this.offset = JsonNullable.<Long> of(offset);
+
         return this;
     }
 
@@ -275,6 +296,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getOffset() {
         return offset.orElse(null);
     }
@@ -297,6 +319,7 @@ public class LyricMetadata {
 
     public LyricMetadata creator(@javax.annotation.Nullable String creator) {
         this.creator = JsonNullable.<String> of(creator);
+
         return this;
     }
 
@@ -307,6 +330,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCreator() {
         return creator.orElse(null);
     }
@@ -329,6 +353,7 @@ public class LyricMetadata {
 
     public LyricMetadata version(@javax.annotation.Nullable String version) {
         this.version = JsonNullable.<String> of(version);
+
         return this;
     }
 
@@ -339,6 +364,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
         return version.orElse(null);
     }
@@ -361,6 +387,7 @@ public class LyricMetadata {
 
     public LyricMetadata isSynced(@javax.annotation.Nullable Boolean isSynced) {
         this.isSynced = JsonNullable.<Boolean> of(isSynced);
+
         return this;
     }
 
@@ -371,6 +398,7 @@ public class LyricMetadata {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsSynced() {
         return isSynced.orElse(null);
     }
@@ -391,9 +419,6 @@ public class LyricMetadata {
         this.isSynced = JsonNullable.<Boolean> of(isSynced);
     }
 
-    /**
-     * Return true if this LyricMetadata object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -458,101 +483,6 @@ public class LyricMetadata {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Artist` to the URL query string
-        if (getArtist() != null) {
-            joiner.add(String.format("%sArtist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtist()))));
-        }
-
-        // add `Album` to the URL query string
-        if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
-        }
-
-        // add `Title` to the URL query string
-        if (getTitle() != null) {
-            joiner.add(String.format("%sTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-        }
-
-        // add `Author` to the URL query string
-        if (getAuthor() != null) {
-            joiner.add(String.format("%sAuthor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
-        }
-
-        // add `Length` to the URL query string
-        if (getLength() != null) {
-            joiner.add(String.format("%sLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLength()))));
-        }
-
-        // add `By` to the URL query string
-        if (getBy() != null) {
-            joiner.add(
-                    String.format("%sBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
-        }
-
-        // add `Offset` to the URL query string
-        if (getOffset() != null) {
-            joiner.add(String.format("%sOffset%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOffset()))));
-        }
-
-        // add `Creator` to the URL query string
-        if (getCreator() != null) {
-            joiner.add(String.format("%sCreator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCreator()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `IsSynced` to the URL query string
-        if (getIsSynced() != null) {
-            joiner.add(String.format("%sIsSynced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSynced()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

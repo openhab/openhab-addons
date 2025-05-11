@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,6 +48,7 @@ public class BaseItemDtoQueryResult {
     }
 
     public BaseItemDtoQueryResult items(@javax.annotation.Nullable List<BaseItemDto> items) {
+
         this.items = items;
         return this;
     }
@@ -71,6 +69,7 @@ public class BaseItemDtoQueryResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<BaseItemDto> getItems() {
         return items;
     }
@@ -82,6 +81,7 @@ public class BaseItemDtoQueryResult {
     }
 
     public BaseItemDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
         this.totalRecordCount = totalRecordCount;
         return this;
     }
@@ -94,6 +94,7 @@ public class BaseItemDtoQueryResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -105,6 +106,7 @@ public class BaseItemDtoQueryResult {
     }
 
     public BaseItemDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
         this.startIndex = startIndex;
         return this;
     }
@@ -117,6 +119,7 @@ public class BaseItemDtoQueryResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStartIndex() {
         return startIndex;
     }
@@ -127,9 +130,6 @@ public class BaseItemDtoQueryResult {
         this.startIndex = startIndex;
     }
 
-    /**
-     * Return true if this BaseItemDtoQueryResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -169,63 +169,6 @@ public class BaseItemDtoQueryResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Items` to the URL query string
-        if (getItems() != null) {
-            for (int i = 0; i < getItems().size(); i++) {
-                if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

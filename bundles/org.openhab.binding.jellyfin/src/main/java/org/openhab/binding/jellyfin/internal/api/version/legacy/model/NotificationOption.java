@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationOption {
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_MONITOR_USERS = "DisabledMonitorUsers";
@@ -67,6 +66,7 @@ public class NotificationOption {
 
     public NotificationOption type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -77,6 +77,7 @@ public class NotificationOption {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -98,6 +99,7 @@ public class NotificationOption {
     }
 
     public NotificationOption disabledMonitorUsers(@javax.annotation.Nullable List<String> disabledMonitorUsers) {
+
         this.disabledMonitorUsers = disabledMonitorUsers;
         return this;
     }
@@ -118,6 +120,7 @@ public class NotificationOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISABLED_MONITOR_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getDisabledMonitorUsers() {
         return disabledMonitorUsers;
     }
@@ -129,6 +132,7 @@ public class NotificationOption {
     }
 
     public NotificationOption sendToUsers(@javax.annotation.Nullable List<String> sendToUsers) {
+
         this.sendToUsers = sendToUsers;
         return this;
     }
@@ -149,6 +153,7 @@ public class NotificationOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEND_TO_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSendToUsers() {
         return sendToUsers;
     }
@@ -160,6 +165,7 @@ public class NotificationOption {
     }
 
     public NotificationOption enabled(@javax.annotation.Nullable Boolean enabled) {
+
         this.enabled = enabled;
         return this;
     }
@@ -172,6 +178,7 @@ public class NotificationOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnabled() {
         return enabled;
     }
@@ -183,6 +190,7 @@ public class NotificationOption {
     }
 
     public NotificationOption disabledServices(@javax.annotation.Nullable List<String> disabledServices) {
+
         this.disabledServices = disabledServices;
         return this;
     }
@@ -203,6 +211,7 @@ public class NotificationOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISABLED_SERVICES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getDisabledServices() {
         return disabledServices;
     }
@@ -214,6 +223,7 @@ public class NotificationOption {
     }
 
     public NotificationOption sendToUserMode(@javax.annotation.Nullable SendToUserType sendToUserMode) {
+
         this.sendToUserMode = sendToUserMode;
         return this;
     }
@@ -226,6 +236,7 @@ public class NotificationOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEND_TO_USER_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SendToUserType getSendToUserMode() {
         return sendToUserMode;
     }
@@ -236,9 +247,6 @@ public class NotificationOption {
         this.sendToUserMode = sendToUserMode;
     }
 
-    /**
-     * Return true if this NotificationOption object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -297,86 +305,6 @@ public class NotificationOption {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `DisabledMonitorUsers` to the URL query string
-        if (getDisabledMonitorUsers() != null) {
-            for (int i = 0; i < getDisabledMonitorUsers().size(); i++) {
-                joiner.add(String.format("%sDisabledMonitorUsers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMonitorUsers().get(i)))));
-            }
-        }
-
-        // add `SendToUsers` to the URL query string
-        if (getSendToUsers() != null) {
-            for (int i = 0; i < getSendToUsers().size(); i++) {
-                joiner.add(String.format("%sSendToUsers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSendToUsers().get(i)))));
-            }
-        }
-
-        // add `Enabled` to the URL query string
-        if (getEnabled() != null) {
-            joiner.add(String.format("%sEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
-        }
-
-        // add `DisabledServices` to the URL query string
-        if (getDisabledServices() != null) {
-            for (int i = 0; i < getDisabledServices().size(); i++) {
-                joiner.add(String.format("%sDisabledServices%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledServices().get(i)))));
-            }
-        }
-
-        // add `SendToUserMode` to the URL query string
-        if (getSendToUserMode() != null) {
-            joiner.add(String.format("%sSendToUserMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSendToUserMode()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,9 +36,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationTypeInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
@@ -48,6 +48,7 @@ public class NotificationTypeInfo {
     private Boolean enabled;
 
     public static final String JSON_PROPERTY_CATEGORY = "Category";
+    @javax.annotation.Nullable
     private JsonNullable<String> category = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_BASED_ON_USER_EVENT = "IsBasedOnUserEvent";
@@ -59,6 +60,7 @@ public class NotificationTypeInfo {
 
     public NotificationTypeInfo type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -69,6 +71,7 @@ public class NotificationTypeInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -91,6 +94,7 @@ public class NotificationTypeInfo {
 
     public NotificationTypeInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -101,6 +105,7 @@ public class NotificationTypeInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -122,6 +127,7 @@ public class NotificationTypeInfo {
     }
 
     public NotificationTypeInfo enabled(@javax.annotation.Nullable Boolean enabled) {
+
         this.enabled = enabled;
         return this;
     }
@@ -134,6 +140,7 @@ public class NotificationTypeInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnabled() {
         return enabled;
     }
@@ -146,6 +153,7 @@ public class NotificationTypeInfo {
 
     public NotificationTypeInfo category(@javax.annotation.Nullable String category) {
         this.category = JsonNullable.<String> of(category);
+
         return this;
     }
 
@@ -156,6 +164,7 @@ public class NotificationTypeInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCategory() {
         return category.orElse(null);
     }
@@ -177,6 +186,7 @@ public class NotificationTypeInfo {
     }
 
     public NotificationTypeInfo isBasedOnUserEvent(@javax.annotation.Nullable Boolean isBasedOnUserEvent) {
+
         this.isBasedOnUserEvent = isBasedOnUserEvent;
         return this;
     }
@@ -189,6 +199,7 @@ public class NotificationTypeInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_BASED_ON_USER_EVENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsBasedOnUserEvent() {
         return isBasedOnUserEvent;
     }
@@ -199,9 +210,6 @@ public class NotificationTypeInfo {
         this.isBasedOnUserEvent = isBasedOnUserEvent;
     }
 
-    /**
-     * Return true if this NotificationTypeInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -258,71 +266,6 @@ public class NotificationTypeInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Enabled` to the URL query string
-        if (getEnabled() != null) {
-            joiner.add(String.format("%sEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
-        }
-
-        // add `Category` to the URL query string
-        if (getCategory() != null) {
-            joiner.add(String.format("%sCategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-        }
-
-        // add `IsBasedOnUserEvent` to the URL query string
-        if (getIsBasedOnUserEvent() != null) {
-            joiner.add(String.format("%sIsBasedOnUserEvent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsBasedOnUserEvent()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

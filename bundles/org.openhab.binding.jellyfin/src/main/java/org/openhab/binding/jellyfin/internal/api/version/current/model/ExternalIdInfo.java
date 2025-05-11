@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,15 +43,18 @@ public class ExternalIdInfo {
     private String key;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<ExternalIdMediaType> type = JsonNullable.<ExternalIdMediaType> undefined();
 
     public static final String JSON_PROPERTY_URL_FORMAT_STRING = "UrlFormatString";
+    @javax.annotation.Nullable
     private JsonNullable<String> urlFormatString = JsonNullable.<String> undefined();
 
     public ExternalIdInfo() {
     }
 
     public ExternalIdInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -66,6 +67,7 @@ public class ExternalIdInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -77,6 +79,7 @@ public class ExternalIdInfo {
     }
 
     public ExternalIdInfo key(@javax.annotation.Nullable String key) {
+
         this.key = key;
         return this;
     }
@@ -89,6 +92,7 @@ public class ExternalIdInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -101,6 +105,7 @@ public class ExternalIdInfo {
 
     public ExternalIdInfo type(@javax.annotation.Nullable ExternalIdMediaType type) {
         this.type = JsonNullable.<ExternalIdMediaType> of(type);
+
         return this;
     }
 
@@ -113,6 +118,7 @@ public class ExternalIdInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ExternalIdMediaType getType() {
         return type.orElse(null);
     }
@@ -135,6 +141,7 @@ public class ExternalIdInfo {
 
     public ExternalIdInfo urlFormatString(@javax.annotation.Nullable String urlFormatString) {
         this.urlFormatString = JsonNullable.<String> of(urlFormatString);
+
         return this;
     }
 
@@ -147,6 +154,7 @@ public class ExternalIdInfo {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUrlFormatString() {
         return urlFormatString.orElse(null);
     }
@@ -167,9 +175,6 @@ public class ExternalIdInfo {
         this.urlFormatString = JsonNullable.<String> of(urlFormatString);
     }
 
-    /**
-     * Return true if this ExternalIdInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -222,65 +227,6 @@ public class ExternalIdInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `UrlFormatString` to the URL query string
-        if (getUrlFormatString() != null) {
-            joiner.add(String.format("%sUrlFormatString%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrlFormatString()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

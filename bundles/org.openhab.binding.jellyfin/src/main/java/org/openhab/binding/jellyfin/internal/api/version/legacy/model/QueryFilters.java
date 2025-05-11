@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,9 +36,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueryFilters {
     public static final String JSON_PROPERTY_GENRES = "Genres";
+    @javax.annotation.Nullable
     private JsonNullable<List<NameGuidPair>> genres = JsonNullable.<List<NameGuidPair>> undefined();
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> tags = JsonNullable.<List<String>> undefined();
 
     public QueryFilters() {
@@ -48,6 +48,7 @@ public class QueryFilters {
 
     public QueryFilters genres(@javax.annotation.Nullable List<NameGuidPair> genres) {
         this.genres = JsonNullable.<List<NameGuidPair>> of(genres);
+
         return this;
     }
 
@@ -70,6 +71,7 @@ public class QueryFilters {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<NameGuidPair> getGenres() {
         return genres.orElse(null);
     }
@@ -92,6 +94,7 @@ public class QueryFilters {
 
     public QueryFilters tags(@javax.annotation.Nullable List<String> tags) {
         this.tags = JsonNullable.<List<String>> of(tags);
+
         return this;
     }
 
@@ -114,6 +117,7 @@ public class QueryFilters {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getTags() {
         return tags.orElse(null);
     }
@@ -134,9 +138,6 @@ public class QueryFilters {
         this.tags = JsonNullable.<List<String>> of(tags);
     }
 
-    /**
-     * Return true if this QueryFilters object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -185,60 +186,6 @@ public class QueryFilters {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                if (getGenres().get(i) != null) {
-                    joiner.add(getGenres().get(i).toUrlQueryString(String.format("%sGenres%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Tags` to the URL query string
-        if (getTags() != null) {
-            for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

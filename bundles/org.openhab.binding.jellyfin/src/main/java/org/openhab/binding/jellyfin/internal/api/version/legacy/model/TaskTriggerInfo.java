@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,18 +36,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TaskTriggerInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> timeOfDayTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> intervalTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
+    @javax.annotation.Nullable
     private JsonNullable<DayOfWeek> dayOfWeek = JsonNullable.<DayOfWeek> undefined();
 
     public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> maxRuntimeTicks = JsonNullable.<Long> undefined();
 
     public TaskTriggerInfo() {
@@ -57,6 +60,7 @@ public class TaskTriggerInfo {
 
     public TaskTriggerInfo type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -67,6 +71,7 @@ public class TaskTriggerInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -89,6 +94,7 @@ public class TaskTriggerInfo {
 
     public TaskTriggerInfo timeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
         this.timeOfDayTicks = JsonNullable.<Long> of(timeOfDayTicks);
+
         return this;
     }
 
@@ -99,6 +105,7 @@ public class TaskTriggerInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getTimeOfDayTicks() {
         return timeOfDayTicks.orElse(null);
     }
@@ -121,6 +128,7 @@ public class TaskTriggerInfo {
 
     public TaskTriggerInfo intervalTicks(@javax.annotation.Nullable Long intervalTicks) {
         this.intervalTicks = JsonNullable.<Long> of(intervalTicks);
+
         return this;
     }
 
@@ -131,6 +139,7 @@ public class TaskTriggerInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getIntervalTicks() {
         return intervalTicks.orElse(null);
     }
@@ -153,6 +162,7 @@ public class TaskTriggerInfo {
 
     public TaskTriggerInfo dayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
         this.dayOfWeek = JsonNullable.<DayOfWeek> of(dayOfWeek);
+
         return this;
     }
 
@@ -163,6 +173,7 @@ public class TaskTriggerInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek.orElse(null);
     }
@@ -185,6 +196,7 @@ public class TaskTriggerInfo {
 
     public TaskTriggerInfo maxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
         this.maxRuntimeTicks = JsonNullable.<Long> of(maxRuntimeTicks);
+
         return this;
     }
 
@@ -195,6 +207,7 @@ public class TaskTriggerInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getMaxRuntimeTicks() {
         return maxRuntimeTicks.orElse(null);
     }
@@ -215,9 +228,6 @@ public class TaskTriggerInfo {
         this.maxRuntimeTicks = JsonNullable.<Long> of(maxRuntimeTicks);
     }
 
-    /**
-     * Return true if this TaskTriggerInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -274,71 +284,6 @@ public class TaskTriggerInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `TimeOfDayTicks` to the URL query string
-        if (getTimeOfDayTicks() != null) {
-            joiner.add(String.format("%sTimeOfDayTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeOfDayTicks()))));
-        }
-
-        // add `IntervalTicks` to the URL query string
-        if (getIntervalTicks() != null) {
-            joiner.add(String.format("%sIntervalTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIntervalTicks()))));
-        }
-
-        // add `DayOfWeek` to the URL query string
-        if (getDayOfWeek() != null) {
-            joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
-        }
-
-        // add `MaxRuntimeTicks` to the URL query string
-        if (getMaxRuntimeTicks() != null) {
-            joiner.add(String.format("%sMaxRuntimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxRuntimeTicks()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

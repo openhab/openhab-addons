@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -52,12 +50,14 @@ public class ChannelMappingOptionsDto {
     private List<NameValuePair> mappings = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+    @javax.annotation.Nullable
     private JsonNullable<String> providerName = JsonNullable.<String> undefined();
 
     public ChannelMappingOptionsDto() {
     }
 
     public ChannelMappingOptionsDto tunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
+
         this.tunerChannels = tunerChannels;
         return this;
     }
@@ -78,6 +78,7 @@ public class ChannelMappingOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TunerChannelMapping> getTunerChannels() {
         return tunerChannels;
     }
@@ -89,6 +90,7 @@ public class ChannelMappingOptionsDto {
     }
 
     public ChannelMappingOptionsDto providerChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
+
         this.providerChannels = providerChannels;
         return this;
     }
@@ -109,6 +111,7 @@ public class ChannelMappingOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameIdPair> getProviderChannels() {
         return providerChannels;
     }
@@ -120,6 +123,7 @@ public class ChannelMappingOptionsDto {
     }
 
     public ChannelMappingOptionsDto mappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
+
         this.mappings = mappings;
         return this;
     }
@@ -140,6 +144,7 @@ public class ChannelMappingOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MAPPINGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NameValuePair> getMappings() {
         return mappings;
     }
@@ -152,6 +157,7 @@ public class ChannelMappingOptionsDto {
 
     public ChannelMappingOptionsDto providerName(@javax.annotation.Nullable String providerName) {
         this.providerName = JsonNullable.<String> of(providerName);
+
         return this;
     }
 
@@ -162,6 +168,7 @@ public class ChannelMappingOptionsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProviderName() {
         return providerName.orElse(null);
     }
@@ -182,9 +189,6 @@ public class ChannelMappingOptionsDto {
         this.providerName = JsonNullable.<String> of(providerName);
     }
 
-    /**
-     * Return true if this ChannelMappingOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -238,79 +242,6 @@ public class ChannelMappingOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `TunerChannels` to the URL query string
-        if (getTunerChannels() != null) {
-            for (int i = 0; i < getTunerChannels().size(); i++) {
-                if (getTunerChannels().get(i) != null) {
-                    joiner.add(getTunerChannels().get(i).toUrlQueryString(String.format("%sTunerChannels%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ProviderChannels` to the URL query string
-        if (getProviderChannels() != null) {
-            for (int i = 0; i < getProviderChannels().size(); i++) {
-                if (getProviderChannels().get(i) != null) {
-                    joiner.add(getProviderChannels().get(i).toUrlQueryString(String.format("%sProviderChannels%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Mappings` to the URL query string
-        if (getMappings() != null) {
-            for (int i = 0; i < getMappings().size(); i++) {
-                if (getMappings().get(i) != null) {
-                    joiner.add(getMappings().get(i).toUrlQueryString(String.format("%sMappings%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

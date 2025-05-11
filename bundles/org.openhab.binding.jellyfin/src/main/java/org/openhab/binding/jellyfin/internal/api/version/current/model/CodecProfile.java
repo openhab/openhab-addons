@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -52,18 +50,22 @@ public class CodecProfile {
     private List<ProfileCondition> applyConditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CODEC = "Codec";
+    @javax.annotation.Nullable
     private JsonNullable<String> codec = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
+    @javax.annotation.Nullable
     private JsonNullable<String> subContainer = JsonNullable.<String> undefined();
 
     public CodecProfile() {
     }
 
     public CodecProfile type(@javax.annotation.Nullable CodecType type) {
+
         this.type = type;
         return this;
     }
@@ -76,6 +78,7 @@ public class CodecProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public CodecType getType() {
         return type;
     }
@@ -87,6 +90,7 @@ public class CodecProfile {
     }
 
     public CodecProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+
         this.conditions = conditions;
         return this;
     }
@@ -107,6 +111,7 @@ public class CodecProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
@@ -118,6 +123,7 @@ public class CodecProfile {
     }
 
     public CodecProfile applyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
+
         this.applyConditions = applyConditions;
         return this;
     }
@@ -138,6 +144,7 @@ public class CodecProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getApplyConditions() {
         return applyConditions;
     }
@@ -150,6 +157,7 @@ public class CodecProfile {
 
     public CodecProfile codec(@javax.annotation.Nullable String codec) {
         this.codec = JsonNullable.<String> of(codec);
+
         return this;
     }
 
@@ -160,6 +168,7 @@ public class CodecProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCodec() {
         return codec.orElse(null);
     }
@@ -182,6 +191,7 @@ public class CodecProfile {
 
     public CodecProfile container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -192,6 +202,7 @@ public class CodecProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -214,6 +225,7 @@ public class CodecProfile {
 
     public CodecProfile subContainer(@javax.annotation.Nullable String subContainer) {
         this.subContainer = JsonNullable.<String> of(subContainer);
+
         return this;
     }
 
@@ -224,6 +236,7 @@ public class CodecProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSubContainer() {
         return subContainer.orElse(null);
     }
@@ -244,9 +257,6 @@ public class CodecProfile {
         this.subContainer = JsonNullable.<String> of(subContainer);
     }
 
-    /**
-     * Return true if this CodecProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -304,86 +314,6 @@ public class CodecProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ApplyConditions` to the URL query string
-        if (getApplyConditions() != null) {
-            for (int i = 0; i < getApplyConditions().size(); i++) {
-                if (getApplyConditions().get(i) != null) {
-                    joiner.add(getApplyConditions().get(i).toUrlQueryString(String.format("%sApplyConditions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Codec` to the URL query string
-        if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `SubContainer` to the URL query string
-        if (getSubContainer() != null) {
-            joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,12 +36,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ImageByNameInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_THEME = "Theme";
+    @javax.annotation.Nullable
     private JsonNullable<String> theme = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CONTEXT = "Context";
+    @javax.annotation.Nullable
     private JsonNullable<String> context = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_FILE_LENGTH = "FileLength";
@@ -51,6 +52,7 @@ public class ImageByNameInfo {
     private Long fileLength;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
+    @javax.annotation.Nullable
     private JsonNullable<String> format = JsonNullable.<String> undefined();
 
     public ImageByNameInfo() {
@@ -58,6 +60,7 @@ public class ImageByNameInfo {
 
     public ImageByNameInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -68,6 +71,7 @@ public class ImageByNameInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -90,6 +94,7 @@ public class ImageByNameInfo {
 
     public ImageByNameInfo theme(@javax.annotation.Nullable String theme) {
         this.theme = JsonNullable.<String> of(theme);
+
         return this;
     }
 
@@ -100,6 +105,7 @@ public class ImageByNameInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTheme() {
         return theme.orElse(null);
     }
@@ -122,6 +128,7 @@ public class ImageByNameInfo {
 
     public ImageByNameInfo context(@javax.annotation.Nullable String context) {
         this.context = JsonNullable.<String> of(context);
+
         return this;
     }
 
@@ -132,6 +139,7 @@ public class ImageByNameInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContext() {
         return context.orElse(null);
     }
@@ -153,6 +161,7 @@ public class ImageByNameInfo {
     }
 
     public ImageByNameInfo fileLength(@javax.annotation.Nullable Long fileLength) {
+
         this.fileLength = fileLength;
         return this;
     }
@@ -165,6 +174,7 @@ public class ImageByNameInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FILE_LENGTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getFileLength() {
         return fileLength;
     }
@@ -177,6 +187,7 @@ public class ImageByNameInfo {
 
     public ImageByNameInfo format(@javax.annotation.Nullable String format) {
         this.format = JsonNullable.<String> of(format);
+
         return this;
     }
 
@@ -187,6 +198,7 @@ public class ImageByNameInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getFormat() {
         return format.orElse(null);
     }
@@ -207,9 +219,6 @@ public class ImageByNameInfo {
         this.format = JsonNullable.<String> of(format);
     }
 
-    /**
-     * Return true if this ImageByNameInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -265,71 +274,6 @@ public class ImageByNameInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Theme` to the URL query string
-        if (getTheme() != null) {
-            joiner.add(String.format("%sTheme%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTheme()))));
-        }
-
-        // add `Context` to the URL query string
-        if (getContext() != null) {
-            joiner.add(String.format("%sContext%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
-        }
-
-        // add `FileLength` to the URL query string
-        if (getFileLength() != null) {
-            joiner.add(String.format("%sFileLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFileLength()))));
-        }
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

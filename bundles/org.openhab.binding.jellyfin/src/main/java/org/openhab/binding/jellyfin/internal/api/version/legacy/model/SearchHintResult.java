@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,6 +43,7 @@ public class SearchHintResult {
     }
 
     public SearchHintResult searchHints(@javax.annotation.Nullable List<SearchHint> searchHints) {
+
         this.searchHints = searchHints;
         return this;
     }
@@ -66,6 +64,7 @@ public class SearchHintResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEARCH_HINTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SearchHint> getSearchHints() {
         return searchHints;
     }
@@ -77,6 +76,7 @@ public class SearchHintResult {
     }
 
     public SearchHintResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
         this.totalRecordCount = totalRecordCount;
         return this;
     }
@@ -89,6 +89,7 @@ public class SearchHintResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -99,9 +100,6 @@ public class SearchHintResult {
         this.totalRecordCount = totalRecordCount;
     }
 
-    /**
-     * Return true if this SearchHintResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -139,58 +137,6 @@ public class SearchHintResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `SearchHints` to the URL query string
-        if (getSearchHints() != null) {
-            for (int i = 0; i < getSearchHints().size(); i++) {
-                if (getSearchHints().get(i) != null) {
-                    joiner.add(getSearchHints().get(i).toUrlQueryString(String.format("%sSearchHints%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

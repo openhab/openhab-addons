@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -36,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class WakeOnLanInfo {
     public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
+    @javax.annotation.Nullable
     private JsonNullable<String> macAddress = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PORT = "Port";
@@ -47,6 +46,7 @@ public class WakeOnLanInfo {
 
     public WakeOnLanInfo macAddress(@javax.annotation.Nullable String macAddress) {
         this.macAddress = JsonNullable.<String> of(macAddress);
+
         return this;
     }
 
@@ -57,6 +57,7 @@ public class WakeOnLanInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMacAddress() {
         return macAddress.orElse(null);
     }
@@ -78,6 +79,7 @@ public class WakeOnLanInfo {
     }
 
     public WakeOnLanInfo port(@javax.annotation.Nullable Integer port) {
+
         this.port = port;
         return this;
     }
@@ -90,6 +92,7 @@ public class WakeOnLanInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPort() {
         return port;
     }
@@ -100,9 +103,6 @@ public class WakeOnLanInfo {
         this.port = port;
     }
 
-    /**
-     * Return true if this WakeOnLanInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,53 +152,6 @@ public class WakeOnLanInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MacAddress` to the URL query string
-        if (getMacAddress() != null) {
-            joiner.add(String.format("%sMacAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMacAddress()))));
-        }
-
-        // add `Port` to the URL query string
-        if (getPort() != null) {
-            joiner.add(String.format("%sPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPort()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

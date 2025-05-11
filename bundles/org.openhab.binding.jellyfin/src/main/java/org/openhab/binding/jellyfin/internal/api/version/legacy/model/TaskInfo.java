@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,6 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TaskInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_STATE = "State";
@@ -49,21 +48,27 @@ public class TaskInfo {
     private TaskState state;
 
     public static final String JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
+    @javax.annotation.Nullable
     private JsonNullable<Double> currentProgressPercentage = JsonNullable.<Double> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LAST_EXECUTION_RESULT = "LastExecutionResult";
+    @javax.annotation.Nullable
     private JsonNullable<TaskResult> lastExecutionResult = JsonNullable.<TaskResult> undefined();
 
     public static final String JSON_PROPERTY_TRIGGERS = "Triggers";
+    @javax.annotation.Nullable
     private JsonNullable<List<TaskTriggerInfo>> triggers = JsonNullable.<List<TaskTriggerInfo>> undefined();
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+    @javax.annotation.Nullable
     private JsonNullable<String> description = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CATEGORY = "Category";
+    @javax.annotation.Nullable
     private JsonNullable<String> category = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
@@ -71,6 +76,7 @@ public class TaskInfo {
     private Boolean isHidden;
 
     public static final String JSON_PROPERTY_KEY = "Key";
+    @javax.annotation.Nullable
     private JsonNullable<String> key = JsonNullable.<String> undefined();
 
     public TaskInfo() {
@@ -78,6 +84,7 @@ public class TaskInfo {
 
     public TaskInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -88,6 +95,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -109,6 +117,7 @@ public class TaskInfo {
     }
 
     public TaskInfo state(@javax.annotation.Nullable TaskState state) {
+
         this.state = state;
         return this;
     }
@@ -121,6 +130,7 @@ public class TaskInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TaskState getState() {
         return state;
     }
@@ -133,6 +143,7 @@ public class TaskInfo {
 
     public TaskInfo currentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
         this.currentProgressPercentage = JsonNullable.<Double> of(currentProgressPercentage);
+
         return this;
     }
 
@@ -143,6 +154,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Double getCurrentProgressPercentage() {
         return currentProgressPercentage.orElse(null);
     }
@@ -165,6 +177,7 @@ public class TaskInfo {
 
     public TaskInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -175,6 +188,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -197,6 +211,7 @@ public class TaskInfo {
 
     public TaskInfo lastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
         this.lastExecutionResult = JsonNullable.<TaskResult> of(lastExecutionResult);
+
         return this;
     }
 
@@ -207,6 +222,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public TaskResult getLastExecutionResult() {
         return lastExecutionResult.orElse(null);
     }
@@ -229,6 +245,7 @@ public class TaskInfo {
 
     public TaskInfo triggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
         this.triggers = JsonNullable.<List<TaskTriggerInfo>> of(triggers);
+
         return this;
     }
 
@@ -251,6 +268,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<TaskTriggerInfo> getTriggers() {
         return triggers.orElse(null);
     }
@@ -273,6 +291,7 @@ public class TaskInfo {
 
     public TaskInfo description(@javax.annotation.Nullable String description) {
         this.description = JsonNullable.<String> of(description);
+
         return this;
     }
 
@@ -283,6 +302,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDescription() {
         return description.orElse(null);
     }
@@ -305,6 +325,7 @@ public class TaskInfo {
 
     public TaskInfo category(@javax.annotation.Nullable String category) {
         this.category = JsonNullable.<String> of(category);
+
         return this;
     }
 
@@ -315,6 +336,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCategory() {
         return category.orElse(null);
     }
@@ -336,6 +358,7 @@ public class TaskInfo {
     }
 
     public TaskInfo isHidden(@javax.annotation.Nullable Boolean isHidden) {
+
         this.isHidden = isHidden;
         return this;
     }
@@ -348,6 +371,7 @@ public class TaskInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHidden() {
         return isHidden;
     }
@@ -360,6 +384,7 @@ public class TaskInfo {
 
     public TaskInfo key(@javax.annotation.Nullable String key) {
         this.key = JsonNullable.<String> of(key);
+
         return this;
     }
 
@@ -370,6 +395,7 @@ public class TaskInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getKey() {
         return key.orElse(null);
     }
@@ -390,9 +416,6 @@ public class TaskInfo {
         this.key = JsonNullable.<String> of(key);
     }
 
-    /**
-     * Return true if this TaskInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -458,104 +481,6 @@ public class TaskInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `State` to the URL query string
-        if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-        }
-
-        // add `CurrentProgressPercentage` to the URL query string
-        if (getCurrentProgressPercentage() != null) {
-            joiner.add(String.format("%sCurrentProgressPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentProgressPercentage()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `LastExecutionResult` to the URL query string
-        if (getLastExecutionResult() != null) {
-            joiner.add(getLastExecutionResult().toUrlQueryString(prefix + "LastExecutionResult" + suffix));
-        }
-
-        // add `Triggers` to the URL query string
-        if (getTriggers() != null) {
-            for (int i = 0; i < getTriggers().size(); i++) {
-                if (getTriggers().get(i) != null) {
-                    joiner.add(getTriggers().get(i).toUrlQueryString(String.format("%sTriggers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Category` to the URL query string
-        if (getCategory() != null) {
-            joiner.add(String.format("%sCategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-        }
-
-        // add `IsHidden` to the URL query string
-        if (getIsHidden() != null) {
-            joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

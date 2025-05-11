@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -78,6 +75,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification friendlyName(@javax.annotation.Nullable String friendlyName) {
+
         this.friendlyName = friendlyName;
         return this;
     }
@@ -90,6 +88,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getFriendlyName() {
         return friendlyName;
     }
@@ -101,6 +100,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification modelNumber(@javax.annotation.Nullable String modelNumber) {
+
         this.modelNumber = modelNumber;
         return this;
     }
@@ -113,6 +113,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getModelNumber() {
         return modelNumber;
     }
@@ -124,6 +125,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification serialNumber(@javax.annotation.Nullable String serialNumber) {
+
         this.serialNumber = serialNumber;
         return this;
     }
@@ -136,6 +138,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -147,6 +150,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification modelName(@javax.annotation.Nullable String modelName) {
+
         this.modelName = modelName;
         return this;
     }
@@ -159,6 +163,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MODEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getModelName() {
         return modelName;
     }
@@ -170,6 +175,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification modelDescription(@javax.annotation.Nullable String modelDescription) {
+
         this.modelDescription = modelDescription;
         return this;
     }
@@ -182,6 +188,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getModelDescription() {
         return modelDescription;
     }
@@ -193,6 +200,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification modelUrl(@javax.annotation.Nullable String modelUrl) {
+
         this.modelUrl = modelUrl;
         return this;
     }
@@ -205,6 +213,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MODEL_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getModelUrl() {
         return modelUrl;
     }
@@ -216,6 +225,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification manufacturer(@javax.annotation.Nullable String manufacturer) {
+
         this.manufacturer = manufacturer;
         return this;
     }
@@ -228,6 +238,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MANUFACTURER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getManufacturer() {
         return manufacturer;
     }
@@ -239,6 +250,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification manufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
+
         this.manufacturerUrl = manufacturerUrl;
         return this;
     }
@@ -251,6 +263,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getManufacturerUrl() {
         return manufacturerUrl;
     }
@@ -262,6 +275,7 @@ public class DeviceIdentification {
     }
 
     public DeviceIdentification headers(@javax.annotation.Nullable List<HttpHeaderInfo> headers) {
+
         this.headers = headers;
         return this;
     }
@@ -282,6 +296,7 @@ public class DeviceIdentification {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HEADERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<HttpHeaderInfo> getHeaders() {
         return headers;
     }
@@ -292,9 +307,6 @@ public class DeviceIdentification {
         this.headers = headers;
     }
 
-    /**
-     * Return true if this DeviceIdentification object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -347,99 +359,6 @@ public class DeviceIdentification {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `FriendlyName` to the URL query string
-        if (getFriendlyName() != null) {
-            joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
-        }
-
-        // add `ModelNumber` to the URL query string
-        if (getModelNumber() != null) {
-            joiner.add(String.format("%sModelNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelNumber()))));
-        }
-
-        // add `SerialNumber` to the URL query string
-        if (getSerialNumber() != null) {
-            joiner.add(String.format("%sSerialNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSerialNumber()))));
-        }
-
-        // add `ModelName` to the URL query string
-        if (getModelName() != null) {
-            joiner.add(String.format("%sModelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelName()))));
-        }
-
-        // add `ModelDescription` to the URL query string
-        if (getModelDescription() != null) {
-            joiner.add(String.format("%sModelDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelDescription()))));
-        }
-
-        // add `ModelUrl` to the URL query string
-        if (getModelUrl() != null) {
-            joiner.add(String.format("%sModelUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelUrl()))));
-        }
-
-        // add `Manufacturer` to the URL query string
-        if (getManufacturer() != null) {
-            joiner.add(String.format("%sManufacturer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getManufacturer()))));
-        }
-
-        // add `ManufacturerUrl` to the URL query string
-        if (getManufacturerUrl() != null) {
-            joiner.add(String.format("%sManufacturerUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getManufacturerUrl()))));
-        }
-
-        // add `Headers` to the URL query string
-        if (getHeaders() != null) {
-            for (int i = 0; i < getHeaders().size(); i++) {
-                if (getHeaders().get(i) != null) {
-                    joiner.add(getHeaders().get(i).toUrlQueryString(String.format("%sHeaders%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

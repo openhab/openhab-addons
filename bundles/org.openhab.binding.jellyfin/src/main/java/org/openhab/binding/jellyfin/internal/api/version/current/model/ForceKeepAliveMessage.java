@@ -18,10 +18,7 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,6 +47,9 @@ public class ForceKeepAliveMessage {
     public ForceKeepAliveMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public ForceKeepAliveMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
@@ -57,6 +57,7 @@ public class ForceKeepAliveMessage {
     }
 
     public ForceKeepAliveMessage data(@javax.annotation.Nullable Integer data) {
+
         this.data = data;
         return this;
     }
@@ -69,6 +70,7 @@ public class ForceKeepAliveMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getData() {
         return data;
     }
@@ -80,6 +82,7 @@ public class ForceKeepAliveMessage {
     }
 
     public ForceKeepAliveMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
         this.messageId = messageId;
         return this;
     }
@@ -92,6 +95,7 @@ public class ForceKeepAliveMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -110,13 +114,11 @@ public class ForceKeepAliveMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this ForceKeepAliveMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,59 +158,6 @@ public class ForceKeepAliveMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

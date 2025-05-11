@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -53,15 +51,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> serverId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_EXTERNAL_ID = "ExternalId";
+    @javax.annotation.Nullable
     private JsonNullable<String> externalId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
@@ -69,24 +71,31 @@ public class TimerInfoDto {
     private UUID channelId;
 
     public static final String JSON_PROPERTY_EXTERNAL_CHANNEL_ID = "ExternalChannelId";
+    @javax.annotation.Nullable
     private JsonNullable<String> externalChannelId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
+    @javax.annotation.Nullable
     private JsonNullable<String> channelName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> channelPrimaryImageTag = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
+    @javax.annotation.Nullable
     private JsonNullable<String> programId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_EXTERNAL_PROGRAM_ID = "ExternalProgramId";
+    @javax.annotation.Nullable
     private JsonNullable<String> externalProgramId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+    @javax.annotation.Nullable
     private JsonNullable<String> overview = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
@@ -98,6 +107,7 @@ public class TimerInfoDto {
     private OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_SERVICE_NAME = "ServiceName";
+    @javax.annotation.Nullable
     private JsonNullable<String> serviceName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PRIORITY = "Priority";
@@ -117,9 +127,11 @@ public class TimerInfoDto {
     private Boolean isPrePaddingRequired;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> parentBackdropItemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> parentBackdropImageTags = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_IS_POST_PADDING_REQUIRED = "IsPostPaddingRequired";
@@ -135,15 +147,19 @@ public class TimerInfoDto {
     private RecordingStatus status;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> seriesTimerId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID = "ExternalSeriesTimerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> externalSeriesTimerId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> runTimeTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_PROGRAM_INFO = "ProgramInfo";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItemDto> programInfo = JsonNullable.<BaseItemDto> undefined();
 
     public TimerInfoDto() {
@@ -151,6 +167,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -161,6 +178,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -183,6 +201,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -193,6 +212,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -215,6 +235,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto serverId(@javax.annotation.Nullable String serverId) {
         this.serverId = JsonNullable.<String> of(serverId);
+
         return this;
     }
 
@@ -225,6 +246,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServerId() {
         return serverId.orElse(null);
     }
@@ -247,6 +269,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto externalId(@javax.annotation.Nullable String externalId) {
         this.externalId = JsonNullable.<String> of(externalId);
+
         return this;
     }
 
@@ -257,6 +280,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getExternalId() {
         return externalId.orElse(null);
     }
@@ -278,6 +302,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto channelId(@javax.annotation.Nullable UUID channelId) {
+
         this.channelId = channelId;
         return this;
     }
@@ -290,6 +315,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getChannelId() {
         return channelId;
     }
@@ -302,6 +328,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto externalChannelId(@javax.annotation.Nullable String externalChannelId) {
         this.externalChannelId = JsonNullable.<String> of(externalChannelId);
+
         return this;
     }
 
@@ -312,6 +339,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getExternalChannelId() {
         return externalChannelId.orElse(null);
     }
@@ -334,6 +362,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto channelName(@javax.annotation.Nullable String channelName) {
         this.channelName = JsonNullable.<String> of(channelName);
+
         return this;
     }
 
@@ -344,6 +373,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChannelName() {
         return channelName.orElse(null);
     }
@@ -366,6 +396,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto channelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
         this.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
+
         return this;
     }
 
@@ -376,6 +407,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag.orElse(null);
     }
@@ -398,6 +430,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto programId(@javax.annotation.Nullable String programId) {
         this.programId = JsonNullable.<String> of(programId);
+
         return this;
     }
 
@@ -408,6 +441,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProgramId() {
         return programId.orElse(null);
     }
@@ -430,6 +464,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto externalProgramId(@javax.annotation.Nullable String externalProgramId) {
         this.externalProgramId = JsonNullable.<String> of(externalProgramId);
+
         return this;
     }
 
@@ -440,6 +475,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getExternalProgramId() {
         return externalProgramId.orElse(null);
     }
@@ -462,6 +498,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -472,6 +509,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -494,6 +532,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto overview(@javax.annotation.Nullable String overview) {
         this.overview = JsonNullable.<String> of(overview);
+
         return this;
     }
 
@@ -504,6 +543,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOverview() {
         return overview.orElse(null);
     }
@@ -525,6 +565,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
+
         this.startDate = startDate;
         return this;
     }
@@ -537,6 +578,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getStartDate() {
         return startDate;
     }
@@ -548,6 +590,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
+
         this.endDate = endDate;
         return this;
     }
@@ -560,6 +603,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEndDate() {
         return endDate;
     }
@@ -572,6 +616,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto serviceName(@javax.annotation.Nullable String serviceName) {
         this.serviceName = JsonNullable.<String> of(serviceName);
+
         return this;
     }
 
@@ -582,6 +627,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServiceName() {
         return serviceName.orElse(null);
     }
@@ -603,6 +649,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto priority(@javax.annotation.Nullable Integer priority) {
+
         this.priority = priority;
         return this;
     }
@@ -615,6 +662,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PRIORITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPriority() {
         return priority;
     }
@@ -626,6 +674,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto prePaddingSeconds(@javax.annotation.Nullable Integer prePaddingSeconds) {
+
         this.prePaddingSeconds = prePaddingSeconds;
         return this;
     }
@@ -638,6 +687,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
@@ -649,6 +699,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto postPaddingSeconds(@javax.annotation.Nullable Integer postPaddingSeconds) {
+
         this.postPaddingSeconds = postPaddingSeconds;
         return this;
     }
@@ -661,6 +712,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
@@ -672,6 +724,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto isPrePaddingRequired(@javax.annotation.Nullable Boolean isPrePaddingRequired) {
+
         this.isPrePaddingRequired = isPrePaddingRequired;
         return this;
     }
@@ -684,6 +737,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPrePaddingRequired() {
         return isPrePaddingRequired;
     }
@@ -696,6 +750,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto parentBackdropItemId(@javax.annotation.Nullable String parentBackdropItemId) {
         this.parentBackdropItemId = JsonNullable.<String> of(parentBackdropItemId);
+
         return this;
     }
 
@@ -706,6 +761,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getParentBackdropItemId() {
         return parentBackdropItemId.orElse(null);
     }
@@ -728,6 +784,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto parentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
         this.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
+
         return this;
     }
 
@@ -750,6 +807,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags.orElse(null);
     }
@@ -771,6 +829,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto isPostPaddingRequired(@javax.annotation.Nullable Boolean isPostPaddingRequired) {
+
         this.isPostPaddingRequired = isPostPaddingRequired;
         return this;
     }
@@ -783,6 +842,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPostPaddingRequired() {
         return isPostPaddingRequired;
     }
@@ -794,6 +854,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto keepUntil(@javax.annotation.Nullable KeepUntil keepUntil) {
+
         this.keepUntil = keepUntil;
         return this;
     }
@@ -806,6 +867,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_KEEP_UNTIL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public KeepUntil getKeepUntil() {
         return keepUntil;
     }
@@ -817,6 +879,7 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto status(@javax.annotation.Nullable RecordingStatus status) {
+
         this.status = status;
         return this;
     }
@@ -829,6 +892,7 @@ public class TimerInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RecordingStatus getStatus() {
         return status;
     }
@@ -841,6 +905,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
         this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
+
         return this;
     }
 
@@ -851,6 +916,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSeriesTimerId() {
         return seriesTimerId.orElse(null);
     }
@@ -873,6 +939,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto externalSeriesTimerId(@javax.annotation.Nullable String externalSeriesTimerId) {
         this.externalSeriesTimerId = JsonNullable.<String> of(externalSeriesTimerId);
+
         return this;
     }
 
@@ -883,6 +950,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getExternalSeriesTimerId() {
         return externalSeriesTimerId.orElse(null);
     }
@@ -905,6 +973,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
         this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
+
         return this;
     }
 
@@ -915,6 +984,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getRunTimeTicks() {
         return runTimeTicks.orElse(null);
     }
@@ -937,6 +1007,7 @@ public class TimerInfoDto {
 
     public TimerInfoDto programInfo(@javax.annotation.Nullable BaseItemDto programInfo) {
         this.programInfo = JsonNullable.<BaseItemDto> of(programInfo);
+
         return this;
     }
 
@@ -947,6 +1018,7 @@ public class TimerInfoDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItemDto getProgramInfo() {
         return programInfo.orElse(null);
     }
@@ -967,9 +1039,6 @@ public class TimerInfoDto {
         this.programInfo = JsonNullable.<BaseItemDto> of(programInfo);
     }
 
-    /**
-     * Return true if this TimerInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1076,211 +1145,6 @@ public class TimerInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `ServerId` to the URL query string
-        if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
-        }
-
-        // add `ExternalId` to the URL query string
-        if (getExternalId() != null) {
-            joiner.add(String.format("%sExternalId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalId()))));
-        }
-
-        // add `ChannelId` to the URL query string
-        if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
-        }
-
-        // add `ExternalChannelId` to the URL query string
-        if (getExternalChannelId() != null) {
-            joiner.add(String.format("%sExternalChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalChannelId()))));
-        }
-
-        // add `ChannelName` to the URL query string
-        if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
-        }
-
-        // add `ChannelPrimaryImageTag` to the URL query string
-        if (getChannelPrimaryImageTag() != null) {
-            joiner.add(String.format("%sChannelPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelPrimaryImageTag()))));
-        }
-
-        // add `ProgramId` to the URL query string
-        if (getProgramId() != null) {
-            joiner.add(String.format("%sProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
-        }
-
-        // add `ExternalProgramId` to the URL query string
-        if (getExternalProgramId() != null) {
-            joiner.add(String.format("%sExternalProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalProgramId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `StartDate` to the URL query string
-        if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
-        }
-
-        // add `EndDate` to the URL query string
-        if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
-        }
-
-        // add `ServiceName` to the URL query string
-        if (getServiceName() != null) {
-            joiner.add(String.format("%sServiceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServiceName()))));
-        }
-
-        // add `Priority` to the URL query string
-        if (getPriority() != null) {
-            joiner.add(String.format("%sPriority%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPriority()))));
-        }
-
-        // add `PrePaddingSeconds` to the URL query string
-        if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format("%sPrePaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
-        }
-
-        // add `PostPaddingSeconds` to the URL query string
-        if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format("%sPostPaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
-        }
-
-        // add `IsPrePaddingRequired` to the URL query string
-        if (getIsPrePaddingRequired() != null) {
-            joiner.add(String.format("%sIsPrePaddingRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPrePaddingRequired()))));
-        }
-
-        // add `ParentBackdropItemId` to the URL query string
-        if (getParentBackdropItemId() != null) {
-            joiner.add(String.format("%sParentBackdropItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropItemId()))));
-        }
-
-        // add `ParentBackdropImageTags` to the URL query string
-        if (getParentBackdropImageTags() != null) {
-            for (int i = 0; i < getParentBackdropImageTags().size(); i++) {
-                joiner.add(String.format("%sParentBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropImageTags().get(i)))));
-            }
-        }
-
-        // add `IsPostPaddingRequired` to the URL query string
-        if (getIsPostPaddingRequired() != null) {
-            joiner.add(String.format("%sIsPostPaddingRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPostPaddingRequired()))));
-        }
-
-        // add `KeepUntil` to the URL query string
-        if (getKeepUntil() != null) {
-            joiner.add(String.format("%sKeepUntil%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKeepUntil()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `SeriesTimerId` to the URL query string
-        if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
-        }
-
-        // add `ExternalSeriesTimerId` to the URL query string
-        if (getExternalSeriesTimerId() != null) {
-            joiner.add(String.format("%sExternalSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalSeriesTimerId()))));
-        }
-
-        // add `RunTimeTicks` to the URL query string
-        if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
-        }
-
-        // add `ProgramInfo` to the URL query string
-        if (getProgramInfo() != null) {
-            joiner.add(getProgramInfo().toUrlQueryString(prefix + "ProgramInfo" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -20,10 +20,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,15 +40,18 @@ public class ForgotPasswordResult {
     private ForgotPasswordAction action;
 
     public static final String JSON_PROPERTY_PIN_FILE = "PinFile";
+    @javax.annotation.Nullable
     private JsonNullable<String> pinFile = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PIN_EXPIRATION_DATE = "PinExpirationDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> pinExpirationDate = JsonNullable.<OffsetDateTime> undefined();
 
     public ForgotPasswordResult() {
     }
 
     public ForgotPasswordResult action(@javax.annotation.Nullable ForgotPasswordAction action) {
+
         this.action = action;
         return this;
     }
@@ -63,6 +64,7 @@ public class ForgotPasswordResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ACTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ForgotPasswordAction getAction() {
         return action;
     }
@@ -75,6 +77,7 @@ public class ForgotPasswordResult {
 
     public ForgotPasswordResult pinFile(@javax.annotation.Nullable String pinFile) {
         this.pinFile = JsonNullable.<String> of(pinFile);
+
         return this;
     }
 
@@ -85,6 +88,7 @@ public class ForgotPasswordResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPinFile() {
         return pinFile.orElse(null);
     }
@@ -107,6 +111,7 @@ public class ForgotPasswordResult {
 
     public ForgotPasswordResult pinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
         this.pinExpirationDate = JsonNullable.<OffsetDateTime> of(pinExpirationDate);
+
         return this;
     }
 
@@ -117,6 +122,7 @@ public class ForgotPasswordResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getPinExpirationDate() {
         return pinExpirationDate.orElse(null);
     }
@@ -137,9 +143,6 @@ public class ForgotPasswordResult {
         this.pinExpirationDate = JsonNullable.<OffsetDateTime> of(pinExpirationDate);
     }
 
-    /**
-     * Return true if this ForgotPasswordResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -191,59 +194,6 @@ public class ForgotPasswordResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Action` to the URL query string
-        if (getAction() != null) {
-            joiner.add(String.format("%sAction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
-        }
-
-        // add `PinFile` to the URL query string
-        if (getPinFile() != null) {
-            joiner.add(String.format("%sPinFile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPinFile()))));
-        }
-
-        // add `PinExpirationDate` to the URL query string
-        if (getPinExpirationDate() != null) {
-            joiner.add(String.format("%sPinExpirationDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPinExpirationDate()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

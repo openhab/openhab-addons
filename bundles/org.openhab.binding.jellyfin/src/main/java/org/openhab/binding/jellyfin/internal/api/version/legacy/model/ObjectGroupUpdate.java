@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,12 +44,14 @@ public class ObjectGroupUpdate {
     private GroupUpdateType type;
 
     public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
     private JsonNullable<Object> data = JsonNullable.<Object> of(null);
 
     public ObjectGroupUpdate() {
     }
 
     public ObjectGroupUpdate groupId(@javax.annotation.Nullable UUID groupId) {
+
         this.groupId = groupId;
         return this;
     }
@@ -64,6 +64,7 @@ public class ObjectGroupUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -75,6 +76,7 @@ public class ObjectGroupUpdate {
     }
 
     public ObjectGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
+
         this.type = type;
         return this;
     }
@@ -87,6 +89,7 @@ public class ObjectGroupUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupUpdateType getType() {
         return type;
     }
@@ -99,6 +102,7 @@ public class ObjectGroupUpdate {
 
     public ObjectGroupUpdate data(@javax.annotation.Nullable Object data) {
         this.data = JsonNullable.<Object> of(data);
+
         return this;
     }
 
@@ -109,6 +113,7 @@ public class ObjectGroupUpdate {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Object getData() {
         return data.orElse(null);
     }
@@ -129,9 +134,6 @@ public class ObjectGroupUpdate {
         this.data = JsonNullable.<Object> of(data);
     }
 
-    /**
-     * Return true if this ObjectGroupUpdate object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -183,59 +185,6 @@ public class ObjectGroupUpdate {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `GroupId` to the URL query string
-        if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

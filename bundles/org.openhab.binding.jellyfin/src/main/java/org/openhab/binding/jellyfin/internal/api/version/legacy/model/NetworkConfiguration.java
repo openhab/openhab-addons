@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -197,6 +194,9 @@ public class NetworkConfiguration {
     public NetworkConfiguration() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public NetworkConfiguration(
             @JsonProperty(JSON_PROPERTY_ENABLE_MULTI_SOCKET_BINDING) Boolean enableMultiSocketBinding) {
@@ -205,6 +205,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration requireHttps(@javax.annotation.Nullable Boolean requireHttps) {
+
         this.requireHttps = requireHttps;
         return this;
     }
@@ -217,6 +218,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequireHttps() {
         return requireHttps;
     }
@@ -228,6 +230,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration certificatePath(@javax.annotation.Nullable String certificatePath) {
+
         this.certificatePath = certificatePath;
         return this;
     }
@@ -240,6 +243,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCertificatePath() {
         return certificatePath;
     }
@@ -251,6 +255,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration certificatePassword(@javax.annotation.Nullable String certificatePassword) {
+
         this.certificatePassword = certificatePassword;
         return this;
     }
@@ -264,6 +269,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCertificatePassword() {
         return certificatePassword;
     }
@@ -275,6 +281,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration baseUrl(@javax.annotation.Nullable String baseUrl) {
+
         this.baseUrl = baseUrl;
         return this;
     }
@@ -287,6 +294,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -298,6 +306,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration publicHttpsPort(@javax.annotation.Nullable Integer publicHttpsPort) {
+
         this.publicHttpsPort = publicHttpsPort;
         return this;
     }
@@ -310,6 +319,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPublicHttpsPort() {
         return publicHttpsPort;
     }
@@ -321,6 +331,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration httpServerPortNumber(@javax.annotation.Nullable Integer httpServerPortNumber) {
+
         this.httpServerPortNumber = httpServerPortNumber;
         return this;
     }
@@ -333,6 +344,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HTTP_SERVER_PORT_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHttpServerPortNumber() {
         return httpServerPortNumber;
     }
@@ -344,6 +356,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration httpsPortNumber(@javax.annotation.Nullable Integer httpsPortNumber) {
+
         this.httpsPortNumber = httpsPortNumber;
         return this;
     }
@@ -356,6 +369,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HTTPS_PORT_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHttpsPortNumber() {
         return httpsPortNumber;
     }
@@ -367,6 +381,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableHttps(@javax.annotation.Nullable Boolean enableHttps) {
+
         this.enableHttps = enableHttps;
         return this;
     }
@@ -379,6 +394,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHttps() {
         return enableHttps;
     }
@@ -390,6 +406,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration publicPort(@javax.annotation.Nullable Integer publicPort) {
+
         this.publicPort = publicPort;
         return this;
     }
@@ -402,6 +419,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PUBLIC_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPublicPort() {
         return publicPort;
     }
@@ -413,6 +431,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration upnPCreateHttpPortMap(@javax.annotation.Nullable Boolean upnPCreateHttpPortMap) {
+
         this.upnPCreateHttpPortMap = upnPCreateHttpPortMap;
         return this;
     }
@@ -425,6 +444,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_UPN_P_CREATE_HTTP_PORT_MAP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getUpnPCreateHttpPortMap() {
         return upnPCreateHttpPortMap;
     }
@@ -436,6 +456,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration udPPortRange(@javax.annotation.Nullable String udPPortRange) {
+
         this.udPPortRange = udPPortRange;
         return this;
     }
@@ -448,6 +469,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_UD_P_PORT_RANGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getUdPPortRange() {
         return udPPortRange;
     }
@@ -459,6 +481,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableIPV6(@javax.annotation.Nullable Boolean enableIPV6) {
+
         this.enableIPV6 = enableIPV6;
         return this;
     }
@@ -471,6 +494,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_I_P_V6)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableIPV6() {
         return enableIPV6;
     }
@@ -482,6 +506,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableIPV4(@javax.annotation.Nullable Boolean enableIPV4) {
+
         this.enableIPV4 = enableIPV4;
         return this;
     }
@@ -494,6 +519,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_I_P_V4)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableIPV4() {
         return enableIPV4;
     }
@@ -505,6 +531,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableSSDPTracing(@javax.annotation.Nullable Boolean enableSSDPTracing) {
+
         this.enableSSDPTracing = enableSSDPTracing;
         return this;
     }
@@ -518,6 +545,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_S_S_D_P_TRACING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSSDPTracing() {
         return enableSSDPTracing;
     }
@@ -529,6 +557,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration ssDPTracingFilter(@javax.annotation.Nullable String ssDPTracingFilter) {
+
         this.ssDPTracingFilter = ssDPTracingFilter;
         return this;
     }
@@ -543,6 +572,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SS_D_P_TRACING_FILTER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSsDPTracingFilter() {
         return ssDPTracingFilter;
     }
@@ -554,6 +584,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration udPSendCount(@javax.annotation.Nullable Integer udPSendCount) {
+
         this.udPSendCount = udPSendCount;
         return this;
     }
@@ -566,6 +597,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_UD_P_SEND_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getUdPSendCount() {
         return udPSendCount;
     }
@@ -577,6 +609,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration udPSendDelay(@javax.annotation.Nullable Integer udPSendDelay) {
+
         this.udPSendDelay = udPSendDelay;
         return this;
     }
@@ -589,6 +622,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_UD_P_SEND_DELAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getUdPSendDelay() {
         return udPSendDelay;
     }
@@ -600,6 +634,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration ignoreVirtualInterfaces(@javax.annotation.Nullable Boolean ignoreVirtualInterfaces) {
+
         this.ignoreVirtualInterfaces = ignoreVirtualInterfaces;
         return this;
     }
@@ -614,6 +649,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreVirtualInterfaces() {
         return ignoreVirtualInterfaces;
     }
@@ -625,6 +661,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration virtualInterfaceNames(@javax.annotation.Nullable String virtualInterfaceNames) {
+
         this.virtualInterfaceNames = virtualInterfaceNames;
         return this;
     }
@@ -639,6 +676,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVirtualInterfaceNames() {
         return virtualInterfaceNames;
     }
@@ -650,6 +688,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration gatewayMonitorPeriod(@javax.annotation.Nullable Integer gatewayMonitorPeriod) {
+
         this.gatewayMonitorPeriod = gatewayMonitorPeriod;
         return this;
     }
@@ -662,6 +701,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GATEWAY_MONITOR_PERIOD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getGatewayMonitorPeriod() {
         return gatewayMonitorPeriod;
     }
@@ -680,11 +720,13 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_MULTI_SOCKET_BINDING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMultiSocketBinding() {
         return enableMultiSocketBinding;
     }
 
     public NetworkConfiguration trustAllIP6Interfaces(@javax.annotation.Nullable Boolean trustAllIP6Interfaces) {
+
         this.trustAllIP6Interfaces = trustAllIP6Interfaces;
         return this;
     }
@@ -698,6 +740,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TRUST_ALL_I_P6_INTERFACES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getTrustAllIP6Interfaces() {
         return trustAllIP6Interfaces;
     }
@@ -709,6 +752,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration hdHomerunPortRange(@javax.annotation.Nullable String hdHomerunPortRange) {
+
         this.hdHomerunPortRange = hdHomerunPortRange;
         return this;
     }
@@ -721,6 +765,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HD_HOMERUN_PORT_RANGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getHdHomerunPortRange() {
         return hdHomerunPortRange;
     }
@@ -733,6 +778,7 @@ public class NetworkConfiguration {
 
     public NetworkConfiguration publishedServerUriBySubnet(
             @javax.annotation.Nullable List<String> publishedServerUriBySubnet) {
+
         this.publishedServerUriBySubnet = publishedServerUriBySubnet;
         return this;
     }
@@ -753,6 +799,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getPublishedServerUriBySubnet() {
         return publishedServerUriBySubnet;
     }
@@ -764,6 +811,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration autoDiscoveryTracing(@javax.annotation.Nullable Boolean autoDiscoveryTracing) {
+
         this.autoDiscoveryTracing = autoDiscoveryTracing;
         return this;
     }
@@ -776,6 +824,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY_TRACING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAutoDiscoveryTracing() {
         return autoDiscoveryTracing;
     }
@@ -787,6 +836,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration autoDiscovery(@javax.annotation.Nullable Boolean autoDiscovery) {
+
         this.autoDiscovery = autoDiscovery;
         return this;
     }
@@ -799,6 +849,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAutoDiscovery() {
         return autoDiscovery;
     }
@@ -810,6 +861,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration remoteIPFilter(@javax.annotation.Nullable List<String> remoteIPFilter) {
+
         this.remoteIPFilter = remoteIPFilter;
         return this;
     }
@@ -831,6 +883,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getRemoteIPFilter() {
         return remoteIPFilter;
     }
@@ -843,6 +896,7 @@ public class NetworkConfiguration {
 
     public NetworkConfiguration isRemoteIPFilterBlacklist(
             @javax.annotation.Nullable Boolean isRemoteIPFilterBlacklist) {
+
         this.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;
         return this;
     }
@@ -857,6 +911,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRemoteIPFilterBlacklist() {
         return isRemoteIPFilterBlacklist;
     }
@@ -868,6 +923,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableUPnP(@javax.annotation.Nullable Boolean enableUPnP) {
+
         this.enableUPnP = enableUPnP;
         return this;
     }
@@ -880,6 +936,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableUPnP() {
         return enableUPnP;
     }
@@ -891,6 +948,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration enableRemoteAccess(@javax.annotation.Nullable Boolean enableRemoteAccess) {
+
         this.enableRemoteAccess = enableRemoteAccess;
         return this;
     }
@@ -903,6 +961,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
@@ -914,6 +973,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration localNetworkSubnets(@javax.annotation.Nullable List<String> localNetworkSubnets) {
+
         this.localNetworkSubnets = localNetworkSubnets;
         return this;
     }
@@ -934,6 +994,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLocalNetworkSubnets() {
         return localNetworkSubnets;
     }
@@ -945,6 +1006,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration localNetworkAddresses(@javax.annotation.Nullable List<String> localNetworkAddresses) {
+
         this.localNetworkAddresses = localNetworkAddresses;
         return this;
     }
@@ -965,6 +1027,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getLocalNetworkAddresses() {
         return localNetworkAddresses;
     }
@@ -976,6 +1039,7 @@ public class NetworkConfiguration {
     }
 
     public NetworkConfiguration knownProxies(@javax.annotation.Nullable List<String> knownProxies) {
+
         this.knownProxies = knownProxies;
         return this;
     }
@@ -996,6 +1060,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getKnownProxies() {
         return knownProxies;
     }
@@ -1008,6 +1073,7 @@ public class NetworkConfiguration {
 
     public NetworkConfiguration enablePublishedServerUriByRequest(
             @javax.annotation.Nullable Boolean enablePublishedServerUriByRequest) {
+
         this.enablePublishedServerUriByRequest = enablePublishedServerUriByRequest;
         return this;
     }
@@ -1020,6 +1086,7 @@ public class NetworkConfiguration {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePublishedServerUriByRequest() {
         return enablePublishedServerUriByRequest;
     }
@@ -1031,9 +1098,6 @@ public class NetworkConfiguration {
         this.enablePublishedServerUriByRequest = enablePublishedServerUriByRequest;
     }
 
-    /**
-     * Return true if this NetworkConfiguration object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1142,260 +1206,6 @@ public class NetworkConfiguration {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `RequireHttps` to the URL query string
-        if (getRequireHttps() != null) {
-            joiner.add(String.format("%sRequireHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequireHttps()))));
-        }
-
-        // add `CertificatePath` to the URL query string
-        if (getCertificatePath() != null) {
-            joiner.add(String.format("%sCertificatePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePath()))));
-        }
-
-        // add `CertificatePassword` to the URL query string
-        if (getCertificatePassword() != null) {
-            joiner.add(String.format("%sCertificatePassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePassword()))));
-        }
-
-        // add `BaseUrl` to the URL query string
-        if (getBaseUrl() != null) {
-            joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
-        }
-
-        // add `PublicHttpsPort` to the URL query string
-        if (getPublicHttpsPort() != null) {
-            joiner.add(String.format("%sPublicHttpsPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpsPort()))));
-        }
-
-        // add `HttpServerPortNumber` to the URL query string
-        if (getHttpServerPortNumber() != null) {
-            joiner.add(String.format("%sHttpServerPortNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHttpServerPortNumber()))));
-        }
-
-        // add `HttpsPortNumber` to the URL query string
-        if (getHttpsPortNumber() != null) {
-            joiner.add(String.format("%sHttpsPortNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHttpsPortNumber()))));
-        }
-
-        // add `EnableHttps` to the URL query string
-        if (getEnableHttps() != null) {
-            joiner.add(String.format("%sEnableHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHttps()))));
-        }
-
-        // add `PublicPort` to the URL query string
-        if (getPublicPort() != null) {
-            joiner.add(String.format("%sPublicPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicPort()))));
-        }
-
-        // add `UPnPCreateHttpPortMap` to the URL query string
-        if (getUpnPCreateHttpPortMap() != null) {
-            joiner.add(String.format("%sUPnPCreateHttpPortMap%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUpnPCreateHttpPortMap()))));
-        }
-
-        // add `UDPPortRange` to the URL query string
-        if (getUdPPortRange() != null) {
-            joiner.add(String.format("%sUDPPortRange%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUdPPortRange()))));
-        }
-
-        // add `EnableIPV6` to the URL query string
-        if (getEnableIPV6() != null) {
-            joiner.add(String.format("%sEnableIPV6%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPV6()))));
-        }
-
-        // add `EnableIPV4` to the URL query string
-        if (getEnableIPV4() != null) {
-            joiner.add(String.format("%sEnableIPV4%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPV4()))));
-        }
-
-        // add `EnableSSDPTracing` to the URL query string
-        if (getEnableSSDPTracing() != null) {
-            joiner.add(String.format("%sEnableSSDPTracing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSSDPTracing()))));
-        }
-
-        // add `SSDPTracingFilter` to the URL query string
-        if (getSsDPTracingFilter() != null) {
-            joiner.add(String.format("%sSSDPTracingFilter%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSsDPTracingFilter()))));
-        }
-
-        // add `UDPSendCount` to the URL query string
-        if (getUdPSendCount() != null) {
-            joiner.add(String.format("%sUDPSendCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUdPSendCount()))));
-        }
-
-        // add `UDPSendDelay` to the URL query string
-        if (getUdPSendDelay() != null) {
-            joiner.add(String.format("%sUDPSendDelay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUdPSendDelay()))));
-        }
-
-        // add `IgnoreVirtualInterfaces` to the URL query string
-        if (getIgnoreVirtualInterfaces() != null) {
-            joiner.add(String.format("%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreVirtualInterfaces()))));
-        }
-
-        // add `VirtualInterfaceNames` to the URL query string
-        if (getVirtualInterfaceNames() != null) {
-            joiner.add(String.format("%sVirtualInterfaceNames%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVirtualInterfaceNames()))));
-        }
-
-        // add `GatewayMonitorPeriod` to the URL query string
-        if (getGatewayMonitorPeriod() != null) {
-            joiner.add(String.format("%sGatewayMonitorPeriod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGatewayMonitorPeriod()))));
-        }
-
-        // add `EnableMultiSocketBinding` to the URL query string
-        if (getEnableMultiSocketBinding() != null) {
-            joiner.add(String.format("%sEnableMultiSocketBinding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMultiSocketBinding()))));
-        }
-
-        // add `TrustAllIP6Interfaces` to the URL query string
-        if (getTrustAllIP6Interfaces() != null) {
-            joiner.add(String.format("%sTrustAllIP6Interfaces%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrustAllIP6Interfaces()))));
-        }
-
-        // add `HDHomerunPortRange` to the URL query string
-        if (getHdHomerunPortRange() != null) {
-            joiner.add(String.format("%sHDHomerunPortRange%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHdHomerunPortRange()))));
-        }
-
-        // add `PublishedServerUriBySubnet` to the URL query string
-        if (getPublishedServerUriBySubnet() != null) {
-            for (int i = 0; i < getPublishedServerUriBySubnet().size(); i++) {
-                joiner.add(String.format("%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPublishedServerUriBySubnet().get(i)))));
-            }
-        }
-
-        // add `AutoDiscoveryTracing` to the URL query string
-        if (getAutoDiscoveryTracing() != null) {
-            joiner.add(String.format("%sAutoDiscoveryTracing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscoveryTracing()))));
-        }
-
-        // add `AutoDiscovery` to the URL query string
-        if (getAutoDiscovery() != null) {
-            joiner.add(String.format("%sAutoDiscovery%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscovery()))));
-        }
-
-        // add `RemoteIPFilter` to the URL query string
-        if (getRemoteIPFilter() != null) {
-            for (int i = 0; i < getRemoteIPFilter().size(); i++) {
-                joiner.add(String.format("%sRemoteIPFilter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getRemoteIPFilter().get(i)))));
-            }
-        }
-
-        // add `IsRemoteIPFilterBlacklist` to the URL query string
-        if (getIsRemoteIPFilterBlacklist() != null) {
-            joiner.add(String.format("%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRemoteIPFilterBlacklist()))));
-        }
-
-        // add `EnableUPnP` to the URL query string
-        if (getEnableUPnP() != null) {
-            joiner.add(String.format("%sEnableUPnP%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUPnP()))));
-        }
-
-        // add `EnableRemoteAccess` to the URL query string
-        if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
-        }
-
-        // add `LocalNetworkSubnets` to the URL query string
-        if (getLocalNetworkSubnets() != null) {
-            for (int i = 0; i < getLocalNetworkSubnets().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkSubnets().get(i)))));
-            }
-        }
-
-        // add `LocalNetworkAddresses` to the URL query string
-        if (getLocalNetworkAddresses() != null) {
-            for (int i = 0; i < getLocalNetworkAddresses().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkAddresses().get(i)))));
-            }
-        }
-
-        // add `KnownProxies` to the URL query string
-        if (getKnownProxies() != null) {
-            for (int i = 0; i < getKnownProxies().size(); i++) {
-                joiner.add(String.format("%sKnownProxies%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKnownProxies().get(i)))));
-            }
-        }
-
-        // add `EnablePublishedServerUriByRequest` to the URL query string
-        if (getEnablePublishedServerUriByRequest() != null) {
-            joiner.add(String.format("%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublishedServerUriByRequest()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

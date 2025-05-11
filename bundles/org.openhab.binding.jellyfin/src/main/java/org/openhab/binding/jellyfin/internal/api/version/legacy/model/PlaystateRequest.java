@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,15 +39,18 @@ public class PlaystateRequest {
     private PlaystateCommand command;
 
     public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> seekPositionTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
+    @javax.annotation.Nullable
     private JsonNullable<String> controllingUserId = JsonNullable.<String> undefined();
 
     public PlaystateRequest() {
     }
 
     public PlaystateRequest command(@javax.annotation.Nullable PlaystateCommand command) {
+
         this.command = command;
         return this;
     }
@@ -62,6 +63,7 @@ public class PlaystateRequest {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_COMMAND)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlaystateCommand getCommand() {
         return command;
     }
@@ -74,6 +76,7 @@ public class PlaystateRequest {
 
     public PlaystateRequest seekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
         this.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
+
         return this;
     }
 
@@ -84,6 +87,7 @@ public class PlaystateRequest {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getSeekPositionTicks() {
         return seekPositionTicks.orElse(null);
     }
@@ -106,6 +110,7 @@ public class PlaystateRequest {
 
     public PlaystateRequest controllingUserId(@javax.annotation.Nullable String controllingUserId) {
         this.controllingUserId = JsonNullable.<String> of(controllingUserId);
+
         return this;
     }
 
@@ -116,6 +121,7 @@ public class PlaystateRequest {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getControllingUserId() {
         return controllingUserId.orElse(null);
     }
@@ -136,9 +142,6 @@ public class PlaystateRequest {
         this.controllingUserId = JsonNullable.<String> of(controllingUserId);
     }
 
-    /**
-     * Return true if this PlaystateRequest object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -190,59 +193,6 @@ public class PlaystateRequest {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Command` to the URL query string
-        if (getCommand() != null) {
-            joiner.add(String.format("%sCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
-        }
-
-        // add `SeekPositionTicks` to the URL query string
-        if (getSeekPositionTicks() != null) {
-            joiner.add(String.format("%sSeekPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeekPositionTicks()))));
-        }
-
-        // add `ControllingUserId` to the URL query string
-        if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

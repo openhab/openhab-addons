@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,15 +37,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueryFiltersLegacy {
     public static final String JSON_PROPERTY_GENRES = "Genres";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> genres = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> tags = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> officialRatings = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_YEARS = "Years";
+    @javax.annotation.Nullable
     private JsonNullable<List<Integer>> years = JsonNullable.<List<Integer>> undefined();
 
     public QueryFiltersLegacy() {
@@ -55,6 +57,7 @@ public class QueryFiltersLegacy {
 
     public QueryFiltersLegacy genres(@javax.annotation.Nullable List<String> genres) {
         this.genres = JsonNullable.<List<String>> of(genres);
+
         return this;
     }
 
@@ -77,6 +80,7 @@ public class QueryFiltersLegacy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getGenres() {
         return genres.orElse(null);
     }
@@ -99,6 +103,7 @@ public class QueryFiltersLegacy {
 
     public QueryFiltersLegacy tags(@javax.annotation.Nullable List<String> tags) {
         this.tags = JsonNullable.<List<String>> of(tags);
+
         return this;
     }
 
@@ -121,6 +126,7 @@ public class QueryFiltersLegacy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getTags() {
         return tags.orElse(null);
     }
@@ -143,6 +149,7 @@ public class QueryFiltersLegacy {
 
     public QueryFiltersLegacy officialRatings(@javax.annotation.Nullable List<String> officialRatings) {
         this.officialRatings = JsonNullable.<List<String>> of(officialRatings);
+
         return this;
     }
 
@@ -165,6 +172,7 @@ public class QueryFiltersLegacy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getOfficialRatings() {
         return officialRatings.orElse(null);
     }
@@ -187,6 +195,7 @@ public class QueryFiltersLegacy {
 
     public QueryFiltersLegacy years(@javax.annotation.Nullable List<Integer> years) {
         this.years = JsonNullable.<List<Integer>> of(years);
+
         return this;
     }
 
@@ -209,6 +218,7 @@ public class QueryFiltersLegacy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<Integer> getYears() {
         return years.orElse(null);
     }
@@ -229,9 +239,6 @@ public class QueryFiltersLegacy {
         this.years = JsonNullable.<List<Integer>> of(years);
     }
 
-    /**
-     * Return true if this QueryFiltersLegacy object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -286,77 +293,6 @@ public class QueryFiltersLegacy {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
-            }
-        }
-
-        // add `Tags` to the URL query string
-        if (getTags() != null) {
-            for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
-            }
-        }
-
-        // add `OfficialRatings` to the URL query string
-        if (getOfficialRatings() != null) {
-            for (int i = 0; i < getOfficialRatings().size(); i++) {
-                joiner.add(String.format("%sOfficialRatings%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getOfficialRatings().get(i)))));
-            }
-        }
-
-        // add `Years` to the URL query string
-        if (getYears() != null) {
-            for (int i = 0; i < getYears().size(); i++) {
-                joiner.add(String.format("%sYears%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getYears().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

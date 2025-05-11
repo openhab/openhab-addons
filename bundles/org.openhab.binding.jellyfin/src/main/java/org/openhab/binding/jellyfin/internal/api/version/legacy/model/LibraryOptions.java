@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -101,9 +99,11 @@ public class LibraryOptions {
     private Integer automaticRefreshIntervalDays;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
+    @javax.annotation.Nullable
     private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+    @javax.annotation.Nullable
     private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME = "SeasonZeroDisplayName";
@@ -111,6 +111,7 @@ public class LibraryOptions {
     private String seasonZeroDisplayName;
 
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> metadataSavers = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS = "DisabledLocalMetadataReaders";
@@ -118,6 +119,7 @@ public class LibraryOptions {
     private List<String> disabledLocalMetadataReaders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> localMetadataReaderOrder = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS = "DisabledSubtitleFetchers";
@@ -137,6 +139,7 @@ public class LibraryOptions {
     private Boolean skipSubtitlesIfAudioTrackMatches;
 
     public static final String JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES = "SubtitleDownloadLanguages";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> subtitleDownloadLanguages = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH = "RequirePerfectSubtitleMatch";
@@ -163,6 +166,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions enablePhotos(@javax.annotation.Nullable Boolean enablePhotos) {
+
         this.enablePhotos = enablePhotos;
         return this;
     }
@@ -175,6 +179,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PHOTOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePhotos() {
         return enablePhotos;
     }
@@ -186,6 +191,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions enableRealtimeMonitor(@javax.annotation.Nullable Boolean enableRealtimeMonitor) {
+
         this.enableRealtimeMonitor = enableRealtimeMonitor;
         return this;
     }
@@ -198,6 +204,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRealtimeMonitor() {
         return enableRealtimeMonitor;
     }
@@ -210,6 +217,7 @@ public class LibraryOptions {
 
     public LibraryOptions enableChapterImageExtraction(
             @javax.annotation.Nullable Boolean enableChapterImageExtraction) {
+
         this.enableChapterImageExtraction = enableChapterImageExtraction;
         return this;
     }
@@ -222,6 +230,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableChapterImageExtraction() {
         return enableChapterImageExtraction;
     }
@@ -234,6 +243,7 @@ public class LibraryOptions {
 
     public LibraryOptions extractChapterImagesDuringLibraryScan(
             @javax.annotation.Nullable Boolean extractChapterImagesDuringLibraryScan) {
+
         this.extractChapterImagesDuringLibraryScan = extractChapterImagesDuringLibraryScan;
         return this;
     }
@@ -246,6 +256,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getExtractChapterImagesDuringLibraryScan() {
         return extractChapterImagesDuringLibraryScan;
     }
@@ -258,6 +269,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions pathInfos(@javax.annotation.Nullable List<MediaPathInfo> pathInfos) {
+
         this.pathInfos = pathInfos;
         return this;
     }
@@ -278,6 +290,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PATH_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaPathInfo> getPathInfos() {
         return pathInfos;
     }
@@ -289,6 +302,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions saveLocalMetadata(@javax.annotation.Nullable Boolean saveLocalMetadata) {
+
         this.saveLocalMetadata = saveLocalMetadata;
         return this;
     }
@@ -301,6 +315,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SAVE_LOCAL_METADATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveLocalMetadata() {
         return saveLocalMetadata;
     }
@@ -312,6 +327,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions enableInternetProviders(@javax.annotation.Nullable Boolean enableInternetProviders) {
+
         this.enableInternetProviders = enableInternetProviders;
         return this;
     }
@@ -326,6 +342,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableInternetProviders() {
         return enableInternetProviders;
     }
@@ -338,6 +355,7 @@ public class LibraryOptions {
 
     public LibraryOptions enableAutomaticSeriesGrouping(
             @javax.annotation.Nullable Boolean enableAutomaticSeriesGrouping) {
+
         this.enableAutomaticSeriesGrouping = enableAutomaticSeriesGrouping;
         return this;
     }
@@ -350,6 +368,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAutomaticSeriesGrouping() {
         return enableAutomaticSeriesGrouping;
     }
@@ -361,6 +380,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions enableEmbeddedTitles(@javax.annotation.Nullable Boolean enableEmbeddedTitles) {
+
         this.enableEmbeddedTitles = enableEmbeddedTitles;
         return this;
     }
@@ -373,6 +393,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableEmbeddedTitles() {
         return enableEmbeddedTitles;
     }
@@ -384,6 +405,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions enableEmbeddedEpisodeInfos(@javax.annotation.Nullable Boolean enableEmbeddedEpisodeInfos) {
+
         this.enableEmbeddedEpisodeInfos = enableEmbeddedEpisodeInfos;
         return this;
     }
@@ -396,6 +418,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableEmbeddedEpisodeInfos() {
         return enableEmbeddedEpisodeInfos;
     }
@@ -408,6 +431,7 @@ public class LibraryOptions {
 
     public LibraryOptions automaticRefreshIntervalDays(
             @javax.annotation.Nullable Integer automaticRefreshIntervalDays) {
+
         this.automaticRefreshIntervalDays = automaticRefreshIntervalDays;
         return this;
     }
@@ -420,6 +444,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAutomaticRefreshIntervalDays() {
         return automaticRefreshIntervalDays;
     }
@@ -432,6 +457,7 @@ public class LibraryOptions {
 
     public LibraryOptions preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
+
         return this;
     }
 
@@ -442,6 +468,7 @@ public class LibraryOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage.orElse(null);
     }
@@ -464,6 +491,7 @@ public class LibraryOptions {
 
     public LibraryOptions metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
         this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
+
         return this;
     }
 
@@ -474,6 +502,7 @@ public class LibraryOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMetadataCountryCode() {
         return metadataCountryCode.orElse(null);
     }
@@ -495,6 +524,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions seasonZeroDisplayName(@javax.annotation.Nullable String seasonZeroDisplayName) {
+
         this.seasonZeroDisplayName = seasonZeroDisplayName;
         return this;
     }
@@ -507,6 +537,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSeasonZeroDisplayName() {
         return seasonZeroDisplayName;
     }
@@ -519,6 +550,7 @@ public class LibraryOptions {
 
     public LibraryOptions metadataSavers(@javax.annotation.Nullable List<String> metadataSavers) {
         this.metadataSavers = JsonNullable.<List<String>> of(metadataSavers);
+
         return this;
     }
 
@@ -541,6 +573,7 @@ public class LibraryOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getMetadataSavers() {
         return metadataSavers.orElse(null);
     }
@@ -563,6 +596,7 @@ public class LibraryOptions {
 
     public LibraryOptions disabledLocalMetadataReaders(
             @javax.annotation.Nullable List<String> disabledLocalMetadataReaders) {
+
         this.disabledLocalMetadataReaders = disabledLocalMetadataReaders;
         return this;
     }
@@ -583,6 +617,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getDisabledLocalMetadataReaders() {
         return disabledLocalMetadataReaders;
     }
@@ -595,6 +630,7 @@ public class LibraryOptions {
 
     public LibraryOptions localMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
         this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
+
         return this;
     }
 
@@ -617,6 +653,7 @@ public class LibraryOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder.orElse(null);
     }
@@ -638,6 +675,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions disabledSubtitleFetchers(@javax.annotation.Nullable List<String> disabledSubtitleFetchers) {
+
         this.disabledSubtitleFetchers = disabledSubtitleFetchers;
         return this;
     }
@@ -658,6 +696,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getDisabledSubtitleFetchers() {
         return disabledSubtitleFetchers;
     }
@@ -669,6 +708,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions subtitleFetcherOrder(@javax.annotation.Nullable List<String> subtitleFetcherOrder) {
+
         this.subtitleFetcherOrder = subtitleFetcherOrder;
         return this;
     }
@@ -689,6 +729,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSubtitleFetcherOrder() {
         return subtitleFetcherOrder;
     }
@@ -701,6 +742,7 @@ public class LibraryOptions {
 
     public LibraryOptions skipSubtitlesIfEmbeddedSubtitlesPresent(
             @javax.annotation.Nullable Boolean skipSubtitlesIfEmbeddedSubtitlesPresent) {
+
         this.skipSubtitlesIfEmbeddedSubtitlesPresent = skipSubtitlesIfEmbeddedSubtitlesPresent;
         return this;
     }
@@ -713,6 +755,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
         return skipSubtitlesIfEmbeddedSubtitlesPresent;
     }
@@ -726,6 +769,7 @@ public class LibraryOptions {
 
     public LibraryOptions skipSubtitlesIfAudioTrackMatches(
             @javax.annotation.Nullable Boolean skipSubtitlesIfAudioTrackMatches) {
+
         this.skipSubtitlesIfAudioTrackMatches = skipSubtitlesIfAudioTrackMatches;
         return this;
     }
@@ -738,6 +782,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSkipSubtitlesIfAudioTrackMatches() {
         return skipSubtitlesIfAudioTrackMatches;
     }
@@ -751,6 +796,7 @@ public class LibraryOptions {
 
     public LibraryOptions subtitleDownloadLanguages(@javax.annotation.Nullable List<String> subtitleDownloadLanguages) {
         this.subtitleDownloadLanguages = JsonNullable.<List<String>> of(subtitleDownloadLanguages);
+
         return this;
     }
 
@@ -773,6 +819,7 @@ public class LibraryOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getSubtitleDownloadLanguages() {
         return subtitleDownloadLanguages.orElse(null);
     }
@@ -794,6 +841,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions requirePerfectSubtitleMatch(@javax.annotation.Nullable Boolean requirePerfectSubtitleMatch) {
+
         this.requirePerfectSubtitleMatch = requirePerfectSubtitleMatch;
         return this;
     }
@@ -806,6 +854,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequirePerfectSubtitleMatch() {
         return requirePerfectSubtitleMatch;
     }
@@ -817,6 +866,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions saveSubtitlesWithMedia(@javax.annotation.Nullable Boolean saveSubtitlesWithMedia) {
+
         this.saveSubtitlesWithMedia = saveSubtitlesWithMedia;
         return this;
     }
@@ -829,6 +879,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSaveSubtitlesWithMedia() {
         return saveSubtitlesWithMedia;
     }
@@ -841,6 +892,7 @@ public class LibraryOptions {
 
     public LibraryOptions automaticallyAddToCollection(
             @javax.annotation.Nullable Boolean automaticallyAddToCollection) {
+
         this.automaticallyAddToCollection = automaticallyAddToCollection;
         return this;
     }
@@ -853,6 +905,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAutomaticallyAddToCollection() {
         return automaticallyAddToCollection;
     }
@@ -865,6 +918,7 @@ public class LibraryOptions {
 
     public LibraryOptions allowEmbeddedSubtitles(
             @javax.annotation.Nullable EmbeddedSubtitleOptions allowEmbeddedSubtitles) {
+
         this.allowEmbeddedSubtitles = allowEmbeddedSubtitles;
         return this;
     }
@@ -877,6 +931,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
         return allowEmbeddedSubtitles;
     }
@@ -888,6 +943,7 @@ public class LibraryOptions {
     }
 
     public LibraryOptions typeOptions(@javax.annotation.Nullable List<TypeOptions> typeOptions) {
+
         this.typeOptions = typeOptions;
         return this;
     }
@@ -908,6 +964,7 @@ public class LibraryOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TypeOptions> getTypeOptions() {
         return typeOptions;
     }
@@ -918,9 +975,6 @@ public class LibraryOptions {
         this.typeOptions = typeOptions;
     }
 
-    /**
-     * Return true if this LibraryOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1040,230 +1094,6 @@ public class LibraryOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `EnablePhotos` to the URL query string
-        if (getEnablePhotos() != null) {
-            joiner.add(String.format("%sEnablePhotos%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePhotos()))));
-        }
-
-        // add `EnableRealtimeMonitor` to the URL query string
-        if (getEnableRealtimeMonitor() != null) {
-            joiner.add(String.format("%sEnableRealtimeMonitor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRealtimeMonitor()))));
-        }
-
-        // add `EnableChapterImageExtraction` to the URL query string
-        if (getEnableChapterImageExtraction() != null) {
-            joiner.add(String.format("%sEnableChapterImageExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableChapterImageExtraction()))));
-        }
-
-        // add `ExtractChapterImagesDuringLibraryScan` to the URL query string
-        if (getExtractChapterImagesDuringLibraryScan() != null) {
-            joiner.add(String.format("%sExtractChapterImagesDuringLibraryScan%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExtractChapterImagesDuringLibraryScan()))));
-        }
-
-        // add `PathInfos` to the URL query string
-        if (getPathInfos() != null) {
-            for (int i = 0; i < getPathInfos().size(); i++) {
-                if (getPathInfos().get(i) != null) {
-                    joiner.add(getPathInfos().get(i).toUrlQueryString(String.format("%sPathInfos%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SaveLocalMetadata` to the URL query string
-        if (getSaveLocalMetadata() != null) {
-            joiner.add(String.format("%sSaveLocalMetadata%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveLocalMetadata()))));
-        }
-
-        // add `EnableInternetProviders` to the URL query string
-        if (getEnableInternetProviders() != null) {
-            joiner.add(String.format("%sEnableInternetProviders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableInternetProviders()))));
-        }
-
-        // add `EnableAutomaticSeriesGrouping` to the URL query string
-        if (getEnableAutomaticSeriesGrouping() != null) {
-            joiner.add(String.format("%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticSeriesGrouping()))));
-        }
-
-        // add `EnableEmbeddedTitles` to the URL query string
-        if (getEnableEmbeddedTitles() != null) {
-            joiner.add(String.format("%sEnableEmbeddedTitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedTitles()))));
-        }
-
-        // add `EnableEmbeddedEpisodeInfos` to the URL query string
-        if (getEnableEmbeddedEpisodeInfos() != null) {
-            joiner.add(String.format("%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedEpisodeInfos()))));
-        }
-
-        // add `AutomaticRefreshIntervalDays` to the URL query string
-        if (getAutomaticRefreshIntervalDays() != null) {
-            joiner.add(String.format("%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutomaticRefreshIntervalDays()))));
-        }
-
-        // add `PreferredMetadataLanguage` to the URL query string
-        if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
-        }
-
-        // add `MetadataCountryCode` to the URL query string
-        if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
-        }
-
-        // add `SeasonZeroDisplayName` to the URL query string
-        if (getSeasonZeroDisplayName() != null) {
-            joiner.add(String.format("%sSeasonZeroDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeasonZeroDisplayName()))));
-        }
-
-        // add `MetadataSavers` to the URL query string
-        if (getMetadataSavers() != null) {
-            for (int i = 0; i < getMetadataSavers().size(); i++) {
-                joiner.add(String.format("%sMetadataSavers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataSavers().get(i)))));
-            }
-        }
-
-        // add `DisabledLocalMetadataReaders` to the URL query string
-        if (getDisabledLocalMetadataReaders() != null) {
-            for (int i = 0; i < getDisabledLocalMetadataReaders().size(); i++) {
-                joiner.add(String.format("%sDisabledLocalMetadataReaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledLocalMetadataReaders().get(i)))));
-            }
-        }
-
-        // add `LocalMetadataReaderOrder` to the URL query string
-        if (getLocalMetadataReaderOrder() != null) {
-            for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
-                joiner.add(String.format("%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
-            }
-        }
-
-        // add `DisabledSubtitleFetchers` to the URL query string
-        if (getDisabledSubtitleFetchers() != null) {
-            for (int i = 0; i < getDisabledSubtitleFetchers().size(); i++) {
-                joiner.add(String.format("%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledSubtitleFetchers().get(i)))));
-            }
-        }
-
-        // add `SubtitleFetcherOrder` to the URL query string
-        if (getSubtitleFetcherOrder() != null) {
-            for (int i = 0; i < getSubtitleFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSubtitleFetcherOrder().get(i)))));
-            }
-        }
-
-        // add `SkipSubtitlesIfEmbeddedSubtitlesPresent` to the URL query string
-        if (getSkipSubtitlesIfEmbeddedSubtitlesPresent() != null) {
-            joiner.add(String.format("%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfEmbeddedSubtitlesPresent()))));
-        }
-
-        // add `SkipSubtitlesIfAudioTrackMatches` to the URL query string
-        if (getSkipSubtitlesIfAudioTrackMatches() != null) {
-            joiner.add(String.format("%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfAudioTrackMatches()))));
-        }
-
-        // add `SubtitleDownloadLanguages` to the URL query string
-        if (getSubtitleDownloadLanguages() != null) {
-            for (int i = 0; i < getSubtitleDownloadLanguages().size(); i++) {
-                joiner.add(String.format("%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSubtitleDownloadLanguages().get(i)))));
-            }
-        }
-
-        // add `RequirePerfectSubtitleMatch` to the URL query string
-        if (getRequirePerfectSubtitleMatch() != null) {
-            joiner.add(String.format("%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectSubtitleMatch()))));
-        }
-
-        // add `SaveSubtitlesWithMedia` to the URL query string
-        if (getSaveSubtitlesWithMedia() != null) {
-            joiner.add(String.format("%sSaveSubtitlesWithMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveSubtitlesWithMedia()))));
-        }
-
-        // add `AutomaticallyAddToCollection` to the URL query string
-        if (getAutomaticallyAddToCollection() != null) {
-            joiner.add(String.format("%sAutomaticallyAddToCollection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutomaticallyAddToCollection()))));
-        }
-
-        // add `AllowEmbeddedSubtitles` to the URL query string
-        if (getAllowEmbeddedSubtitles() != null) {
-            joiner.add(String.format("%sAllowEmbeddedSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowEmbeddedSubtitles()))));
-        }
-
-        // add `TypeOptions` to the URL query string
-        if (getTypeOptions() != null) {
-            for (int i = 0; i < getTypeOptions().size(); i++) {
-                if (getTypeOptions().get(i) != null) {
-                    joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,9 +19,6 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,6 +43,7 @@ public class UtcTimeResponse {
     }
 
     public UtcTimeResponse requestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
+
         this.requestReceptionTime = requestReceptionTime;
         return this;
     }
@@ -58,6 +56,7 @@ public class UtcTimeResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getRequestReceptionTime() {
         return requestReceptionTime;
     }
@@ -70,6 +69,7 @@ public class UtcTimeResponse {
 
     public UtcTimeResponse responseTransmissionTime(
             @javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
+
         this.responseTransmissionTime = responseTransmissionTime;
         return this;
     }
@@ -82,6 +82,7 @@ public class UtcTimeResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getResponseTransmissionTime() {
         return responseTransmissionTime;
     }
@@ -92,9 +93,6 @@ public class UtcTimeResponse {
         this.responseTransmissionTime = responseTransmissionTime;
     }
 
-    /**
-     * Return true if this UtcTimeResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -132,53 +130,6 @@ public class UtcTimeResponse {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `RequestReceptionTime` to the URL query string
-        if (getRequestReceptionTime() != null) {
-            joiner.add(String.format("%sRequestReceptionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequestReceptionTime()))));
-        }
-
-        // add `ResponseTransmissionTime` to the URL query string
-        if (getResponseTransmissionTime() != null) {
-            joiner.add(String.format("%sResponseTransmissionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResponseTransmissionTime()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

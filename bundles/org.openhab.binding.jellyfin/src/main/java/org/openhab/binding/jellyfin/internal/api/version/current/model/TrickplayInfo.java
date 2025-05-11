@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,6 +64,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo width(@javax.annotation.Nullable Integer width) {
+
         this.width = width;
         return this;
     }
@@ -79,6 +77,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -90,6 +89,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo height(@javax.annotation.Nullable Integer height) {
+
         this.height = height;
         return this;
     }
@@ -102,6 +102,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -113,6 +114,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo tileWidth(@javax.annotation.Nullable Integer tileWidth) {
+
         this.tileWidth = tileWidth;
         return this;
     }
@@ -125,6 +127,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileWidth() {
         return tileWidth;
     }
@@ -136,6 +139,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo tileHeight(@javax.annotation.Nullable Integer tileHeight) {
+
         this.tileHeight = tileHeight;
         return this;
     }
@@ -148,6 +152,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileHeight() {
         return tileHeight;
     }
@@ -159,6 +164,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo thumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
+
         this.thumbnailCount = thumbnailCount;
         return this;
     }
@@ -171,6 +177,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getThumbnailCount() {
         return thumbnailCount;
     }
@@ -182,6 +189,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo interval(@javax.annotation.Nullable Integer interval) {
+
         this.interval = interval;
         return this;
     }
@@ -194,6 +202,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_INTERVAL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInterval() {
         return interval;
     }
@@ -205,6 +214,7 @@ public class TrickplayInfo {
     }
 
     public TrickplayInfo bandwidth(@javax.annotation.Nullable Integer bandwidth) {
+
         this.bandwidth = bandwidth;
         return this;
     }
@@ -217,6 +227,7 @@ public class TrickplayInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BANDWIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBandwidth() {
         return bandwidth;
     }
@@ -227,9 +238,6 @@ public class TrickplayInfo {
         this.bandwidth = bandwidth;
     }
 
-    /**
-     * Return true if this TrickplayInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -276,83 +284,6 @@ public class TrickplayInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `TileWidth` to the URL query string
-        if (getTileWidth() != null) {
-            joiner.add(String.format("%sTileWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
-        }
-
-        // add `TileHeight` to the URL query string
-        if (getTileHeight() != null) {
-            joiner.add(String.format("%sTileHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
-        }
-
-        // add `ThumbnailCount` to the URL query string
-        if (getThumbnailCount() != null) {
-            joiner.add(String.format("%sThumbnailCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbnailCount()))));
-        }
-
-        // add `Interval` to the URL query string
-        if (getInterval() != null) {
-            joiner.add(String.format("%sInterval%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
-        }
-
-        // add `Bandwidth` to the URL query string
-        if (getBandwidth() != null) {
-            joiner.add(String.format("%sBandwidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBandwidth()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

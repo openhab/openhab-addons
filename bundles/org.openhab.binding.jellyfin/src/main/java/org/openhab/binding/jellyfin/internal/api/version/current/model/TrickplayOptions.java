@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -92,6 +89,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions enableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
+
         this.enableHwAcceleration = enableHwAcceleration;
         return this;
     }
@@ -104,6 +102,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHwAcceleration() {
         return enableHwAcceleration;
     }
@@ -115,6 +114,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions enableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
+
         this.enableHwEncoding = enableHwEncoding;
         return this;
     }
@@ -127,6 +127,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableHwEncoding() {
         return enableHwEncoding;
     }
@@ -139,6 +140,7 @@ public class TrickplayOptions {
 
     public TrickplayOptions enableKeyFrameOnlyExtraction(
             @javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
+
         this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
         return this;
     }
@@ -152,6 +154,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableKeyFrameOnlyExtraction() {
         return enableKeyFrameOnlyExtraction;
     }
@@ -163,6 +166,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions scanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
+
         this.scanBehavior = scanBehavior;
         return this;
     }
@@ -175,6 +179,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TrickplayScanBehavior getScanBehavior() {
         return scanBehavior;
     }
@@ -186,6 +191,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions processPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
+
         this.processPriority = processPriority;
         return this;
     }
@@ -198,6 +204,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProcessPriorityClass getProcessPriority() {
         return processPriority;
     }
@@ -209,6 +216,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions interval(@javax.annotation.Nullable Integer interval) {
+
         this.interval = interval;
         return this;
     }
@@ -221,6 +229,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_INTERVAL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInterval() {
         return interval;
     }
@@ -232,6 +241,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions widthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
+
         this.widthResolutions = widthResolutions;
         return this;
     }
@@ -252,6 +262,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<Integer> getWidthResolutions() {
         return widthResolutions;
     }
@@ -263,6 +274,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions tileWidth(@javax.annotation.Nullable Integer tileWidth) {
+
         this.tileWidth = tileWidth;
         return this;
     }
@@ -275,6 +287,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileWidth() {
         return tileWidth;
     }
@@ -286,6 +299,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions tileHeight(@javax.annotation.Nullable Integer tileHeight) {
+
         this.tileHeight = tileHeight;
         return this;
     }
@@ -298,6 +312,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTileHeight() {
         return tileHeight;
     }
@@ -309,6 +324,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions qscale(@javax.annotation.Nullable Integer qscale) {
+
         this.qscale = qscale;
         return this;
     }
@@ -321,6 +337,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_QSCALE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getQscale() {
         return qscale;
     }
@@ -332,6 +349,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions jpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
+
         this.jpegQuality = jpegQuality;
         return this;
     }
@@ -344,6 +362,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getJpegQuality() {
         return jpegQuality;
     }
@@ -355,6 +374,7 @@ public class TrickplayOptions {
     }
 
     public TrickplayOptions processThreads(@javax.annotation.Nullable Integer processThreads) {
+
         this.processThreads = processThreads;
         return this;
     }
@@ -367,6 +387,7 @@ public class TrickplayOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProcessThreads() {
         return processThreads;
     }
@@ -377,9 +398,6 @@ public class TrickplayOptions {
         this.processThreads = processThreads;
     }
 
-    /**
-     * Return true if this TrickplayOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -440,116 +458,6 @@ public class TrickplayOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `EnableHwAcceleration` to the URL query string
-        if (getEnableHwAcceleration() != null) {
-            joiner.add(String.format("%sEnableHwAcceleration%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwAcceleration()))));
-        }
-
-        // add `EnableHwEncoding` to the URL query string
-        if (getEnableHwEncoding() != null) {
-            joiner.add(String.format("%sEnableHwEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwEncoding()))));
-        }
-
-        // add `EnableKeyFrameOnlyExtraction` to the URL query string
-        if (getEnableKeyFrameOnlyExtraction() != null) {
-            joiner.add(String.format("%sEnableKeyFrameOnlyExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableKeyFrameOnlyExtraction()))));
-        }
-
-        // add `ScanBehavior` to the URL query string
-        if (getScanBehavior() != null) {
-            joiner.add(String.format("%sScanBehavior%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScanBehavior()))));
-        }
-
-        // add `ProcessPriority` to the URL query string
-        if (getProcessPriority() != null) {
-            joiner.add(String.format("%sProcessPriority%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessPriority()))));
-        }
-
-        // add `Interval` to the URL query string
-        if (getInterval() != null) {
-            joiner.add(String.format("%sInterval%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
-        }
-
-        // add `WidthResolutions` to the URL query string
-        if (getWidthResolutions() != null) {
-            for (int i = 0; i < getWidthResolutions().size(); i++) {
-                joiner.add(String.format("%sWidthResolutions%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getWidthResolutions().get(i)))));
-            }
-        }
-
-        // add `TileWidth` to the URL query string
-        if (getTileWidth() != null) {
-            joiner.add(String.format("%sTileWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
-        }
-
-        // add `TileHeight` to the URL query string
-        if (getTileHeight() != null) {
-            joiner.add(String.format("%sTileHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
-        }
-
-        // add `Qscale` to the URL query string
-        if (getQscale() != null) {
-            joiner.add(String.format("%sQscale%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getQscale()))));
-        }
-
-        // add `JpegQuality` to the URL query string
-        if (getJpegQuality() != null) {
-            joiner.add(String.format("%sJpegQuality%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getJpegQuality()))));
-        }
-
-        // add `ProcessThreads` to the URL query string
-        if (getProcessThreads() != null) {
-            joiner.add(String.format("%sProcessThreads%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessThreads()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,9 +42,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItem {
     public static final String JSON_PROPERTY_SIZE = "Size";
+    @javax.annotation.Nullable
     private JsonNullable<Long> size = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_H_D = "IsHD";
@@ -58,6 +58,7 @@ public class BaseItem {
     private Boolean isShortcut;
 
     public static final String JSON_PROPERTY_SHORTCUT_PATH = "ShortcutPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> shortcutPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
@@ -69,6 +70,7 @@ public class BaseItem {
     private Integer height;
 
     public static final String JSON_PROPERTY_EXTRA_IDS = "ExtraIds";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> extraIds = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_DATE_LAST_SAVED = "DateLastSaved";
@@ -76,6 +78,7 @@ public class BaseItem {
     private OffsetDateTime dateLastSaved;
 
     public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
+    @javax.annotation.Nullable
     private JsonNullable<List<MediaUrl>> remoteTrailers = JsonNullable.<List<MediaUrl>> undefined();
 
     public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER = "SupportsExternalTransfer";
@@ -85,6 +88,9 @@ public class BaseItem {
     public BaseItem() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public BaseItem(@JsonProperty(JSON_PROPERTY_IS_H_D) Boolean isHD,
             @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER) Boolean supportsExternalTransfer) {
@@ -95,6 +101,7 @@ public class BaseItem {
 
     public BaseItem size(@javax.annotation.Nullable Long size) {
         this.size = JsonNullable.<Long> of(size);
+
         return this;
     }
 
@@ -105,6 +112,7 @@ public class BaseItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getSize() {
         return size.orElse(null);
     }
@@ -127,6 +135,7 @@ public class BaseItem {
 
     public BaseItem container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -137,6 +146,7 @@ public class BaseItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -165,11 +175,13 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_H_D)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHD() {
         return isHD;
     }
 
     public BaseItem isShortcut(@javax.annotation.Nullable Boolean isShortcut) {
+
         this.isShortcut = isShortcut;
         return this;
     }
@@ -182,6 +194,7 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_SHORTCUT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsShortcut() {
         return isShortcut;
     }
@@ -194,6 +207,7 @@ public class BaseItem {
 
     public BaseItem shortcutPath(@javax.annotation.Nullable String shortcutPath) {
         this.shortcutPath = JsonNullable.<String> of(shortcutPath);
+
         return this;
     }
 
@@ -204,6 +218,7 @@ public class BaseItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getShortcutPath() {
         return shortcutPath.orElse(null);
     }
@@ -225,6 +240,7 @@ public class BaseItem {
     }
 
     public BaseItem width(@javax.annotation.Nullable Integer width) {
+
         this.width = width;
         return this;
     }
@@ -237,6 +253,7 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWidth() {
         return width;
     }
@@ -248,6 +265,7 @@ public class BaseItem {
     }
 
     public BaseItem height(@javax.annotation.Nullable Integer height) {
+
         this.height = height;
         return this;
     }
@@ -260,6 +278,7 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getHeight() {
         return height;
     }
@@ -272,6 +291,7 @@ public class BaseItem {
 
     public BaseItem extraIds(@javax.annotation.Nullable List<UUID> extraIds) {
         this.extraIds = JsonNullable.<List<UUID>> of(extraIds);
+
         return this;
     }
 
@@ -294,6 +314,7 @@ public class BaseItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getExtraIds() {
         return extraIds.orElse(null);
     }
@@ -315,6 +336,7 @@ public class BaseItem {
     }
 
     public BaseItem dateLastSaved(@javax.annotation.Nullable OffsetDateTime dateLastSaved) {
+
         this.dateLastSaved = dateLastSaved;
         return this;
     }
@@ -327,6 +349,7 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_LAST_SAVED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastSaved() {
         return dateLastSaved;
     }
@@ -339,6 +362,7 @@ public class BaseItem {
 
     public BaseItem remoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
         this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
+
         return this;
     }
 
@@ -361,6 +385,7 @@ public class BaseItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<MediaUrl> getRemoteTrailers() {
         return remoteTrailers.orElse(null);
     }
@@ -389,13 +414,11 @@ public class BaseItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsExternalTransfer() {
         return supportsExternalTransfer;
     }
 
-    /**
-     * Return true if this BaseItem object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -462,117 +485,6 @@ public class BaseItem {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Size` to the URL query string
-        if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `IsHD` to the URL query string
-        if (getIsHD() != null) {
-            joiner.add(String.format("%sIsHD%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHD()))));
-        }
-
-        // add `IsShortcut` to the URL query string
-        if (getIsShortcut() != null) {
-            joiner.add(String.format("%sIsShortcut%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsShortcut()))));
-        }
-
-        // add `ShortcutPath` to the URL query string
-        if (getShortcutPath() != null) {
-            joiner.add(String.format("%sShortcutPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShortcutPath()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `ExtraIds` to the URL query string
-        if (getExtraIds() != null) {
-            for (int i = 0; i < getExtraIds().size(); i++) {
-                if (getExtraIds().get(i) != null) {
-                    joiner.add(String.format("%sExtraIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getExtraIds().get(i)))));
-                }
-            }
-        }
-
-        // add `DateLastSaved` to the URL query string
-        if (getDateLastSaved() != null) {
-            joiner.add(String.format("%sDateLastSaved%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastSaved()))));
-        }
-
-        // add `RemoteTrailers` to the URL query string
-        if (getRemoteTrailers() != null) {
-            for (int i = 0; i < getRemoteTrailers().size(); i++) {
-                if (getRemoteTrailers().get(i) != null) {
-                    joiner.add(getRemoteTrailers().get(i).toUrlQueryString(String.format("%sRemoteTrailers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SupportsExternalTransfer` to the URL query string
-        if (getSupportsExternalTransfer() != null) {
-            joiner.add(String.format("%sSupportsExternalTransfer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsExternalTransfer()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

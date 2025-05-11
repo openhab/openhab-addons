@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,12 +39,14 @@ public class NotificationsSummaryDto {
     private Integer unreadCount;
 
     public static final String JSON_PROPERTY_MAX_UNREAD_NOTIFICATION_LEVEL = "MaxUnreadNotificationLevel";
+    @javax.annotation.Nullable
     private JsonNullable<NotificationLevel> maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> undefined();
 
     public NotificationsSummaryDto() {
     }
 
     public NotificationsSummaryDto unreadCount(@javax.annotation.Nullable Integer unreadCount) {
+
         this.unreadCount = unreadCount;
         return this;
     }
@@ -59,6 +59,7 @@ public class NotificationsSummaryDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_UNREAD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getUnreadCount() {
         return unreadCount;
     }
@@ -72,6 +73,7 @@ public class NotificationsSummaryDto {
     public NotificationsSummaryDto maxUnreadNotificationLevel(
             @javax.annotation.Nullable NotificationLevel maxUnreadNotificationLevel) {
         this.maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> of(maxUnreadNotificationLevel);
+
         return this;
     }
 
@@ -82,6 +84,7 @@ public class NotificationsSummaryDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public NotificationLevel getMaxUnreadNotificationLevel() {
         return maxUnreadNotificationLevel.orElse(null);
     }
@@ -102,9 +105,6 @@ public class NotificationsSummaryDto {
         this.maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> of(maxUnreadNotificationLevel);
     }
 
-    /**
-     * Return true if this NotificationsSummaryDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -154,53 +154,6 @@ public class NotificationsSummaryDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `UnreadCount` to the URL query string
-        if (getUnreadCount() != null) {
-            joiner.add(String.format("%sUnreadCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUnreadCount()))));
-        }
-
-        // add `MaxUnreadNotificationLevel` to the URL query string
-        if (getMaxUnreadNotificationLevel() != null) {
-            joiner.add(String.format("%sMaxUnreadNotificationLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxUnreadNotificationLevel()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

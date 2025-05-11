@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,9 +38,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class IPlugin {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+    @javax.annotation.Nullable
     private JsonNullable<String> description = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
@@ -50,9 +50,11 @@ public class IPlugin {
     private UUID id;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
+    @javax.annotation.Nullable
     private JsonNullable<String> assemblyFilePath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
@@ -60,11 +62,15 @@ public class IPlugin {
     private Boolean canUninstall;
 
     public static final String JSON_PROPERTY_DATA_FOLDER_PATH = "DataFolderPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> dataFolderPath = JsonNullable.<String> undefined();
 
     public IPlugin() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public IPlugin(@JsonProperty(JSON_PROPERTY_NAME) String name,
             @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, @JsonProperty(JSON_PROPERTY_ID) UUID id,
@@ -91,6 +97,7 @@ public class IPlugin {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
 
         if (name == null) {
@@ -118,6 +125,7 @@ public class IPlugin {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDescription() {
 
         if (description == null) {
@@ -146,6 +154,7 @@ public class IPlugin {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -157,6 +166,7 @@ public class IPlugin {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
 
         if (version == null) {
@@ -184,6 +194,7 @@ public class IPlugin {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAssemblyFilePath() {
 
         if (assemblyFilePath == null) {
@@ -212,6 +223,7 @@ public class IPlugin {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanUninstall() {
         return canUninstall;
     }
@@ -223,6 +235,7 @@ public class IPlugin {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDataFolderPath() {
 
         if (dataFolderPath == null) {
@@ -243,9 +256,6 @@ public class IPlugin {
         this.dataFolderPath = dataFolderPath;
     }
 
-    /**
-     * Return true if this IPlugin object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -304,83 +314,6 @@ public class IPlugin {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `AssemblyFilePath` to the URL query string
-        if (getAssemblyFilePath() != null) {
-            joiner.add(String.format("%sAssemblyFilePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAssemblyFilePath()))));
-        }
-
-        // add `CanUninstall` to the URL query string
-        if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
-        }
-
-        // add `DataFolderPath` to the URL query string
-        if (getDataFolderPath() != null) {
-            joiner.add(String.format("%sDataFolderPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDataFolderPath()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,9 +35,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceProfileInfo {
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
@@ -51,6 +51,7 @@ public class DeviceProfileInfo {
 
     public DeviceProfileInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -61,6 +62,7 @@ public class DeviceProfileInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -83,6 +85,7 @@ public class DeviceProfileInfo {
 
     public DeviceProfileInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -93,6 +96,7 @@ public class DeviceProfileInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -114,6 +118,7 @@ public class DeviceProfileInfo {
     }
 
     public DeviceProfileInfo type(@javax.annotation.Nullable DeviceProfileType type) {
+
         this.type = type;
         return this;
     }
@@ -126,6 +131,7 @@ public class DeviceProfileInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DeviceProfileType getType() {
         return type;
     }
@@ -136,9 +142,6 @@ public class DeviceProfileInfo {
         this.type = type;
     }
 
-    /**
-     * Return true if this DeviceProfileInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -189,59 +192,6 @@ public class DeviceProfileInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

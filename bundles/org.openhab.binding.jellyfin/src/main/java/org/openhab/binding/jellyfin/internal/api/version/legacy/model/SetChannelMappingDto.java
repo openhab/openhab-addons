@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,6 +46,7 @@ public class SetChannelMappingDto {
     }
 
     public SetChannelMappingDto providerId(@javax.annotation.Nonnull String providerId) {
+
         this.providerId = providerId;
         return this;
     }
@@ -61,6 +59,7 @@ public class SetChannelMappingDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getProviderId() {
         return providerId;
     }
@@ -72,6 +71,7 @@ public class SetChannelMappingDto {
     }
 
     public SetChannelMappingDto tunerChannelId(@javax.annotation.Nonnull String tunerChannelId) {
+
         this.tunerChannelId = tunerChannelId;
         return this;
     }
@@ -84,6 +84,7 @@ public class SetChannelMappingDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getTunerChannelId() {
         return tunerChannelId;
     }
@@ -95,6 +96,7 @@ public class SetChannelMappingDto {
     }
 
     public SetChannelMappingDto providerChannelId(@javax.annotation.Nonnull String providerChannelId) {
+
         this.providerChannelId = providerChannelId;
         return this;
     }
@@ -107,6 +109,7 @@ public class SetChannelMappingDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getProviderChannelId() {
         return providerChannelId;
     }
@@ -117,9 +120,6 @@ public class SetChannelMappingDto {
         this.providerChannelId = providerChannelId;
     }
 
-    /**
-     * Return true if this SetChannelMappingDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -159,59 +159,6 @@ public class SetChannelMappingDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ProviderId` to the URL query string
-        if (getProviderId() != null) {
-            joiner.add(String.format("%sProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderId()))));
-        }
-
-        // add `TunerChannelId` to the URL query string
-        if (getTunerChannelId() != null) {
-            joiner.add(String.format("%sTunerChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTunerChannelId()))));
-        }
-
-        // add `ProviderChannelId` to the URL query string
-        if (getProviderChannelId() != null) {
-            joiner.add(String.format("%sProviderChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

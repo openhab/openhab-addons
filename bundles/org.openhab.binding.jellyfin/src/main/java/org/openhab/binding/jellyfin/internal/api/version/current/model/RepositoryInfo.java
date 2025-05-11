@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,9 +35,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RepositoryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_URL = "Url";
+    @javax.annotation.Nullable
     private JsonNullable<String> url = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
@@ -51,6 +51,7 @@ public class RepositoryInfo {
 
     public RepositoryInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -61,6 +62,7 @@ public class RepositoryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -83,6 +85,7 @@ public class RepositoryInfo {
 
     public RepositoryInfo url(@javax.annotation.Nullable String url) {
         this.url = JsonNullable.<String> of(url);
+
         return this;
     }
 
@@ -93,6 +96,7 @@ public class RepositoryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUrl() {
         return url.orElse(null);
     }
@@ -114,6 +118,7 @@ public class RepositoryInfo {
     }
 
     public RepositoryInfo enabled(@javax.annotation.Nullable Boolean enabled) {
+
         this.enabled = enabled;
         return this;
     }
@@ -126,6 +131,7 @@ public class RepositoryInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnabled() {
         return enabled;
     }
@@ -136,9 +142,6 @@ public class RepositoryInfo {
         this.enabled = enabled;
     }
 
-    /**
-     * Return true if this RepositoryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -189,59 +192,6 @@ public class RepositoryInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        // add `Enabled` to the URL query string
-        if (getEnabled() != null) {
-            joiner.add(String.format("%sEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

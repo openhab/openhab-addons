@@ -19,7 +19,6 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 
@@ -35,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AddVirtualFolderDto {
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+    @javax.annotation.Nullable
     private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
 
     public AddVirtualFolderDto() {
@@ -42,6 +42,7 @@ public class AddVirtualFolderDto {
 
     public AddVirtualFolderDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
         this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+
         return this;
     }
 
@@ -52,6 +53,7 @@ public class AddVirtualFolderDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public LibraryOptions getLibraryOptions() {
         return libraryOptions.orElse(null);
     }
@@ -72,9 +74,6 @@ public class AddVirtualFolderDto {
         this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
     }
 
-    /**
-     * Return true if this AddVirtualFolderDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -122,46 +121,6 @@ public class AddVirtualFolderDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LibraryOptions` to the URL query string
-        if (getLibraryOptions() != null) {
-            joiner.add(getLibraryOptions().toUrlQueryString(prefix + "LibraryOptions" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

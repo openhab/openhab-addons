@@ -20,10 +20,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class FontFile {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SIZE = "Size";
@@ -57,6 +56,7 @@ public class FontFile {
 
     public FontFile name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -67,6 +67,7 @@ public class FontFile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -88,6 +89,7 @@ public class FontFile {
     }
 
     public FontFile size(@javax.annotation.Nullable Long size) {
+
         this.size = size;
         return this;
     }
@@ -100,6 +102,7 @@ public class FontFile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getSize() {
         return size;
     }
@@ -111,6 +114,7 @@ public class FontFile {
     }
 
     public FontFile dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+
         this.dateCreated = dateCreated;
         return this;
     }
@@ -123,6 +127,7 @@ public class FontFile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
@@ -134,6 +139,7 @@ public class FontFile {
     }
 
     public FontFile dateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+
         this.dateModified = dateModified;
         return this;
     }
@@ -146,6 +152,7 @@ public class FontFile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateModified() {
         return dateModified;
     }
@@ -156,9 +163,6 @@ public class FontFile {
         this.dateModified = dateModified;
     }
 
-    /**
-     * Return true if this FontFile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -211,65 +215,6 @@ public class FontFile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Size` to the URL query string
-        if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-        }
-
-        // add `DateCreated` to the URL query string
-        if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
-        }
-
-        // add `DateModified` to the URL query string
-        if (getDateModified() != null) {
-            joiner.add(String.format("%sDateModified%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateModified()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

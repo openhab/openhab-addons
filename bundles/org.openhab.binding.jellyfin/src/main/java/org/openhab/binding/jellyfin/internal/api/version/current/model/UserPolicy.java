@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -85,12 +83,15 @@ public class UserPolicy {
     private Boolean isDisabled;
 
     public static final String JSON_PROPERTY_MAX_PARENTAL_RATING = "MaxParentalRating";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxParentalRating = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_BLOCKED_TAGS = "BlockedTags";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> blockedTags = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ALLOWED_TAGS = "AllowedTags";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> allowedTags = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS = "EnableUserPreferenceAccess";
@@ -98,9 +99,11 @@ public class UserPolicy {
     private Boolean enableUserPreferenceAccess;
 
     public static final String JSON_PROPERTY_ACCESS_SCHEDULES = "AccessSchedules";
+    @javax.annotation.Nullable
     private JsonNullable<List<AccessSchedule>> accessSchedules = JsonNullable.<List<AccessSchedule>> undefined();
 
     public static final String JSON_PROPERTY_BLOCK_UNRATED_ITEMS = "BlockUnratedItems";
+    @javax.annotation.Nullable
     private JsonNullable<List<UnratedItem>> blockUnratedItems = JsonNullable.<List<UnratedItem>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS = "EnableRemoteControlOfOtherUsers";
@@ -148,6 +151,7 @@ public class UserPolicy {
     private Boolean enableContentDeletion;
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS = "EnableContentDeletionFromFolders";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> enableContentDeletionFromFolders = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING = "EnableContentDownloading";
@@ -163,6 +167,7 @@ public class UserPolicy {
     private Boolean enableMediaConversion;
 
     public static final String JSON_PROPERTY_ENABLED_DEVICES = "EnabledDevices";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> enabledDevices = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_ALL_DEVICES = "EnableAllDevices";
@@ -170,6 +175,7 @@ public class UserPolicy {
     private Boolean enableAllDevices;
 
     public static final String JSON_PROPERTY_ENABLED_CHANNELS = "EnabledChannels";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> enabledChannels = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_ALL_CHANNELS = "EnableAllChannels";
@@ -177,6 +183,7 @@ public class UserPolicy {
     private Boolean enableAllChannels;
 
     public static final String JSON_PROPERTY_ENABLED_FOLDERS = "EnabledFolders";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> enabledFolders = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_ALL_FOLDERS = "EnableAllFolders";
@@ -200,9 +207,11 @@ public class UserPolicy {
     private Boolean enablePublicSharing;
 
     public static final String JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS = "BlockedMediaFolders";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> blockedMediaFolders = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_BLOCKED_CHANNELS = "BlockedChannels";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> blockedChannels = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
@@ -225,6 +234,7 @@ public class UserPolicy {
     }
 
     public UserPolicy isAdministrator(@javax.annotation.Nullable Boolean isAdministrator) {
+
         this.isAdministrator = isAdministrator;
         return this;
     }
@@ -237,6 +247,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_ADMINISTRATOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAdministrator() {
         return isAdministrator;
     }
@@ -248,6 +259,7 @@ public class UserPolicy {
     }
 
     public UserPolicy isHidden(@javax.annotation.Nullable Boolean isHidden) {
+
         this.isHidden = isHidden;
         return this;
     }
@@ -260,6 +272,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsHidden() {
         return isHidden;
     }
@@ -271,6 +284,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableCollectionManagement(@javax.annotation.Nullable Boolean enableCollectionManagement) {
+
         this.enableCollectionManagement = enableCollectionManagement;
         return this;
     }
@@ -283,6 +297,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableCollectionManagement() {
         return enableCollectionManagement;
     }
@@ -294,6 +309,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableSubtitleManagement(@javax.annotation.Nullable Boolean enableSubtitleManagement) {
+
         this.enableSubtitleManagement = enableSubtitleManagement;
         return this;
     }
@@ -306,6 +322,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSubtitleManagement() {
         return enableSubtitleManagement;
     }
@@ -317,6 +334,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableLyricManagement(@javax.annotation.Nullable Boolean enableLyricManagement) {
+
         this.enableLyricManagement = enableLyricManagement;
         return this;
     }
@@ -329,6 +347,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLyricManagement() {
         return enableLyricManagement;
     }
@@ -340,6 +359,7 @@ public class UserPolicy {
     }
 
     public UserPolicy isDisabled(@javax.annotation.Nullable Boolean isDisabled) {
+
         this.isDisabled = isDisabled;
         return this;
     }
@@ -352,6 +372,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_DISABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsDisabled() {
         return isDisabled;
     }
@@ -364,6 +385,7 @@ public class UserPolicy {
 
     public UserPolicy maxParentalRating(@javax.annotation.Nullable Integer maxParentalRating) {
         this.maxParentalRating = JsonNullable.<Integer> of(maxParentalRating);
+
         return this;
     }
 
@@ -374,6 +396,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxParentalRating() {
         return maxParentalRating.orElse(null);
     }
@@ -396,6 +419,7 @@ public class UserPolicy {
 
     public UserPolicy blockedTags(@javax.annotation.Nullable List<String> blockedTags) {
         this.blockedTags = JsonNullable.<List<String>> of(blockedTags);
+
         return this;
     }
 
@@ -418,6 +442,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getBlockedTags() {
         return blockedTags.orElse(null);
     }
@@ -440,6 +465,7 @@ public class UserPolicy {
 
     public UserPolicy allowedTags(@javax.annotation.Nullable List<String> allowedTags) {
         this.allowedTags = JsonNullable.<List<String>> of(allowedTags);
+
         return this;
     }
 
@@ -462,6 +488,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getAllowedTags() {
         return allowedTags.orElse(null);
     }
@@ -483,6 +510,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableUserPreferenceAccess(@javax.annotation.Nullable Boolean enableUserPreferenceAccess) {
+
         this.enableUserPreferenceAccess = enableUserPreferenceAccess;
         return this;
     }
@@ -495,6 +523,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableUserPreferenceAccess() {
         return enableUserPreferenceAccess;
     }
@@ -507,6 +536,7 @@ public class UserPolicy {
 
     public UserPolicy accessSchedules(@javax.annotation.Nullable List<AccessSchedule> accessSchedules) {
         this.accessSchedules = JsonNullable.<List<AccessSchedule>> of(accessSchedules);
+
         return this;
     }
 
@@ -529,6 +559,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<AccessSchedule> getAccessSchedules() {
         return accessSchedules.orElse(null);
     }
@@ -551,6 +582,7 @@ public class UserPolicy {
 
     public UserPolicy blockUnratedItems(@javax.annotation.Nullable List<UnratedItem> blockUnratedItems) {
         this.blockUnratedItems = JsonNullable.<List<UnratedItem>> of(blockUnratedItems);
+
         return this;
     }
 
@@ -573,6 +605,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UnratedItem> getBlockUnratedItems() {
         return blockUnratedItems.orElse(null);
     }
@@ -595,6 +628,7 @@ public class UserPolicy {
 
     public UserPolicy enableRemoteControlOfOtherUsers(
             @javax.annotation.Nullable Boolean enableRemoteControlOfOtherUsers) {
+
         this.enableRemoteControlOfOtherUsers = enableRemoteControlOfOtherUsers;
         return this;
     }
@@ -607,6 +641,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteControlOfOtherUsers() {
         return enableRemoteControlOfOtherUsers;
     }
@@ -618,6 +653,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableSharedDeviceControl(@javax.annotation.Nullable Boolean enableSharedDeviceControl) {
+
         this.enableSharedDeviceControl = enableSharedDeviceControl;
         return this;
     }
@@ -630,6 +666,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSharedDeviceControl() {
         return enableSharedDeviceControl;
     }
@@ -641,6 +678,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableRemoteAccess(@javax.annotation.Nullable Boolean enableRemoteAccess) {
+
         this.enableRemoteAccess = enableRemoteAccess;
         return this;
     }
@@ -653,6 +691,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
@@ -664,6 +703,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableLiveTvManagement(@javax.annotation.Nullable Boolean enableLiveTvManagement) {
+
         this.enableLiveTvManagement = enableLiveTvManagement;
         return this;
     }
@@ -676,6 +716,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLiveTvManagement() {
         return enableLiveTvManagement;
     }
@@ -687,6 +728,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableLiveTvAccess(@javax.annotation.Nullable Boolean enableLiveTvAccess) {
+
         this.enableLiveTvAccess = enableLiveTvAccess;
         return this;
     }
@@ -699,6 +741,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableLiveTvAccess() {
         return enableLiveTvAccess;
     }
@@ -710,6 +753,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableMediaPlayback(@javax.annotation.Nullable Boolean enableMediaPlayback) {
+
         this.enableMediaPlayback = enableMediaPlayback;
         return this;
     }
@@ -722,6 +766,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMediaPlayback() {
         return enableMediaPlayback;
     }
@@ -734,6 +779,7 @@ public class UserPolicy {
 
     public UserPolicy enableAudioPlaybackTranscoding(
             @javax.annotation.Nullable Boolean enableAudioPlaybackTranscoding) {
+
         this.enableAudioPlaybackTranscoding = enableAudioPlaybackTranscoding;
         return this;
     }
@@ -746,6 +792,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAudioPlaybackTranscoding() {
         return enableAudioPlaybackTranscoding;
     }
@@ -758,6 +805,7 @@ public class UserPolicy {
 
     public UserPolicy enableVideoPlaybackTranscoding(
             @javax.annotation.Nullable Boolean enableVideoPlaybackTranscoding) {
+
         this.enableVideoPlaybackTranscoding = enableVideoPlaybackTranscoding;
         return this;
     }
@@ -770,6 +818,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableVideoPlaybackTranscoding() {
         return enableVideoPlaybackTranscoding;
     }
@@ -781,6 +830,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enablePlaybackRemuxing(@javax.annotation.Nullable Boolean enablePlaybackRemuxing) {
+
         this.enablePlaybackRemuxing = enablePlaybackRemuxing;
         return this;
     }
@@ -793,6 +843,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePlaybackRemuxing() {
         return enablePlaybackRemuxing;
     }
@@ -804,6 +855,7 @@ public class UserPolicy {
     }
 
     public UserPolicy forceRemoteSourceTranscoding(@javax.annotation.Nullable Boolean forceRemoteSourceTranscoding) {
+
         this.forceRemoteSourceTranscoding = forceRemoteSourceTranscoding;
         return this;
     }
@@ -816,6 +868,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getForceRemoteSourceTranscoding() {
         return forceRemoteSourceTranscoding;
     }
@@ -827,6 +880,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableContentDeletion(@javax.annotation.Nullable Boolean enableContentDeletion) {
+
         this.enableContentDeletion = enableContentDeletion;
         return this;
     }
@@ -839,6 +893,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DELETION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableContentDeletion() {
         return enableContentDeletion;
     }
@@ -852,6 +907,7 @@ public class UserPolicy {
     public UserPolicy enableContentDeletionFromFolders(
             @javax.annotation.Nullable List<String> enableContentDeletionFromFolders) {
         this.enableContentDeletionFromFolders = JsonNullable.<List<String>> of(enableContentDeletionFromFolders);
+
         return this;
     }
 
@@ -874,6 +930,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getEnableContentDeletionFromFolders() {
         return enableContentDeletionFromFolders.orElse(null);
     }
@@ -897,6 +954,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableContentDownloading(@javax.annotation.Nullable Boolean enableContentDownloading) {
+
         this.enableContentDownloading = enableContentDownloading;
         return this;
     }
@@ -909,6 +967,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableContentDownloading() {
         return enableContentDownloading;
     }
@@ -920,6 +979,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableSyncTranscoding(@javax.annotation.Nullable Boolean enableSyncTranscoding) {
+
         this.enableSyncTranscoding = enableSyncTranscoding;
         return this;
     }
@@ -932,6 +992,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SYNC_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSyncTranscoding() {
         return enableSyncTranscoding;
     }
@@ -943,6 +1004,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableMediaConversion(@javax.annotation.Nullable Boolean enableMediaConversion) {
+
         this.enableMediaConversion = enableMediaConversion;
         return this;
     }
@@ -955,6 +1017,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_CONVERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMediaConversion() {
         return enableMediaConversion;
     }
@@ -967,6 +1030,7 @@ public class UserPolicy {
 
     public UserPolicy enabledDevices(@javax.annotation.Nullable List<String> enabledDevices) {
         this.enabledDevices = JsonNullable.<List<String>> of(enabledDevices);
+
         return this;
     }
 
@@ -989,6 +1053,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getEnabledDevices() {
         return enabledDevices.orElse(null);
     }
@@ -1010,6 +1075,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableAllDevices(@javax.annotation.Nullable Boolean enableAllDevices) {
+
         this.enableAllDevices = enableAllDevices;
         return this;
     }
@@ -1022,6 +1088,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_DEVICES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllDevices() {
         return enableAllDevices;
     }
@@ -1034,6 +1101,7 @@ public class UserPolicy {
 
     public UserPolicy enabledChannels(@javax.annotation.Nullable List<UUID> enabledChannels) {
         this.enabledChannels = JsonNullable.<List<UUID>> of(enabledChannels);
+
         return this;
     }
 
@@ -1056,6 +1124,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getEnabledChannels() {
         return enabledChannels.orElse(null);
     }
@@ -1077,6 +1146,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableAllChannels(@javax.annotation.Nullable Boolean enableAllChannels) {
+
         this.enableAllChannels = enableAllChannels;
         return this;
     }
@@ -1089,6 +1159,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllChannels() {
         return enableAllChannels;
     }
@@ -1101,6 +1172,7 @@ public class UserPolicy {
 
     public UserPolicy enabledFolders(@javax.annotation.Nullable List<UUID> enabledFolders) {
         this.enabledFolders = JsonNullable.<List<UUID>> of(enabledFolders);
+
         return this;
     }
 
@@ -1123,6 +1195,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getEnabledFolders() {
         return enabledFolders.orElse(null);
     }
@@ -1144,6 +1217,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enableAllFolders(@javax.annotation.Nullable Boolean enableAllFolders) {
+
         this.enableAllFolders = enableAllFolders;
         return this;
     }
@@ -1156,6 +1230,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllFolders() {
         return enableAllFolders;
     }
@@ -1167,6 +1242,7 @@ public class UserPolicy {
     }
 
     public UserPolicy invalidLoginAttemptCount(@javax.annotation.Nullable Integer invalidLoginAttemptCount) {
+
         this.invalidLoginAttemptCount = invalidLoginAttemptCount;
         return this;
     }
@@ -1179,6 +1255,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getInvalidLoginAttemptCount() {
         return invalidLoginAttemptCount;
     }
@@ -1190,6 +1267,7 @@ public class UserPolicy {
     }
 
     public UserPolicy loginAttemptsBeforeLockout(@javax.annotation.Nullable Integer loginAttemptsBeforeLockout) {
+
         this.loginAttemptsBeforeLockout = loginAttemptsBeforeLockout;
         return this;
     }
@@ -1202,6 +1280,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLoginAttemptsBeforeLockout() {
         return loginAttemptsBeforeLockout;
     }
@@ -1213,6 +1292,7 @@ public class UserPolicy {
     }
 
     public UserPolicy maxActiveSessions(@javax.annotation.Nullable Integer maxActiveSessions) {
+
         this.maxActiveSessions = maxActiveSessions;
         return this;
     }
@@ -1225,6 +1305,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MAX_ACTIVE_SESSIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMaxActiveSessions() {
         return maxActiveSessions;
     }
@@ -1236,6 +1317,7 @@ public class UserPolicy {
     }
 
     public UserPolicy enablePublicSharing(@javax.annotation.Nullable Boolean enablePublicSharing) {
+
         this.enablePublicSharing = enablePublicSharing;
         return this;
     }
@@ -1248,6 +1330,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PUBLIC_SHARING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePublicSharing() {
         return enablePublicSharing;
     }
@@ -1260,6 +1343,7 @@ public class UserPolicy {
 
     public UserPolicy blockedMediaFolders(@javax.annotation.Nullable List<UUID> blockedMediaFolders) {
         this.blockedMediaFolders = JsonNullable.<List<UUID>> of(blockedMediaFolders);
+
         return this;
     }
 
@@ -1282,6 +1366,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getBlockedMediaFolders() {
         return blockedMediaFolders.orElse(null);
     }
@@ -1304,6 +1389,7 @@ public class UserPolicy {
 
     public UserPolicy blockedChannels(@javax.annotation.Nullable List<UUID> blockedChannels) {
         this.blockedChannels = JsonNullable.<List<UUID>> of(blockedChannels);
+
         return this;
     }
 
@@ -1326,6 +1412,7 @@ public class UserPolicy {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getBlockedChannels() {
         return blockedChannels.orElse(null);
     }
@@ -1347,6 +1434,7 @@ public class UserPolicy {
     }
 
     public UserPolicy remoteClientBitrateLimit(@javax.annotation.Nullable Integer remoteClientBitrateLimit) {
+
         this.remoteClientBitrateLimit = remoteClientBitrateLimit;
         return this;
     }
@@ -1359,6 +1447,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getRemoteClientBitrateLimit() {
         return remoteClientBitrateLimit;
     }
@@ -1370,6 +1459,7 @@ public class UserPolicy {
     }
 
     public UserPolicy authenticationProviderId(@javax.annotation.Nonnull String authenticationProviderId) {
+
         this.authenticationProviderId = authenticationProviderId;
         return this;
     }
@@ -1382,6 +1472,7 @@ public class UserPolicy {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getAuthenticationProviderId() {
         return authenticationProviderId;
     }
@@ -1393,6 +1484,7 @@ public class UserPolicy {
     }
 
     public UserPolicy passwordResetProviderId(@javax.annotation.Nonnull String passwordResetProviderId) {
+
         this.passwordResetProviderId = passwordResetProviderId;
         return this;
     }
@@ -1405,6 +1497,7 @@ public class UserPolicy {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getPasswordResetProviderId() {
         return passwordResetProviderId;
     }
@@ -1416,6 +1509,7 @@ public class UserPolicy {
     }
 
     public UserPolicy syncPlayAccess(@javax.annotation.Nullable SyncPlayUserAccessType syncPlayAccess) {
+
         this.syncPlayAccess = syncPlayAccess;
         return this;
     }
@@ -1428,6 +1522,7 @@ public class UserPolicy {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SYNC_PLAY_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SyncPlayUserAccessType getSyncPlayAccess() {
         return syncPlayAccess;
     }
@@ -1438,9 +1533,6 @@ public class UserPolicy {
         this.syncPlayAccess = syncPlayAccess;
     }
 
-    /**
-     * Return true if this UserPolicy object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1589,341 +1681,6 @@ public class UserPolicy {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `IsAdministrator` to the URL query string
-        if (getIsAdministrator() != null) {
-            joiner.add(String.format("%sIsAdministrator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAdministrator()))));
-        }
-
-        // add `IsHidden` to the URL query string
-        if (getIsHidden() != null) {
-            joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
-        }
-
-        // add `EnableCollectionManagement` to the URL query string
-        if (getEnableCollectionManagement() != null) {
-            joiner.add(String.format("%sEnableCollectionManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableCollectionManagement()))));
-        }
-
-        // add `EnableSubtitleManagement` to the URL query string
-        if (getEnableSubtitleManagement() != null) {
-            joiner.add(String.format("%sEnableSubtitleManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleManagement()))));
-        }
-
-        // add `EnableLyricManagement` to the URL query string
-        if (getEnableLyricManagement() != null) {
-            joiner.add(String.format("%sEnableLyricManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLyricManagement()))));
-        }
-
-        // add `IsDisabled` to the URL query string
-        if (getIsDisabled() != null) {
-            joiner.add(String.format("%sIsDisabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsDisabled()))));
-        }
-
-        // add `MaxParentalRating` to the URL query string
-        if (getMaxParentalRating() != null) {
-            joiner.add(String.format("%sMaxParentalRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxParentalRating()))));
-        }
-
-        // add `BlockedTags` to the URL query string
-        if (getBlockedTags() != null) {
-            for (int i = 0; i < getBlockedTags().size(); i++) {
-                joiner.add(String.format("%sBlockedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBlockedTags().get(i)))));
-            }
-        }
-
-        // add `AllowedTags` to the URL query string
-        if (getAllowedTags() != null) {
-            for (int i = 0; i < getAllowedTags().size(); i++) {
-                joiner.add(String.format("%sAllowedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getAllowedTags().get(i)))));
-            }
-        }
-
-        // add `EnableUserPreferenceAccess` to the URL query string
-        if (getEnableUserPreferenceAccess() != null) {
-            joiner.add(String.format("%sEnableUserPreferenceAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserPreferenceAccess()))));
-        }
-
-        // add `AccessSchedules` to the URL query string
-        if (getAccessSchedules() != null) {
-            for (int i = 0; i < getAccessSchedules().size(); i++) {
-                if (getAccessSchedules().get(i) != null) {
-                    joiner.add(getAccessSchedules().get(i).toUrlQueryString(String.format("%sAccessSchedules%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `BlockUnratedItems` to the URL query string
-        if (getBlockUnratedItems() != null) {
-            for (int i = 0; i < getBlockUnratedItems().size(); i++) {
-                if (getBlockUnratedItems().get(i) != null) {
-                    joiner.add(String.format("%sBlockUnratedItems%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockUnratedItems().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableRemoteControlOfOtherUsers` to the URL query string
-        if (getEnableRemoteControlOfOtherUsers() != null) {
-            joiner.add(String.format("%sEnableRemoteControlOfOtherUsers%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteControlOfOtherUsers()))));
-        }
-
-        // add `EnableSharedDeviceControl` to the URL query string
-        if (getEnableSharedDeviceControl() != null) {
-            joiner.add(String.format("%sEnableSharedDeviceControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSharedDeviceControl()))));
-        }
-
-        // add `EnableRemoteAccess` to the URL query string
-        if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
-        }
-
-        // add `EnableLiveTvManagement` to the URL query string
-        if (getEnableLiveTvManagement() != null) {
-            joiner.add(String.format("%sEnableLiveTvManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvManagement()))));
-        }
-
-        // add `EnableLiveTvAccess` to the URL query string
-        if (getEnableLiveTvAccess() != null) {
-            joiner.add(String.format("%sEnableLiveTvAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvAccess()))));
-        }
-
-        // add `EnableMediaPlayback` to the URL query string
-        if (getEnableMediaPlayback() != null) {
-            joiner.add(String.format("%sEnableMediaPlayback%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaPlayback()))));
-        }
-
-        // add `EnableAudioPlaybackTranscoding` to the URL query string
-        if (getEnableAudioPlaybackTranscoding() != null) {
-            joiner.add(String.format("%sEnableAudioPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioPlaybackTranscoding()))));
-        }
-
-        // add `EnableVideoPlaybackTranscoding` to the URL query string
-        if (getEnableVideoPlaybackTranscoding() != null) {
-            joiner.add(String.format("%sEnableVideoPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableVideoPlaybackTranscoding()))));
-        }
-
-        // add `EnablePlaybackRemuxing` to the URL query string
-        if (getEnablePlaybackRemuxing() != null) {
-            joiner.add(String.format("%sEnablePlaybackRemuxing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePlaybackRemuxing()))));
-        }
-
-        // add `ForceRemoteSourceTranscoding` to the URL query string
-        if (getForceRemoteSourceTranscoding() != null) {
-            joiner.add(String.format("%sForceRemoteSourceTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForceRemoteSourceTranscoding()))));
-        }
-
-        // add `EnableContentDeletion` to the URL query string
-        if (getEnableContentDeletion() != null) {
-            joiner.add(String.format("%sEnableContentDeletion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletion()))));
-        }
-
-        // add `EnableContentDeletionFromFolders` to the URL query string
-        if (getEnableContentDeletionFromFolders() != null) {
-            for (int i = 0; i < getEnableContentDeletionFromFolders().size(); i++) {
-                joiner.add(String.format("%sEnableContentDeletionFromFolders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletionFromFolders().get(i)))));
-            }
-        }
-
-        // add `EnableContentDownloading` to the URL query string
-        if (getEnableContentDownloading() != null) {
-            joiner.add(String.format("%sEnableContentDownloading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDownloading()))));
-        }
-
-        // add `EnableSyncTranscoding` to the URL query string
-        if (getEnableSyncTranscoding() != null) {
-            joiner.add(String.format("%sEnableSyncTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSyncTranscoding()))));
-        }
-
-        // add `EnableMediaConversion` to the URL query string
-        if (getEnableMediaConversion() != null) {
-            joiner.add(String.format("%sEnableMediaConversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaConversion()))));
-        }
-
-        // add `EnabledDevices` to the URL query string
-        if (getEnabledDevices() != null) {
-            for (int i = 0; i < getEnabledDevices().size(); i++) {
-                joiner.add(String.format("%sEnabledDevices%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledDevices().get(i)))));
-            }
-        }
-
-        // add `EnableAllDevices` to the URL query string
-        if (getEnableAllDevices() != null) {
-            joiner.add(String.format("%sEnableAllDevices%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllDevices()))));
-        }
-
-        // add `EnabledChannels` to the URL query string
-        if (getEnabledChannels() != null) {
-            for (int i = 0; i < getEnabledChannels().size(); i++) {
-                if (getEnabledChannels().get(i) != null) {
-                    joiner.add(String.format("%sEnabledChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledChannels().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableAllChannels` to the URL query string
-        if (getEnableAllChannels() != null) {
-            joiner.add(String.format("%sEnableAllChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllChannels()))));
-        }
-
-        // add `EnabledFolders` to the URL query string
-        if (getEnabledFolders() != null) {
-            for (int i = 0; i < getEnabledFolders().size(); i++) {
-                if (getEnabledFolders().get(i) != null) {
-                    joiner.add(String.format("%sEnabledFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledFolders().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableAllFolders` to the URL query string
-        if (getEnableAllFolders() != null) {
-            joiner.add(String.format("%sEnableAllFolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllFolders()))));
-        }
-
-        // add `InvalidLoginAttemptCount` to the URL query string
-        if (getInvalidLoginAttemptCount() != null) {
-            joiner.add(String.format("%sInvalidLoginAttemptCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInvalidLoginAttemptCount()))));
-        }
-
-        // add `LoginAttemptsBeforeLockout` to the URL query string
-        if (getLoginAttemptsBeforeLockout() != null) {
-            joiner.add(String.format("%sLoginAttemptsBeforeLockout%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginAttemptsBeforeLockout()))));
-        }
-
-        // add `MaxActiveSessions` to the URL query string
-        if (getMaxActiveSessions() != null) {
-            joiner.add(String.format("%sMaxActiveSessions%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxActiveSessions()))));
-        }
-
-        // add `EnablePublicSharing` to the URL query string
-        if (getEnablePublicSharing() != null) {
-            joiner.add(String.format("%sEnablePublicSharing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublicSharing()))));
-        }
-
-        // add `BlockedMediaFolders` to the URL query string
-        if (getBlockedMediaFolders() != null) {
-            for (int i = 0; i < getBlockedMediaFolders().size(); i++) {
-                if (getBlockedMediaFolders().get(i) != null) {
-                    joiner.add(String.format("%sBlockedMediaFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedMediaFolders().get(i)))));
-                }
-            }
-        }
-
-        // add `BlockedChannels` to the URL query string
-        if (getBlockedChannels() != null) {
-            for (int i = 0; i < getBlockedChannels().size(); i++) {
-                if (getBlockedChannels().get(i) != null) {
-                    joiner.add(String.format("%sBlockedChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedChannels().get(i)))));
-                }
-            }
-        }
-
-        // add `RemoteClientBitrateLimit` to the URL query string
-        if (getRemoteClientBitrateLimit() != null) {
-            joiner.add(String.format("%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
-        }
-
-        // add `AuthenticationProviderId` to the URL query string
-        if (getAuthenticationProviderId() != null) {
-            joiner.add(String.format("%sAuthenticationProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthenticationProviderId()))));
-        }
-
-        // add `PasswordResetProviderId` to the URL query string
-        if (getPasswordResetProviderId() != null) {
-            joiner.add(String.format("%sPasswordResetProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPasswordResetProviderId()))));
-        }
-
-        // add `SyncPlayAccess` to the URL query string
-        if (getSyncPlayAccess() != null) {
-            joiner.add(String.format("%sSyncPlayAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSyncPlayAccess()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

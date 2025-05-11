@@ -24,10 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,33 +44,43 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AlbumInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
+    @javax.annotation.Nullable
     private JsonNullable<String> originalTitle = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
     private JsonNullable<String> path = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
+    @javax.annotation.Nullable
     private JsonNullable<String> metadataLanguage = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+    @javax.annotation.Nullable
     private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+    @javax.annotation.Nullable
     private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
 
     public static final String JSON_PROPERTY_YEAR = "Year";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> year = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
@@ -96,6 +104,7 @@ public class AlbumInfo {
 
     public AlbumInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -106,6 +115,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -128,6 +138,7 @@ public class AlbumInfo {
 
     public AlbumInfo originalTitle(@javax.annotation.Nullable String originalTitle) {
         this.originalTitle = JsonNullable.<String> of(originalTitle);
+
         return this;
     }
 
@@ -138,6 +149,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOriginalTitle() {
         return originalTitle.orElse(null);
     }
@@ -160,6 +172,7 @@ public class AlbumInfo {
 
     public AlbumInfo path(@javax.annotation.Nullable String path) {
         this.path = JsonNullable.<String> of(path);
+
         return this;
     }
 
@@ -170,6 +183,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPath() {
         return path.orElse(null);
     }
@@ -192,6 +206,7 @@ public class AlbumInfo {
 
     public AlbumInfo metadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
         this.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
+
         return this;
     }
 
@@ -202,6 +217,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMetadataLanguage() {
         return metadataLanguage.orElse(null);
     }
@@ -224,6 +240,7 @@ public class AlbumInfo {
 
     public AlbumInfo metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
         this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
+
         return this;
     }
 
@@ -234,6 +251,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMetadataCountryCode() {
         return metadataCountryCode.orElse(null);
     }
@@ -256,6 +274,7 @@ public class AlbumInfo {
 
     public AlbumInfo providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
+
         return this;
     }
 
@@ -278,6 +297,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Map<String, String> getProviderIds() {
         return providerIds.orElse(null);
     }
@@ -300,6 +320,7 @@ public class AlbumInfo {
 
     public AlbumInfo year(@javax.annotation.Nullable Integer year) {
         this.year = JsonNullable.<Integer> of(year);
+
         return this;
     }
 
@@ -310,6 +331,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getYear() {
         return year.orElse(null);
     }
@@ -332,6 +354,7 @@ public class AlbumInfo {
 
     public AlbumInfo indexNumber(@javax.annotation.Nullable Integer indexNumber) {
         this.indexNumber = JsonNullable.<Integer> of(indexNumber);
+
         return this;
     }
 
@@ -342,6 +365,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getIndexNumber() {
         return indexNumber.orElse(null);
     }
@@ -364,6 +388,7 @@ public class AlbumInfo {
 
     public AlbumInfo parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
         this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
+
         return this;
     }
 
@@ -374,6 +399,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber.orElse(null);
     }
@@ -396,6 +422,7 @@ public class AlbumInfo {
 
     public AlbumInfo premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
         this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+
         return this;
     }
 
@@ -406,6 +433,7 @@ public class AlbumInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getPremiereDate() {
         return premiereDate.orElse(null);
     }
@@ -427,6 +455,7 @@ public class AlbumInfo {
     }
 
     public AlbumInfo isAutomated(@javax.annotation.Nullable Boolean isAutomated) {
+
         this.isAutomated = isAutomated;
         return this;
     }
@@ -439,6 +468,7 @@ public class AlbumInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsAutomated() {
         return isAutomated;
     }
@@ -450,6 +480,7 @@ public class AlbumInfo {
     }
 
     public AlbumInfo albumArtists(@javax.annotation.Nullable List<String> albumArtists) {
+
         this.albumArtists = albumArtists;
         return this;
     }
@@ -470,6 +501,7 @@ public class AlbumInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getAlbumArtists() {
         return albumArtists;
     }
@@ -481,6 +513,7 @@ public class AlbumInfo {
     }
 
     public AlbumInfo artistProviderIds(@javax.annotation.Nullable Map<String, String> artistProviderIds) {
+
         this.artistProviderIds = artistProviderIds;
         return this;
     }
@@ -501,6 +534,7 @@ public class AlbumInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ARTIST_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getArtistProviderIds() {
         return artistProviderIds;
     }
@@ -512,6 +546,7 @@ public class AlbumInfo {
     }
 
     public AlbumInfo songInfos(@javax.annotation.Nullable List<SongInfo> songInfos) {
+
         this.songInfos = songInfos;
         return this;
     }
@@ -532,6 +567,7 @@ public class AlbumInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SONG_INFOS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SongInfo> getSongInfos() {
         return songInfos;
     }
@@ -542,9 +578,6 @@ public class AlbumInfo {
         this.songInfos = songInfos;
     }
 
-    /**
-     * Return true if this AlbumInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -620,140 +653,6 @@ public class AlbumInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `OriginalTitle` to the URL query string
-        if (getOriginalTitle() != null) {
-            joiner.add(String.format("%sOriginalTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `MetadataLanguage` to the URL query string
-        if (getMetadataLanguage() != null) {
-            joiner.add(String.format("%sMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataLanguage()))));
-        }
-
-        // add `MetadataCountryCode` to the URL query string
-        if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
-        }
-
-        // add `ProviderIds` to the URL query string
-        if (getProviderIds() != null) {
-            for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
-            }
-        }
-
-        // add `Year` to the URL query string
-        if (getYear() != null) {
-            joiner.add(String.format("%sYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getYear()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `PremiereDate` to the URL query string
-        if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
-        }
-
-        // add `IsAutomated` to the URL query string
-        if (getIsAutomated() != null) {
-            joiner.add(String.format("%sIsAutomated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAutomated()))));
-        }
-
-        // add `AlbumArtists` to the URL query string
-        if (getAlbumArtists() != null) {
-            for (int i = 0; i < getAlbumArtists().size(); i++) {
-                joiner.add(String.format("%sAlbumArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtists().get(i)))));
-            }
-        }
-
-        // add `ArtistProviderIds` to the URL query string
-        if (getArtistProviderIds() != null) {
-            for (String _key : getArtistProviderIds().keySet()) {
-                joiner.add(String.format("%sArtistProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getArtistProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArtistProviderIds().get(_key)))));
-            }
-        }
-
-        // add `SongInfos` to the URL query string
-        if (getSongInfos() != null) {
-            for (int i = 0; i < getSongInfos().size(); i++) {
-                if (getSongInfos().get(i) != null) {
-                    joiner.add(getSongInfos().get(i).toUrlQueryString(String.format("%sSongInfos%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

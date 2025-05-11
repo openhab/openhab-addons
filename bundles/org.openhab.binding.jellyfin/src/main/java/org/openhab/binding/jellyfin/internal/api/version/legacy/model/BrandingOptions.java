@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,9 +35,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BrandingOptions {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
+    @javax.annotation.Nullable
     private JsonNullable<String> loginDisclaimer = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
+    @javax.annotation.Nullable
     private JsonNullable<String> customCss = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
@@ -51,6 +51,7 @@ public class BrandingOptions {
 
     public BrandingOptions loginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
         this.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
+
         return this;
     }
 
@@ -61,6 +62,7 @@ public class BrandingOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLoginDisclaimer() {
         return loginDisclaimer.orElse(null);
     }
@@ -83,6 +85,7 @@ public class BrandingOptions {
 
     public BrandingOptions customCss(@javax.annotation.Nullable String customCss) {
         this.customCss = JsonNullable.<String> of(customCss);
+
         return this;
     }
 
@@ -93,6 +96,7 @@ public class BrandingOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCustomCss() {
         return customCss.orElse(null);
     }
@@ -114,6 +118,7 @@ public class BrandingOptions {
     }
 
     public BrandingOptions splashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
+
         this.splashscreenEnabled = splashscreenEnabled;
         return this;
     }
@@ -126,6 +131,7 @@ public class BrandingOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSplashscreenEnabled() {
         return splashscreenEnabled;
     }
@@ -136,9 +142,6 @@ public class BrandingOptions {
         this.splashscreenEnabled = splashscreenEnabled;
     }
 
-    /**
-     * Return true if this BrandingOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -190,59 +193,6 @@ public class BrandingOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LoginDisclaimer` to the URL query string
-        if (getLoginDisclaimer() != null) {
-            joiner.add(String.format("%sLoginDisclaimer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginDisclaimer()))));
-        }
-
-        // add `CustomCss` to the URL query string
-        if (getCustomCss() != null) {
-            joiner.add(String.format("%sCustomCss%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomCss()))));
-        }
-
-        // add `SplashscreenEnabled` to the URL query string
-        if (getSplashscreenEnabled() != null) {
-            joiner.add(String.format("%sSplashscreenEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSplashscreenEnabled()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

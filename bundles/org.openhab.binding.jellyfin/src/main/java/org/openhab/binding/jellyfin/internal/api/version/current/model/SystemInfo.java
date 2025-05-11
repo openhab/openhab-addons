@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,30 +49,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
+    @javax.annotation.Nullable
     private JsonNullable<String> localAddress = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
+    @javax.annotation.Nullable
     private JsonNullable<String> serverName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
+    @javax.annotation.Nullable
     private JsonNullable<String> productName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
+    @javax.annotation.Nullable
     private JsonNullable<String> operatingSystem = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> startupWizardCompleted = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME = "OperatingSystemDisplayName";
+    @javax.annotation.Nullable
     private JsonNullable<String> operatingSystemDisplayName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PACKAGE_NAME = "PackageName";
+    @javax.annotation.Nullable
     private JsonNullable<String> packageName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_HAS_PENDING_RESTART = "HasPendingRestart";
@@ -94,6 +101,7 @@ public class SystemInfo {
     private Integer webSocketPortNumber;
 
     public static final String JSON_PROPERTY_COMPLETED_INSTALLATIONS = "CompletedInstallations";
+    @javax.annotation.Nullable
     private JsonNullable<List<InstallationInfo>> completedInstallations = JsonNullable
             .<List<InstallationInfo>> undefined();
 
@@ -106,27 +114,35 @@ public class SystemInfo {
     private Boolean canLaunchWebBrowser = false;
 
     public static final String JSON_PROPERTY_PROGRAM_DATA_PATH = "ProgramDataPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> programDataPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_WEB_PATH = "WebPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> webPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ITEMS_BY_NAME_PATH = "ItemsByNamePath";
+    @javax.annotation.Nullable
     private JsonNullable<String> itemsByNamePath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
+    @javax.annotation.Nullable
     private JsonNullable<String> cachePath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LOG_PATH = "LogPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> logPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_PATH = "InternalMetadataPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> internalMetadataPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> transcodingTempPath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS = "CastReceiverApplications";
+    @javax.annotation.Nullable
     private JsonNullable<List<CastReceiverApplication>> castReceiverApplications = JsonNullable
             .<List<CastReceiverApplication>> undefined();
 
@@ -135,9 +151,11 @@ public class SystemInfo {
     private Boolean hasUpdateAvailable = false;
 
     public static final String JSON_PROPERTY_ENCODER_LOCATION = "EncoderLocation";
+    @javax.annotation.Nullable
     private JsonNullable<String> encoderLocation = JsonNullable.<String> of("System");
 
     public static final String JSON_PROPERTY_SYSTEM_ARCHITECTURE = "SystemArchitecture";
+    @javax.annotation.Nullable
     private JsonNullable<String> systemArchitecture = JsonNullable.<String> of("X64");
 
     public SystemInfo() {
@@ -145,6 +163,7 @@ public class SystemInfo {
 
     public SystemInfo localAddress(@javax.annotation.Nullable String localAddress) {
         this.localAddress = JsonNullable.<String> of(localAddress);
+
         return this;
     }
 
@@ -155,6 +174,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLocalAddress() {
         return localAddress.orElse(null);
     }
@@ -177,6 +197,7 @@ public class SystemInfo {
 
     public SystemInfo serverName(@javax.annotation.Nullable String serverName) {
         this.serverName = JsonNullable.<String> of(serverName);
+
         return this;
     }
 
@@ -187,6 +208,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServerName() {
         return serverName.orElse(null);
     }
@@ -209,6 +231,7 @@ public class SystemInfo {
 
     public SystemInfo version(@javax.annotation.Nullable String version) {
         this.version = JsonNullable.<String> of(version);
+
         return this;
     }
 
@@ -219,6 +242,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
         return version.orElse(null);
     }
@@ -241,6 +265,7 @@ public class SystemInfo {
 
     public SystemInfo productName(@javax.annotation.Nullable String productName) {
         this.productName = JsonNullable.<String> of(productName);
+
         return this;
     }
 
@@ -251,6 +276,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProductName() {
         return productName.orElse(null);
     }
@@ -273,6 +299,7 @@ public class SystemInfo {
 
     public SystemInfo operatingSystem(@javax.annotation.Nullable String operatingSystem) {
         this.operatingSystem = JsonNullable.<String> of(operatingSystem);
+
         return this;
     }
 
@@ -285,6 +312,7 @@ public class SystemInfo {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOperatingSystem() {
         return operatingSystem.orElse(null);
     }
@@ -307,6 +335,7 @@ public class SystemInfo {
 
     public SystemInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -317,6 +346,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -339,6 +369,7 @@ public class SystemInfo {
 
     public SystemInfo startupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
         this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
+
         return this;
     }
 
@@ -349,6 +380,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted.orElse(null);
     }
@@ -371,6 +403,7 @@ public class SystemInfo {
 
     public SystemInfo operatingSystemDisplayName(@javax.annotation.Nullable String operatingSystemDisplayName) {
         this.operatingSystemDisplayName = JsonNullable.<String> of(operatingSystemDisplayName);
+
         return this;
     }
 
@@ -383,6 +416,7 @@ public class SystemInfo {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOperatingSystemDisplayName() {
         return operatingSystemDisplayName.orElse(null);
     }
@@ -405,6 +439,7 @@ public class SystemInfo {
 
     public SystemInfo packageName(@javax.annotation.Nullable String packageName) {
         this.packageName = JsonNullable.<String> of(packageName);
+
         return this;
     }
 
@@ -415,6 +450,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPackageName() {
         return packageName.orElse(null);
     }
@@ -436,6 +472,7 @@ public class SystemInfo {
     }
 
     public SystemInfo hasPendingRestart(@javax.annotation.Nullable Boolean hasPendingRestart) {
+
         this.hasPendingRestart = hasPendingRestart;
         return this;
     }
@@ -448,6 +485,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HAS_PENDING_RESTART)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasPendingRestart() {
         return hasPendingRestart;
     }
@@ -459,6 +497,7 @@ public class SystemInfo {
     }
 
     public SystemInfo isShuttingDown(@javax.annotation.Nullable Boolean isShuttingDown) {
+
         this.isShuttingDown = isShuttingDown;
         return this;
     }
@@ -471,6 +510,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_SHUTTING_DOWN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsShuttingDown() {
         return isShuttingDown;
     }
@@ -482,6 +522,7 @@ public class SystemInfo {
     }
 
     public SystemInfo supportsLibraryMonitor(@javax.annotation.Nullable Boolean supportsLibraryMonitor) {
+
         this.supportsLibraryMonitor = supportsLibraryMonitor;
         return this;
     }
@@ -494,6 +535,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsLibraryMonitor() {
         return supportsLibraryMonitor;
     }
@@ -505,6 +547,7 @@ public class SystemInfo {
     }
 
     public SystemInfo webSocketPortNumber(@javax.annotation.Nullable Integer webSocketPortNumber) {
+
         this.webSocketPortNumber = webSocketPortNumber;
         return this;
     }
@@ -517,6 +560,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getWebSocketPortNumber() {
         return webSocketPortNumber;
     }
@@ -529,6 +573,7 @@ public class SystemInfo {
 
     public SystemInfo completedInstallations(@javax.annotation.Nullable List<InstallationInfo> completedInstallations) {
         this.completedInstallations = JsonNullable.<List<InstallationInfo>> of(completedInstallations);
+
         return this;
     }
 
@@ -551,6 +596,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<InstallationInfo> getCompletedInstallations() {
         return completedInstallations.orElse(null);
     }
@@ -572,6 +618,7 @@ public class SystemInfo {
     }
 
     public SystemInfo canSelfRestart(@javax.annotation.Nullable Boolean canSelfRestart) {
+
         this.canSelfRestart = canSelfRestart;
         return this;
     }
@@ -586,6 +633,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_SELF_RESTART)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanSelfRestart() {
         return canSelfRestart;
     }
@@ -597,6 +645,7 @@ public class SystemInfo {
     }
 
     public SystemInfo canLaunchWebBrowser(@javax.annotation.Nullable Boolean canLaunchWebBrowser) {
+
         this.canLaunchWebBrowser = canLaunchWebBrowser;
         return this;
     }
@@ -611,6 +660,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanLaunchWebBrowser() {
         return canLaunchWebBrowser;
     }
@@ -623,6 +673,7 @@ public class SystemInfo {
 
     public SystemInfo programDataPath(@javax.annotation.Nullable String programDataPath) {
         this.programDataPath = JsonNullable.<String> of(programDataPath);
+
         return this;
     }
 
@@ -633,6 +684,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProgramDataPath() {
         return programDataPath.orElse(null);
     }
@@ -655,6 +707,7 @@ public class SystemInfo {
 
     public SystemInfo webPath(@javax.annotation.Nullable String webPath) {
         this.webPath = JsonNullable.<String> of(webPath);
+
         return this;
     }
 
@@ -665,6 +718,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getWebPath() {
         return webPath.orElse(null);
     }
@@ -687,6 +741,7 @@ public class SystemInfo {
 
     public SystemInfo itemsByNamePath(@javax.annotation.Nullable String itemsByNamePath) {
         this.itemsByNamePath = JsonNullable.<String> of(itemsByNamePath);
+
         return this;
     }
 
@@ -697,6 +752,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getItemsByNamePath() {
         return itemsByNamePath.orElse(null);
     }
@@ -719,6 +775,7 @@ public class SystemInfo {
 
     public SystemInfo cachePath(@javax.annotation.Nullable String cachePath) {
         this.cachePath = JsonNullable.<String> of(cachePath);
+
         return this;
     }
 
@@ -729,6 +786,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCachePath() {
         return cachePath.orElse(null);
     }
@@ -751,6 +809,7 @@ public class SystemInfo {
 
     public SystemInfo logPath(@javax.annotation.Nullable String logPath) {
         this.logPath = JsonNullable.<String> of(logPath);
+
         return this;
     }
 
@@ -761,6 +820,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLogPath() {
         return logPath.orElse(null);
     }
@@ -783,6 +843,7 @@ public class SystemInfo {
 
     public SystemInfo internalMetadataPath(@javax.annotation.Nullable String internalMetadataPath) {
         this.internalMetadataPath = JsonNullable.<String> of(internalMetadataPath);
+
         return this;
     }
 
@@ -793,6 +854,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getInternalMetadataPath() {
         return internalMetadataPath.orElse(null);
     }
@@ -815,6 +877,7 @@ public class SystemInfo {
 
     public SystemInfo transcodingTempPath(@javax.annotation.Nullable String transcodingTempPath) {
         this.transcodingTempPath = JsonNullable.<String> of(transcodingTempPath);
+
         return this;
     }
 
@@ -825,6 +888,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTranscodingTempPath() {
         return transcodingTempPath.orElse(null);
     }
@@ -848,6 +912,7 @@ public class SystemInfo {
     public SystemInfo castReceiverApplications(
             @javax.annotation.Nullable List<CastReceiverApplication> castReceiverApplications) {
         this.castReceiverApplications = JsonNullable.<List<CastReceiverApplication>> of(castReceiverApplications);
+
         return this;
     }
 
@@ -870,6 +935,7 @@ public class SystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<CastReceiverApplication> getCastReceiverApplications() {
         return castReceiverApplications.orElse(null);
     }
@@ -893,6 +959,7 @@ public class SystemInfo {
     }
 
     public SystemInfo hasUpdateAvailable(@javax.annotation.Nullable Boolean hasUpdateAvailable) {
+
         this.hasUpdateAvailable = hasUpdateAvailable;
         return this;
     }
@@ -907,6 +974,7 @@ public class SystemInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
@@ -919,6 +987,7 @@ public class SystemInfo {
 
     public SystemInfo encoderLocation(@javax.annotation.Nullable String encoderLocation) {
         this.encoderLocation = JsonNullable.<String> of(encoderLocation);
+
         return this;
     }
 
@@ -931,6 +1000,7 @@ public class SystemInfo {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getEncoderLocation() {
         return encoderLocation.orElse(null);
     }
@@ -953,6 +1023,7 @@ public class SystemInfo {
 
     public SystemInfo systemArchitecture(@javax.annotation.Nullable String systemArchitecture) {
         this.systemArchitecture = JsonNullable.<String> of(systemArchitecture);
+
         return this;
     }
 
@@ -965,6 +1036,7 @@ public class SystemInfo {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSystemArchitecture() {
         return systemArchitecture.orElse(null);
     }
@@ -985,9 +1057,6 @@ public class SystemInfo {
         this.systemArchitecture = JsonNullable.<String> of(systemArchitecture);
     }
 
-    /**
-     * Return true if this SystemInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1095,213 +1164,6 @@ public class SystemInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LocalAddress` to the URL query string
-        if (getLocalAddress() != null) {
-            joiner.add(String.format("%sLocalAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
-        }
-
-        // add `ServerName` to the URL query string
-        if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `ProductName` to the URL query string
-        if (getProductName() != null) {
-            joiner.add(String.format("%sProductName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
-        }
-
-        // add `OperatingSystem` to the URL query string
-        if (getOperatingSystem() != null) {
-            joiner.add(String.format("%sOperatingSystem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `StartupWizardCompleted` to the URL query string
-        if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
-        }
-
-        // add `OperatingSystemDisplayName` to the URL query string
-        if (getOperatingSystemDisplayName() != null) {
-            joiner.add(String.format("%sOperatingSystemDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystemDisplayName()))));
-        }
-
-        // add `PackageName` to the URL query string
-        if (getPackageName() != null) {
-            joiner.add(String.format("%sPackageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPackageName()))));
-        }
-
-        // add `HasPendingRestart` to the URL query string
-        if (getHasPendingRestart() != null) {
-            joiner.add(String.format("%sHasPendingRestart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasPendingRestart()))));
-        }
-
-        // add `IsShuttingDown` to the URL query string
-        if (getIsShuttingDown() != null) {
-            joiner.add(String.format("%sIsShuttingDown%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsShuttingDown()))));
-        }
-
-        // add `SupportsLibraryMonitor` to the URL query string
-        if (getSupportsLibraryMonitor() != null) {
-            joiner.add(String.format("%sSupportsLibraryMonitor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsLibraryMonitor()))));
-        }
-
-        // add `WebSocketPortNumber` to the URL query string
-        if (getWebSocketPortNumber() != null) {
-            joiner.add(String.format("%sWebSocketPortNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWebSocketPortNumber()))));
-        }
-
-        // add `CompletedInstallations` to the URL query string
-        if (getCompletedInstallations() != null) {
-            for (int i = 0; i < getCompletedInstallations().size(); i++) {
-                if (getCompletedInstallations().get(i) != null) {
-                    joiner.add(getCompletedInstallations().get(i).toUrlQueryString(String.format(
-                            "%sCompletedInstallations%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `CanSelfRestart` to the URL query string
-        if (getCanSelfRestart() != null) {
-            joiner.add(String.format("%sCanSelfRestart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSelfRestart()))));
-        }
-
-        // add `CanLaunchWebBrowser` to the URL query string
-        if (getCanLaunchWebBrowser() != null) {
-            joiner.add(String.format("%sCanLaunchWebBrowser%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanLaunchWebBrowser()))));
-        }
-
-        // add `ProgramDataPath` to the URL query string
-        if (getProgramDataPath() != null) {
-            joiner.add(String.format("%sProgramDataPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramDataPath()))));
-        }
-
-        // add `WebPath` to the URL query string
-        if (getWebPath() != null) {
-            joiner.add(String.format("%sWebPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWebPath()))));
-        }
-
-        // add `ItemsByNamePath` to the URL query string
-        if (getItemsByNamePath() != null) {
-            joiner.add(String.format("%sItemsByNamePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemsByNamePath()))));
-        }
-
-        // add `CachePath` to the URL query string
-        if (getCachePath() != null) {
-            joiner.add(String.format("%sCachePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
-        }
-
-        // add `LogPath` to the URL query string
-        if (getLogPath() != null) {
-            joiner.add(String.format("%sLogPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLogPath()))));
-        }
-
-        // add `InternalMetadataPath` to the URL query string
-        if (getInternalMetadataPath() != null) {
-            joiner.add(String.format("%sInternalMetadataPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalMetadataPath()))));
-        }
-
-        // add `TranscodingTempPath` to the URL query string
-        if (getTranscodingTempPath() != null) {
-            joiner.add(String.format("%sTranscodingTempPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
-        }
-
-        // add `CastReceiverApplications` to the URL query string
-        if (getCastReceiverApplications() != null) {
-            for (int i = 0; i < getCastReceiverApplications().size(); i++) {
-                if (getCastReceiverApplications().get(i) != null) {
-                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(
-                            "%sCastReceiverApplications%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `HasUpdateAvailable` to the URL query string
-        if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format("%sHasUpdateAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
-        }
-
-        // add `EncoderLocation` to the URL query string
-        if (getEncoderLocation() != null) {
-            joiner.add(String.format("%sEncoderLocation%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderLocation()))));
-        }
-
-        // add `SystemArchitecture` to the URL query string
-        if (getSystemArchitecture() != null) {
-            joiner.add(String.format("%sSystemArchitecture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSystemArchitecture()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

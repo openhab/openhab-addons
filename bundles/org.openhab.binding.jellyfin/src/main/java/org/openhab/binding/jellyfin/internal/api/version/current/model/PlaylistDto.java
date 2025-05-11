@@ -20,10 +20,7 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class PlaylistDto {
     }
 
     public PlaylistDto openAccess(@javax.annotation.Nullable Boolean openAccess) {
+
         this.openAccess = openAccess;
         return this;
     }
@@ -64,6 +62,7 @@ public class PlaylistDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_OPEN_ACCESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getOpenAccess() {
         return openAccess;
     }
@@ -75,6 +74,7 @@ public class PlaylistDto {
     }
 
     public PlaylistDto shares(@javax.annotation.Nullable List<PlaylistUserPermissions> shares) {
+
         this.shares = shares;
         return this;
     }
@@ -95,6 +95,7 @@ public class PlaylistDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SHARES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<PlaylistUserPermissions> getShares() {
         return shares;
     }
@@ -106,6 +107,7 @@ public class PlaylistDto {
     }
 
     public PlaylistDto itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
+
         this.itemIds = itemIds;
         return this;
     }
@@ -126,6 +128,7 @@ public class PlaylistDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getItemIds() {
         return itemIds;
     }
@@ -136,9 +139,6 @@ public class PlaylistDto {
         this.itemIds = itemIds;
     }
 
-    /**
-     * Return true if this PlaylistDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -177,68 +177,6 @@ public class PlaylistDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `OpenAccess` to the URL query string
-        if (getOpenAccess() != null) {
-            joiner.add(String.format("%sOpenAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenAccess()))));
-        }
-
-        // add `Shares` to the URL query string
-        if (getShares() != null) {
-            for (int i = 0; i < getShares().size(); i++) {
-                if (getShares().get(i) != null) {
-                    joiner.add(getShares().get(i).toUrlQueryString(String.format("%sShares%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ItemIds` to the URL query string
-        if (getItemIds() != null) {
-            for (int i = 0; i < getItemIds().size(); i++) {
-                if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -49,12 +47,14 @@ public class ServerDiscoveryInfo {
     private String name;
 
     public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
+    @javax.annotation.Nullable
     private JsonNullable<String> endpointAddress = JsonNullable.<String> undefined();
 
     public ServerDiscoveryInfo() {
     }
 
     public ServerDiscoveryInfo address(@javax.annotation.Nullable String address) {
+
         this.address = address;
         return this;
     }
@@ -67,6 +67,7 @@ public class ServerDiscoveryInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAddress() {
         return address;
     }
@@ -78,6 +79,7 @@ public class ServerDiscoveryInfo {
     }
 
     public ServerDiscoveryInfo id(@javax.annotation.Nullable String id) {
+
         this.id = id;
         return this;
     }
@@ -90,6 +92,7 @@ public class ServerDiscoveryInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -101,6 +104,7 @@ public class ServerDiscoveryInfo {
     }
 
     public ServerDiscoveryInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -113,6 +117,7 @@ public class ServerDiscoveryInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -125,6 +130,7 @@ public class ServerDiscoveryInfo {
 
     public ServerDiscoveryInfo endpointAddress(@javax.annotation.Nullable String endpointAddress) {
         this.endpointAddress = JsonNullable.<String> of(endpointAddress);
+
         return this;
     }
 
@@ -135,6 +141,7 @@ public class ServerDiscoveryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getEndpointAddress() {
         return endpointAddress.orElse(null);
     }
@@ -155,9 +162,6 @@ public class ServerDiscoveryInfo {
         this.endpointAddress = JsonNullable.<String> of(endpointAddress);
     }
 
-    /**
-     * Return true if this ServerDiscoveryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -211,65 +215,6 @@ public class ServerDiscoveryInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Address` to the URL query string
-        if (getAddress() != null) {
-            joiner.add(String.format("%sAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `EndpointAddress` to the URL query string
-        if (getEndpointAddress() != null) {
-            joiner.add(String.format("%sEndpointAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndpointAddress()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

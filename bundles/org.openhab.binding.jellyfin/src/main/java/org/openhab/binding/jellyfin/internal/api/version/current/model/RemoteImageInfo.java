@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,27 +38,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteImageInfo {
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+    @javax.annotation.Nullable
     private JsonNullable<String> providerName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_URL = "Url";
+    @javax.annotation.Nullable
     private JsonNullable<String> url = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_THUMBNAIL_URL = "ThumbnailUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> thumbnailUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
+    @javax.annotation.Nullable
     private JsonNullable<Double> communityRating = JsonNullable.<Double> undefined();
 
     public static final String JSON_PROPERTY_VOTE_COUNT = "VoteCount";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> voteCount = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
+    @javax.annotation.Nullable
     private JsonNullable<String> language = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
@@ -76,6 +82,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo providerName(@javax.annotation.Nullable String providerName) {
         this.providerName = JsonNullable.<String> of(providerName);
+
         return this;
     }
 
@@ -86,6 +93,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProviderName() {
         return providerName.orElse(null);
     }
@@ -108,6 +116,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo url(@javax.annotation.Nullable String url) {
         this.url = JsonNullable.<String> of(url);
+
         return this;
     }
 
@@ -118,6 +127,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUrl() {
         return url.orElse(null);
     }
@@ -140,6 +150,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo thumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
         this.thumbnailUrl = JsonNullable.<String> of(thumbnailUrl);
+
         return this;
     }
 
@@ -150,6 +161,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getThumbnailUrl() {
         return thumbnailUrl.orElse(null);
     }
@@ -172,6 +184,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo height(@javax.annotation.Nullable Integer height) {
         this.height = JsonNullable.<Integer> of(height);
+
         return this;
     }
 
@@ -182,6 +195,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getHeight() {
         return height.orElse(null);
     }
@@ -204,6 +218,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo width(@javax.annotation.Nullable Integer width) {
         this.width = JsonNullable.<Integer> of(width);
+
         return this;
     }
 
@@ -214,6 +229,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getWidth() {
         return width.orElse(null);
     }
@@ -236,6 +252,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo communityRating(@javax.annotation.Nullable Double communityRating) {
         this.communityRating = JsonNullable.<Double> of(communityRating);
+
         return this;
     }
 
@@ -246,6 +263,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Double getCommunityRating() {
         return communityRating.orElse(null);
     }
@@ -268,6 +286,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo voteCount(@javax.annotation.Nullable Integer voteCount) {
         this.voteCount = JsonNullable.<Integer> of(voteCount);
+
         return this;
     }
 
@@ -278,6 +297,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getVoteCount() {
         return voteCount.orElse(null);
     }
@@ -300,6 +320,7 @@ public class RemoteImageInfo {
 
     public RemoteImageInfo language(@javax.annotation.Nullable String language) {
         this.language = JsonNullable.<String> of(language);
+
         return this;
     }
 
@@ -310,6 +331,7 @@ public class RemoteImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLanguage() {
         return language.orElse(null);
     }
@@ -331,6 +353,7 @@ public class RemoteImageInfo {
     }
 
     public RemoteImageInfo type(@javax.annotation.Nullable ImageType type) {
+
         this.type = type;
         return this;
     }
@@ -343,6 +366,7 @@ public class RemoteImageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageType getType() {
         return type;
     }
@@ -354,6 +378,7 @@ public class RemoteImageInfo {
     }
 
     public RemoteImageInfo ratingType(@javax.annotation.Nullable RatingType ratingType) {
+
         this.ratingType = ratingType;
         return this;
     }
@@ -366,6 +391,7 @@ public class RemoteImageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_RATING_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RatingType getRatingType() {
         return ratingType;
     }
@@ -376,9 +402,6 @@ public class RemoteImageInfo {
         this.ratingType = ratingType;
     }
 
-    /**
-     * Return true if this RemoteImageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -446,101 +469,6 @@ public class RemoteImageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        // add `ThumbnailUrl` to the URL query string
-        if (getThumbnailUrl() != null) {
-            joiner.add(String.format("%sThumbnailUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbnailUrl()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `CommunityRating` to the URL query string
-        if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
-        }
-
-        // add `VoteCount` to the URL query string
-        if (getVoteCount() != null) {
-            joiner.add(String.format("%sVoteCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVoteCount()))));
-        }
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `RatingType` to the URL query string
-        if (getRatingType() != null) {
-            joiner.add(String.format("%sRatingType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRatingType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

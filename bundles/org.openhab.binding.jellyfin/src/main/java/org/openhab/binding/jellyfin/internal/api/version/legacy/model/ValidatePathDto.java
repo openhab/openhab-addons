@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,15 +39,18 @@ public class ValidatePathDto {
     private Boolean validateWritable;
 
     public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
     private JsonNullable<String> path = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_FILE = "IsFile";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isFile = JsonNullable.<Boolean> undefined();
 
     public ValidatePathDto() {
     }
 
     public ValidatePathDto validateWritable(@javax.annotation.Nullable Boolean validateWritable) {
+
         this.validateWritable = validateWritable;
         return this;
     }
@@ -62,6 +63,7 @@ public class ValidatePathDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getValidateWritable() {
         return validateWritable;
     }
@@ -74,6 +76,7 @@ public class ValidatePathDto {
 
     public ValidatePathDto path(@javax.annotation.Nullable String path) {
         this.path = JsonNullable.<String> of(path);
+
         return this;
     }
 
@@ -84,6 +87,7 @@ public class ValidatePathDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPath() {
         return path.orElse(null);
     }
@@ -106,6 +110,7 @@ public class ValidatePathDto {
 
     public ValidatePathDto isFile(@javax.annotation.Nullable Boolean isFile) {
         this.isFile = JsonNullable.<Boolean> of(isFile);
+
         return this;
     }
 
@@ -116,6 +121,7 @@ public class ValidatePathDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsFile() {
         return isFile.orElse(null);
     }
@@ -136,9 +142,6 @@ public class ValidatePathDto {
         this.isFile = JsonNullable.<Boolean> of(isFile);
     }
 
-    /**
-     * Return true if this ValidatePathDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -190,59 +193,6 @@ public class ValidatePathDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ValidateWritable` to the URL query string
-        if (getValidateWritable() != null) {
-            joiner.add(String.format("%sValidateWritable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValidateWritable()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `IsFile` to the URL query string
-        if (getIsFile() != null) {
-            joiner.add(String.format("%sIsFile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFile()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,12 +39,14 @@ public class UpdateLibraryOptionsDto {
     private UUID id;
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+    @javax.annotation.Nullable
     private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
 
     public UpdateLibraryOptionsDto() {
     }
 
     public UpdateLibraryOptionsDto id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -59,6 +59,7 @@ public class UpdateLibraryOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -71,6 +72,7 @@ public class UpdateLibraryOptionsDto {
 
     public UpdateLibraryOptionsDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
         this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+
         return this;
     }
 
@@ -81,6 +83,7 @@ public class UpdateLibraryOptionsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public LibraryOptions getLibraryOptions() {
         return libraryOptions.orElse(null);
     }
@@ -101,9 +104,6 @@ public class UpdateLibraryOptionsDto {
         this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
     }
 
-    /**
-     * Return true if this UpdateLibraryOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -153,52 +153,6 @@ public class UpdateLibraryOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `LibraryOptions` to the URL query string
-        if (getLibraryOptions() != null) {
-            joiner.add(getLibraryOptions().toUrlQueryString(prefix + "LibraryOptions" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

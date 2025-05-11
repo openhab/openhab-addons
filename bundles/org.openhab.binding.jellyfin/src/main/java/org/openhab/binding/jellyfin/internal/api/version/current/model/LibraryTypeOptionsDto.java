@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryTypeOptionsDto {
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
@@ -63,6 +62,7 @@ public class LibraryTypeOptionsDto {
 
     public LibraryTypeOptionsDto type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -73,6 +73,7 @@ public class LibraryTypeOptionsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -95,6 +96,7 @@ public class LibraryTypeOptionsDto {
 
     public LibraryTypeOptionsDto metadataFetchers(
             @javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
+
         this.metadataFetchers = metadataFetchers;
         return this;
     }
@@ -115,6 +117,7 @@ public class LibraryTypeOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getMetadataFetchers() {
         return metadataFetchers;
     }
@@ -126,6 +129,7 @@ public class LibraryTypeOptionsDto {
     }
 
     public LibraryTypeOptionsDto imageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
+
         this.imageFetchers = imageFetchers;
         return this;
     }
@@ -146,6 +150,7 @@ public class LibraryTypeOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<LibraryOptionInfoDto> getImageFetchers() {
         return imageFetchers;
     }
@@ -157,6 +162,7 @@ public class LibraryTypeOptionsDto {
     }
 
     public LibraryTypeOptionsDto supportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
+
         this.supportedImageTypes = supportedImageTypes;
         return this;
     }
@@ -177,6 +183,7 @@ public class LibraryTypeOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageType> getSupportedImageTypes() {
         return supportedImageTypes;
     }
@@ -188,6 +195,7 @@ public class LibraryTypeOptionsDto {
     }
 
     public LibraryTypeOptionsDto defaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
+
         this.defaultImageOptions = defaultImageOptions;
         return this;
     }
@@ -208,6 +216,7 @@ public class LibraryTypeOptionsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageOption> getDefaultImageOptions() {
         return defaultImageOptions;
     }
@@ -218,9 +227,6 @@ public class LibraryTypeOptionsDto {
         this.defaultImageOptions = defaultImageOptions;
     }
 
-    /**
-     * Return true if this LibraryTypeOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -277,91 +283,6 @@ public class LibraryTypeOptionsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `MetadataFetchers` to the URL query string
-        if (getMetadataFetchers() != null) {
-            for (int i = 0; i < getMetadataFetchers().size(); i++) {
-                if (getMetadataFetchers().get(i) != null) {
-                    joiner.add(getMetadataFetchers().get(i).toUrlQueryString(String.format("%sMetadataFetchers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ImageFetchers` to the URL query string
-        if (getImageFetchers() != null) {
-            for (int i = 0; i < getImageFetchers().size(); i++) {
-                if (getImageFetchers().get(i) != null) {
-                    joiner.add(getImageFetchers().get(i).toUrlQueryString(String.format("%sImageFetchers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SupportedImageTypes` to the URL query string
-        if (getSupportedImageTypes() != null) {
-            for (int i = 0; i < getSupportedImageTypes().size(); i++) {
-                if (getSupportedImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sSupportedImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedImageTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `DefaultImageOptions` to the URL query string
-        if (getDefaultImageOptions() != null) {
-            for (int i = 0; i < getDefaultImageOptions().size(); i++) {
-                if (getDefaultImageOptions().get(i) != null) {
-                    joiner.add(getDefaultImageOptions().get(i).toUrlQueryString(String.format(
-                            "%sDefaultImageOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

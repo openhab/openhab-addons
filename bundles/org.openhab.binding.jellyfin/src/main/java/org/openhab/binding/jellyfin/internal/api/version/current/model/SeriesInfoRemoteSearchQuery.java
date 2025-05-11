@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SeriesInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
+    @javax.annotation.Nullable
     private JsonNullable<SeriesInfo> searchInfo = JsonNullable.<SeriesInfo> undefined();
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
@@ -47,6 +46,7 @@ public class SeriesInfoRemoteSearchQuery {
     private UUID itemId;
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+    @javax.annotation.Nullable
     private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
@@ -58,6 +58,7 @@ public class SeriesInfoRemoteSearchQuery {
 
     public SeriesInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable SeriesInfo searchInfo) {
         this.searchInfo = JsonNullable.<SeriesInfo> of(searchInfo);
+
         return this;
     }
 
@@ -68,6 +69,7 @@ public class SeriesInfoRemoteSearchQuery {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public SeriesInfo getSearchInfo() {
         return searchInfo.orElse(null);
     }
@@ -89,6 +91,7 @@ public class SeriesInfoRemoteSearchQuery {
     }
 
     public SeriesInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
+
         this.itemId = itemId;
         return this;
     }
@@ -101,6 +104,7 @@ public class SeriesInfoRemoteSearchQuery {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -113,6 +117,7 @@ public class SeriesInfoRemoteSearchQuery {
 
     public SeriesInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
         this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+
         return this;
     }
 
@@ -123,6 +128,7 @@ public class SeriesInfoRemoteSearchQuery {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSearchProviderName() {
         return searchProviderName.orElse(null);
     }
@@ -145,6 +151,7 @@ public class SeriesInfoRemoteSearchQuery {
 
     public SeriesInfoRemoteSearchQuery includeDisabledProviders(
             @javax.annotation.Nullable Boolean includeDisabledProviders) {
+
         this.includeDisabledProviders = includeDisabledProviders;
         return this;
     }
@@ -157,6 +164,7 @@ public class SeriesInfoRemoteSearchQuery {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIncludeDisabledProviders() {
         return includeDisabledProviders;
     }
@@ -167,9 +175,6 @@ public class SeriesInfoRemoteSearchQuery {
         this.includeDisabledProviders = includeDisabledProviders;
     }
 
-    /**
-     * Return true if this SeriesInfoRemoteSearchQuery object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -224,64 +229,6 @@ public class SeriesInfoRemoteSearchQuery {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `SearchInfo` to the URL query string
-        if (getSearchInfo() != null) {
-            joiner.add(getSearchInfo().toUrlQueryString(prefix + "SearchInfo" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `SearchProviderName` to the URL query string
-        if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
-        }
-
-        // add `IncludeDisabledProviders` to the URL query string
-        if (getIncludeDisabledProviders() != null) {
-            joiner.add(String.format("%sIncludeDisabledProviders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIncludeDisabledProviders()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

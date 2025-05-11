@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,21 +40,27 @@ public class ImageInfo {
     private ImageType imageType;
 
     public static final String JSON_PROPERTY_IMAGE_INDEX = "ImageIndex";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> imageIndex = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> imageTag = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
     private JsonNullable<String> path = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_BLUR_HASH = "BlurHash";
+    @javax.annotation.Nullable
     private JsonNullable<String> blurHash = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_SIZE = "Size";
@@ -67,6 +71,7 @@ public class ImageInfo {
     }
 
     public ImageInfo imageType(@javax.annotation.Nullable ImageType imageType) {
+
         this.imageType = imageType;
         return this;
     }
@@ -79,6 +84,7 @@ public class ImageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageType getImageType() {
         return imageType;
     }
@@ -91,6 +97,7 @@ public class ImageInfo {
 
     public ImageInfo imageIndex(@javax.annotation.Nullable Integer imageIndex) {
         this.imageIndex = JsonNullable.<Integer> of(imageIndex);
+
         return this;
     }
 
@@ -101,6 +108,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getImageIndex() {
         return imageIndex.orElse(null);
     }
@@ -123,6 +131,7 @@ public class ImageInfo {
 
     public ImageInfo imageTag(@javax.annotation.Nullable String imageTag) {
         this.imageTag = JsonNullable.<String> of(imageTag);
+
         return this;
     }
 
@@ -133,6 +142,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getImageTag() {
         return imageTag.orElse(null);
     }
@@ -155,6 +165,7 @@ public class ImageInfo {
 
     public ImageInfo path(@javax.annotation.Nullable String path) {
         this.path = JsonNullable.<String> of(path);
+
         return this;
     }
 
@@ -165,6 +176,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPath() {
         return path.orElse(null);
     }
@@ -187,6 +199,7 @@ public class ImageInfo {
 
     public ImageInfo blurHash(@javax.annotation.Nullable String blurHash) {
         this.blurHash = JsonNullable.<String> of(blurHash);
+
         return this;
     }
 
@@ -197,6 +210,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getBlurHash() {
         return blurHash.orElse(null);
     }
@@ -219,6 +233,7 @@ public class ImageInfo {
 
     public ImageInfo height(@javax.annotation.Nullable Integer height) {
         this.height = JsonNullable.<Integer> of(height);
+
         return this;
     }
 
@@ -229,6 +244,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getHeight() {
         return height.orElse(null);
     }
@@ -251,6 +267,7 @@ public class ImageInfo {
 
     public ImageInfo width(@javax.annotation.Nullable Integer width) {
         this.width = JsonNullable.<Integer> of(width);
+
         return this;
     }
 
@@ -261,6 +278,7 @@ public class ImageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getWidth() {
         return width.orElse(null);
     }
@@ -282,6 +300,7 @@ public class ImageInfo {
     }
 
     public ImageInfo size(@javax.annotation.Nullable Long size) {
+
         this.size = size;
         return this;
     }
@@ -294,6 +313,7 @@ public class ImageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getSize() {
         return size;
     }
@@ -304,9 +324,6 @@ public class ImageInfo {
         this.size = size;
     }
 
-    /**
-     * Return true if this ImageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -366,89 +383,6 @@ public class ImageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ImageType` to the URL query string
-        if (getImageType() != null) {
-            joiner.add(String.format("%sImageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageType()))));
-        }
-
-        // add `ImageIndex` to the URL query string
-        if (getImageIndex() != null) {
-            joiner.add(String.format("%sImageIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageIndex()))));
-        }
-
-        // add `ImageTag` to the URL query string
-        if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `BlurHash` to the URL query string
-        if (getBlurHash() != null) {
-            joiner.add(String.format("%sBlurHash%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlurHash()))));
-        }
-
-        // add `Height` to the URL query string
-        if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
-        }
-
-        // add `Width` to the URL query string
-        if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
-        }
-
-        // add `Size` to the URL query string
-        if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

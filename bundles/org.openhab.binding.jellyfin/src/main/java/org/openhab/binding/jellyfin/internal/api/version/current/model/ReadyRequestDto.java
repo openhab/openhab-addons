@@ -19,10 +19,7 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,6 +52,7 @@ public class ReadyRequestDto {
     }
 
     public ReadyRequestDto when(@javax.annotation.Nullable OffsetDateTime when) {
+
         this.when = when;
         return this;
     }
@@ -67,6 +65,7 @@ public class ReadyRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_WHEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getWhen() {
         return when;
     }
@@ -78,6 +77,7 @@ public class ReadyRequestDto {
     }
 
     public ReadyRequestDto positionTicks(@javax.annotation.Nullable Long positionTicks) {
+
         this.positionTicks = positionTicks;
         return this;
     }
@@ -90,6 +90,7 @@ public class ReadyRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPositionTicks() {
         return positionTicks;
     }
@@ -101,6 +102,7 @@ public class ReadyRequestDto {
     }
 
     public ReadyRequestDto isPlaying(@javax.annotation.Nullable Boolean isPlaying) {
+
         this.isPlaying = isPlaying;
         return this;
     }
@@ -113,6 +115,7 @@ public class ReadyRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_PLAYING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPlaying() {
         return isPlaying;
     }
@@ -124,6 +127,7 @@ public class ReadyRequestDto {
     }
 
     public ReadyRequestDto playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+
         this.playlistItemId = playlistItemId;
         return this;
     }
@@ -136,6 +140,7 @@ public class ReadyRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
@@ -146,9 +151,6 @@ public class ReadyRequestDto {
         this.playlistItemId = playlistItemId;
     }
 
-    /**
-     * Return true if this ReadyRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -190,65 +192,6 @@ public class ReadyRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `When` to the URL query string
-        if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
-        }
-
-        // add `PositionTicks` to the URL query string
-        if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
-        }
-
-        // add `IsPlaying` to the URL query string
-        if (getIsPlaying() != null) {
-            joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

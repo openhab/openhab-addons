@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,27 +42,34 @@ public class InstallationInfo {
     private UUID guid;
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
+    @javax.annotation.Nullable
     private JsonNullable<String> changelog = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> sourceUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
+    @javax.annotation.Nullable
     private JsonNullable<String> checksum = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
+    @javax.annotation.Nullable
     private JsonNullable<PackageInfo> packageInfo = JsonNullable.<PackageInfo> undefined();
 
     public InstallationInfo() {
     }
 
     public InstallationInfo guid(@javax.annotation.Nullable UUID guid) {
+
         this.guid = guid;
         return this;
     }
@@ -77,6 +82,7 @@ public class InstallationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GUID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGuid() {
         return guid;
     }
@@ -89,6 +95,7 @@ public class InstallationInfo {
 
     public InstallationInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -99,6 +106,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -121,6 +129,7 @@ public class InstallationInfo {
 
     public InstallationInfo version(@javax.annotation.Nullable String version) {
         this.version = JsonNullable.<String> of(version);
+
         return this;
     }
 
@@ -131,6 +140,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
         return version.orElse(null);
     }
@@ -153,6 +163,7 @@ public class InstallationInfo {
 
     public InstallationInfo changelog(@javax.annotation.Nullable String changelog) {
         this.changelog = JsonNullable.<String> of(changelog);
+
         return this;
     }
 
@@ -163,6 +174,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChangelog() {
         return changelog.orElse(null);
     }
@@ -185,6 +197,7 @@ public class InstallationInfo {
 
     public InstallationInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
         this.sourceUrl = JsonNullable.<String> of(sourceUrl);
+
         return this;
     }
 
@@ -195,6 +208,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSourceUrl() {
         return sourceUrl.orElse(null);
     }
@@ -217,6 +231,7 @@ public class InstallationInfo {
 
     public InstallationInfo checksum(@javax.annotation.Nullable String checksum) {
         this.checksum = JsonNullable.<String> of(checksum);
+
         return this;
     }
 
@@ -227,6 +242,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getChecksum() {
         return checksum.orElse(null);
     }
@@ -249,6 +265,7 @@ public class InstallationInfo {
 
     public InstallationInfo packageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
         this.packageInfo = JsonNullable.<PackageInfo> of(packageInfo);
+
         return this;
     }
 
@@ -259,6 +276,7 @@ public class InstallationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public PackageInfo getPackageInfo() {
         return packageInfo.orElse(null);
     }
@@ -279,9 +297,6 @@ public class InstallationInfo {
         this.packageInfo = JsonNullable.<PackageInfo> of(packageInfo);
     }
 
-    /**
-     * Return true if this InstallationInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -341,82 +356,6 @@ public class InstallationInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Guid` to the URL query string
-        if (getGuid() != null) {
-            joiner.add(String.format("%sGuid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `Changelog` to the URL query string
-        if (getChangelog() != null) {
-            joiner.add(String.format("%sChangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
-        }
-
-        // add `SourceUrl` to the URL query string
-        if (getSourceUrl() != null) {
-            joiner.add(String.format("%sSourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
-        }
-
-        // add `Checksum` to the URL query string
-        if (getChecksum() != null) {
-            joiner.add(String.format("%sChecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
-        }
-
-        // add `PackageInfo` to the URL query string
-        if (getPackageInfo() != null) {
-            joiner.add(getPackageInfo().toUrlQueryString(prefix + "PackageInfo" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

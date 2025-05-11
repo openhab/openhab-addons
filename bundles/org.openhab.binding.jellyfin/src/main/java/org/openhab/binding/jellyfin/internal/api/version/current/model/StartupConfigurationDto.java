@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,12 +36,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class StartupConfigurationDto {
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
+    @javax.annotation.Nullable
     private JsonNullable<String> uiCulture = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+    @javax.annotation.Nullable
     private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
+    @javax.annotation.Nullable
     private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String> undefined();
 
     public StartupConfigurationDto() {
@@ -51,6 +52,7 @@ public class StartupConfigurationDto {
 
     public StartupConfigurationDto uiCulture(@javax.annotation.Nullable String uiCulture) {
         this.uiCulture = JsonNullable.<String> of(uiCulture);
+
         return this;
     }
 
@@ -61,6 +63,7 @@ public class StartupConfigurationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUiCulture() {
         return uiCulture.orElse(null);
     }
@@ -83,6 +86,7 @@ public class StartupConfigurationDto {
 
     public StartupConfigurationDto metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
         this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
+
         return this;
     }
 
@@ -93,6 +97,7 @@ public class StartupConfigurationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMetadataCountryCode() {
         return metadataCountryCode.orElse(null);
     }
@@ -116,6 +121,7 @@ public class StartupConfigurationDto {
     public StartupConfigurationDto preferredMetadataLanguage(
             @javax.annotation.Nullable String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
+
         return this;
     }
 
@@ -126,6 +132,7 @@ public class StartupConfigurationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage.orElse(null);
     }
@@ -146,9 +153,6 @@ public class StartupConfigurationDto {
         this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
     }
 
-    /**
-     * Return true if this StartupConfigurationDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -201,59 +205,6 @@ public class StartupConfigurationDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `UICulture` to the URL query string
-        if (getUiCulture() != null) {
-            joiner.add(String.format("%sUICulture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
-        }
-
-        // add `MetadataCountryCode` to the URL query string
-        if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
-        }
-
-        // add `PreferredMetadataLanguage` to the URL query string
-        if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,6 +44,7 @@ public class NotificationResultDto {
     }
 
     public NotificationResultDto notifications(@javax.annotation.Nullable List<NotificationDto> notifications) {
+
         this.notifications = notifications;
         return this;
     }
@@ -67,6 +65,7 @@ public class NotificationResultDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<NotificationDto> getNotifications() {
         return notifications;
     }
@@ -78,6 +77,7 @@ public class NotificationResultDto {
     }
 
     public NotificationResultDto totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
         this.totalRecordCount = totalRecordCount;
         return this;
     }
@@ -90,6 +90,7 @@ public class NotificationResultDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -100,9 +101,6 @@ public class NotificationResultDto {
         this.totalRecordCount = totalRecordCount;
     }
 
-    /**
-     * Return true if this NotificationResultDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -140,58 +138,6 @@ public class NotificationResultDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Notifications` to the URL query string
-        if (getNotifications() != null) {
-            for (int i = 0; i < getNotifications().size(); i++) {
-                if (getNotifications().get(i) != null) {
-                    joiner.add(getNotifications().get(i).toUrlQueryString(String.format("%sNotifications%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

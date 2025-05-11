@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,6 +43,7 @@ public class ImageProviderInfo {
     }
 
     public ImageProviderInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -58,6 +56,7 @@ public class ImageProviderInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -69,6 +68,7 @@ public class ImageProviderInfo {
     }
 
     public ImageProviderInfo supportedImages(@javax.annotation.Nullable List<ImageType> supportedImages) {
+
         this.supportedImages = supportedImages;
         return this;
     }
@@ -89,6 +89,7 @@ public class ImageProviderInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageType> getSupportedImages() {
         return supportedImages;
     }
@@ -99,9 +100,6 @@ public class ImageProviderInfo {
         this.supportedImages = supportedImages;
     }
 
-    /**
-     * Return true if this ImageProviderInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -139,58 +137,6 @@ public class ImageProviderInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `SupportedImages` to the URL query string
-        if (getSupportedImages() != null) {
-            for (int i = 0; i < getSupportedImages().size(); i++) {
-                if (getSupportedImages().get(i) != null) {
-                    joiner.add(String.format("%sSupportedImages%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedImages().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

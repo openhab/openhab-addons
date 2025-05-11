@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,9 +42,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ClientCapabilities {
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> playableMediaTypes = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
+    @javax.annotation.Nullable
     private JsonNullable<List<GeneralCommandType>> supportedCommands = JsonNullable
             .<List<GeneralCommandType>> undefined();
 
@@ -59,6 +59,7 @@ public class ClientCapabilities {
     private Boolean supportsContentUploading;
 
     public static final String JSON_PROPERTY_MESSAGE_CALLBACK_URL = "MessageCallbackUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> messageCallbackUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
@@ -70,12 +71,15 @@ public class ClientCapabilities {
     private Boolean supportsSync;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
+    @javax.annotation.Nullable
     private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
 
     public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> appStoreUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
 
     public ClientCapabilities() {
@@ -83,6 +87,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities playableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
         this.playableMediaTypes = JsonNullable.<List<String>> of(playableMediaTypes);
+
         return this;
     }
 
@@ -105,6 +110,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getPlayableMediaTypes() {
         return playableMediaTypes.orElse(null);
     }
@@ -127,6 +133,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities supportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
         this.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(supportedCommands);
+
         return this;
     }
 
@@ -149,6 +156,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands.orElse(null);
     }
@@ -170,6 +178,7 @@ public class ClientCapabilities {
     }
 
     public ClientCapabilities supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+
         this.supportsMediaControl = supportsMediaControl;
         return this;
     }
@@ -182,6 +191,7 @@ public class ClientCapabilities {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
@@ -193,6 +203,7 @@ public class ClientCapabilities {
     }
 
     public ClientCapabilities supportsContentUploading(@javax.annotation.Nullable Boolean supportsContentUploading) {
+
         this.supportsContentUploading = supportsContentUploading;
         return this;
     }
@@ -205,6 +216,7 @@ public class ClientCapabilities {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsContentUploading() {
         return supportsContentUploading;
     }
@@ -217,6 +229,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities messageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
         this.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
+
         return this;
     }
 
@@ -227,6 +240,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMessageCallbackUrl() {
         return messageCallbackUrl.orElse(null);
     }
@@ -249,6 +263,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities supportsPersistentIdentifier(
             @javax.annotation.Nullable Boolean supportsPersistentIdentifier) {
+
         this.supportsPersistentIdentifier = supportsPersistentIdentifier;
         return this;
     }
@@ -261,6 +276,7 @@ public class ClientCapabilities {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsPersistentIdentifier() {
         return supportsPersistentIdentifier;
     }
@@ -272,6 +288,7 @@ public class ClientCapabilities {
     }
 
     public ClientCapabilities supportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+
         this.supportsSync = supportsSync;
         return this;
     }
@@ -284,6 +301,7 @@ public class ClientCapabilities {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsSync() {
         return supportsSync;
     }
@@ -296,6 +314,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
         this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
+
         return this;
     }
 
@@ -313,6 +332,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public DeviceProfile getDeviceProfile() {
         return deviceProfile.orElse(null);
     }
@@ -335,6 +355,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities appStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
         this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
+
         return this;
     }
 
@@ -345,6 +366,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAppStoreUrl() {
         return appStoreUrl.orElse(null);
     }
@@ -367,6 +389,7 @@ public class ClientCapabilities {
 
     public ClientCapabilities iconUrl(@javax.annotation.Nullable String iconUrl) {
         this.iconUrl = JsonNullable.<String> of(iconUrl);
+
         return this;
     }
 
@@ -377,6 +400,7 @@ public class ClientCapabilities {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getIconUrl() {
         return iconUrl.orElse(null);
     }
@@ -397,9 +421,6 @@ public class ClientCapabilities {
         this.iconUrl = JsonNullable.<String> of(iconUrl);
     }
 
-    /**
-     * Return true if this ClientCapabilities object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -469,108 +490,6 @@ public class ClientCapabilities {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlayableMediaTypes` to the URL query string
-        if (getPlayableMediaTypes() != null) {
-            for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
-                joiner.add(String.format("%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
-            }
-        }
-
-        // add `SupportedCommands` to the URL query string
-        if (getSupportedCommands() != null) {
-            for (int i = 0; i < getSupportedCommands().size(); i++) {
-                if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format("%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
-                }
-            }
-        }
-
-        // add `SupportsMediaControl` to the URL query string
-        if (getSupportsMediaControl() != null) {
-            joiner.add(String.format("%sSupportsMediaControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
-        }
-
-        // add `SupportsContentUploading` to the URL query string
-        if (getSupportsContentUploading() != null) {
-            joiner.add(String.format("%sSupportsContentUploading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsContentUploading()))));
-        }
-
-        // add `MessageCallbackUrl` to the URL query string
-        if (getMessageCallbackUrl() != null) {
-            joiner.add(String.format("%sMessageCallbackUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageCallbackUrl()))));
-        }
-
-        // add `SupportsPersistentIdentifier` to the URL query string
-        if (getSupportsPersistentIdentifier() != null) {
-            joiner.add(String.format("%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsPersistentIdentifier()))));
-        }
-
-        // add `SupportsSync` to the URL query string
-        if (getSupportsSync() != null) {
-            joiner.add(String.format("%sSupportsSync%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsSync()))));
-        }
-
-        // add `DeviceProfile` to the URL query string
-        if (getDeviceProfile() != null) {
-            joiner.add(getDeviceProfile().toUrlQueryString(prefix + "DeviceProfile" + suffix));
-        }
-
-        // add `AppStoreUrl` to the URL query string
-        if (getAppStoreUrl() != null) {
-            joiner.add(String.format("%sAppStoreUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppStoreUrl()))));
-        }
-
-        // add `IconUrl` to the URL query string
-        if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

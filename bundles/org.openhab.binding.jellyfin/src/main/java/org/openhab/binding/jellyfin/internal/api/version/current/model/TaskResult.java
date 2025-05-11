@@ -20,10 +20,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -52,24 +50,30 @@ public class TaskResult {
     private TaskCompletionStatus status;
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_KEY = "Key";
+    @javax.annotation.Nullable
     private JsonNullable<String> key = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ERROR_MESSAGE = "ErrorMessage";
+    @javax.annotation.Nullable
     private JsonNullable<String> errorMessage = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LONG_ERROR_MESSAGE = "LongErrorMessage";
+    @javax.annotation.Nullable
     private JsonNullable<String> longErrorMessage = JsonNullable.<String> undefined();
 
     public TaskResult() {
     }
 
     public TaskResult startTimeUtc(@javax.annotation.Nullable OffsetDateTime startTimeUtc) {
+
         this.startTimeUtc = startTimeUtc;
         return this;
     }
@@ -82,6 +86,7 @@ public class TaskResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getStartTimeUtc() {
         return startTimeUtc;
     }
@@ -93,6 +98,7 @@ public class TaskResult {
     }
 
     public TaskResult endTimeUtc(@javax.annotation.Nullable OffsetDateTime endTimeUtc) {
+
         this.endTimeUtc = endTimeUtc;
         return this;
     }
@@ -105,6 +111,7 @@ public class TaskResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getEndTimeUtc() {
         return endTimeUtc;
     }
@@ -116,6 +123,7 @@ public class TaskResult {
     }
 
     public TaskResult status(@javax.annotation.Nullable TaskCompletionStatus status) {
+
         this.status = status;
         return this;
     }
@@ -128,6 +136,7 @@ public class TaskResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TaskCompletionStatus getStatus() {
         return status;
     }
@@ -140,6 +149,7 @@ public class TaskResult {
 
     public TaskResult name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -150,6 +160,7 @@ public class TaskResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -172,6 +183,7 @@ public class TaskResult {
 
     public TaskResult key(@javax.annotation.Nullable String key) {
         this.key = JsonNullable.<String> of(key);
+
         return this;
     }
 
@@ -182,6 +194,7 @@ public class TaskResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getKey() {
         return key.orElse(null);
     }
@@ -204,6 +217,7 @@ public class TaskResult {
 
     public TaskResult id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -214,6 +228,7 @@ public class TaskResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -236,6 +251,7 @@ public class TaskResult {
 
     public TaskResult errorMessage(@javax.annotation.Nullable String errorMessage) {
         this.errorMessage = JsonNullable.<String> of(errorMessage);
+
         return this;
     }
 
@@ -246,6 +262,7 @@ public class TaskResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getErrorMessage() {
         return errorMessage.orElse(null);
     }
@@ -268,6 +285,7 @@ public class TaskResult {
 
     public TaskResult longErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
         this.longErrorMessage = JsonNullable.<String> of(longErrorMessage);
+
         return this;
     }
 
@@ -278,6 +296,7 @@ public class TaskResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLongErrorMessage() {
         return longErrorMessage.orElse(null);
     }
@@ -298,9 +317,6 @@ public class TaskResult {
         this.longErrorMessage = JsonNullable.<String> of(longErrorMessage);
     }
 
-    /**
-     * Return true if this TaskResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -361,89 +377,6 @@ public class TaskResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `StartTimeUtc` to the URL query string
-        if (getStartTimeUtc() != null) {
-            joiner.add(String.format("%sStartTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeUtc()))));
-        }
-
-        // add `EndTimeUtc` to the URL query string
-        if (getEndTimeUtc() != null) {
-            joiner.add(String.format("%sEndTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTimeUtc()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ErrorMessage` to the URL query string
-        if (getErrorMessage() != null) {
-            joiner.add(String.format("%sErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorMessage()))));
-        }
-
-        // add `LongErrorMessage` to the URL query string
-        if (getLongErrorMessage() != null) {
-            joiner.add(String.format("%sLongErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLongErrorMessage()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

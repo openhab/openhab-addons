@@ -21,9 +21,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,6 +71,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate reason(@javax.annotation.Nullable PlayQueueUpdateReason reason) {
+
         this.reason = reason;
         return this;
     }
@@ -86,6 +84,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REASON)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public PlayQueueUpdateReason getReason() {
         return reason;
     }
@@ -97,6 +96,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate lastUpdate(@javax.annotation.Nullable OffsetDateTime lastUpdate) {
+
         this.lastUpdate = lastUpdate;
         return this;
     }
@@ -109,6 +109,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LAST_UPDATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastUpdate() {
         return lastUpdate;
     }
@@ -120,6 +121,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate playlist(@javax.annotation.Nullable List<SyncPlayQueueItem> playlist) {
+
         this.playlist = playlist;
         return this;
     }
@@ -140,6 +142,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYLIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SyncPlayQueueItem> getPlaylist() {
         return playlist;
     }
@@ -151,6 +154,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate playingItemIndex(@javax.annotation.Nullable Integer playingItemIndex) {
+
         this.playingItemIndex = playingItemIndex;
         return this;
     }
@@ -163,6 +167,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPlayingItemIndex() {
         return playingItemIndex;
     }
@@ -174,6 +179,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
+
         this.startPositionTicks = startPositionTicks;
         return this;
     }
@@ -186,6 +192,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
@@ -197,6 +204,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate isPlaying(@javax.annotation.Nullable Boolean isPlaying) {
+
         this.isPlaying = isPlaying;
         return this;
     }
@@ -209,6 +217,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_PLAYING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsPlaying() {
         return isPlaying;
     }
@@ -220,6 +229,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate shuffleMode(@javax.annotation.Nullable GroupShuffleMode shuffleMode) {
+
         this.shuffleMode = shuffleMode;
         return this;
     }
@@ -232,6 +242,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SHUFFLE_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupShuffleMode getShuffleMode() {
         return shuffleMode;
     }
@@ -243,6 +254,7 @@ public class PlayQueueUpdate {
     }
 
     public PlayQueueUpdate repeatMode(@javax.annotation.Nullable GroupRepeatMode repeatMode) {
+
         this.repeatMode = repeatMode;
         return this;
     }
@@ -255,6 +267,7 @@ public class PlayQueueUpdate {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupRepeatMode getRepeatMode() {
         return repeatMode;
     }
@@ -265,9 +278,6 @@ public class PlayQueueUpdate {
         this.repeatMode = repeatMode;
     }
 
-    /**
-     * Return true if this PlayQueueUpdate object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -318,93 +328,6 @@ public class PlayQueueUpdate {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Reason` to the URL query string
-        if (getReason() != null) {
-            joiner.add(String.format("%sReason%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
-        }
-
-        // add `LastUpdate` to the URL query string
-        if (getLastUpdate() != null) {
-            joiner.add(String.format("%sLastUpdate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUpdate()))));
-        }
-
-        // add `Playlist` to the URL query string
-        if (getPlaylist() != null) {
-            for (int i = 0; i < getPlaylist().size(); i++) {
-                if (getPlaylist().get(i) != null) {
-                    joiner.add(getPlaylist().get(i).toUrlQueryString(String.format("%sPlaylist%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `PlayingItemIndex` to the URL query string
-        if (getPlayingItemIndex() != null) {
-            joiner.add(String.format("%sPlayingItemIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemIndex()))));
-        }
-
-        // add `StartPositionTicks` to the URL query string
-        if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
-        }
-
-        // add `IsPlaying` to the URL query string
-        if (getIsPlaying() != null) {
-            joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
-        }
-
-        // add `ShuffleMode` to the URL query string
-        if (getShuffleMode() != null) {
-            joiner.add(String.format("%sShuffleMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShuffleMode()))));
-        }
-
-        // add `RepeatMode` to the URL query string
-        if (getRepeatMode() != null) {
-            joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

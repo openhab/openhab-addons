@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,30 +44,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ListingsProviderInfo {
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USERNAME = "Username";
+    @javax.annotation.Nullable
     private JsonNullable<String> username = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
+    @javax.annotation.Nullable
     private JsonNullable<String> password = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LISTINGS_ID = "ListingsId";
+    @javax.annotation.Nullable
     private JsonNullable<String> listingsId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ZIP_CODE = "ZipCode";
+    @javax.annotation.Nullable
     private JsonNullable<String> zipCode = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_COUNTRY = "Country";
+    @javax.annotation.Nullable
     private JsonNullable<String> country = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
     private JsonNullable<String> path = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ENABLED_TUNERS = "EnabledTuners";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> enabledTuners = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_ALL_TUNERS = "EnableAllTuners";
@@ -77,27 +84,35 @@ public class ListingsProviderInfo {
     private Boolean enableAllTuners;
 
     public static final String JSON_PROPERTY_NEWS_CATEGORIES = "NewsCategories";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> newsCategories = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_SPORTS_CATEGORIES = "SportsCategories";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> sportsCategories = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_KIDS_CATEGORIES = "KidsCategories";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> kidsCategories = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_MOVIE_CATEGORIES = "MovieCategories";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> movieCategories = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_CHANNEL_MAPPINGS = "ChannelMappings";
+    @javax.annotation.Nullable
     private JsonNullable<List<NameValuePair>> channelMappings = JsonNullable.<List<NameValuePair>> undefined();
 
     public static final String JSON_PROPERTY_MOVIE_PREFIX = "MoviePrefix";
+    @javax.annotation.Nullable
     private JsonNullable<String> moviePrefix = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PREFERRED_LANGUAGE = "PreferredLanguage";
+    @javax.annotation.Nullable
     private JsonNullable<String> preferredLanguage = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
+    @javax.annotation.Nullable
     private JsonNullable<String> userAgent = JsonNullable.<String> undefined();
 
     public ListingsProviderInfo() {
@@ -105,6 +120,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -115,6 +131,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -137,6 +154,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -147,6 +165,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -169,6 +188,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo username(@javax.annotation.Nullable String username) {
         this.username = JsonNullable.<String> of(username);
+
         return this;
     }
 
@@ -179,6 +199,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUsername() {
         return username.orElse(null);
     }
@@ -201,6 +222,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo password(@javax.annotation.Nullable String password) {
         this.password = JsonNullable.<String> of(password);
+
         return this;
     }
 
@@ -211,6 +233,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPassword() {
         return password.orElse(null);
     }
@@ -233,6 +256,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo listingsId(@javax.annotation.Nullable String listingsId) {
         this.listingsId = JsonNullable.<String> of(listingsId);
+
         return this;
     }
 
@@ -243,6 +267,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getListingsId() {
         return listingsId.orElse(null);
     }
@@ -265,6 +290,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo zipCode(@javax.annotation.Nullable String zipCode) {
         this.zipCode = JsonNullable.<String> of(zipCode);
+
         return this;
     }
 
@@ -275,6 +301,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getZipCode() {
         return zipCode.orElse(null);
     }
@@ -297,6 +324,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo country(@javax.annotation.Nullable String country) {
         this.country = JsonNullable.<String> of(country);
+
         return this;
     }
 
@@ -307,6 +335,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getCountry() {
         return country.orElse(null);
     }
@@ -329,6 +358,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo path(@javax.annotation.Nullable String path) {
         this.path = JsonNullable.<String> of(path);
+
         return this;
     }
 
@@ -339,6 +369,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPath() {
         return path.orElse(null);
     }
@@ -361,6 +392,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo enabledTuners(@javax.annotation.Nullable List<String> enabledTuners) {
         this.enabledTuners = JsonNullable.<List<String>> of(enabledTuners);
+
         return this;
     }
 
@@ -383,6 +415,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getEnabledTuners() {
         return enabledTuners.orElse(null);
     }
@@ -404,6 +437,7 @@ public class ListingsProviderInfo {
     }
 
     public ListingsProviderInfo enableAllTuners(@javax.annotation.Nullable Boolean enableAllTuners) {
+
         this.enableAllTuners = enableAllTuners;
         return this;
     }
@@ -416,6 +450,7 @@ public class ListingsProviderInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAllTuners() {
         return enableAllTuners;
     }
@@ -428,6 +463,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo newsCategories(@javax.annotation.Nullable List<String> newsCategories) {
         this.newsCategories = JsonNullable.<List<String>> of(newsCategories);
+
         return this;
     }
 
@@ -450,6 +486,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getNewsCategories() {
         return newsCategories.orElse(null);
     }
@@ -472,6 +509,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo sportsCategories(@javax.annotation.Nullable List<String> sportsCategories) {
         this.sportsCategories = JsonNullable.<List<String>> of(sportsCategories);
+
         return this;
     }
 
@@ -494,6 +532,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getSportsCategories() {
         return sportsCategories.orElse(null);
     }
@@ -516,6 +555,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo kidsCategories(@javax.annotation.Nullable List<String> kidsCategories) {
         this.kidsCategories = JsonNullable.<List<String>> of(kidsCategories);
+
         return this;
     }
 
@@ -538,6 +578,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getKidsCategories() {
         return kidsCategories.orElse(null);
     }
@@ -560,6 +601,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo movieCategories(@javax.annotation.Nullable List<String> movieCategories) {
         this.movieCategories = JsonNullable.<List<String>> of(movieCategories);
+
         return this;
     }
 
@@ -582,6 +624,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getMovieCategories() {
         return movieCategories.orElse(null);
     }
@@ -604,6 +647,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo channelMappings(@javax.annotation.Nullable List<NameValuePair> channelMappings) {
         this.channelMappings = JsonNullable.<List<NameValuePair>> of(channelMappings);
+
         return this;
     }
 
@@ -626,6 +670,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<NameValuePair> getChannelMappings() {
         return channelMappings.orElse(null);
     }
@@ -648,6 +693,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo moviePrefix(@javax.annotation.Nullable String moviePrefix) {
         this.moviePrefix = JsonNullable.<String> of(moviePrefix);
+
         return this;
     }
 
@@ -658,6 +704,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMoviePrefix() {
         return moviePrefix.orElse(null);
     }
@@ -680,6 +727,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo preferredLanguage(@javax.annotation.Nullable String preferredLanguage) {
         this.preferredLanguage = JsonNullable.<String> of(preferredLanguage);
+
         return this;
     }
 
@@ -690,6 +738,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPreferredLanguage() {
         return preferredLanguage.orElse(null);
     }
@@ -712,6 +761,7 @@ public class ListingsProviderInfo {
 
     public ListingsProviderInfo userAgent(@javax.annotation.Nullable String userAgent) {
         this.userAgent = JsonNullable.<String> of(userAgent);
+
         return this;
     }
 
@@ -722,6 +772,7 @@ public class ListingsProviderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserAgent() {
         return userAgent.orElse(null);
     }
@@ -742,9 +793,6 @@ public class ListingsProviderInfo {
         this.userAgent = JsonNullable.<String> of(userAgent);
     }
 
-    /**
-     * Return true if this ListingsProviderInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -830,169 +878,6 @@ public class ListingsProviderInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Username` to the URL query string
-        if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
-        }
-
-        // add `Password` to the URL query string
-        if (getPassword() != null) {
-            joiner.add(String.format("%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
-        }
-
-        // add `ListingsId` to the URL query string
-        if (getListingsId() != null) {
-            joiner.add(String.format("%sListingsId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getListingsId()))));
-        }
-
-        // add `ZipCode` to the URL query string
-        if (getZipCode() != null) {
-            joiner.add(String.format("%sZipCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getZipCode()))));
-        }
-
-        // add `Country` to the URL query string
-        if (getCountry() != null) {
-            joiner.add(String.format("%sCountry%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
-        }
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `EnabledTuners` to the URL query string
-        if (getEnabledTuners() != null) {
-            for (int i = 0; i < getEnabledTuners().size(); i++) {
-                joiner.add(String.format("%sEnabledTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledTuners().get(i)))));
-            }
-        }
-
-        // add `EnableAllTuners` to the URL query string
-        if (getEnableAllTuners() != null) {
-            joiner.add(String.format("%sEnableAllTuners%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllTuners()))));
-        }
-
-        // add `NewsCategories` to the URL query string
-        if (getNewsCategories() != null) {
-            for (int i = 0; i < getNewsCategories().size(); i++) {
-                joiner.add(String.format("%sNewsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getNewsCategories().get(i)))));
-            }
-        }
-
-        // add `SportsCategories` to the URL query string
-        if (getSportsCategories() != null) {
-            for (int i = 0; i < getSportsCategories().size(); i++) {
-                joiner.add(String.format("%sSportsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSportsCategories().get(i)))));
-            }
-        }
-
-        // add `KidsCategories` to the URL query string
-        if (getKidsCategories() != null) {
-            for (int i = 0; i < getKidsCategories().size(); i++) {
-                joiner.add(String.format("%sKidsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKidsCategories().get(i)))));
-            }
-        }
-
-        // add `MovieCategories` to the URL query string
-        if (getMovieCategories() != null) {
-            for (int i = 0; i < getMovieCategories().size(); i++) {
-                joiner.add(String.format("%sMovieCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMovieCategories().get(i)))));
-            }
-        }
-
-        // add `ChannelMappings` to the URL query string
-        if (getChannelMappings() != null) {
-            for (int i = 0; i < getChannelMappings().size(); i++) {
-                if (getChannelMappings().get(i) != null) {
-                    joiner.add(getChannelMappings().get(i).toUrlQueryString(String.format("%sChannelMappings%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MoviePrefix` to the URL query string
-        if (getMoviePrefix() != null) {
-            joiner.add(String.format("%sMoviePrefix%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMoviePrefix()))));
-        }
-
-        // add `PreferredLanguage` to the URL query string
-        if (getPreferredLanguage() != null) {
-            joiner.add(String.format("%sPreferredLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredLanguage()))));
-        }
-
-        // add `UserAgent` to the URL query string
-        if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

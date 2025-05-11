@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,39 +43,51 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class OpenLiveStreamDto {
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
+    @javax.annotation.Nullable
     private JsonNullable<String> openToken = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
+    @javax.annotation.Nullable
     private JsonNullable<UUID> userId = JsonNullable.<UUID> undefined();
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playSessionId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_START_TIME_TICKS = "StartTimeTicks";
+    @javax.annotation.Nullable
     private JsonNullable<Long> startTimeTicks = JsonNullable.<Long> undefined();
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxAudioChannels = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+    @javax.annotation.Nullable
     private JsonNullable<UUID> itemId = JsonNullable.<UUID> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_PLAY = "EnableDirectPlay";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> enableDirectPlay = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_STREAM = "EnableDirectStream";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> enableDirectStream = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
+    @javax.annotation.Nullable
     private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS = "DirectPlayProtocols";
@@ -89,6 +99,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto openToken(@javax.annotation.Nullable String openToken) {
         this.openToken = JsonNullable.<String> of(openToken);
+
         return this;
     }
 
@@ -99,6 +110,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOpenToken() {
         return openToken.orElse(null);
     }
@@ -121,6 +133,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto userId(@javax.annotation.Nullable UUID userId) {
         this.userId = JsonNullable.<UUID> of(userId);
+
         return this;
     }
 
@@ -131,6 +144,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public UUID getUserId() {
         return userId.orElse(null);
     }
@@ -153,6 +167,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto playSessionId(@javax.annotation.Nullable String playSessionId) {
         this.playSessionId = JsonNullable.<String> of(playSessionId);
+
         return this;
     }
 
@@ -163,6 +178,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaySessionId() {
         return playSessionId.orElse(null);
     }
@@ -185,6 +201,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
+
         return this;
     }
 
@@ -195,6 +212,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate.orElse(null);
     }
@@ -217,6 +235,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto startTimeTicks(@javax.annotation.Nullable Long startTimeTicks) {
         this.startTimeTicks = JsonNullable.<Long> of(startTimeTicks);
+
         return this;
     }
 
@@ -227,6 +246,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getStartTimeTicks() {
         return startTimeTicks.orElse(null);
     }
@@ -249,6 +269,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
         this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
+
         return this;
     }
 
@@ -259,6 +280,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getAudioStreamIndex() {
         return audioStreamIndex.orElse(null);
     }
@@ -281,6 +303,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
+
         return this;
     }
 
@@ -291,6 +314,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex.orElse(null);
     }
@@ -313,6 +337,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto maxAudioChannels(@javax.annotation.Nullable Integer maxAudioChannels) {
         this.maxAudioChannels = JsonNullable.<Integer> of(maxAudioChannels);
+
         return this;
     }
 
@@ -323,6 +348,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxAudioChannels() {
         return maxAudioChannels.orElse(null);
     }
@@ -345,6 +371,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto itemId(@javax.annotation.Nullable UUID itemId) {
         this.itemId = JsonNullable.<UUID> of(itemId);
+
         return this;
     }
 
@@ -355,6 +382,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public UUID getItemId() {
         return itemId.orElse(null);
     }
@@ -377,6 +405,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto enableDirectPlay(@javax.annotation.Nullable Boolean enableDirectPlay) {
         this.enableDirectPlay = JsonNullable.<Boolean> of(enableDirectPlay);
+
         return this;
     }
 
@@ -387,6 +416,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getEnableDirectPlay() {
         return enableDirectPlay.orElse(null);
     }
@@ -409,6 +439,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto enableDirectStream(@javax.annotation.Nullable Boolean enableDirectStream) {
         this.enableDirectStream = JsonNullable.<Boolean> of(enableDirectStream);
+
         return this;
     }
 
@@ -419,6 +450,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getEnableDirectStream() {
         return enableDirectStream.orElse(null);
     }
@@ -441,6 +473,7 @@ public class OpenLiveStreamDto {
 
     public OpenLiveStreamDto deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
         this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
+
         return this;
     }
 
@@ -458,6 +491,7 @@ public class OpenLiveStreamDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public DeviceProfile getDeviceProfile() {
         return deviceProfile.orElse(null);
     }
@@ -479,6 +513,7 @@ public class OpenLiveStreamDto {
     }
 
     public OpenLiveStreamDto directPlayProtocols(@javax.annotation.Nullable List<MediaProtocol> directPlayProtocols) {
+
         this.directPlayProtocols = directPlayProtocols;
         return this;
     }
@@ -499,6 +534,7 @@ public class OpenLiveStreamDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaProtocol> getDirectPlayProtocols() {
         return directPlayProtocols;
     }
@@ -509,9 +545,6 @@ public class OpenLiveStreamDto {
         this.directPlayProtocols = directPlayProtocols;
     }
 
-    /**
-     * Return true if this OpenLiveStreamDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -587,123 +620,6 @@ public class OpenLiveStreamDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `OpenToken` to the URL query string
-        if (getOpenToken() != null) {
-            joiner.add(String.format("%sOpenToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `MaxStreamingBitrate` to the URL query string
-        if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
-        }
-
-        // add `StartTimeTicks` to the URL query string
-        if (getStartTimeTicks() != null) {
-            joiner.add(String.format("%sStartTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeTicks()))));
-        }
-
-        // add `AudioStreamIndex` to the URL query string
-        if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
-        }
-
-        // add `SubtitleStreamIndex` to the URL query string
-        if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
-        }
-
-        // add `MaxAudioChannels` to the URL query string
-        if (getMaxAudioChannels() != null) {
-            joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `EnableDirectPlay` to the URL query string
-        if (getEnableDirectPlay() != null) {
-            joiner.add(String.format("%sEnableDirectPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectPlay()))));
-        }
-
-        // add `EnableDirectStream` to the URL query string
-        if (getEnableDirectStream() != null) {
-            joiner.add(String.format("%sEnableDirectStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectStream()))));
-        }
-
-        // add `DeviceProfile` to the URL query string
-        if (getDeviceProfile() != null) {
-            joiner.add(getDeviceProfile().toUrlQueryString(prefix + "DeviceProfile" + suffix));
-        }
-
-        // add `DirectPlayProtocols` to the URL query string
-        if (getDirectPlayProtocols() != null) {
-            for (int i = 0; i < getDirectPlayProtocols().size(); i++) {
-                if (getDirectPlayProtocols().get(i) != null) {
-                    joiner.add(String.format("%sDirectPlayProtocols%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getDirectPlayProtocols().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

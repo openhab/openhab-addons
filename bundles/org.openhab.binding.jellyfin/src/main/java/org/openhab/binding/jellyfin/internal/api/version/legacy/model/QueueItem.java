@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,12 +39,14 @@ public class QueueItem {
     private UUID id;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
 
     public QueueItem() {
     }
 
     public QueueItem id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -59,6 +59,7 @@ public class QueueItem {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -71,6 +72,7 @@ public class QueueItem {
 
     public QueueItem playlistItemId(@javax.annotation.Nullable String playlistItemId) {
         this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+
         return this;
     }
 
@@ -81,6 +83,7 @@ public class QueueItem {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
     }
@@ -101,9 +104,6 @@ public class QueueItem {
         this.playlistItemId = JsonNullable.<String> of(playlistItemId);
     }
 
-    /**
-     * Return true if this QueueItem object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,53 +152,6 @@ public class QueueItem {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

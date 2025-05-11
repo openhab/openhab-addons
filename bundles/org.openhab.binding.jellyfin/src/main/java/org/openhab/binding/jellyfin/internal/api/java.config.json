@@ -1,5 +1,5 @@
 {
-  "library": "native",
+  "library": "webclient",
   "developerOrganization": "openHAB project",
   "developerOrganizationUrl": "https://www.openhab.org",
   "dateLibrary": "java8",

@@ -24,10 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,39 +44,51 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteSearchResult {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+    @javax.annotation.Nullable
     private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
 
     public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> productionYear = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_URL = "ImageUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> imageUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+    @javax.annotation.Nullable
     private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+    @javax.annotation.Nullable
     private JsonNullable<String> overview = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
+    @javax.annotation.Nullable
     private JsonNullable<RemoteSearchResult> albumArtist = JsonNullable.<RemoteSearchResult> undefined();
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
+    @javax.annotation.Nullable
     private JsonNullable<List<RemoteSearchResult>> artists = JsonNullable.<List<RemoteSearchResult>> undefined();
 
     public RemoteSearchResult() {
@@ -86,6 +96,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -96,6 +107,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -118,6 +130,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
+
         return this;
     }
 
@@ -140,6 +153,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Map<String, String> getProviderIds() {
         return providerIds.orElse(null);
     }
@@ -162,6 +176,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult productionYear(@javax.annotation.Nullable Integer productionYear) {
         this.productionYear = JsonNullable.<Integer> of(productionYear);
+
         return this;
     }
 
@@ -172,6 +187,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getProductionYear() {
         return productionYear.orElse(null);
     }
@@ -194,6 +210,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult indexNumber(@javax.annotation.Nullable Integer indexNumber) {
         this.indexNumber = JsonNullable.<Integer> of(indexNumber);
+
         return this;
     }
 
@@ -204,6 +221,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getIndexNumber() {
         return indexNumber.orElse(null);
     }
@@ -226,6 +244,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
         this.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
+
         return this;
     }
 
@@ -236,6 +255,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getIndexNumberEnd() {
         return indexNumberEnd.orElse(null);
     }
@@ -258,6 +278,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
         this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
+
         return this;
     }
 
@@ -268,6 +289,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getParentIndexNumber() {
         return parentIndexNumber.orElse(null);
     }
@@ -290,6 +312,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
         this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+
         return this;
     }
 
@@ -300,6 +323,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getPremiereDate() {
         return premiereDate.orElse(null);
     }
@@ -322,6 +346,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult imageUrl(@javax.annotation.Nullable String imageUrl) {
         this.imageUrl = JsonNullable.<String> of(imageUrl);
+
         return this;
     }
 
@@ -332,6 +357,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getImageUrl() {
         return imageUrl.orElse(null);
     }
@@ -354,6 +380,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult searchProviderName(@javax.annotation.Nullable String searchProviderName) {
         this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+
         return this;
     }
 
@@ -364,6 +391,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSearchProviderName() {
         return searchProviderName.orElse(null);
     }
@@ -386,6 +414,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult overview(@javax.annotation.Nullable String overview) {
         this.overview = JsonNullable.<String> of(overview);
+
         return this;
     }
 
@@ -396,6 +425,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOverview() {
         return overview.orElse(null);
     }
@@ -418,6 +448,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult albumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
         this.albumArtist = JsonNullable.<RemoteSearchResult> of(albumArtist);
+
         return this;
     }
 
@@ -428,6 +459,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public RemoteSearchResult getAlbumArtist() {
         return albumArtist.orElse(null);
     }
@@ -450,6 +482,7 @@ public class RemoteSearchResult {
 
     public RemoteSearchResult artists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
         this.artists = JsonNullable.<List<RemoteSearchResult>> of(artists);
+
         return this;
     }
 
@@ -472,6 +505,7 @@ public class RemoteSearchResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<RemoteSearchResult> getArtists() {
         return artists.orElse(null);
     }
@@ -492,9 +526,6 @@ public class RemoteSearchResult {
         this.artists = JsonNullable.<List<RemoteSearchResult>> of(artists);
     }
 
-    /**
-     * Return true if this RemoteSearchResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -567,120 +598,6 @@ public class RemoteSearchResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ProviderIds` to the URL query string
-        if (getProviderIds() != null) {
-            for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
-            }
-        }
-
-        // add `ProductionYear` to the URL query string
-        if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
-        }
-
-        // add `IndexNumber` to the URL query string
-        if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
-        }
-
-        // add `IndexNumberEnd` to the URL query string
-        if (getIndexNumberEnd() != null) {
-            joiner.add(String.format("%sIndexNumberEnd%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
-        }
-
-        // add `ParentIndexNumber` to the URL query string
-        if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
-        }
-
-        // add `PremiereDate` to the URL query string
-        if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
-        }
-
-        // add `ImageUrl` to the URL query string
-        if (getImageUrl() != null) {
-            joiner.add(String.format("%sImageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
-        }
-
-        // add `SearchProviderName` to the URL query string
-        if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `AlbumArtist` to the URL query string
-        if (getAlbumArtist() != null) {
-            joiner.add(getAlbumArtist().toUrlQueryString(prefix + "AlbumArtist" + suffix));
-        }
-
-        // add `Artists` to the URL query string
-        if (getArtists() != null) {
-            for (int i = 0; i < getArtists().size(); i++) {
-                if (getArtists().get(i) != null) {
-                    joiner.add(getArtists().get(i).toUrlQueryString(String.format("%sArtists%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

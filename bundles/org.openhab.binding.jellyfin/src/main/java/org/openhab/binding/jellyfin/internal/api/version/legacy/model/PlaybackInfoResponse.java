@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,15 +41,18 @@ public class PlaybackInfoResponse {
     private List<MediaSourceInfo> mediaSources = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playSessionId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
+    @javax.annotation.Nullable
     private JsonNullable<PlaybackErrorCode> errorCode = JsonNullable.<PlaybackErrorCode> undefined();
 
     public PlaybackInfoResponse() {
     }
 
     public PlaybackInfoResponse mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
+
         this.mediaSources = mediaSources;
         return this;
     }
@@ -72,6 +73,7 @@ public class PlaybackInfoResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<MediaSourceInfo> getMediaSources() {
         return mediaSources;
     }
@@ -84,6 +86,7 @@ public class PlaybackInfoResponse {
 
     public PlaybackInfoResponse playSessionId(@javax.annotation.Nullable String playSessionId) {
         this.playSessionId = JsonNullable.<String> of(playSessionId);
+
         return this;
     }
 
@@ -94,6 +97,7 @@ public class PlaybackInfoResponse {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaySessionId() {
         return playSessionId.orElse(null);
     }
@@ -116,6 +120,7 @@ public class PlaybackInfoResponse {
 
     public PlaybackInfoResponse errorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
         this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
+
         return this;
     }
 
@@ -126,6 +131,7 @@ public class PlaybackInfoResponse {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public PlaybackErrorCode getErrorCode() {
         return errorCode.orElse(null);
     }
@@ -146,9 +152,6 @@ public class PlaybackInfoResponse {
         this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
     }
 
-    /**
-     * Return true if this PlaybackInfoResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -200,64 +203,6 @@ public class PlaybackInfoResponse {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MediaSources` to the URL query string
-        if (getMediaSources() != null) {
-            for (int i = 0; i < getMediaSources().size(); i++) {
-                if (getMediaSources().get(i) != null) {
-                    joiner.add(getMediaSources().get(i).toUrlQueryString(String.format("%sMediaSources%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `PlaySessionId` to the URL query string
-        if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
-        }
-
-        // add `ErrorCode` to the URL query string
-        if (getErrorCode() != null) {
-            joiner.add(String.format("%sErrorCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorCode()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -70,6 +68,7 @@ public class DlnaOptions {
     private Integer blastAliveMessageIntervalSeconds;
 
     public static final String JSON_PROPERTY_DEFAULT_USER_ID = "DefaultUserId";
+    @javax.annotation.Nullable
     private JsonNullable<String> defaultUserId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES = "AutoCreatePlayToProfiles";
@@ -88,6 +87,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions enablePlayTo(@javax.annotation.Nullable Boolean enablePlayTo) {
+
         this.enablePlayTo = enablePlayTo;
         return this;
     }
@@ -100,6 +100,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePlayTo() {
         return enablePlayTo;
     }
@@ -111,6 +112,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions enableServer(@javax.annotation.Nullable Boolean enableServer) {
+
         this.enableServer = enableServer;
         return this;
     }
@@ -123,6 +125,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SERVER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableServer() {
         return enableServer;
     }
@@ -134,6 +137,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions enableDebugLog(@javax.annotation.Nullable Boolean enableDebugLog) {
+
         this.enableDebugLog = enableDebugLog;
         return this;
     }
@@ -147,6 +151,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_DEBUG_LOG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableDebugLog() {
         return enableDebugLog;
     }
@@ -158,6 +163,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions enablePlayToTracing(@javax.annotation.Nullable Boolean enablePlayToTracing) {
+
         this.enablePlayToTracing = enablePlayToTracing;
         return this;
     }
@@ -172,6 +178,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO_TRACING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnablePlayToTracing() {
         return enablePlayToTracing;
     }
@@ -184,6 +191,7 @@ public class DlnaOptions {
 
     public DlnaOptions clientDiscoveryIntervalSeconds(
             @javax.annotation.Nullable Integer clientDiscoveryIntervalSeconds) {
+
         this.clientDiscoveryIntervalSeconds = clientDiscoveryIntervalSeconds;
         return this;
     }
@@ -197,6 +205,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CLIENT_DISCOVERY_INTERVAL_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getClientDiscoveryIntervalSeconds() {
         return clientDiscoveryIntervalSeconds;
     }
@@ -208,6 +217,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions aliveMessageIntervalSeconds(@javax.annotation.Nullable Integer aliveMessageIntervalSeconds) {
+
         this.aliveMessageIntervalSeconds = aliveMessageIntervalSeconds;
         return this;
     }
@@ -220,6 +230,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALIVE_MESSAGE_INTERVAL_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAliveMessageIntervalSeconds() {
         return aliveMessageIntervalSeconds;
     }
@@ -232,6 +243,7 @@ public class DlnaOptions {
 
     public DlnaOptions blastAliveMessageIntervalSeconds(
             @javax.annotation.Nullable Integer blastAliveMessageIntervalSeconds) {
+
         this.blastAliveMessageIntervalSeconds = blastAliveMessageIntervalSeconds;
         return this;
     }
@@ -245,6 +257,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBlastAliveMessageIntervalSeconds() {
         return blastAliveMessageIntervalSeconds;
     }
@@ -258,6 +271,7 @@ public class DlnaOptions {
 
     public DlnaOptions defaultUserId(@javax.annotation.Nullable String defaultUserId) {
         this.defaultUserId = JsonNullable.<String> of(defaultUserId);
+
         return this;
     }
 
@@ -268,6 +282,7 @@ public class DlnaOptions {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDefaultUserId() {
         return defaultUserId.orElse(null);
     }
@@ -289,6 +304,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions autoCreatePlayToProfiles(@javax.annotation.Nullable Boolean autoCreatePlayToProfiles) {
+
         this.autoCreatePlayToProfiles = autoCreatePlayToProfiles;
         return this;
     }
@@ -301,6 +317,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAutoCreatePlayToProfiles() {
         return autoCreatePlayToProfiles;
     }
@@ -312,6 +329,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions blastAliveMessages(@javax.annotation.Nullable Boolean blastAliveMessages) {
+
         this.blastAliveMessages = blastAliveMessages;
         return this;
     }
@@ -324,6 +342,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getBlastAliveMessages() {
         return blastAliveMessages;
     }
@@ -335,6 +354,7 @@ public class DlnaOptions {
     }
 
     public DlnaOptions sendOnlyMatchedHost(@javax.annotation.Nullable Boolean sendOnlyMatchedHost) {
+
         this.sendOnlyMatchedHost = sendOnlyMatchedHost;
         return this;
     }
@@ -347,6 +367,7 @@ public class DlnaOptions {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEND_ONLY_MATCHED_HOST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSendOnlyMatchedHost() {
         return sendOnlyMatchedHost;
     }
@@ -357,9 +378,6 @@ public class DlnaOptions {
         this.sendOnlyMatchedHost = sendOnlyMatchedHost;
     }
 
-    /**
-     * Return true if this DlnaOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -432,107 +450,6 @@ public class DlnaOptions {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `EnablePlayTo` to the URL query string
-        if (getEnablePlayTo() != null) {
-            joiner.add(String.format("%sEnablePlayTo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePlayTo()))));
-        }
-
-        // add `EnableServer` to the URL query string
-        if (getEnableServer() != null) {
-            joiner.add(String.format("%sEnableServer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableServer()))));
-        }
-
-        // add `EnableDebugLog` to the URL query string
-        if (getEnableDebugLog() != null) {
-            joiner.add(String.format("%sEnableDebugLog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDebugLog()))));
-        }
-
-        // add `EnablePlayToTracing` to the URL query string
-        if (getEnablePlayToTracing() != null) {
-            joiner.add(String.format("%sEnablePlayToTracing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePlayToTracing()))));
-        }
-
-        // add `ClientDiscoveryIntervalSeconds` to the URL query string
-        if (getClientDiscoveryIntervalSeconds() != null) {
-            joiner.add(String.format("%sClientDiscoveryIntervalSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClientDiscoveryIntervalSeconds()))));
-        }
-
-        // add `AliveMessageIntervalSeconds` to the URL query string
-        if (getAliveMessageIntervalSeconds() != null) {
-            joiner.add(String.format("%sAliveMessageIntervalSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAliveMessageIntervalSeconds()))));
-        }
-
-        // add `BlastAliveMessageIntervalSeconds` to the URL query string
-        if (getBlastAliveMessageIntervalSeconds() != null) {
-            joiner.add(String.format("%sBlastAliveMessageIntervalSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlastAliveMessageIntervalSeconds()))));
-        }
-
-        // add `DefaultUserId` to the URL query string
-        if (getDefaultUserId() != null) {
-            joiner.add(String.format("%sDefaultUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDefaultUserId()))));
-        }
-
-        // add `AutoCreatePlayToProfiles` to the URL query string
-        if (getAutoCreatePlayToProfiles() != null) {
-            joiner.add(String.format("%sAutoCreatePlayToProfiles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoCreatePlayToProfiles()))));
-        }
-
-        // add `BlastAliveMessages` to the URL query string
-        if (getBlastAliveMessages() != null) {
-            joiner.add(String.format("%sBlastAliveMessages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlastAliveMessages()))));
-        }
-
-        // add `SendOnlyMatchedHost` to the URL query string
-        if (getSendOnlyMatchedHost() != null) {
-            joiner.add(String.format("%sSendOnlyMatchedHost%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSendOnlyMatchedHost()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

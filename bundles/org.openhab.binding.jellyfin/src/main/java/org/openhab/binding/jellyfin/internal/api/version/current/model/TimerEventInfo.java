@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,12 +39,14 @@ public class TimerEventInfo {
     private String id;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
+    @javax.annotation.Nullable
     private JsonNullable<UUID> programId = JsonNullable.<UUID> undefined();
 
     public TimerEventInfo() {
     }
 
     public TimerEventInfo id(@javax.annotation.Nullable String id) {
+
         this.id = id;
         return this;
     }
@@ -59,6 +59,7 @@ public class TimerEventInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -71,6 +72,7 @@ public class TimerEventInfo {
 
     public TimerEventInfo programId(@javax.annotation.Nullable UUID programId) {
         this.programId = JsonNullable.<UUID> of(programId);
+
         return this;
     }
 
@@ -81,6 +83,7 @@ public class TimerEventInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public UUID getProgramId() {
         return programId.orElse(null);
     }
@@ -101,9 +104,6 @@ public class TimerEventInfo {
         this.programId = JsonNullable.<UUID> of(programId);
     }
 
-    /**
-     * Return true if this TimerEventInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,53 +152,6 @@ public class TimerEventInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ProgramId` to the URL query string
-        if (getProgramId() != null) {
-            joiner.add(String.format("%sProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

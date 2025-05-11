@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,21 +45,26 @@ public class ConfigurationPageInfo {
     private Boolean enableInMainMenu;
 
     public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
+    @javax.annotation.Nullable
     private JsonNullable<String> menuSection = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
+    @javax.annotation.Nullable
     private JsonNullable<String> menuIcon = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+    @javax.annotation.Nullable
     private JsonNullable<String> displayName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
+    @javax.annotation.Nullable
     private JsonNullable<UUID> pluginId = JsonNullable.<UUID> undefined();
 
     public ConfigurationPageInfo() {
     }
 
     public ConfigurationPageInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -74,6 +77,7 @@ public class ConfigurationPageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -85,6 +89,7 @@ public class ConfigurationPageInfo {
     }
 
     public ConfigurationPageInfo enableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
+
         this.enableInMainMenu = enableInMainMenu;
         return this;
     }
@@ -97,6 +102,7 @@ public class ConfigurationPageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableInMainMenu() {
         return enableInMainMenu;
     }
@@ -109,6 +115,7 @@ public class ConfigurationPageInfo {
 
     public ConfigurationPageInfo menuSection(@javax.annotation.Nullable String menuSection) {
         this.menuSection = JsonNullable.<String> of(menuSection);
+
         return this;
     }
 
@@ -119,6 +126,7 @@ public class ConfigurationPageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMenuSection() {
         return menuSection.orElse(null);
     }
@@ -141,6 +149,7 @@ public class ConfigurationPageInfo {
 
     public ConfigurationPageInfo menuIcon(@javax.annotation.Nullable String menuIcon) {
         this.menuIcon = JsonNullable.<String> of(menuIcon);
+
         return this;
     }
 
@@ -151,6 +160,7 @@ public class ConfigurationPageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMenuIcon() {
         return menuIcon.orElse(null);
     }
@@ -173,6 +183,7 @@ public class ConfigurationPageInfo {
 
     public ConfigurationPageInfo displayName(@javax.annotation.Nullable String displayName) {
         this.displayName = JsonNullable.<String> of(displayName);
+
         return this;
     }
 
@@ -183,6 +194,7 @@ public class ConfigurationPageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDisplayName() {
         return displayName.orElse(null);
     }
@@ -205,6 +217,7 @@ public class ConfigurationPageInfo {
 
     public ConfigurationPageInfo pluginId(@javax.annotation.Nullable UUID pluginId) {
         this.pluginId = JsonNullable.<UUID> of(pluginId);
+
         return this;
     }
 
@@ -215,6 +228,7 @@ public class ConfigurationPageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public UUID getPluginId() {
         return pluginId.orElse(null);
     }
@@ -235,9 +249,6 @@ public class ConfigurationPageInfo {
         this.pluginId = JsonNullable.<UUID> of(pluginId);
     }
 
-    /**
-     * Return true if this ConfigurationPageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -296,77 +307,6 @@ public class ConfigurationPageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `EnableInMainMenu` to the URL query string
-        if (getEnableInMainMenu() != null) {
-            joiner.add(String.format("%sEnableInMainMenu%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableInMainMenu()))));
-        }
-
-        // add `MenuSection` to the URL query string
-        if (getMenuSection() != null) {
-            joiner.add(String.format("%sMenuSection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuSection()))));
-        }
-
-        // add `MenuIcon` to the URL query string
-        if (getMenuIcon() != null) {
-            joiner.add(String.format("%sMenuIcon%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuIcon()))));
-        }
-
-        // add `DisplayName` to the URL query string
-        if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-        }
-
-        // add `PluginId` to the URL query string
-        if (getPluginId() != null) {
-            joiner.add(String.format("%sPluginId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPluginId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

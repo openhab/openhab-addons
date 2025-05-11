@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,12 +38,14 @@ public class LyricLine {
     private String text;
 
     public static final String JSON_PROPERTY_START = "Start";
+    @javax.annotation.Nullable
     private JsonNullable<Long> start = JsonNullable.<Long> undefined();
 
     public LyricLine() {
     }
 
     public LyricLine text(@javax.annotation.Nullable String text) {
+
         this.text = text;
         return this;
     }
@@ -58,6 +58,7 @@ public class LyricLine {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TEXT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getText() {
         return text;
     }
@@ -70,6 +71,7 @@ public class LyricLine {
 
     public LyricLine start(@javax.annotation.Nullable Long start) {
         this.start = JsonNullable.<Long> of(start);
+
         return this;
     }
 
@@ -80,6 +82,7 @@ public class LyricLine {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Long getStart() {
         return start.orElse(null);
     }
@@ -100,9 +103,6 @@ public class LyricLine {
         this.start = JsonNullable.<Long> of(start);
     }
 
-    /**
-     * Return true if this LyricLine object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -151,53 +151,6 @@ public class LyricLine {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Text` to the URL query string
-        if (getText() != null) {
-            joiner.add(String.format("%sText%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getText()))));
-        }
-
-        // add `Start` to the URL query string
-        if (getStart() != null) {
-            joiner.add(String.format("%sStart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStart()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

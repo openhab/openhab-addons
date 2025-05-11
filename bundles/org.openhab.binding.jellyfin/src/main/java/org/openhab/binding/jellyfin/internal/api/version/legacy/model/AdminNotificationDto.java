@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,15 +35,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AdminNotificationDto {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+    @javax.annotation.Nullable
     private JsonNullable<String> description = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NOTIFICATION_LEVEL = "NotificationLevel";
+    @javax.annotation.Nullable
     private JsonNullable<NotificationLevel> notificationLevel = JsonNullable.<NotificationLevel> undefined();
 
     public static final String JSON_PROPERTY_URL = "Url";
+    @javax.annotation.Nullable
     private JsonNullable<String> url = JsonNullable.<String> undefined();
 
     public AdminNotificationDto() {
@@ -53,6 +55,7 @@ public class AdminNotificationDto {
 
     public AdminNotificationDto name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -63,6 +66,7 @@ public class AdminNotificationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -85,6 +89,7 @@ public class AdminNotificationDto {
 
     public AdminNotificationDto description(@javax.annotation.Nullable String description) {
         this.description = JsonNullable.<String> of(description);
+
         return this;
     }
 
@@ -95,6 +100,7 @@ public class AdminNotificationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDescription() {
         return description.orElse(null);
     }
@@ -117,6 +123,7 @@ public class AdminNotificationDto {
 
     public AdminNotificationDto notificationLevel(@javax.annotation.Nullable NotificationLevel notificationLevel) {
         this.notificationLevel = JsonNullable.<NotificationLevel> of(notificationLevel);
+
         return this;
     }
 
@@ -127,6 +134,7 @@ public class AdminNotificationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public NotificationLevel getNotificationLevel() {
         return notificationLevel.orElse(null);
     }
@@ -149,6 +157,7 @@ public class AdminNotificationDto {
 
     public AdminNotificationDto url(@javax.annotation.Nullable String url) {
         this.url = JsonNullable.<String> of(url);
+
         return this;
     }
 
@@ -159,6 +168,7 @@ public class AdminNotificationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUrl() {
         return url.orElse(null);
     }
@@ -179,9 +189,6 @@ public class AdminNotificationDto {
         this.url = JsonNullable.<String> of(url);
     }
 
-    /**
-     * Return true if this AdminNotificationDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -236,65 +243,6 @@ public class AdminNotificationDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `NotificationLevel` to the URL query string
-        if (getNotificationLevel() != null) {
-            joiner.add(String.format("%sNotificationLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNotificationLevel()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

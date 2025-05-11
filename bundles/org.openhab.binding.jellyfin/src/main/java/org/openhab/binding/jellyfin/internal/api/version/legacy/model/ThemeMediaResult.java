@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ThemeMediaResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
     private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>> undefined();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
@@ -59,6 +58,7 @@ public class ThemeMediaResult {
 
     public ThemeMediaResult items(@javax.annotation.Nullable List<BaseItemDto> items) {
         this.items = JsonNullable.<List<BaseItemDto>> of(items);
+
         return this;
     }
 
@@ -81,6 +81,7 @@ public class ThemeMediaResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<BaseItemDto> getItems() {
         return items.orElse(null);
     }
@@ -102,6 +103,7 @@ public class ThemeMediaResult {
     }
 
     public ThemeMediaResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
         this.totalRecordCount = totalRecordCount;
         return this;
     }
@@ -114,6 +116,7 @@ public class ThemeMediaResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
@@ -125,6 +128,7 @@ public class ThemeMediaResult {
     }
 
     public ThemeMediaResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
         this.startIndex = startIndex;
         return this;
     }
@@ -137,6 +141,7 @@ public class ThemeMediaResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getStartIndex() {
         return startIndex;
     }
@@ -148,6 +153,7 @@ public class ThemeMediaResult {
     }
 
     public ThemeMediaResult ownerId(@javax.annotation.Nullable UUID ownerId) {
+
         this.ownerId = ownerId;
         return this;
     }
@@ -160,6 +166,7 @@ public class ThemeMediaResult {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_OWNER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getOwnerId() {
         return ownerId;
     }
@@ -170,9 +177,6 @@ public class ThemeMediaResult {
         this.ownerId = ownerId;
     }
 
-    /**
-     * Return true if this ThemeMediaResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -226,69 +230,6 @@ public class ThemeMediaResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Items` to the URL query string
-        if (getItems() != null) {
-            for (int i = 0; i < getItems().size(); i++) {
-                if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TotalRecordCount` to the URL query string
-        if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        // add `OwnerId` to the URL query string
-        if (getOwnerId() != null) {
-            joiner.add(String.format("%sOwnerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOwnerId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

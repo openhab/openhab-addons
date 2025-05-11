@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -36,9 +34,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaUpdateInfoPathDto {
     public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
     private JsonNullable<String> path = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
+    @javax.annotation.Nullable
     private JsonNullable<String> updateType = JsonNullable.<String> undefined();
 
     public MediaUpdateInfoPathDto() {
@@ -46,6 +46,7 @@ public class MediaUpdateInfoPathDto {
 
     public MediaUpdateInfoPathDto path(@javax.annotation.Nullable String path) {
         this.path = JsonNullable.<String> of(path);
+
         return this;
     }
 
@@ -56,6 +57,7 @@ public class MediaUpdateInfoPathDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPath() {
         return path.orElse(null);
     }
@@ -78,6 +80,7 @@ public class MediaUpdateInfoPathDto {
 
     public MediaUpdateInfoPathDto updateType(@javax.annotation.Nullable String updateType) {
         this.updateType = JsonNullable.<String> of(updateType);
+
         return this;
     }
 
@@ -88,6 +91,7 @@ public class MediaUpdateInfoPathDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUpdateType() {
         return updateType.orElse(null);
     }
@@ -108,9 +112,6 @@ public class MediaUpdateInfoPathDto {
         this.updateType = JsonNullable.<String> of(updateType);
     }
 
-    /**
-     * Return true if this MediaUpdateInfoPathDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -160,53 +161,6 @@ public class MediaUpdateInfoPathDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `UpdateType` to the URL query string
-        if (getUpdateType() != null) {
-            joiner.add(String.format("%sUpdateType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUpdateType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

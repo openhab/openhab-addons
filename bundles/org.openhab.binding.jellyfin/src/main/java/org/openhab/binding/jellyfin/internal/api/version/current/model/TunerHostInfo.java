@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,18 +40,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TunerHostInfo {
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_URL = "Url";
+    @javax.annotation.Nullable
     private JsonNullable<String> url = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
+    @javax.annotation.Nullable
     private JsonNullable<String> friendlyName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IMPORT_FAVORITES_ONLY = "ImportFavoritesOnly";
@@ -81,6 +84,7 @@ public class TunerHostInfo {
     private Boolean enableStreamLooping;
 
     public static final String JSON_PROPERTY_SOURCE = "Source";
+    @javax.annotation.Nullable
     private JsonNullable<String> source = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TUNER_COUNT = "TunerCount";
@@ -88,6 +92,7 @@ public class TunerHostInfo {
     private Integer tunerCount;
 
     public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
+    @javax.annotation.Nullable
     private JsonNullable<String> userAgent = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IGNORE_DTS = "IgnoreDts";
@@ -99,6 +104,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -109,6 +115,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -131,6 +138,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo url(@javax.annotation.Nullable String url) {
         this.url = JsonNullable.<String> of(url);
+
         return this;
     }
 
@@ -141,6 +149,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUrl() {
         return url.orElse(null);
     }
@@ -163,6 +172,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -173,6 +183,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -195,6 +206,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo deviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = JsonNullable.<String> of(deviceId);
+
         return this;
     }
 
@@ -205,6 +217,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceId() {
         return deviceId.orElse(null);
     }
@@ -227,6 +240,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo friendlyName(@javax.annotation.Nullable String friendlyName) {
         this.friendlyName = JsonNullable.<String> of(friendlyName);
+
         return this;
     }
 
@@ -237,6 +251,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getFriendlyName() {
         return friendlyName.orElse(null);
     }
@@ -258,6 +273,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo importFavoritesOnly(@javax.annotation.Nullable Boolean importFavoritesOnly) {
+
         this.importFavoritesOnly = importFavoritesOnly;
         return this;
     }
@@ -270,6 +286,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getImportFavoritesOnly() {
         return importFavoritesOnly;
     }
@@ -281,6 +298,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo allowHWTranscoding(@javax.annotation.Nullable Boolean allowHWTranscoding) {
+
         this.allowHWTranscoding = allowHWTranscoding;
         return this;
     }
@@ -293,6 +311,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowHWTranscoding() {
         return allowHWTranscoding;
     }
@@ -305,6 +324,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo allowFmp4TranscodingContainer(
             @javax.annotation.Nullable Boolean allowFmp4TranscodingContainer) {
+
         this.allowFmp4TranscodingContainer = allowFmp4TranscodingContainer;
         return this;
     }
@@ -317,6 +337,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowFmp4TranscodingContainer() {
         return allowFmp4TranscodingContainer;
     }
@@ -328,6 +349,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo allowStreamSharing(@javax.annotation.Nullable Boolean allowStreamSharing) {
+
         this.allowStreamSharing = allowStreamSharing;
         return this;
     }
@@ -340,6 +362,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALLOW_STREAM_SHARING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getAllowStreamSharing() {
         return allowStreamSharing;
     }
@@ -351,6 +374,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo fallbackMaxStreamingBitrate(@javax.annotation.Nullable Integer fallbackMaxStreamingBitrate) {
+
         this.fallbackMaxStreamingBitrate = fallbackMaxStreamingBitrate;
         return this;
     }
@@ -363,6 +387,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getFallbackMaxStreamingBitrate() {
         return fallbackMaxStreamingBitrate;
     }
@@ -374,6 +399,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo enableStreamLooping(@javax.annotation.Nullable Boolean enableStreamLooping) {
+
         this.enableStreamLooping = enableStreamLooping;
         return this;
     }
@@ -386,6 +412,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableStreamLooping() {
         return enableStreamLooping;
     }
@@ -398,6 +425,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo source(@javax.annotation.Nullable String source) {
         this.source = JsonNullable.<String> of(source);
+
         return this;
     }
 
@@ -408,6 +436,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSource() {
         return source.orElse(null);
     }
@@ -429,6 +458,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo tunerCount(@javax.annotation.Nullable Integer tunerCount) {
+
         this.tunerCount = tunerCount;
         return this;
     }
@@ -441,6 +471,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTunerCount() {
         return tunerCount;
     }
@@ -453,6 +484,7 @@ public class TunerHostInfo {
 
     public TunerHostInfo userAgent(@javax.annotation.Nullable String userAgent) {
         this.userAgent = JsonNullable.<String> of(userAgent);
+
         return this;
     }
 
@@ -463,6 +495,7 @@ public class TunerHostInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserAgent() {
         return userAgent.orElse(null);
     }
@@ -484,6 +517,7 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo ignoreDts(@javax.annotation.Nullable Boolean ignoreDts) {
+
         this.ignoreDts = ignoreDts;
         return this;
     }
@@ -496,6 +530,7 @@ public class TunerHostInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreDts() {
         return ignoreDts;
     }
@@ -506,9 +541,6 @@ public class TunerHostInfo {
         this.ignoreDts = ignoreDts;
     }
 
-    /**
-     * Return true if this TunerHostInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -588,131 +620,6 @@ public class TunerHostInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Url` to the URL query string
-        if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `FriendlyName` to the URL query string
-        if (getFriendlyName() != null) {
-            joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
-        }
-
-        // add `ImportFavoritesOnly` to the URL query string
-        if (getImportFavoritesOnly() != null) {
-            joiner.add(String.format("%sImportFavoritesOnly%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImportFavoritesOnly()))));
-        }
-
-        // add `AllowHWTranscoding` to the URL query string
-        if (getAllowHWTranscoding() != null) {
-            joiner.add(String.format("%sAllowHWTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowHWTranscoding()))));
-        }
-
-        // add `AllowFmp4TranscodingContainer` to the URL query string
-        if (getAllowFmp4TranscodingContainer() != null) {
-            joiner.add(String.format("%sAllowFmp4TranscodingContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowFmp4TranscodingContainer()))));
-        }
-
-        // add `AllowStreamSharing` to the URL query string
-        if (getAllowStreamSharing() != null) {
-            joiner.add(String.format("%sAllowStreamSharing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowStreamSharing()))));
-        }
-
-        // add `FallbackMaxStreamingBitrate` to the URL query string
-        if (getFallbackMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFallbackMaxStreamingBitrate()))));
-        }
-
-        // add `EnableStreamLooping` to the URL query string
-        if (getEnableStreamLooping() != null) {
-            joiner.add(String.format("%sEnableStreamLooping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableStreamLooping()))));
-        }
-
-        // add `Source` to the URL query string
-        if (getSource() != null) {
-            joiner.add(String.format("%sSource%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSource()))));
-        }
-
-        // add `TunerCount` to the URL query string
-        if (getTunerCount() != null) {
-            joiner.add(String.format("%sTunerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTunerCount()))));
-        }
-
-        // add `UserAgent` to the URL query string
-        if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
-        }
-
-        // add `IgnoreDts` to the URL query string
-        if (getIgnoreDts() != null) {
-            joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

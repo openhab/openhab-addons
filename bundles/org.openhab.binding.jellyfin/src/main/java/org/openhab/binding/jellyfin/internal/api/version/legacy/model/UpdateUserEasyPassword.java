@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,9 +35,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateUserEasyPassword {
     public static final String JSON_PROPERTY_NEW_PASSWORD = "NewPassword";
+    @javax.annotation.Nullable
     private JsonNullable<String> newPassword = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NEW_PW = "NewPw";
+    @javax.annotation.Nullable
     private JsonNullable<String> newPw = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
@@ -51,6 +51,7 @@ public class UpdateUserEasyPassword {
 
     public UpdateUserEasyPassword newPassword(@javax.annotation.Nullable String newPassword) {
         this.newPassword = JsonNullable.<String> of(newPassword);
+
         return this;
     }
 
@@ -61,6 +62,7 @@ public class UpdateUserEasyPassword {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getNewPassword() {
         return newPassword.orElse(null);
     }
@@ -83,6 +85,7 @@ public class UpdateUserEasyPassword {
 
     public UpdateUserEasyPassword newPw(@javax.annotation.Nullable String newPw) {
         this.newPw = JsonNullable.<String> of(newPw);
+
         return this;
     }
 
@@ -93,6 +96,7 @@ public class UpdateUserEasyPassword {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getNewPw() {
         return newPw.orElse(null);
     }
@@ -114,6 +118,7 @@ public class UpdateUserEasyPassword {
     }
 
     public UpdateUserEasyPassword resetPassword(@javax.annotation.Nullable Boolean resetPassword) {
+
         this.resetPassword = resetPassword;
         return this;
     }
@@ -126,6 +131,7 @@ public class UpdateUserEasyPassword {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getResetPassword() {
         return resetPassword;
     }
@@ -136,9 +142,6 @@ public class UpdateUserEasyPassword {
         this.resetPassword = resetPassword;
     }
 
-    /**
-     * Return true if this UpdateUserEasyPassword object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -190,59 +193,6 @@ public class UpdateUserEasyPassword {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `NewPassword` to the URL query string
-        if (getNewPassword() != null) {
-            joiner.add(String.format("%sNewPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewPassword()))));
-        }
-
-        // add `NewPw` to the URL query string
-        if (getNewPw() != null) {
-            joiner.add(String.format("%sNewPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewPw()))));
-        }
-
-        // add `ResetPassword` to the URL query string
-        if (getResetPassword() != null) {
-            joiner.add(String.format("%sResetPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResetPassword()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

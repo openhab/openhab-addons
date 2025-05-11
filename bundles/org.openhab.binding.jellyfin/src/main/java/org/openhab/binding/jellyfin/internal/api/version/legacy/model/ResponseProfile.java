@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,12 +39,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ResponseProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
+    @javax.annotation.Nullable
     private JsonNullable<String> audioCodec = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
+    @javax.annotation.Nullable
     private JsonNullable<String> videoCodec = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
@@ -54,12 +55,15 @@ public class ResponseProfile {
     private DlnaProfileType type;
 
     public static final String JSON_PROPERTY_ORG_PN = "OrgPn";
+    @javax.annotation.Nullable
     private JsonNullable<String> orgPn = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
+    @javax.annotation.Nullable
     private JsonNullable<String> mimeType = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
+    @javax.annotation.Nullable
     private JsonNullable<List<ProfileCondition>> conditions = JsonNullable.<List<ProfileCondition>> undefined();
 
     public ResponseProfile() {
@@ -67,6 +71,7 @@ public class ResponseProfile {
 
     public ResponseProfile container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -77,6 +82,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -99,6 +105,7 @@ public class ResponseProfile {
 
     public ResponseProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
         this.audioCodec = JsonNullable.<String> of(audioCodec);
+
         return this;
     }
 
@@ -109,6 +116,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAudioCodec() {
         return audioCodec.orElse(null);
     }
@@ -131,6 +139,7 @@ public class ResponseProfile {
 
     public ResponseProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
         this.videoCodec = JsonNullable.<String> of(videoCodec);
+
         return this;
     }
 
@@ -141,6 +150,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVideoCodec() {
         return videoCodec.orElse(null);
     }
@@ -162,6 +172,7 @@ public class ResponseProfile {
     }
 
     public ResponseProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+
         this.type = type;
         return this;
     }
@@ -174,6 +185,7 @@ public class ResponseProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -186,6 +198,7 @@ public class ResponseProfile {
 
     public ResponseProfile orgPn(@javax.annotation.Nullable String orgPn) {
         this.orgPn = JsonNullable.<String> of(orgPn);
+
         return this;
     }
 
@@ -196,6 +209,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOrgPn() {
         return orgPn.orElse(null);
     }
@@ -218,6 +232,7 @@ public class ResponseProfile {
 
     public ResponseProfile mimeType(@javax.annotation.Nullable String mimeType) {
         this.mimeType = JsonNullable.<String> of(mimeType);
+
         return this;
     }
 
@@ -228,6 +243,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMimeType() {
         return mimeType.orElse(null);
     }
@@ -250,6 +266,7 @@ public class ResponseProfile {
 
     public ResponseProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
         this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
+
         return this;
     }
 
@@ -272,6 +289,7 @@ public class ResponseProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<ProfileCondition> getConditions() {
         return conditions.orElse(null);
     }
@@ -292,9 +310,6 @@ public class ResponseProfile {
         this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
     }
 
-    /**
-     * Return true if this ResponseProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -354,87 +369,6 @@ public class ResponseProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `AudioCodec` to the URL query string
-        if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
-        }
-
-        // add `VideoCodec` to the URL query string
-        if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `OrgPn` to the URL query string
-        if (getOrgPn() != null) {
-            joiner.add(String.format("%sOrgPn%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOrgPn()))));
-        }
-
-        // add `MimeType` to the URL query string
-        if (getMimeType() != null) {
-            joiner.add(String.format("%sMimeType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,15 +35,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TunerChannelMapping {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_NAME = "ProviderChannelName";
+    @javax.annotation.Nullable
     private JsonNullable<String> providerChannelName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
+    @javax.annotation.Nullable
     private JsonNullable<String> providerChannelId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public TunerChannelMapping() {
@@ -53,6 +55,7 @@ public class TunerChannelMapping {
 
     public TunerChannelMapping name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -63,6 +66,7 @@ public class TunerChannelMapping {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -85,6 +89,7 @@ public class TunerChannelMapping {
 
     public TunerChannelMapping providerChannelName(@javax.annotation.Nullable String providerChannelName) {
         this.providerChannelName = JsonNullable.<String> of(providerChannelName);
+
         return this;
     }
 
@@ -95,6 +100,7 @@ public class TunerChannelMapping {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProviderChannelName() {
         return providerChannelName.orElse(null);
     }
@@ -117,6 +123,7 @@ public class TunerChannelMapping {
 
     public TunerChannelMapping providerChannelId(@javax.annotation.Nullable String providerChannelId) {
         this.providerChannelId = JsonNullable.<String> of(providerChannelId);
+
         return this;
     }
 
@@ -127,6 +134,7 @@ public class TunerChannelMapping {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProviderChannelId() {
         return providerChannelId.orElse(null);
     }
@@ -149,6 +157,7 @@ public class TunerChannelMapping {
 
     public TunerChannelMapping id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -159,6 +168,7 @@ public class TunerChannelMapping {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -179,9 +189,6 @@ public class TunerChannelMapping {
         this.id = JsonNullable.<String> of(id);
     }
 
-    /**
-     * Return true if this TunerChannelMapping object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -236,65 +243,6 @@ public class TunerChannelMapping {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ProviderChannelName` to the URL query string
-        if (getProviderChannelName() != null) {
-            joiner.add(String.format("%sProviderChannelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelName()))));
-        }
-
-        // add `ProviderChannelId` to the URL query string
-        if (getProviderChannelId() != null) {
-            joiner.add(String.format("%sProviderChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

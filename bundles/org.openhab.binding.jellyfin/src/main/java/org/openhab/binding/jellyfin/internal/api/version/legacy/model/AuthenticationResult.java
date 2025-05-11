@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,15 +35,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AuthenticationResult {
     public static final String JSON_PROPERTY_USER = "User";
+    @javax.annotation.Nullable
     private JsonNullable<UserDto> user = JsonNullable.<UserDto> undefined();
 
     public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
+    @javax.annotation.Nullable
     private JsonNullable<SessionInfo> sessionInfo = JsonNullable.<SessionInfo> undefined();
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+    @javax.annotation.Nullable
     private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> serverId = JsonNullable.<String> undefined();
 
     public AuthenticationResult() {
@@ -53,6 +55,7 @@ public class AuthenticationResult {
 
     public AuthenticationResult user(@javax.annotation.Nullable UserDto user) {
         this.user = JsonNullable.<UserDto> of(user);
+
         return this;
     }
 
@@ -63,6 +66,7 @@ public class AuthenticationResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public UserDto getUser() {
         return user.orElse(null);
     }
@@ -85,6 +89,7 @@ public class AuthenticationResult {
 
     public AuthenticationResult sessionInfo(@javax.annotation.Nullable SessionInfo sessionInfo) {
         this.sessionInfo = JsonNullable.<SessionInfo> of(sessionInfo);
+
         return this;
     }
 
@@ -95,6 +100,7 @@ public class AuthenticationResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public SessionInfo getSessionInfo() {
         return sessionInfo.orElse(null);
     }
@@ -117,6 +123,7 @@ public class AuthenticationResult {
 
     public AuthenticationResult accessToken(@javax.annotation.Nullable String accessToken) {
         this.accessToken = JsonNullable.<String> of(accessToken);
+
         return this;
     }
 
@@ -127,6 +134,7 @@ public class AuthenticationResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAccessToken() {
         return accessToken.orElse(null);
     }
@@ -149,6 +157,7 @@ public class AuthenticationResult {
 
     public AuthenticationResult serverId(@javax.annotation.Nullable String serverId) {
         this.serverId = JsonNullable.<String> of(serverId);
+
         return this;
     }
 
@@ -159,6 +168,7 @@ public class AuthenticationResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServerId() {
         return serverId.orElse(null);
     }
@@ -179,9 +189,6 @@ public class AuthenticationResult {
         this.serverId = JsonNullable.<String> of(serverId);
     }
 
-    /**
-     * Return true if this AuthenticationResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -236,63 +243,6 @@ public class AuthenticationResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `User` to the URL query string
-        if (getUser() != null) {
-            joiner.add(getUser().toUrlQueryString(prefix + "User" + suffix));
-        }
-
-        // add `SessionInfo` to the URL query string
-        if (getSessionInfo() != null) {
-            joiner.add(getSessionInfo().toUrlQueryString(prefix + "SessionInfo" + suffix));
-        }
-
-        // add `AccessToken` to the URL query string
-        if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
-        }
-
-        // add `ServerId` to the URL query string
-        if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

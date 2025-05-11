@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,6 +50,7 @@ public class UploadSubtitleDto {
     }
 
     public UploadSubtitleDto language(@javax.annotation.Nonnull String language) {
+
         this.language = language;
         return this;
     }
@@ -65,6 +63,7 @@ public class UploadSubtitleDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getLanguage() {
         return language;
     }
@@ -76,6 +75,7 @@ public class UploadSubtitleDto {
     }
 
     public UploadSubtitleDto format(@javax.annotation.Nonnull String format) {
+
         this.format = format;
         return this;
     }
@@ -88,6 +88,7 @@ public class UploadSubtitleDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_FORMAT)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getFormat() {
         return format;
     }
@@ -99,6 +100,7 @@ public class UploadSubtitleDto {
     }
 
     public UploadSubtitleDto isForced(@javax.annotation.Nonnull Boolean isForced) {
+
         this.isForced = isForced;
         return this;
     }
@@ -111,6 +113,7 @@ public class UploadSubtitleDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_IS_FORCED)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public Boolean getIsForced() {
         return isForced;
     }
@@ -122,6 +125,7 @@ public class UploadSubtitleDto {
     }
 
     public UploadSubtitleDto data(@javax.annotation.Nonnull String data) {
+
         this.data = data;
         return this;
     }
@@ -134,6 +138,7 @@ public class UploadSubtitleDto {
     @javax.annotation.Nonnull
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
     public String getData() {
         return data;
     }
@@ -144,9 +149,6 @@ public class UploadSubtitleDto {
         this.data = data;
     }
 
-    /**
-     * Return true if this UploadSubtitleDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -188,65 +190,6 @@ public class UploadSubtitleDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        // add `IsForced` to the URL query string
-        if (getIsForced() != null) {
-            joiner.add(String.format("%sIsForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
-        }
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

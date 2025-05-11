@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,15 +36,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CountryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+    @javax.annotation.Nullable
     private JsonNullable<String> displayName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
+    @javax.annotation.Nullable
     private JsonNullable<String> twoLetterISORegionName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
+    @javax.annotation.Nullable
     private JsonNullable<String> threeLetterISORegionName = JsonNullable.<String> undefined();
 
     public CountryInfo() {
@@ -54,6 +56,7 @@ public class CountryInfo {
 
     public CountryInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -64,6 +67,7 @@ public class CountryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -86,6 +90,7 @@ public class CountryInfo {
 
     public CountryInfo displayName(@javax.annotation.Nullable String displayName) {
         this.displayName = JsonNullable.<String> of(displayName);
+
         return this;
     }
 
@@ -96,6 +101,7 @@ public class CountryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDisplayName() {
         return displayName.orElse(null);
     }
@@ -118,6 +124,7 @@ public class CountryInfo {
 
     public CountryInfo twoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
         this.twoLetterISORegionName = JsonNullable.<String> of(twoLetterISORegionName);
+
         return this;
     }
 
@@ -128,6 +135,7 @@ public class CountryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTwoLetterISORegionName() {
         return twoLetterISORegionName.orElse(null);
     }
@@ -150,6 +158,7 @@ public class CountryInfo {
 
     public CountryInfo threeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
         this.threeLetterISORegionName = JsonNullable.<String> of(threeLetterISORegionName);
+
         return this;
     }
 
@@ -160,6 +169,7 @@ public class CountryInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getThreeLetterISORegionName() {
         return threeLetterISORegionName.orElse(null);
     }
@@ -180,9 +190,6 @@ public class CountryInfo {
         this.threeLetterISORegionName = JsonNullable.<String> of(threeLetterISORegionName);
     }
 
-    /**
-     * Return true if this CountryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -236,65 +243,6 @@ public class CountryInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `DisplayName` to the URL query string
-        if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-        }
-
-        // add `TwoLetterISORegionName` to the URL query string
-        if (getTwoLetterISORegionName() != null) {
-            joiner.add(String.format("%sTwoLetterISORegionName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISORegionName()))));
-        }
-
-        // add `ThreeLetterISORegionName` to the URL query string
-        if (getThreeLetterISORegionName() != null) {
-            joiner.add(String.format("%sThreeLetterISORegionName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISORegionName()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

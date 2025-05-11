@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -61,42 +59,55 @@ public class GetProgramsDto {
     private UUID userId;
 
     public static final String JSON_PROPERTY_MIN_START_DATE = "MinStartDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> minStartDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_HAS_AIRED = "HasAired";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> hasAired = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_IS_AIRING = "IsAiring";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isAiring = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_MAX_START_DATE = "MaxStartDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> maxStartDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_MIN_END_DATE = "MinEndDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> minEndDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_MAX_END_DATE = "MaxEndDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> maxEndDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isMovie = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isSeries = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isNews = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isKids = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isSports = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> startIndex = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_LIMIT = "Limit";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> limit = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_SORT_BY = "SortBy";
@@ -116,6 +127,7 @@ public class GetProgramsDto {
     private List<UUID> genreIds = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_IMAGES = "EnableImages";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> enableImages = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT = "EnableTotalRecordCount";
@@ -123,6 +135,7 @@ public class GetProgramsDto {
     private Boolean enableTotalRecordCount;
 
     public static final String JSON_PROPERTY_IMAGE_TYPE_LIMIT = "ImageTypeLimit";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> imageTypeLimit = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_IMAGE_TYPES = "EnableImageTypes";
@@ -130,9 +143,11 @@ public class GetProgramsDto {
     private List<ImageType> enableImageTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_USER_DATA = "EnableUserData";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> enableUserData = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> seriesTimerId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LIBRARY_SERIES_ID = "LibrarySeriesId";
@@ -147,6 +162,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto channelIds(@javax.annotation.Nullable List<UUID> channelIds) {
+
         this.channelIds = channelIds;
         return this;
     }
@@ -167,6 +183,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getChannelIds() {
         return channelIds;
     }
@@ -178,6 +195,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto userId(@javax.annotation.Nullable UUID userId) {
+
         this.userId = userId;
         return this;
     }
@@ -190,6 +208,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -202,6 +221,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto minStartDate(@javax.annotation.Nullable OffsetDateTime minStartDate) {
         this.minStartDate = JsonNullable.<OffsetDateTime> of(minStartDate);
+
         return this;
     }
 
@@ -212,6 +232,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getMinStartDate() {
         return minStartDate.orElse(null);
     }
@@ -234,6 +255,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto hasAired(@javax.annotation.Nullable Boolean hasAired) {
         this.hasAired = JsonNullable.<Boolean> of(hasAired);
+
         return this;
     }
 
@@ -244,6 +266,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getHasAired() {
         return hasAired.orElse(null);
     }
@@ -266,6 +289,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isAiring(@javax.annotation.Nullable Boolean isAiring) {
         this.isAiring = JsonNullable.<Boolean> of(isAiring);
+
         return this;
     }
 
@@ -276,6 +300,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsAiring() {
         return isAiring.orElse(null);
     }
@@ -298,6 +323,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto maxStartDate(@javax.annotation.Nullable OffsetDateTime maxStartDate) {
         this.maxStartDate = JsonNullable.<OffsetDateTime> of(maxStartDate);
+
         return this;
     }
 
@@ -308,6 +334,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getMaxStartDate() {
         return maxStartDate.orElse(null);
     }
@@ -330,6 +357,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto minEndDate(@javax.annotation.Nullable OffsetDateTime minEndDate) {
         this.minEndDate = JsonNullable.<OffsetDateTime> of(minEndDate);
+
         return this;
     }
 
@@ -340,6 +368,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getMinEndDate() {
         return minEndDate.orElse(null);
     }
@@ -362,6 +391,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto maxEndDate(@javax.annotation.Nullable OffsetDateTime maxEndDate) {
         this.maxEndDate = JsonNullable.<OffsetDateTime> of(maxEndDate);
+
         return this;
     }
 
@@ -372,6 +402,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getMaxEndDate() {
         return maxEndDate.orElse(null);
     }
@@ -394,6 +425,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isMovie(@javax.annotation.Nullable Boolean isMovie) {
         this.isMovie = JsonNullable.<Boolean> of(isMovie);
+
         return this;
     }
 
@@ -404,6 +436,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsMovie() {
         return isMovie.orElse(null);
     }
@@ -426,6 +459,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isSeries(@javax.annotation.Nullable Boolean isSeries) {
         this.isSeries = JsonNullable.<Boolean> of(isSeries);
+
         return this;
     }
 
@@ -436,6 +470,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsSeries() {
         return isSeries.orElse(null);
     }
@@ -458,6 +493,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isNews(@javax.annotation.Nullable Boolean isNews) {
         this.isNews = JsonNullable.<Boolean> of(isNews);
+
         return this;
     }
 
@@ -468,6 +504,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsNews() {
         return isNews.orElse(null);
     }
@@ -490,6 +527,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isKids(@javax.annotation.Nullable Boolean isKids) {
         this.isKids = JsonNullable.<Boolean> of(isKids);
+
         return this;
     }
 
@@ -500,6 +538,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsKids() {
         return isKids.orElse(null);
     }
@@ -522,6 +561,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto isSports(@javax.annotation.Nullable Boolean isSports) {
         this.isSports = JsonNullable.<Boolean> of(isSports);
+
         return this;
     }
 
@@ -532,6 +572,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsSports() {
         return isSports.orElse(null);
     }
@@ -554,6 +595,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto startIndex(@javax.annotation.Nullable Integer startIndex) {
         this.startIndex = JsonNullable.<Integer> of(startIndex);
+
         return this;
     }
 
@@ -565,6 +607,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getStartIndex() {
         return startIndex.orElse(null);
     }
@@ -587,6 +630,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto limit(@javax.annotation.Nullable Integer limit) {
         this.limit = JsonNullable.<Integer> of(limit);
+
         return this;
     }
 
@@ -597,6 +641,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getLimit() {
         return limit.orElse(null);
     }
@@ -618,6 +663,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto sortBy(@javax.annotation.Nullable List<String> sortBy) {
+
         this.sortBy = sortBy;
         return this;
     }
@@ -638,6 +684,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SORT_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getSortBy() {
         return sortBy;
     }
@@ -649,6 +696,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto sortOrder(@javax.annotation.Nullable List<SortOrder> sortOrder) {
+
         this.sortOrder = sortOrder;
         return this;
     }
@@ -669,6 +717,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SORT_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SortOrder> getSortOrder() {
         return sortOrder;
     }
@@ -680,6 +729,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto genres(@javax.annotation.Nullable List<String> genres) {
+
         this.genres = genres;
         return this;
     }
@@ -700,6 +750,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GENRES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getGenres() {
         return genres;
     }
@@ -711,6 +762,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto genreIds(@javax.annotation.Nullable List<UUID> genreIds) {
+
         this.genreIds = genreIds;
         return this;
     }
@@ -731,6 +783,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GENRE_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getGenreIds() {
         return genreIds;
     }
@@ -743,6 +796,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto enableImages(@javax.annotation.Nullable Boolean enableImages) {
         this.enableImages = JsonNullable.<Boolean> of(enableImages);
+
         return this;
     }
 
@@ -753,6 +807,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getEnableImages() {
         return enableImages.orElse(null);
     }
@@ -774,6 +829,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto enableTotalRecordCount(@javax.annotation.Nullable Boolean enableTotalRecordCount) {
+
         this.enableTotalRecordCount = enableTotalRecordCount;
         return this;
     }
@@ -786,6 +842,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableTotalRecordCount() {
         return enableTotalRecordCount;
     }
@@ -798,6 +855,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto imageTypeLimit(@javax.annotation.Nullable Integer imageTypeLimit) {
         this.imageTypeLimit = JsonNullable.<Integer> of(imageTypeLimit);
+
         return this;
     }
 
@@ -808,6 +866,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getImageTypeLimit() {
         return imageTypeLimit.orElse(null);
     }
@@ -829,6 +888,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto enableImageTypes(@javax.annotation.Nullable List<ImageType> enableImageTypes) {
+
         this.enableImageTypes = enableImageTypes;
         return this;
     }
@@ -849,6 +909,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ImageType> getEnableImageTypes() {
         return enableImageTypes;
     }
@@ -861,6 +922,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto enableUserData(@javax.annotation.Nullable Boolean enableUserData) {
         this.enableUserData = JsonNullable.<Boolean> of(enableUserData);
+
         return this;
     }
 
@@ -871,6 +933,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getEnableUserData() {
         return enableUserData.orElse(null);
     }
@@ -893,6 +956,7 @@ public class GetProgramsDto {
 
     public GetProgramsDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
         this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
+
         return this;
     }
 
@@ -903,6 +967,7 @@ public class GetProgramsDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSeriesTimerId() {
         return seriesTimerId.orElse(null);
     }
@@ -924,6 +989,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto librarySeriesId(@javax.annotation.Nullable UUID librarySeriesId) {
+
         this.librarySeriesId = librarySeriesId;
         return this;
     }
@@ -936,6 +1002,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getLibrarySeriesId() {
         return librarySeriesId;
     }
@@ -947,6 +1014,7 @@ public class GetProgramsDto {
     }
 
     public GetProgramsDto fields(@javax.annotation.Nullable List<ItemFields> fields) {
+
         this.fields = fields;
         return this;
     }
@@ -969,6 +1037,7 @@ public class GetProgramsDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_FIELDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ItemFields> getFields() {
         return fields;
     }
@@ -979,9 +1048,6 @@ public class GetProgramsDto {
         this.fields = fields;
     }
 
-    /**
-     * Return true if this GetProgramsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1088,234 +1154,6 @@ public class GetProgramsDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ChannelIds` to the URL query string
-        if (getChannelIds() != null) {
-            for (int i = 0; i < getChannelIds().size(); i++) {
-                if (getChannelIds().get(i) != null) {
-                    joiner.add(String.format("%sChannelIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getChannelIds().get(i)))));
-                }
-            }
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `MinStartDate` to the URL query string
-        if (getMinStartDate() != null) {
-            joiner.add(String.format("%sMinStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinStartDate()))));
-        }
-
-        // add `HasAired` to the URL query string
-        if (getHasAired() != null) {
-            joiner.add(String.format("%sHasAired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasAired()))));
-        }
-
-        // add `IsAiring` to the URL query string
-        if (getIsAiring() != null) {
-            joiner.add(String.format("%sIsAiring%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAiring()))));
-        }
-
-        // add `MaxStartDate` to the URL query string
-        if (getMaxStartDate() != null) {
-            joiner.add(String.format("%sMaxStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStartDate()))));
-        }
-
-        // add `MinEndDate` to the URL query string
-        if (getMinEndDate() != null) {
-            joiner.add(String.format("%sMinEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinEndDate()))));
-        }
-
-        // add `MaxEndDate` to the URL query string
-        if (getMaxEndDate() != null) {
-            joiner.add(String.format("%sMaxEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxEndDate()))));
-        }
-
-        // add `IsMovie` to the URL query string
-        if (getIsMovie() != null) {
-            joiner.add(String.format("%sIsMovie%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMovie()))));
-        }
-
-        // add `IsSeries` to the URL query string
-        if (getIsSeries() != null) {
-            joiner.add(String.format("%sIsSeries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSeries()))));
-        }
-
-        // add `IsNews` to the URL query string
-        if (getIsNews() != null) {
-            joiner.add(String.format("%sIsNews%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsNews()))));
-        }
-
-        // add `IsKids` to the URL query string
-        if (getIsKids() != null) {
-            joiner.add(String.format("%sIsKids%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsKids()))));
-        }
-
-        // add `IsSports` to the URL query string
-        if (getIsSports() != null) {
-            joiner.add(String.format("%sIsSports%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSports()))));
-        }
-
-        // add `StartIndex` to the URL query string
-        if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-        }
-
-        // add `Limit` to the URL query string
-        if (getLimit() != null) {
-            joiner.add(String.format("%sLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
-        }
-
-        // add `SortBy` to the URL query string
-        if (getSortBy() != null) {
-            for (int i = 0; i < getSortBy().size(); i++) {
-                joiner.add(String.format("%sSortBy%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSortBy().get(i)))));
-            }
-        }
-
-        // add `SortOrder` to the URL query string
-        if (getSortOrder() != null) {
-            for (int i = 0; i < getSortOrder().size(); i++) {
-                if (getSortOrder().get(i) != null) {
-                    joiner.add(String.format("%sSortOrder%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSortOrder().get(i)))));
-                }
-            }
-        }
-
-        // add `Genres` to the URL query string
-        if (getGenres() != null) {
-            for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
-            }
-        }
-
-        // add `GenreIds` to the URL query string
-        if (getGenreIds() != null) {
-            for (int i = 0; i < getGenreIds().size(); i++) {
-                if (getGenreIds().get(i) != null) {
-                    joiner.add(String.format("%sGenreIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getGenreIds().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableImages` to the URL query string
-        if (getEnableImages() != null) {
-            joiner.add(String.format("%sEnableImages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableImages()))));
-        }
-
-        // add `EnableTotalRecordCount` to the URL query string
-        if (getEnableTotalRecordCount() != null) {
-            joiner.add(String.format("%sEnableTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableTotalRecordCount()))));
-        }
-
-        // add `ImageTypeLimit` to the URL query string
-        if (getImageTypeLimit() != null) {
-            joiner.add(String.format("%sImageTypeLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTypeLimit()))));
-        }
-
-        // add `EnableImageTypes` to the URL query string
-        if (getEnableImageTypes() != null) {
-            for (int i = 0; i < getEnableImageTypes().size(); i++) {
-                if (getEnableImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sEnableImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnableImageTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `EnableUserData` to the URL query string
-        if (getEnableUserData() != null) {
-            joiner.add(String.format("%sEnableUserData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserData()))));
-        }
-
-        // add `SeriesTimerId` to the URL query string
-        if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
-        }
-
-        // add `LibrarySeriesId` to the URL query string
-        if (getLibrarySeriesId() != null) {
-            joiner.add(String.format("%sLibrarySeriesId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibrarySeriesId()))));
-        }
-
-        // add `Fields` to the URL query string
-        if (getFields() != null) {
-            for (int i = 0; i < getFields().size(); i++) {
-                if (getFields().get(i) != null) {
-                    joiner.add(String.format("%sFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SubtitleProfile {
     public static final String JSON_PROPERTY_FORMAT = "Format";
+    @javax.annotation.Nullable
     private JsonNullable<String> format = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_METHOD = "Method";
@@ -45,12 +44,15 @@ public class SubtitleProfile {
     private SubtitleDeliveryMethod method;
 
     public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
+    @javax.annotation.Nullable
     private JsonNullable<String> didlMode = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
+    @javax.annotation.Nullable
     private JsonNullable<String> language = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public SubtitleProfile() {
@@ -58,6 +60,7 @@ public class SubtitleProfile {
 
     public SubtitleProfile format(@javax.annotation.Nullable String format) {
         this.format = JsonNullable.<String> of(format);
+
         return this;
     }
 
@@ -68,6 +71,7 @@ public class SubtitleProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getFormat() {
         return format.orElse(null);
     }
@@ -89,6 +93,7 @@ public class SubtitleProfile {
     }
 
     public SubtitleProfile method(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
+
         this.method = method;
         return this;
     }
@@ -101,6 +106,7 @@ public class SubtitleProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_METHOD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SubtitleDeliveryMethod getMethod() {
         return method;
     }
@@ -113,6 +119,7 @@ public class SubtitleProfile {
 
     public SubtitleProfile didlMode(@javax.annotation.Nullable String didlMode) {
         this.didlMode = JsonNullable.<String> of(didlMode);
+
         return this;
     }
 
@@ -123,6 +130,7 @@ public class SubtitleProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDidlMode() {
         return didlMode.orElse(null);
     }
@@ -145,6 +153,7 @@ public class SubtitleProfile {
 
     public SubtitleProfile language(@javax.annotation.Nullable String language) {
         this.language = JsonNullable.<String> of(language);
+
         return this;
     }
 
@@ -155,6 +164,7 @@ public class SubtitleProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLanguage() {
         return language.orElse(null);
     }
@@ -177,6 +187,7 @@ public class SubtitleProfile {
 
     public SubtitleProfile container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -187,6 +198,7 @@ public class SubtitleProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -207,9 +219,6 @@ public class SubtitleProfile {
         this.container = JsonNullable.<String> of(container);
     }
 
-    /**
-     * Return true if this SubtitleProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -266,71 +275,6 @@ public class SubtitleProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Format` to the URL query string
-        if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
-        }
-
-        // add `Method` to the URL query string
-        if (getMethod() != null) {
-            joiner.add(String.format("%sMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMethod()))));
-        }
-
-        // add `DidlMode` to the URL query string
-        if (getDidlMode() != null) {
-            joiner.add(String.format("%sDidlMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDidlMode()))));
-        }
-
-        // add `Language` to the URL query string
-        if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -89,6 +86,7 @@ public class ItemCounts {
     }
 
     public ItemCounts movieCount(@javax.annotation.Nullable Integer movieCount) {
+
         this.movieCount = movieCount;
         return this;
     }
@@ -101,6 +99,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMovieCount() {
         return movieCount;
     }
@@ -112,6 +111,7 @@ public class ItemCounts {
     }
 
     public ItemCounts seriesCount(@javax.annotation.Nullable Integer seriesCount) {
+
         this.seriesCount = seriesCount;
         return this;
     }
@@ -124,6 +124,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSeriesCount() {
         return seriesCount;
     }
@@ -135,6 +136,7 @@ public class ItemCounts {
     }
 
     public ItemCounts episodeCount(@javax.annotation.Nullable Integer episodeCount) {
+
         this.episodeCount = episodeCount;
         return this;
     }
@@ -147,6 +149,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getEpisodeCount() {
         return episodeCount;
     }
@@ -158,6 +161,7 @@ public class ItemCounts {
     }
 
     public ItemCounts artistCount(@javax.annotation.Nullable Integer artistCount) {
+
         this.artistCount = artistCount;
         return this;
     }
@@ -170,6 +174,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getArtistCount() {
         return artistCount;
     }
@@ -181,6 +186,7 @@ public class ItemCounts {
     }
 
     public ItemCounts programCount(@javax.annotation.Nullable Integer programCount) {
+
         this.programCount = programCount;
         return this;
     }
@@ -193,6 +199,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getProgramCount() {
         return programCount;
     }
@@ -204,6 +211,7 @@ public class ItemCounts {
     }
 
     public ItemCounts trailerCount(@javax.annotation.Nullable Integer trailerCount) {
+
         this.trailerCount = trailerCount;
         return this;
     }
@@ -216,6 +224,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTrailerCount() {
         return trailerCount;
     }
@@ -227,6 +236,7 @@ public class ItemCounts {
     }
 
     public ItemCounts songCount(@javax.annotation.Nullable Integer songCount) {
+
         this.songCount = songCount;
         return this;
     }
@@ -239,6 +249,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSongCount() {
         return songCount;
     }
@@ -250,6 +261,7 @@ public class ItemCounts {
     }
 
     public ItemCounts albumCount(@javax.annotation.Nullable Integer albumCount) {
+
         this.albumCount = albumCount;
         return this;
     }
@@ -262,6 +274,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getAlbumCount() {
         return albumCount;
     }
@@ -273,6 +286,7 @@ public class ItemCounts {
     }
 
     public ItemCounts musicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
+
         this.musicVideoCount = musicVideoCount;
         return this;
     }
@@ -285,6 +299,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMusicVideoCount() {
         return musicVideoCount;
     }
@@ -296,6 +311,7 @@ public class ItemCounts {
     }
 
     public ItemCounts boxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
+
         this.boxSetCount = boxSetCount;
         return this;
     }
@@ -308,6 +324,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBoxSetCount() {
         return boxSetCount;
     }
@@ -319,6 +336,7 @@ public class ItemCounts {
     }
 
     public ItemCounts bookCount(@javax.annotation.Nullable Integer bookCount) {
+
         this.bookCount = bookCount;
         return this;
     }
@@ -331,6 +349,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getBookCount() {
         return bookCount;
     }
@@ -342,6 +361,7 @@ public class ItemCounts {
     }
 
     public ItemCounts itemCount(@javax.annotation.Nullable Integer itemCount) {
+
         this.itemCount = itemCount;
         return this;
     }
@@ -354,6 +374,7 @@ public class ItemCounts {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getItemCount() {
         return itemCount;
     }
@@ -364,9 +385,6 @@ public class ItemCounts {
         this.itemCount = itemCount;
     }
 
-    /**
-     * Return true if this ItemCounts object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -425,113 +443,6 @@ public class ItemCounts {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `MovieCount` to the URL query string
-        if (getMovieCount() != null) {
-            joiner.add(String.format("%sMovieCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
-        }
-
-        // add `SeriesCount` to the URL query string
-        if (getSeriesCount() != null) {
-            joiner.add(String.format("%sSeriesCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
-        }
-
-        // add `EpisodeCount` to the URL query string
-        if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
-        }
-
-        // add `ArtistCount` to the URL query string
-        if (getArtistCount() != null) {
-            joiner.add(String.format("%sArtistCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
-        }
-
-        // add `ProgramCount` to the URL query string
-        if (getProgramCount() != null) {
-            joiner.add(String.format("%sProgramCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
-        }
-
-        // add `TrailerCount` to the URL query string
-        if (getTrailerCount() != null) {
-            joiner.add(String.format("%sTrailerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
-        }
-
-        // add `SongCount` to the URL query string
-        if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
-        }
-
-        // add `AlbumCount` to the URL query string
-        if (getAlbumCount() != null) {
-            joiner.add(String.format("%sAlbumCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
-        }
-
-        // add `MusicVideoCount` to the URL query string
-        if (getMusicVideoCount() != null) {
-            joiner.add(String.format("%sMusicVideoCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
-        }
-
-        // add `BoxSetCount` to the URL query string
-        if (getBoxSetCount() != null) {
-            joiner.add(String.format("%sBoxSetCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBoxSetCount()))));
-        }
-
-        // add `BookCount` to the URL query string
-        if (getBookCount() != null) {
-            joiner.add(String.format("%sBookCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBookCount()))));
-        }
-
-        // add `ItemCount` to the URL query string
-        if (getItemCount() != null) {
-            joiner.add(String.format("%sItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemCount()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

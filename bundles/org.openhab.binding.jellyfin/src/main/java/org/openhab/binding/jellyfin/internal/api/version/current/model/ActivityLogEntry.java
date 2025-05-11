@@ -20,11 +20,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,9 +48,11 @@ public class ActivityLogEntry {
     private String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+    @javax.annotation.Nullable
     private JsonNullable<String> overview = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SHORT_OVERVIEW = "ShortOverview";
+    @javax.annotation.Nullable
     private JsonNullable<String> shortOverview = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
@@ -60,6 +60,7 @@ public class ActivityLogEntry {
     private String type;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> itemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DATE = "Date";
@@ -71,6 +72,7 @@ public class ActivityLogEntry {
     private UUID userId;
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SEVERITY = "Severity";
@@ -81,6 +83,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry id(@javax.annotation.Nullable Long id) {
+
         this.id = id;
         return this;
     }
@@ -93,6 +96,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getId() {
         return id;
     }
@@ -104,6 +108,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -116,6 +121,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -128,6 +134,7 @@ public class ActivityLogEntry {
 
     public ActivityLogEntry overview(@javax.annotation.Nullable String overview) {
         this.overview = JsonNullable.<String> of(overview);
+
         return this;
     }
 
@@ -138,6 +145,7 @@ public class ActivityLogEntry {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOverview() {
         return overview.orElse(null);
     }
@@ -160,6 +168,7 @@ public class ActivityLogEntry {
 
     public ActivityLogEntry shortOverview(@javax.annotation.Nullable String shortOverview) {
         this.shortOverview = JsonNullable.<String> of(shortOverview);
+
         return this;
     }
 
@@ -170,6 +179,7 @@ public class ActivityLogEntry {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getShortOverview() {
         return shortOverview.orElse(null);
     }
@@ -191,6 +201,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry type(@javax.annotation.Nullable String type) {
+
         this.type = type;
         return this;
     }
@@ -203,6 +214,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getType() {
         return type;
     }
@@ -215,6 +227,7 @@ public class ActivityLogEntry {
 
     public ActivityLogEntry itemId(@javax.annotation.Nullable String itemId) {
         this.itemId = JsonNullable.<String> of(itemId);
+
         return this;
     }
 
@@ -225,6 +238,7 @@ public class ActivityLogEntry {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getItemId() {
         return itemId.orElse(null);
     }
@@ -246,6 +260,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry date(@javax.annotation.Nullable OffsetDateTime date) {
+
         this.date = date;
         return this;
     }
@@ -258,6 +273,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDate() {
         return date;
     }
@@ -269,6 +285,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry userId(@javax.annotation.Nullable UUID userId) {
+
         this.userId = userId;
         return this;
     }
@@ -281,6 +298,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -293,6 +311,7 @@ public class ActivityLogEntry {
 
     public ActivityLogEntry userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
         this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
+
         return this;
     }
 
@@ -305,6 +324,7 @@ public class ActivityLogEntry {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserPrimaryImageTag() {
         return userPrimaryImageTag.orElse(null);
     }
@@ -326,6 +346,7 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry severity(@javax.annotation.Nullable LogLevel severity) {
+
         this.severity = severity;
         return this;
     }
@@ -338,6 +359,7 @@ public class ActivityLogEntry {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEVERITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LogLevel getSeverity() {
         return severity;
     }
@@ -348,9 +370,6 @@ public class ActivityLogEntry {
         this.severity = severity;
     }
 
-    /**
-     * Return true if this ActivityLogEntry object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -416,101 +435,6 @@ public class ActivityLogEntry {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `ShortOverview` to the URL query string
-        if (getShortOverview() != null) {
-            joiner.add(String.format("%sShortOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShortOverview()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `Date` to the URL query string
-        if (getDate() != null) {
-            joiner.add(String.format("%sDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `UserPrimaryImageTag` to the URL query string
-        if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
-        }
-
-        // add `Severity` to the URL query string
-        if (getSeverity() != null) {
-            joiner.add(String.format("%sSeverity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeverity()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -20,11 +20,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,18 +45,23 @@ public class AuthenticationInfo {
     private Long id;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+    @javax.annotation.Nullable
     private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
+    @javax.annotation.Nullable
     private JsonNullable<String> appName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
+    @javax.annotation.Nullable
     private JsonNullable<String> appVersion = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
@@ -74,6 +77,7 @@ public class AuthenticationInfo {
     private OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_DATE_REVOKED = "DateRevoked";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> dateRevoked = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
@@ -81,12 +85,14 @@ public class AuthenticationInfo {
     private OffsetDateTime dateLastActivity;
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
+    @javax.annotation.Nullable
     private JsonNullable<String> userName = JsonNullable.<String> undefined();
 
     public AuthenticationInfo() {
     }
 
     public AuthenticationInfo id(@javax.annotation.Nullable Long id) {
+
         this.id = id;
         return this;
     }
@@ -99,6 +105,7 @@ public class AuthenticationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getId() {
         return id;
     }
@@ -111,6 +118,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo accessToken(@javax.annotation.Nullable String accessToken) {
         this.accessToken = JsonNullable.<String> of(accessToken);
+
         return this;
     }
 
@@ -121,6 +129,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAccessToken() {
         return accessToken.orElse(null);
     }
@@ -143,6 +152,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo deviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = JsonNullable.<String> of(deviceId);
+
         return this;
     }
 
@@ -153,6 +163,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceId() {
         return deviceId.orElse(null);
     }
@@ -175,6 +186,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo appName(@javax.annotation.Nullable String appName) {
         this.appName = JsonNullable.<String> of(appName);
+
         return this;
     }
 
@@ -185,6 +197,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAppName() {
         return appName.orElse(null);
     }
@@ -207,6 +220,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo appVersion(@javax.annotation.Nullable String appVersion) {
         this.appVersion = JsonNullable.<String> of(appVersion);
+
         return this;
     }
 
@@ -217,6 +231,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAppVersion() {
         return appVersion.orElse(null);
     }
@@ -239,6 +254,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo deviceName(@javax.annotation.Nullable String deviceName) {
         this.deviceName = JsonNullable.<String> of(deviceName);
+
         return this;
     }
 
@@ -249,6 +265,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceName() {
         return deviceName.orElse(null);
     }
@@ -270,6 +287,7 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo userId(@javax.annotation.Nullable UUID userId) {
+
         this.userId = userId;
         return this;
     }
@@ -282,6 +300,7 @@ public class AuthenticationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -293,6 +312,7 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo isActive(@javax.annotation.Nullable Boolean isActive) {
+
         this.isActive = isActive;
         return this;
     }
@@ -305,6 +325,7 @@ public class AuthenticationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -316,6 +337,7 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+
         this.dateCreated = dateCreated;
         return this;
     }
@@ -328,6 +350,7 @@ public class AuthenticationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_CREATED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
@@ -340,6 +363,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo dateRevoked(@javax.annotation.Nullable OffsetDateTime dateRevoked) {
         this.dateRevoked = JsonNullable.<OffsetDateTime> of(dateRevoked);
+
         return this;
     }
 
@@ -350,6 +374,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getDateRevoked() {
         return dateRevoked.orElse(null);
     }
@@ -371,6 +396,7 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo dateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
+
         this.dateLastActivity = dateLastActivity;
         return this;
     }
@@ -383,6 +409,7 @@ public class AuthenticationInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
@@ -395,6 +422,7 @@ public class AuthenticationInfo {
 
     public AuthenticationInfo userName(@javax.annotation.Nullable String userName) {
         this.userName = JsonNullable.<String> of(userName);
+
         return this;
     }
 
@@ -405,6 +433,7 @@ public class AuthenticationInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserName() {
         return userName.orElse(null);
     }
@@ -425,9 +454,6 @@ public class AuthenticationInfo {
         this.userName = JsonNullable.<String> of(userName);
     }
 
-    /**
-     * Return true if this AuthenticationInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -499,113 +525,6 @@ public class AuthenticationInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `AccessToken` to the URL query string
-        if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `AppName` to the URL query string
-        if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
-        }
-
-        // add `AppVersion` to the URL query string
-        if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
-        }
-
-        // add `DeviceName` to the URL query string
-        if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `IsActive` to the URL query string
-        if (getIsActive() != null) {
-            joiner.add(String.format("%sIsActive%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsActive()))));
-        }
-
-        // add `DateCreated` to the URL query string
-        if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
-        }
-
-        // add `DateRevoked` to the URL query string
-        if (getDateRevoked() != null) {
-            joiner.add(String.format("%sDateRevoked%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateRevoked()))));
-        }
-
-        // add `DateLastActivity` to the URL query string
-        if (getDateLastActivity() != null) {
-            joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
-        }
-
-        // add `UserName` to the URL query string
-        if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.JellyfinServerConfiguration;
+import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.version.legacy.ItemsApi;
 import org.openhab.binding.jellyfin.internal.api.version.legacy.SessionApi;

@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PluginInstallationCancelledMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
     private JsonNullable<InstallationInfo> data = JsonNullable.<InstallationInfo> undefined();
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
@@ -53,6 +52,9 @@ public class PluginInstallationCancelledMessage {
     public PluginInstallationCancelledMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public PluginInstallationCancelledMessage(
             @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
@@ -62,6 +64,7 @@ public class PluginInstallationCancelledMessage {
 
     public PluginInstallationCancelledMessage data(@javax.annotation.Nullable InstallationInfo data) {
         this.data = JsonNullable.<InstallationInfo> of(data);
+
         return this;
     }
 
@@ -72,6 +75,7 @@ public class PluginInstallationCancelledMessage {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public InstallationInfo getData() {
         return data.orElse(null);
     }
@@ -93,6 +97,7 @@ public class PluginInstallationCancelledMessage {
     }
 
     public PluginInstallationCancelledMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
         this.messageId = messageId;
         return this;
     }
@@ -105,6 +110,7 @@ public class PluginInstallationCancelledMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -123,13 +129,11 @@ public class PluginInstallationCancelledMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this PluginInstallationCancelledMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -181,58 +185,6 @@ public class PluginInstallationCancelledMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            joiner.add(getData().toUrlQueryString(prefix + "Data" + suffix));
-        }
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

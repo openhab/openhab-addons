@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,6 +52,7 @@ public class CultureDto {
     private String twoLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
+    @javax.annotation.Nullable
     private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
@@ -63,6 +62,9 @@ public class CultureDto {
     public CultureDto() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public CultureDto(@JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName) {
         this();
@@ -71,6 +73,7 @@ public class CultureDto {
     }
 
     public CultureDto name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -83,6 +86,7 @@ public class CultureDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -94,6 +98,7 @@ public class CultureDto {
     }
 
     public CultureDto displayName(@javax.annotation.Nullable String displayName) {
+
         this.displayName = displayName;
         return this;
     }
@@ -106,6 +111,7 @@ public class CultureDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDisplayName() {
         return displayName;
     }
@@ -117,6 +123,7 @@ public class CultureDto {
     }
 
     public CultureDto twoLetterISOLanguageName(@javax.annotation.Nullable String twoLetterISOLanguageName) {
+
         this.twoLetterISOLanguageName = twoLetterISOLanguageName;
         return this;
     }
@@ -129,6 +136,7 @@ public class CultureDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getTwoLetterISOLanguageName() {
         return twoLetterISOLanguageName;
     }
@@ -146,6 +154,7 @@ public class CultureDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getThreeLetterISOLanguageName() {
 
         if (threeLetterISOLanguageName == null) {
@@ -167,6 +176,7 @@ public class CultureDto {
     }
 
     public CultureDto threeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
+
         this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
         return this;
     }
@@ -187,6 +197,7 @@ public class CultureDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<String> getThreeLetterISOLanguageNames() {
         return threeLetterISOLanguageNames;
     }
@@ -197,9 +208,6 @@ public class CultureDto {
         this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
     }
 
-    /**
-     * Return true if this CultureDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -256,74 +264,6 @@ public class CultureDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `DisplayName` to the URL query string
-        if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-        }
-
-        // add `TwoLetterISOLanguageName` to the URL query string
-        if (getTwoLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sTwoLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISOLanguageName()))));
-        }
-
-        // add `ThreeLetterISOLanguageName` to the URL query string
-        if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
-        }
-
-        // add `ThreeLetterISOLanguageNames` to the URL query string
-        if (getThreeLetterISOLanguageNames() != null) {
-            for (int i = 0; i < getThreeLetterISOLanguageNames().size(); i++) {
-                joiner.add(String.format("%sThreeLetterISOLanguageNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageNames().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

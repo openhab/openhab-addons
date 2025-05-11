@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,15 +45,18 @@ public class ContainerProfile {
     private List<ProfileCondition> conditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
+    @javax.annotation.Nullable
     private JsonNullable<String> subContainer = JsonNullable.<String> undefined();
 
     public ContainerProfile() {
     }
 
     public ContainerProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+
         this.type = type;
         return this;
     }
@@ -68,6 +69,7 @@ public class ContainerProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -79,6 +81,7 @@ public class ContainerProfile {
     }
 
     public ContainerProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+
         this.conditions = conditions;
         return this;
     }
@@ -99,6 +102,7 @@ public class ContainerProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
@@ -111,6 +115,7 @@ public class ContainerProfile {
 
     public ContainerProfile container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -121,6 +126,7 @@ public class ContainerProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -143,6 +149,7 @@ public class ContainerProfile {
 
     public ContainerProfile subContainer(@javax.annotation.Nullable String subContainer) {
         this.subContainer = JsonNullable.<String> of(subContainer);
+
         return this;
     }
 
@@ -153,6 +160,7 @@ public class ContainerProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSubContainer() {
         return subContainer.orElse(null);
     }
@@ -173,9 +181,6 @@ public class ContainerProfile {
         this.subContainer = JsonNullable.<String> of(subContainer);
     }
 
-    /**
-     * Return true if this ContainerProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -229,69 +234,6 @@ public class ContainerProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `SubContainer` to the URL query string
-        if (getSubContainer() != null) {
-            joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

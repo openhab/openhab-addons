@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
     private JsonNullable<List<ActivityLogEntry>> data = JsonNullable.<List<ActivityLogEntry>> undefined();
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
@@ -54,6 +53,9 @@ public class ActivityLogEntryMessage {
     public ActivityLogEntryMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public ActivityLogEntryMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
@@ -62,6 +64,7 @@ public class ActivityLogEntryMessage {
 
     public ActivityLogEntryMessage data(@javax.annotation.Nullable List<ActivityLogEntry> data) {
         this.data = JsonNullable.<List<ActivityLogEntry>> of(data);
+
         return this;
     }
 
@@ -84,6 +87,7 @@ public class ActivityLogEntryMessage {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<ActivityLogEntry> getData() {
         return data.orElse(null);
     }
@@ -105,6 +109,7 @@ public class ActivityLogEntryMessage {
     }
 
     public ActivityLogEntryMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
         this.messageId = messageId;
         return this;
     }
@@ -117,6 +122,7 @@ public class ActivityLogEntryMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -135,13 +141,11 @@ public class ActivityLogEntryMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this ActivityLogEntryMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -193,63 +197,6 @@ public class ActivityLogEntryMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            for (int i = 0; i < getData().size(); i++) {
-                if (getData().get(i) != null) {
-                    joiner.add(getData().get(i).toUrlQueryString(String.format("%sData%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

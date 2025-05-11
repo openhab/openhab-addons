@@ -20,9 +20,6 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,6 +48,9 @@ public class ControlResponse {
     public ControlResponse() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public ControlResponse(@JsonProperty(JSON_PROPERTY_HEADERS) Map<String, String> headers) {
         this();
@@ -65,11 +65,13 @@ public class ControlResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HEADERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getHeaders() {
         return headers;
     }
 
     public ControlResponse xml(@javax.annotation.Nullable String xml) {
+
         this.xml = xml;
         return this;
     }
@@ -82,6 +84,7 @@ public class ControlResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_XML)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getXml() {
         return xml;
     }
@@ -93,6 +96,7 @@ public class ControlResponse {
     }
 
     public ControlResponse isSuccessful(@javax.annotation.Nullable Boolean isSuccessful) {
+
         this.isSuccessful = isSuccessful;
         return this;
     }
@@ -105,6 +109,7 @@ public class ControlResponse {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_SUCCESSFUL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsSuccessful() {
         return isSuccessful;
     }
@@ -115,9 +120,6 @@ public class ControlResponse {
         this.isSuccessful = isSuccessful;
     }
 
-    /**
-     * Return true if this ControlResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,62 +158,6 @@ public class ControlResponse {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Headers` to the URL query string
-        if (getHeaders() != null) {
-            for (String _key : getHeaders().keySet()) {
-                joiner.add(String.format("%sHeaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getHeaders().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getHeaders().get(_key)))));
-            }
-        }
-
-        // add `Xml` to the URL query string
-        if (getXml() != null) {
-            joiner.add(String.format("%sXml%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getXml()))));
-        }
-
-        // add `IsSuccessful` to the URL query string
-        if (getIsSuccessful() != null) {
-            joiner.add(String.format("%sIsSuccessful%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSuccessful()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

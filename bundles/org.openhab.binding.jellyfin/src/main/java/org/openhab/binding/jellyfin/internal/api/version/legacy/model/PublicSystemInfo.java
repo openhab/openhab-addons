@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,24 +37,31 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PublicSystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
+    @javax.annotation.Nullable
     private JsonNullable<String> localAddress = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
+    @javax.annotation.Nullable
     private JsonNullable<String> serverName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
+    @javax.annotation.Nullable
     private JsonNullable<String> productName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
+    @javax.annotation.Nullable
     private JsonNullable<String> operatingSystem = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> startupWizardCompleted = JsonNullable.<Boolean> undefined();
 
     public PublicSystemInfo() {
@@ -64,6 +69,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo localAddress(@javax.annotation.Nullable String localAddress) {
         this.localAddress = JsonNullable.<String> of(localAddress);
+
         return this;
     }
 
@@ -74,6 +80,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLocalAddress() {
         return localAddress.orElse(null);
     }
@@ -96,6 +103,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo serverName(@javax.annotation.Nullable String serverName) {
         this.serverName = JsonNullable.<String> of(serverName);
+
         return this;
     }
 
@@ -106,6 +114,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServerName() {
         return serverName.orElse(null);
     }
@@ -128,6 +137,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo version(@javax.annotation.Nullable String version) {
         this.version = JsonNullable.<String> of(version);
+
         return this;
     }
 
@@ -138,6 +148,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
         return version.orElse(null);
     }
@@ -160,6 +171,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo productName(@javax.annotation.Nullable String productName) {
         this.productName = JsonNullable.<String> of(productName);
+
         return this;
     }
 
@@ -170,6 +182,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProductName() {
         return productName.orElse(null);
     }
@@ -192,6 +205,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo operatingSystem(@javax.annotation.Nullable String operatingSystem) {
         this.operatingSystem = JsonNullable.<String> of(operatingSystem);
+
         return this;
     }
 
@@ -202,6 +216,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getOperatingSystem() {
         return operatingSystem.orElse(null);
     }
@@ -224,6 +239,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -234,6 +250,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -256,6 +273,7 @@ public class PublicSystemInfo {
 
     public PublicSystemInfo startupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
         this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
+
         return this;
     }
 
@@ -266,6 +284,7 @@ public class PublicSystemInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted.orElse(null);
     }
@@ -286,9 +305,6 @@ public class PublicSystemInfo {
         this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
     }
 
-    /**
-     * Return true if this PublicSystemInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -350,83 +366,6 @@ public class PublicSystemInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `LocalAddress` to the URL query string
-        if (getLocalAddress() != null) {
-            joiner.add(String.format("%sLocalAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
-        }
-
-        // add `ServerName` to the URL query string
-        if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `ProductName` to the URL query string
-        if (getProductName() != null) {
-            joiner.add(String.format("%sProductName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
-        }
-
-        // add `OperatingSystem` to the URL query string
-        if (getOperatingSystem() != null) {
-            joiner.add(String.format("%sOperatingSystem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `StartupWizardCompleted` to the URL query string
-        if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

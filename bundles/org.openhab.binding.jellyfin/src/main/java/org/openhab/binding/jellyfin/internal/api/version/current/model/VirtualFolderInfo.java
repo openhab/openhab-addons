@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,27 +39,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class VirtualFolderInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LOCATIONS = "Locations";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> locations = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
+    @javax.annotation.Nullable
     private JsonNullable<CollectionTypeOptions> collectionType = JsonNullable.<CollectionTypeOptions> undefined();
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+    @javax.annotation.Nullable
     private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> itemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID = "PrimaryImageItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> primaryImageItemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_REFRESH_PROGRESS = "RefreshProgress";
+    @javax.annotation.Nullable
     private JsonNullable<Double> refreshProgress = JsonNullable.<Double> undefined();
 
     public static final String JSON_PROPERTY_REFRESH_STATUS = "RefreshStatus";
+    @javax.annotation.Nullable
     private JsonNullable<String> refreshStatus = JsonNullable.<String> undefined();
 
     public VirtualFolderInfo() {
@@ -69,6 +75,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -79,6 +86,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -101,6 +109,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo locations(@javax.annotation.Nullable List<String> locations) {
         this.locations = JsonNullable.<List<String>> of(locations);
+
         return this;
     }
 
@@ -123,6 +132,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getLocations() {
         return locations.orElse(null);
     }
@@ -145,6 +155,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo collectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
         this.collectionType = JsonNullable.<CollectionTypeOptions> of(collectionType);
+
         return this;
     }
 
@@ -155,6 +166,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public CollectionTypeOptions getCollectionType() {
         return collectionType.orElse(null);
     }
@@ -177,6 +189,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
         this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+
         return this;
     }
 
@@ -187,6 +200,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public LibraryOptions getLibraryOptions() {
         return libraryOptions.orElse(null);
     }
@@ -209,6 +223,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo itemId(@javax.annotation.Nullable String itemId) {
         this.itemId = JsonNullable.<String> of(itemId);
+
         return this;
     }
 
@@ -219,6 +234,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getItemId() {
         return itemId.orElse(null);
     }
@@ -241,6 +257,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo primaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
         this.primaryImageItemId = JsonNullable.<String> of(primaryImageItemId);
+
         return this;
     }
 
@@ -251,6 +268,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPrimaryImageItemId() {
         return primaryImageItemId.orElse(null);
     }
@@ -273,6 +291,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo refreshProgress(@javax.annotation.Nullable Double refreshProgress) {
         this.refreshProgress = JsonNullable.<Double> of(refreshProgress);
+
         return this;
     }
 
@@ -283,6 +302,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Double getRefreshProgress() {
         return refreshProgress.orElse(null);
     }
@@ -305,6 +325,7 @@ public class VirtualFolderInfo {
 
     public VirtualFolderInfo refreshStatus(@javax.annotation.Nullable String refreshStatus) {
         this.refreshStatus = JsonNullable.<String> of(refreshStatus);
+
         return this;
     }
 
@@ -315,6 +336,7 @@ public class VirtualFolderInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getRefreshStatus() {
         return refreshStatus.orElse(null);
     }
@@ -335,9 +357,6 @@ public class VirtualFolderInfo {
         this.refreshStatus = JsonNullable.<String> of(refreshStatus);
     }
 
-    /**
-     * Return true if this VirtualFolderInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -401,91 +420,6 @@ public class VirtualFolderInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Locations` to the URL query string
-        if (getLocations() != null) {
-            for (int i = 0; i < getLocations().size(); i++) {
-                joiner.add(String.format("%sLocations%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocations().get(i)))));
-            }
-        }
-
-        // add `CollectionType` to the URL query string
-        if (getCollectionType() != null) {
-            joiner.add(String.format("%sCollectionType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
-        }
-
-        // add `LibraryOptions` to the URL query string
-        if (getLibraryOptions() != null) {
-            joiner.add(getLibraryOptions().toUrlQueryString(prefix + "LibraryOptions" + suffix));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `PrimaryImageItemId` to the URL query string
-        if (getPrimaryImageItemId() != null) {
-            joiner.add(String.format("%sPrimaryImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageItemId()))));
-        }
-
-        // add `RefreshProgress` to the URL query string
-        if (getRefreshProgress() != null) {
-            joiner.add(String.format("%sRefreshProgress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshProgress()))));
-        }
-
-        // add `RefreshStatus` to the URL query string
-        if (getRefreshStatus() != null) {
-            joiner.add(String.format("%sRefreshStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshStatus()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

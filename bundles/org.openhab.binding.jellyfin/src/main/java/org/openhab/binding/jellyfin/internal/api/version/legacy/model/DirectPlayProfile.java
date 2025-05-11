@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,12 +35,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DirectPlayProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
     private JsonNullable<String> container = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
+    @javax.annotation.Nullable
     private JsonNullable<String> audioCodec = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
+    @javax.annotation.Nullable
     private JsonNullable<String> videoCodec = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
@@ -54,6 +55,7 @@ public class DirectPlayProfile {
 
     public DirectPlayProfile container(@javax.annotation.Nullable String container) {
         this.container = JsonNullable.<String> of(container);
+
         return this;
     }
 
@@ -64,6 +66,7 @@ public class DirectPlayProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getContainer() {
         return container.orElse(null);
     }
@@ -86,6 +89,7 @@ public class DirectPlayProfile {
 
     public DirectPlayProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
         this.audioCodec = JsonNullable.<String> of(audioCodec);
+
         return this;
     }
 
@@ -96,6 +100,7 @@ public class DirectPlayProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAudioCodec() {
         return audioCodec.orElse(null);
     }
@@ -118,6 +123,7 @@ public class DirectPlayProfile {
 
     public DirectPlayProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
         this.videoCodec = JsonNullable.<String> of(videoCodec);
+
         return this;
     }
 
@@ -128,6 +134,7 @@ public class DirectPlayProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVideoCodec() {
         return videoCodec.orElse(null);
     }
@@ -149,6 +156,7 @@ public class DirectPlayProfile {
     }
 
     public DirectPlayProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+
         this.type = type;
         return this;
     }
@@ -161,6 +169,7 @@ public class DirectPlayProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -171,9 +180,6 @@ public class DirectPlayProfile {
         this.type = type;
     }
 
-    /**
-     * Return true if this DirectPlayProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -228,65 +234,6 @@ public class DirectPlayProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `AudioCodec` to the URL query string
-        if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
-        }
-
-        // add `VideoCodec` to the URL query string
-        if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

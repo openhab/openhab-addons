@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,12 +35,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AuthenticateUserByName {
     public static final String JSON_PROPERTY_USERNAME = "Username";
+    @javax.annotation.Nullable
     private JsonNullable<String> username = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PW = "Pw";
+    @javax.annotation.Nullable
     private JsonNullable<String> pw = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
+    @javax.annotation.Nullable
     private JsonNullable<String> password = JsonNullable.<String> undefined();
 
     public AuthenticateUserByName() {
@@ -50,6 +51,7 @@ public class AuthenticateUserByName {
 
     public AuthenticateUserByName username(@javax.annotation.Nullable String username) {
         this.username = JsonNullable.<String> of(username);
+
         return this;
     }
 
@@ -60,6 +62,7 @@ public class AuthenticateUserByName {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUsername() {
         return username.orElse(null);
     }
@@ -82,6 +85,7 @@ public class AuthenticateUserByName {
 
     public AuthenticateUserByName pw(@javax.annotation.Nullable String pw) {
         this.pw = JsonNullable.<String> of(pw);
+
         return this;
     }
 
@@ -92,6 +96,7 @@ public class AuthenticateUserByName {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPw() {
         return pw.orElse(null);
     }
@@ -114,6 +119,7 @@ public class AuthenticateUserByName {
 
     public AuthenticateUserByName password(@javax.annotation.Nullable String password) {
         this.password = JsonNullable.<String> of(password);
+
         return this;
     }
 
@@ -126,6 +132,7 @@ public class AuthenticateUserByName {
     @Deprecated
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPassword() {
         return password.orElse(null);
     }
@@ -146,9 +153,6 @@ public class AuthenticateUserByName {
         this.password = JsonNullable.<String> of(password);
     }
 
-    /**
-     * Return true if this AuthenticateUserByName object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -200,59 +204,6 @@ public class AuthenticateUserByName {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Username` to the URL query string
-        if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
-        }
-
-        // add `Pw` to the URL query string
-        if (getPw() != null) {
-            joiner.add(
-                    String.format("%sPw%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPw()))));
-        }
-
-        // add `Password` to the URL query string
-        if (getPassword() != null) {
-            joiner.add(String.format("%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

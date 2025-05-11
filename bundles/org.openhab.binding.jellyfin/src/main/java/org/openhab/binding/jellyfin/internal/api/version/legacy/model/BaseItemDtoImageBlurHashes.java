@@ -20,13 +20,11 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Gets or sets the blurhashes for the image tags. Maps image type to dictionary mapping image tag to blurhash value.
@@ -38,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         BaseItemDtoImageBlurHashes.JSON_PROPERTY_SCREENSHOT, BaseItemDtoImageBlurHashes.JSON_PROPERTY_MENU,
         BaseItemDtoImageBlurHashes.JSON_PROPERTY_CHAPTER, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX_REAR,
         BaseItemDtoImageBlurHashes.JSON_PROPERTY_PROFILE })
+@JsonTypeName("BaseItemDto_ImageBlurHashes")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemDtoImageBlurHashes {
     public static final String JSON_PROPERTY_PRIMARY = "Primary";
@@ -96,6 +95,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes primary(@javax.annotation.Nullable Map<String, String> primary) {
+
         this.primary = primary;
         return this;
     }
@@ -116,6 +116,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PRIMARY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getPrimary() {
         return primary;
     }
@@ -127,6 +128,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes art(@javax.annotation.Nullable Map<String, String> art) {
+
         this.art = art;
         return this;
     }
@@ -147,6 +149,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ART)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getArt() {
         return art;
     }
@@ -158,6 +161,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes backdrop(@javax.annotation.Nullable Map<String, String> backdrop) {
+
         this.backdrop = backdrop;
         return this;
     }
@@ -178,6 +182,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BACKDROP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getBackdrop() {
         return backdrop;
     }
@@ -189,6 +194,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes banner(@javax.annotation.Nullable Map<String, String> banner) {
+
         this.banner = banner;
         return this;
     }
@@ -209,6 +215,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BANNER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getBanner() {
         return banner;
     }
@@ -220,6 +227,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes logo(@javax.annotation.Nullable Map<String, String> logo) {
+
         this.logo = logo;
         return this;
     }
@@ -240,6 +248,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LOGO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getLogo() {
         return logo;
     }
@@ -251,6 +260,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes thumb(@javax.annotation.Nullable Map<String, String> thumb) {
+
         this.thumb = thumb;
         return this;
     }
@@ -271,6 +281,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_THUMB)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getThumb() {
         return thumb;
     }
@@ -282,6 +293,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes disc(@javax.annotation.Nullable Map<String, String> disc) {
+
         this.disc = disc;
         return this;
     }
@@ -302,6 +314,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DISC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getDisc() {
         return disc;
     }
@@ -313,6 +326,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes box(@javax.annotation.Nullable Map<String, String> box) {
+
         this.box = box;
         return this;
     }
@@ -333,6 +347,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BOX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getBox() {
         return box;
     }
@@ -344,6 +359,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes screenshot(@javax.annotation.Nullable Map<String, String> screenshot) {
+
         this.screenshot = screenshot;
         return this;
     }
@@ -364,6 +380,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SCREENSHOT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getScreenshot() {
         return screenshot;
     }
@@ -375,6 +392,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes menu(@javax.annotation.Nullable Map<String, String> menu) {
+
         this.menu = menu;
         return this;
     }
@@ -395,6 +413,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MENU)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getMenu() {
         return menu;
     }
@@ -406,6 +425,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes chapter(@javax.annotation.Nullable Map<String, String> chapter) {
+
         this.chapter = chapter;
         return this;
     }
@@ -426,6 +446,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CHAPTER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getChapter() {
         return chapter;
     }
@@ -437,6 +458,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes boxRear(@javax.annotation.Nullable Map<String, String> boxRear) {
+
         this.boxRear = boxRear;
         return this;
     }
@@ -457,6 +479,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BOX_REAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getBoxRear() {
         return boxRear;
     }
@@ -468,6 +491,7 @@ public class BaseItemDtoImageBlurHashes {
     }
 
     public BaseItemDtoImageBlurHashes profile(@javax.annotation.Nullable Map<String, String> profile) {
+
         this.profile = profile;
         return this;
     }
@@ -488,6 +512,7 @@ public class BaseItemDtoImageBlurHashes {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getProfile() {
         return profile;
     }
@@ -498,9 +523,6 @@ public class BaseItemDtoImageBlurHashes {
         this.profile = profile;
     }
 
-    /**
-     * Return true if this BaseItemDto_ImageBlurHashes object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -561,160 +583,6 @@ public class BaseItemDtoImageBlurHashes {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Primary` to the URL query string
-        if (getPrimary() != null) {
-            for (String _key : getPrimary().keySet()) {
-                joiner.add(String.format("%sPrimary%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getPrimary().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getPrimary().get(_key)))));
-            }
-        }
-
-        // add `Art` to the URL query string
-        if (getArt() != null) {
-            for (String _key : getArt().keySet()) {
-                joiner.add(String.format("%sArt%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getArt().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getArt().get(_key)))));
-            }
-        }
-
-        // add `Backdrop` to the URL query string
-        if (getBackdrop() != null) {
-            for (String _key : getBackdrop().keySet()) {
-                joiner.add(String.format("%sBackdrop%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getBackdrop().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBackdrop().get(_key)))));
-            }
-        }
-
-        // add `Banner` to the URL query string
-        if (getBanner() != null) {
-            for (String _key : getBanner().keySet()) {
-                joiner.add(String.format("%sBanner%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getBanner().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBanner().get(_key)))));
-            }
-        }
-
-        // add `Logo` to the URL query string
-        if (getLogo() != null) {
-            for (String _key : getLogo().keySet()) {
-                joiner.add(String.format("%sLogo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getLogo().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getLogo().get(_key)))));
-            }
-        }
-
-        // add `Thumb` to the URL query string
-        if (getThumb() != null) {
-            for (String _key : getThumb().keySet()) {
-                joiner.add(String.format("%sThumb%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getThumb().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getThumb().get(_key)))));
-            }
-        }
-
-        // add `Disc` to the URL query string
-        if (getDisc() != null) {
-            for (String _key : getDisc().keySet()) {
-                joiner.add(String.format("%sDisc%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getDisc().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getDisc().get(_key)))));
-            }
-        }
-
-        // add `Box` to the URL query string
-        if (getBox() != null) {
-            for (String _key : getBox().keySet()) {
-                joiner.add(String.format("%sBox%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getBox().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBox().get(_key)))));
-            }
-        }
-
-        // add `Screenshot` to the URL query string
-        if (getScreenshot() != null) {
-            for (String _key : getScreenshot().keySet()) {
-                joiner.add(String.format("%sScreenshot%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getScreenshot().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getScreenshot().get(_key)))));
-            }
-        }
-
-        // add `Menu` to the URL query string
-        if (getMenu() != null) {
-            for (String _key : getMenu().keySet()) {
-                joiner.add(String.format("%sMenu%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getMenu().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMenu().get(_key)))));
-            }
-        }
-
-        // add `Chapter` to the URL query string
-        if (getChapter() != null) {
-            for (String _key : getChapter().keySet()) {
-                joiner.add(String.format("%sChapter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getChapter().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getChapter().get(_key)))));
-            }
-        }
-
-        // add `BoxRear` to the URL query string
-        if (getBoxRear() != null) {
-            for (String _key : getBoxRear().keySet()) {
-                joiner.add(String.format("%sBoxRear%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getBoxRear().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBoxRear().get(_key)))));
-            }
-        }
-
-        // add `Profile` to the URL query string
-        if (getProfile() != null) {
-            for (String _key : getProfile().keySet()) {
-                joiner.add(String.format("%sProfile%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getProfile().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProfile().get(_key)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -69,12 +67,14 @@ public class PackageInfo {
     private List<VersionInfo> versions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> imageUrl = JsonNullable.<String> undefined();
 
     public PackageInfo() {
     }
 
     public PackageInfo name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -87,6 +87,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -98,6 +99,7 @@ public class PackageInfo {
     }
 
     public PackageInfo description(@javax.annotation.Nullable String description) {
+
         this.description = description;
         return this;
     }
@@ -110,6 +112,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getDescription() {
         return description;
     }
@@ -121,6 +124,7 @@ public class PackageInfo {
     }
 
     public PackageInfo overview(@javax.annotation.Nullable String overview) {
+
         this.overview = overview;
         return this;
     }
@@ -133,6 +137,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOverview() {
         return overview;
     }
@@ -144,6 +149,7 @@ public class PackageInfo {
     }
 
     public PackageInfo owner(@javax.annotation.Nullable String owner) {
+
         this.owner = owner;
         return this;
     }
@@ -156,6 +162,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_OWNER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getOwner() {
         return owner;
     }
@@ -167,6 +174,7 @@ public class PackageInfo {
     }
 
     public PackageInfo category(@javax.annotation.Nullable String category) {
+
         this.category = category;
         return this;
     }
@@ -179,6 +187,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CATEGORY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getCategory() {
         return category;
     }
@@ -190,6 +199,7 @@ public class PackageInfo {
     }
 
     public PackageInfo guid(@javax.annotation.Nullable UUID guid) {
+
         this.guid = guid;
         return this;
     }
@@ -203,6 +213,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GUID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getGuid() {
         return guid;
     }
@@ -214,6 +225,7 @@ public class PackageInfo {
     }
 
     public PackageInfo versions(@javax.annotation.Nullable List<VersionInfo> versions) {
+
         this.versions = versions;
         return this;
     }
@@ -234,6 +246,7 @@ public class PackageInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VERSIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<VersionInfo> getVersions() {
         return versions;
     }
@@ -246,6 +259,7 @@ public class PackageInfo {
 
     public PackageInfo imageUrl(@javax.annotation.Nullable String imageUrl) {
         this.imageUrl = JsonNullable.<String> of(imageUrl);
+
         return this;
     }
 
@@ -256,6 +270,7 @@ public class PackageInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getImageUrl() {
         return imageUrl.orElse(null);
     }
@@ -276,9 +291,6 @@ public class PackageInfo {
         this.imageUrl = JsonNullable.<String> of(imageUrl);
     }
 
-    /**
-     * Return true if this PackageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -337,93 +349,6 @@ public class PackageInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sname%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `description` to the URL query string
-        if (getDescription() != null) {
-            joiner.add(String.format("%sdescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-        }
-
-        // add `overview` to the URL query string
-        if (getOverview() != null) {
-            joiner.add(String.format("%soverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
-        }
-
-        // add `owner` to the URL query string
-        if (getOwner() != null) {
-            joiner.add(String.format("%sowner%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOwner()))));
-        }
-
-        // add `category` to the URL query string
-        if (getCategory() != null) {
-            joiner.add(String.format("%scategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-        }
-
-        // add `guid` to the URL query string
-        if (getGuid() != null) {
-            joiner.add(String.format("%sguid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
-        }
-
-        // add `versions` to the URL query string
-        if (getVersions() != null) {
-            for (int i = 0; i < getVersions().size(); i++) {
-                if (getVersions().get(i) != null) {
-                    joiner.add(getVersions().get(i).toUrlQueryString(String.format("%sversions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `imageUrl` to the URL query string
-        if (getImageUrl() != null) {
-            joiner.add(String.format("%simageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -18,10 +18,7 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,6 +56,7 @@ public class MediaSegmentDto {
     }
 
     public MediaSegmentDto id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -71,6 +69,7 @@ public class MediaSegmentDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -82,6 +81,7 @@ public class MediaSegmentDto {
     }
 
     public MediaSegmentDto itemId(@javax.annotation.Nullable UUID itemId) {
+
         this.itemId = itemId;
         return this;
     }
@@ -94,6 +94,7 @@ public class MediaSegmentDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -105,6 +106,7 @@ public class MediaSegmentDto {
     }
 
     public MediaSegmentDto type(@javax.annotation.Nullable MediaSegmentType type) {
+
         this.type = type;
         return this;
     }
@@ -117,6 +119,7 @@ public class MediaSegmentDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public MediaSegmentType getType() {
         return type;
     }
@@ -128,6 +131,7 @@ public class MediaSegmentDto {
     }
 
     public MediaSegmentDto startTicks(@javax.annotation.Nullable Long startTicks) {
+
         this.startTicks = startTicks;
         return this;
     }
@@ -140,6 +144,7 @@ public class MediaSegmentDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartTicks() {
         return startTicks;
     }
@@ -151,6 +156,7 @@ public class MediaSegmentDto {
     }
 
     public MediaSegmentDto endTicks(@javax.annotation.Nullable Long endTicks) {
+
         this.endTicks = endTicks;
         return this;
     }
@@ -163,6 +169,7 @@ public class MediaSegmentDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_END_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getEndTicks() {
         return endTicks;
     }
@@ -173,9 +180,6 @@ public class MediaSegmentDto {
         this.endTicks = endTicks;
     }
 
-    /**
-     * Return true if this MediaSegmentDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -218,71 +222,6 @@ public class MediaSegmentDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `StartTicks` to the URL query string
-        if (getStartTicks() != null) {
-            joiner.add(String.format("%sStartTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTicks()))));
-        }
-
-        // add `EndTicks` to the URL query string
-        if (getEndTicks() != null) {
-            joiner.add(String.format("%sEndTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTicks()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

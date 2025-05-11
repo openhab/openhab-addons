@@ -20,10 +20,7 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,6 +44,7 @@ public class QueueRequestDto {
     }
 
     public QueueRequestDto itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
+
         this.itemIds = itemIds;
         return this;
     }
@@ -67,6 +65,7 @@ public class QueueRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<UUID> getItemIds() {
         return itemIds;
     }
@@ -78,6 +77,7 @@ public class QueueRequestDto {
     }
 
     public QueueRequestDto mode(@javax.annotation.Nullable GroupQueueMode mode) {
+
         this.mode = mode;
         return this;
     }
@@ -90,6 +90,7 @@ public class QueueRequestDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GroupQueueMode getMode() {
         return mode;
     }
@@ -100,9 +101,6 @@ public class QueueRequestDto {
         this.mode = mode;
     }
 
-    /**
-     * Return true if this QueueRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -139,58 +137,6 @@ public class QueueRequestDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ItemIds` to the URL query string
-        if (getItemIds() != null) {
-            for (int i = 0; i < getItemIds().size(); i++) {
-                if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
-                }
-            }
-        }
-
-        // add `Mode` to the URL query string
-        if (getMode() != null) {
-            joiner.add(String.format("%sMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

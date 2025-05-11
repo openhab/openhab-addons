@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,9 +39,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LiveTvServiceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_HOME_PAGE_URL = "HomePageUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> homePageUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_STATUS = "Status";
@@ -51,9 +51,11 @@ public class LiveTvServiceInfo {
     private LiveTvServiceStatus status;
 
     public static final String JSON_PROPERTY_STATUS_MESSAGE = "StatusMessage";
+    @javax.annotation.Nullable
     private JsonNullable<String> statusMessage = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
     private JsonNullable<String> version = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
@@ -65,6 +67,7 @@ public class LiveTvServiceInfo {
     private Boolean isVisible;
 
     public static final String JSON_PROPERTY_TUNERS = "Tuners";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> tuners = JsonNullable.<List<String>> undefined();
 
     public LiveTvServiceInfo() {
@@ -72,6 +75,7 @@ public class LiveTvServiceInfo {
 
     public LiveTvServiceInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -82,6 +86,7 @@ public class LiveTvServiceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -104,6 +109,7 @@ public class LiveTvServiceInfo {
 
     public LiveTvServiceInfo homePageUrl(@javax.annotation.Nullable String homePageUrl) {
         this.homePageUrl = JsonNullable.<String> of(homePageUrl);
+
         return this;
     }
 
@@ -114,6 +120,7 @@ public class LiveTvServiceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getHomePageUrl() {
         return homePageUrl.orElse(null);
     }
@@ -135,6 +142,7 @@ public class LiveTvServiceInfo {
     }
 
     public LiveTvServiceInfo status(@javax.annotation.Nullable LiveTvServiceStatus status) {
+
         this.status = status;
         return this;
     }
@@ -147,6 +155,7 @@ public class LiveTvServiceInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LiveTvServiceStatus getStatus() {
         return status;
     }
@@ -159,6 +168,7 @@ public class LiveTvServiceInfo {
 
     public LiveTvServiceInfo statusMessage(@javax.annotation.Nullable String statusMessage) {
         this.statusMessage = JsonNullable.<String> of(statusMessage);
+
         return this;
     }
 
@@ -169,6 +179,7 @@ public class LiveTvServiceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getStatusMessage() {
         return statusMessage.orElse(null);
     }
@@ -191,6 +202,7 @@ public class LiveTvServiceInfo {
 
     public LiveTvServiceInfo version(@javax.annotation.Nullable String version) {
         this.version = JsonNullable.<String> of(version);
+
         return this;
     }
 
@@ -201,6 +213,7 @@ public class LiveTvServiceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getVersion() {
         return version.orElse(null);
     }
@@ -222,6 +235,7 @@ public class LiveTvServiceInfo {
     }
 
     public LiveTvServiceInfo hasUpdateAvailable(@javax.annotation.Nullable Boolean hasUpdateAvailable) {
+
         this.hasUpdateAvailable = hasUpdateAvailable;
         return this;
     }
@@ -234,6 +248,7 @@ public class LiveTvServiceInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
@@ -245,6 +260,7 @@ public class LiveTvServiceInfo {
     }
 
     public LiveTvServiceInfo isVisible(@javax.annotation.Nullable Boolean isVisible) {
+
         this.isVisible = isVisible;
         return this;
     }
@@ -257,6 +273,7 @@ public class LiveTvServiceInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_VISIBLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsVisible() {
         return isVisible;
     }
@@ -269,6 +286,7 @@ public class LiveTvServiceInfo {
 
     public LiveTvServiceInfo tuners(@javax.annotation.Nullable List<String> tuners) {
         this.tuners = JsonNullable.<List<String>> of(tuners);
+
         return this;
     }
 
@@ -291,6 +309,7 @@ public class LiveTvServiceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getTuners() {
         return tuners.orElse(null);
     }
@@ -311,9 +330,6 @@ public class LiveTvServiceInfo {
         this.tuners = JsonNullable.<List<String>> of(tuners);
     }
 
-    /**
-     * Return true if this LiveTvServiceInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -377,92 +393,6 @@ public class LiveTvServiceInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `HomePageUrl` to the URL query string
-        if (getHomePageUrl() != null) {
-            joiner.add(String.format("%sHomePageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHomePageUrl()))));
-        }
-
-        // add `Status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `StatusMessage` to the URL query string
-        if (getStatusMessage() != null) {
-            joiner.add(String.format("%sStatusMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatusMessage()))));
-        }
-
-        // add `Version` to the URL query string
-        if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-        }
-
-        // add `HasUpdateAvailable` to the URL query string
-        if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format("%sHasUpdateAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
-        }
-
-        // add `IsVisible` to the URL query string
-        if (getIsVisible() != null) {
-            joiner.add(String.format("%sIsVisible%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsVisible()))));
-        }
-
-        // add `Tuners` to the URL query string
-        if (getTuners() != null) {
-            for (int i = 0; i < getTuners().size(); i++) {
-                joiner.add(String.format("%sTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTuners().get(i)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

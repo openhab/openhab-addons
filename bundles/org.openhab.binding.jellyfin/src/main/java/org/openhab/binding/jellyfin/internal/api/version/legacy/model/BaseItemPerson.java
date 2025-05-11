@@ -19,11 +19,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemPerson {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
@@ -46,15 +45,19 @@ public class BaseItemPerson {
     private UUID id;
 
     public static final String JSON_PROPERTY_ROLE = "Role";
+    @javax.annotation.Nullable
     private JsonNullable<String> role = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> primaryImageTag = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes = JsonNullable
             .<BaseItemPersonImageBlurHashes> undefined();
 
@@ -63,6 +66,7 @@ public class BaseItemPerson {
 
     public BaseItemPerson name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -73,6 +77,7 @@ public class BaseItemPerson {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -94,6 +99,7 @@ public class BaseItemPerson {
     }
 
     public BaseItemPerson id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -106,6 +112,7 @@ public class BaseItemPerson {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -118,6 +125,7 @@ public class BaseItemPerson {
 
     public BaseItemPerson role(@javax.annotation.Nullable String role) {
         this.role = JsonNullable.<String> of(role);
+
         return this;
     }
 
@@ -128,6 +136,7 @@ public class BaseItemPerson {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getRole() {
         return role.orElse(null);
     }
@@ -150,6 +159,7 @@ public class BaseItemPerson {
 
     public BaseItemPerson type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -160,6 +170,7 @@ public class BaseItemPerson {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -182,6 +193,7 @@ public class BaseItemPerson {
 
     public BaseItemPerson primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
         this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
+
         return this;
     }
 
@@ -192,6 +204,7 @@ public class BaseItemPerson {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPrimaryImageTag() {
         return primaryImageTag.orElse(null);
     }
@@ -214,6 +227,7 @@ public class BaseItemPerson {
 
     public BaseItemPerson imageBlurHashes(@javax.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes) {
         this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes> of(imageBlurHashes);
+
         return this;
     }
 
@@ -224,6 +238,7 @@ public class BaseItemPerson {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItemPersonImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes.orElse(null);
     }
@@ -244,9 +259,6 @@ public class BaseItemPerson {
         this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes> of(imageBlurHashes);
     }
 
-    /**
-     * Return true if this BaseItemPerson object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -303,76 +315,6 @@ public class BaseItemPerson {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Role` to the URL query string
-        if (getRole() != null) {
-            joiner.add(String.format("%sRole%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRole()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `PrimaryImageTag` to the URL query string
-        if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
-        }
-
-        // add `ImageBlurHashes` to the URL query string
-        if (getImageBlurHashes() != null) {
-            joiner.add(getImageBlurHashes().toUrlQueryString(prefix + "ImageBlurHashes" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

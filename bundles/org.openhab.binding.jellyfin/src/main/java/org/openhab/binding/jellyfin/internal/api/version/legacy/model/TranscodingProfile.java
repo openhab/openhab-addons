@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -90,6 +88,7 @@ public class TranscodingProfile {
     private Boolean enableSubtitlesInManifest = false;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
+    @javax.annotation.Nullable
     private JsonNullable<String> maxAudioChannels = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
@@ -112,6 +111,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile container(@javax.annotation.Nullable String container) {
+
         this.container = container;
         return this;
     }
@@ -124,6 +124,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getContainer() {
         return container;
     }
@@ -135,6 +136,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+
         this.type = type;
         return this;
     }
@@ -147,6 +149,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public DlnaProfileType getType() {
         return type;
     }
@@ -158,6 +161,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
+
         this.videoCodec = videoCodec;
         return this;
     }
@@ -170,6 +174,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getVideoCodec() {
         return videoCodec;
     }
@@ -181,6 +186,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
+
         this.audioCodec = audioCodec;
         return this;
     }
@@ -193,6 +199,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getAudioCodec() {
         return audioCodec;
     }
@@ -204,6 +211,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile protocol(@javax.annotation.Nullable String protocol) {
+
         this.protocol = protocol;
         return this;
     }
@@ -216,6 +224,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProtocol() {
         return protocol;
     }
@@ -227,6 +236,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile estimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
+
         this.estimateContentLength = estimateContentLength;
         return this;
     }
@@ -239,6 +249,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEstimateContentLength() {
         return estimateContentLength;
     }
@@ -250,6 +261,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile enableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
+
         this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
         return this;
     }
@@ -262,6 +274,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMpegtsM2TsMode() {
         return enableMpegtsM2TsMode;
     }
@@ -273,6 +286,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile transcodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
+
         this.transcodeSeekInfo = transcodeSeekInfo;
         return this;
     }
@@ -285,6 +299,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public TranscodeSeekInfo getTranscodeSeekInfo() {
         return transcodeSeekInfo;
     }
@@ -296,6 +311,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile copyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
+
         this.copyTimestamps = copyTimestamps;
         return this;
     }
@@ -308,6 +324,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCopyTimestamps() {
         return copyTimestamps;
     }
@@ -319,6 +336,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile context(@javax.annotation.Nullable EncodingContext context) {
+
         this.context = context;
         return this;
     }
@@ -331,6 +349,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTEXT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public EncodingContext getContext() {
         return context;
     }
@@ -342,6 +361,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile enableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
+
         this.enableSubtitlesInManifest = enableSubtitlesInManifest;
         return this;
     }
@@ -354,6 +374,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSubtitlesInManifest() {
         return enableSubtitlesInManifest;
     }
@@ -366,6 +387,7 @@ public class TranscodingProfile {
 
     public TranscodingProfile maxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
         this.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
+
         return this;
     }
 
@@ -376,6 +398,7 @@ public class TranscodingProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getMaxAudioChannels() {
         return maxAudioChannels.orElse(null);
     }
@@ -397,6 +420,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile minSegments(@javax.annotation.Nullable Integer minSegments) {
+
         this.minSegments = minSegments;
         return this;
     }
@@ -409,6 +433,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMinSegments() {
         return minSegments;
     }
@@ -420,6 +445,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile segmentLength(@javax.annotation.Nullable Integer segmentLength) {
+
         this.segmentLength = segmentLength;
         return this;
     }
@@ -432,6 +458,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getSegmentLength() {
         return segmentLength;
     }
@@ -443,6 +470,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile breakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
+
         this.breakOnNonKeyFrames = breakOnNonKeyFrames;
         return this;
     }
@@ -455,6 +483,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getBreakOnNonKeyFrames() {
         return breakOnNonKeyFrames;
     }
@@ -466,6 +495,7 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+
         this.conditions = conditions;
         return this;
     }
@@ -486,6 +516,7 @@ public class TranscodingProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
@@ -496,9 +527,6 @@ public class TranscodingProfile {
         this.conditions = conditions;
     }
 
-    /**
-     * Return true if this TranscodingProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -578,141 +606,6 @@ public class TranscodingProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Container` to the URL query string
-        if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
-        }
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `VideoCodec` to the URL query string
-        if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
-        }
-
-        // add `AudioCodec` to the URL query string
-        if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
-        }
-
-        // add `Protocol` to the URL query string
-        if (getProtocol() != null) {
-            joiner.add(String.format("%sProtocol%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
-        }
-
-        // add `EstimateContentLength` to the URL query string
-        if (getEstimateContentLength() != null) {
-            joiner.add(String.format("%sEstimateContentLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEstimateContentLength()))));
-        }
-
-        // add `EnableMpegtsM2TsMode` to the URL query string
-        if (getEnableMpegtsM2TsMode() != null) {
-            joiner.add(String.format("%sEnableMpegtsM2TsMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMpegtsM2TsMode()))));
-        }
-
-        // add `TranscodeSeekInfo` to the URL query string
-        if (getTranscodeSeekInfo() != null) {
-            joiner.add(String.format("%sTranscodeSeekInfo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodeSeekInfo()))));
-        }
-
-        // add `CopyTimestamps` to the URL query string
-        if (getCopyTimestamps() != null) {
-            joiner.add(String.format("%sCopyTimestamps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCopyTimestamps()))));
-        }
-
-        // add `Context` to the URL query string
-        if (getContext() != null) {
-            joiner.add(String.format("%sContext%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
-        }
-
-        // add `EnableSubtitlesInManifest` to the URL query string
-        if (getEnableSubtitlesInManifest() != null) {
-            joiner.add(String.format("%sEnableSubtitlesInManifest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitlesInManifest()))));
-        }
-
-        // add `MaxAudioChannels` to the URL query string
-        if (getMaxAudioChannels() != null) {
-            joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
-        }
-
-        // add `MinSegments` to the URL query string
-        if (getMinSegments() != null) {
-            joiner.add(String.format("%sMinSegments%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinSegments()))));
-        }
-
-        // add `SegmentLength` to the URL query string
-        if (getSegmentLength() != null) {
-            joiner.add(String.format("%sSegmentLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSegmentLength()))));
-        }
-
-        // add `BreakOnNonKeyFrames` to the URL query string
-        if (getBreakOnNonKeyFrames() != null) {
-            joiner.add(String.format("%sBreakOnNonKeyFrames%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBreakOnNonKeyFrames()))));
-        }
-
-        // add `Conditions` to the URL query string
-        if (getConditions() != null) {
-            for (int i = 0; i < getConditions().size(); i++) {
-                if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

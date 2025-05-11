@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,6 +46,7 @@ public class ImageOption {
     }
 
     public ImageOption type(@javax.annotation.Nullable ImageType type) {
+
         this.type = type;
         return this;
     }
@@ -61,6 +59,7 @@ public class ImageOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ImageType getType() {
         return type;
     }
@@ -72,6 +71,7 @@ public class ImageOption {
     }
 
     public ImageOption limit(@javax.annotation.Nullable Integer limit) {
+
         this.limit = limit;
         return this;
     }
@@ -84,6 +84,7 @@ public class ImageOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getLimit() {
         return limit;
     }
@@ -95,6 +96,7 @@ public class ImageOption {
     }
 
     public ImageOption minWidth(@javax.annotation.Nullable Integer minWidth) {
+
         this.minWidth = minWidth;
         return this;
     }
@@ -107,6 +109,7 @@ public class ImageOption {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MIN_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getMinWidth() {
         return minWidth;
     }
@@ -117,9 +120,6 @@ public class ImageOption {
         this.minWidth = minWidth;
     }
 
-    /**
-     * Return true if this ImageOption object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -158,59 +158,6 @@ public class ImageOption {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `Limit` to the URL query string
-        if (getLimit() != null) {
-            joiner.add(String.format("%sLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
-        }
-
-        // add `MinWidth` to the URL query string
-        if (getMinWidth() != null) {
-            joiner.add(String.format("%sMinWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinWidth()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

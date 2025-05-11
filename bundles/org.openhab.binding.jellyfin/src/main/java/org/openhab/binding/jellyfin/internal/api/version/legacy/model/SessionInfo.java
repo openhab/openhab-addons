@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,21 +52,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SessionInfo {
     public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
+    @javax.annotation.Nullable
     private JsonNullable<PlayerStateInfo> playState = JsonNullable.<PlayerStateInfo> undefined();
 
     public static final String JSON_PROPERTY_ADDITIONAL_USERS = "AdditionalUsers";
+    @javax.annotation.Nullable
     private JsonNullable<List<SessionUserInfo>> additionalUsers = JsonNullable.<List<SessionUserInfo>> undefined();
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
+    @javax.annotation.Nullable
     private JsonNullable<ClientCapabilities> capabilities = JsonNullable.<ClientCapabilities> undefined();
 
     public static final String JSON_PROPERTY_REMOTE_END_POINT = "RemoteEndPoint";
+    @javax.annotation.Nullable
     private JsonNullable<String> remoteEndPoint = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
+    @javax.annotation.Nullable
     private JsonNullable<List<String>> playableMediaTypes = JsonNullable.<List<String>> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
@@ -76,9 +80,11 @@ public class SessionInfo {
     private UUID userId;
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
+    @javax.annotation.Nullable
     private JsonNullable<String> userName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CLIENT = "Client";
+    @javax.annotation.Nullable
     private JsonNullable<String> client = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
@@ -90,27 +96,35 @@ public class SessionInfo {
     private OffsetDateTime lastPlaybackCheckIn;
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_TYPE = "DeviceType";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceType = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_NOW_PLAYING_ITEM = "NowPlayingItem";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItemDto> nowPlayingItem = JsonNullable.<BaseItemDto> undefined();
 
     public static final String JSON_PROPERTY_FULL_NOW_PLAYING_ITEM = "FullNowPlayingItem";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItem> fullNowPlayingItem = JsonNullable.<BaseItem> undefined();
 
     public static final String JSON_PROPERTY_NOW_VIEWING_ITEM = "NowViewingItem";
+    @javax.annotation.Nullable
     private JsonNullable<BaseItemDto> nowViewingItem = JsonNullable.<BaseItemDto> undefined();
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+    @javax.annotation.Nullable
     private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_APPLICATION_VERSION = "ApplicationVersion";
+    @javax.annotation.Nullable
     private JsonNullable<String> applicationVersion = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TRANSCODING_INFO = "TranscodingInfo";
+    @javax.annotation.Nullable
     private JsonNullable<TranscodingInfo> transcodingInfo = JsonNullable.<TranscodingInfo> undefined();
 
     public static final String JSON_PROPERTY_IS_ACTIVE = "IsActive";
@@ -126,9 +140,11 @@ public class SessionInfo {
     private Boolean supportsRemoteControl;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
+    @javax.annotation.Nullable
     private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>> undefined();
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS = "NowPlayingQueueFullItems";
+    @javax.annotation.Nullable
     private JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> undefined();
 
     public static final String JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME = "HasCustomDeviceName";
@@ -136,21 +152,28 @@ public class SessionInfo {
     private Boolean hasCustomDeviceName;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
     private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+    @javax.annotation.Nullable
     private JsonNullable<String> serverId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
+    @javax.annotation.Nullable
     private JsonNullable<List<GeneralCommandType>> supportedCommands = JsonNullable
             .<List<GeneralCommandType>> undefined();
 
     public SessionInfo() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public SessionInfo(@JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES) List<String> playableMediaTypes,
             @JsonProperty(JSON_PROPERTY_IS_ACTIVE) Boolean isActive,
@@ -169,6 +192,7 @@ public class SessionInfo {
 
     public SessionInfo playState(@javax.annotation.Nullable PlayerStateInfo playState) {
         this.playState = JsonNullable.<PlayerStateInfo> of(playState);
+
         return this;
     }
 
@@ -179,6 +203,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public PlayerStateInfo getPlayState() {
         return playState.orElse(null);
     }
@@ -201,6 +226,7 @@ public class SessionInfo {
 
     public SessionInfo additionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
         this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
+
         return this;
     }
 
@@ -223,6 +249,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<SessionUserInfo> getAdditionalUsers() {
         return additionalUsers.orElse(null);
     }
@@ -245,6 +272,7 @@ public class SessionInfo {
 
     public SessionInfo capabilities(@javax.annotation.Nullable ClientCapabilities capabilities) {
         this.capabilities = JsonNullable.<ClientCapabilities> of(capabilities);
+
         return this;
     }
 
@@ -255,6 +283,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ClientCapabilities getCapabilities() {
         return capabilities.orElse(null);
     }
@@ -277,6 +306,7 @@ public class SessionInfo {
 
     public SessionInfo remoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
         this.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
+
         return this;
     }
 
@@ -287,6 +317,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getRemoteEndPoint() {
         return remoteEndPoint.orElse(null);
     }
@@ -314,6 +345,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<String> getPlayableMediaTypes() {
 
         if (playableMediaTypes == null) {
@@ -336,6 +368,7 @@ public class SessionInfo {
 
     public SessionInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -346,6 +379,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -367,6 +401,7 @@ public class SessionInfo {
     }
 
     public SessionInfo userId(@javax.annotation.Nullable UUID userId) {
+
         this.userId = userId;
         return this;
     }
@@ -379,6 +414,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getUserId() {
         return userId;
     }
@@ -391,6 +427,7 @@ public class SessionInfo {
 
     public SessionInfo userName(@javax.annotation.Nullable String userName) {
         this.userName = JsonNullable.<String> of(userName);
+
         return this;
     }
 
@@ -401,6 +438,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserName() {
         return userName.orElse(null);
     }
@@ -423,6 +461,7 @@ public class SessionInfo {
 
     public SessionInfo client(@javax.annotation.Nullable String client) {
         this.client = JsonNullable.<String> of(client);
+
         return this;
     }
 
@@ -433,6 +472,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getClient() {
         return client.orElse(null);
     }
@@ -454,6 +494,7 @@ public class SessionInfo {
     }
 
     public SessionInfo lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
+
         this.lastActivityDate = lastActivityDate;
         return this;
     }
@@ -466,6 +507,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
@@ -477,6 +519,7 @@ public class SessionInfo {
     }
 
     public SessionInfo lastPlaybackCheckIn(@javax.annotation.Nullable OffsetDateTime lastPlaybackCheckIn) {
+
         this.lastPlaybackCheckIn = lastPlaybackCheckIn;
         return this;
     }
@@ -489,6 +532,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getLastPlaybackCheckIn() {
         return lastPlaybackCheckIn;
     }
@@ -501,6 +545,7 @@ public class SessionInfo {
 
     public SessionInfo deviceName(@javax.annotation.Nullable String deviceName) {
         this.deviceName = JsonNullable.<String> of(deviceName);
+
         return this;
     }
 
@@ -511,6 +556,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceName() {
         return deviceName.orElse(null);
     }
@@ -533,6 +579,7 @@ public class SessionInfo {
 
     public SessionInfo deviceType(@javax.annotation.Nullable String deviceType) {
         this.deviceType = JsonNullable.<String> of(deviceType);
+
         return this;
     }
 
@@ -543,6 +590,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceType() {
         return deviceType.orElse(null);
     }
@@ -565,6 +613,7 @@ public class SessionInfo {
 
     public SessionInfo nowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
         this.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
+
         return this;
     }
 
@@ -575,6 +624,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItemDto getNowPlayingItem() {
         return nowPlayingItem.orElse(null);
     }
@@ -597,6 +647,7 @@ public class SessionInfo {
 
     public SessionInfo fullNowPlayingItem(@javax.annotation.Nullable BaseItem fullNowPlayingItem) {
         this.fullNowPlayingItem = JsonNullable.<BaseItem> of(fullNowPlayingItem);
+
         return this;
     }
 
@@ -607,6 +658,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItem getFullNowPlayingItem() {
         return fullNowPlayingItem.orElse(null);
     }
@@ -629,6 +681,7 @@ public class SessionInfo {
 
     public SessionInfo nowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
         this.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
+
         return this;
     }
 
@@ -640,6 +693,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public BaseItemDto getNowViewingItem() {
         return nowViewingItem.orElse(null);
     }
@@ -662,6 +716,7 @@ public class SessionInfo {
 
     public SessionInfo deviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = JsonNullable.<String> of(deviceId);
+
         return this;
     }
 
@@ -672,6 +727,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDeviceId() {
         return deviceId.orElse(null);
     }
@@ -694,6 +750,7 @@ public class SessionInfo {
 
     public SessionInfo applicationVersion(@javax.annotation.Nullable String applicationVersion) {
         this.applicationVersion = JsonNullable.<String> of(applicationVersion);
+
         return this;
     }
 
@@ -704,6 +761,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getApplicationVersion() {
         return applicationVersion.orElse(null);
     }
@@ -726,6 +784,7 @@ public class SessionInfo {
 
     public SessionInfo transcodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
         this.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
+
         return this;
     }
 
@@ -736,6 +795,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public TranscodingInfo getTranscodingInfo() {
         return transcodingInfo.orElse(null);
     }
@@ -764,6 +824,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -776,6 +837,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
@@ -788,12 +850,14 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsRemoteControl() {
         return supportsRemoteControl;
     }
 
     public SessionInfo nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
+
         return this;
     }
 
@@ -816,6 +880,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue.orElse(null);
     }
@@ -838,6 +903,7 @@ public class SessionInfo {
 
     public SessionInfo nowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
         this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
+
         return this;
     }
 
@@ -860,6 +926,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<BaseItemDto> getNowPlayingQueueFullItems() {
         return nowPlayingQueueFullItems.orElse(null);
     }
@@ -881,6 +948,7 @@ public class SessionInfo {
     }
 
     public SessionInfo hasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
+
         this.hasCustomDeviceName = hasCustomDeviceName;
         return this;
     }
@@ -893,6 +961,7 @@ public class SessionInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getHasCustomDeviceName() {
         return hasCustomDeviceName;
     }
@@ -905,6 +974,7 @@ public class SessionInfo {
 
     public SessionInfo playlistItemId(@javax.annotation.Nullable String playlistItemId) {
         this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+
         return this;
     }
 
@@ -915,6 +985,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
     }
@@ -937,6 +1008,7 @@ public class SessionInfo {
 
     public SessionInfo serverId(@javax.annotation.Nullable String serverId) {
         this.serverId = JsonNullable.<String> of(serverId);
+
         return this;
     }
 
@@ -947,6 +1019,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getServerId() {
         return serverId.orElse(null);
     }
@@ -969,6 +1042,7 @@ public class SessionInfo {
 
     public SessionInfo userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
         this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
+
         return this;
     }
 
@@ -979,6 +1053,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserPrimaryImageTag() {
         return userPrimaryImageTag.orElse(null);
     }
@@ -1006,6 +1081,7 @@ public class SessionInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<GeneralCommandType> getSupportedCommands() {
 
         if (supportedCommands == null) {
@@ -1026,9 +1102,6 @@ public class SessionInfo {
         this.supportedCommands = supportedCommands;
     }
 
-    /**
-     * Return true if this SessionInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1140,232 +1213,6 @@ public class SessionInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `PlayState` to the URL query string
-        if (getPlayState() != null) {
-            joiner.add(getPlayState().toUrlQueryString(prefix + "PlayState" + suffix));
-        }
-
-        // add `AdditionalUsers` to the URL query string
-        if (getAdditionalUsers() != null) {
-            for (int i = 0; i < getAdditionalUsers().size(); i++) {
-                if (getAdditionalUsers().get(i) != null) {
-                    joiner.add(getAdditionalUsers().get(i).toUrlQueryString(String.format("%sAdditionalUsers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `Capabilities` to the URL query string
-        if (getCapabilities() != null) {
-            joiner.add(getCapabilities().toUrlQueryString(prefix + "Capabilities" + suffix));
-        }
-
-        // add `RemoteEndPoint` to the URL query string
-        if (getRemoteEndPoint() != null) {
-            joiner.add(String.format("%sRemoteEndPoint%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteEndPoint()))));
-        }
-
-        // add `PlayableMediaTypes` to the URL query string
-        if (getPlayableMediaTypes() != null) {
-            for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
-                joiner.add(String.format("%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
-            }
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `UserName` to the URL query string
-        if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
-        }
-
-        // add `Client` to the URL query string
-        if (getClient() != null) {
-            joiner.add(String.format("%sClient%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
-        }
-
-        // add `LastActivityDate` to the URL query string
-        if (getLastActivityDate() != null) {
-            joiner.add(String.format("%sLastActivityDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
-        }
-
-        // add `LastPlaybackCheckIn` to the URL query string
-        if (getLastPlaybackCheckIn() != null) {
-            joiner.add(String.format("%sLastPlaybackCheckIn%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPlaybackCheckIn()))));
-        }
-
-        // add `DeviceName` to the URL query string
-        if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
-        }
-
-        // add `DeviceType` to the URL query string
-        if (getDeviceType() != null) {
-            joiner.add(String.format("%sDeviceType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceType()))));
-        }
-
-        // add `NowPlayingItem` to the URL query string
-        if (getNowPlayingItem() != null) {
-            joiner.add(getNowPlayingItem().toUrlQueryString(prefix + "NowPlayingItem" + suffix));
-        }
-
-        // add `FullNowPlayingItem` to the URL query string
-        if (getFullNowPlayingItem() != null) {
-            joiner.add(getFullNowPlayingItem().toUrlQueryString(prefix + "FullNowPlayingItem" + suffix));
-        }
-
-        // add `NowViewingItem` to the URL query string
-        if (getNowViewingItem() != null) {
-            joiner.add(getNowViewingItem().toUrlQueryString(prefix + "NowViewingItem" + suffix));
-        }
-
-        // add `DeviceId` to the URL query string
-        if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
-        }
-
-        // add `ApplicationVersion` to the URL query string
-        if (getApplicationVersion() != null) {
-            joiner.add(String.format("%sApplicationVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getApplicationVersion()))));
-        }
-
-        // add `TranscodingInfo` to the URL query string
-        if (getTranscodingInfo() != null) {
-            joiner.add(getTranscodingInfo().toUrlQueryString(prefix + "TranscodingInfo" + suffix));
-        }
-
-        // add `IsActive` to the URL query string
-        if (getIsActive() != null) {
-            joiner.add(String.format("%sIsActive%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsActive()))));
-        }
-
-        // add `SupportsMediaControl` to the URL query string
-        if (getSupportsMediaControl() != null) {
-            joiner.add(String.format("%sSupportsMediaControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
-        }
-
-        // add `SupportsRemoteControl` to the URL query string
-        if (getSupportsRemoteControl() != null) {
-            joiner.add(String.format("%sSupportsRemoteControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsRemoteControl()))));
-        }
-
-        // add `NowPlayingQueue` to the URL query string
-        if (getNowPlayingQueue() != null) {
-            for (int i = 0; i < getNowPlayingQueue().size(); i++) {
-                if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `NowPlayingQueueFullItems` to the URL query string
-        if (getNowPlayingQueueFullItems() != null) {
-            for (int i = 0; i < getNowPlayingQueueFullItems().size(); i++) {
-                if (getNowPlayingQueueFullItems().get(i) != null) {
-                    joiner.add(getNowPlayingQueueFullItems().get(i).toUrlQueryString(String.format(
-                            "%sNowPlayingQueueFullItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `HasCustomDeviceName` to the URL query string
-        if (getHasCustomDeviceName() != null) {
-            joiner.add(String.format("%sHasCustomDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasCustomDeviceName()))));
-        }
-
-        // add `PlaylistItemId` to the URL query string
-        if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
-        }
-
-        // add `ServerId` to the URL query string
-        if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
-        }
-
-        // add `UserPrimaryImageTag` to the URL query string
-        if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
-        }
-
-        // add `SupportedCommands` to the URL query string
-        if (getSupportedCommands() != null) {
-            for (int i = 0; i < getSupportedCommands().size(); i++) {
-                if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format("%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

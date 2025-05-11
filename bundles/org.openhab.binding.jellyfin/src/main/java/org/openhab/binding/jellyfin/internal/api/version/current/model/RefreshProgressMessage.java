@@ -21,11 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RefreshProgressMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
     private JsonNullable<Map<String, String>> data = JsonNullable.<Map<String, String>> undefined();
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
@@ -54,6 +53,9 @@ public class RefreshProgressMessage {
     public RefreshProgressMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
     public RefreshProgressMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
@@ -62,6 +64,7 @@ public class RefreshProgressMessage {
 
     public RefreshProgressMessage data(@javax.annotation.Nullable Map<String, String> data) {
         this.data = JsonNullable.<Map<String, String>> of(data);
+
         return this;
     }
 
@@ -84,6 +87,7 @@ public class RefreshProgressMessage {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Map<String, String> getData() {
         return data.orElse(null);
     }
@@ -105,6 +109,7 @@ public class RefreshProgressMessage {
     }
 
     public RefreshProgressMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
         this.messageId = messageId;
         return this;
     }
@@ -117,6 +122,7 @@ public class RefreshProgressMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getMessageId() {
         return messageId;
     }
@@ -135,13 +141,11 @@ public class RefreshProgressMessage {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this RefreshProgressMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -193,62 +197,6 @@ public class RefreshProgressMessage {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Data` to the URL query string
-        if (getData() != null) {
-            for (String _key : getData().keySet()) {
-                joiner.add(String.format("%sData%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getData().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getData().get(_key)))));
-            }
-        }
-
-        // add `MessageId` to the URL query string
-        if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
-        }
-
-        // add `MessageType` to the URL query string
-        if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

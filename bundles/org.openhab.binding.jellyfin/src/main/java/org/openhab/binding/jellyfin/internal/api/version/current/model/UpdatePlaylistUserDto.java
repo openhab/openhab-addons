@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -36,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdatePlaylistUserDto {
     public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> canEdit = JsonNullable.<Boolean> undefined();
 
     public UpdatePlaylistUserDto() {
@@ -43,6 +42,7 @@ public class UpdatePlaylistUserDto {
 
     public UpdatePlaylistUserDto canEdit(@javax.annotation.Nullable Boolean canEdit) {
         this.canEdit = JsonNullable.<Boolean> of(canEdit);
+
         return this;
     }
 
@@ -53,6 +53,7 @@ public class UpdatePlaylistUserDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getCanEdit() {
         return canEdit.orElse(null);
     }
@@ -73,9 +74,6 @@ public class UpdatePlaylistUserDto {
         this.canEdit = JsonNullable.<Boolean> of(canEdit);
     }
 
-    /**
-     * Return true if this UpdatePlaylistUserDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -123,47 +121,6 @@ public class UpdatePlaylistUserDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `CanEdit` to the URL query string
-        if (getCanEdit() != null) {
-            joiner.add(String.format("%sCanEdit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanEdit()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

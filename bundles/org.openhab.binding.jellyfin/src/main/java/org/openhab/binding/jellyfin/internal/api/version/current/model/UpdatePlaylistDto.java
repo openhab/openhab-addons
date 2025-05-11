@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,16 +38,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IDS = "Ids";
+    @javax.annotation.Nullable
     private JsonNullable<List<UUID>> ids = JsonNullable.<List<UUID>> undefined();
 
     public static final String JSON_PROPERTY_USERS = "Users";
+    @javax.annotation.Nullable
     private JsonNullable<List<PlaylistUserPermissions>> users = JsonNullable
             .<List<PlaylistUserPermissions>> undefined();
 
     public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> isPublic = JsonNullable.<Boolean> undefined();
 
     public UpdatePlaylistDto() {
@@ -57,6 +59,7 @@ public class UpdatePlaylistDto {
 
     public UpdatePlaylistDto name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -67,6 +70,7 @@ public class UpdatePlaylistDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -89,6 +93,7 @@ public class UpdatePlaylistDto {
 
     public UpdatePlaylistDto ids(@javax.annotation.Nullable List<UUID> ids) {
         this.ids = JsonNullable.<List<UUID>> of(ids);
+
         return this;
     }
 
@@ -111,6 +116,7 @@ public class UpdatePlaylistDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<UUID> getIds() {
         return ids.orElse(null);
     }
@@ -133,6 +139,7 @@ public class UpdatePlaylistDto {
 
     public UpdatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
         this.users = JsonNullable.<List<PlaylistUserPermissions>> of(users);
+
         return this;
     }
 
@@ -155,6 +162,7 @@ public class UpdatePlaylistDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<PlaylistUserPermissions> getUsers() {
         return users.orElse(null);
     }
@@ -177,6 +185,7 @@ public class UpdatePlaylistDto {
 
     public UpdatePlaylistDto isPublic(@javax.annotation.Nullable Boolean isPublic) {
         this.isPublic = JsonNullable.<Boolean> of(isPublic);
+
         return this;
     }
 
@@ -187,6 +196,7 @@ public class UpdatePlaylistDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getIsPublic() {
         return isPublic.orElse(null);
     }
@@ -207,9 +217,6 @@ public class UpdatePlaylistDto {
         this.isPublic = JsonNullable.<Boolean> of(isPublic);
     }
 
-    /**
-     * Return true if this UpdatePlaylistDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -263,74 +270,6 @@ public class UpdatePlaylistDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Ids` to the URL query string
-        if (getIds() != null) {
-            for (int i = 0; i < getIds().size(); i++) {
-                if (getIds().get(i) != null) {
-                    joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
-                }
-            }
-        }
-
-        // add `Users` to the URL query string
-        if (getUsers() != null) {
-            for (int i = 0; i < getUsers().size(); i++) {
-                if (getUsers().get(i) != null) {
-                    joiner.add(getUsers().get(i).toUrlQueryString(String.format("%sUsers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `IsPublic` to the URL query string
-        if (getIsPublic() != null) {
-            joiner.add(String.format("%sIsPublic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

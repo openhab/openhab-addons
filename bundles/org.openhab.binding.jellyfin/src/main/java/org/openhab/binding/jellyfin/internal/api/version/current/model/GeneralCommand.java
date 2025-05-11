@@ -20,10 +20,7 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +49,7 @@ public class GeneralCommand {
     }
 
     public GeneralCommand name(@javax.annotation.Nullable GeneralCommandType name) {
+
         this.name = name;
         return this;
     }
@@ -64,6 +62,7 @@ public class GeneralCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public GeneralCommandType getName() {
         return name;
     }
@@ -75,6 +74,7 @@ public class GeneralCommand {
     }
 
     public GeneralCommand controllingUserId(@javax.annotation.Nullable UUID controllingUserId) {
+
         this.controllingUserId = controllingUserId;
         return this;
     }
@@ -87,6 +87,7 @@ public class GeneralCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getControllingUserId() {
         return controllingUserId;
     }
@@ -98,6 +99,7 @@ public class GeneralCommand {
     }
 
     public GeneralCommand arguments(@javax.annotation.Nullable Map<String, String> arguments) {
+
         this.arguments = arguments;
         return this;
     }
@@ -118,6 +120,7 @@ public class GeneralCommand {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ARGUMENTS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
     public Map<String, String> getArguments() {
         return arguments;
     }
@@ -128,9 +131,6 @@ public class GeneralCommand {
         this.arguments = arguments;
     }
 
-    /**
-     * Return true if this GeneralCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -170,63 +170,6 @@ public class GeneralCommand {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ControllingUserId` to the URL query string
-        if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
-        }
-
-        // add `Arguments` to the URL query string
-        if (getArguments() != null) {
-            for (String _key : getArguments().keySet()) {
-                joiner.add(String.format("%sArguments%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
-                        getArguments().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArguments().get(_key)))));
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

@@ -20,11 +20,9 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,21 +40,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+    @javax.annotation.Nullable
     private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LAST_USER_NAME = "LastUserName";
+    @javax.annotation.Nullable
     private JsonNullable<String> lastUserName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
+    @javax.annotation.Nullable
     private JsonNullable<String> appName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
+    @javax.annotation.Nullable
     private JsonNullable<String> appVersion = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_LAST_USER_ID = "LastUserId";
@@ -68,9 +72,11 @@ public class DeviceInfo {
     private OffsetDateTime dateLastActivity;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
+    @javax.annotation.Nullable
     private JsonNullable<ClientCapabilities> capabilities = JsonNullable.<ClientCapabilities> undefined();
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
 
     public DeviceInfo() {
@@ -78,6 +84,7 @@ public class DeviceInfo {
 
     public DeviceInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -88,6 +95,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -110,6 +118,7 @@ public class DeviceInfo {
 
     public DeviceInfo accessToken(@javax.annotation.Nullable String accessToken) {
         this.accessToken = JsonNullable.<String> of(accessToken);
+
         return this;
     }
 
@@ -120,6 +129,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAccessToken() {
         return accessToken.orElse(null);
     }
@@ -142,6 +152,7 @@ public class DeviceInfo {
 
     public DeviceInfo id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -152,6 +163,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -174,6 +186,7 @@ public class DeviceInfo {
 
     public DeviceInfo lastUserName(@javax.annotation.Nullable String lastUserName) {
         this.lastUserName = JsonNullable.<String> of(lastUserName);
+
         return this;
     }
 
@@ -184,6 +197,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getLastUserName() {
         return lastUserName.orElse(null);
     }
@@ -206,6 +220,7 @@ public class DeviceInfo {
 
     public DeviceInfo appName(@javax.annotation.Nullable String appName) {
         this.appName = JsonNullable.<String> of(appName);
+
         return this;
     }
 
@@ -216,6 +231,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAppName() {
         return appName.orElse(null);
     }
@@ -238,6 +254,7 @@ public class DeviceInfo {
 
     public DeviceInfo appVersion(@javax.annotation.Nullable String appVersion) {
         this.appVersion = JsonNullable.<String> of(appVersion);
+
         return this;
     }
 
@@ -248,6 +265,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAppVersion() {
         return appVersion.orElse(null);
     }
@@ -269,6 +287,7 @@ public class DeviceInfo {
     }
 
     public DeviceInfo lastUserId(@javax.annotation.Nullable UUID lastUserId) {
+
         this.lastUserId = lastUserId;
         return this;
     }
@@ -281,6 +300,7 @@ public class DeviceInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getLastUserId() {
         return lastUserId;
     }
@@ -292,6 +312,7 @@ public class DeviceInfo {
     }
 
     public DeviceInfo dateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
+
         this.dateLastActivity = dateLastActivity;
         return this;
     }
@@ -304,6 +325,7 @@ public class DeviceInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
@@ -316,6 +338,7 @@ public class DeviceInfo {
 
     public DeviceInfo capabilities(@javax.annotation.Nullable ClientCapabilities capabilities) {
         this.capabilities = JsonNullable.<ClientCapabilities> of(capabilities);
+
         return this;
     }
 
@@ -326,6 +349,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ClientCapabilities getCapabilities() {
         return capabilities.orElse(null);
     }
@@ -348,6 +372,7 @@ public class DeviceInfo {
 
     public DeviceInfo iconUrl(@javax.annotation.Nullable String iconUrl) {
         this.iconUrl = JsonNullable.<String> of(iconUrl);
+
         return this;
     }
 
@@ -358,6 +383,7 @@ public class DeviceInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getIconUrl() {
         return iconUrl.orElse(null);
     }
@@ -378,9 +404,6 @@ public class DeviceInfo {
         this.iconUrl = JsonNullable.<String> of(iconUrl);
     }
 
-    /**
-     * Return true if this DeviceInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -446,100 +469,6 @@ public class DeviceInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `AccessToken` to the URL query string
-        if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `LastUserName` to the URL query string
-        if (getLastUserName() != null) {
-            joiner.add(String.format("%sLastUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserName()))));
-        }
-
-        // add `AppName` to the URL query string
-        if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
-        }
-
-        // add `AppVersion` to the URL query string
-        if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
-        }
-
-        // add `LastUserId` to the URL query string
-        if (getLastUserId() != null) {
-            joiner.add(String.format("%sLastUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserId()))));
-        }
-
-        // add `DateLastActivity` to the URL query string
-        if (getDateLastActivity() != null) {
-            joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
-        }
-
-        // add `Capabilities` to the URL query string
-        if (getCapabilities() != null) {
-            joiner.add(getCapabilities().toUrlQueryString(prefix + "Capabilities" + suffix));
-        }
-
-        // add `IconUrl` to the URL query string
-        if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

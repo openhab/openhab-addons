@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RecommendationDto {
     public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
     private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>> undefined();
 
     public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
@@ -47,6 +46,7 @@ public class RecommendationDto {
     private RecommendationType recommendationType;
 
     public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
+    @javax.annotation.Nullable
     private JsonNullable<String> baselineItemName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
@@ -58,6 +58,7 @@ public class RecommendationDto {
 
     public RecommendationDto items(@javax.annotation.Nullable List<BaseItemDto> items) {
         this.items = JsonNullable.<List<BaseItemDto>> of(items);
+
         return this;
     }
 
@@ -80,6 +81,7 @@ public class RecommendationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public List<BaseItemDto> getItems() {
         return items.orElse(null);
     }
@@ -101,6 +103,7 @@ public class RecommendationDto {
     }
 
     public RecommendationDto recommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
+
         this.recommendationType = recommendationType;
         return this;
     }
@@ -113,6 +116,7 @@ public class RecommendationDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public RecommendationType getRecommendationType() {
         return recommendationType;
     }
@@ -125,6 +129,7 @@ public class RecommendationDto {
 
     public RecommendationDto baselineItemName(@javax.annotation.Nullable String baselineItemName) {
         this.baselineItemName = JsonNullable.<String> of(baselineItemName);
+
         return this;
     }
 
@@ -135,6 +140,7 @@ public class RecommendationDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getBaselineItemName() {
         return baselineItemName.orElse(null);
     }
@@ -156,6 +162,7 @@ public class RecommendationDto {
     }
 
     public RecommendationDto categoryId(@javax.annotation.Nullable UUID categoryId) {
+
         this.categoryId = categoryId;
         return this;
     }
@@ -168,6 +175,7 @@ public class RecommendationDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getCategoryId() {
         return categoryId;
     }
@@ -178,9 +186,6 @@ public class RecommendationDto {
         this.categoryId = categoryId;
     }
 
-    /**
-     * Return true if this RecommendationDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -235,69 +240,6 @@ public class RecommendationDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Items` to the URL query string
-        if (getItems() != null) {
-            for (int i = 0; i < getItems().size(); i++) {
-                if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `RecommendationType` to the URL query string
-        if (getRecommendationType() != null) {
-            joiner.add(String.format("%sRecommendationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecommendationType()))));
-        }
-
-        // add `BaselineItemName` to the URL query string
-        if (getBaselineItemName() != null) {
-            joiner.add(String.format("%sBaselineItemName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaselineItemName()))));
-        }
-
-        // add `CategoryId` to the URL query string
-        if (getCategoryId() != null) {
-            joiner.add(String.format("%sCategoryId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

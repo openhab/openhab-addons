@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -66,36 +64,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
     private JsonNullable<String> id = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IDENTIFICATION = "Identification";
+    @javax.annotation.Nullable
     private JsonNullable<DeviceIdentification> identification = JsonNullable.<DeviceIdentification> undefined();
 
     public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
+    @javax.annotation.Nullable
     private JsonNullable<String> friendlyName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MANUFACTURER = "Manufacturer";
+    @javax.annotation.Nullable
     private JsonNullable<String> manufacturer = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MANUFACTURER_URL = "ManufacturerUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> manufacturerUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MODEL_NAME = "ModelName";
+    @javax.annotation.Nullable
     private JsonNullable<String> modelName = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MODEL_DESCRIPTION = "ModelDescription";
+    @javax.annotation.Nullable
     private JsonNullable<String> modelDescription = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MODEL_NUMBER = "ModelNumber";
+    @javax.annotation.Nullable
     private JsonNullable<String> modelNumber = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MODEL_URL = "ModelUrl";
+    @javax.annotation.Nullable
     private JsonNullable<String> modelUrl = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_SERIAL_NUMBER = "SerialNumber";
+    @javax.annotation.Nullable
     private JsonNullable<String> serialNumber = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL = "EnableAlbumArtInDidl";
@@ -115,39 +124,51 @@ public class DeviceProfile {
     private String supportedMediaTypes;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
+    @javax.annotation.Nullable
     private JsonNullable<String> userId = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_ALBUM_ART_PN = "AlbumArtPn";
+    @javax.annotation.Nullable
     private JsonNullable<String> albumArtPn = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_MAX_ALBUM_ART_WIDTH = "MaxAlbumArtWidth";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxAlbumArtWidth = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT = "MaxAlbumArtHeight";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxAlbumArtHeight = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_ICON_WIDTH = "MaxIconWidth";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxIconWidth = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_ICON_HEIGHT = "MaxIconHeight";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxIconHeight = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_SONY_AGGREGATION_FLAGS = "SonyAggregationFlags";
+    @javax.annotation.Nullable
     private JsonNullable<String> sonyAggregationFlags = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_PROTOCOL_INFO = "ProtocolInfo";
+    @javax.annotation.Nullable
     private JsonNullable<String> protocolInfo = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TIMELINE_OFFSET_SECONDS = "TimelineOffsetSeconds";
@@ -203,6 +224,7 @@ public class DeviceProfile {
 
     public DeviceProfile name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -213,6 +235,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -235,6 +258,7 @@ public class DeviceProfile {
 
     public DeviceProfile id(@javax.annotation.Nullable String id) {
         this.id = JsonNullable.<String> of(id);
+
         return this;
     }
 
@@ -245,6 +269,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getId() {
         return id.orElse(null);
     }
@@ -267,6 +292,7 @@ public class DeviceProfile {
 
     public DeviceProfile identification(@javax.annotation.Nullable DeviceIdentification identification) {
         this.identification = JsonNullable.<DeviceIdentification> of(identification);
+
         return this;
     }
 
@@ -277,6 +303,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public DeviceIdentification getIdentification() {
         return identification.orElse(null);
     }
@@ -299,6 +326,7 @@ public class DeviceProfile {
 
     public DeviceProfile friendlyName(@javax.annotation.Nullable String friendlyName) {
         this.friendlyName = JsonNullable.<String> of(friendlyName);
+
         return this;
     }
 
@@ -309,6 +337,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getFriendlyName() {
         return friendlyName.orElse(null);
     }
@@ -331,6 +360,7 @@ public class DeviceProfile {
 
     public DeviceProfile manufacturer(@javax.annotation.Nullable String manufacturer) {
         this.manufacturer = JsonNullable.<String> of(manufacturer);
+
         return this;
     }
 
@@ -341,6 +371,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getManufacturer() {
         return manufacturer.orElse(null);
     }
@@ -363,6 +394,7 @@ public class DeviceProfile {
 
     public DeviceProfile manufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
         this.manufacturerUrl = JsonNullable.<String> of(manufacturerUrl);
+
         return this;
     }
 
@@ -373,6 +405,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getManufacturerUrl() {
         return manufacturerUrl.orElse(null);
     }
@@ -395,6 +428,7 @@ public class DeviceProfile {
 
     public DeviceProfile modelName(@javax.annotation.Nullable String modelName) {
         this.modelName = JsonNullable.<String> of(modelName);
+
         return this;
     }
 
@@ -405,6 +439,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getModelName() {
         return modelName.orElse(null);
     }
@@ -427,6 +462,7 @@ public class DeviceProfile {
 
     public DeviceProfile modelDescription(@javax.annotation.Nullable String modelDescription) {
         this.modelDescription = JsonNullable.<String> of(modelDescription);
+
         return this;
     }
 
@@ -437,6 +473,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getModelDescription() {
         return modelDescription.orElse(null);
     }
@@ -459,6 +496,7 @@ public class DeviceProfile {
 
     public DeviceProfile modelNumber(@javax.annotation.Nullable String modelNumber) {
         this.modelNumber = JsonNullable.<String> of(modelNumber);
+
         return this;
     }
 
@@ -469,6 +507,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getModelNumber() {
         return modelNumber.orElse(null);
     }
@@ -491,6 +530,7 @@ public class DeviceProfile {
 
     public DeviceProfile modelUrl(@javax.annotation.Nullable String modelUrl) {
         this.modelUrl = JsonNullable.<String> of(modelUrl);
+
         return this;
     }
 
@@ -501,6 +541,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getModelUrl() {
         return modelUrl.orElse(null);
     }
@@ -523,6 +564,7 @@ public class DeviceProfile {
 
     public DeviceProfile serialNumber(@javax.annotation.Nullable String serialNumber) {
         this.serialNumber = JsonNullable.<String> of(serialNumber);
+
         return this;
     }
 
@@ -533,6 +575,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSerialNumber() {
         return serialNumber.orElse(null);
     }
@@ -554,6 +597,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile enableAlbumArtInDidl(@javax.annotation.Nullable Boolean enableAlbumArtInDidl) {
+
         this.enableAlbumArtInDidl = enableAlbumArtInDidl;
         return this;
     }
@@ -566,6 +610,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableAlbumArtInDidl() {
         return enableAlbumArtInDidl;
     }
@@ -577,6 +622,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile enableSingleAlbumArtLimit(@javax.annotation.Nullable Boolean enableSingleAlbumArtLimit) {
+
         this.enableSingleAlbumArtLimit = enableSingleAlbumArtLimit;
         return this;
     }
@@ -589,6 +635,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_ALBUM_ART_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSingleAlbumArtLimit() {
         return enableSingleAlbumArtLimit;
     }
@@ -600,6 +647,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile enableSingleSubtitleLimit(@javax.annotation.Nullable Boolean enableSingleSubtitleLimit) {
+
         this.enableSingleSubtitleLimit = enableSingleSubtitleLimit;
         return this;
     }
@@ -612,6 +660,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_SUBTITLE_LIMIT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableSingleSubtitleLimit() {
         return enableSingleSubtitleLimit;
     }
@@ -623,6 +672,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile supportedMediaTypes(@javax.annotation.Nullable String supportedMediaTypes) {
+
         this.supportedMediaTypes = supportedMediaTypes;
         return this;
     }
@@ -635,6 +685,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTED_MEDIA_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getSupportedMediaTypes() {
         return supportedMediaTypes;
     }
@@ -647,6 +698,7 @@ public class DeviceProfile {
 
     public DeviceProfile userId(@javax.annotation.Nullable String userId) {
         this.userId = JsonNullable.<String> of(userId);
+
         return this;
     }
 
@@ -657,6 +709,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getUserId() {
         return userId.orElse(null);
     }
@@ -679,6 +732,7 @@ public class DeviceProfile {
 
     public DeviceProfile albumArtPn(@javax.annotation.Nullable String albumArtPn) {
         this.albumArtPn = JsonNullable.<String> of(albumArtPn);
+
         return this;
     }
 
@@ -689,6 +743,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getAlbumArtPn() {
         return albumArtPn.orElse(null);
     }
@@ -711,6 +766,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
         this.maxAlbumArtWidth = JsonNullable.<Integer> of(maxAlbumArtWidth);
+
         return this;
     }
 
@@ -721,6 +777,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxAlbumArtWidth() {
         return maxAlbumArtWidth.orElse(null);
     }
@@ -743,6 +800,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
         this.maxAlbumArtHeight = JsonNullable.<Integer> of(maxAlbumArtHeight);
+
         return this;
     }
 
@@ -753,6 +811,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxAlbumArtHeight() {
         return maxAlbumArtHeight.orElse(null);
     }
@@ -775,6 +834,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
         this.maxIconWidth = JsonNullable.<Integer> of(maxIconWidth);
+
         return this;
     }
 
@@ -785,6 +845,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxIconWidth() {
         return maxIconWidth.orElse(null);
     }
@@ -807,6 +868,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
         this.maxIconHeight = JsonNullable.<Integer> of(maxIconHeight);
+
         return this;
     }
 
@@ -817,6 +879,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxIconHeight() {
         return maxIconHeight.orElse(null);
     }
@@ -839,6 +902,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
+
         return this;
     }
 
@@ -849,6 +913,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate.orElse(null);
     }
@@ -871,6 +936,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
         this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
+
         return this;
     }
 
@@ -881,6 +947,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxStaticBitrate() {
         return maxStaticBitrate.orElse(null);
     }
@@ -904,6 +971,7 @@ public class DeviceProfile {
     public DeviceProfile musicStreamingTranscodingBitrate(
             @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
         this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
+
         return this;
     }
 
@@ -914,6 +982,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate.orElse(null);
     }
@@ -938,6 +1007,7 @@ public class DeviceProfile {
 
     public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
         this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
+
         return this;
     }
 
@@ -948,6 +1018,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate.orElse(null);
     }
@@ -970,6 +1041,7 @@ public class DeviceProfile {
 
     public DeviceProfile sonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
         this.sonyAggregationFlags = JsonNullable.<String> of(sonyAggregationFlags);
+
         return this;
     }
 
@@ -980,6 +1052,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getSonyAggregationFlags() {
         return sonyAggregationFlags.orElse(null);
     }
@@ -1002,6 +1075,7 @@ public class DeviceProfile {
 
     public DeviceProfile protocolInfo(@javax.annotation.Nullable String protocolInfo) {
         this.protocolInfo = JsonNullable.<String> of(protocolInfo);
+
         return this;
     }
 
@@ -1012,6 +1086,7 @@ public class DeviceProfile {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getProtocolInfo() {
         return protocolInfo.orElse(null);
     }
@@ -1033,6 +1108,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile timelineOffsetSeconds(@javax.annotation.Nullable Integer timelineOffsetSeconds) {
+
         this.timelineOffsetSeconds = timelineOffsetSeconds;
         return this;
     }
@@ -1045,6 +1121,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TIMELINE_OFFSET_SECONDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getTimelineOffsetSeconds() {
         return timelineOffsetSeconds;
     }
@@ -1056,6 +1133,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile requiresPlainVideoItems(@javax.annotation.Nullable Boolean requiresPlainVideoItems) {
+
         this.requiresPlainVideoItems = requiresPlainVideoItems;
         return this;
     }
@@ -1068,6 +1146,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_VIDEO_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequiresPlainVideoItems() {
         return requiresPlainVideoItems;
     }
@@ -1079,6 +1158,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile requiresPlainFolders(@javax.annotation.Nullable Boolean requiresPlainFolders) {
+
         this.requiresPlainFolders = requiresPlainFolders;
         return this;
     }
@@ -1091,6 +1171,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getRequiresPlainFolders() {
         return requiresPlainFolders;
     }
@@ -1103,6 +1184,7 @@ public class DeviceProfile {
 
     public DeviceProfile enableMSMediaReceiverRegistrar(
             @javax.annotation.Nullable Boolean enableMSMediaReceiverRegistrar) {
+
         this.enableMSMediaReceiverRegistrar = enableMSMediaReceiverRegistrar;
         return this;
     }
@@ -1115,6 +1197,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getEnableMSMediaReceiverRegistrar() {
         return enableMSMediaReceiverRegistrar;
     }
@@ -1127,6 +1210,7 @@ public class DeviceProfile {
 
     public DeviceProfile ignoreTranscodeByteRangeRequests(
             @javax.annotation.Nullable Boolean ignoreTranscodeByteRangeRequests) {
+
         this.ignoreTranscodeByteRangeRequests = ignoreTranscodeByteRangeRequests;
         return this;
     }
@@ -1139,6 +1223,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIgnoreTranscodeByteRangeRequests() {
         return ignoreTranscodeByteRangeRequests;
     }
@@ -1151,6 +1236,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile xmlRootAttributes(@javax.annotation.Nullable List<XmlAttribute> xmlRootAttributes) {
+
         this.xmlRootAttributes = xmlRootAttributes;
         return this;
     }
@@ -1171,6 +1257,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_XML_ROOT_ATTRIBUTES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<XmlAttribute> getXmlRootAttributes() {
         return xmlRootAttributes;
     }
@@ -1182,6 +1269,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile directPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
+
         this.directPlayProfiles = directPlayProfiles;
         return this;
     }
@@ -1202,6 +1290,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<DirectPlayProfile> getDirectPlayProfiles() {
         return directPlayProfiles;
     }
@@ -1213,6 +1302,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile transcodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
+
         this.transcodingProfiles = transcodingProfiles;
         return this;
     }
@@ -1233,6 +1323,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<TranscodingProfile> getTranscodingProfiles() {
         return transcodingProfiles;
     }
@@ -1244,6 +1335,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile containerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
+
         this.containerProfiles = containerProfiles;
         return this;
     }
@@ -1264,6 +1356,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ContainerProfile> getContainerProfiles() {
         return containerProfiles;
     }
@@ -1275,6 +1368,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile codecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
+
         this.codecProfiles = codecProfiles;
         return this;
     }
@@ -1295,6 +1389,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<CodecProfile> getCodecProfiles() {
         return codecProfiles;
     }
@@ -1306,6 +1401,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile responseProfiles(@javax.annotation.Nullable List<ResponseProfile> responseProfiles) {
+
         this.responseProfiles = responseProfiles;
         return this;
     }
@@ -1326,6 +1422,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_RESPONSE_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ResponseProfile> getResponseProfiles() {
         return responseProfiles;
     }
@@ -1337,6 +1434,7 @@ public class DeviceProfile {
     }
 
     public DeviceProfile subtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
+
         this.subtitleProfiles = subtitleProfiles;
         return this;
     }
@@ -1357,6 +1455,7 @@ public class DeviceProfile {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<SubtitleProfile> getSubtitleProfiles() {
         return subtitleProfiles;
     }
@@ -1367,9 +1466,6 @@ public class DeviceProfile {
         this.subtitleProfiles = subtitleProfiles;
     }
 
-    /**
-     * Return true if this DeviceProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1506,309 +1602,6 @@ public class DeviceProfile {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `Identification` to the URL query string
-        if (getIdentification() != null) {
-            joiner.add(getIdentification().toUrlQueryString(prefix + "Identification" + suffix));
-        }
-
-        // add `FriendlyName` to the URL query string
-        if (getFriendlyName() != null) {
-            joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
-        }
-
-        // add `Manufacturer` to the URL query string
-        if (getManufacturer() != null) {
-            joiner.add(String.format("%sManufacturer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getManufacturer()))));
-        }
-
-        // add `ManufacturerUrl` to the URL query string
-        if (getManufacturerUrl() != null) {
-            joiner.add(String.format("%sManufacturerUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getManufacturerUrl()))));
-        }
-
-        // add `ModelName` to the URL query string
-        if (getModelName() != null) {
-            joiner.add(String.format("%sModelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelName()))));
-        }
-
-        // add `ModelDescription` to the URL query string
-        if (getModelDescription() != null) {
-            joiner.add(String.format("%sModelDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelDescription()))));
-        }
-
-        // add `ModelNumber` to the URL query string
-        if (getModelNumber() != null) {
-            joiner.add(String.format("%sModelNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelNumber()))));
-        }
-
-        // add `ModelUrl` to the URL query string
-        if (getModelUrl() != null) {
-            joiner.add(String.format("%sModelUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getModelUrl()))));
-        }
-
-        // add `SerialNumber` to the URL query string
-        if (getSerialNumber() != null) {
-            joiner.add(String.format("%sSerialNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSerialNumber()))));
-        }
-
-        // add `EnableAlbumArtInDidl` to the URL query string
-        if (getEnableAlbumArtInDidl() != null) {
-            joiner.add(String.format("%sEnableAlbumArtInDidl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAlbumArtInDidl()))));
-        }
-
-        // add `EnableSingleAlbumArtLimit` to the URL query string
-        if (getEnableSingleAlbumArtLimit() != null) {
-            joiner.add(String.format("%sEnableSingleAlbumArtLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSingleAlbumArtLimit()))));
-        }
-
-        // add `EnableSingleSubtitleLimit` to the URL query string
-        if (getEnableSingleSubtitleLimit() != null) {
-            joiner.add(String.format("%sEnableSingleSubtitleLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSingleSubtitleLimit()))));
-        }
-
-        // add `SupportedMediaTypes` to the URL query string
-        if (getSupportedMediaTypes() != null) {
-            joiner.add(String.format("%sSupportedMediaTypes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportedMediaTypes()))));
-        }
-
-        // add `UserId` to the URL query string
-        if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
-        }
-
-        // add `AlbumArtPn` to the URL query string
-        if (getAlbumArtPn() != null) {
-            joiner.add(String.format("%sAlbumArtPn%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtPn()))));
-        }
-
-        // add `MaxAlbumArtWidth` to the URL query string
-        if (getMaxAlbumArtWidth() != null) {
-            joiner.add(String.format("%sMaxAlbumArtWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAlbumArtWidth()))));
-        }
-
-        // add `MaxAlbumArtHeight` to the URL query string
-        if (getMaxAlbumArtHeight() != null) {
-            joiner.add(String.format("%sMaxAlbumArtHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAlbumArtHeight()))));
-        }
-
-        // add `MaxIconWidth` to the URL query string
-        if (getMaxIconWidth() != null) {
-            joiner.add(String.format("%sMaxIconWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxIconWidth()))));
-        }
-
-        // add `MaxIconHeight` to the URL query string
-        if (getMaxIconHeight() != null) {
-            joiner.add(String.format("%sMaxIconHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxIconHeight()))));
-        }
-
-        // add `MaxStreamingBitrate` to the URL query string
-        if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
-        }
-
-        // add `MaxStaticBitrate` to the URL query string
-        if (getMaxStaticBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
-        }
-
-        // add `MusicStreamingTranscodingBitrate` to the URL query string
-        if (getMusicStreamingTranscodingBitrate() != null) {
-            joiner.add(String.format("%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
-        }
-
-        // add `MaxStaticMusicBitrate` to the URL query string
-        if (getMaxStaticMusicBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticMusicBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
-        }
-
-        // add `SonyAggregationFlags` to the URL query string
-        if (getSonyAggregationFlags() != null) {
-            joiner.add(String.format("%sSonyAggregationFlags%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSonyAggregationFlags()))));
-        }
-
-        // add `ProtocolInfo` to the URL query string
-        if (getProtocolInfo() != null) {
-            joiner.add(String.format("%sProtocolInfo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProtocolInfo()))));
-        }
-
-        // add `TimelineOffsetSeconds` to the URL query string
-        if (getTimelineOffsetSeconds() != null) {
-            joiner.add(String.format("%sTimelineOffsetSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimelineOffsetSeconds()))));
-        }
-
-        // add `RequiresPlainVideoItems` to the URL query string
-        if (getRequiresPlainVideoItems() != null) {
-            joiner.add(String.format("%sRequiresPlainVideoItems%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequiresPlainVideoItems()))));
-        }
-
-        // add `RequiresPlainFolders` to the URL query string
-        if (getRequiresPlainFolders() != null) {
-            joiner.add(String.format("%sRequiresPlainFolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequiresPlainFolders()))));
-        }
-
-        // add `EnableMSMediaReceiverRegistrar` to the URL query string
-        if (getEnableMSMediaReceiverRegistrar() != null) {
-            joiner.add(String.format("%sEnableMSMediaReceiverRegistrar%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMSMediaReceiverRegistrar()))));
-        }
-
-        // add `IgnoreTranscodeByteRangeRequests` to the URL query string
-        if (getIgnoreTranscodeByteRangeRequests() != null) {
-            joiner.add(String.format("%sIgnoreTranscodeByteRangeRequests%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreTranscodeByteRangeRequests()))));
-        }
-
-        // add `XmlRootAttributes` to the URL query string
-        if (getXmlRootAttributes() != null) {
-            for (int i = 0; i < getXmlRootAttributes().size(); i++) {
-                if (getXmlRootAttributes().get(i) != null) {
-                    joiner.add(getXmlRootAttributes().get(i).toUrlQueryString(String.format("%sXmlRootAttributes%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `DirectPlayProfiles` to the URL query string
-        if (getDirectPlayProfiles() != null) {
-            for (int i = 0; i < getDirectPlayProfiles().size(); i++) {
-                if (getDirectPlayProfiles().get(i) != null) {
-                    joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format("%sDirectPlayProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `TranscodingProfiles` to the URL query string
-        if (getTranscodingProfiles() != null) {
-            for (int i = 0; i < getTranscodingProfiles().size(); i++) {
-                if (getTranscodingProfiles().get(i) != null) {
-                    joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format(
-                            "%sTranscodingProfiles%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ContainerProfiles` to the URL query string
-        if (getContainerProfiles() != null) {
-            for (int i = 0; i < getContainerProfiles().size(); i++) {
-                if (getContainerProfiles().get(i) != null) {
-                    joiner.add(getContainerProfiles().get(i).toUrlQueryString(String.format("%sContainerProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `CodecProfiles` to the URL query string
-        if (getCodecProfiles() != null) {
-            for (int i = 0; i < getCodecProfiles().size(); i++) {
-                if (getCodecProfiles().get(i) != null) {
-                    joiner.add(getCodecProfiles().get(i).toUrlQueryString(String.format("%sCodecProfiles%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `ResponseProfiles` to the URL query string
-        if (getResponseProfiles() != null) {
-            for (int i = 0; i < getResponseProfiles().size(); i++) {
-                if (getResponseProfiles().get(i) != null) {
-                    joiner.add(getResponseProfiles().get(i).toUrlQueryString(String.format("%sResponseProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        // add `SubtitleProfiles` to the URL query string
-        if (getSubtitleProfiles() != null) {
-            for (int i = 0; i < getSubtitleProfiles().size(); i++) {
-                if (getSubtitleProfiles().get(i) != null) {
-                    joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(String.format("%sSubtitleProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
-                }
-            }
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

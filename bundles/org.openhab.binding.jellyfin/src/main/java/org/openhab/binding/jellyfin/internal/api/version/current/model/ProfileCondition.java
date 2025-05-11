@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,6 +43,7 @@ public class ProfileCondition {
     private ProfileConditionValue property;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
+    @javax.annotation.Nullable
     private JsonNullable<String> value = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
@@ -55,6 +54,7 @@ public class ProfileCondition {
     }
 
     public ProfileCondition condition(@javax.annotation.Nullable ProfileConditionType condition) {
+
         this.condition = condition;
         return this;
     }
@@ -67,6 +67,7 @@ public class ProfileCondition {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONDITION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProfileConditionType getCondition() {
         return condition;
     }
@@ -78,6 +79,7 @@ public class ProfileCondition {
     }
 
     public ProfileCondition property(@javax.annotation.Nullable ProfileConditionValue property) {
+
         this.property = property;
         return this;
     }
@@ -90,6 +92,7 @@ public class ProfileCondition {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROPERTY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public ProfileConditionValue getProperty() {
         return property;
     }
@@ -102,6 +105,7 @@ public class ProfileCondition {
 
     public ProfileCondition value(@javax.annotation.Nullable String value) {
         this.value = JsonNullable.<String> of(value);
+
         return this;
     }
 
@@ -112,6 +116,7 @@ public class ProfileCondition {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getValue() {
         return value.orElse(null);
     }
@@ -133,6 +138,7 @@ public class ProfileCondition {
     }
 
     public ProfileCondition isRequired(@javax.annotation.Nullable Boolean isRequired) {
+
         this.isRequired = isRequired;
         return this;
     }
@@ -145,6 +151,7 @@ public class ProfileCondition {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsRequired() {
         return isRequired;
     }
@@ -155,9 +162,6 @@ public class ProfileCondition {
         this.isRequired = isRequired;
     }
 
-    /**
-     * Return true if this ProfileCondition object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -211,65 +215,6 @@ public class ProfileCondition {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Condition` to the URL query string
-        if (getCondition() != null) {
-            joiner.add(String.format("%sCondition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCondition()))));
-        }
-
-        // add `Property` to the URL query string
-        if (getProperty() != null) {
-            joiner.add(String.format("%sProperty%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProperty()))));
-        }
-
-        // add `Value` to the URL query string
-        if (getValue() != null) {
-            joiner.add(String.format("%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-        }
-
-        // add `IsRequired` to the URL query string
-        if (getIsRequired() != null) {
-            joiner.add(String.format("%sIsRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

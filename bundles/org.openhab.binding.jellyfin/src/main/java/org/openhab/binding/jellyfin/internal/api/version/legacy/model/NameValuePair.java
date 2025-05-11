@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -36,9 +34,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NameValuePair {
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_VALUE = "Value";
+    @javax.annotation.Nullable
     private JsonNullable<String> value = JsonNullable.<String> undefined();
 
     public NameValuePair() {
@@ -46,6 +46,7 @@ public class NameValuePair {
 
     public NameValuePair name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -56,6 +57,7 @@ public class NameValuePair {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -78,6 +80,7 @@ public class NameValuePair {
 
     public NameValuePair value(@javax.annotation.Nullable String value) {
         this.value = JsonNullable.<String> of(value);
+
         return this;
     }
 
@@ -88,6 +91,7 @@ public class NameValuePair {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getValue() {
         return value.orElse(null);
     }
@@ -108,9 +112,6 @@ public class NameValuePair {
         this.value = JsonNullable.<String> of(value);
     }
 
-    /**
-     * Return true if this NameValuePair object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -159,53 +160,6 @@ public class NameValuePair {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Value` to the URL query string
-        if (getValue() != null) {
-            joiner.add(String.format("%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

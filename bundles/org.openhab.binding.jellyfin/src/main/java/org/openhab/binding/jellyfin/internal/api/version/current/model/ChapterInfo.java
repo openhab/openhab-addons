@@ -20,10 +20,8 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,9 +41,11 @@ public class ChapterInfo {
     private Long startPositionTicks;
 
     public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
     private JsonNullable<String> name = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_PATH = "ImagePath";
+    @javax.annotation.Nullable
     private JsonNullable<String> imagePath = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_IMAGE_DATE_MODIFIED = "ImageDateModified";
@@ -53,12 +53,14 @@ public class ChapterInfo {
     private OffsetDateTime imageDateModified;
 
     public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
+    @javax.annotation.Nullable
     private JsonNullable<String> imageTag = JsonNullable.<String> undefined();
 
     public ChapterInfo() {
     }
 
     public ChapterInfo startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
+
         this.startPositionTicks = startPositionTicks;
         return this;
     }
@@ -71,6 +73,7 @@ public class ChapterInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
@@ -83,6 +86,7 @@ public class ChapterInfo {
 
     public ChapterInfo name(@javax.annotation.Nullable String name) {
         this.name = JsonNullable.<String> of(name);
+
         return this;
     }
 
@@ -93,6 +97,7 @@ public class ChapterInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getName() {
         return name.orElse(null);
     }
@@ -115,6 +120,7 @@ public class ChapterInfo {
 
     public ChapterInfo imagePath(@javax.annotation.Nullable String imagePath) {
         this.imagePath = JsonNullable.<String> of(imagePath);
+
         return this;
     }
 
@@ -125,6 +131,7 @@ public class ChapterInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getImagePath() {
         return imagePath.orElse(null);
     }
@@ -146,6 +153,7 @@ public class ChapterInfo {
     }
 
     public ChapterInfo imageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
+
         this.imageDateModified = imageDateModified;
         return this;
     }
@@ -158,6 +166,7 @@ public class ChapterInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public OffsetDateTime getImageDateModified() {
         return imageDateModified;
     }
@@ -170,6 +179,7 @@ public class ChapterInfo {
 
     public ChapterInfo imageTag(@javax.annotation.Nullable String imageTag) {
         this.imageTag = JsonNullable.<String> of(imageTag);
+
         return this;
     }
 
@@ -180,6 +190,7 @@ public class ChapterInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getImageTag() {
         return imageTag.orElse(null);
     }
@@ -200,9 +211,6 @@ public class ChapterInfo {
         this.imageTag = JsonNullable.<String> of(imageTag);
     }
 
-    /**
-     * Return true if this ChapterInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -258,71 +266,6 @@ public class ChapterInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `StartPositionTicks` to the URL query string
-        if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
-        }
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `ImagePath` to the URL query string
-        if (getImagePath() != null) {
-            joiner.add(String.format("%sImagePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImagePath()))));
-        }
-
-        // add `ImageDateModified` to the URL query string
-        if (getImageDateModified() != null) {
-            joiner.add(String.format("%sImageDateModified%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageDateModified()))));
-        }
-
-        // add `ImageTag` to the URL query string
-        if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

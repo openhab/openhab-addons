@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -64,9 +62,11 @@ public class ChannelFeatures {
     private List<ChannelMediaContentType> contentTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MAX_PAGE_SIZE = "MaxPageSize";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> maxPageSize = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_AUTO_REFRESH_LEVELS = "AutoRefreshLevels";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> autoRefreshLevels = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_DEFAULT_SORT_FIELDS = "DefaultSortFields";
@@ -93,6 +93,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures name(@javax.annotation.Nullable String name) {
+
         this.name = name;
         return this;
     }
@@ -105,6 +106,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getName() {
         return name;
     }
@@ -116,6 +118,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures id(@javax.annotation.Nullable UUID id) {
+
         this.id = id;
         return this;
     }
@@ -128,6 +131,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getId() {
         return id;
     }
@@ -139,6 +143,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures canSearch(@javax.annotation.Nullable Boolean canSearch) {
+
         this.canSearch = canSearch;
         return this;
     }
@@ -151,6 +156,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_SEARCH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanSearch() {
         return canSearch;
     }
@@ -162,6 +168,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures mediaTypes(@javax.annotation.Nullable List<ChannelMediaType> mediaTypes) {
+
         this.mediaTypes = mediaTypes;
         return this;
     }
@@ -182,6 +189,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ChannelMediaType> getMediaTypes() {
         return mediaTypes;
     }
@@ -193,6 +201,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures contentTypes(@javax.annotation.Nullable List<ChannelMediaContentType> contentTypes) {
+
         this.contentTypes = contentTypes;
         return this;
     }
@@ -213,6 +222,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ChannelMediaContentType> getContentTypes() {
         return contentTypes;
     }
@@ -225,6 +235,7 @@ public class ChannelFeatures {
 
     public ChannelFeatures maxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
         this.maxPageSize = JsonNullable.<Integer> of(maxPageSize);
+
         return this;
     }
 
@@ -235,6 +246,7 @@ public class ChannelFeatures {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getMaxPageSize() {
         return maxPageSize.orElse(null);
     }
@@ -257,6 +269,7 @@ public class ChannelFeatures {
 
     public ChannelFeatures autoRefreshLevels(@javax.annotation.Nullable Integer autoRefreshLevels) {
         this.autoRefreshLevels = JsonNullable.<Integer> of(autoRefreshLevels);
+
         return this;
     }
 
@@ -267,6 +280,7 @@ public class ChannelFeatures {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getAutoRefreshLevels() {
         return autoRefreshLevels.orElse(null);
     }
@@ -288,6 +302,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures defaultSortFields(@javax.annotation.Nullable List<ChannelItemSortField> defaultSortFields) {
+
         this.defaultSortFields = defaultSortFields;
         return this;
     }
@@ -308,6 +323,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DEFAULT_SORT_FIELDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public List<ChannelItemSortField> getDefaultSortFields() {
         return defaultSortFields;
     }
@@ -319,6 +335,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures supportsSortOrderToggle(@javax.annotation.Nullable Boolean supportsSortOrderToggle) {
+
         this.supportsSortOrderToggle = supportsSortOrderToggle;
         return this;
     }
@@ -331,6 +348,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsSortOrderToggle() {
         return supportsSortOrderToggle;
     }
@@ -342,6 +360,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures supportsLatestMedia(@javax.annotation.Nullable Boolean supportsLatestMedia) {
+
         this.supportsLatestMedia = supportsLatestMedia;
         return this;
     }
@@ -354,6 +373,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsLatestMedia() {
         return supportsLatestMedia;
     }
@@ -365,6 +385,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures canFilter(@javax.annotation.Nullable Boolean canFilter) {
+
         this.canFilter = canFilter;
         return this;
     }
@@ -377,6 +398,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CAN_FILTER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getCanFilter() {
         return canFilter;
     }
@@ -388,6 +410,7 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures supportsContentDownloading(@javax.annotation.Nullable Boolean supportsContentDownloading) {
+
         this.supportsContentDownloading = supportsContentDownloading;
         return this;
     }
@@ -400,6 +423,7 @@ public class ChannelFeatures {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getSupportsContentDownloading() {
         return supportsContentDownloading;
     }
@@ -410,9 +434,6 @@ public class ChannelFeatures {
         this.supportsContentDownloading = supportsContentDownloading;
     }
 
-    /**
-     * Return true if this ChannelFeatures object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -483,128 +504,6 @@ public class ChannelFeatures {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Name` to the URL query string
-        if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-        }
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `CanSearch` to the URL query string
-        if (getCanSearch() != null) {
-            joiner.add(String.format("%sCanSearch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSearch()))));
-        }
-
-        // add `MediaTypes` to the URL query string
-        if (getMediaTypes() != null) {
-            for (int i = 0; i < getMediaTypes().size(); i++) {
-                if (getMediaTypes().get(i) != null) {
-                    joiner.add(String.format("%sMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getMediaTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `ContentTypes` to the URL query string
-        if (getContentTypes() != null) {
-            for (int i = 0; i < getContentTypes().size(); i++) {
-                if (getContentTypes().get(i) != null) {
-                    joiner.add(String.format("%sContentTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getContentTypes().get(i)))));
-                }
-            }
-        }
-
-        // add `MaxPageSize` to the URL query string
-        if (getMaxPageSize() != null) {
-            joiner.add(String.format("%sMaxPageSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxPageSize()))));
-        }
-
-        // add `AutoRefreshLevels` to the URL query string
-        if (getAutoRefreshLevels() != null) {
-            joiner.add(String.format("%sAutoRefreshLevels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoRefreshLevels()))));
-        }
-
-        // add `DefaultSortFields` to the URL query string
-        if (getDefaultSortFields() != null) {
-            for (int i = 0; i < getDefaultSortFields().size(); i++) {
-                if (getDefaultSortFields().get(i) != null) {
-                    joiner.add(String.format("%sDefaultSortFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getDefaultSortFields().get(i)))));
-                }
-            }
-        }
-
-        // add `SupportsSortOrderToggle` to the URL query string
-        if (getSupportsSortOrderToggle() != null) {
-            joiner.add(String.format("%sSupportsSortOrderToggle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsSortOrderToggle()))));
-        }
-
-        // add `SupportsLatestMedia` to the URL query string
-        if (getSupportsLatestMedia() != null) {
-            joiner.add(String.format("%sSupportsLatestMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsLatestMedia()))));
-        }
-
-        // add `CanFilter` to the URL query string
-        if (getCanFilter() != null) {
-            joiner.add(String.format("%sCanFilter%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanFilter()))));
-        }
-
-        // add `SupportsContentDownloading` to the URL query string
-        if (getSupportsContentDownloading() != null) {
-            joiner.add(String.format("%sSupportsContentDownloading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsContentDownloading()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

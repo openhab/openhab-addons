@@ -18,9 +18,6 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
-
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,6 +46,7 @@ public class RemoteLyricInfoDto {
     }
 
     public RemoteLyricInfoDto id(@javax.annotation.Nullable String id) {
+
         this.id = id;
         return this;
     }
@@ -61,6 +59,7 @@ public class RemoteLyricInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getId() {
         return id;
     }
@@ -72,6 +71,7 @@ public class RemoteLyricInfoDto {
     }
 
     public RemoteLyricInfoDto providerName(@javax.annotation.Nullable String providerName) {
+
         this.providerName = providerName;
         return this;
     }
@@ -84,6 +84,7 @@ public class RemoteLyricInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getProviderName() {
         return providerName;
     }
@@ -95,6 +96,7 @@ public class RemoteLyricInfoDto {
     }
 
     public RemoteLyricInfoDto lyrics(@javax.annotation.Nullable LyricDto lyrics) {
+
         this.lyrics = lyrics;
         return this;
     }
@@ -107,6 +109,7 @@ public class RemoteLyricInfoDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LYRICS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public LyricDto getLyrics() {
         return lyrics;
     }
@@ -117,9 +120,6 @@ public class RemoteLyricInfoDto {
         this.lyrics = lyrics;
     }
 
-    /**
-     * Return true if this RemoteLyricInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -159,58 +159,6 @@ public class RemoteLyricInfoDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Id` to the URL query string
-        if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-        }
-
-        // add `ProviderName` to the URL query string
-        if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
-        }
-
-        // add `Lyrics` to the URL query string
-        if (getLyrics() != null) {
-            joiner.add(getLyrics().toUrlQueryString(prefix + "Lyrics" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

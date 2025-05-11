@@ -20,11 +20,9 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,12 +41,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UserItemDataDto {
     public static final String JSON_PROPERTY_RATING = "Rating";
+    @javax.annotation.Nullable
     private JsonNullable<Double> rating = JsonNullable.<Double> undefined();
 
     public static final String JSON_PROPERTY_PLAYED_PERCENTAGE = "PlayedPercentage";
+    @javax.annotation.Nullable
     private JsonNullable<Double> playedPercentage = JsonNullable.<Double> undefined();
 
     public static final String JSON_PROPERTY_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> unplayedItemCount = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
@@ -64,9 +65,11 @@ public class UserItemDataDto {
     private Boolean isFavorite;
 
     public static final String JSON_PROPERTY_LIKES = "Likes";
+    @javax.annotation.Nullable
     private JsonNullable<Boolean> likes = JsonNullable.<Boolean> undefined();
 
     public static final String JSON_PROPERTY_LAST_PLAYED_DATE = "LastPlayedDate";
+    @javax.annotation.Nullable
     private JsonNullable<OffsetDateTime> lastPlayedDate = JsonNullable.<OffsetDateTime> undefined();
 
     public static final String JSON_PROPERTY_PLAYED = "Played";
@@ -86,6 +89,7 @@ public class UserItemDataDto {
 
     public UserItemDataDto rating(@javax.annotation.Nullable Double rating) {
         this.rating = JsonNullable.<Double> of(rating);
+
         return this;
     }
 
@@ -96,6 +100,7 @@ public class UserItemDataDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Double getRating() {
         return rating.orElse(null);
     }
@@ -118,6 +123,7 @@ public class UserItemDataDto {
 
     public UserItemDataDto playedPercentage(@javax.annotation.Nullable Double playedPercentage) {
         this.playedPercentage = JsonNullable.<Double> of(playedPercentage);
+
         return this;
     }
 
@@ -128,6 +134,7 @@ public class UserItemDataDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Double getPlayedPercentage() {
         return playedPercentage.orElse(null);
     }
@@ -150,6 +157,7 @@ public class UserItemDataDto {
 
     public UserItemDataDto unplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
         this.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
+
         return this;
     }
 
@@ -160,6 +168,7 @@ public class UserItemDataDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getUnplayedItemCount() {
         return unplayedItemCount.orElse(null);
     }
@@ -181,6 +190,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto playbackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
+
         this.playbackPositionTicks = playbackPositionTicks;
         return this;
     }
@@ -193,6 +203,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Long getPlaybackPositionTicks() {
         return playbackPositionTicks;
     }
@@ -204,6 +215,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto playCount(@javax.annotation.Nullable Integer playCount) {
+
         this.playCount = playCount;
         return this;
     }
@@ -216,6 +228,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Integer getPlayCount() {
         return playCount;
     }
@@ -227,6 +240,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto isFavorite(@javax.annotation.Nullable Boolean isFavorite) {
+
         this.isFavorite = isFavorite;
         return this;
     }
@@ -239,6 +253,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getIsFavorite() {
         return isFavorite;
     }
@@ -251,6 +266,7 @@ public class UserItemDataDto {
 
     public UserItemDataDto likes(@javax.annotation.Nullable Boolean likes) {
         this.likes = JsonNullable.<Boolean> of(likes);
+
         return this;
     }
 
@@ -261,6 +277,7 @@ public class UserItemDataDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Boolean getLikes() {
         return likes.orElse(null);
     }
@@ -283,6 +300,7 @@ public class UserItemDataDto {
 
     public UserItemDataDto lastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
         this.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
+
         return this;
     }
 
@@ -293,6 +311,7 @@ public class UserItemDataDto {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate.orElse(null);
     }
@@ -314,6 +333,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto played(@javax.annotation.Nullable Boolean played) {
+
         this.played = played;
         return this;
     }
@@ -326,6 +346,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PLAYED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public Boolean getPlayed() {
         return played;
     }
@@ -337,6 +358,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto key(@javax.annotation.Nullable String key) {
+
         this.key = key;
         return this;
     }
@@ -349,6 +371,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getKey() {
         return key;
     }
@@ -360,6 +383,7 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto itemId(@javax.annotation.Nullable UUID itemId) {
+
         this.itemId = itemId;
         return this;
     }
@@ -372,6 +396,7 @@ public class UserItemDataDto {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public UUID getItemId() {
         return itemId;
     }
@@ -382,9 +407,6 @@ public class UserItemDataDto {
         this.itemId = itemId;
     }
 
-    /**
-     * Return true if this UserItemDataDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -453,107 +475,6 @@ public class UserItemDataDto {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Rating` to the URL query string
-        if (getRating() != null) {
-            joiner.add(String.format("%sRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRating()))));
-        }
-
-        // add `PlayedPercentage` to the URL query string
-        if (getPlayedPercentage() != null) {
-            joiner.add(String.format("%sPlayedPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayedPercentage()))));
-        }
-
-        // add `UnplayedItemCount` to the URL query string
-        if (getUnplayedItemCount() != null) {
-            joiner.add(String.format("%sUnplayedItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUnplayedItemCount()))));
-        }
-
-        // add `PlaybackPositionTicks` to the URL query string
-        if (getPlaybackPositionTicks() != null) {
-            joiner.add(String.format("%sPlaybackPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackPositionTicks()))));
-        }
-
-        // add `PlayCount` to the URL query string
-        if (getPlayCount() != null) {
-            joiner.add(String.format("%sPlayCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayCount()))));
-        }
-
-        // add `IsFavorite` to the URL query string
-        if (getIsFavorite() != null) {
-            joiner.add(String.format("%sIsFavorite%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFavorite()))));
-        }
-
-        // add `Likes` to the URL query string
-        if (getLikes() != null) {
-            joiner.add(String.format("%sLikes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLikes()))));
-        }
-
-        // add `LastPlayedDate` to the URL query string
-        if (getLastPlayedDate() != null) {
-            joiner.add(String.format("%sLastPlayedDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPlayedDate()))));
-        }
-
-        // add `Played` to the URL query string
-        if (getPlayed() != null) {
-            joiner.add(String.format("%sPlayed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayed()))));
-        }
-
-        // add `Key` to the URL query string
-        if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-        }
-
-        // add `ItemId` to the URL query string
-        if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

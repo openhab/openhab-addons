@@ -21,10 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -40,20 +38,25 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ProblemDetails.JSON_PROPERTY_STATUS, ProblemDetails.JSON_PROPERTY_DETAIL,
         ProblemDetails.JSON_PROPERTY_INSTANCE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
-public class ProblemDetails extends HashMap<String, Object> {
+public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
+    @javax.annotation.Nullable
     private JsonNullable<String> type = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_TITLE = "title";
+    @javax.annotation.Nullable
     private JsonNullable<String> title = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_STATUS = "status";
+    @javax.annotation.Nullable
     private JsonNullable<Integer> status = JsonNullable.<Integer> undefined();
 
     public static final String JSON_PROPERTY_DETAIL = "detail";
+    @javax.annotation.Nullable
     private JsonNullable<String> detail = JsonNullable.<String> undefined();
 
     public static final String JSON_PROPERTY_INSTANCE = "instance";
+    @javax.annotation.Nullable
     private JsonNullable<String> instance = JsonNullable.<String> undefined();
 
     public ProblemDetails() {
@@ -61,6 +64,7 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     public ProblemDetails type(@javax.annotation.Nullable String type) {
         this.type = JsonNullable.<String> of(type);
+
         return this;
     }
 
@@ -71,6 +75,7 @@ public class ProblemDetails extends HashMap<String, Object> {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getType() {
         return type.orElse(null);
     }
@@ -93,6 +98,7 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     public ProblemDetails title(@javax.annotation.Nullable String title) {
         this.title = JsonNullable.<String> of(title);
+
         return this;
     }
 
@@ -103,6 +109,7 @@ public class ProblemDetails extends HashMap<String, Object> {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getTitle() {
         return title.orElse(null);
     }
@@ -125,6 +132,7 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     public ProblemDetails status(@javax.annotation.Nullable Integer status) {
         this.status = JsonNullable.<Integer> of(status);
+
         return this;
     }
 
@@ -135,6 +143,7 @@ public class ProblemDetails extends HashMap<String, Object> {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public Integer getStatus() {
         return status.orElse(null);
     }
@@ -157,6 +166,7 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     public ProblemDetails detail(@javax.annotation.Nullable String detail) {
         this.detail = JsonNullable.<String> of(detail);
+
         return this;
     }
 
@@ -167,6 +177,7 @@ public class ProblemDetails extends HashMap<String, Object> {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getDetail() {
         return detail.orElse(null);
     }
@@ -189,6 +200,7 @@ public class ProblemDetails extends HashMap<String, Object> {
 
     public ProblemDetails instance(@javax.annotation.Nullable String instance) {
         this.instance = JsonNullable.<String> of(instance);
+
         return this;
     }
 
@@ -199,6 +211,7 @@ public class ProblemDetails extends HashMap<String, Object> {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getInstance() {
         return instance.orElse(null);
     }
@@ -266,9 +279,6 @@ public class ProblemDetails extends HashMap<String, Object> {
         return this.additionalProperties.get(key);
     }
 
-    /**
-     * Return true if this ProblemDetails object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -282,7 +292,7 @@ public class ProblemDetails extends HashMap<String, Object> {
                 && equalsNullable(this.status, problemDetails.status)
                 && equalsNullable(this.detail, problemDetails.detail)
                 && equalsNullable(this.instance, problemDetails.instance)
-                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties) && super.equals(o);
+                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties);
     }
 
     private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -293,7 +303,7 @@ public class ProblemDetails extends HashMap<String, Object> {
     @Override
     public int hashCode() {
         return Objects.hash(hashCodeNullable(type), hashCodeNullable(title), hashCodeNullable(status),
-                hashCodeNullable(detail), hashCodeNullable(instance), super.hashCode(), additionalProperties);
+                hashCodeNullable(detail), hashCodeNullable(instance), additionalProperties);
     }
 
     private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -307,7 +317,6 @@ public class ProblemDetails extends HashMap<String, Object> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class ProblemDetails {\n");
-        sb.append("    ").append(toIndentedString(super.toString())).append("\n");
         sb.append("    type: ").append(toIndentedString(type)).append("\n");
         sb.append("    title: ").append(toIndentedString(title)).append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
@@ -327,71 +336,6 @@ public class ProblemDetails extends HashMap<String, Object> {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `type` to the URL query string
-        if (getType() != null) {
-            joiner.add(String.format("%stype%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `title` to the URL query string
-        if (getTitle() != null) {
-            joiner.add(String.format("%stitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-        }
-
-        // add `status` to the URL query string
-        if (getStatus() != null) {
-            joiner.add(String.format("%sstatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-        }
-
-        // add `detail` to the URL query string
-        if (getDetail() != null) {
-            joiner.add(String.format("%sdetail%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDetail()))));
-        }
-
-        // add `instance` to the URL query string
-        if (getInstance() != null) {
-            joiner.add(String.format("%sinstance%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInstance()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

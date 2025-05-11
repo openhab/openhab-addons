@@ -19,10 +19,8 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -40,12 +38,14 @@ public class MediaPathInfo {
     private String path;
 
     public static final String JSON_PROPERTY_NETWORK_PATH = "NetworkPath";
+    @javax.annotation.Nullable
     private JsonNullable<String> networkPath = JsonNullable.<String> undefined();
 
     public MediaPathInfo() {
     }
 
     public MediaPathInfo path(@javax.annotation.Nullable String path) {
+
         this.path = path;
         return this;
     }
@@ -58,6 +58,7 @@ public class MediaPathInfo {
     @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
     public String getPath() {
         return path;
     }
@@ -70,6 +71,7 @@ public class MediaPathInfo {
 
     public MediaPathInfo networkPath(@javax.annotation.Nullable String networkPath) {
         this.networkPath = JsonNullable.<String> of(networkPath);
+
         return this;
     }
 
@@ -80,6 +82,7 @@ public class MediaPathInfo {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public String getNetworkPath() {
         return networkPath.orElse(null);
     }
@@ -100,9 +103,6 @@ public class MediaPathInfo {
         this.networkPath = JsonNullable.<String> of(networkPath);
     }
 
-    /**
-     * Return true if this MediaPathInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,53 +152,6 @@ public class MediaPathInfo {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `Path` to the URL query string
-        if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
-        }
-
-        // add `NetworkPath` to the URL query string
-        if (getNetworkPath() != null) {
-            joiner.add(String.format("%sNetworkPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNetworkPath()))));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {

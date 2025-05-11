@@ -19,7 +19,6 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 
@@ -37,12 +36,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AllThemeMediaResult {
     public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
+    @javax.annotation.Nullable
     private JsonNullable<ThemeMediaResult> themeVideosResult = JsonNullable.<ThemeMediaResult> undefined();
 
     public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
+    @javax.annotation.Nullable
     private JsonNullable<ThemeMediaResult> themeSongsResult = JsonNullable.<ThemeMediaResult> undefined();
 
     public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
+    @javax.annotation.Nullable
     private JsonNullable<ThemeMediaResult> soundtrackSongsResult = JsonNullable.<ThemeMediaResult> undefined();
 
     public AllThemeMediaResult() {
@@ -50,6 +52,7 @@ public class AllThemeMediaResult {
 
     public AllThemeMediaResult themeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
         this.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
+
         return this;
     }
 
@@ -60,6 +63,7 @@ public class AllThemeMediaResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult.orElse(null);
     }
@@ -82,6 +86,7 @@ public class AllThemeMediaResult {
 
     public AllThemeMediaResult themeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
         this.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
+
         return this;
     }
 
@@ -92,6 +97,7 @@ public class AllThemeMediaResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult.orElse(null);
     }
@@ -115,6 +121,7 @@ public class AllThemeMediaResult {
     public AllThemeMediaResult soundtrackSongsResult(
             @javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
         this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
+
         return this;
     }
 
@@ -125,6 +132,7 @@ public class AllThemeMediaResult {
      */
     @javax.annotation.Nullable
     @JsonIgnore
+
     public ThemeMediaResult getSoundtrackSongsResult() {
         return soundtrackSongsResult.orElse(null);
     }
@@ -145,9 +153,6 @@ public class AllThemeMediaResult {
         this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
     }
 
-    /**
-     * Return true if this AllThemeMediaResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -200,56 +205,6 @@ public class AllThemeMediaResult {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @return URL query string
-     */
-    public String toUrlQueryString() {
-        return toUrlQueryString(null);
-    }
-
-    /**
-     * Convert the instance into URL query string.
-     *
-     * @param prefix prefix of the query string
-     * @return URL query string
-     */
-    public String toUrlQueryString(String prefix) {
-        String suffix = "";
-        String containerSuffix = "";
-        String containerPrefix = "";
-        if (prefix == null) {
-            // style=form, explode=true, e.g. /pet?name=cat&type=manx
-            prefix = "";
-        } else {
-            // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-            prefix = prefix + "[";
-            suffix = "]";
-            containerSuffix = "]";
-            containerPrefix = "[";
-        }
-
-        StringJoiner joiner = new StringJoiner("&");
-
-        // add `ThemeVideosResult` to the URL query string
-        if (getThemeVideosResult() != null) {
-            joiner.add(getThemeVideosResult().toUrlQueryString(prefix + "ThemeVideosResult" + suffix));
-        }
-
-        // add `ThemeSongsResult` to the URL query string
-        if (getThemeSongsResult() != null) {
-            joiner.add(getThemeSongsResult().toUrlQueryString(prefix + "ThemeSongsResult" + suffix));
-        }
-
-        // add `SoundtrackSongsResult` to the URL query string
-        if (getSoundtrackSongsResult() != null) {
-            joiner.add(getSoundtrackSongsResult().toUrlQueryString(prefix + "SoundtrackSongsResult" + suffix));
-        }
-
-        return joiner.toString();
     }
 
     public static class Builder {
