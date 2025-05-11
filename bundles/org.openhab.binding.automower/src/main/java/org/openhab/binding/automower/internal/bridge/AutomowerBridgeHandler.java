@@ -165,12 +165,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                     HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
             this.oAuthService = oAuthService;
 
-            if (bridge == null) {
+            if (this.bridge == null) {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
-                bridge = currentBridge;
+                this.bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
-
-                connectWebSocket(new AutomowerWebSocketAdapter(this, bridge));
+                
+                connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
