@@ -26,8 +26,9 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.Type;
 
 /**
+ * Utility class for converting values to and from Matter types.
+ * 
  * @author Dan Cunningham - Initial contribution
- *
  */
 @NonNullByDefault
 public class ValueUtils {
@@ -68,12 +69,9 @@ public class ValueUtils {
                 value = quantity.toBigDecimal();
             } else if (quantity.getUnit() == ImperialUnits.FAHRENHEIT) {
                 QuantityType<?> celsius = quantity.toUnit(SIUnits.CELSIUS);
-                if (celsius == null) {
-                    return null;
+                if (celsius != null) {
+                    value = celsius.toBigDecimal();
                 }
-                value = celsius.toBigDecimal();
-            } else {
-                return null;
             }
         } else if (type instanceof Number number) {
             // No scale, so assumed to be Celsius

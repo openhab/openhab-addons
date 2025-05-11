@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GenericDevice}
+ * The {@link GenericDevice} is a base class for all devices that are managed by the bridge.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -209,7 +209,7 @@ public abstract class GenericDevice implements StateChangeListener {
     }
 
     private List<KeyValue> parseFixedLabels(String labels) {
-        Map<String, String> keyValueMap = Arrays.stream(labels.split(", ")).map(pair -> pair.split("=", 2))
+        Map<String, String> keyValueMap = Arrays.stream(labels.split(",")).map(pair -> pair.trim().split("=", 2))
                 .filter(parts -> parts.length == 2)
                 .collect(Collectors.toMap(parts -> parts[0].trim(), parts -> parts[1].trim()));
         return keyValueMap.entrySet().stream().map(entry -> new KeyValue(entry.getKey(), entry.getValue()))

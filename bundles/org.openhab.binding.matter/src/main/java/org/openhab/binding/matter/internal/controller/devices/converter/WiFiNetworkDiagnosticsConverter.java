@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_WIFINETWORKDIAGNOSTICS_RSSI;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_POWER;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -62,9 +61,8 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI), ITEM_TYPE_NUMBER_POWER)
-                .withType(CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI)
-                .withLabel(formatLabel(CHANNEL_LABEL_WIFINETWORKDIAGNOSTICS_RSSI)).build();
+                .create(new ChannelUID(thingUID, CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI).build();
         return Collections.singletonMap(channel, null);
     }
 

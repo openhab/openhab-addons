@@ -96,7 +96,6 @@ public class MatterBridgeClient extends MatterWebsocketClient {
     public CompletableFuture<String> getFabrics() {
         CompletableFuture<JsonElement> future = sendMessage("bridge", "getFabrics", new Object[0]);
         return future.thenApply(obj -> {
-            // return gson.fromJson(obj, new TypeToken<List<Fabric>>() {}.getType());
             return obj.toString();
         });
     }

@@ -17,11 +17,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_ENERGY;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -34,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -63,11 +59,8 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 Channel exportedEnergyChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY),
-                                ITEM_TYPE_NUMBER_ENERGY)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY)
-                        .withLabel(
-                                formatLabel(CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY))
-                        .build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(exportedEnergyChannel, null);
             }
 
@@ -75,11 +68,8 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 Channel importedEnergyChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY),
-                                ITEM_TYPE_NUMBER_ENERGY)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY)
-                        .withLabel(
-                                formatLabel(CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY))
-                        .build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(importedEnergyChannel, null);
             }
         }
@@ -88,20 +78,16 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 Channel exportedEnergyChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY),
-                                ITEM_TYPE_NUMBER_ENERGY)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY)
-                        .withLabel(formatLabel(CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY))
-                        .build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(exportedEnergyChannel, null);
             }
             if (initializingCluster.featureMap.importedEnergy) {
                 Channel importedEnergyChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY),
-                                ITEM_TYPE_NUMBER_ENERGY)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY)
-                        .withLabel(formatLabel(CHANNEL_LABEL_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY))
-                        .build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(importedEnergyChannel, null);
             }
         }

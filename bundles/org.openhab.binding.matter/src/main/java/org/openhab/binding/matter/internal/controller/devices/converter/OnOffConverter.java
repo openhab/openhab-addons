@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ONOFF_ONOFF;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ONOFF_ONOFF;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ONOFF_ONOFF;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_SWITCH;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +24,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -49,8 +48,9 @@ public class OnOffConverter extends GenericConverter<OnOffCluster> {
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_ONOFF_ONOFF), ITEM_TYPE_SWITCH)
-                .withType(CHANNEL_ONOFF_ONOFF).withLabel(formatLabel(CHANNEL_LABEL_ONOFF_ONOFF)).build();
+        Channel channel = ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ID_ONOFF_ONOFF), CoreItemFactory.SWITCH)
+                .withType(CHANNEL_ONOFF_ONOFF).build();
         return Collections.singletonMap(channel, null);
     }
 

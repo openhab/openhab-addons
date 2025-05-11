@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_WINDOWCOVERING_LIFT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_WINDOWCOVERING_LIFT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_WINDOWCOVERING_LIFT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_ROLLERSHUTTER;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +24,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -52,9 +51,8 @@ public class WindowCoveringConverter extends GenericConverter<WindowCoveringClus
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_WINDOWCOVERING_LIFT), ITEM_TYPE_ROLLERSHUTTER)
-                .withType(CHANNEL_WINDOWCOVERING_LIFT).withLabel(formatLabel(CHANNEL_LABEL_WINDOWCOVERING_LIFT))
-                .build();
+                .create(new ChannelUID(thingUID, CHANNEL_ID_WINDOWCOVERING_LIFT), CoreItemFactory.ROLLERSHUTTER)
+                .withType(CHANNEL_WINDOWCOVERING_LIFT).build();
         return Collections.singletonMap(channel, null);
     }
 

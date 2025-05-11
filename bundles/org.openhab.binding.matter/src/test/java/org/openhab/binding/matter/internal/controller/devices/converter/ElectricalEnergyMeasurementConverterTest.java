@@ -63,7 +63,7 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
         assertEquals(4, channels.size());
 
         for (Channel channel : channels.keySet()) {
-            assertEquals("Number:Energy", channel.getAcceptedItemType());
+            assertEquals("Number", channel.getAcceptedItemType());
         }
     }
 

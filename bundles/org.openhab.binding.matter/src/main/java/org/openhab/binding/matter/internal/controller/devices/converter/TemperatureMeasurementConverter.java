@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_TEMPERATUREMEASURMENT_MEASUREDVALUE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_TEMPERATUREMEASURMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_TEMPERATURE;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +24,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.TemperatureMea
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -49,9 +48,8 @@ public class TemperatureMeasurementConverter extends GenericConverter<Temperatur
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
                 .create(new ChannelUID(thingUID, CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE),
-                        ITEM_TYPE_NUMBER_TEMPERATURE)
-                .withType(CHANNEL_TEMPERATUREMEASURMENT_MEASUREDVALUE)
-                .withLabel(formatLabel(CHANNEL_LABEL_TEMPERATUREMEASURMENT_MEASUREDVALUE)).build();
+                        CoreItemFactory.NUMBER)
+                .withType(CHANNEL_TEMPERATUREMEASURMENT_MEASUREDVALUE).build();
         return Collections.singletonMap(channel, null);
     }
 

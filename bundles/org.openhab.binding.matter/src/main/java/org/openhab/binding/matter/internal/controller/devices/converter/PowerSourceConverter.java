@@ -14,11 +14,8 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_POWER_BATTERYPERCENT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_POWER_CHARGELEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_POWER_BATTERYPERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_POWER_CHARGELEVEL;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_POWER_BATTERYPERCENT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_POWER_CHARGELEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +28,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceClu
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceCluster.BatChargeLevelEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
@@ -62,16 +60,14 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
         if (initializingCluster.featureMap.battery) {
             if (initializingCluster.batPercentRemaining != null) {
                 Channel channel = ChannelBuilder
-                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_BATTERYPERCENT), ITEM_TYPE_NUMBER)
-                        .withType(CHANNEL_POWER_BATTERYPERCENT)
-                        .withLabel(formatLabel(CHANNEL_LABEL_POWER_BATTERYPERCENT)).build();
+                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_BATTERYPERCENT), CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_POWER_BATTERYPERCENT).build();
                 channels.put(channel, null);
             }
             if (initializingCluster.batChargeLevel != null) {
                 Channel channel = ChannelBuilder
-                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_CHARGELEVEL), ITEM_TYPE_NUMBER)
-                        .withType(CHANNEL_POWER_CHARGELEVEL).withLabel(formatLabel(CHANNEL_LABEL_POWER_CHARGELEVEL))
-                        .build();
+                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_CHARGELEVEL), CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_POWER_CHARGELEVEL).build();
                 List<StateOption> options = new ArrayList<>();
                 for (BatChargeLevelEnum mode : BatChargeLevelEnum.values()) {
                     options.add(new StateOption(mode.value.toString(), mode.label));

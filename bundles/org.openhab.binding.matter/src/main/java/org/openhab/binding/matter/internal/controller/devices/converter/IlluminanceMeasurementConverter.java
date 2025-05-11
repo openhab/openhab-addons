@@ -14,8 +14,6 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_ILLUMINANCE;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -50,9 +49,8 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
                 .create(new ChannelUID(thingUID, CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE),
-                        ITEM_TYPE_NUMBER_ILLUMINANCE)
-                .withType(CHANNEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE)
-                .withLabel(formatLabel(CHANNEL_LABEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE)).build();
+                        CoreItemFactory.NUMBER)
+                .withType(CHANNEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE).build();
         return Collections.singletonMap(channel, null);
     }
 

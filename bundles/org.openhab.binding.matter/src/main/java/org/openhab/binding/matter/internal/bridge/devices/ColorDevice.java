@@ -66,20 +66,22 @@ public class ColorDevice extends GenericDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         if (primaryItem instanceof ColorItem colorItem) {
             HSBType hsbType = colorItem.getStateAs(HSBType.class);
-            if (hsbType != null) {
-                Integer currentHue = toHue(hsbType.getHue());
-                Integer currentSaturation = toSaturation(hsbType.getSaturation());
-                Integer currentLevel = toBrightness(hsbType.getBrightness());
-                attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                        Math.max(currentLevel, 1));
-                attributeMap.put(ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
-                        currentHue);
-                attributeMap.put(
-                        ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION,
-                        currentSaturation);
-                attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, currentLevel > 0);
+            if (hsbType == null) {
+                hsbType = new HSBType();
             }
+            Integer currentHue = toHue(hsbType.getHue());
+            Integer currentSaturation = toSaturation(hsbType.getSaturation());
+            Integer currentLevel = toBrightness(hsbType.getBrightness());
+            attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
+                    Math.max(currentLevel, 1));
+            attributeMap.put(ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
+                    currentHue);
+            attributeMap.put(
+                    ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION,
+                    currentSaturation);
+            attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, currentLevel > 0);
         }
+
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 

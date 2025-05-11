@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.matter.internal.actions;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
 import org.openhab.binding.matter.internal.util.MatterVendorIDs;
+import org.openhab.binding.matter.internal.util.ResourceHelper;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
@@ -56,10 +62,10 @@ public class MatterNodeActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "Generate a new pairing code for a Matter device", description = "Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller")
-    public @Nullable @ActionOutputs({
-            @ActionOutput(name = "manualPairingCode", label = "Manual pairing code", type = "java.lang.String"),
-            @ActionOutput(name = "qrPairingCode", label = "QR pairing code", type = "qrCode") }) Map<String, Object> generateNewPairingCode() {
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GENERATE_NEW_PAIRING_CODE)
+    public @ActionOutputs({
+            @ActionOutput(name = "manualPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_MANUAL_PAIRING_CODE, type = "java.lang.String"),
+            @ActionOutput(name = "qrPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE, type = "qrCode") }) Map<String, Object> generateNewPairingCode() {
         NodeHandler handler = this.handler;
         if (handler != null) {
             MatterControllerClient client = handler.getClient();
@@ -72,65 +78,73 @@ public class MatterNodeActions implements ThingActions {
                 }
             }
         }
-        return null;
+        return Map.of("manualPairingCode",
+                ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER),
+                "qrPairingCode",
+                ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
     }
 
-    @RuleAction(label = "Decommission Matter node from fabric", description = "This will remove the device from the Matter fabric.  If the device is online and reachable this will attempt to remove the credentials from the device first before removing it from the network.  Once a device is removed, this Thing will go offline and can be removed.")
-    public @Nullable @ActionOutputs({
-            @ActionOutput(name = "result", label = "Result from decommissioning process", type = "java.lang.String") }) String decommissionNode() {
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_DECOMMISSION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_DECOMMISSION)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_DECOMMISSION_RESULT, type = "java.lang.String") }) String decommissionNode() {
         NodeHandler handler = this.handler;
         if (handler != null) {
             MatterControllerClient client = handler.getClient();
             if (client != null) {
                 try {
                     client.removeNode(handler.getNodeId()).get();
-                    return "success";
+                    return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
-                    return e.getLocalizedMessage();
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
         }
-        return null;
+        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 
-    @RuleAction(label = "List connected Matter fabrics", description = "This will list all the Matter fabrics this node belongs to")
-    public @Nullable @ActionOutputs({
-            @ActionOutput(name = "result", label = "Connected Fabrics", type = "java.lang.String") }) String getFabrics() {
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GET_FABRICS, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GET_FABRICS)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GET_FABRICS_RESULT, type = "java.lang.String") }) String getFabrics() {
         NodeHandler handler = this.handler;
         if (handler != null) {
             MatterControllerClient client = handler.getClient();
             if (client != null) {
                 try {
-                    var fabrics = client.getFabrics(handler.getNodeId()).get();
-                    return fabrics.stream().map(fabric -> String.format("#%d %s (%s)", fabric.fabricIndex, fabric.label,
-                            MatterVendorIDs.VENDOR_IDS.get(fabric.vendorId))).collect(Collectors.joining(", "));
+                    List<OperationalCredentialsCluster.FabricDescriptorStruct> fabrics = client
+                            .getFabrics(handler.getNodeId()).get();
+                    String result = fabrics.stream().map(fabric -> String.format("#%d %s (%s)", fabric.fabricIndex,
+                            fabric.label, MatterVendorIDs.VENDOR_IDS.get(fabric.vendorId)))
+                            .collect(Collectors.joining(", "));
+                    return result.isEmpty()
+                            ? ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
+                            : result;
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
-                    return e.getLocalizedMessage();
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
         }
-        return null;
+        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 
-    @RuleAction(label = "Remove connected Matter fabric", description = "This removes a connected Matter fabric from a device.  Use the 'List connected Matter fabrics' action to retrieve the fabric index number")
-    public @Nullable @ActionOutputs({
-            @ActionOutput(name = "result", label = "Remove Result", type = "java.lang.String") }) String removeFabric(
-                    @ActionInput(name = "indexNumber", label = "The index number of the fabric", description = "The index number of the connected Matter fabric") Integer indexNumber) {
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REMOVE_FABRIC)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC_RESULT, type = "java.lang.String") }) String removeFabric(
+                    @ActionInput(name = "indexNumber", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC_INDEX, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REMOVE_FABRIC_INDEX) Integer indexNumber) {
         NodeHandler handler = this.handler;
         if (handler != null) {
             MatterControllerClient client = handler.getClient();
             if (client != null) {
                 try {
                     client.removeFabric(handler.getNodeId(), indexNumber).get();
-                    return "success";
+                    return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
-                    return e.getLocalizedMessage();
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
         }
-        return null;
+        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 }

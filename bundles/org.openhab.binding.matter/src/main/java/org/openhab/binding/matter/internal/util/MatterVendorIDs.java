@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Utility class for the vendor IDs for Matter devices.
  * 
  * @author Dan Cunningham - Initial contribution
  */

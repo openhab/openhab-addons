@@ -23,7 +23,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidi
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
 
@@ -54,9 +53,10 @@ public class HumiditySensorDevice extends GenericDevice {
         primaryItem.addStateChangeListener(this);
         MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
-        DecimalType state = primaryItem.getStateAs(DecimalType.class);
-        attributeMap.put(RelativeHumidityMeasurementCluster.CLUSTER_PREFIX + "."
-                + RelativeHumidityMeasurementCluster.ATTRIBUTE_MEASURED_VALUE, toMatterValue(state));
+        attributeMap.put(
+                RelativeHumidityMeasurementCluster.CLUSTER_PREFIX + "."
+                        + RelativeHumidityMeasurementCluster.ATTRIBUTE_MEASURED_VALUE,
+                toMatterValue(primaryItem.getState()));
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 

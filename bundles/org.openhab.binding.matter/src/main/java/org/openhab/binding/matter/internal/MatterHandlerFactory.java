@@ -16,7 +16,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_T
 import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_ENDPOINT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_NODE;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,7 +51,6 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
     private final MatterWebsocketService websocketService;
     private final MatterChannelTypeProvider channelGroupTypeProvider;
     private final MatterConfigDescriptionProvider configDescriptionProvider;
-    private final Set<ControllerHandler> controllers = new HashSet<>();
 
     @Activate
     public MatterHandlerFactory(@Reference MatterWebsocketService websocketService,
@@ -77,7 +75,6 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             ControllerHandler controllerHandler = new ControllerHandler((Bridge) thing, websocketService);
-            controllers.add(controllerHandler);
             return controllerHandler;
         }
 
@@ -95,17 +92,5 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof ControllerHandler) {
-            controllers.remove(thingHandler);
-        }
-        super.removeHandler(thingHandler);
-    }
-
-    public Set<ControllerHandler> getControllers() {
-        return controllers;
     }
 }

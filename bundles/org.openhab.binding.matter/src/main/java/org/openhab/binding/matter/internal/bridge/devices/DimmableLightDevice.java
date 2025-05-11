@@ -55,12 +55,12 @@ public class DimmableLightDevice extends GenericDevice {
         primaryItem.addStateChangeListener(this);
         MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
-        int level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class)).orElseGet(() -> new PercentType(0))
-                .intValue();
-        lastOnOffState = level > 0 ? OnOffType.ON : OnOffType.OFF;
+        PercentType level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class))
+                .orElseGet(() -> new PercentType(0));
+        lastOnOffState = level.intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
         attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                Math.max(1, level));
-        attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level > 0);
+                Math.max(1, ValueUtils.percentToLevel(level)));
+        attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level.intValue() > 0);
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 
@@ -99,6 +99,8 @@ public class DimmableLightDevice extends GenericDevice {
                 setEndpointState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
                         ValueUtils.percentToLevel(percentType));
                 lastOnOffState = OnOffType.ON;
+            } else {
+                lastOnOffState = OnOffType.OFF;
             }
         } else if (state instanceof OnOffType onOffType) {
             setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,

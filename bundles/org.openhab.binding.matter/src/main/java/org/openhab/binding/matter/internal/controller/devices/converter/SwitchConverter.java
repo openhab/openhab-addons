@@ -13,14 +13,6 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_SWITCH_SWITCH;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_INITIALPRESS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_LONGPRESS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_LONGRELEASE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_MULTIPRESSCOMPLETE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_MULTIPRESSONGOING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_SHORTRELEASE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_SWITCH;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_SWITCH_SWITCHLATECHED;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_INITIALPRESS;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_LONGPRESS;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_LONGRELEASE;
@@ -29,12 +21,12 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SHORTRELEASE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SWITCH;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SWITCHLATECHED;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +35,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.TriggerEvent;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -72,36 +65,32 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
-        final Map<Channel, @Nullable StateDescription> map = new HashMap<>();
-        Map<ChannelTypeUID, String> triggerChannels = new HashMap<>();
+        final Map<Channel, @Nullable StateDescription> map = new java.util.HashMap<>();
+        Set<ChannelTypeUID> triggerChannelTypes = new HashSet<>();
         // See cluster specification table 1.13.4. Switch Features
         if (initializingCluster.featureMap.latchingSwitch) {
-            triggerChannels.put(CHANNEL_SWITCH_SWITCHLATECHED, CHANNEL_LABEL_SWITCH_SWITCHLATECHED);
+            triggerChannelTypes.add(CHANNEL_SWITCH_SWITCHLATECHED);
         }
         if (initializingCluster.featureMap.momentarySwitch) {
-            triggerChannels.put(CHANNEL_SWITCH_INITIALPRESS, CHANNEL_LABEL_SWITCH_INITIALPRESS);
+            triggerChannelTypes.add(CHANNEL_SWITCH_INITIALPRESS);
         }
         if (initializingCluster.featureMap.momentarySwitchRelease) {
-            triggerChannels.put(CHANNEL_SWITCH_SHORTRELEASE, CHANNEL_LABEL_SWITCH_SHORTRELEASE);
-
+            triggerChannelTypes.add(CHANNEL_SWITCH_SHORTRELEASE);
         }
         if (initializingCluster.featureMap.momentarySwitchLongPress) {
-            triggerChannels.put(CHANNEL_SWITCH_LONGPRESS, CHANNEL_LABEL_SWITCH_LONGPRESS);
-            triggerChannels.put(CHANNEL_SWITCH_LONGRELEASE, CHANNEL_LABEL_SWITCH_LONGRELEASE);
-
+            triggerChannelTypes.add(CHANNEL_SWITCH_LONGPRESS);
+            triggerChannelTypes.add(CHANNEL_SWITCH_LONGRELEASE);
         }
         if (initializingCluster.featureMap.momentarySwitchMultiPress) {
-            triggerChannels.put(CHANNEL_SWITCH_MULTIPRESSCOMPLETE, CHANNEL_LABEL_SWITCH_MULTIPRESSCOMPLETE);
-            triggerChannels.put(CHANNEL_SWITCH_MULTIPRESSONGOING, CHANNEL_LABEL_SWITCH_MULTIPRESSONGOING);
+            triggerChannelTypes.add(CHANNEL_SWITCH_MULTIPRESSCOMPLETE);
+            triggerChannelTypes.add(CHANNEL_SWITCH_MULTIPRESSONGOING);
         }
-        triggerChannels
-                .forEach((type,
-                        label) -> map.put(ChannelBuilder.create(new ChannelUID(thingUID, type.getId()), null)
-                                .withType(type).withLabel(formatLabel(label)).withKind(ChannelKind.TRIGGER).build(),
-                                null));
+        triggerChannelTypes.forEach(type -> map.put(ChannelBuilder.create(new ChannelUID(thingUID, type.getId()), null)
+                .withType(type).withKind(ChannelKind.TRIGGER).build(), null));
 
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_SWITCH_SWITCH), ITEM_TYPE_NUMBER)
-                .withType(CHANNEL_SWITCH_SWITCH).withLabel(formatLabel(CHANNEL_LABEL_SWITCH_SWITCH)).build();
+        Channel channel = ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ID_SWITCH_SWITCH), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_SWITCH_SWITCH).build();
 
         List<StateOption> options = new ArrayList<>();
         for (int i = 0; i < initializingCluster.numberOfPositions; i++) {

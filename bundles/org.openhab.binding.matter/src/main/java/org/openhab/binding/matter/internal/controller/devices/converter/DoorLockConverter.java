@@ -14,8 +14,6 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_DOORLOCK_STATE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_DOORLOCK_STATE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_DOORLOCK_STATE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_SWITCH;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,6 +24,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -49,8 +48,9 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_DOORLOCK_STATE), ITEM_TYPE_SWITCH)
-                .withType(CHANNEL_DOORLOCK_STATE).withLabel(formatLabel(CHANNEL_LABEL_DOORLOCK_STATE)).build();
+        Channel channel = ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ID_DOORLOCK_STATE), CoreItemFactory.SWITCH)
+                .withType(CHANNEL_DOORLOCK_STATE).build();
 
         return Collections.singletonMap(channel, null);
     }

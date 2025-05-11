@@ -20,13 +20,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THERMOSTAT_SYSTEMMODE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THERMOSTAT_UNOCCUPIEDCOOLING;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_THERMOSTAT_UNOCCUPIEDHEATING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_LOCALTEMPERATURE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_OCCUPIEDCOOLING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_OCCUPIEDHEATING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_OUTDOORTEMPERATURE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_SYSTEMMODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDCOOLING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDHEATING;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_LOCALTEMPERATURE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_OCCUPIEDCOOLING;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_OCCUPIEDHEATING;
@@ -35,8 +28,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_SYSTEMMODE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_UNOCCUPIEDCOOLING;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_THERMOSTAT_UNOCCUPIEDHEATING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_TEMPERATURE;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -50,6 +41,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatClus
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -79,9 +71,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
 
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_SYSTEMMODE), ITEM_TYPE_NUMBER)
-                .withType(CHANNEL_THERMOSTAT_SYSTEMMODE).withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_SYSTEMMODE))
-                .build();
+                .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_SYSTEMMODE), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_THERMOSTAT_SYSTEMMODE).build();
 
         List<StateOption> modeOptions = new ArrayList<>();
 
@@ -116,10 +107,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
 
         if (!initializingCluster.featureMap.localTemperatureNotExposed) {
             Channel tempChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_LOCALTEMPERATURE),
-                            ITEM_TYPE_NUMBER_TEMPERATURE)
-                    .withType(CHANNEL_THERMOSTAT_LOCALTEMPERATURE)
-                    .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_LOCALTEMPERATURE)).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_LOCALTEMPERATURE), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_THERMOSTAT_LOCALTEMPERATURE).build();
 
             StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%.1f %unit%")
                     .build().toStateDescription();
@@ -127,20 +116,16 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         }
         if (initializingCluster.outdoorTemperature != null) {
             Channel tempChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OUTDOORTEMPERATURE),
-                            ITEM_TYPE_NUMBER_TEMPERATURE)
-                    .withType(CHANNEL_THERMOSTAT_OUTDOORTEMPERATURE)
-                    .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_OUTDOORTEMPERATURE)).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OUTDOORTEMPERATURE), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_THERMOSTAT_OUTDOORTEMPERATURE).build();
             StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%.1f %unit%")
                     .build().toStateDescription();
             channels.put(tempChannel, stateDescription);
         }
         if (initializingCluster.featureMap.heating) {
             Channel tempChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OCCUPIEDHEATING),
-                            ITEM_TYPE_NUMBER_TEMPERATURE)
-                    .withType(CHANNEL_THERMOSTAT_OCCUPIEDHEATING)
-                    .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_OCCUPIEDHEATING)).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OCCUPIEDHEATING), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_THERMOSTAT_OCCUPIEDHEATING).build();
             StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                     .withMinimum(
                             ValueUtils.valueToTemperature(initializingCluster.absMinHeatSetpointLimit).toBigDecimal())
@@ -152,10 +137,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         }
         if (initializingCluster.featureMap.cooling) {
             Channel tempChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OCCUPIEDCOOLING),
-                            ITEM_TYPE_NUMBER_TEMPERATURE)
-                    .withType(CHANNEL_THERMOSTAT_OCCUPIEDCOOLING)
-                    .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_OCCUPIEDCOOLING)).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_OCCUPIEDCOOLING), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_THERMOSTAT_OCCUPIEDCOOLING).build();
             StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                     .withMinimum(
                             ValueUtils.valueToTemperature(initializingCluster.absMinCoolSetpointLimit).toBigDecimal())
@@ -169,9 +152,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
             if (initializingCluster.featureMap.heating) {
                 Channel tempChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_UNOCCUPIEDHEATING),
-                                ITEM_TYPE_NUMBER_TEMPERATURE)
-                        .withType(CHANNEL_THERMOSTAT_UNOCCUPIEDHEATING)
-                        .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDHEATING)).build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_THERMOSTAT_UNOCCUPIEDHEATING).build();
                 StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                         .withMinimum(ValueUtils.valueToTemperature(initializingCluster.absMinHeatSetpointLimit)
                                 .toBigDecimal())
@@ -184,9 +166,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
             if (initializingCluster.featureMap.cooling) {
                 Channel tempChannel = ChannelBuilder
                         .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_UNOCCUPIEDCOOLING),
-                                ITEM_TYPE_NUMBER_TEMPERATURE)
-                        .withType(CHANNEL_THERMOSTAT_UNOCCUPIEDCOOLING)
-                        .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDCOOLING)).build();
+                                CoreItemFactory.NUMBER)
+                        .withType(CHANNEL_THERMOSTAT_UNOCCUPIEDCOOLING).build();
                 StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                         .withMinimum(ValueUtils.valueToTemperature(initializingCluster.absMinCoolSetpointLimit)
                                 .toBigDecimal())
@@ -199,9 +180,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         }
         if (initializingCluster.thermostatRunningMode != null) {
             Channel tempChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_RUNNINGMODE), ITEM_TYPE_NUMBER)
-                    .withType(CHANNEL_THERMOSTAT_RUNNINGMODE)
-                    .withLabel(formatLabel(CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDCOOLING)).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_THERMOSTAT_RUNNINGMODE), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_THERMOSTAT_RUNNINGMODE).build();
             List<StateOption> options = new ArrayList<>();
             options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.OFF.value.toString(),
                     ThermostatCluster.ThermostatRunningModeEnum.OFF.label));

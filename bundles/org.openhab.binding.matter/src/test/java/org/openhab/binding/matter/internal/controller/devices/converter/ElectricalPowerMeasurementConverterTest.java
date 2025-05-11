@@ -68,13 +68,13 @@ class ElectricalPowerMeasurementConverterTest extends BaseMatterConverterTest {
             String channelId = channel.getUID().getIdWithoutGroup();
             switch (channelId) {
                 case "electricalpowermeasurement-activepower":
-                    assertEquals("Number:Power", channel.getAcceptedItemType());
+                    assertEquals("Number", channel.getAcceptedItemType());
                     break;
                 case "electricalpowermeasurement-activecurrent":
-                    assertEquals("Number:ElectricCurrent", channel.getAcceptedItemType());
+                    assertEquals("Number", channel.getAcceptedItemType());
                     break;
                 case "electricalpowermeasurement-voltage":
-                    assertEquals("Number:ElectricPotential", channel.getAcceptedItemType());
+                    assertEquals("Number", channel.getAcceptedItemType());
                     break;
             }
         }

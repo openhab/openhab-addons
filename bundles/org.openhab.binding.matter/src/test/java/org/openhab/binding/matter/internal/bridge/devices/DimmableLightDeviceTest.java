@@ -160,7 +160,7 @@ class DimmableLightDeviceTest {
         assertNotNull(levelMap);
         assertNotNull(onOffMap);
 
-        assertEquals(100, levelMap.get("currentLevel"));
+        assertEquals(254, levelMap.get("currentLevel"));
         assertEquals(true, onOffMap.get("onOff"));
     }
 

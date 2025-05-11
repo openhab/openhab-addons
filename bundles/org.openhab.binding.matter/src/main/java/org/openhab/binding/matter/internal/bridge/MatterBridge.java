@@ -63,6 +63,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The {@link MatterBridge}
  *
@@ -145,10 +147,12 @@ public class MatterBridge implements MatterClientListener {
         this.itemRegistry.addRegistryChangeListener(itemRegistryChangeListener);
 
         metadataRegistryChangeListener = new RegistryChangeListener<>() {
-            private void handleMetadataChange(Metadata element) {
+            private boolean handleMetadataChange(Metadata element) {
                 if ("matter".equals(element.getUID().getNamespace())) {
                     updateModifyFuture();
+                    return true;
                 }
+                return false;
             }
 
             public void added(Metadata element) {
@@ -160,7 +164,9 @@ public class MatterBridge implements MatterClientListener {
             }
 
             public void updated(Metadata oldElement, Metadata element) {
-                handleMetadataChange(element);
+                if (!handleMetadataChange(oldElement)) {
+                    handleMetadataChange(element);
+                }
             }
         };
         this.metadataRegistry.addRegistryChangeListener(metadataRegistryChangeListener);
@@ -298,11 +304,11 @@ public class MatterBridge implements MatterClientListener {
     }
 
     public void removeFabric(String fabricId) {
-        client.removeFabric(Integer.parseInt(fabricId));
-    }
-
-    public void rpc(String command) {
-        // client.rpc(command);
+        try {
+            client.removeFabric(Integer.parseInt(fabricId)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("Could not remove fabric", e);
+        }
     }
 
     private synchronized void connectClient() {
@@ -349,7 +355,6 @@ public class MatterBridge implements MatterClientListener {
         if (modifyFuture != null) {
             modifyFuture.cancel(true);
         }
-        MatterBridgeClient client = this.client;
         client.removeListener(this);
         client.disconnect();
         devices.values().forEach(GenericDevice::dispose);
@@ -514,23 +519,23 @@ public class MatterBridge implements MatterClientListener {
             BridgeCommissionState state = client.getCommissioningState().get();
             updateConfig(Map.of("manualPairingCode", state.pairingCodes.manualPairingCode, "qrCode",
                     state.pairingCodes.qrPairingCode, "openCommissioningWindow", state.commissioningWindowOpen));
-        } catch (CancellationException | InterruptedException | ExecutionException e) {
+        } catch (CancellationException | InterruptedException | ExecutionException | JsonParseException e) {
             logger.debug("Could not query codes", e);
         }
     }
 
-    private void updateConfig(Map<String, Object> entires) {
+    private void updateConfig(Map<String, Object> entries) {
         try {
             org.osgi.service.cm.Configuration config = configAdmin.getConfiguration(MatterBridge.CONFIG_PID);
             Dictionary<String, Object> props = config.getProperties();
             if (props == null) {
                 return;
             }
-            entires.forEach((k, v) -> props.put(k, v));
+            entries.forEach((k, v) -> props.put(k, v));
             // if this updates, it will trigger a @Modified call
             config.updateIfDifferent(props);
         } catch (IOException e) {
-            logger.debug("Could not get pairing codes", e);
+            logger.debug("Could load configuration", e);
         }
     }
 
@@ -549,7 +554,7 @@ public class MatterBridge implements MatterClientListener {
         }
         ScheduledFuture<?> modifyFuture = this.modifyFuture;
         if (modifyFuture != null) {
-            modifyFuture.cancel(false);
+            modifyFuture.cancel(true);
         }
         this.modifyFuture = scheduler.schedule(this::registerItems, 5, TimeUnit.SECONDS);
     }

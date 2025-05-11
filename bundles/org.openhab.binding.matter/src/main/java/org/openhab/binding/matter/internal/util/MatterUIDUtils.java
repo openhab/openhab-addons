@@ -20,8 +20,8 @@ import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MatterUIDUtils}
- *
+ * Utility class for creating and manipulating the UIDs for Matter thing types.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault

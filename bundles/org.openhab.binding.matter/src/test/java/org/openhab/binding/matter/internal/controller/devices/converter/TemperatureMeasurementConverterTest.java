@@ -61,7 +61,7 @@ class TemperatureMeasurementConverterTest extends BaseMatterConverterTest {
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#temperaturemeasurement-measuredvalue", channel.getUID().toString());
-        assertEquals("Number:Temperature", channel.getAcceptedItemType());
+        assertEquals("Number", channel.getAcceptedItemType());
     }
 
     @Test

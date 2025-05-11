@@ -13,11 +13,11 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BooleanStateCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
@@ -39,8 +39,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkD
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ConverterRegistry}
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ConverterRegistry {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConverterRegistry.class);
     private static final Map<Integer, Class<? extends GenericConverter<? extends BaseCluster>>> CONVERTERS = new HashMap<>();
 
     static {
@@ -86,20 +83,39 @@ public class ConverterRegistry {
         CONVERTERS.put(clusterId, converter);
     }
 
-    public static @Nullable GenericConverter<? extends BaseCluster> createConverter(BaseCluster cluster,
-            MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
+    public static GenericConverter<? extends BaseCluster> createConverter(BaseCluster cluster,
+            MatterBaseThingHandler handler, int endpointNumber, String labelPrefix)
+            throws ConverterCreationException, NoConverterFoundException {
         Class<? extends GenericConverter<? extends BaseCluster>> clazz = CONVERTERS.get(cluster.id);
-        if (clazz != null) {
-            try {
-                Class<?>[] constructorParameterTypes = new Class<?>[] { cluster.getClass(),
-                        MatterBaseThingHandler.class, int.class, String.class };
-                Constructor<? extends GenericConverter<? extends BaseCluster>> constructor = clazz
-                        .getConstructor(constructorParameterTypes);
-                return constructor.newInstance(cluster, handler, endpointNumber, labelPrefix);
-            } catch (Exception e) {
-                LOGGER.error("Error creating converter for cluster {}", cluster.id, e);
-            }
+        if (clazz == null) {
+            throw new NoConverterFoundException("No converter found for cluster " + cluster.id);
         }
-        return null;
+
+        Class<?>[] constructorParameterTypes = new Class<?>[] { cluster.getClass(), MatterBaseThingHandler.class,
+                int.class, String.class };
+        Constructor<? extends GenericConverter<? extends BaseCluster>> constructor;
+        try {
+            constructor = clazz.getConstructor(constructorParameterTypes);
+            return constructor.newInstance(cluster, handler, endpointNumber, labelPrefix);
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            throw new ConverterCreationException("Error creating converter for cluster " + cluster.id, e);
+        }
+    }
+
+    public static class ConverterCreationException extends Exception {
+        public ConverterCreationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public ConverterCreationException(String message) {
+            super(message);
+        }
+    }
+
+    public static class NoConverterFoundException extends Exception {
+        public NoConverterFoundException(String message) {
+            super(message);
+        }
     }
 }

@@ -16,7 +16,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.handler.ControllerHandler;
+import org.openhab.binding.matter.internal.util.ResourceHelper;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
@@ -51,19 +53,20 @@ public class MatterControllerActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "Pair a Matter device", description = "Pairs a Matter device using a manual pairing code or QR code")
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE, description = MatterBindingConstants.THING_ACTION_DESC_CONTROLLER_PAIR_DEVICE)
     public @Nullable @ActionOutputs({
-            @ActionOutput(name = "result", label = "The pairing result", type = "java.lang.String") }) String pairDevice(
-                    @ActionInput(name = "Pairing Code", label = "Manual pairing code or QR code", type = "java.lang.String") String code) {
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_RESULT, type = "java.lang.String") }) String pairDevice(
+                    @ActionInput(name = "code", label = MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_CODE, description = MatterBindingConstants.THING_ACTION_DESC_CONTROLLER_PAIR_DEVICE_CODE, type = "java.lang.String") String code) {
         ControllerHandler handler = this.handler;
         if (handler != null) {
             try {
                 handler.startScan(code).get();
-                return "Device added to Inbox";
+                return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
             } catch (InterruptedException | ExecutionException e) {
-                return "Failed to pair device: " + e.getLocalizedMessage();
+                return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED)
+                        + e.getLocalizedMessage();
             }
         }
-        return null;
+        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 }

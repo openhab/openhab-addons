@@ -15,7 +15,7 @@ package org.openhab.binding.matter.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EndpointConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link NodeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NodeConfiguration {
 
     public String nodeId = "0";
-    public Integer pollInterval = 1800;
+    public int pollInterval = 1800;
 }

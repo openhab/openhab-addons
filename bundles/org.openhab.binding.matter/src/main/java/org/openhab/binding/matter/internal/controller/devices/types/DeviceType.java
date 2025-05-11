@@ -196,6 +196,14 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
     // This method is designed to be overridden in subclasses
     protected @Nullable GenericConverter<? extends BaseCluster> createConverter(BaseCluster cluster,
             Map<String, BaseCluster> allClusters, String labelPrefix) {
-        return ConverterRegistry.createConverter(cluster, handler, endpointNumber, labelPrefix);
+        try {
+            return ConverterRegistry.createConverter(cluster, handler, endpointNumber, labelPrefix);
+        } catch (ConverterRegistry.NoConverterFoundException e) {
+            logger.debug("No converter found for cluster: {}", cluster.id);
+            return null;
+        } catch (ConverterRegistry.ConverterCreationException e) {
+            logger.debug("Error creating converter for cluster: {}", cluster.id, e);
+            return null;
+        }
     }
 }

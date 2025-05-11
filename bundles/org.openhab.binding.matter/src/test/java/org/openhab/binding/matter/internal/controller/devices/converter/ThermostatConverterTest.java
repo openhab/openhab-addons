@@ -81,7 +81,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
                 case "thermostat-occupiedcooling":
                 case "thermostat-unoccupiedheating":
                 case "thermostat-unoccupiedcooling":
-                    assertEquals("Number:Temperature", channel.getAcceptedItemType());
+                    assertEquals("Number", channel.getAcceptedItemType());
                     break;
             }
         }

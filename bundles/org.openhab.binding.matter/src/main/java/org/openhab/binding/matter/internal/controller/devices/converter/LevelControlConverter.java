@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_LEVEL_LEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_LEVEL_LEVEL;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LEVEL_LEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_DIMMER;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,6 +26,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
@@ -74,8 +73,9 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_LEVEL_LEVEL), ITEM_TYPE_DIMMER)
-                .withType(CHANNEL_LEVEL_LEVEL).withLabel(formatLabel(CHANNEL_LABEL_LEVEL_LEVEL)).build();
+        Channel channel = ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ID_LEVEL_LEVEL), CoreItemFactory.DIMMER)
+                .withType(CHANNEL_LEVEL_LEVEL).build();
         return Collections.singletonMap(channel, null);
     }
 

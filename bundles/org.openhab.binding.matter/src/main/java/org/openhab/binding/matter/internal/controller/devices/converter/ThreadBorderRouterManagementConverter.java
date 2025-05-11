@@ -34,6 +34,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralCommiss
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadBorderRouterManagementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.binding.matter.internal.util.ResourceHelper;
 import org.openhab.binding.matter.internal.util.ThreadDataset;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
@@ -252,186 +253,226 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
 
         groups.add(ConfigDescriptionParameterGroupBuilder
                 .create(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE)
-                .withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET)
-                .withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET).build());
+                .withLabel(ResourceHelper.getResourceString(
+                        MatterBindingConstants.CONFIG_LABEL_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET))
+                .withDescription(ResourceHelper
+                        .getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_BORDER_ROUTER_OPERATIONAL_DATASET))
+                .build());
 
         ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder
                 .create(MatterBindingConstants.CONFIG_THREAD_CHANNEL, Type.INTEGER);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_CHANNEL_NUMBER);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_CHANNEL_NUMBER));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_CHANNEL_NUMBER);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_CHANNEL_NUMBER));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_ALLOWED_CHANNELS,
                 Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_ALLOWED_CHANNELS);
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_ALLOWED_CHANNELS);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_ALLOWED_CHANNELS));
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_ALLOWED_CHANNELS));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_EXTENDED_PAN_ID,
                 Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_EXTENDED_PAN_ID);
+        builder.withLabel(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_EXTENDED_PAN_ID));
         builder.withDefault("");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_EXTENDED_PAN_ID);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_EXTENDED_PAN_ID));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_MESH_LOCAL_PREFIX,
                 Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_MESH_LOCAL_PREFIX);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_MESH_LOCAL_PREFIX));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_MESH_LOCAL_PREFIX);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_MESH_LOCAL_PREFIX));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_NETWORK_NAME,
                 Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_NAME);
+        builder.withLabel(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_NAME));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_NAME);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_NAME));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_NETWORK_KEY, Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_KEY);
+        builder.withLabel(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_NETWORK_KEY));
         builder.withDefault("");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_KEY);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_NETWORK_KEY));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_PAN_ID, Type.INTEGER);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_PAN_ID);
+        builder.withLabel(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_PAN_ID));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_PAN_ID);
+        builder.withDescription(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_PAN_ID));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_PSKC, Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_PSKC);
+        builder.withLabel(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_PSKC));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_PSKC);
+        builder.withDescription(ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_PSKC));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder
                 .create(MatterBindingConstants.CONFIG_THREAD_ACTIVE_TIMESTAMP_SECONDS, Type.TEXT);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_SECONDS);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_SECONDS));
         builder.withDefault("1");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_SECONDS);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_SECONDS));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_ACTIVE_TIMESTAMP_TICKS,
                 Type.INTEGER);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_TICKS);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_TICKS));
         builder.withDefault("0");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_TICKS);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_TICKS));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder
                 .create(MatterBindingConstants.CONFIG_THREAD_ACTIVE_TIMESTAMP_AUTHORITATIVE, Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE));
         builder.withDefault("false");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_ACTIVE_TIMESTAMP_IS_AUTHORITATIVE));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_THREAD_BORDER_ROUTER_CORE);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         groups.add(ConfigDescriptionParameterGroupBuilder.create(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY)
-                .withLabel(MatterBindingConstants.CONFIG_LABEL_THREAD_DATASET_SECURITY_POLICY)
-                .withDescription(MatterBindingConstants.CONFIG_DESC_THREAD_DATASET_SECURITY_POLICY).withAdvanced(true)
-                .build());
+                .withLabel(ResourceHelper
+                        .getResourceString(MatterBindingConstants.CONFIG_LABEL_THREAD_DATASET_SECURITY_POLICY))
+                .withDescription(ResourceHelper
+                        .getResourceString(MatterBindingConstants.CONFIG_DESC_THREAD_DATASET_SECURITY_POLICY))
+                .withAdvanced(true).build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_ROTATION_TIME,
                 Type.INTEGER);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_ROTATION_TIME);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_ROTATION_TIME));
         builder.withDefault("672");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_ROTATION_TIME);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_ROTATION_TIME));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_OBTAIN_NETWORK_KEY,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_OBTAIN_NETWORK_KEY);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_OBTAIN_NETWORK_KEY));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_OBTAIN_NETWORK_KEY);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_OBTAIN_NETWORK_KEY));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_NATIVE_COMMISSIONING,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NATIVE_COMMISSIONING);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NATIVE_COMMISSIONING));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NATIVE_COMMISSIONING);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NATIVE_COMMISSIONING));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_ROUTERS, Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_ROUTERS);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_ROUTERS));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_ROUTERS);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_ROUTERS));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_EXTERNAL_COMMISSIONING,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_EXTERNAL_COMMISSIONING);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_EXTERNAL_COMMISSIONING));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_EXTERNAL_COMMISSIONING);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_EXTERNAL_COMMISSIONING));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder
                 .create(MatterBindingConstants.CONFIG_THREAD_COMMERCIAL_COMMISSIONING, Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_COMMERCIAL_COMMISSIONING);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_COMMERCIAL_COMMISSIONING));
         builder.withDefault("false");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_COMMERCIAL_COMMISSIONING);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_COMMERCIAL_COMMISSIONING));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_AUTONOMOUS_ENROLLMENT,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_AUTONOMOUS_ENROLLMENT));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder
                 .create(MatterBindingConstants.CONFIG_THREAD_NETWORK_KEY_PROVISIONING, Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NETWORK_KEY_PROVISIONING);
+        builder.withLabel(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NETWORK_KEY_PROVISIONING));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NETWORK_KEY_PROVISIONING);
+        builder.withDescription(ResourceHelper
+                .getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NETWORK_KEY_PROVISIONING));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_TOBLE_LINK,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_TO_BLE_LINK);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_TO_BLE_LINK));
         builder.withDefault("true");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_TO_BLE_LINK);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_TO_BLE_LINK));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());
 
         builder = ConfigDescriptionParameterBuilder.create(MatterBindingConstants.CONFIG_THREAD_NON_CCM_ROUTERS,
                 Type.BOOLEAN);
-        builder.withLabel(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NON_CCM_ROUTERS);
+        builder.withLabel(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_LABEL_SECURITY_POLICY_NON_CCM_ROUTERS));
         builder.withDefault("false");
-        builder.withDescription(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NON_CCM_ROUTERS);
+        builder.withDescription(
+                ResourceHelper.getResourceString(MatterBindingConstants.CONFIG_DESC_SECURITY_POLICY_NON_CCM_ROUTERS));
         builder.withGroupName(MatterBindingConstants.CONFIG_GROUP_SECURITY_POLICY);
         builder.withAdvanced(true);
         params.add(builder.build());

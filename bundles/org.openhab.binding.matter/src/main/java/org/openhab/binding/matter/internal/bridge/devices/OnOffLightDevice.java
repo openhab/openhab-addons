@@ -58,10 +58,11 @@ public class OnOffLightDevice extends GenericDevice {
             }
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL: {
+                OnOffType onOff = OnOffType.from(((Double) data).intValue() > 0);
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(OnOffType.from(data.toString()));
+                    groupItem.send(onOff);
                 } else {
-                    ((SwitchItem) primaryItem).send(OnOffType.from(data.toString()));
+                    ((SwitchItem) primaryItem).send(onOff);
                 }
             }
                 break;

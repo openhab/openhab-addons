@@ -13,9 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_OCCUPANCYSENSING_OCCUPIED;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_OCCUPANCYSENSING_OCCUPIED;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_SWITCH;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -48,9 +47,8 @@ public class OccupancySensingConverter extends GenericConverter<OccupancySensing
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED), ITEM_TYPE_SWITCH)
-                .withType(CHANNEL_OCCUPANCYSENSING_OCCUPIED)
-                .withLabel(formatLabel(CHANNEL_LABEL_OCCUPANCYSENSING_OCCUPIED)).build();
+                .create(new ChannelUID(thingUID, CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED), CoreItemFactory.SWITCH)
+                .withType(CHANNEL_OCCUPANCYSENSING_OCCUPIED).build();
         return Collections.singletonMap(channel, null);
     }
 

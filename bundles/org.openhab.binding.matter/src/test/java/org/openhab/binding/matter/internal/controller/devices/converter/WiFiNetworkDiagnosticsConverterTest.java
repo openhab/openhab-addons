@@ -62,7 +62,7 @@ class WiFiNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#wifinetworkdiagnostics-rssi", channel.getUID().toString());
-        assertEquals("Number:Power", channel.getAcceptedItemType());
+        assertEquals("Number", channel.getAcceptedItemType());
     }
 
     @Test

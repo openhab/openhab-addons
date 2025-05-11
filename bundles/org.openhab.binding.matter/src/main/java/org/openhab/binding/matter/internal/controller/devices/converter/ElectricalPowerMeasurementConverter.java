@@ -18,12 +18,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_ELECTRICCURRENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_ELECTRICPOTENTIAL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_POWER;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -38,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowerMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -66,18 +61,16 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
         // Active Power is mandatory
         Channel activePowerChannel = ChannelBuilder
                 .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER),
-                        ITEM_TYPE_NUMBER_POWER)
-                .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER)
-                .withLabel(formatLabel(CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER)).build();
+                        CoreItemFactory.NUMBER)
+                .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER).build();
         map.put(activePowerChannel, null);
 
         // optional cluster if not null
         if (initializingCluster.activeCurrent != null) {
             Channel activeCurrentChannel = ChannelBuilder
                     .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT),
-                            ITEM_TYPE_NUMBER_ELECTRICCURRENT)
-                    .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT)
-                    .withLabel(formatLabel(CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT)).build();
+                            CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT).build();
             map.put(activeCurrentChannel, null);
         }
 
@@ -85,9 +78,8 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
         if (initializingCluster.voltage != null) {
             Channel voltageChannel = ChannelBuilder
                     .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE),
-                            ITEM_TYPE_NUMBER_ELECTRICPOTENTIAL)
-                    .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE)
-                    .withLabel(formatLabel(CHANNEL_LABEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE)).build();
+                            CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE).build();
             map.put(voltageChannel, null);
         }
         return map;

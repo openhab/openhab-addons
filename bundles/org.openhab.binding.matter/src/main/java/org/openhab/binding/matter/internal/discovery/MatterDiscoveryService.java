@@ -35,8 +35,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterDiscoveryService}
- *
+ * The {@link MatterDiscoveryService} is the service that discovers Matter devices and endpoints.
+ * 
+ * If a code is provided, it will be used to discover a specific device and commission it to our Fabric
+ * 
+ * If no code is provided, it will scan for existing devices and endpoints and add them to the inbox for further
+ * processing
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
@@ -44,12 +49,12 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
     private final Logger logger = LoggerFactory.getLogger(MatterDiscoveryService.class);
     private @Nullable ThingHandler thingHandler;
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private final int refreshInterval = 60 * 5;
+    private static final int REFRESH_INTERVAL = 60 * 5;
 
     public MatterDiscoveryService() throws IllegalArgumentException {
         // set a 2 min timeout, which should be plenty of time to discover devices, but stopScan will be called when the
         // Matter client is done looking for new Nodes/Endpoints
-        super(Set.of(THING_TYPE_NODE, THING_TYPE_ENDPOINT), 60 * 2);
+        super(Set.of(THING_TYPE_NODE, THING_TYPE_ENDPOINT), REFRESH_INTERVAL);
     }
 
     @Override
@@ -82,7 +87,7 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
         logger.debug("Start background discovery");
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, refreshInterval, refreshInterval,
+            this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, REFRESH_INTERVAL, REFRESH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -93,18 +98,18 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
-            discoveryJob = null;
+            this.discoveryJob = null;
         }
     }
 
     @Override
     public @Nullable String getScanInputLabel() {
-        return "Matter Pairing Code";
+        return "@text/discovery.matter.scan-input.label";
     }
 
     @Override
     public @Nullable String getScanInputDescription() {
-        return "11 digit matter pairing code (with or without hyphens) or a short code and key (separated by a space)";
+        return "@text/discovery.matter.scan-input.description";
     }
 
     @Override
@@ -124,17 +129,19 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     public void discoverBridgeEndpoint(ThingUID thingUID, ThingUID bridgeUID, Endpoint root) {
-        String label = ("Matter Endpoint (Bridged): " + MatterLabelUtils.labelForBridgeEndpoint(root)).trim();
+        String label = ("@text/discovery.matter.bridge-endpoint.label : "
+                + MatterLabelUtils.labelForBridgeEndpoint(root)).trim();
         discoverThing(thingUID, bridgeUID, root, root.number.toString(), "endpointId", label);
     }
 
     public void discoverNodeDevice(ThingUID thingUID, ThingUID bridgeUID, Node node) {
-        String label = ("Matter Device: " + MatterLabelUtils.labelForNode(node.rootEndpoint)).trim();
+        String label = ("@text/discovery.matter.node-device.label : "
+                + MatterLabelUtils.labelForNode(node.rootEndpoint)).trim();
         discoverThing(thingUID, bridgeUID, node.rootEndpoint, node.id.toString(), "nodeId", label);
     }
 
     public void discoverUnknownNodeDevice(ThingUID thingUID, ThingUID bridgeUID, BigInteger nodeId) {
-        String label = ("Matter Device: Unknown Node").trim();
+        String label = ("@text/discovery.matter.unknown-node.label");
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(label)
                 .withProperty("nodeId", nodeId.toString()).withRepresentationProperty("nodeId").withBridge(bridgeUID)
                 .build();

@@ -32,8 +32,9 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DeviceTypes;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FixedLabelCluster;
 
 /**
+ * Utility class for creating and manipulating the labels for Matter devices.
+ * 
  * @author Dan Cunningham - Initial contribution
- *
  */
 @NonNullByDefault
 public class MatterLabelUtils {
@@ -83,7 +84,7 @@ public class MatterLabelUtils {
         if (basicInfoObject != null) {
             BasicInformationCluster basicInfo = (BasicInformationCluster) basicInfoObject;
             String basicInfoString = normalizeString(basicInfo.nodeLabel);
-            label.append(basicInfoString.length() > 0 ? basicInfoString : normalizeString(basicInfo.productLabel));
+            label.append(!basicInfoString.isEmpty() ? basicInfoString : normalizeString(basicInfo.productLabel));
         }
 
         // Fixed labels are a way of vendors to label endpoints with additional meta data.
@@ -108,14 +109,14 @@ public class MatterLabelUtils {
             String nodeLabel = normalizeString(basicInfo.nodeLabel);
             String productLabel = normalizeString(basicInfo.productLabel);
 
-            if (nodeLabel.length() > 0) {
+            if (!nodeLabel.isEmpty()) {
                 label.append(nodeLabel);
             } else {
                 label.append(productLabel);
             }
         }
 
-        if (label.length() == 0) {
+        if (label.isEmpty()) {
             Integer deviceTypeID = primaryDeviceTypeForEndpoint(endpoint);
             String deviceTypeLabel = splitAndCapitalize(DeviceTypes.DEVICE_MAPPING.get(deviceTypeID));
             label.append(deviceTypeLabel + " (" + endpoint.number.toString() + ")");

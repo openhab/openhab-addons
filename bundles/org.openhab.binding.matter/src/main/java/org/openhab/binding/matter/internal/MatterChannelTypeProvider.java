@@ -36,7 +36,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- *
+ * This class is used to provide channel types dynamically for Matter devices.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault

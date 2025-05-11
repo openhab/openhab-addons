@@ -29,9 +29,9 @@
 				<label>Node Id</label>
 				<description>The Matter Node Id</description>
 			</parameter>
-			<parameter name="pollInterval" type="integer" required="false" min="0">
-				<label>Poll Interval (seconds)</label>
-				<description>The interval (in seconds) to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+			<parameter name="pollInterval" type="integer" required="false" min="0" unit="s">
+				<label>Poll Interval</label>
+				<description>The interval to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
 				<advanced>true</advanced>
 				<default>1800</default>
 			</parameter>
@@ -50,9 +50,9 @@
 				<label>Endpoint Id</label>
 				<description>The Matter Endpoint Id</description>
 			</parameter>
-			<parameter name="pollInterval" type="integer" required="false" min="0">
-				<label>Poll Interval (seconds)</label>
-				<description>The interval (in seconds) to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+			<parameter name="pollInterval" type="integer" required="false" min="0" unit="s">
+				<label>Poll Interval</label>
+				<description>The interval to poll for diagnostic cluster attributes. Set to 0 to disable polling.</description>
 				<advanced>true</advanced>
 				<default>1800</default>
 			</parameter>

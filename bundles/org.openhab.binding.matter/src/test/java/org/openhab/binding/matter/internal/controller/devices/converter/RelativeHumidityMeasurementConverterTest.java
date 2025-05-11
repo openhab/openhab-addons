@@ -64,7 +64,7 @@ class RelativeHumidityMeasurementConverterTest extends BaseMatterConverterTest {
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#relativehumiditymeasurement-measuredvalue", channel.getUID().toString());
-        assertEquals("Number:Dimensionless", channel.getAcceptedItemType());
+        assertEquals("Number", channel.getAcceptedItemType());
     }
 
     @Test

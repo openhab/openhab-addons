@@ -16,10 +16,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_FANCONTROL_PERCENT;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_FANCONTROL_MODE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_FANCONTROL_PERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_FANCONTROL_MODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_FANCONTROL_PERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_DIMMER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +28,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
@@ -65,14 +62,14 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
         Channel percentChannel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_PERCENT), ITEM_TYPE_DIMMER)
-                .withType(CHANNEL_FANCONTROL_PERCENT).withLabel(formatLabel(CHANNEL_LABEL_FANCONTROL_PERCENT)).build();
+                .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_PERCENT), CoreItemFactory.DIMMER)
+                .withType(CHANNEL_FANCONTROL_PERCENT).build();
         channels.put(percentChannel, null);
 
         if (initializingCluster.fanModeSequence != null) {
             Channel modeChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_MODE), ITEM_TYPE_NUMBER)
-                    .withType(CHANNEL_FANCONTROL_MODE).withLabel(CHANNEL_LABEL_FANCONTROL_MODE).build();
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_MODE), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_FANCONTROL_MODE).build();
 
             List<StateOption> modeOptions = new ArrayList<>();
 

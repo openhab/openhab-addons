@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MatterDiscoveryHandler}
- *
+ * The {@link MatterDiscoveryHandler} is the interface for the discovery handler.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault

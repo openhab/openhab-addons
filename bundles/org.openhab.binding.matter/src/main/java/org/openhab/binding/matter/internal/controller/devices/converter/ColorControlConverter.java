@@ -18,12 +18,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_COLOR;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_TEMPERATURE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_COLOR_COLOR;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_COLOR_TEMPERATURE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LABEL_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_COLOR;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_DIMMER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER_TEMPERATURE;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -45,6 +39,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -113,14 +108,14 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Map<Channel, @Nullable StateDescription> map = new HashMap<>();
 
-        map.put(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_COLOR), ITEM_TYPE_COLOR)
-                .withType(CHANNEL_COLOR_COLOR).withLabel(formatLabel(CHANNEL_LABEL_COLOR_COLOR)).build(), null);
+        map.put(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_COLOR), CoreItemFactory.COLOR)
+                .withType(CHANNEL_COLOR_COLOR).build(), null);
 
         // see Matter spec 3.2.6.1 For more information on color temperature
         if (initializingCluster.featureMap.colorTemperature) {
-            map.put(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE), ITEM_TYPE_DIMMER)
-                    .withType(CHANNEL_COLOR_TEMPERATURE).withLabel(formatLabel(CHANNEL_LABEL_COLOR_TEMPERATURE))
-                    .build(), null);
+            map.put(ChannelBuilder
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE), CoreItemFactory.DIMMER)
+                    .withType(CHANNEL_COLOR_TEMPERATURE).build(), null);
             StateDescription stateDescription = null;
             if (colorTempPhysicalMinMireds < colorTempPhysicalMaxMireds) {
                 stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%.0f mirek")
@@ -128,9 +123,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                         .withMaximum(BigDecimal.valueOf(colorTempPhysicalMaxMireds)).build().toStateDescription();
             }
             map.put(ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE_ABS), ITEM_TYPE_NUMBER_TEMPERATURE)
-                    .withType(CHANNEL_COLOR_TEMPERATURE_ABS).withLabel(formatLabel(CHANNEL_LABEL_COLOR_TEMPERATURE_ABS))
-                    .build(), stateDescription);
+                    .create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE_ABS), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_COLOR_TEMPERATURE_ABS).build(), stateDescription);
         }
         return map;
     }

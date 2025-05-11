@@ -14,7 +14,6 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_MODESELECT_MODE;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_MODESELECT_MODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.ITEM_TYPE_NUMBER;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +26,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -52,7 +52,8 @@ public class ModeSelectConverter extends GenericConverter<ModeSelectCluster> {
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_MODESELECT_MODE), ITEM_TYPE_NUMBER)
+        Channel channel = ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ID_MODESELECT_MODE), CoreItemFactory.NUMBER)
                 .withType(CHANNEL_MODESELECT_MODE).withLabel(formatLabel(initializingCluster.description)).build();
 
         List<StateOption> modeOptions = new ArrayList<>();
