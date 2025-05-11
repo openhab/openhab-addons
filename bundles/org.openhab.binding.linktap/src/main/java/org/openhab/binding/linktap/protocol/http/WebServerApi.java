@@ -87,7 +87,6 @@ public final class WebServerApi {
     private static final String FIELD_ADMIN_USER = "admin";
     private static final String FIELD_ADMIN_USER_PWD = "adminpwd";
 
-    // private static final int REQ_TIMEOUT_SECONDS = 3;
     private static final WebServerApi INSTANCE = new WebServerApi();
     private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
     private final Logger logger = LoggerFactory.getLogger(WebServerApi.class);
