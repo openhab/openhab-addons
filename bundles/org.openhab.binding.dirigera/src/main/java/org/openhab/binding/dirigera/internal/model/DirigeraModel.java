@@ -236,6 +236,15 @@ public class DirigeraModel implements Model {
         return returnArray;
     }
 
+    private boolean hasAttribute(String id, String attribute) {
+        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
+        if (deviceObject.has(ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+            return attributes.has(attribute);
+        }
+        return false;
+    }
+
     private String getStringAttribute(String id, String attribute) {
         String attributeValue = "";
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
@@ -435,15 +444,11 @@ public class DirigeraModel implements Model {
                 case DEVICE_TYPE_CONTACT_SENSOR:
                     return THING_TYPE_CONTACT_SENSOR;
                 case DEVICE_TYPE_OUTLET:
-                    String plugProductCode = getStringAttribute(id, "productCode");
-                    if ("E2206".equals(plugProductCode)) {
-                        // if product code is E2206 (INSPELNING) plug contains measurements
+                    if (hasAttribute(id, "currentActivePower")) {
                         return THING_TYPE_SMART_PLUG;
-                    } else if ("E2204".equals(plugProductCode)) {
-                        // if product code is E2206 (TRETAKT) plug contains child lock and status light
+                    } else if (hasAttribute(id, "childLock")) {
                         return THING_TYPE_POWER_PLUG;
                     } else {
-                        // otherwise consider simple-plug with sinple switch on / off capabilities
                         return THING_TYPE_SIMPLE_PLUG;
                     }
                 case DEVICE_TYPE_SPEAKER:

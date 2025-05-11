@@ -229,9 +229,10 @@ public class ColorLightHandler extends TemperatureLightHandler {
     }
 
     public HSBType kelvin2Hsb(int kelvin) {
-        int kelvinBoundaries = Math.min(kelvin, colorTemperatureMin);
-        kelvinBoundaries = Math.max(kelvin, colorTemperatureMax);
-        return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvinBoundaries));
+        return getHSBTemperature(kelvin);
+        // int kelvinBoundaries = Math.min(kelvin, colorTemperatureMin);
+        // kelvinBoundaries = Math.max(kelvin, colorTemperatureMax);
+        // return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvinBoundaries));
     }
 
     /**

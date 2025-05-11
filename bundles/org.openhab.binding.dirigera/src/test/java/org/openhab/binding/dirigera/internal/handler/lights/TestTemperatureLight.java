@@ -94,6 +94,7 @@ class TestTemperatureLight {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS), RefreshType.REFRESH);
         checkLightStates(callback);
     }
 
@@ -107,6 +108,11 @@ class TestTemperatureLight {
         assertNotNull(temperatureState);
         assertTrue(temperatureState instanceof PercentType);
         assertEquals(0, ((PercentType) temperatureState).intValue(), "Temperature");
+
+        State temperatureAbsState = callback.getState("dirigera:temperature-light:test-device:color-temperature-abs");
+        assertNotNull(temperatureAbsState);
+        assertTrue(temperatureAbsState instanceof QuantityType);
+        assertEquals(4000, ((QuantityType) temperatureAbsState).intValue(), "Temperature Abs");
 
         State brightnessState = callback.getState("dirigera:temperature-light:test-device:brightness");
         assertNotNull(brightnessState);
