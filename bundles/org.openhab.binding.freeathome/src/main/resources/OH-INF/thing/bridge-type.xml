@@ -16,6 +16,12 @@
 				<advanced>false</advanced>
 			</parameter-group>
 
+			<parameter-group name="advanced_com_settings">
+				<label>Advanced Communication Settings</label>
+				<description>Detailed settings for SysAp communication behavior</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
 			<parameter name="ipAddress" type="text" required="true" groupName="identification">
 				<context>network-address</context>
 				<label>Sysap IP Address</label>
@@ -29,6 +35,14 @@
 				<label>Password</label>
 				<context>password</context>
 				<description>Password for gateway</description>
+			</parameter>
+
+			<parameter name="sendKeepAliveMessage" type="boolean" required="false" groupName="identification">
+				<label>Send keep-alive message to SysAp</label>
+				<context>password</context>
+				<description>Older SysAp might require a keep-alive message over the socket instead of a ping message.</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>

@@ -28,4 +28,5 @@ public class FreeAtHomeBridgeHandlerConfiguration {
     public String ipAddress = "";
     public String username = "";
     public String password = "";
+    public boolean sendKeepAliveMessage = false;
 }

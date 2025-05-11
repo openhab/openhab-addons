@@ -75,13 +75,13 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
-    private FreeAtHomeChannelTypeProvider channelTypeProvider;
-    private TranslationProvider i18nProvider;
-    private Locale locale;
+    private final FreeAtHomeChannelTypeProvider channelTypeProvider;
+    private final TranslationProvider i18nProvider;
+    private final Locale locale;
     private Bundle bundle;
 
-    private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
-    private Map<String, ChannelUID> mapEventToChannelUID = new HashMap<String, ChannelUID>();
+    private final Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
+    private final Map<String, ChannelUID> mapEventToChannelUID = new HashMap<String, ChannelUID>();
 
     public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider,
             TranslationProvider i18nProvider, LocaleProvider localeProvider) {
@@ -305,10 +305,12 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         }
     }
 
+    @Override
     public void onDeviceRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE);
     }
 
+    @Override
     public void onDeviceStateChanged(String event, String valueString) {
         // Get the channle UID belonging to this event
         ChannelUID channelUID = mapEventToChannelUID.get(event);
@@ -499,8 +501,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
                     // in case of output channel, register it for updates
                     if (outputDatapoint != null) {
-                        String eventDatapointID = new String(device.getDeviceId() + "/" + channel.getChannelId() + "/"
-                                + outputDatapoint.getDatapointId());
+                        String eventDatapointID = device.getDeviceId() + "/" + channel.getChannelId() + "/"
+                                + outputDatapoint.getDatapointId();
 
                         mapEventToChannelUID.put(eventDatapointID, channelUID);
                     }
@@ -572,8 +574,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
                 // in case of output channel, register it for updates
                 if (outputDatapoint != null) {
-                    String eventDatapointID = new String(device.getDeviceId() + "/" + channel.getChannelId() + "/"
-                            + outputDatapoint.getDatapointId());
+                    String eventDatapointID = device.getDeviceId() + "/" + channel.getChannelId() + "/"
+                            + outputDatapoint.getDatapointId();
 
                     mapEventToChannelUID.put(eventDatapointID, channelUID);
                 }
