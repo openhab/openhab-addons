@@ -101,7 +101,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The list with events.
      */
-    private @Nullable List<RingEvent> lastEvents;
+    private @NonNullByDefault({}) List<RingEvent> lastEvents;
     /**
      * The index to the current event.
      */

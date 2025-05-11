@@ -701,7 +701,8 @@ public class RestClient {
                             String jsonResult = getRequest(vidUrl.toString(), profile);
                             JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
                             if (obj.get("url").toString().startsWith("http")) {
-                                InputStream in = new URL(obj.get("url").toString()).openStream();
+                                URL url = new URI(obj.get("url").toString()).toURL();
+                                InputStream in = url.openStream();
                                 Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();
                                 if (fullfilepath.length() > 0) {
