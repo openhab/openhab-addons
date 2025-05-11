@@ -99,7 +99,8 @@ public class Profile {
      */
     public Profile(@Nullable JSONObject jsonProfile, String refreshToken, String accessToken) {
         this.jsonProfile = jsonProfile;
-        this.jsonFeatures = (JSONObject) jsonProfile.get("features");
+        if (jsonProfile != null)
+            this.jsonFeatures = (JSONObject) jsonProfile.get("features");
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
     }

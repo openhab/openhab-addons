@@ -50,7 +50,7 @@ public class Doorbot {
      */
     @SuppressWarnings("unchecked")
     public String getId() {
-        return jsonObject.getOrDefault(ApiConstants.DOORBOT_ID, "?").toString();
+        return (jsonObject != null) ? jsonObject.getOrDefault(ApiConstants.DOORBOT_ID, "?").toString() : "";
     }
 
     /**
@@ -60,6 +60,6 @@ public class Doorbot {
      */
     @SuppressWarnings("unchecked")
     public String getDescription() {
-        return jsonObject.getOrDefault(ApiConstants.DOORBOT_DESCRIPTION, "?").toString();
+        return (jsonObject != null) ? jsonObject.getOrDefault(ApiConstants.DOORBOT_DESCRIPTION, "?").toString() : "";
     }
 }

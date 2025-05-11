@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -106,7 +108,7 @@ public class RestClient {
         try {
             byte[] postData = data.getBytes(StandardCharsets.UTF_8);
             StringBuilder output = new StringBuilder();
-            URL url = new URL(resourceUrl);
+            URL url = new URI(resourceUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -169,7 +171,7 @@ public class RestClient {
             conn.disconnect();
             result = output.toString();
             logger.trace("RestApi postRequest response: {}.", result);
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("RestApi error in postRequest!", ex);
             // ex.printStackTrace();
         }
@@ -189,7 +191,7 @@ public class RestClient {
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
             StringBuilder output = new StringBuilder();
-            URL url = new URL(resourceUrl);// + "?" + data);
+            URL url = new URI(resourceUrl).toURL();// + "?" + data);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -255,7 +257,7 @@ public class RestClient {
             if (!result.startsWith("[{\"id\"")) { // Ignore ding results
                 logger.trace("RestApi getRequest response: {}.", result);
             }
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.debug("RestApi error in getRequest!", ex);
             // ex.printStackTrace();
         }
@@ -329,7 +331,7 @@ public class RestClient {
                 map.put("grant_type", "refresh_token");
                 map.put("refresh_token", refreshToken);
             }
-            URL url = new URL(resourceUrl);
+            URL url = new URI(resourceUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -402,7 +404,7 @@ public class RestClient {
 
             oauthToken = (JSONObject) new JSONParser().parse(result);
             logger.debug("RestClient response: {}.", RingUtils.sanitizeData(result));
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("RestApi: Error in getOauthToken!", ex);
             // ex.printStackTrace();
         }
@@ -433,7 +435,7 @@ public class RestClient {
             map.put("grant_type", "refresh_token");
             map.put("refresh_token", refreshToken);
 
-            URL url = new URL(resourceUrl);
+            URL url = new URI(resourceUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -498,7 +500,7 @@ public class RestClient {
             conn.disconnect();
 
             logger.debug("RestApi response: {}.", result);
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("ERROR!", ex);
             // ex.printStackTrace();
         }
@@ -532,7 +534,7 @@ public class RestClient {
             pb.add("password", password);
             pb.add("username", username);
 
-            URL url = new URL(resourceUrl);
+            URL url = new URI(resourceUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -605,7 +607,7 @@ public class RestClient {
             JSONObject refToken = (JSONObject) new JSONParser().parse(result);
             result = refToken.get("refresh_token").toString();
             logger.debug("RestClient - getAuthCode response: {}.", RingUtils.sanitizeData(result));
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("Error getting auth code!", ex);
         } catch (ParseException e) {
             logger.error("Error parsing refToken", e);
@@ -670,7 +672,7 @@ public class RestClient {
         }
     }
 
-    public @Nullable String downloadEventVideo(RingEvent event, Profile profile, String filePath, int retentionCount) {
+    public String downloadEventVideo(RingEvent event, Profile profile, String filePath, int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 
@@ -678,7 +680,7 @@ public class RestClient {
                 Files.createDirectories(path.toAbsolutePath());
             } catch (IOException e) {
                 logger.error("RingVideo: Unable to create folder {}, cannot download.: {}", filePath, e.getMessage());
-                return null;
+                return "";
             }
             if (retentionCount > 0 && Files.exists(path)) {
                 // get FileSystem object
@@ -740,11 +742,11 @@ public class RestClient {
             } else if (retentionCount == 0) {
                 return "videoRetentionCount = 0, Auto downloading disabled";
             } else {
-                return null;
+                return "";
             }
         } catch (Exception e) {
             logger.error("RingVideo: Unable to process request: {}", e.getMessage());
-            return null;
+            return "";
         }
     }
 }

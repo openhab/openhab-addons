@@ -60,7 +60,7 @@ public class RingVideoServlet extends HttpServlet {
     public RingVideoServlet() {
     }
 
-    public RingVideoServlet(@Nullable HttpService httpService, @Nullable String videoStoragePath) {
+    public RingVideoServlet(@Nullable HttpService httpService, String videoStoragePath) {
         Path path = Paths.get(videoStoragePath);
         FileSystem fs = path.getFileSystem();
         String sep = fs.getSeparator();
