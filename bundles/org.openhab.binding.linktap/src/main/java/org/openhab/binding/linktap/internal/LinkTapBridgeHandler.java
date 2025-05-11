@@ -536,7 +536,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReconnect() {
-        scheduleReconnect(config.gatewayRequestTimeout * 5);
+        scheduleReconnect(config.gatewayRequestTimeout * 5); // 5 is due to the number of req/resp required for
+                                                             // connection
     }
 
     public void attemptReconnectIfNeeded() {
