@@ -23,20 +23,17 @@ Once the bridge is created and configured, openHAB will automatically discover a
 - appSecret (mandatory): The Application Secret is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/).
 - pollingInterval (optional): How often the bridge should query the available automowers (in seconds). Default is 1h (3600s).
 
-Keep in mind that the status of the bridge should not be queried too often.
-According to the Husqvarna documentation not more than 10.000 requests per month / 1 request per second and application key are allowed.
-With the default value of 1h this would mean ~720 requests per month for the bridge state.
-
 `automower:`
 
 - mowerId (mandatory): The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is automatically filled when the thing is discovered
 - pollingInterval (optional): How often the current Automower® state should be polled in seconds. Default is 10min (600s)
 - mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system
 
-Keep in mind that the status of the Automower® should not be queried too often.
-According to the Husqvarna documentation not more than 10.000 requests per month / 1 request per second and application key are allowed.
-With the default value of 10min this would mean ~4300 requests per month per single Automower®.
-In addition to polling of the Automower® Connect API for changes, the binding receives notifications when the status, position, setting or message of the Automower® changes (event triggered).
+Keep in mind that the bridge and Automower® status should not be queried too frequently. According to Husqvarna's guidelines, each application key is limited to 10,000 requests per month and 1 request per second.
+
+With the default polling interval of 1 hour, the bridge will make approximately 720 requests per month. For Automower® devices, the default polling interval of 10 minutes results in about 8,600 requests per month per mower (2 requests are sent per cycle). If you have multiple Automower® devices, the total number of requests will increase significantly, as each additional mower will double the request count.
+
+In addition to periodic polling, the binding also receives event-triggered notifications whenever there are changes to the Automower®'s status, position, settings, or messages.
 
 ## Channels
 

@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -43,6 +44,7 @@ import com.google.gson.JsonParser;
  *
  * @author MikeTheTux - Initial contribution
  */
+@NonNullByDefault
 @WebSocket
 public class AutomowerWebSocketAdapter {
     private final AutomowerBridgeHandler handler;
