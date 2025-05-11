@@ -110,7 +110,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private volatile long lastGwCommandRecvTs = 0L;
     private volatile long lastMdnsScanMillis = -1L;
     private volatile boolean readZeroDevices = false;
-    private volatile int requestTimeout = 3;
 
     private String bridgeKey = "";
     private IHttpClientProvider httpClientProvider;
@@ -145,7 +144,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     public int getRequestTimeout() {
-        return requestTimeout;
+        return config.gatewayRequestTimeout;
     }
 
     private void startGwPolling() {
@@ -434,7 +433,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final WebServerApi api = WebServerApi.getInstance();
         api.setHttpClient(httpClientProvider.getHttpClient());
         try {
-            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey, config.gatewayRequestTimeout);
+            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey, getRequestTimeout());
             if (!bridgeProps.isEmpty()) {
                 final String readGwId = bridgeProps.get(BRIDGE_PROP_GW_ID);
                 if (readGwId != null) {
@@ -444,8 +443,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 currentProps.putAll(bridgeProps);
                 updateProperties(currentProps);
             } else {
-                if (!api.unlockWebInterface(bridgeKey, config.gatewayRequestTimeout, config.username,
-                        config.password)) {
+                if (!api.unlockWebInterface(bridgeKey, getRequestTimeout(), config.username, config.password)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             getLocalizedText("bridge.error.check-credentials"));
                     return;
@@ -487,7 +485,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final String servletEp = BindingServlet.getServletAddress(localServerAddr,
                     getLocalizedText("warning.no-http-server-port"));
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
-            api.configureBridge(hostname, config.gatewayRequestTimeout, Optional.of(config.enableMDNS),
+            api.configureBridge(hostname, getRequestTimeout(), Optional.of(config.enableMDNS),
                     Optional.of(config.enableJSONComms), servletEpOpt);
             if (Thread.currentThread().isInterrupted()) {
                 return;
