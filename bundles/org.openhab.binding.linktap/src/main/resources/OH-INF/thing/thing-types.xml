@@ -53,6 +53,13 @@
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="gatewayRequestTimeout" type="integer" required="true" min="3" max="30">
+				<label>Gateway Response Timeout</label>
+				<description>For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds
+					allowed for responses from the gateway)</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -108,11 +115,6 @@
 			<parameter name="name" type="text" required="false">
 				<label>Device Name</label>
 				<description>The name allocated to the device by the app. (Must be unique if used)</description>
-			</parameter>
-			<parameter name="enableAlerts" type="boolean" required="false">
-				<label>Auto Enable Alerts</label>
-				<description>If enabled, during device initialisation all alerts are enabled</description>
-				<default>true</default>
 			</parameter>
 		</config-description>
 

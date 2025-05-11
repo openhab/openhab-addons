@@ -205,7 +205,7 @@ public final class TransactionProcessor {
         int retry = 0;
         while (triesLeft > 0) {
             try {
-                return sendSingleRequest(handler, request);
+                return sendSingleRequest(handler, handler.getRequestTimeout(), request);
             } catch (TransientCommunicationIssueException tcie) {
                 // Only retry a water timer status read once, with a 3 second delay
                 if (request.command == CMD_UPDATE_WATER_TIMER_STATUS) {
@@ -227,9 +227,9 @@ public final class TransactionProcessor {
         return "";
     }
 
-    public String sendSingleRequest(final LinkTapBridgeHandler handler, final TLGatewayFrame request)
-            throws GatewayIdException, DeviceIdException, CommandNotSupportedException, InvalidParameterException,
-            TransientCommunicationIssueException {
+    public String sendSingleRequest(final LinkTapBridgeHandler handler, final int reqTimeout,
+            final TLGatewayFrame request) throws GatewayIdException, DeviceIdException, CommandNotSupportedException,
+            InvalidParameterException, TransientCommunicationIssueException {
         // We need the hostname from the handler of the bridge
 
         // Responses can be one of the following types
@@ -239,7 +239,7 @@ public final class TransactionProcessor {
             final String payloadJson = GSON.toJson(request);
             logger.debug("{} = APP -> GW Request {} -> Payload {}", uid, targetHost, payloadJson);
 
-            String response = API.sendRequest(targetHost, GSON.toJson(request));
+            String response = API.sendRequest(targetHost, reqTimeout, GSON.toJson(request));
             logger.debug("{} = APP -> GW Response {} -> Payload {}", uid, targetHost, response.trim());
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
 

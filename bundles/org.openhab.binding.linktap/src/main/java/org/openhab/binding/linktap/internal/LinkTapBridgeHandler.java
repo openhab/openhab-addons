@@ -110,6 +110,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private volatile long lastGwCommandRecvTs = 0L;
     private volatile long lastMdnsScanMillis = -1L;
     private volatile boolean readZeroDevices = false;
+    private volatile int requestTimeout = 3;
 
     private String bridgeKey = "";
     private IHttpClientProvider httpClientProvider;
@@ -141,6 +142,10 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
         String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
         return Objects.nonNull(result) ? result : key;
+    }
+
+    public int getRequestTimeout() {
+        return requestTimeout;
     }
 
     private void startGwPolling() {
@@ -379,7 +384,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             }
             final String reqData = LinkTapBindingConstants.GSON.toJson(req);
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
-            final String respData = api.sendRequest(host, reqData);
+            final String respData = api.sendRequest(host, config.gatewayRequestTimeout, reqData);
             logger.debug("{} = APP BRIDGE -> GW -> Response {}", uid, respData);
             final GatewayDeviceResponse gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
                     GatewayDeviceResponse.class);
@@ -429,7 +434,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final WebServerApi api = WebServerApi.getInstance();
         api.setHttpClient(httpClientProvider.getHttpClient());
         try {
-            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey);
+            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey, config.gatewayRequestTimeout);
             if (!bridgeProps.isEmpty()) {
                 final String readGwId = bridgeProps.get(BRIDGE_PROP_GW_ID);
                 if (readGwId != null) {
@@ -439,7 +444,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 currentProps.putAll(bridgeProps);
                 updateProperties(currentProps);
             } else {
-                if (!api.unlockWebInterface(bridgeKey, config.username, config.password)) {
+                if (!api.unlockWebInterface(bridgeKey, config.gatewayRequestTimeout, config.username,
+                        config.password)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             getLocalizedText("bridge.error.check-credentials"));
                     return;
@@ -481,13 +487,13 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final String servletEp = BindingServlet.getServletAddress(localServerAddr,
                     getLocalizedText("warning.no-http-server-port"));
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
-            api.configureBridge(hostname, Optional.of(config.enableMDNS), Optional.of(config.enableJSONComms),
-                    servletEpOpt);
+            api.configureBridge(hostname, config.gatewayRequestTimeout, Optional.of(config.enableMDNS),
+                    Optional.of(config.enableJSONComms), servletEpOpt);
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
 
-            // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, theres no reason
+            // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, there's no reason
             // for a gateway with no devices.
             if (!getGatewayConfigurationFreshCheck()) {
                 logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
@@ -532,7 +538,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReconnect() {
-        scheduleReconnect(15);
+        scheduleReconnect(config.gatewayRequestTimeout * 5);
     }
 
     public void attemptReconnectIfNeeded() {
@@ -586,7 +592,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     private final Object singleCommLock = new Object();
 
-    public String sendRequest(final TLGatewayFrame frame) throws DeviceIdException, InvalidParameterException {
+    public String sendRequest(final TLGatewayFrame frame, final int reqTimeout)
+            throws DeviceIdException, InvalidParameterException {
         // Validate the payload is within the expected limits for the device its being sent to
         if (config.enforceProtocolLimits) {
             final Collection<ValidationError> errors = frame.getValidationErrors();
