@@ -591,8 +591,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     private final Object singleCommLock = new Object();
 
-    public String sendRequest(final TLGatewayFrame frame)
-            throws DeviceIdException, InvalidParameterException {
+    public String sendRequest(final TLGatewayFrame frame) throws DeviceIdException, InvalidParameterException {
         // Validate the payload is within the expected limits for the device its being sent to
         if (config.enforceProtocolLimits) {
             final Collection<ValidationError> errors = frame.getValidationErrors();
