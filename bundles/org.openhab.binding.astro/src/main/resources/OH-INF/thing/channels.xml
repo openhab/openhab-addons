@@ -50,10 +50,6 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Direct Radiation</label>
 		<description>Level of radiation after penetration of the atmospheric layer</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -61,10 +57,6 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Diffuse Radiation</label>
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -101,10 +93,6 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
@@ -113,10 +101,6 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
@@ -125,10 +109,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>The duration of the event</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -217,10 +197,6 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -228,10 +204,6 @@
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -239,10 +211,6 @@
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -250,10 +218,6 @@
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -276,10 +240,6 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -287,10 +247,6 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -298,10 +254,6 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -371,10 +323,6 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -382,10 +330,6 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -393,10 +337,6 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -404,10 +344,6 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -415,10 +351,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -518,10 +450,6 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
