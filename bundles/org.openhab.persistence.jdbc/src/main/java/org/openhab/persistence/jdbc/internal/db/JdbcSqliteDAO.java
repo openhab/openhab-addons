@@ -13,7 +13,6 @@
 package org.openhab.persistence.jdbc.internal.db;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +67,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
         sqlTypes.put("tablePrimaryValue", "strftime('%Y-%m-%d %H:%M:%f' , 'now' , 'localtime')");
+        sqlTypes.put("tablePrimaryValueFormated",
+                "strftime('%Y-%m-%d %H:%M:%S' , substr(?, 0, 11), 'unixepoch', 'localtime') || '.' || substr(?, 11, 3)");
     }
 
     /**
@@ -131,11 +132,12 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        String timestamp = date.format(formatter);
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValueParsed") });
 
-        Object[] params = { timestamp, storedVO.getValue() };
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
+
+        Object[] params = { timestamp, timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
             Yank.execute(sql, params);
