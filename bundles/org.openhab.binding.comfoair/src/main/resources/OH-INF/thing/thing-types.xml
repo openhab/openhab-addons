@@ -412,10 +412,6 @@
 		<label>Activate Binding Control</label>
 		<description>Activate (control through openHAB) or deactivate (return control to CCEase) binding control</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -455,9 +451,6 @@
 		<label>Filter Error</label>
 		<description>Filter full</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -554,10 +547,6 @@
 		<label>Fan In (%)</label>
 		<description>Current relative speed (%) of incoming fan</description>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -566,10 +555,6 @@
 		<label>Fan Out (%)</label>
 		<description>Current relative speed (%) of outgoing fan</description>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -578,10 +563,6 @@
 		<label>Fan In (rpm)</label>
 		<description>Current rotational speed of incoming fan</description>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
@@ -590,10 +571,6 @@
 		<label>Fan Out (rpm)</label>
 		<description>Current rotational speed of outgoing fan</description>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
@@ -870,10 +847,6 @@
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -882,10 +855,6 @@
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -894,10 +863,6 @@
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -906,10 +871,6 @@
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -918,10 +879,6 @@
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -930,10 +887,6 @@
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -942,10 +895,6 @@
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
@@ -954,10 +903,6 @@
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 

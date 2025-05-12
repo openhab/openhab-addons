@@ -292,10 +292,6 @@
 		<item-type>Number</item-type>
 		<label>Duration</label>
 		<description>Length of the bestprice period to search for (hours)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="false" pattern="%d"/>
 	</channel-type>
 
@@ -310,10 +306,6 @@
 		<item-type>Switch</item-type>
 		<label>Consecutive</label>
 		<description>Consecutive range needed?</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -321,10 +313,6 @@
 		<item-type>Switch</item-type>
 		<label>Inverted</label>
 		<description>Return highest prices?</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -341,10 +329,6 @@
 		<label>Starttime</label>
 		<description>Starting time of period.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -353,10 +337,6 @@
 		<label>Endtime</label>
 		<description>End time of period.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -365,10 +345,6 @@
 		<label>Countdown</label>
 		<description>Time until start of period.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -377,10 +353,6 @@
 		<label>Remaining</label>
 		<description>Time until end of period.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

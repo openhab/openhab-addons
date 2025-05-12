@@ -7,18 +7,10 @@
 	<channel-type id="ungroup">
 		<item-type>Switch</item-type>
 		<label>Group</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cover" advanced="true">
@@ -29,10 +21,6 @@
 	<channel-type id="buildGroup">
 		<item-type>Switch</item-type>
 		<label>Make Group</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="playlists" advanced="true">
 		<item-type>String</item-type>
@@ -53,10 +41,6 @@
 	<channel-type id="reboot">
 		<item-type>Switch</item-type>
 		<label>Reboot</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
@@ -67,10 +51,6 @@
 		<label>Track Position</label>
 		<description>The current track position</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
@@ -78,10 +58,6 @@
 		<label>Track Duration</label>
 		<description>The overall duration of the track</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="rawCommand" advanced="true">
@@ -99,10 +75,6 @@
 		<item-type>String</item-type>
 		<label>Station</label>
 		<description>The name of the station currently played</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playUrl" advanced="true">

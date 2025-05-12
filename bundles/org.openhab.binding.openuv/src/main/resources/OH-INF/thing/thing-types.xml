@@ -77,10 +77,6 @@
 		<label>UV Index</label>
 		<description>UV Index</description>
 		<category>oh:openuv:uv-index</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
 
@@ -97,10 +93,6 @@
 		<label>Ozone</label>
 		<description>Ozone level from OMI data</description>
 		<category>oh:openuv:ozone</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -161,10 +153,6 @@
 		<item-type>Number</item-type>
 		<label>UV Alert</label>
 		<category>oh:openuv:uv-alarm</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Low</option>

@@ -336,10 +336,6 @@
 		<label>Control</label>
 		<description>Control movie playback e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="title_name">
@@ -364,10 +360,6 @@
 		<item-type>String</item-type>
 		<label>Play Speed</label>
 		<description>The speed of playback scanning</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -382,10 +374,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Title Length</label>
 		<description>The total running time of the currently playing movie</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -423,10 +411,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Chapter Length</label>
 		<description>The total running time of the current chapter</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -434,10 +418,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Chapter Location</label>
 		<description>The running time elapsed of the current chapter</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -445,10 +425,6 @@
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>The type of media that is currently playing</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -456,10 +432,6 @@
 		<item-type>String</item-type>
 		<label>Movie Location</label>
 		<description>Identifies the location in the movie, ie: Main Content, Intermission, or End Credits</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -481,10 +453,6 @@
 		<item-type>String</item-type>
 		<label>Video Mode - Composite</label>
 		<description>Identifies the video currently active on the Composite video output</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -492,10 +460,6 @@
 		<item-type>String</item-type>
 		<label>Video Mode - Component</label>
 		<description>Identifies the video currently active on the Component video output</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -503,10 +467,6 @@
 		<item-type>String</item-type>
 		<label>Video Mode - HDMI</label>
 		<description>Identifies the video currently active on the HDMI video output</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -521,10 +481,6 @@
 		<item-type>String</item-type>
 		<label>Video Color EOTF</label>
 		<description>Identifies the Electro-Optical Transfer Function standard of the current video output</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -539,10 +495,6 @@
 		<item-type>String</item-type>
 		<label>Content Color EOTF</label>
 		<description>Identifies the Electro-Optical Transfer Function standard of the currently playing content</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -639,40 +591,24 @@
 		<label>Control</label>
 		<description>Control music playback e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
 		<category>Player</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="repeat">
 		<item-type>Switch</item-type>
 		<label>Repeat</label>
 		<description>Controls repeat playback for music</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="random">
 		<item-type>Switch</item-type>
 		<label>Random</label>
 		<description>Controls random playback for music</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="track">
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>The name of the currently playing track</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -680,10 +616,6 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>The name of the currently playing artist</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -691,10 +623,6 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>The name of the currently playing album</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -702,10 +630,6 @@
 		<item-type>String</item-type>
 		<label>Music Title</label>
 		<description>The raw output from the MUSIC_TITLE api response</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -713,10 +637,6 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The current playback mode of the music</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -724,10 +644,6 @@
 		<item-type>String</item-type>
 		<label>Play Speed</label>
 		<description>The speed of playback scanning</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -735,10 +651,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Length</label>
 		<description>The total running time of the current playing track</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -746,10 +658,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>The running time elapsed of the current playing track</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -757,10 +665,6 @@
 		<item-type>Number</item-type>
 		<label>Track Progress</label>
 		<description>The percentage complete of the current playing track</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -798,10 +702,6 @@
 		<item-type>String</item-type>
 		<label>Movie Title</label>
 		<description>The title of the selected Movie</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -809,10 +709,6 @@
 		<item-type>String</item-type>
 		<label>Album Title</label>
 		<description>The title of the selected Album</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -841,10 +737,6 @@
 		<item-type>String</item-type>
 		<label>Rating</label>
 		<description>The MPAA rating of the selected Movie</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -852,10 +744,6 @@
 		<item-type>String</item-type>
 		<label>Year</label>
 		<description>The release year of the selected item</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -863,10 +751,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Running time</label>
 		<description>The total running time of the selected item</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -874,10 +758,6 @@
 		<item-type>String</item-type>
 		<label>Actors</label>
 		<description>A list of actors appearing in the selected Movie</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -885,10 +765,6 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>The artist of the selected Album</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -896,10 +772,6 @@
 		<item-type>String</item-type>
 		<label>Directors</label>
 		<description>A list of directors of the selected Movie</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -907,10 +779,6 @@
 		<item-type>String</item-type>
 		<label>Genres</label>
 		<description>A list of genres of the selected item</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -939,10 +807,6 @@
 		<item-type>String</item-type>
 		<label>Color Description</label>
 		<description>Indicates if the selected Movie is in color, black and white, etc.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

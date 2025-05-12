@@ -113,10 +113,6 @@
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Variable Price TTC</label>
 		<category>Price</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"></state>
 	</channel-type>
 

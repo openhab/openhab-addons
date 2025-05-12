@@ -41,10 +41,6 @@
 		<label>Beaufort</label>
 		<description>Wind speed in Beaufort Scale</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="12"/>
 	</channel-type>
 
@@ -53,10 +49,6 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="N">N</option>

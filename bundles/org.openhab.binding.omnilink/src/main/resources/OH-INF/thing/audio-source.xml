@@ -40,10 +40,6 @@
 		<label>Source Data</label>
 		<description>A line of metadata from this audio source.</description>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="audio_source_polling">
@@ -51,10 +47,6 @@
 		<label>Audio Source Polling</label>
 		<description>Enable or disable polling of this audio source.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

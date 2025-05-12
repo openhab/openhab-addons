@@ -114,10 +114,6 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku TV</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Home">Home</option>
@@ -159,10 +155,6 @@
 		<label>Control</label>
 		<description>Control playback e.g. Play/Pause/Next/Previous</description>
 		<category>Player</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="activeApp">
@@ -208,10 +200,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
@@ -231,10 +219,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Media Progress</label>
 		<description>The current progress of playing media</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="activeChannel">
@@ -251,10 +235,6 @@
 		<item-type>String</item-type>
 		<label>Signal Mode</label>
 		<description>The Signal Type of the Current TV Channel, ie: 1080i</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -262,10 +242,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Quality</label>
 		<description>The Signal Quality of the Current TV Channel</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -280,10 +256,6 @@
 		<item-type>String</item-type>
 		<label>Program Title</label>
 		<description>The Name of the Current TV Program</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -291,10 +263,6 @@
 		<item-type>String</item-type>
 		<label>Program Description</label>
 		<description>The Description of the Current TV Program</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -302,10 +270,6 @@
 		<item-type>String</item-type>
 		<label>Program Rating</label>
 		<description>The TV Parental Guideline Rating of the Current TV Program</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

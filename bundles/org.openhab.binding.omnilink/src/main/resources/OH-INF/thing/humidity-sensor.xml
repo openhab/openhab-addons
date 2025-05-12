@@ -43,10 +43,6 @@
 		<label>Low SetPoint</label>
 		<description>The current low setpoint for this humidity sensor.</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -55,10 +51,6 @@
 		<label>High SetPoint</label>
 		<description>The current high setpoint for this humidity sensor.</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
