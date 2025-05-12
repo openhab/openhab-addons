@@ -52,7 +52,7 @@
 		<description>@text/channel-type.mielecloud.spinning_speed.description</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Speed</tag>
+			<tag>Frequency</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>@text/channel-type.mielecloud.spinning_speed_raw.label</label>
 		<description>@text/channel-type.mielecloud.spinning_speed_raw.description</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Status</tag>
+			<tag>Frequency</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -152,10 +152,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.program_stop.label</label>
 		<description>@text/channel-type.mielecloud.program_stop.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="program_start_stop">
@@ -187,10 +183,6 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.power_state_on_off.label</label>
 		<description>@text/channel-type.mielecloud.power_state_on_off.description</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="on">@text/channel-option.mielecloud.power_state_on_off.on</option>
@@ -205,7 +197,8 @@
 		<description>@text/channel-type.mielecloud.finish_state.description</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -262,7 +255,8 @@
 		<description>@text/channel-type.mielecloud.pre_heat_finished.description</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,10 +334,6 @@
 		<label>@text/channel-type.mielecloud.fridge_super_cool.label</label>
 		<description>@text/channel-type.mielecloud.fridge_super_cool.description</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="freezer_super_freeze">
@@ -351,10 +341,6 @@
 		<label>@text/channel-type.mielecloud.freezer_super_freeze.label</label>
 		<description>@text/channel-type.mielecloud.freezer_super_freeze.description</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="super_cool_can_be_controlled">
@@ -506,10 +492,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.light_can_be_controlled.label</label>
 		<description>@text/channel-type.mielecloud.light_can_be_controlled.description</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -584,7 +566,7 @@
 		<category>Battery</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
