@@ -49,7 +49,6 @@
 		</supported-bridge-type-refs>
 		<label>Harmony Device</label>
 		<description>Logitech Harmony Hub Device</description>
-
 		<channels>
 			<channel id="buttonPress" typeId="buttonPress"/>
 		</channels>
