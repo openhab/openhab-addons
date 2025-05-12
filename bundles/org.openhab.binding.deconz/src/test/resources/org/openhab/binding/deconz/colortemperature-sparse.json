@@ -1,0 +1,14 @@
+{
+  "e": "changed",
+  "id": "3",
+  "r": "lights",
+  "state": {
+    "alert": null,
+    "bri": 51,
+    "ct": 400,
+    "on": true,
+    "reachable": true
+  },
+  "t": "event",
+  "uniqueid": "00:0b:57:ff:fe:eb:2f:84-01"
+}

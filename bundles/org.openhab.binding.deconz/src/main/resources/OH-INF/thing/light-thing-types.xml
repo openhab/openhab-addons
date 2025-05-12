@@ -69,9 +69,15 @@
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -93,10 +99,18 @@
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -118,9 +132,15 @@
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -142,10 +162,18 @@
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -181,7 +209,7 @@
 		<category>Rollershutter</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
@@ -197,7 +225,7 @@
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
@@ -216,6 +244,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="none">No Alarm</option>
@@ -228,6 +260,10 @@
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
