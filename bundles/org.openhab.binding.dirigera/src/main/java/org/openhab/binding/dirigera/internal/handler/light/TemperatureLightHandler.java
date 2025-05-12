@@ -94,7 +94,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
             case CHANNEL_LIGHT_TEMPERATURE_ABS:
                 targetProperty = "colorTemperature";
             case CHANNEL_LIGHT_TEMPERATURE:
-                int kelvinValue = -1;
+                long kelvinValue = -1;
                 int percentValue = -1;
                 if (command instanceof PercentType percent) {
                     percentValue = percent.intValue();
@@ -154,11 +154,11 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         }
     }
 
-    protected int getKelvin(int percent) {
+    protected long getKelvin(int percent) {
         return Math.round(colorTemperatureMin - (range * percent / 100));
     }
 
-    protected int getPercent(int kelvin) {
-        return Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
+    protected int getPercent(long kelvin) {
+        return Math.min(100, Math.max(0, Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range))));
     }
 }

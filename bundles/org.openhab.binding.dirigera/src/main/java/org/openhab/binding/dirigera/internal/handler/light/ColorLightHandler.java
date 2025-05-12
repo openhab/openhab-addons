@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.model.ColorModel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -30,7 +31,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +45,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
 
     private HSBType hsbStateReflection = new HSBType(); // proxy to reflect state to end user
     private HSBType hsbDevice = new HSBType(); // strictly holding values which were received via update
+    private String colorMode = "";
 
     public ColorLightHandler(Thing thing, Map<String, String> mapping, DirigeraStateDescriptionProvider stateProvider) {
         super(thing, mapping, stateProvider);
@@ -97,14 +98,14 @@ public class ColorLightHandler extends TemperatureLightHandler {
             }
         }
         if (CHANNEL_LIGHT_TEMPERATURE.equals(channel) || CHANNEL_LIGHT_TEMPERATURE_ABS.equals(channel)) {
-            int kelvin = -1;
+            long kelvin = -1;
             HSBType colorTemp = null;
             if (command instanceof PercentType percent) {
                 kelvin = super.getKelvin(percent.intValue());
-                colorTemp = kelvin2Hsb(kelvin);
+                colorTemp = ColorModel.kelvin2Hsb(kelvin);
             } else if (command instanceof QuantityType number) {
                 kelvin = number.intValue();
-                colorTemp = kelvin2Hsb(kelvin);
+                colorTemp = ColorModel.kelvin2Hsb(kelvin);
             }
             // there are color lights which cannot handle tempera HSB {}t ,kelvin,colorTempure as stored in capabilities
             // in this case calculate color which is fitting to temperature
@@ -127,24 +128,12 @@ public class ColorLightHandler extends TemperatureLightHandler {
      * @return true if color request is sent, false otherwise
      */
     private void colorCommand(HSBType hsb) {
-        // if (!hsb.closeTo(hsbDevice, 0.02)) {
-        /**
-         * Why is closeTo not working on target?
-         * 2024-11-09 09:28:21.191 [TRACE] [rnal.handler.light.ColorLightHandler] - DIRIGERA COLOR_LIGHT hsb too
-         * close Device 63.0,0,33 Requested 63,100,0
-         **/
-        if (!closeTo(hsb)) {
+        if (!"color".equals(colorMode) || !ColorModel.closeTo(hsb, hsbDevice, 0.02)) {
             JSONObject colorAttributes = new JSONObject();
             colorAttributes.put("colorHue", hsb.getHue().intValue());
             colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
             super.changeProperty(LightCommand.Action.COLOR, colorAttributes);
         }
-    }
-
-    private boolean closeTo(HSBType hsb) {
-        int hueDistance = Math.abs(hsb.getHue().intValue() - hsbDevice.getHue().intValue());
-        int saturationDistance = Math.abs(hsb.getSaturation().intValue() - hsbDevice.getSaturation().intValue());
-        return ((hueDistance < 3 || hueDistance > 367) && saturationDistance < 3);
     }
 
     private void brightnessCommand(HSBType hsb) {
@@ -168,6 +157,9 @@ public class ColorLightHandler extends TemperatureLightHandler {
             boolean deliverHSB = false;
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
+                if (ATTRIBUTE_COLOR_MODE.equals(key)) {
+                    colorMode = attributes.getString(key);
+                }
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
                     // apply and update to hsbCurrent, only in case !isOn deliver fake brightness HSBs
@@ -183,11 +175,11 @@ public class ColorLightHandler extends TemperatureLightHandler {
                                     deliverHSB = true;
                                     break;
                                 case "colorSaturation":
-                                    double saturationValue = Math.round(attributes.getDouble(key) * 100);
-                                    hsbDevice = new HSBType(hsbDevice.getHue(), new PercentType((int) saturationValue),
+                                    int saturationValue = Math.round(attributes.getFloat(key) * 100);
+                                    hsbDevice = new HSBType(hsbDevice.getHue(), new PercentType(saturationValue),
                                             hsbDevice.getBrightness());
                                     hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
-                                            new PercentType((int) saturationValue), hsbStateReflection.getBrightness());
+                                            new PercentType(saturationValue), hsbStateReflection.getBrightness());
                                     deliverHSB = true;
                                     break;
                                 case "lightLevel":
@@ -208,8 +200,8 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), hsbStateReflection);
                 if (!receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY)) {
                     // if color light doesn't support native light temperature converted values are taken
-                    int kelvin = hsb2Kelvin(new HSBType(hsbStateReflection.getHue(), hsbStateReflection.getSaturation(),
-                            PercentType.HUNDRED));
+                    long kelvin = Math.min(colorTemperatureMin,
+                            Math.max(colorTemperatureMax, ColorModel.hsb2Kelvin(hsbStateReflection)));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE),
                             new PercentType(getPercent(kelvin)));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS),
@@ -217,86 +209,5 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 }
             }
         }
-    }
-
-    public int hsb2Kelvin(HSBType hsb) {
-        double[] xy = ColorUtil.hsbToXY(hsb);
-        long kelvin = Math.round(ColorUtil.xyToKelvin(new double[] { xy[0], xy[1] }));
-
-        kelvin = Math.min(kelvin, colorTemperatureMin);
-        kelvin = Math.max(kelvin, colorTemperatureMax);
-        return (int) kelvin;
-    }
-
-    public HSBType kelvin2Hsb(int kelvin) {
-        return getHSBTemperature(kelvin);
-        // int kelvinBoundaries = Math.min(kelvin, colorTemperatureMin);
-        // kelvinBoundaries = Math.max(kelvin, colorTemperatureMax);
-        // return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvinBoundaries));
-    }
-
-    /**
-     * Simulate color-temperature if color light doesn't have the "canReceive" "colorTemperature" capability
-     * https://www.npmjs.com/package/color-temperature?activeTab=code
-     *
-     * @param kelvin
-     * @return color temperature as HSBType
-     */
-    public static HSBType getHSBTemperature(long kelvin) {
-        double temperature = kelvin / 100.0;
-        double red;
-        double green;
-        double blue;
-        /* Calculate red */
-        if (temperature <= 66.0) {
-            red = 255;
-        } else {
-            red = temperature - 60.0;
-            red = 329.698727446 * Math.pow(red, -0.1332047592);
-            if (red < 0) {
-                red = 0;
-            }
-            if (red > 255) {
-                red = 255;
-            }
-        }
-        /* Calculate green */
-        if (temperature <= 66.0) {
-            green = temperature;
-            green = 99.4708025861 * Math.log(green) - 161.1195681661;
-            if (green < 0) {
-                green = 0;
-            }
-            if (green > 255) {
-                green = 255;
-            }
-        } else {
-            green = temperature - 60.0;
-            green = 288.1221695283 * Math.pow(green, -0.0755148492);
-            if (green < 0) {
-                green = 0;
-            }
-            if (green > 255) {
-                green = 255;
-            }
-        }
-        /* Calculate blue */
-        if (temperature >= 66.0) {
-            blue = 255;
-        } else {
-            if (temperature <= 19.0) {
-                blue = 0;
-            } else {
-                blue = temperature - 10;
-                blue = 138.5177312231 * Math.log(blue) - 305.0447927307;
-                if (blue < 0) {
-                    blue = 0;
-                }
-                if (blue > 255) {
-                    blue = 255;
-                }
-            }
-        }
-        return HSBType.fromRGB((int) Math.round(red), (int) Math.round(green), (int) Math.round(blue));
     }
 }

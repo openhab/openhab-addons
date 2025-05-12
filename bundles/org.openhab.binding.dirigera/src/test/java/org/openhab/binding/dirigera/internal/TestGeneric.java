@@ -36,7 +36,6 @@ import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.library.types.HSBType;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -57,14 +56,6 @@ class TestGeneric {
         } catch (Exception e) {
             fail();
         }
-    }
-
-    @Test
-    void hsbCloseTo() {
-        HSBType first = new HSBType("180, 100, 100");
-        HSBType second = new HSBType("177, 97, 50");
-        boolean isClose = first.closeTo(second, 0.02);
-        assertTrue(isClose);
     }
 
     @Test
