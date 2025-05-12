@@ -17,572 +17,564 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.DeviceProfile;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.GeneralCommandType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Client capabilities dto.
  */
-@JsonPropertyOrder({ ClientCapabilitiesDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTED_COMMANDS,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING,
-        ClientCapabilitiesDto.JSON_PROPERTY_MESSAGE_CALLBACK_URL,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_SYNC, ClientCapabilitiesDto.JSON_PROPERTY_DEVICE_PROFILE,
-        ClientCapabilitiesDto.JSON_PROPERTY_APP_STORE_URL, ClientCapabilitiesDto.JSON_PROPERTY_ICON_URL })
+@JsonPropertyOrder({
+  ClientCapabilitiesDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES,
+  ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTED_COMMANDS,
+  ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL,
+  ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING,
+  ClientCapabilitiesDto.JSON_PROPERTY_MESSAGE_CALLBACK_URL,
+  ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER,
+  ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_SYNC,
+  ClientCapabilitiesDto.JSON_PROPERTY_DEVICE_PROFILE,
+  ClientCapabilitiesDto.JSON_PROPERTY_APP_STORE_URL,
+  ClientCapabilitiesDto.JSON_PROPERTY_ICON_URL
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ClientCapabilitiesDto {
-    public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
-    @javax.annotation.Nullable
-    private List<String> playableMediaTypes = new ArrayList<>();
+  public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
+  @javax.annotation.Nullable
+  private List<String> playableMediaTypes = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
-    @javax.annotation.Nullable
-    private List<GeneralCommandType> supportedCommands = new ArrayList<>();
+  public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
+  @javax.annotation.Nullable
+  private List<GeneralCommandType> supportedCommands = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
-    @javax.annotation.Nullable
-    private Boolean supportsMediaControl;
+  public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
+  @javax.annotation.Nullable
+  private Boolean supportsMediaControl;
 
-    public static final String JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING = "SupportsContentUploading";
-    @javax.annotation.Nullable
-    private Boolean supportsContentUploading;
+  public static final String JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING = "SupportsContentUploading";
+  @javax.annotation.Nullable
+  private Boolean supportsContentUploading;
 
-    public static final String JSON_PROPERTY_MESSAGE_CALLBACK_URL = "MessageCallbackUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> messageCallbackUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MESSAGE_CALLBACK_URL = "MessageCallbackUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> messageCallbackUrl = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
-    @javax.annotation.Nullable
-    private Boolean supportsPersistentIdentifier;
+  public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
+  @javax.annotation.Nullable
+  private Boolean supportsPersistentIdentifier;
 
-    public static final String JSON_PROPERTY_SUPPORTS_SYNC = "SupportsSync";
-    @javax.annotation.Nullable
-    private Boolean supportsSync;
+  public static final String JSON_PROPERTY_SUPPORTS_SYNC = "SupportsSync";
+  @javax.annotation.Nullable
+  private Boolean supportsSync;
 
-    public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
-    @javax.annotation.Nullable
-    private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
+  public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
+  @javax.annotation.Nullable
+  private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile>undefined();
 
-    public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> appStoreUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> appStoreUrl = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> iconUrl = JsonNullable.<String>undefined();
 
-    public ClientCapabilitiesDto() {
+  public ClientCapabilitiesDto() {
+  }
+
+  public ClientCapabilitiesDto playableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
+    
+    this.playableMediaTypes = playableMediaTypes;
+    return this;
+  }
+
+  public ClientCapabilitiesDto addPlayableMediaTypesItem(String playableMediaTypesItem) {
+    if (this.playableMediaTypes == null) {
+      this.playableMediaTypes = new ArrayList<>();
     }
+    this.playableMediaTypes.add(playableMediaTypesItem);
+    return this;
+  }
 
-    public ClientCapabilitiesDto playableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
+  /**
+   * Gets or sets the list of playable media types.
+   * @return playableMediaTypes
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.playableMediaTypes = playableMediaTypes;
-        return this;
+  public List<String> getPlayableMediaTypes() {
+    return playableMediaTypes;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlayableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
+    this.playableMediaTypes = playableMediaTypes;
+  }
+
+  public ClientCapabilitiesDto supportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
+    
+    this.supportedCommands = supportedCommands;
+    return this;
+  }
+
+  public ClientCapabilitiesDto addSupportedCommandsItem(GeneralCommandType supportedCommandsItem) {
+    if (this.supportedCommands == null) {
+      this.supportedCommands = new ArrayList<>();
     }
+    this.supportedCommands.add(supportedCommandsItem);
+    return this;
+  }
 
-    public ClientCapabilitiesDto addPlayableMediaTypesItem(String playableMediaTypesItem) {
-        if (this.playableMediaTypes == null) {
-            this.playableMediaTypes = new ArrayList<>();
-        }
-        this.playableMediaTypes.add(playableMediaTypesItem);
-        return this;
-    }
+  /**
+   * Gets or sets the list of supported commands.
+   * @return supportedCommands
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the list of playable media types.
-     * 
-     * @return playableMediaTypes
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public List<GeneralCommandType> getSupportedCommands() {
+    return supportedCommands;
+  }
 
-    public List<String> getPlayableMediaTypes() {
-        return playableMediaTypes;
-    }
 
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPlayableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
-        this.playableMediaTypes = playableMediaTypes;
-    }
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
+    this.supportedCommands = supportedCommands;
+  }
 
-    public ClientCapabilitiesDto supportedCommands(
-            @javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
+  public ClientCapabilitiesDto supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+    
+    this.supportsMediaControl = supportsMediaControl;
+    return this;
+  }
 
-        this.supportedCommands = supportedCommands;
-        return this;
-    }
+  /**
+   * Gets or sets a value indicating whether session supports media control.
+   * @return supportsMediaControl
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public ClientCapabilitiesDto addSupportedCommandsItem(GeneralCommandType supportedCommandsItem) {
-        if (this.supportedCommands == null) {
-            this.supportedCommands = new ArrayList<>();
-        }
-        this.supportedCommands.add(supportedCommandsItem);
-        return this;
-    }
+  public Boolean getSupportsMediaControl() {
+    return supportsMediaControl;
+  }
 
-    /**
-     * Gets or sets the list of supported commands.
-     * 
-     * @return supportedCommands
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public List<GeneralCommandType> getSupportedCommands() {
-        return supportedCommands;
-    }
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+    this.supportsMediaControl = supportsMediaControl;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
-        this.supportedCommands = supportedCommands;
-    }
+  public ClientCapabilitiesDto supportsContentUploading(@javax.annotation.Nullable Boolean supportsContentUploading) {
+    
+    this.supportsContentUploading = supportsContentUploading;
+    return this;
+  }
 
-    public ClientCapabilitiesDto supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+  /**
+   * Gets or sets a value indicating whether session supports content uploading.
+   * @return supportsContentUploading
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.supportsMediaControl = supportsMediaControl;
-        return this;
-    }
+  public Boolean getSupportsContentUploading() {
+    return supportsContentUploading;
+  }
 
-    /**
-     * Gets or sets a value indicating whether session supports media control.
-     * 
-     * @return supportsMediaControl
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getSupportsMediaControl() {
-        return supportsMediaControl;
-    }
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsContentUploading(@javax.annotation.Nullable Boolean supportsContentUploading) {
+    this.supportsContentUploading = supportsContentUploading;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
-        this.supportsMediaControl = supportsMediaControl;
-    }
+  public ClientCapabilitiesDto messageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
+    this.messageCallbackUrl = JsonNullable.<String>of(messageCallbackUrl);
+    
+    return this;
+  }
 
-    public ClientCapabilitiesDto supportsContentUploading(@javax.annotation.Nullable Boolean supportsContentUploading) {
+  /**
+   * Gets or sets the message callback url.
+   * @return messageCallbackUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        this.supportsContentUploading = supportsContentUploading;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether session supports content uploading.
-     * 
-     * @return supportsContentUploading
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSupportsContentUploading() {
-        return supportsContentUploading;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_UPLOADING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsContentUploading(@javax.annotation.Nullable Boolean supportsContentUploading) {
-        this.supportsContentUploading = supportsContentUploading;
-    }
-
-    public ClientCapabilitiesDto messageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
-        this.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the message callback url.
-     * 
-     * @return messageCallbackUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMessageCallbackUrl() {
+  public String getMessageCallbackUrl() {
         return messageCallbackUrl.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMessageCallbackUrl_JsonNullable() {
-        return messageCallbackUrl;
-    }
+  public JsonNullable<String> getMessageCallbackUrl_JsonNullable() {
+    return messageCallbackUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
+  public void setMessageCallbackUrl_JsonNullable(JsonNullable<String> messageCallbackUrl) {
+    this.messageCallbackUrl = messageCallbackUrl;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
-    public void setMessageCallbackUrl_JsonNullable(JsonNullable<String> messageCallbackUrl) {
-        this.messageCallbackUrl = messageCallbackUrl;
-    }
+  public void setMessageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
+    this.messageCallbackUrl = JsonNullable.<String>of(messageCallbackUrl);
+  }
 
-    public void setMessageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
-        this.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
-    }
+  public ClientCapabilitiesDto supportsPersistentIdentifier(@javax.annotation.Nullable Boolean supportsPersistentIdentifier) {
+    
+    this.supportsPersistentIdentifier = supportsPersistentIdentifier;
+    return this;
+  }
 
-    public ClientCapabilitiesDto supportsPersistentIdentifier(
-            @javax.annotation.Nullable Boolean supportsPersistentIdentifier) {
+  /**
+   * Gets or sets a value indicating whether session supports a persistent identifier.
+   * @return supportsPersistentIdentifier
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.supportsPersistentIdentifier = supportsPersistentIdentifier;
-        return this;
-    }
+  public Boolean getSupportsPersistentIdentifier() {
+    return supportsPersistentIdentifier;
+  }
 
-    /**
-     * Gets or sets a value indicating whether session supports a persistent identifier.
-     * 
-     * @return supportsPersistentIdentifier
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getSupportsPersistentIdentifier() {
-        return supportsPersistentIdentifier;
-    }
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsPersistentIdentifier(@javax.annotation.Nullable Boolean supportsPersistentIdentifier) {
+    this.supportsPersistentIdentifier = supportsPersistentIdentifier;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsPersistentIdentifier(@javax.annotation.Nullable Boolean supportsPersistentIdentifier) {
-        this.supportsPersistentIdentifier = supportsPersistentIdentifier;
-    }
+  public ClientCapabilitiesDto supportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+    
+    this.supportsSync = supportsSync;
+    return this;
+  }
 
-    public ClientCapabilitiesDto supportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+  /**
+   * Gets or sets a value indicating whether session supports sync.
+   * @return supportsSync
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.supportsSync = supportsSync;
-        return this;
-    }
+  public Boolean getSupportsSync() {
+    return supportsSync;
+  }
 
-    /**
-     * Gets or sets a value indicating whether session supports sync.
-     * 
-     * @return supportsSync
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getSupportsSync() {
-        return supportsSync;
-    }
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+    this.supportsSync = supportsSync;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsSync(@javax.annotation.Nullable Boolean supportsSync) {
-        this.supportsSync = supportsSync;
-    }
+  public ClientCapabilitiesDto deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
+    this.deviceProfile = JsonNullable.<DeviceProfile>of(deviceProfile);
+    
+    return this;
+  }
 
-    public ClientCapabilitiesDto deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
+  /**
+   * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device is able to play.  &lt;br /&gt;  Specifically, it defines the supported &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and  &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt; (video and/or audio, including codec profiles and levels)  the device is able to direct play (without transcoding or remuxing),  as well as which &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode to&lt;/see&gt; in case it isn&#39;t.
+   * @return deviceProfile
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain
-     * device is able to play. &lt;br /&gt; Specifically, it defines the supported &lt;see
-     * cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and
-     * &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt;
-     * (video and/or audio, including codec profiles and levels) the device is able to direct play (without transcoding
-     * or remuxing), as well as which &lt;see
-     * cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to
-     * transcode to&lt;/see&gt; in case it isn&#39;t.
-     * 
-     * @return deviceProfile
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DeviceProfile getDeviceProfile() {
+  public DeviceProfile getDeviceProfile() {
         return deviceProfile.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<DeviceProfile> getDeviceProfile_JsonNullable() {
-        return deviceProfile;
-    }
+  public JsonNullable<DeviceProfile> getDeviceProfile_JsonNullable() {
+    return deviceProfile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+  public void setDeviceProfile_JsonNullable(JsonNullable<DeviceProfile> deviceProfile) {
+    this.deviceProfile = deviceProfile;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
-    public void setDeviceProfile_JsonNullable(JsonNullable<DeviceProfile> deviceProfile) {
-        this.deviceProfile = deviceProfile;
-    }
+  public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
+    this.deviceProfile = JsonNullable.<DeviceProfile>of(deviceProfile);
+  }
 
-    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-    }
+  public ClientCapabilitiesDto appStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
+    this.appStoreUrl = JsonNullable.<String>of(appStoreUrl);
+    
+    return this;
+  }
 
-    public ClientCapabilitiesDto appStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
+  /**
+   * Gets or sets the app store url.
+   * @return appStoreUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the app store url.
-     * 
-     * @return appStoreUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppStoreUrl() {
+  public String getAppStoreUrl() {
         return appStoreUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAppStoreUrl_JsonNullable() {
+    return appStoreUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
+  public void setAppStoreUrl_JsonNullable(JsonNullable<String> appStoreUrl) {
+    this.appStoreUrl = appStoreUrl;
+  }
+
+  public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
+    this.appStoreUrl = JsonNullable.<String>of(appStoreUrl);
+  }
+
+  public ClientCapabilitiesDto iconUrl(@javax.annotation.Nullable String iconUrl) {
+    this.iconUrl = JsonNullable.<String>of(iconUrl);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the icon url.
+   * @return iconUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getIconUrl() {
+        return iconUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ICON_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getIconUrl_JsonNullable() {
+    return iconUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ICON_URL)
+  public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
+    this.iconUrl = iconUrl;
+  }
+
+  public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
+    this.iconUrl = JsonNullable.<String>of(iconUrl);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ClientCapabilitiesDto clientCapabilitiesDto = (ClientCapabilitiesDto) o;
+    return Objects.equals(this.playableMediaTypes, clientCapabilitiesDto.playableMediaTypes) &&
+        Objects.equals(this.supportedCommands, clientCapabilitiesDto.supportedCommands) &&
+        Objects.equals(this.supportsMediaControl, clientCapabilitiesDto.supportsMediaControl) &&
+        Objects.equals(this.supportsContentUploading, clientCapabilitiesDto.supportsContentUploading) &&
+        equalsNullable(this.messageCallbackUrl, clientCapabilitiesDto.messageCallbackUrl) &&
+        Objects.equals(this.supportsPersistentIdentifier, clientCapabilitiesDto.supportsPersistentIdentifier) &&
+        Objects.equals(this.supportsSync, clientCapabilitiesDto.supportsSync) &&
+        equalsNullable(this.deviceProfile, clientCapabilitiesDto.deviceProfile) &&
+        equalsNullable(this.appStoreUrl, clientCapabilitiesDto.appStoreUrl) &&
+        equalsNullable(this.iconUrl, clientCapabilitiesDto.iconUrl);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(playableMediaTypes, supportedCommands, supportsMediaControl, supportsContentUploading, hashCodeNullable(messageCallbackUrl), supportsPersistentIdentifier, supportsSync, hashCodeNullable(deviceProfile), hashCodeNullable(appStoreUrl), hashCodeNullable(iconUrl));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ClientCapabilitiesDto {\n");
+    sb.append("    playableMediaTypes: ").append(toIndentedString(playableMediaTypes)).append("\n");
+    sb.append("    supportedCommands: ").append(toIndentedString(supportedCommands)).append("\n");
+    sb.append("    supportsMediaControl: ").append(toIndentedString(supportsMediaControl)).append("\n");
+    sb.append("    supportsContentUploading: ").append(toIndentedString(supportsContentUploading)).append("\n");
+    sb.append("    messageCallbackUrl: ").append(toIndentedString(messageCallbackUrl)).append("\n");
+    sb.append("    supportsPersistentIdentifier: ").append(toIndentedString(supportsPersistentIdentifier)).append("\n");
+    sb.append("    supportsSync: ").append(toIndentedString(supportsSync)).append("\n");
+    sb.append("    deviceProfile: ").append(toIndentedString(deviceProfile)).append("\n");
+    sb.append("    appStoreUrl: ").append(toIndentedString(appStoreUrl)).append("\n");
+    sb.append("    iconUrl: ").append(toIndentedString(iconUrl)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ClientCapabilitiesDto instance;
+
+    public Builder() {
+      this(new ClientCapabilitiesDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getAppStoreUrl_JsonNullable() {
-        return appStoreUrl;
+    protected Builder(ClientCapabilitiesDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
-    public void setAppStoreUrl_JsonNullable(JsonNullable<String> appStoreUrl) {
-        this.appStoreUrl = appStoreUrl;
+    public ClientCapabilitiesDto.Builder playableMediaTypes(List<String> playableMediaTypes) {
+      this.instance.playableMediaTypes = playableMediaTypes;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
+      this.instance.supportedCommands = supportedCommands;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder supportsMediaControl(Boolean supportsMediaControl) {
+      this.instance.supportsMediaControl = supportsMediaControl;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder supportsContentUploading(Boolean supportsContentUploading) {
+      this.instance.supportsContentUploading = supportsContentUploading;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder messageCallbackUrl(String messageCallbackUrl) {
+      this.instance.messageCallbackUrl = JsonNullable.<String>of(messageCallbackUrl);
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder messageCallbackUrl(JsonNullable<String> messageCallbackUrl) {
+      this.instance.messageCallbackUrl = messageCallbackUrl;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder supportsPersistentIdentifier(Boolean supportsPersistentIdentifier) {
+      this.instance.supportsPersistentIdentifier = supportsPersistentIdentifier;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder supportsSync(Boolean supportsSync) {
+      this.instance.supportsSync = supportsSync;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder deviceProfile(DeviceProfile deviceProfile) {
+      this.instance.deviceProfile = JsonNullable.<DeviceProfile>of(deviceProfile);
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder deviceProfile(JsonNullable<DeviceProfile> deviceProfile) {
+      this.instance.deviceProfile = deviceProfile;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder appStoreUrl(String appStoreUrl) {
+      this.instance.appStoreUrl = JsonNullable.<String>of(appStoreUrl);
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder appStoreUrl(JsonNullable<String> appStoreUrl) {
+      this.instance.appStoreUrl = appStoreUrl;
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder iconUrl(String iconUrl) {
+      this.instance.iconUrl = JsonNullable.<String>of(iconUrl);
+      return this;
+    }
+    public ClientCapabilitiesDto.Builder iconUrl(JsonNullable<String> iconUrl) {
+      this.instance.iconUrl = iconUrl;
+      return this;
     }
 
-    public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-    }
-
-    public ClientCapabilitiesDto iconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the icon url.
-     * 
-     * @return iconUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIconUrl() {
-        return iconUrl.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getIconUrl_JsonNullable() {
-        return iconUrl;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
-    public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
-    public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ClientCapabilitiesDto clientCapabilitiesDto = (ClientCapabilitiesDto) o;
-        return Objects.equals(this.playableMediaTypes, clientCapabilitiesDto.playableMediaTypes)
-                && Objects.equals(this.supportedCommands, clientCapabilitiesDto.supportedCommands)
-                && Objects.equals(this.supportsMediaControl, clientCapabilitiesDto.supportsMediaControl)
-                && Objects.equals(this.supportsContentUploading, clientCapabilitiesDto.supportsContentUploading)
-                && equalsNullable(this.messageCallbackUrl, clientCapabilitiesDto.messageCallbackUrl)
-                && Objects.equals(this.supportsPersistentIdentifier, clientCapabilitiesDto.supportsPersistentIdentifier)
-                && Objects.equals(this.supportsSync, clientCapabilitiesDto.supportsSync)
-                && equalsNullable(this.deviceProfile, clientCapabilitiesDto.deviceProfile)
-                && equalsNullable(this.appStoreUrl, clientCapabilitiesDto.appStoreUrl)
-                && equalsNullable(this.iconUrl, clientCapabilitiesDto.iconUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(playableMediaTypes, supportedCommands, supportsMediaControl, supportsContentUploading,
-                hashCodeNullable(messageCallbackUrl), supportsPersistentIdentifier, supportsSync,
-                hashCodeNullable(deviceProfile), hashCodeNullable(appStoreUrl), hashCodeNullable(iconUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built ClientCapabilitiesDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public ClientCapabilitiesDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ClientCapabilitiesDto {\n");
-        sb.append("    playableMediaTypes: ").append(toIndentedString(playableMediaTypes)).append("\n");
-        sb.append("    supportedCommands: ").append(toIndentedString(supportedCommands)).append("\n");
-        sb.append("    supportsMediaControl: ").append(toIndentedString(supportsMediaControl)).append("\n");
-        sb.append("    supportsContentUploading: ").append(toIndentedString(supportsContentUploading)).append("\n");
-        sb.append("    messageCallbackUrl: ").append(toIndentedString(messageCallbackUrl)).append("\n");
-        sb.append("    supportsPersistentIdentifier: ").append(toIndentedString(supportsPersistentIdentifier))
-                .append("\n");
-        sb.append("    supportsSync: ").append(toIndentedString(supportsSync)).append("\n");
-        sb.append("    deviceProfile: ").append(toIndentedString(deviceProfile)).append("\n");
-        sb.append("    appStoreUrl: ").append(toIndentedString(appStoreUrl)).append("\n");
-        sb.append("    iconUrl: ").append(toIndentedString(iconUrl)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ClientCapabilitiesDto.Builder builder() {
+    return new ClientCapabilitiesDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ClientCapabilitiesDto.Builder toBuilder() {
+    return new ClientCapabilitiesDto.Builder()
+      .playableMediaTypes(getPlayableMediaTypes())
+      .supportedCommands(getSupportedCommands())
+      .supportsMediaControl(getSupportsMediaControl())
+      .supportsContentUploading(getSupportsContentUploading())
+      .messageCallbackUrl(getMessageCallbackUrl())
+      .supportsPersistentIdentifier(getSupportsPersistentIdentifier())
+      .supportsSync(getSupportsSync())
+      .deviceProfile(getDeviceProfile())
+      .appStoreUrl(getAppStoreUrl())
+      .iconUrl(getIconUrl());
+  }
 
-        private ClientCapabilitiesDto instance;
 
-        public Builder() {
-            this(new ClientCapabilitiesDto());
-        }
-
-        protected Builder(ClientCapabilitiesDto instance) {
-            this.instance = instance;
-        }
-
-        public ClientCapabilitiesDto.Builder playableMediaTypes(List<String> playableMediaTypes) {
-            this.instance.playableMediaTypes = playableMediaTypes;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
-            this.instance.supportedCommands = supportedCommands;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsMediaControl(Boolean supportsMediaControl) {
-            this.instance.supportsMediaControl = supportsMediaControl;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsContentUploading(Boolean supportsContentUploading) {
-            this.instance.supportsContentUploading = supportsContentUploading;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder messageCallbackUrl(String messageCallbackUrl) {
-            this.instance.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder messageCallbackUrl(JsonNullable<String> messageCallbackUrl) {
-            this.instance.messageCallbackUrl = messageCallbackUrl;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsPersistentIdentifier(Boolean supportsPersistentIdentifier) {
-            this.instance.supportsPersistentIdentifier = supportsPersistentIdentifier;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder supportsSync(Boolean supportsSync) {
-            this.instance.supportsSync = supportsSync;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder deviceProfile(JsonNullable<DeviceProfile> deviceProfile) {
-            this.instance.deviceProfile = deviceProfile;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder appStoreUrl(String appStoreUrl) {
-            this.instance.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder appStoreUrl(JsonNullable<String> appStoreUrl) {
-            this.instance.appStoreUrl = appStoreUrl;
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = JsonNullable.<String> of(iconUrl);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder iconUrl(JsonNullable<String> iconUrl) {
-            this.instance.iconUrl = iconUrl;
-            return this;
-        }
-
-        /**
-         * returns a built ClientCapabilitiesDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ClientCapabilitiesDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ClientCapabilitiesDto.Builder builder() {
-        return new ClientCapabilitiesDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ClientCapabilitiesDto.Builder toBuilder() {
-        return new ClientCapabilitiesDto.Builder().playableMediaTypes(getPlayableMediaTypes())
-                .supportedCommands(getSupportedCommands()).supportsMediaControl(getSupportsMediaControl())
-                .supportsContentUploading(getSupportsContentUploading()).messageCallbackUrl(getMessageCallbackUrl())
-                .supportsPersistentIdentifier(getSupportsPersistentIdentifier()).supportsSync(getSupportsSync())
-                .deviceProfile(getDeviceProfile()).appStoreUrl(getAppStoreUrl()).iconUrl(getIconUrl());
-    }
 }
+

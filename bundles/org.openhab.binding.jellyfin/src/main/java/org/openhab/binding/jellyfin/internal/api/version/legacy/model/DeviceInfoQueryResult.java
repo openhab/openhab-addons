@@ -17,253 +17,264 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.DeviceInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * DeviceInfoQueryResult
  */
-@JsonPropertyOrder({ DeviceInfoQueryResult.JSON_PROPERTY_ITEMS, DeviceInfoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-        DeviceInfoQueryResult.JSON_PROPERTY_START_INDEX })
+@JsonPropertyOrder({
+  DeviceInfoQueryResult.JSON_PROPERTY_ITEMS,
+  DeviceInfoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+  DeviceInfoQueryResult.JSON_PROPERTY_START_INDEX
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceInfoQueryResult {
-    public static final String JSON_PROPERTY_ITEMS = "Items";
-    @javax.annotation.Nullable
-    private JsonNullable<List<DeviceInfo>> items = JsonNullable.<List<DeviceInfo>> undefined();
+  public static final String JSON_PROPERTY_ITEMS = "Items";
+  @javax.annotation.Nullable
+  private JsonNullable<List<DeviceInfo>> items = JsonNullable.<List<DeviceInfo>>undefined();
 
-    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @javax.annotation.Nullable
-    private Integer totalRecordCount;
+  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+  @javax.annotation.Nullable
+  private Integer totalRecordCount;
 
-    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @javax.annotation.Nullable
-    private Integer startIndex;
+  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+  @javax.annotation.Nullable
+  private Integer startIndex;
 
-    public DeviceInfoQueryResult() {
+  public DeviceInfoQueryResult() {
+  }
+
+  public DeviceInfoQueryResult items(@javax.annotation.Nullable List<DeviceInfo> items) {
+    this.items = JsonNullable.<List<DeviceInfo>>of(items);
+    
+    return this;
+  }
+
+  public DeviceInfoQueryResult addItemsItem(DeviceInfo itemsItem) {
+    if (this.items == null || !this.items.isPresent()) {
+      this.items = JsonNullable.<List<DeviceInfo>>of(new ArrayList<>());
     }
-
-    public DeviceInfoQueryResult items(@javax.annotation.Nullable List<DeviceInfo> items) {
-        this.items = JsonNullable.<List<DeviceInfo>> of(items);
-
-        return this;
+    try {
+      this.items.get().add(itemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    public DeviceInfoQueryResult addItemsItem(DeviceInfo itemsItem) {
-        if (this.items == null || !this.items.isPresent()) {
-            this.items = JsonNullable.<List<DeviceInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.items.get().add(itemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
+  /**
+   * Gets or sets the items.
+   * @return items
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the items.
-     * 
-     * @return items
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<DeviceInfo> getItems() {
+  public List<DeviceInfo> getItems() {
         return items.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<DeviceInfo>> getItems_JsonNullable() {
+    return items;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  public void setItems_JsonNullable(JsonNullable<List<DeviceInfo>> items) {
+    this.items = items;
+  }
+
+  public void setItems(@javax.annotation.Nullable List<DeviceInfo> items) {
+    this.items = JsonNullable.<List<DeviceInfo>>of(items);
+  }
+
+  public DeviceInfoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    
+    this.totalRecordCount = totalRecordCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the total number of records available.
+   * @return totalRecordCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTotalRecordCount() {
+    return totalRecordCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    this.totalRecordCount = totalRecordCount;
+  }
+
+  public DeviceInfoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+    
+    this.startIndex = startIndex;
+    return this;
+  }
+
+  /**
+   * Gets or sets the index of the first record in Items.
+   * @return startIndex
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getStartIndex() {
+    return startIndex;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+    this.startIndex = startIndex;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DeviceInfoQueryResult deviceInfoQueryResult = (DeviceInfoQueryResult) o;
+    return equalsNullable(this.items, deviceInfoQueryResult.items) &&
+        Objects.equals(this.totalRecordCount, deviceInfoQueryResult.totalRecordCount) &&
+        Objects.equals(this.startIndex, deviceInfoQueryResult.startIndex);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DeviceInfoQueryResult {\n");
+    sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DeviceInfoQueryResult instance;
+
+    public Builder() {
+      this(new DeviceInfoQueryResult());
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<DeviceInfo>> getItems_JsonNullable() {
-        return items;
+    protected Builder(DeviceInfoQueryResult instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    public void setItems_JsonNullable(JsonNullable<List<DeviceInfo>> items) {
-        this.items = items;
+    public DeviceInfoQueryResult.Builder items(List<DeviceInfo> items) {
+      this.instance.items = JsonNullable.<List<DeviceInfo>>of(items);
+      return this;
+    }
+    public DeviceInfoQueryResult.Builder items(JsonNullable<List<DeviceInfo>> items) {
+      this.instance.items = items;
+      return this;
+    }
+    public DeviceInfoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
+      this.instance.totalRecordCount = totalRecordCount;
+      return this;
+    }
+    public DeviceInfoQueryResult.Builder startIndex(Integer startIndex) {
+      this.instance.startIndex = startIndex;
+      return this;
     }
 
-    public void setItems(@javax.annotation.Nullable List<DeviceInfo> items) {
-        this.items = JsonNullable.<List<DeviceInfo>> of(items);
-    }
-
-    public DeviceInfoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-
-        this.totalRecordCount = totalRecordCount;
-        return this;
-    }
 
     /**
-     * Gets or sets the total number of records available.
-     * 
-     * @return totalRecordCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTotalRecordCount() {
-        return totalRecordCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-        this.totalRecordCount = totalRecordCount;
-    }
-
-    public DeviceInfoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-
-        this.startIndex = startIndex;
-        return this;
-    }
-
-    /**
-     * Gets or sets the index of the first record in Items.
-     * 
-     * @return startIndex
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getStartIndex() {
-        return startIndex;
-    }
-
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = startIndex;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DeviceInfoQueryResult deviceInfoQueryResult = (DeviceInfoQueryResult) o;
-        return equalsNullable(this.items, deviceInfoQueryResult.items)
-                && Objects.equals(this.totalRecordCount, deviceInfoQueryResult.totalRecordCount)
-                && Objects.equals(this.startIndex, deviceInfoQueryResult.startIndex);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built DeviceInfoQueryResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public DeviceInfoQueryResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DeviceInfoQueryResult {\n");
-        sb.append("    items: ").append(toIndentedString(items)).append("\n");
-        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DeviceInfoQueryResult.Builder builder() {
+    return new DeviceInfoQueryResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DeviceInfoQueryResult.Builder toBuilder() {
+    return new DeviceInfoQueryResult.Builder()
+      .items(getItems())
+      .totalRecordCount(getTotalRecordCount())
+      .startIndex(getStartIndex());
+  }
 
-        private DeviceInfoQueryResult instance;
 
-        public Builder() {
-            this(new DeviceInfoQueryResult());
-        }
-
-        protected Builder(DeviceInfoQueryResult instance) {
-            this.instance = instance;
-        }
-
-        public DeviceInfoQueryResult.Builder items(List<DeviceInfo> items) {
-            this.instance.items = JsonNullable.<List<DeviceInfo>> of(items);
-            return this;
-        }
-
-        public DeviceInfoQueryResult.Builder items(JsonNullable<List<DeviceInfo>> items) {
-            this.instance.items = items;
-            return this;
-        }
-
-        public DeviceInfoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-            this.instance.totalRecordCount = totalRecordCount;
-            return this;
-        }
-
-        public DeviceInfoQueryResult.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        /**
-         * returns a built DeviceInfoQueryResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public DeviceInfoQueryResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DeviceInfoQueryResult.Builder builder() {
-        return new DeviceInfoQueryResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DeviceInfoQueryResult.Builder toBuilder() {
-        return new DeviceInfoQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
-                .startIndex(getStartIndex());
-    }
 }
+

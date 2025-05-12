@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,38 +29,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MetadataRefreshMode
  */
 public enum MetadataRefreshMode {
+  
+  NONE("None"),
+  
+  VALIDATION_ONLY("ValidationOnly"),
+  
+  DEFAULT("Default"),
+  
+  FULL_REFRESH("FullRefresh");
 
-    NONE("None"),
+  private String value;
 
-    VALIDATION_ONLY("ValidationOnly"),
+  MetadataRefreshMode(String value) {
+    this.value = value;
+  }
 
-    DEFAULT("Default"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    FULL_REFRESH("FullRefresh");
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    private String value;
-
-    MetadataRefreshMode(String value) {
-        this.value = value;
+  @JsonCreator
+  public static MetadataRefreshMode fromValue(String value) {
+    for (MetadataRefreshMode b : MetadataRefreshMode.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MetadataRefreshMode fromValue(String value) {
-        for (MetadataRefreshMode b : MetadataRefreshMode.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

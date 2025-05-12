@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,52 +29,53 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupUpdateType.
  */
 public enum GroupUpdateType {
+  
+  USER_JOINED("UserJoined"),
+  
+  USER_LEFT("UserLeft"),
+  
+  GROUP_JOINED("GroupJoined"),
+  
+  GROUP_LEFT("GroupLeft"),
+  
+  STATE_UPDATE("StateUpdate"),
+  
+  PLAY_QUEUE("PlayQueue"),
+  
+  NOT_IN_GROUP("NotInGroup"),
+  
+  GROUP_DOES_NOT_EXIST("GroupDoesNotExist"),
+  
+  CREATE_GROUP_DENIED("CreateGroupDenied"),
+  
+  JOIN_GROUP_DENIED("JoinGroupDenied"),
+  
+  LIBRARY_ACCESS_DENIED("LibraryAccessDenied");
 
-    USER_JOINED("UserJoined"),
+  private String value;
 
-    USER_LEFT("UserLeft"),
+  GroupUpdateType(String value) {
+    this.value = value;
+  }
 
-    GROUP_JOINED("GroupJoined"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    GROUP_LEFT("GroupLeft"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    STATE_UPDATE("StateUpdate"),
-
-    PLAY_QUEUE("PlayQueue"),
-
-    NOT_IN_GROUP("NotInGroup"),
-
-    GROUP_DOES_NOT_EXIST("GroupDoesNotExist"),
-
-    CREATE_GROUP_DENIED("CreateGroupDenied"),
-
-    JOIN_GROUP_DENIED("JoinGroupDenied"),
-
-    LIBRARY_ACCESS_DENIED("LibraryAccessDenied");
-
-    private String value;
-
-    GroupUpdateType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static GroupUpdateType fromValue(String value) {
+    for (GroupUpdateType b : GroupUpdateType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static GroupUpdateType fromValue(String value) {
-        for (GroupUpdateType b : GroupUpdateType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

@@ -17,457 +17,458 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.PackageInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class InstallationInfo.
  */
-@JsonPropertyOrder({ InstallationInfo.JSON_PROPERTY_GUID, InstallationInfo.JSON_PROPERTY_NAME,
-        InstallationInfo.JSON_PROPERTY_VERSION, InstallationInfo.JSON_PROPERTY_CHANGELOG,
-        InstallationInfo.JSON_PROPERTY_SOURCE_URL, InstallationInfo.JSON_PROPERTY_CHECKSUM,
-        InstallationInfo.JSON_PROPERTY_PACKAGE_INFO })
+@JsonPropertyOrder({
+  InstallationInfo.JSON_PROPERTY_GUID,
+  InstallationInfo.JSON_PROPERTY_NAME,
+  InstallationInfo.JSON_PROPERTY_VERSION,
+  InstallationInfo.JSON_PROPERTY_CHANGELOG,
+  InstallationInfo.JSON_PROPERTY_SOURCE_URL,
+  InstallationInfo.JSON_PROPERTY_CHECKSUM,
+  InstallationInfo.JSON_PROPERTY_PACKAGE_INFO
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class InstallationInfo {
-    public static final String JSON_PROPERTY_GUID = "Guid";
-    @javax.annotation.Nullable
-    private UUID guid;
+  public static final String JSON_PROPERTY_GUID = "Guid";
+  @javax.annotation.Nullable
+  private UUID guid;
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_VERSION = "Version";
-    @javax.annotation.Nullable
-    private JsonNullable<String> version = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  @javax.annotation.Nullable
+  private JsonNullable<String> version = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
-    @javax.annotation.Nullable
-    private JsonNullable<String> changelog = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
+  @javax.annotation.Nullable
+  private JsonNullable<String> changelog = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> sourceUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> sourceUrl = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
-    @javax.annotation.Nullable
-    private JsonNullable<String> checksum = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
+  @javax.annotation.Nullable
+  private JsonNullable<String> checksum = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
-    @javax.annotation.Nullable
-    private JsonNullable<PackageInfo> packageInfo = JsonNullable.<PackageInfo> undefined();
+  public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
+  @javax.annotation.Nullable
+  private JsonNullable<PackageInfo> packageInfo = JsonNullable.<PackageInfo>undefined();
 
-    public InstallationInfo() {
-    }
+  public InstallationInfo() {
+  }
 
-    public InstallationInfo guid(@javax.annotation.Nullable UUID guid) {
+  public InstallationInfo guid(@javax.annotation.Nullable UUID guid) {
+    
+    this.guid = guid;
+    return this;
+  }
 
-        this.guid = guid;
-        return this;
-    }
+  /**
+   * Gets or sets the Id.
+   * @return guid
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the Id.
-     * 
-     * @return guid
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_GUID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public UUID getGuid() {
+    return guid;
+  }
 
-    public UUID getGuid() {
-        return guid;
-    }
 
-    @JsonProperty(JSON_PROPERTY_GUID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setGuid(@javax.annotation.Nullable UUID guid) {
-        this.guid = guid;
-    }
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGuid(@javax.annotation.Nullable UUID guid) {
+    this.guid = guid;
+  }
 
-    public InstallationInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public InstallationInfo name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public InstallationInfo version(@javax.annotation.Nullable String version) {
+    this.version = JsonNullable.<String>of(version);
+    
+    return this;
+  }
 
-    public InstallationInfo version(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
+  /**
+   * Gets or sets the version.
+   * @return version
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the version.
-     * 
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVersion() {
+  public String getVersion() {
         return version.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVersion_JsonNullable() {
-        return version;
-    }
+  public JsonNullable<String> getVersion_JsonNullable() {
+    return version;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  public void setVersion_JsonNullable(JsonNullable<String> version) {
+    this.version = version;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    public void setVersion_JsonNullable(JsonNullable<String> version) {
-        this.version = version;
-    }
+  public void setVersion(@javax.annotation.Nullable String version) {
+    this.version = JsonNullable.<String>of(version);
+  }
 
-    public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
-    }
+  public InstallationInfo changelog(@javax.annotation.Nullable String changelog) {
+    this.changelog = JsonNullable.<String>of(changelog);
+    
+    return this;
+  }
 
-    public InstallationInfo changelog(@javax.annotation.Nullable String changelog) {
-        this.changelog = JsonNullable.<String> of(changelog);
+  /**
+   * Gets or sets the changelog for this version.
+   * @return changelog
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the changelog for this version.
-     * 
-     * @return changelog
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChangelog() {
+  public String getChangelog() {
         return changelog.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChangelog_JsonNullable() {
-        return changelog;
-    }
+  public JsonNullable<String> getChangelog_JsonNullable() {
+    return changelog;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
+    this.changelog = changelog;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
-    public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
-        this.changelog = changelog;
-    }
+  public void setChangelog(@javax.annotation.Nullable String changelog) {
+    this.changelog = JsonNullable.<String>of(changelog);
+  }
 
-    public void setChangelog(@javax.annotation.Nullable String changelog) {
-        this.changelog = JsonNullable.<String> of(changelog);
-    }
+  public InstallationInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
+    
+    return this;
+  }
 
-    public InstallationInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
-        this.sourceUrl = JsonNullable.<String> of(sourceUrl);
+  /**
+   * Gets or sets the source URL.
+   * @return sourceUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the source URL.
-     * 
-     * @return sourceUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSourceUrl() {
+  public String getSourceUrl() {
         return sourceUrl.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSourceUrl_JsonNullable() {
-        return sourceUrl;
-    }
+  public JsonNullable<String> getSourceUrl_JsonNullable() {
+    return sourceUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
+    this.sourceUrl = sourceUrl;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
-    public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
-        this.sourceUrl = sourceUrl;
-    }
+  public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
+  }
 
-    public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
-        this.sourceUrl = JsonNullable.<String> of(sourceUrl);
-    }
+  public InstallationInfo checksum(@javax.annotation.Nullable String checksum) {
+    this.checksum = JsonNullable.<String>of(checksum);
+    
+    return this;
+  }
 
-    public InstallationInfo checksum(@javax.annotation.Nullable String checksum) {
-        this.checksum = JsonNullable.<String> of(checksum);
+  /**
+   * Gets or sets a checksum for the binary.
+   * @return checksum
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a checksum for the binary.
-     * 
-     * @return checksum
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChecksum() {
+  public String getChecksum() {
         return checksum.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChecksum_JsonNullable() {
+    return checksum;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
+    this.checksum = checksum;
+  }
+
+  public void setChecksum(@javax.annotation.Nullable String checksum) {
+    this.checksum = JsonNullable.<String>of(checksum);
+  }
+
+  public InstallationInfo packageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
+    this.packageInfo = JsonNullable.<PackageInfo>of(packageInfo);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets package information for the installation.
+   * @return packageInfo
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public PackageInfo getPackageInfo() {
+        return packageInfo.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PackageInfo> getPackageInfo_JsonNullable() {
+    return packageInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
+  public void setPackageInfo_JsonNullable(JsonNullable<PackageInfo> packageInfo) {
+    this.packageInfo = packageInfo;
+  }
+
+  public void setPackageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
+    this.packageInfo = JsonNullable.<PackageInfo>of(packageInfo);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    InstallationInfo installationInfo = (InstallationInfo) o;
+    return Objects.equals(this.guid, installationInfo.guid) &&
+        equalsNullable(this.name, installationInfo.name) &&
+        equalsNullable(this.version, installationInfo.version) &&
+        equalsNullable(this.changelog, installationInfo.changelog) &&
+        equalsNullable(this.sourceUrl, installationInfo.sourceUrl) &&
+        equalsNullable(this.checksum, installationInfo.checksum) &&
+        equalsNullable(this.packageInfo, installationInfo.packageInfo);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(guid, hashCodeNullable(name), hashCodeNullable(version), hashCodeNullable(changelog), hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(packageInfo));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class InstallationInfo {\n");
+    sb.append("    guid: ").append(toIndentedString(guid)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    changelog: ").append(toIndentedString(changelog)).append("\n");
+    sb.append("    sourceUrl: ").append(toIndentedString(sourceUrl)).append("\n");
+    sb.append("    checksum: ").append(toIndentedString(checksum)).append("\n");
+    sb.append("    packageInfo: ").append(toIndentedString(packageInfo)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private InstallationInfo instance;
+
+    public Builder() {
+      this(new InstallationInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getChecksum_JsonNullable() {
-        return checksum;
+    protected Builder(InstallationInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
-    public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
-        this.checksum = checksum;
+    public InstallationInfo.Builder guid(UUID guid) {
+      this.instance.guid = guid;
+      return this;
+    }
+    public InstallationInfo.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public InstallationInfo.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public InstallationInfo.Builder version(String version) {
+      this.instance.version = JsonNullable.<String>of(version);
+      return this;
+    }
+    public InstallationInfo.Builder version(JsonNullable<String> version) {
+      this.instance.version = version;
+      return this;
+    }
+    public InstallationInfo.Builder changelog(String changelog) {
+      this.instance.changelog = JsonNullable.<String>of(changelog);
+      return this;
+    }
+    public InstallationInfo.Builder changelog(JsonNullable<String> changelog) {
+      this.instance.changelog = changelog;
+      return this;
+    }
+    public InstallationInfo.Builder sourceUrl(String sourceUrl) {
+      this.instance.sourceUrl = JsonNullable.<String>of(sourceUrl);
+      return this;
+    }
+    public InstallationInfo.Builder sourceUrl(JsonNullable<String> sourceUrl) {
+      this.instance.sourceUrl = sourceUrl;
+      return this;
+    }
+    public InstallationInfo.Builder checksum(String checksum) {
+      this.instance.checksum = JsonNullable.<String>of(checksum);
+      return this;
+    }
+    public InstallationInfo.Builder checksum(JsonNullable<String> checksum) {
+      this.instance.checksum = checksum;
+      return this;
+    }
+    public InstallationInfo.Builder packageInfo(PackageInfo packageInfo) {
+      this.instance.packageInfo = JsonNullable.<PackageInfo>of(packageInfo);
+      return this;
+    }
+    public InstallationInfo.Builder packageInfo(JsonNullable<PackageInfo> packageInfo) {
+      this.instance.packageInfo = packageInfo;
+      return this;
     }
 
-    public void setChecksum(@javax.annotation.Nullable String checksum) {
-        this.checksum = JsonNullable.<String> of(checksum);
-    }
-
-    public InstallationInfo packageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
-        this.packageInfo = JsonNullable.<PackageInfo> of(packageInfo);
-
-        return this;
-    }
 
     /**
-     * Gets or sets package information for the installation.
-     * 
-     * @return packageInfo
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PackageInfo getPackageInfo() {
-        return packageInfo.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<PackageInfo> getPackageInfo_JsonNullable() {
-        return packageInfo;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
-    public void setPackageInfo_JsonNullable(JsonNullable<PackageInfo> packageInfo) {
-        this.packageInfo = packageInfo;
-    }
-
-    public void setPackageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
-        this.packageInfo = JsonNullable.<PackageInfo> of(packageInfo);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        InstallationInfo installationInfo = (InstallationInfo) o;
-        return Objects.equals(this.guid, installationInfo.guid) && equalsNullable(this.name, installationInfo.name)
-                && equalsNullable(this.version, installationInfo.version)
-                && equalsNullable(this.changelog, installationInfo.changelog)
-                && equalsNullable(this.sourceUrl, installationInfo.sourceUrl)
-                && equalsNullable(this.checksum, installationInfo.checksum)
-                && equalsNullable(this.packageInfo, installationInfo.packageInfo);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(guid, hashCodeNullable(name), hashCodeNullable(version), hashCodeNullable(changelog),
-                hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(packageInfo));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built InstallationInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public InstallationInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class InstallationInfo {\n");
-        sb.append("    guid: ").append(toIndentedString(guid)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    version: ").append(toIndentedString(version)).append("\n");
-        sb.append("    changelog: ").append(toIndentedString(changelog)).append("\n");
-        sb.append("    sourceUrl: ").append(toIndentedString(sourceUrl)).append("\n");
-        sb.append("    checksum: ").append(toIndentedString(checksum)).append("\n");
-        sb.append("    packageInfo: ").append(toIndentedString(packageInfo)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static InstallationInfo.Builder builder() {
+    return new InstallationInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public InstallationInfo.Builder toBuilder() {
+    return new InstallationInfo.Builder()
+      .guid(getGuid())
+      .name(getName())
+      .version(getVersion())
+      .changelog(getChangelog())
+      .sourceUrl(getSourceUrl())
+      .checksum(getChecksum())
+      .packageInfo(getPackageInfo());
+  }
 
-        private InstallationInfo instance;
 
-        public Builder() {
-            this(new InstallationInfo());
-        }
-
-        protected Builder(InstallationInfo instance) {
-            this.instance = instance;
-        }
-
-        public InstallationInfo.Builder guid(UUID guid) {
-            this.instance.guid = guid;
-            return this;
-        }
-
-        public InstallationInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public InstallationInfo.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public InstallationInfo.Builder version(String version) {
-            this.instance.version = JsonNullable.<String> of(version);
-            return this;
-        }
-
-        public InstallationInfo.Builder version(JsonNullable<String> version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public InstallationInfo.Builder changelog(String changelog) {
-            this.instance.changelog = JsonNullable.<String> of(changelog);
-            return this;
-        }
-
-        public InstallationInfo.Builder changelog(JsonNullable<String> changelog) {
-            this.instance.changelog = changelog;
-            return this;
-        }
-
-        public InstallationInfo.Builder sourceUrl(String sourceUrl) {
-            this.instance.sourceUrl = JsonNullable.<String> of(sourceUrl);
-            return this;
-        }
-
-        public InstallationInfo.Builder sourceUrl(JsonNullable<String> sourceUrl) {
-            this.instance.sourceUrl = sourceUrl;
-            return this;
-        }
-
-        public InstallationInfo.Builder checksum(String checksum) {
-            this.instance.checksum = JsonNullable.<String> of(checksum);
-            return this;
-        }
-
-        public InstallationInfo.Builder checksum(JsonNullable<String> checksum) {
-            this.instance.checksum = checksum;
-            return this;
-        }
-
-        public InstallationInfo.Builder packageInfo(PackageInfo packageInfo) {
-            this.instance.packageInfo = JsonNullable.<PackageInfo> of(packageInfo);
-            return this;
-        }
-
-        public InstallationInfo.Builder packageInfo(JsonNullable<PackageInfo> packageInfo) {
-            this.instance.packageInfo = packageInfo;
-            return this;
-        }
-
-        /**
-         * returns a built InstallationInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public InstallationInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static InstallationInfo.Builder builder() {
-        return new InstallationInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public InstallationInfo.Builder toBuilder() {
-        return new InstallationInfo.Builder().guid(getGuid()).name(getName()).version(getVersion())
-                .changelog(getChangelog()).sourceUrl(getSourceUrl()).checksum(getChecksum())
-                .packageInfo(getPackageInfo());
-    }
 }
+

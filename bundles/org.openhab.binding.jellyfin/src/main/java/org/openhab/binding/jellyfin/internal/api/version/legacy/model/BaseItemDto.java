@@ -17,8078 +17,7791 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemDtoImageBlurHashes;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemPerson;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ChannelType;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ChapterInfo;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.DayOfWeek;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ExternalUrl;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ImageOrientation;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.IsoType;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.LocationType;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaSourceInfo;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaStream;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaUrl;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MetadataField;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.NameGuidPair;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlayAccess;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ProgramAudio;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.UserItemDataDto;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.Video3DFormat;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.VideoType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * This is strictly used as a data transfer object from the api layer. This holds information about a BaseItem in a
- * format that is convenient for the client.
+ * This is strictly used as a data transfer object from the api layer.  This holds information about a BaseItem in a format that is convenient for the client.
  */
-@JsonPropertyOrder({ BaseItemDto.JSON_PROPERTY_NAME, BaseItemDto.JSON_PROPERTY_ORIGINAL_TITLE,
-        BaseItemDto.JSON_PROPERTY_SERVER_ID, BaseItemDto.JSON_PROPERTY_ID, BaseItemDto.JSON_PROPERTY_ETAG,
-        BaseItemDto.JSON_PROPERTY_SOURCE_TYPE, BaseItemDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-        BaseItemDto.JSON_PROPERTY_DATE_CREATED, BaseItemDto.JSON_PROPERTY_DATE_LAST_MEDIA_ADDED,
-        BaseItemDto.JSON_PROPERTY_EXTRA_TYPE, BaseItemDto.JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER,
-        BaseItemDto.JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER, BaseItemDto.JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER,
-        BaseItemDto.JSON_PROPERTY_CAN_DELETE, BaseItemDto.JSON_PROPERTY_CAN_DOWNLOAD,
-        BaseItemDto.JSON_PROPERTY_HAS_SUBTITLES, BaseItemDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE,
-        BaseItemDto.JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE, BaseItemDto.JSON_PROPERTY_SUPPORTS_SYNC,
-        BaseItemDto.JSON_PROPERTY_CONTAINER, BaseItemDto.JSON_PROPERTY_SORT_NAME,
-        BaseItemDto.JSON_PROPERTY_FORCED_SORT_NAME, BaseItemDto.JSON_PROPERTY_VIDEO3_D_FORMAT,
-        BaseItemDto.JSON_PROPERTY_PREMIERE_DATE, BaseItemDto.JSON_PROPERTY_EXTERNAL_URLS,
-        BaseItemDto.JSON_PROPERTY_MEDIA_SOURCES, BaseItemDto.JSON_PROPERTY_CRITIC_RATING,
-        BaseItemDto.JSON_PROPERTY_PRODUCTION_LOCATIONS, BaseItemDto.JSON_PROPERTY_PATH,
-        BaseItemDto.JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY, BaseItemDto.JSON_PROPERTY_OFFICIAL_RATING,
-        BaseItemDto.JSON_PROPERTY_CUSTOM_RATING, BaseItemDto.JSON_PROPERTY_CHANNEL_ID,
-        BaseItemDto.JSON_PROPERTY_CHANNEL_NAME, BaseItemDto.JSON_PROPERTY_OVERVIEW, BaseItemDto.JSON_PROPERTY_TAGLINES,
-        BaseItemDto.JSON_PROPERTY_GENRES, BaseItemDto.JSON_PROPERTY_COMMUNITY_RATING,
-        BaseItemDto.JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS, BaseItemDto.JSON_PROPERTY_RUN_TIME_TICKS,
-        BaseItemDto.JSON_PROPERTY_PLAY_ACCESS, BaseItemDto.JSON_PROPERTY_ASPECT_RATIO,
-        BaseItemDto.JSON_PROPERTY_PRODUCTION_YEAR, BaseItemDto.JSON_PROPERTY_IS_PLACE_HOLDER,
-        BaseItemDto.JSON_PROPERTY_NUMBER, BaseItemDto.JSON_PROPERTY_CHANNEL_NUMBER,
-        BaseItemDto.JSON_PROPERTY_INDEX_NUMBER, BaseItemDto.JSON_PROPERTY_INDEX_NUMBER_END,
-        BaseItemDto.JSON_PROPERTY_PARENT_INDEX_NUMBER, BaseItemDto.JSON_PROPERTY_REMOTE_TRAILERS,
-        BaseItemDto.JSON_PROPERTY_PROVIDER_IDS, BaseItemDto.JSON_PROPERTY_IS_H_D, BaseItemDto.JSON_PROPERTY_IS_FOLDER,
-        BaseItemDto.JSON_PROPERTY_PARENT_ID, BaseItemDto.JSON_PROPERTY_TYPE, BaseItemDto.JSON_PROPERTY_PEOPLE,
-        BaseItemDto.JSON_PROPERTY_STUDIOS, BaseItemDto.JSON_PROPERTY_GENRE_ITEMS,
-        BaseItemDto.JSON_PROPERTY_PARENT_LOGO_ITEM_ID, BaseItemDto.JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID,
-        BaseItemDto.JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, BaseItemDto.JSON_PROPERTY_LOCAL_TRAILER_COUNT,
-        BaseItemDto.JSON_PROPERTY_USER_DATA, BaseItemDto.JSON_PROPERTY_RECURSIVE_ITEM_COUNT,
-        BaseItemDto.JSON_PROPERTY_CHILD_COUNT, BaseItemDto.JSON_PROPERTY_SERIES_NAME,
-        BaseItemDto.JSON_PROPERTY_SERIES_ID, BaseItemDto.JSON_PROPERTY_SEASON_ID,
-        BaseItemDto.JSON_PROPERTY_SPECIAL_FEATURE_COUNT, BaseItemDto.JSON_PROPERTY_DISPLAY_PREFERENCES_ID,
-        BaseItemDto.JSON_PROPERTY_STATUS, BaseItemDto.JSON_PROPERTY_AIR_TIME, BaseItemDto.JSON_PROPERTY_AIR_DAYS,
-        BaseItemDto.JSON_PROPERTY_TAGS, BaseItemDto.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO,
-        BaseItemDto.JSON_PROPERTY_ARTISTS, BaseItemDto.JSON_PROPERTY_ARTIST_ITEMS, BaseItemDto.JSON_PROPERTY_ALBUM,
-        BaseItemDto.JSON_PROPERTY_COLLECTION_TYPE, BaseItemDto.JSON_PROPERTY_DISPLAY_ORDER,
-        BaseItemDto.JSON_PROPERTY_ALBUM_ID, BaseItemDto.JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG,
-        BaseItemDto.JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG, BaseItemDto.JSON_PROPERTY_ALBUM_ARTIST,
-        BaseItemDto.JSON_PROPERTY_ALBUM_ARTISTS, BaseItemDto.JSON_PROPERTY_SEASON_NAME,
-        BaseItemDto.JSON_PROPERTY_MEDIA_STREAMS, BaseItemDto.JSON_PROPERTY_VIDEO_TYPE,
-        BaseItemDto.JSON_PROPERTY_PART_COUNT, BaseItemDto.JSON_PROPERTY_MEDIA_SOURCE_COUNT,
-        BaseItemDto.JSON_PROPERTY_IMAGE_TAGS, BaseItemDto.JSON_PROPERTY_BACKDROP_IMAGE_TAGS,
-        BaseItemDto.JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS, BaseItemDto.JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG,
-        BaseItemDto.JSON_PROPERTY_PARENT_ART_ITEM_ID, BaseItemDto.JSON_PROPERTY_PARENT_ART_IMAGE_TAG,
-        BaseItemDto.JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG, BaseItemDto.JSON_PROPERTY_IMAGE_BLUR_HASHES,
-        BaseItemDto.JSON_PROPERTY_SERIES_STUDIO, BaseItemDto.JSON_PROPERTY_PARENT_THUMB_ITEM_ID,
-        BaseItemDto.JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, BaseItemDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID,
-        BaseItemDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, BaseItemDto.JSON_PROPERTY_CHAPTERS,
-        BaseItemDto.JSON_PROPERTY_LOCATION_TYPE, BaseItemDto.JSON_PROPERTY_ISO_TYPE,
-        BaseItemDto.JSON_PROPERTY_MEDIA_TYPE, BaseItemDto.JSON_PROPERTY_END_DATE,
-        BaseItemDto.JSON_PROPERTY_LOCKED_FIELDS, BaseItemDto.JSON_PROPERTY_TRAILER_COUNT,
-        BaseItemDto.JSON_PROPERTY_MOVIE_COUNT, BaseItemDto.JSON_PROPERTY_SERIES_COUNT,
-        BaseItemDto.JSON_PROPERTY_PROGRAM_COUNT, BaseItemDto.JSON_PROPERTY_EPISODE_COUNT,
-        BaseItemDto.JSON_PROPERTY_SONG_COUNT, BaseItemDto.JSON_PROPERTY_ALBUM_COUNT,
-        BaseItemDto.JSON_PROPERTY_ARTIST_COUNT, BaseItemDto.JSON_PROPERTY_MUSIC_VIDEO_COUNT,
-        BaseItemDto.JSON_PROPERTY_LOCK_DATA, BaseItemDto.JSON_PROPERTY_WIDTH, BaseItemDto.JSON_PROPERTY_HEIGHT,
-        BaseItemDto.JSON_PROPERTY_CAMERA_MAKE, BaseItemDto.JSON_PROPERTY_CAMERA_MODEL,
-        BaseItemDto.JSON_PROPERTY_SOFTWARE, BaseItemDto.JSON_PROPERTY_EXPOSURE_TIME,
-        BaseItemDto.JSON_PROPERTY_FOCAL_LENGTH, BaseItemDto.JSON_PROPERTY_IMAGE_ORIENTATION,
-        BaseItemDto.JSON_PROPERTY_APERTURE, BaseItemDto.JSON_PROPERTY_SHUTTER_SPEED, BaseItemDto.JSON_PROPERTY_LATITUDE,
-        BaseItemDto.JSON_PROPERTY_LONGITUDE, BaseItemDto.JSON_PROPERTY_ALTITUDE,
-        BaseItemDto.JSON_PROPERTY_ISO_SPEED_RATING, BaseItemDto.JSON_PROPERTY_SERIES_TIMER_ID,
-        BaseItemDto.JSON_PROPERTY_PROGRAM_ID, BaseItemDto.JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG,
-        BaseItemDto.JSON_PROPERTY_START_DATE, BaseItemDto.JSON_PROPERTY_COMPLETION_PERCENTAGE,
-        BaseItemDto.JSON_PROPERTY_IS_REPEAT, BaseItemDto.JSON_PROPERTY_EPISODE_TITLE,
-        BaseItemDto.JSON_PROPERTY_CHANNEL_TYPE, BaseItemDto.JSON_PROPERTY_AUDIO, BaseItemDto.JSON_PROPERTY_IS_MOVIE,
-        BaseItemDto.JSON_PROPERTY_IS_SPORTS, BaseItemDto.JSON_PROPERTY_IS_SERIES, BaseItemDto.JSON_PROPERTY_IS_LIVE,
-        BaseItemDto.JSON_PROPERTY_IS_NEWS, BaseItemDto.JSON_PROPERTY_IS_KIDS, BaseItemDto.JSON_PROPERTY_IS_PREMIERE,
-        BaseItemDto.JSON_PROPERTY_TIMER_ID, BaseItemDto.JSON_PROPERTY_CURRENT_PROGRAM })
+@JsonPropertyOrder({
+  BaseItemDto.JSON_PROPERTY_NAME,
+  BaseItemDto.JSON_PROPERTY_ORIGINAL_TITLE,
+  BaseItemDto.JSON_PROPERTY_SERVER_ID,
+  BaseItemDto.JSON_PROPERTY_ID,
+  BaseItemDto.JSON_PROPERTY_ETAG,
+  BaseItemDto.JSON_PROPERTY_SOURCE_TYPE,
+  BaseItemDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_DATE_CREATED,
+  BaseItemDto.JSON_PROPERTY_DATE_LAST_MEDIA_ADDED,
+  BaseItemDto.JSON_PROPERTY_EXTRA_TYPE,
+  BaseItemDto.JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER,
+  BaseItemDto.JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER,
+  BaseItemDto.JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER,
+  BaseItemDto.JSON_PROPERTY_CAN_DELETE,
+  BaseItemDto.JSON_PROPERTY_CAN_DOWNLOAD,
+  BaseItemDto.JSON_PROPERTY_HAS_SUBTITLES,
+  BaseItemDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE,
+  BaseItemDto.JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE,
+  BaseItemDto.JSON_PROPERTY_SUPPORTS_SYNC,
+  BaseItemDto.JSON_PROPERTY_CONTAINER,
+  BaseItemDto.JSON_PROPERTY_SORT_NAME,
+  BaseItemDto.JSON_PROPERTY_FORCED_SORT_NAME,
+  BaseItemDto.JSON_PROPERTY_VIDEO3_D_FORMAT,
+  BaseItemDto.JSON_PROPERTY_PREMIERE_DATE,
+  BaseItemDto.JSON_PROPERTY_EXTERNAL_URLS,
+  BaseItemDto.JSON_PROPERTY_MEDIA_SOURCES,
+  BaseItemDto.JSON_PROPERTY_CRITIC_RATING,
+  BaseItemDto.JSON_PROPERTY_PRODUCTION_LOCATIONS,
+  BaseItemDto.JSON_PROPERTY_PATH,
+  BaseItemDto.JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY,
+  BaseItemDto.JSON_PROPERTY_OFFICIAL_RATING,
+  BaseItemDto.JSON_PROPERTY_CUSTOM_RATING,
+  BaseItemDto.JSON_PROPERTY_CHANNEL_ID,
+  BaseItemDto.JSON_PROPERTY_CHANNEL_NAME,
+  BaseItemDto.JSON_PROPERTY_OVERVIEW,
+  BaseItemDto.JSON_PROPERTY_TAGLINES,
+  BaseItemDto.JSON_PROPERTY_GENRES,
+  BaseItemDto.JSON_PROPERTY_COMMUNITY_RATING,
+  BaseItemDto.JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS,
+  BaseItemDto.JSON_PROPERTY_RUN_TIME_TICKS,
+  BaseItemDto.JSON_PROPERTY_PLAY_ACCESS,
+  BaseItemDto.JSON_PROPERTY_ASPECT_RATIO,
+  BaseItemDto.JSON_PROPERTY_PRODUCTION_YEAR,
+  BaseItemDto.JSON_PROPERTY_IS_PLACE_HOLDER,
+  BaseItemDto.JSON_PROPERTY_NUMBER,
+  BaseItemDto.JSON_PROPERTY_CHANNEL_NUMBER,
+  BaseItemDto.JSON_PROPERTY_INDEX_NUMBER,
+  BaseItemDto.JSON_PROPERTY_INDEX_NUMBER_END,
+  BaseItemDto.JSON_PROPERTY_PARENT_INDEX_NUMBER,
+  BaseItemDto.JSON_PROPERTY_REMOTE_TRAILERS,
+  BaseItemDto.JSON_PROPERTY_PROVIDER_IDS,
+  BaseItemDto.JSON_PROPERTY_IS_H_D,
+  BaseItemDto.JSON_PROPERTY_IS_FOLDER,
+  BaseItemDto.JSON_PROPERTY_PARENT_ID,
+  BaseItemDto.JSON_PROPERTY_TYPE,
+  BaseItemDto.JSON_PROPERTY_PEOPLE,
+  BaseItemDto.JSON_PROPERTY_STUDIOS,
+  BaseItemDto.JSON_PROPERTY_GENRE_ITEMS,
+  BaseItemDto.JSON_PROPERTY_PARENT_LOGO_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS,
+  BaseItemDto.JSON_PROPERTY_LOCAL_TRAILER_COUNT,
+  BaseItemDto.JSON_PROPERTY_USER_DATA,
+  BaseItemDto.JSON_PROPERTY_RECURSIVE_ITEM_COUNT,
+  BaseItemDto.JSON_PROPERTY_CHILD_COUNT,
+  BaseItemDto.JSON_PROPERTY_SERIES_NAME,
+  BaseItemDto.JSON_PROPERTY_SERIES_ID,
+  BaseItemDto.JSON_PROPERTY_SEASON_ID,
+  BaseItemDto.JSON_PROPERTY_SPECIAL_FEATURE_COUNT,
+  BaseItemDto.JSON_PROPERTY_DISPLAY_PREFERENCES_ID,
+  BaseItemDto.JSON_PROPERTY_STATUS,
+  BaseItemDto.JSON_PROPERTY_AIR_TIME,
+  BaseItemDto.JSON_PROPERTY_AIR_DAYS,
+  BaseItemDto.JSON_PROPERTY_TAGS,
+  BaseItemDto.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO,
+  BaseItemDto.JSON_PROPERTY_ARTISTS,
+  BaseItemDto.JSON_PROPERTY_ARTIST_ITEMS,
+  BaseItemDto.JSON_PROPERTY_ALBUM,
+  BaseItemDto.JSON_PROPERTY_COLLECTION_TYPE,
+  BaseItemDto.JSON_PROPERTY_DISPLAY_ORDER,
+  BaseItemDto.JSON_PROPERTY_ALBUM_ID,
+  BaseItemDto.JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_ALBUM_ARTIST,
+  BaseItemDto.JSON_PROPERTY_ALBUM_ARTISTS,
+  BaseItemDto.JSON_PROPERTY_SEASON_NAME,
+  BaseItemDto.JSON_PROPERTY_MEDIA_STREAMS,
+  BaseItemDto.JSON_PROPERTY_VIDEO_TYPE,
+  BaseItemDto.JSON_PROPERTY_PART_COUNT,
+  BaseItemDto.JSON_PROPERTY_MEDIA_SOURCE_COUNT,
+  BaseItemDto.JSON_PROPERTY_IMAGE_TAGS,
+  BaseItemDto.JSON_PROPERTY_BACKDROP_IMAGE_TAGS,
+  BaseItemDto.JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS,
+  BaseItemDto.JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_PARENT_ART_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_PARENT_ART_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_IMAGE_BLUR_HASHES,
+  BaseItemDto.JSON_PROPERTY_SERIES_STUDIO,
+  BaseItemDto.JSON_PROPERTY_PARENT_THUMB_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID,
+  BaseItemDto.JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_CHAPTERS,
+  BaseItemDto.JSON_PROPERTY_LOCATION_TYPE,
+  BaseItemDto.JSON_PROPERTY_ISO_TYPE,
+  BaseItemDto.JSON_PROPERTY_MEDIA_TYPE,
+  BaseItemDto.JSON_PROPERTY_END_DATE,
+  BaseItemDto.JSON_PROPERTY_LOCKED_FIELDS,
+  BaseItemDto.JSON_PROPERTY_TRAILER_COUNT,
+  BaseItemDto.JSON_PROPERTY_MOVIE_COUNT,
+  BaseItemDto.JSON_PROPERTY_SERIES_COUNT,
+  BaseItemDto.JSON_PROPERTY_PROGRAM_COUNT,
+  BaseItemDto.JSON_PROPERTY_EPISODE_COUNT,
+  BaseItemDto.JSON_PROPERTY_SONG_COUNT,
+  BaseItemDto.JSON_PROPERTY_ALBUM_COUNT,
+  BaseItemDto.JSON_PROPERTY_ARTIST_COUNT,
+  BaseItemDto.JSON_PROPERTY_MUSIC_VIDEO_COUNT,
+  BaseItemDto.JSON_PROPERTY_LOCK_DATA,
+  BaseItemDto.JSON_PROPERTY_WIDTH,
+  BaseItemDto.JSON_PROPERTY_HEIGHT,
+  BaseItemDto.JSON_PROPERTY_CAMERA_MAKE,
+  BaseItemDto.JSON_PROPERTY_CAMERA_MODEL,
+  BaseItemDto.JSON_PROPERTY_SOFTWARE,
+  BaseItemDto.JSON_PROPERTY_EXPOSURE_TIME,
+  BaseItemDto.JSON_PROPERTY_FOCAL_LENGTH,
+  BaseItemDto.JSON_PROPERTY_IMAGE_ORIENTATION,
+  BaseItemDto.JSON_PROPERTY_APERTURE,
+  BaseItemDto.JSON_PROPERTY_SHUTTER_SPEED,
+  BaseItemDto.JSON_PROPERTY_LATITUDE,
+  BaseItemDto.JSON_PROPERTY_LONGITUDE,
+  BaseItemDto.JSON_PROPERTY_ALTITUDE,
+  BaseItemDto.JSON_PROPERTY_ISO_SPEED_RATING,
+  BaseItemDto.JSON_PROPERTY_SERIES_TIMER_ID,
+  BaseItemDto.JSON_PROPERTY_PROGRAM_ID,
+  BaseItemDto.JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG,
+  BaseItemDto.JSON_PROPERTY_START_DATE,
+  BaseItemDto.JSON_PROPERTY_COMPLETION_PERCENTAGE,
+  BaseItemDto.JSON_PROPERTY_IS_REPEAT,
+  BaseItemDto.JSON_PROPERTY_EPISODE_TITLE,
+  BaseItemDto.JSON_PROPERTY_CHANNEL_TYPE,
+  BaseItemDto.JSON_PROPERTY_AUDIO,
+  BaseItemDto.JSON_PROPERTY_IS_MOVIE,
+  BaseItemDto.JSON_PROPERTY_IS_SPORTS,
+  BaseItemDto.JSON_PROPERTY_IS_SERIES,
+  BaseItemDto.JSON_PROPERTY_IS_LIVE,
+  BaseItemDto.JSON_PROPERTY_IS_NEWS,
+  BaseItemDto.JSON_PROPERTY_IS_KIDS,
+  BaseItemDto.JSON_PROPERTY_IS_PREMIERE,
+  BaseItemDto.JSON_PROPERTY_TIMER_ID,
+  BaseItemDto.JSON_PROPERTY_CURRENT_PROGRAM
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemDto {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
-    @javax.annotation.Nullable
-    private JsonNullable<String> originalTitle = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private UUID id;
-
-    public static final String JSON_PROPERTY_ETAG = "Etag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> etag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SOURCE_TYPE = "SourceType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> sourceType = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> dateCreated = JsonNullable.<OffsetDateTime> undefined();
-
-    public static final String JSON_PROPERTY_DATE_LAST_MEDIA_ADDED = "DateLastMediaAdded";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> dateLastMediaAdded = JsonNullable.<OffsetDateTime> undefined();
-
-    public static final String JSON_PROPERTY_EXTRA_TYPE = "ExtraType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> extraType = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER = "AirsBeforeSeasonNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> airsBeforeSeasonNumber = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER = "AirsAfterSeasonNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> airsAfterSeasonNumber = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER = "AirsBeforeEpisodeNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> airsBeforeEpisodeNumber = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_CAN_DELETE = "CanDelete";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> canDelete = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_CAN_DOWNLOAD = "CanDownload";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> canDownload = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_HAS_SUBTITLES = "HasSubtitles";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> hasSubtitles = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-    @javax.annotation.Nullable
-    private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE = "PreferredMetadataCountryCode";
-    @javax.annotation.Nullable
-    private JsonNullable<String> preferredMetadataCountryCode = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SUPPORTS_SYNC = "SupportsSync";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> supportsSync = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SORT_NAME = "SortName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> sortName = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_FORCED_SORT_NAME = "ForcedSortName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> forcedSortName = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
-    @javax.annotation.Nullable
-    private JsonNullable<Video3DFormat> video3DFormat = JsonNullable.<Video3DFormat> undefined();
-
-    public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
-
-    public static final String JSON_PROPERTY_EXTERNAL_URLS = "ExternalUrls";
-    @javax.annotation.Nullable
-    private JsonNullable<List<ExternalUrl>> externalUrls = JsonNullable.<List<ExternalUrl>> undefined();
-
-    public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
-    @javax.annotation.Nullable
-    private JsonNullable<List<MediaSourceInfo>> mediaSources = JsonNullable.<List<MediaSourceInfo>> undefined();
-
-    public static final String JSON_PROPERTY_CRITIC_RATING = "CriticRating";
-    @javax.annotation.Nullable
-    private JsonNullable<Float> criticRating = JsonNullable.<Float> undefined();
-
-    public static final String JSON_PROPERTY_PRODUCTION_LOCATIONS = "ProductionLocations";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> productionLocations = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_PATH = "Path";
-    @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY = "EnableMediaSourceDisplay";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableMediaSourceDisplay = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_OFFICIAL_RATING = "OfficialRating";
-    @javax.annotation.Nullable
-    private JsonNullable<String> officialRating = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CUSTOM_RATING = "CustomRating";
-    @javax.annotation.Nullable
-    private JsonNullable<String> customRating = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> channelId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> channelName = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_OVERVIEW = "Overview";
-    @javax.annotation.Nullable
-    private JsonNullable<String> overview = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_TAGLINES = "Taglines";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> taglines = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_GENRES = "Genres";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> genres = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
-    @javax.annotation.Nullable
-    private JsonNullable<Float> communityRating = JsonNullable.<Float> undefined();
-
-    public static final String JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS = "CumulativeRunTimeTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> cumulativeRunTimeTicks = JsonNullable.<Long> undefined();
-
-    public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> runTimeTicks = JsonNullable.<Long> undefined();
-
-    public static final String JSON_PROPERTY_PLAY_ACCESS = "PlayAccess";
-    @javax.annotation.Nullable
-    private JsonNullable<PlayAccess> playAccess = JsonNullable.<PlayAccess> undefined();
-
-    public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
-    @javax.annotation.Nullable
-    private JsonNullable<String> aspectRatio = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> productionYear = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_IS_PLACE_HOLDER = "IsPlaceHolder";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isPlaceHolder = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_NUMBER = "Number";
-    @javax.annotation.Nullable
-    private JsonNullable<String> number = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CHANNEL_NUMBER = "ChannelNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<String> channelNumber = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
-    @javax.annotation.Nullable
-    private JsonNullable<List<MediaUrl>> remoteTrailers = JsonNullable.<List<MediaUrl>> undefined();
-
-    public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
-    @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
-
-    public static final String JSON_PROPERTY_IS_H_D = "IsHD";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isHD = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_FOLDER = "IsFolder";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isFolder = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_ID = "ParentId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> parentId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private BaseItemKind type;
-
-    public static final String JSON_PROPERTY_PEOPLE = "People";
-    @javax.annotation.Nullable
-    private JsonNullable<List<BaseItemPerson>> people = JsonNullable.<List<BaseItemPerson>> undefined();
-
-    public static final String JSON_PROPERTY_STUDIOS = "Studios";
-    @javax.annotation.Nullable
-    private JsonNullable<List<NameGuidPair>> studios = JsonNullable.<List<NameGuidPair>> undefined();
-
-    public static final String JSON_PROPERTY_GENRE_ITEMS = "GenreItems";
-    @javax.annotation.Nullable
-    private JsonNullable<List<NameGuidPair>> genreItems = JsonNullable.<List<NameGuidPair>> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_LOGO_ITEM_ID = "ParentLogoItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> parentLogoItemId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> parentBackdropItemId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> parentBackdropImageTags = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_LOCAL_TRAILER_COUNT = "LocalTrailerCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> localTrailerCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_USER_DATA = "UserData";
-    @javax.annotation.Nullable
-    private JsonNullable<UserItemDataDto> userData = JsonNullable.<UserItemDataDto> undefined();
-
-    public static final String JSON_PROPERTY_RECURSIVE_ITEM_COUNT = "RecursiveItemCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> recursiveItemCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_CHILD_COUNT = "ChildCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> childCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_NAME = "SeriesName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesName = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_ID = "SeriesId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> seriesId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_SEASON_ID = "SeasonId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> seasonId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_SPECIAL_FEATURE_COUNT = "SpecialFeatureCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> specialFeatureCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_DISPLAY_PREFERENCES_ID = "DisplayPreferencesId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> displayPreferencesId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_STATUS = "Status";
-    @javax.annotation.Nullable
-    private JsonNullable<String> status = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_AIR_TIME = "AirTime";
-    @javax.annotation.Nullable
-    private JsonNullable<String> airTime = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_AIR_DAYS = "AirDays";
-    @javax.annotation.Nullable
-    private JsonNullable<List<DayOfWeek>> airDays = JsonNullable.<List<DayOfWeek>> undefined();
-
-    public static final String JSON_PROPERTY_TAGS = "Tags";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> tags = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> primaryImageAspectRatio = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_ARTISTS = "Artists";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> artists = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_ARTIST_ITEMS = "ArtistItems";
-    @javax.annotation.Nullable
-    private JsonNullable<List<NameGuidPair>> artistItems = JsonNullable.<List<NameGuidPair>> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM = "Album";
-    @javax.annotation.Nullable
-    private JsonNullable<String> album = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> collectionType = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_DISPLAY_ORDER = "DisplayOrder";
-    @javax.annotation.Nullable
-    private JsonNullable<String> displayOrder = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM_ID = "AlbumId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> albumId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG = "AlbumPrimaryImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> albumPrimaryImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG = "SeriesPrimaryImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesPrimaryImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
-    @javax.annotation.Nullable
-    private JsonNullable<String> albumArtist = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
-    @javax.annotation.Nullable
-    private JsonNullable<List<NameGuidPair>> albumArtists = JsonNullable.<List<NameGuidPair>> undefined();
-
-    public static final String JSON_PROPERTY_SEASON_NAME = "SeasonName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seasonName = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
-    @javax.annotation.Nullable
-    private JsonNullable<List<MediaStream>> mediaStreams = JsonNullable.<List<MediaStream>> undefined();
-
-    public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
-    @javax.annotation.Nullable
-    private JsonNullable<VideoType> videoType = JsonNullable.<VideoType> undefined();
-
-    public static final String JSON_PROPERTY_PART_COUNT = "PartCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> partCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_MEDIA_SOURCE_COUNT = "MediaSourceCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> mediaSourceCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_IMAGE_TAGS = "ImageTags";
-    @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> imageTags = JsonNullable.<Map<String, String>> undefined();
-
-    public static final String JSON_PROPERTY_BACKDROP_IMAGE_TAGS = "BackdropImageTags";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> backdropImageTags = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS = "ScreenshotImageTags";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> screenshotImageTags = JsonNullable.<List<String>> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG = "ParentLogoImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> parentLogoImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_ART_ITEM_ID = "ParentArtItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> parentArtItemId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_ART_IMAGE_TAG = "ParentArtImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> parentArtImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG = "SeriesThumbImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesThumbImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
-    @javax.annotation.Nullable
-    private JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes = JsonNullable
-            .<BaseItemDtoImageBlurHashes> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_STUDIO = "SeriesStudio";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesStudio = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_THUMB_ITEM_ID = "ParentThumbItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> parentThumbItemId = JsonNullable.<UUID> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG = "ParentThumbImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> parentThumbImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID = "ParentPrimaryImageItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> parentPrimaryImageItemId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG = "ParentPrimaryImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> parentPrimaryImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CHAPTERS = "Chapters";
-    @javax.annotation.Nullable
-    private JsonNullable<List<ChapterInfo>> chapters = JsonNullable.<List<ChapterInfo>> undefined();
-
-    public static final String JSON_PROPERTY_LOCATION_TYPE = "LocationType";
-    @javax.annotation.Nullable
-    private JsonNullable<LocationType> locationType = JsonNullable.<LocationType> undefined();
-
-    public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
-    @javax.annotation.Nullable
-    private JsonNullable<IsoType> isoType = JsonNullable.<IsoType> undefined();
-
-    public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> mediaType = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_END_DATE = "EndDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> endDate = JsonNullable.<OffsetDateTime> undefined();
-
-    public static final String JSON_PROPERTY_LOCKED_FIELDS = "LockedFields";
-    @javax.annotation.Nullable
-    private JsonNullable<List<MetadataField>> lockedFields = JsonNullable.<List<MetadataField>> undefined();
-
-    public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> trailerCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> movieCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> seriesCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> programCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> episodeCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> songCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> albumCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> artistCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> musicVideoCount = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_LOCK_DATA = "LockData";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> lockData = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_WIDTH = "Width";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_CAMERA_MAKE = "CameraMake";
-    @javax.annotation.Nullable
-    private JsonNullable<String> cameraMake = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CAMERA_MODEL = "CameraModel";
-    @javax.annotation.Nullable
-    private JsonNullable<String> cameraModel = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_SOFTWARE = "Software";
-    @javax.annotation.Nullable
-    private JsonNullable<String> software = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_EXPOSURE_TIME = "ExposureTime";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> exposureTime = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_FOCAL_LENGTH = "FocalLength";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> focalLength = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_IMAGE_ORIENTATION = "ImageOrientation";
-    @javax.annotation.Nullable
-    private JsonNullable<ImageOrientation> imageOrientation = JsonNullable.<ImageOrientation> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
+  @javax.annotation.Nullable
+  private JsonNullable<String> originalTitle = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> serverId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private UUID id;
+
+  public static final String JSON_PROPERTY_ETAG = "Etag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> etag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SOURCE_TYPE = "SourceType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> sourceType = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> playlistItemId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> dateCreated = JsonNullable.<OffsetDateTime>undefined();
+
+  public static final String JSON_PROPERTY_DATE_LAST_MEDIA_ADDED = "DateLastMediaAdded";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> dateLastMediaAdded = JsonNullable.<OffsetDateTime>undefined();
+
+  public static final String JSON_PROPERTY_EXTRA_TYPE = "ExtraType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> extraType = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER = "AirsBeforeSeasonNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> airsBeforeSeasonNumber = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER = "AirsAfterSeasonNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> airsAfterSeasonNumber = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER = "AirsBeforeEpisodeNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> airsBeforeEpisodeNumber = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_CAN_DELETE = "CanDelete";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> canDelete = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_CAN_DOWNLOAD = "CanDownload";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> canDownload = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_HAS_SUBTITLES = "HasSubtitles";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> hasSubtitles = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
+  @javax.annotation.Nullable
+  private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE = "PreferredMetadataCountryCode";
+  @javax.annotation.Nullable
+  private JsonNullable<String> preferredMetadataCountryCode = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SUPPORTS_SYNC = "SupportsSync";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> supportsSync = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  @javax.annotation.Nullable
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SORT_NAME = "SortName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> sortName = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_FORCED_SORT_NAME = "ForcedSortName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> forcedSortName = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
+  @javax.annotation.Nullable
+  private JsonNullable<Video3DFormat> video3DFormat = JsonNullable.<Video3DFormat>undefined();
+
+  public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime>undefined();
+
+  public static final String JSON_PROPERTY_EXTERNAL_URLS = "ExternalUrls";
+  @javax.annotation.Nullable
+  private JsonNullable<List<ExternalUrl>> externalUrls = JsonNullable.<List<ExternalUrl>>undefined();
+
+  public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
+  @javax.annotation.Nullable
+  private JsonNullable<List<MediaSourceInfo>> mediaSources = JsonNullable.<List<MediaSourceInfo>>undefined();
+
+  public static final String JSON_PROPERTY_CRITIC_RATING = "CriticRating";
+  @javax.annotation.Nullable
+  private JsonNullable<Float> criticRating = JsonNullable.<Float>undefined();
+
+  public static final String JSON_PROPERTY_PRODUCTION_LOCATIONS = "ProductionLocations";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> productionLocations = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_PATH = "Path";
+  @javax.annotation.Nullable
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY = "EnableMediaSourceDisplay";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> enableMediaSourceDisplay = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_OFFICIAL_RATING = "OfficialRating";
+  @javax.annotation.Nullable
+  private JsonNullable<String> officialRating = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CUSTOM_RATING = "CustomRating";
+  @javax.annotation.Nullable
+  private JsonNullable<String> customRating = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> channelId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> channelName = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+  @javax.annotation.Nullable
+  private JsonNullable<String> overview = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_TAGLINES = "Taglines";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> taglines = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_GENRES = "Genres";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> genres = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
+  @javax.annotation.Nullable
+  private JsonNullable<Float> communityRating = JsonNullable.<Float>undefined();
+
+  public static final String JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS = "CumulativeRunTimeTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> cumulativeRunTimeTicks = JsonNullable.<Long>undefined();
+
+  public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> runTimeTicks = JsonNullable.<Long>undefined();
+
+  public static final String JSON_PROPERTY_PLAY_ACCESS = "PlayAccess";
+  @javax.annotation.Nullable
+  private JsonNullable<PlayAccess> playAccess = JsonNullable.<PlayAccess>undefined();
+
+  public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
+  @javax.annotation.Nullable
+  private JsonNullable<String> aspectRatio = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> productionYear = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_IS_PLACE_HOLDER = "IsPlaceHolder";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isPlaceHolder = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_NUMBER = "Number";
+  @javax.annotation.Nullable
+  private JsonNullable<String> number = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CHANNEL_NUMBER = "ChannelNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<String> channelNumber = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> indexNumber = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
+  @javax.annotation.Nullable
+  private JsonNullable<List<MediaUrl>> remoteTrailers = JsonNullable.<List<MediaUrl>>undefined();
+
+  public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+  @javax.annotation.Nullable
+  private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>>undefined();
+
+  public static final String JSON_PROPERTY_IS_H_D = "IsHD";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isHD = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_FOLDER = "IsFolder";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isFolder = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_ID = "ParentId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> parentId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private BaseItemKind type;
+
+  public static final String JSON_PROPERTY_PEOPLE = "People";
+  @javax.annotation.Nullable
+  private JsonNullable<List<BaseItemPerson>> people = JsonNullable.<List<BaseItemPerson>>undefined();
+
+  public static final String JSON_PROPERTY_STUDIOS = "Studios";
+  @javax.annotation.Nullable
+  private JsonNullable<List<NameGuidPair>> studios = JsonNullable.<List<NameGuidPair>>undefined();
+
+  public static final String JSON_PROPERTY_GENRE_ITEMS = "GenreItems";
+  @javax.annotation.Nullable
+  private JsonNullable<List<NameGuidPair>> genreItems = JsonNullable.<List<NameGuidPair>>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_LOGO_ITEM_ID = "ParentLogoItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> parentLogoItemId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> parentBackdropItemId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> parentBackdropImageTags = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_LOCAL_TRAILER_COUNT = "LocalTrailerCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> localTrailerCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_USER_DATA = "UserData";
+  @javax.annotation.Nullable
+  private JsonNullable<UserItemDataDto> userData = JsonNullable.<UserItemDataDto>undefined();
+
+  public static final String JSON_PROPERTY_RECURSIVE_ITEM_COUNT = "RecursiveItemCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> recursiveItemCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_CHILD_COUNT = "ChildCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> childCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_NAME = "SeriesName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesName = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_ID = "SeriesId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> seriesId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_SEASON_ID = "SeasonId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> seasonId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_SPECIAL_FEATURE_COUNT = "SpecialFeatureCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> specialFeatureCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_DISPLAY_PREFERENCES_ID = "DisplayPreferencesId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> displayPreferencesId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_STATUS = "Status";
+  @javax.annotation.Nullable
+  private JsonNullable<String> status = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_AIR_TIME = "AirTime";
+  @javax.annotation.Nullable
+  private JsonNullable<String> airTime = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_AIR_DAYS = "AirDays";
+  @javax.annotation.Nullable
+  private JsonNullable<List<DayOfWeek>> airDays = JsonNullable.<List<DayOfWeek>>undefined();
+
+  public static final String JSON_PROPERTY_TAGS = "Tags";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> tags = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> primaryImageAspectRatio = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_ARTISTS = "Artists";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> artists = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_ARTIST_ITEMS = "ArtistItems";
+  @javax.annotation.Nullable
+  private JsonNullable<List<NameGuidPair>> artistItems = JsonNullable.<List<NameGuidPair>>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM = "Album";
+  @javax.annotation.Nullable
+  private JsonNullable<String> album = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> collectionType = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_DISPLAY_ORDER = "DisplayOrder";
+  @javax.annotation.Nullable
+  private JsonNullable<String> displayOrder = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM_ID = "AlbumId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> albumId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG = "AlbumPrimaryImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> albumPrimaryImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG = "SeriesPrimaryImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesPrimaryImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
+  @javax.annotation.Nullable
+  private JsonNullable<String> albumArtist = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
+  @javax.annotation.Nullable
+  private JsonNullable<List<NameGuidPair>> albumArtists = JsonNullable.<List<NameGuidPair>>undefined();
+
+  public static final String JSON_PROPERTY_SEASON_NAME = "SeasonName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seasonName = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
+  @javax.annotation.Nullable
+  private JsonNullable<List<MediaStream>> mediaStreams = JsonNullable.<List<MediaStream>>undefined();
+
+  public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
+  @javax.annotation.Nullable
+  private JsonNullable<VideoType> videoType = JsonNullable.<VideoType>undefined();
+
+  public static final String JSON_PROPERTY_PART_COUNT = "PartCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> partCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_MEDIA_SOURCE_COUNT = "MediaSourceCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> mediaSourceCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_IMAGE_TAGS = "ImageTags";
+  @javax.annotation.Nullable
+  private JsonNullable<Map<String, String>> imageTags = JsonNullable.<Map<String, String>>undefined();
+
+  public static final String JSON_PROPERTY_BACKDROP_IMAGE_TAGS = "BackdropImageTags";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> backdropImageTags = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS = "ScreenshotImageTags";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> screenshotImageTags = JsonNullable.<List<String>>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG = "ParentLogoImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> parentLogoImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_ART_ITEM_ID = "ParentArtItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> parentArtItemId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_ART_IMAGE_TAG = "ParentArtImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> parentArtImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG = "SeriesThumbImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesThumbImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
+  @javax.annotation.Nullable
+  private JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_STUDIO = "SeriesStudio";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesStudio = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_THUMB_ITEM_ID = "ParentThumbItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> parentThumbItemId = JsonNullable.<UUID>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG = "ParentThumbImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> parentThumbImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID = "ParentPrimaryImageItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> parentPrimaryImageItemId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG = "ParentPrimaryImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> parentPrimaryImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CHAPTERS = "Chapters";
+  @javax.annotation.Nullable
+  private JsonNullable<List<ChapterInfo>> chapters = JsonNullable.<List<ChapterInfo>>undefined();
+
+  public static final String JSON_PROPERTY_LOCATION_TYPE = "LocationType";
+  @javax.annotation.Nullable
+  private JsonNullable<LocationType> locationType = JsonNullable.<LocationType>undefined();
+
+  public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
+  @javax.annotation.Nullable
+  private JsonNullable<IsoType> isoType = JsonNullable.<IsoType>undefined();
+
+  public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> mediaType = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_END_DATE = "EndDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> endDate = JsonNullable.<OffsetDateTime>undefined();
+
+  public static final String JSON_PROPERTY_LOCKED_FIELDS = "LockedFields";
+  @javax.annotation.Nullable
+  private JsonNullable<List<MetadataField>> lockedFields = JsonNullable.<List<MetadataField>>undefined();
+
+  public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> trailerCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> movieCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> seriesCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> programCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> episodeCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> songCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> albumCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> artistCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> musicVideoCount = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_LOCK_DATA = "LockData";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> lockData = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_CAMERA_MAKE = "CameraMake";
+  @javax.annotation.Nullable
+  private JsonNullable<String> cameraMake = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CAMERA_MODEL = "CameraModel";
+  @javax.annotation.Nullable
+  private JsonNullable<String> cameraModel = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_SOFTWARE = "Software";
+  @javax.annotation.Nullable
+  private JsonNullable<String> software = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_EXPOSURE_TIME = "ExposureTime";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> exposureTime = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_FOCAL_LENGTH = "FocalLength";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> focalLength = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_IMAGE_ORIENTATION = "ImageOrientation";
+  @javax.annotation.Nullable
+  private JsonNullable<ImageOrientation> imageOrientation = JsonNullable.<ImageOrientation>undefined();
 
-    public static final String JSON_PROPERTY_APERTURE = "Aperture";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> aperture = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_SHUTTER_SPEED = "ShutterSpeed";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> shutterSpeed = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_LATITUDE = "Latitude";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> latitude = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_LONGITUDE = "Longitude";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> longitude = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_ALTITUDE = "Altitude";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> altitude = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_ISO_SPEED_RATING = "IsoSpeedRating";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> isoSpeedRating = JsonNullable.<Integer> undefined();
-
-    public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesTimerId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> programId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> channelPrimaryImageTag = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_START_DATE = "StartDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> startDate = JsonNullable.<OffsetDateTime> undefined();
-
-    public static final String JSON_PROPERTY_COMPLETION_PERCENTAGE = "CompletionPercentage";
-    @javax.annotation.Nullable
-    private JsonNullable<Double> completionPercentage = JsonNullable.<Double> undefined();
-
-    public static final String JSON_PROPERTY_IS_REPEAT = "IsRepeat";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isRepeat = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_EPISODE_TITLE = "EpisodeTitle";
-    @javax.annotation.Nullable
-    private JsonNullable<String> episodeTitle = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CHANNEL_TYPE = "ChannelType";
-    @javax.annotation.Nullable
-    private JsonNullable<ChannelType> channelType = JsonNullable.<ChannelType> undefined();
-
-    public static final String JSON_PROPERTY_AUDIO = "Audio";
-    @javax.annotation.Nullable
-    private JsonNullable<ProgramAudio> audio = JsonNullable.<ProgramAudio> undefined();
-
-    public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isMovie = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isSports = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isSeries = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_LIVE = "IsLive";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isLive = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isNews = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isKids = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_IS_PREMIERE = "IsPremiere";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isPremiere = JsonNullable.<Boolean> undefined();
-
-    public static final String JSON_PROPERTY_TIMER_ID = "TimerId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> timerId = JsonNullable.<String> undefined();
-
-    public static final String JSON_PROPERTY_CURRENT_PROGRAM = "CurrentProgram";
-    @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> currentProgram = JsonNullable.<BaseItemDto> undefined();
-
-    public BaseItemDto() {
-    }
-
-    public BaseItemDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public static final String JSON_PROPERTY_APERTURE = "Aperture";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> aperture = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_SHUTTER_SPEED = "ShutterSpeed";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> shutterSpeed = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_LATITUDE = "Latitude";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> latitude = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_LONGITUDE = "Longitude";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> longitude = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_ALTITUDE = "Altitude";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> altitude = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_ISO_SPEED_RATING = "IsoSpeedRating";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> isoSpeedRating = JsonNullable.<Integer>undefined();
+
+  public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesTimerId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> programId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> channelPrimaryImageTag = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_START_DATE = "StartDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> startDate = JsonNullable.<OffsetDateTime>undefined();
+
+  public static final String JSON_PROPERTY_COMPLETION_PERCENTAGE = "CompletionPercentage";
+  @javax.annotation.Nullable
+  private JsonNullable<Double> completionPercentage = JsonNullable.<Double>undefined();
+
+  public static final String JSON_PROPERTY_IS_REPEAT = "IsRepeat";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isRepeat = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_EPISODE_TITLE = "EpisodeTitle";
+  @javax.annotation.Nullable
+  private JsonNullable<String> episodeTitle = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CHANNEL_TYPE = "ChannelType";
+  @javax.annotation.Nullable
+  private JsonNullable<ChannelType> channelType = JsonNullable.<ChannelType>undefined();
+
+  public static final String JSON_PROPERTY_AUDIO = "Audio";
+  @javax.annotation.Nullable
+  private JsonNullable<ProgramAudio> audio = JsonNullable.<ProgramAudio>undefined();
+
+  public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isMovie = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isSports = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isSeries = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_LIVE = "IsLive";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isLive = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isNews = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isKids = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_IS_PREMIERE = "IsPremiere";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isPremiere = JsonNullable.<Boolean>undefined();
+
+  public static final String JSON_PROPERTY_TIMER_ID = "TimerId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> timerId = JsonNullable.<String>undefined();
+
+  public static final String JSON_PROPERTY_CURRENT_PROGRAM = "CurrentProgram";
+  @javax.annotation.Nullable
+  private JsonNullable<BaseItemDto> currentProgram = JsonNullable.<BaseItemDto>undefined();
+
+  public BaseItemDto() {
+  }
+
+  public BaseItemDto name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public BaseItemDto originalTitle(@javax.annotation.Nullable String originalTitle) {
+    this.originalTitle = JsonNullable.<String>of(originalTitle);
+    
+    return this;
+  }
 
-    public BaseItemDto originalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
+  /**
+   * Get originalTitle
+   * @return originalTitle
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get originalTitle
-     * 
-     * @return originalTitle
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOriginalTitle() {
+  public String getOriginalTitle() {
         return originalTitle.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOriginalTitle_JsonNullable() {
-        return originalTitle;
-    }
+  public JsonNullable<String> getOriginalTitle_JsonNullable() {
+    return originalTitle;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+  public void setOriginalTitle_JsonNullable(JsonNullable<String> originalTitle) {
+    this.originalTitle = originalTitle;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
-    public void setOriginalTitle_JsonNullable(JsonNullable<String> originalTitle) {
-        this.originalTitle = originalTitle;
-    }
+  public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
+    this.originalTitle = JsonNullable.<String>of(originalTitle);
+  }
 
-    public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
-    }
+  public BaseItemDto serverId(@javax.annotation.Nullable String serverId) {
+    this.serverId = JsonNullable.<String>of(serverId);
+    
+    return this;
+  }
 
-    public BaseItemDto serverId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
+  /**
+   * Gets or sets the server identifier.
+   * @return serverId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the server identifier.
-     * 
-     * @return serverId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerId() {
+  public String getServerId() {
         return serverId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerId_JsonNullable() {
-        return serverId;
-    }
+  public JsonNullable<String> getServerId_JsonNullable() {
+    return serverId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    this.serverId = serverId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
-        this.serverId = serverId;
-    }
+  public void setServerId(@javax.annotation.Nullable String serverId) {
+    this.serverId = JsonNullable.<String>of(serverId);
+  }
 
-    public void setServerId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
-    }
+  public BaseItemDto id(@javax.annotation.Nullable UUID id) {
+    
+    this.id = id;
+    return this;
+  }
 
-    public BaseItemDto id(@javax.annotation.Nullable UUID id) {
+  /**
+   * Gets or sets the id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.id = id;
-        return this;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    /**
-     * Gets or sets the id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public UUID getId() {
-        return id;
-    }
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = id;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = id;
-    }
+  public BaseItemDto etag(@javax.annotation.Nullable String etag) {
+    this.etag = JsonNullable.<String>of(etag);
+    
+    return this;
+  }
 
-    public BaseItemDto etag(@javax.annotation.Nullable String etag) {
-        this.etag = JsonNullable.<String> of(etag);
+  /**
+   * Gets or sets the etag.
+   * @return etag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the etag.
-     * 
-     * @return etag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getEtag() {
+  public String getEtag() {
         return etag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ETAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ETAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getEtag_JsonNullable() {
-        return etag;
-    }
+  public JsonNullable<String> getEtag_JsonNullable() {
+    return etag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ETAG)
+  public void setEtag_JsonNullable(JsonNullable<String> etag) {
+    this.etag = etag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ETAG)
-    public void setEtag_JsonNullable(JsonNullable<String> etag) {
-        this.etag = etag;
-    }
+  public void setEtag(@javax.annotation.Nullable String etag) {
+    this.etag = JsonNullable.<String>of(etag);
+  }
 
-    public void setEtag(@javax.annotation.Nullable String etag) {
-        this.etag = JsonNullable.<String> of(etag);
-    }
+  public BaseItemDto sourceType(@javax.annotation.Nullable String sourceType) {
+    this.sourceType = JsonNullable.<String>of(sourceType);
+    
+    return this;
+  }
 
-    public BaseItemDto sourceType(@javax.annotation.Nullable String sourceType) {
-        this.sourceType = JsonNullable.<String> of(sourceType);
+  /**
+   * Gets or sets the type of the source.
+   * @return sourceType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the source.
-     * 
-     * @return sourceType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSourceType() {
+  public String getSourceType() {
         return sourceType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SOURCE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSourceType_JsonNullable() {
-        return sourceType;
-    }
+  public JsonNullable<String> getSourceType_JsonNullable() {
+    return sourceType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE_TYPE)
+  public void setSourceType_JsonNullable(JsonNullable<String> sourceType) {
+    this.sourceType = sourceType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_TYPE)
-    public void setSourceType_JsonNullable(JsonNullable<String> sourceType) {
-        this.sourceType = sourceType;
-    }
+  public void setSourceType(@javax.annotation.Nullable String sourceType) {
+    this.sourceType = JsonNullable.<String>of(sourceType);
+  }
 
-    public void setSourceType(@javax.annotation.Nullable String sourceType) {
-        this.sourceType = JsonNullable.<String> of(sourceType);
-    }
+  public BaseItemDto playlistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+  /**
+   * Gets or sets the playlist item identifier.
+   * @return playlistItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the playlist item identifier.
-     * 
-     * @return playlistItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaylistItemId() {
+  public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPlaylistItemId_JsonNullable() {
-        return playlistItemId;
-    }
+  public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    return playlistItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
+    this.playlistItemId = playlistItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
-        this.playlistItemId = playlistItemId;
-    }
+  public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+  }
 
-    public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
-    }
+  public BaseItemDto dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+    
+    return this;
+  }
 
-    public BaseItemDto dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-        this.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
+  /**
+   * Gets or sets the date created.
+   * @return dateCreated
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the date created.
-     * 
-     * @return dateCreated
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getDateCreated() {
+  public OffsetDateTime getDateCreated() {
         return dateCreated.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getDateCreated_JsonNullable() {
-        return dateCreated;
-    }
+  public JsonNullable<OffsetDateTime> getDateCreated_JsonNullable() {
+    return dateCreated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  public void setDateCreated_JsonNullable(JsonNullable<OffsetDateTime> dateCreated) {
+    this.dateCreated = dateCreated;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    public void setDateCreated_JsonNullable(JsonNullable<OffsetDateTime> dateCreated) {
-        this.dateCreated = dateCreated;
-    }
+  public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+  }
 
-    public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-        this.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
-    }
+  public BaseItemDto dateLastMediaAdded(@javax.annotation.Nullable OffsetDateTime dateLastMediaAdded) {
+    this.dateLastMediaAdded = JsonNullable.<OffsetDateTime>of(dateLastMediaAdded);
+    
+    return this;
+  }
 
-    public BaseItemDto dateLastMediaAdded(@javax.annotation.Nullable OffsetDateTime dateLastMediaAdded) {
-        this.dateLastMediaAdded = JsonNullable.<OffsetDateTime> of(dateLastMediaAdded);
+  /**
+   * Get dateLastMediaAdded
+   * @return dateLastMediaAdded
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get dateLastMediaAdded
-     * 
-     * @return dateLastMediaAdded
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getDateLastMediaAdded() {
+  public OffsetDateTime getDateLastMediaAdded() {
         return dateLastMediaAdded.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getDateLastMediaAdded_JsonNullable() {
-        return dateLastMediaAdded;
-    }
+  public JsonNullable<OffsetDateTime> getDateLastMediaAdded_JsonNullable() {
+    return dateLastMediaAdded;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
+  public void setDateLastMediaAdded_JsonNullable(JsonNullable<OffsetDateTime> dateLastMediaAdded) {
+    this.dateLastMediaAdded = dateLastMediaAdded;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
-    public void setDateLastMediaAdded_JsonNullable(JsonNullable<OffsetDateTime> dateLastMediaAdded) {
-        this.dateLastMediaAdded = dateLastMediaAdded;
-    }
+  public void setDateLastMediaAdded(@javax.annotation.Nullable OffsetDateTime dateLastMediaAdded) {
+    this.dateLastMediaAdded = JsonNullable.<OffsetDateTime>of(dateLastMediaAdded);
+  }
 
-    public void setDateLastMediaAdded(@javax.annotation.Nullable OffsetDateTime dateLastMediaAdded) {
-        this.dateLastMediaAdded = JsonNullable.<OffsetDateTime> of(dateLastMediaAdded);
-    }
+  public BaseItemDto extraType(@javax.annotation.Nullable String extraType) {
+    this.extraType = JsonNullable.<String>of(extraType);
+    
+    return this;
+  }
 
-    public BaseItemDto extraType(@javax.annotation.Nullable String extraType) {
-        this.extraType = JsonNullable.<String> of(extraType);
+  /**
+   * Get extraType
+   * @return extraType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get extraType
-     * 
-     * @return extraType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getExtraType() {
+  public String getExtraType() {
         return extraType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_EXTRA_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_EXTRA_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getExtraType_JsonNullable() {
-        return extraType;
-    }
+  public JsonNullable<String> getExtraType_JsonNullable() {
+    return extraType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EXTRA_TYPE)
+  public void setExtraType_JsonNullable(JsonNullable<String> extraType) {
+    this.extraType = extraType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_EXTRA_TYPE)
-    public void setExtraType_JsonNullable(JsonNullable<String> extraType) {
-        this.extraType = extraType;
-    }
+  public void setExtraType(@javax.annotation.Nullable String extraType) {
+    this.extraType = JsonNullable.<String>of(extraType);
+  }
 
-    public void setExtraType(@javax.annotation.Nullable String extraType) {
-        this.extraType = JsonNullable.<String> of(extraType);
-    }
+  public BaseItemDto airsBeforeSeasonNumber(@javax.annotation.Nullable Integer airsBeforeSeasonNumber) {
+    this.airsBeforeSeasonNumber = JsonNullable.<Integer>of(airsBeforeSeasonNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto airsBeforeSeasonNumber(@javax.annotation.Nullable Integer airsBeforeSeasonNumber) {
-        this.airsBeforeSeasonNumber = JsonNullable.<Integer> of(airsBeforeSeasonNumber);
+  /**
+   * Get airsBeforeSeasonNumber
+   * @return airsBeforeSeasonNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get airsBeforeSeasonNumber
-     * 
-     * @return airsBeforeSeasonNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAirsBeforeSeasonNumber() {
+  public Integer getAirsBeforeSeasonNumber() {
         return airsBeforeSeasonNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAirsBeforeSeasonNumber_JsonNullable() {
-        return airsBeforeSeasonNumber;
-    }
+  public JsonNullable<Integer> getAirsBeforeSeasonNumber_JsonNullable() {
+    return airsBeforeSeasonNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
+  public void setAirsBeforeSeasonNumber_JsonNullable(JsonNullable<Integer> airsBeforeSeasonNumber) {
+    this.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
-    public void setAirsBeforeSeasonNumber_JsonNullable(JsonNullable<Integer> airsBeforeSeasonNumber) {
-        this.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
-    }
+  public void setAirsBeforeSeasonNumber(@javax.annotation.Nullable Integer airsBeforeSeasonNumber) {
+    this.airsBeforeSeasonNumber = JsonNullable.<Integer>of(airsBeforeSeasonNumber);
+  }
 
-    public void setAirsBeforeSeasonNumber(@javax.annotation.Nullable Integer airsBeforeSeasonNumber) {
-        this.airsBeforeSeasonNumber = JsonNullable.<Integer> of(airsBeforeSeasonNumber);
-    }
+  public BaseItemDto airsAfterSeasonNumber(@javax.annotation.Nullable Integer airsAfterSeasonNumber) {
+    this.airsAfterSeasonNumber = JsonNullable.<Integer>of(airsAfterSeasonNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto airsAfterSeasonNumber(@javax.annotation.Nullable Integer airsAfterSeasonNumber) {
-        this.airsAfterSeasonNumber = JsonNullable.<Integer> of(airsAfterSeasonNumber);
+  /**
+   * Get airsAfterSeasonNumber
+   * @return airsAfterSeasonNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get airsAfterSeasonNumber
-     * 
-     * @return airsAfterSeasonNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAirsAfterSeasonNumber() {
+  public Integer getAirsAfterSeasonNumber() {
         return airsAfterSeasonNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAirsAfterSeasonNumber_JsonNullable() {
-        return airsAfterSeasonNumber;
-    }
+  public JsonNullable<Integer> getAirsAfterSeasonNumber_JsonNullable() {
+    return airsAfterSeasonNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
+  public void setAirsAfterSeasonNumber_JsonNullable(JsonNullable<Integer> airsAfterSeasonNumber) {
+    this.airsAfterSeasonNumber = airsAfterSeasonNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
-    public void setAirsAfterSeasonNumber_JsonNullable(JsonNullable<Integer> airsAfterSeasonNumber) {
-        this.airsAfterSeasonNumber = airsAfterSeasonNumber;
-    }
+  public void setAirsAfterSeasonNumber(@javax.annotation.Nullable Integer airsAfterSeasonNumber) {
+    this.airsAfterSeasonNumber = JsonNullable.<Integer>of(airsAfterSeasonNumber);
+  }
 
-    public void setAirsAfterSeasonNumber(@javax.annotation.Nullable Integer airsAfterSeasonNumber) {
-        this.airsAfterSeasonNumber = JsonNullable.<Integer> of(airsAfterSeasonNumber);
-    }
+  public BaseItemDto airsBeforeEpisodeNumber(@javax.annotation.Nullable Integer airsBeforeEpisodeNumber) {
+    this.airsBeforeEpisodeNumber = JsonNullable.<Integer>of(airsBeforeEpisodeNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto airsBeforeEpisodeNumber(@javax.annotation.Nullable Integer airsBeforeEpisodeNumber) {
-        this.airsBeforeEpisodeNumber = JsonNullable.<Integer> of(airsBeforeEpisodeNumber);
+  /**
+   * Get airsBeforeEpisodeNumber
+   * @return airsBeforeEpisodeNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get airsBeforeEpisodeNumber
-     * 
-     * @return airsBeforeEpisodeNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAirsBeforeEpisodeNumber() {
+  public Integer getAirsBeforeEpisodeNumber() {
         return airsBeforeEpisodeNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAirsBeforeEpisodeNumber_JsonNullable() {
-        return airsBeforeEpisodeNumber;
-    }
+  public JsonNullable<Integer> getAirsBeforeEpisodeNumber_JsonNullable() {
+    return airsBeforeEpisodeNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
+  public void setAirsBeforeEpisodeNumber_JsonNullable(JsonNullable<Integer> airsBeforeEpisodeNumber) {
+    this.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
-    public void setAirsBeforeEpisodeNumber_JsonNullable(JsonNullable<Integer> airsBeforeEpisodeNumber) {
-        this.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
-    }
+  public void setAirsBeforeEpisodeNumber(@javax.annotation.Nullable Integer airsBeforeEpisodeNumber) {
+    this.airsBeforeEpisodeNumber = JsonNullable.<Integer>of(airsBeforeEpisodeNumber);
+  }
 
-    public void setAirsBeforeEpisodeNumber(@javax.annotation.Nullable Integer airsBeforeEpisodeNumber) {
-        this.airsBeforeEpisodeNumber = JsonNullable.<Integer> of(airsBeforeEpisodeNumber);
-    }
+  public BaseItemDto canDelete(@javax.annotation.Nullable Boolean canDelete) {
+    this.canDelete = JsonNullable.<Boolean>of(canDelete);
+    
+    return this;
+  }
 
-    public BaseItemDto canDelete(@javax.annotation.Nullable Boolean canDelete) {
-        this.canDelete = JsonNullable.<Boolean> of(canDelete);
+  /**
+   * Get canDelete
+   * @return canDelete
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get canDelete
-     * 
-     * @return canDelete
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getCanDelete() {
+  public Boolean getCanDelete() {
         return canDelete.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAN_DELETE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CAN_DELETE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getCanDelete_JsonNullable() {
-        return canDelete;
-    }
+  public JsonNullable<Boolean> getCanDelete_JsonNullable() {
+    return canDelete;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CAN_DELETE)
+  public void setCanDelete_JsonNullable(JsonNullable<Boolean> canDelete) {
+    this.canDelete = canDelete;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAN_DELETE)
-    public void setCanDelete_JsonNullable(JsonNullable<Boolean> canDelete) {
-        this.canDelete = canDelete;
-    }
+  public void setCanDelete(@javax.annotation.Nullable Boolean canDelete) {
+    this.canDelete = JsonNullable.<Boolean>of(canDelete);
+  }
 
-    public void setCanDelete(@javax.annotation.Nullable Boolean canDelete) {
-        this.canDelete = JsonNullable.<Boolean> of(canDelete);
-    }
+  public BaseItemDto canDownload(@javax.annotation.Nullable Boolean canDownload) {
+    this.canDownload = JsonNullable.<Boolean>of(canDownload);
+    
+    return this;
+  }
 
-    public BaseItemDto canDownload(@javax.annotation.Nullable Boolean canDownload) {
-        this.canDownload = JsonNullable.<Boolean> of(canDownload);
+  /**
+   * Get canDownload
+   * @return canDownload
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get canDownload
-     * 
-     * @return canDownload
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getCanDownload() {
+  public Boolean getCanDownload() {
         return canDownload.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAN_DOWNLOAD)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CAN_DOWNLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getCanDownload_JsonNullable() {
-        return canDownload;
-    }
+  public JsonNullable<Boolean> getCanDownload_JsonNullable() {
+    return canDownload;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CAN_DOWNLOAD)
+  public void setCanDownload_JsonNullable(JsonNullable<Boolean> canDownload) {
+    this.canDownload = canDownload;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAN_DOWNLOAD)
-    public void setCanDownload_JsonNullable(JsonNullable<Boolean> canDownload) {
-        this.canDownload = canDownload;
-    }
+  public void setCanDownload(@javax.annotation.Nullable Boolean canDownload) {
+    this.canDownload = JsonNullable.<Boolean>of(canDownload);
+  }
 
-    public void setCanDownload(@javax.annotation.Nullable Boolean canDownload) {
-        this.canDownload = JsonNullable.<Boolean> of(canDownload);
-    }
+  public BaseItemDto hasSubtitles(@javax.annotation.Nullable Boolean hasSubtitles) {
+    this.hasSubtitles = JsonNullable.<Boolean>of(hasSubtitles);
+    
+    return this;
+  }
 
-    public BaseItemDto hasSubtitles(@javax.annotation.Nullable Boolean hasSubtitles) {
-        this.hasSubtitles = JsonNullable.<Boolean> of(hasSubtitles);
+  /**
+   * Get hasSubtitles
+   * @return hasSubtitles
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get hasSubtitles
-     * 
-     * @return hasSubtitles
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getHasSubtitles() {
+  public Boolean getHasSubtitles() {
         return hasSubtitles.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_HAS_SUBTITLES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_HAS_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getHasSubtitles_JsonNullable() {
-        return hasSubtitles;
-    }
+  public JsonNullable<Boolean> getHasSubtitles_JsonNullable() {
+    return hasSubtitles;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HAS_SUBTITLES)
+  public void setHasSubtitles_JsonNullable(JsonNullable<Boolean> hasSubtitles) {
+    this.hasSubtitles = hasSubtitles;
+  }
 
-    @JsonProperty(JSON_PROPERTY_HAS_SUBTITLES)
-    public void setHasSubtitles_JsonNullable(JsonNullable<Boolean> hasSubtitles) {
-        this.hasSubtitles = hasSubtitles;
-    }
+  public void setHasSubtitles(@javax.annotation.Nullable Boolean hasSubtitles) {
+    this.hasSubtitles = JsonNullable.<Boolean>of(hasSubtitles);
+  }
 
-    public void setHasSubtitles(@javax.annotation.Nullable Boolean hasSubtitles) {
-        this.hasSubtitles = JsonNullable.<Boolean> of(hasSubtitles);
-    }
+  public BaseItemDto preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
+    
+    return this;
+  }
 
-    public BaseItemDto preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
+  /**
+   * Get preferredMetadataLanguage
+   * @return preferredMetadataLanguage
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get preferredMetadataLanguage
-     * 
-     * @return preferredMetadataLanguage
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreferredMetadataLanguage() {
+  public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
-        return preferredMetadataLanguage;
-    }
+  public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
+    return preferredMetadataLanguage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
+    this.preferredMetadataLanguage = preferredMetadataLanguage;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = preferredMetadataLanguage;
-    }
+  public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
+  }
 
-    public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
-    }
+  public BaseItemDto preferredMetadataCountryCode(@javax.annotation.Nullable String preferredMetadataCountryCode) {
+    this.preferredMetadataCountryCode = JsonNullable.<String>of(preferredMetadataCountryCode);
+    
+    return this;
+  }
 
-    public BaseItemDto preferredMetadataCountryCode(@javax.annotation.Nullable String preferredMetadataCountryCode) {
-        this.preferredMetadataCountryCode = JsonNullable.<String> of(preferredMetadataCountryCode);
+  /**
+   * Get preferredMetadataCountryCode
+   * @return preferredMetadataCountryCode
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get preferredMetadataCountryCode
-     * 
-     * @return preferredMetadataCountryCode
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreferredMetadataCountryCode() {
+  public String getPreferredMetadataCountryCode() {
         return preferredMetadataCountryCode.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreferredMetadataCountryCode_JsonNullable() {
-        return preferredMetadataCountryCode;
-    }
+  public JsonNullable<String> getPreferredMetadataCountryCode_JsonNullable() {
+    return preferredMetadataCountryCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
+  public void setPreferredMetadataCountryCode_JsonNullable(JsonNullable<String> preferredMetadataCountryCode) {
+    this.preferredMetadataCountryCode = preferredMetadataCountryCode;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
-    public void setPreferredMetadataCountryCode_JsonNullable(JsonNullable<String> preferredMetadataCountryCode) {
-        this.preferredMetadataCountryCode = preferredMetadataCountryCode;
-    }
+  public void setPreferredMetadataCountryCode(@javax.annotation.Nullable String preferredMetadataCountryCode) {
+    this.preferredMetadataCountryCode = JsonNullable.<String>of(preferredMetadataCountryCode);
+  }
 
-    public void setPreferredMetadataCountryCode(@javax.annotation.Nullable String preferredMetadataCountryCode) {
-        this.preferredMetadataCountryCode = JsonNullable.<String> of(preferredMetadataCountryCode);
-    }
+  public BaseItemDto supportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+    this.supportsSync = JsonNullable.<Boolean>of(supportsSync);
+    
+    return this;
+  }
 
-    public BaseItemDto supportsSync(@javax.annotation.Nullable Boolean supportsSync) {
-        this.supportsSync = JsonNullable.<Boolean> of(supportsSync);
+  /**
+   * Gets or sets a value indicating whether [supports synchronize].
+   * @return supportsSync
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether [supports synchronize].
-     * 
-     * @return supportsSync
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getSupportsSync() {
+  public Boolean getSupportsSync() {
         return supportsSync.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getSupportsSync_JsonNullable() {
-        return supportsSync;
-    }
+  public JsonNullable<Boolean> getSupportsSync_JsonNullable() {
+    return supportsSync;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
+  public void setSupportsSync_JsonNullable(JsonNullable<Boolean> supportsSync) {
+    this.supportsSync = supportsSync;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SYNC)
-    public void setSupportsSync_JsonNullable(JsonNullable<Boolean> supportsSync) {
-        this.supportsSync = supportsSync;
-    }
+  public void setSupportsSync(@javax.annotation.Nullable Boolean supportsSync) {
+    this.supportsSync = JsonNullable.<Boolean>of(supportsSync);
+  }
 
-    public void setSupportsSync(@javax.annotation.Nullable Boolean supportsSync) {
-        this.supportsSync = JsonNullable.<Boolean> of(supportsSync);
-    }
+  public BaseItemDto container(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+    
+    return this;
+  }
 
-    public BaseItemDto container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
+  /**
+   * Get container
+   * @return container
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get container
-     * 
-     * @return container
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
+  public String getContainer() {
         return container.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
-        return container;
-    }
+  public JsonNullable<String> getContainer_JsonNullable() {
+    return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
-        this.container = container;
-    }
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+  }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
+  public BaseItemDto sortName(@javax.annotation.Nullable String sortName) {
+    this.sortName = JsonNullable.<String>of(sortName);
+    
+    return this;
+  }
 
-    public BaseItemDto sortName(@javax.annotation.Nullable String sortName) {
-        this.sortName = JsonNullable.<String> of(sortName);
+  /**
+   * Gets or sets the name of the sort.
+   * @return sortName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the name of the sort.
-     * 
-     * @return sortName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSortName() {
+  public String getSortName() {
         return sortName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SORT_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SORT_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSortName_JsonNullable() {
-        return sortName;
-    }
+  public JsonNullable<String> getSortName_JsonNullable() {
+    return sortName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SORT_NAME)
+  public void setSortName_JsonNullable(JsonNullable<String> sortName) {
+    this.sortName = sortName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SORT_NAME)
-    public void setSortName_JsonNullable(JsonNullable<String> sortName) {
-        this.sortName = sortName;
-    }
+  public void setSortName(@javax.annotation.Nullable String sortName) {
+    this.sortName = JsonNullable.<String>of(sortName);
+  }
 
-    public void setSortName(@javax.annotation.Nullable String sortName) {
-        this.sortName = JsonNullable.<String> of(sortName);
-    }
+  public BaseItemDto forcedSortName(@javax.annotation.Nullable String forcedSortName) {
+    this.forcedSortName = JsonNullable.<String>of(forcedSortName);
+    
+    return this;
+  }
 
-    public BaseItemDto forcedSortName(@javax.annotation.Nullable String forcedSortName) {
-        this.forcedSortName = JsonNullable.<String> of(forcedSortName);
+  /**
+   * Get forcedSortName
+   * @return forcedSortName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get forcedSortName
-     * 
-     * @return forcedSortName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getForcedSortName() {
+  public String getForcedSortName() {
         return forcedSortName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORCED_SORT_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FORCED_SORT_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getForcedSortName_JsonNullable() {
-        return forcedSortName;
-    }
+  public JsonNullable<String> getForcedSortName_JsonNullable() {
+    return forcedSortName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORCED_SORT_NAME)
+  public void setForcedSortName_JsonNullable(JsonNullable<String> forcedSortName) {
+    this.forcedSortName = forcedSortName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORCED_SORT_NAME)
-    public void setForcedSortName_JsonNullable(JsonNullable<String> forcedSortName) {
-        this.forcedSortName = forcedSortName;
-    }
+  public void setForcedSortName(@javax.annotation.Nullable String forcedSortName) {
+    this.forcedSortName = JsonNullable.<String>of(forcedSortName);
+  }
 
-    public void setForcedSortName(@javax.annotation.Nullable String forcedSortName) {
-        this.forcedSortName = JsonNullable.<String> of(forcedSortName);
-    }
+  public BaseItemDto video3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
+    this.video3DFormat = JsonNullable.<Video3DFormat>of(video3DFormat);
+    
+    return this;
+  }
 
-    public BaseItemDto video3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-        this.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
+  /**
+   * Gets or sets the video3 D format.
+   * @return video3DFormat
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the video3 D format.
-     * 
-     * @return video3DFormat
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Video3DFormat getVideo3DFormat() {
+  public Video3DFormat getVideo3DFormat() {
         return video3DFormat.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Video3DFormat> getVideo3DFormat_JsonNullable() {
-        return video3DFormat;
-    }
+  public JsonNullable<Video3DFormat> getVideo3DFormat_JsonNullable() {
+    return video3DFormat;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+  public void setVideo3DFormat_JsonNullable(JsonNullable<Video3DFormat> video3DFormat) {
+    this.video3DFormat = video3DFormat;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
-    public void setVideo3DFormat_JsonNullable(JsonNullable<Video3DFormat> video3DFormat) {
-        this.video3DFormat = video3DFormat;
-    }
+  public void setVideo3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
+    this.video3DFormat = JsonNullable.<Video3DFormat>of(video3DFormat);
+  }
 
-    public void setVideo3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-        this.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
-    }
+  public BaseItemDto premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+    
+    return this;
+  }
 
-    public BaseItemDto premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+  /**
+   * Gets or sets the premiere date.
+   * @return premiereDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the premiere date.
-     * 
-     * @return premiereDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getPremiereDate() {
+  public OffsetDateTime getPremiereDate() {
         return premiereDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
+    return premiereDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
+    this.premiereDate = premiereDate;
+  }
+
+  public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+  }
+
+  public BaseItemDto externalUrls(@javax.annotation.Nullable List<ExternalUrl> externalUrls) {
+    this.externalUrls = JsonNullable.<List<ExternalUrl>>of(externalUrls);
+    
+    return this;
+  }
+
+  public BaseItemDto addExternalUrlsItem(ExternalUrl externalUrlsItem) {
+    if (this.externalUrls == null || !this.externalUrls.isPresent()) {
+      this.externalUrls = JsonNullable.<List<ExternalUrl>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
-        return premiereDate;
+    try {
+      this.externalUrls.get().add(externalUrlsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
-        this.premiereDate = premiereDate;
-    }
+  /**
+   * Gets or sets the external urls.
+   * @return externalUrls
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-    }
-
-    public BaseItemDto externalUrls(@javax.annotation.Nullable List<ExternalUrl> externalUrls) {
-        this.externalUrls = JsonNullable.<List<ExternalUrl>> of(externalUrls);
-
-        return this;
-    }
-
-    public BaseItemDto addExternalUrlsItem(ExternalUrl externalUrlsItem) {
-        if (this.externalUrls == null || !this.externalUrls.isPresent()) {
-            this.externalUrls = JsonNullable.<List<ExternalUrl>> of(new ArrayList<>());
-        }
-        try {
-            this.externalUrls.get().add(externalUrlsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the external urls.
-     * 
-     * @return externalUrls
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ExternalUrl> getExternalUrls() {
+  public List<ExternalUrl> getExternalUrls() {
         return externalUrls.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_EXTERNAL_URLS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<ExternalUrl>> getExternalUrls_JsonNullable() {
+    return externalUrls;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EXTERNAL_URLS)
+  public void setExternalUrls_JsonNullable(JsonNullable<List<ExternalUrl>> externalUrls) {
+    this.externalUrls = externalUrls;
+  }
+
+  public void setExternalUrls(@javax.annotation.Nullable List<ExternalUrl> externalUrls) {
+    this.externalUrls = JsonNullable.<List<ExternalUrl>>of(externalUrls);
+  }
+
+  public BaseItemDto mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
+    this.mediaSources = JsonNullable.<List<MediaSourceInfo>>of(mediaSources);
+    
+    return this;
+  }
+
+  public BaseItemDto addMediaSourcesItem(MediaSourceInfo mediaSourcesItem) {
+    if (this.mediaSources == null || !this.mediaSources.isPresent()) {
+      this.mediaSources = JsonNullable.<List<MediaSourceInfo>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_URLS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<ExternalUrl>> getExternalUrls_JsonNullable() {
-        return externalUrls;
+    try {
+      this.mediaSources.get().add(mediaSourcesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_URLS)
-    public void setExternalUrls_JsonNullable(JsonNullable<List<ExternalUrl>> externalUrls) {
-        this.externalUrls = externalUrls;
-    }
+  /**
+   * Gets or sets the media versions.
+   * @return mediaSources
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setExternalUrls(@javax.annotation.Nullable List<ExternalUrl> externalUrls) {
-        this.externalUrls = JsonNullable.<List<ExternalUrl>> of(externalUrls);
-    }
-
-    public BaseItemDto mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
-        this.mediaSources = JsonNullable.<List<MediaSourceInfo>> of(mediaSources);
-
-        return this;
-    }
-
-    public BaseItemDto addMediaSourcesItem(MediaSourceInfo mediaSourcesItem) {
-        if (this.mediaSources == null || !this.mediaSources.isPresent()) {
-            this.mediaSources = JsonNullable.<List<MediaSourceInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.mediaSources.get().add(mediaSourcesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the media versions.
-     * 
-     * @return mediaSources
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaSourceInfo> getMediaSources() {
+  public List<MediaSourceInfo> getMediaSources() {
         return mediaSources.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MediaSourceInfo>> getMediaSources_JsonNullable() {
-        return mediaSources;
-    }
+  public JsonNullable<List<MediaSourceInfo>> getMediaSources_JsonNullable() {
+    return mediaSources;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+  public void setMediaSources_JsonNullable(JsonNullable<List<MediaSourceInfo>> mediaSources) {
+    this.mediaSources = mediaSources;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
-    public void setMediaSources_JsonNullable(JsonNullable<List<MediaSourceInfo>> mediaSources) {
-        this.mediaSources = mediaSources;
-    }
+  public void setMediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
+    this.mediaSources = JsonNullable.<List<MediaSourceInfo>>of(mediaSources);
+  }
 
-    public void setMediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
-        this.mediaSources = JsonNullable.<List<MediaSourceInfo>> of(mediaSources);
-    }
+  public BaseItemDto criticRating(@javax.annotation.Nullable Float criticRating) {
+    this.criticRating = JsonNullable.<Float>of(criticRating);
+    
+    return this;
+  }
 
-    public BaseItemDto criticRating(@javax.annotation.Nullable Float criticRating) {
-        this.criticRating = JsonNullable.<Float> of(criticRating);
+  /**
+   * Gets or sets the critic rating.
+   * @return criticRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the critic rating.
-     * 
-     * @return criticRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Float getCriticRating() {
+  public Float getCriticRating() {
         return criticRating.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CRITIC_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getCriticRating_JsonNullable() {
+    return criticRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CRITIC_RATING)
+  public void setCriticRating_JsonNullable(JsonNullable<Float> criticRating) {
+    this.criticRating = criticRating;
+  }
+
+  public void setCriticRating(@javax.annotation.Nullable Float criticRating) {
+    this.criticRating = JsonNullable.<Float>of(criticRating);
+  }
+
+  public BaseItemDto productionLocations(@javax.annotation.Nullable List<String> productionLocations) {
+    this.productionLocations = JsonNullable.<List<String>>of(productionLocations);
+    
+    return this;
+  }
+
+  public BaseItemDto addProductionLocationsItem(String productionLocationsItem) {
+    if (this.productionLocations == null || !this.productionLocations.isPresent()) {
+      this.productionLocations = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_CRITIC_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Float> getCriticRating_JsonNullable() {
-        return criticRating;
+    try {
+      this.productionLocations.get().add(productionLocationsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CRITIC_RATING)
-    public void setCriticRating_JsonNullable(JsonNullable<Float> criticRating) {
-        this.criticRating = criticRating;
-    }
+  /**
+   * Get productionLocations
+   * @return productionLocations
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setCriticRating(@javax.annotation.Nullable Float criticRating) {
-        this.criticRating = JsonNullable.<Float> of(criticRating);
-    }
-
-    public BaseItemDto productionLocations(@javax.annotation.Nullable List<String> productionLocations) {
-        this.productionLocations = JsonNullable.<List<String>> of(productionLocations);
-
-        return this;
-    }
-
-    public BaseItemDto addProductionLocationsItem(String productionLocationsItem) {
-        if (this.productionLocations == null || !this.productionLocations.isPresent()) {
-            this.productionLocations = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.productionLocations.get().add(productionLocationsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get productionLocations
-     * 
-     * @return productionLocations
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getProductionLocations() {
+  public List<String> getProductionLocations() {
         return productionLocations.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_LOCATIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_LOCATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getProductionLocations_JsonNullable() {
-        return productionLocations;
-    }
+  public JsonNullable<List<String>> getProductionLocations_JsonNullable() {
+    return productionLocations;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_LOCATIONS)
+  public void setProductionLocations_JsonNullable(JsonNullable<List<String>> productionLocations) {
+    this.productionLocations = productionLocations;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_LOCATIONS)
-    public void setProductionLocations_JsonNullable(JsonNullable<List<String>> productionLocations) {
-        this.productionLocations = productionLocations;
-    }
+  public void setProductionLocations(@javax.annotation.Nullable List<String> productionLocations) {
+    this.productionLocations = JsonNullable.<List<String>>of(productionLocations);
+  }
 
-    public void setProductionLocations(@javax.annotation.Nullable List<String> productionLocations) {
-        this.productionLocations = JsonNullable.<List<String>> of(productionLocations);
-    }
+  public BaseItemDto path(@javax.annotation.Nullable String path) {
+    this.path = JsonNullable.<String>of(path);
+    
+    return this;
+  }
 
-    public BaseItemDto path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
+  /**
+   * Gets or sets the path.
+   * @return path
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the path.
-     * 
-     * @return path
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
+  public String getPath() {
         return path.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
-        return path;
-    }
+  public JsonNullable<String> getPath_JsonNullable() {
+    return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
-        this.path = path;
-    }
+  public void setPath(@javax.annotation.Nullable String path) {
+    this.path = JsonNullable.<String>of(path);
+  }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
+  public BaseItemDto enableMediaSourceDisplay(@javax.annotation.Nullable Boolean enableMediaSourceDisplay) {
+    this.enableMediaSourceDisplay = JsonNullable.<Boolean>of(enableMediaSourceDisplay);
+    
+    return this;
+  }
 
-    public BaseItemDto enableMediaSourceDisplay(@javax.annotation.Nullable Boolean enableMediaSourceDisplay) {
-        this.enableMediaSourceDisplay = JsonNullable.<Boolean> of(enableMediaSourceDisplay);
+  /**
+   * Get enableMediaSourceDisplay
+   * @return enableMediaSourceDisplay
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get enableMediaSourceDisplay
-     * 
-     * @return enableMediaSourceDisplay
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableMediaSourceDisplay() {
+  public Boolean getEnableMediaSourceDisplay() {
         return enableMediaSourceDisplay.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableMediaSourceDisplay_JsonNullable() {
-        return enableMediaSourceDisplay;
-    }
+  public JsonNullable<Boolean> getEnableMediaSourceDisplay_JsonNullable() {
+    return enableMediaSourceDisplay;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
+  public void setEnableMediaSourceDisplay_JsonNullable(JsonNullable<Boolean> enableMediaSourceDisplay) {
+    this.enableMediaSourceDisplay = enableMediaSourceDisplay;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
-    public void setEnableMediaSourceDisplay_JsonNullable(JsonNullable<Boolean> enableMediaSourceDisplay) {
-        this.enableMediaSourceDisplay = enableMediaSourceDisplay;
-    }
+  public void setEnableMediaSourceDisplay(@javax.annotation.Nullable Boolean enableMediaSourceDisplay) {
+    this.enableMediaSourceDisplay = JsonNullable.<Boolean>of(enableMediaSourceDisplay);
+  }
 
-    public void setEnableMediaSourceDisplay(@javax.annotation.Nullable Boolean enableMediaSourceDisplay) {
-        this.enableMediaSourceDisplay = JsonNullable.<Boolean> of(enableMediaSourceDisplay);
-    }
+  public BaseItemDto officialRating(@javax.annotation.Nullable String officialRating) {
+    this.officialRating = JsonNullable.<String>of(officialRating);
+    
+    return this;
+  }
 
-    public BaseItemDto officialRating(@javax.annotation.Nullable String officialRating) {
-        this.officialRating = JsonNullable.<String> of(officialRating);
+  /**
+   * Gets or sets the official rating.
+   * @return officialRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the official rating.
-     * 
-     * @return officialRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOfficialRating() {
+  public String getOfficialRating() {
         return officialRating.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_OFFICIAL_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOfficialRating_JsonNullable() {
-        return officialRating;
-    }
+  public JsonNullable<String> getOfficialRating_JsonNullable() {
+    return officialRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATING)
+  public void setOfficialRating_JsonNullable(JsonNullable<String> officialRating) {
+    this.officialRating = officialRating;
+  }
 
-    @JsonProperty(JSON_PROPERTY_OFFICIAL_RATING)
-    public void setOfficialRating_JsonNullable(JsonNullable<String> officialRating) {
-        this.officialRating = officialRating;
-    }
+  public void setOfficialRating(@javax.annotation.Nullable String officialRating) {
+    this.officialRating = JsonNullable.<String>of(officialRating);
+  }
 
-    public void setOfficialRating(@javax.annotation.Nullable String officialRating) {
-        this.officialRating = JsonNullable.<String> of(officialRating);
-    }
+  public BaseItemDto customRating(@javax.annotation.Nullable String customRating) {
+    this.customRating = JsonNullable.<String>of(customRating);
+    
+    return this;
+  }
 
-    public BaseItemDto customRating(@javax.annotation.Nullable String customRating) {
-        this.customRating = JsonNullable.<String> of(customRating);
+  /**
+   * Gets or sets the custom rating.
+   * @return customRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the custom rating.
-     * 
-     * @return customRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomRating() {
+  public String getCustomRating() {
         return customRating.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CUSTOM_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCustomRating_JsonNullable() {
-        return customRating;
-    }
+  public JsonNullable<String> getCustomRating_JsonNullable() {
+    return customRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUSTOM_RATING)
+  public void setCustomRating_JsonNullable(JsonNullable<String> customRating) {
+    this.customRating = customRating;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_RATING)
-    public void setCustomRating_JsonNullable(JsonNullable<String> customRating) {
-        this.customRating = customRating;
-    }
+  public void setCustomRating(@javax.annotation.Nullable String customRating) {
+    this.customRating = JsonNullable.<String>of(customRating);
+  }
 
-    public void setCustomRating(@javax.annotation.Nullable String customRating) {
-        this.customRating = JsonNullable.<String> of(customRating);
-    }
+  public BaseItemDto channelId(@javax.annotation.Nullable UUID channelId) {
+    this.channelId = JsonNullable.<UUID>of(channelId);
+    
+    return this;
+  }
 
-    public BaseItemDto channelId(@javax.annotation.Nullable UUID channelId) {
-        this.channelId = JsonNullable.<UUID> of(channelId);
+  /**
+   * Gets or sets the channel identifier.
+   * @return channelId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the channel identifier.
-     * 
-     * @return channelId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getChannelId() {
+  public UUID getChannelId() {
         return channelId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getChannelId_JsonNullable() {
-        return channelId;
-    }
+  public JsonNullable<UUID> getChannelId_JsonNullable() {
+    return channelId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+  public void setChannelId_JsonNullable(JsonNullable<UUID> channelId) {
+    this.channelId = channelId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
-    public void setChannelId_JsonNullable(JsonNullable<UUID> channelId) {
-        this.channelId = channelId;
-    }
+  public void setChannelId(@javax.annotation.Nullable UUID channelId) {
+    this.channelId = JsonNullable.<UUID>of(channelId);
+  }
 
-    public void setChannelId(@javax.annotation.Nullable UUID channelId) {
-        this.channelId = JsonNullable.<UUID> of(channelId);
-    }
+  public BaseItemDto channelName(@javax.annotation.Nullable String channelName) {
+    this.channelName = JsonNullable.<String>of(channelName);
+    
+    return this;
+  }
 
-    public BaseItemDto channelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
+  /**
+   * Get channelName
+   * @return channelName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get channelName
-     * 
-     * @return channelName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelName() {
+  public String getChannelName() {
         return channelName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelName_JsonNullable() {
-        return channelName;
-    }
+  public JsonNullable<String> getChannelName_JsonNullable() {
+    return channelName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+  public void setChannelName_JsonNullable(JsonNullable<String> channelName) {
+    this.channelName = channelName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
-    public void setChannelName_JsonNullable(JsonNullable<String> channelName) {
-        this.channelName = channelName;
-    }
+  public void setChannelName(@javax.annotation.Nullable String channelName) {
+    this.channelName = JsonNullable.<String>of(channelName);
+  }
 
-    public void setChannelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
-    }
+  public BaseItemDto overview(@javax.annotation.Nullable String overview) {
+    this.overview = JsonNullable.<String>of(overview);
+    
+    return this;
+  }
 
-    public BaseItemDto overview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
+  /**
+   * Gets or sets the overview.
+   * @return overview
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the overview.
-     * 
-     * @return overview
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOverview() {
+  public String getOverview() {
         return overview.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOverview_JsonNullable() {
+    return overview;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  public void setOverview_JsonNullable(JsonNullable<String> overview) {
+    this.overview = overview;
+  }
+
+  public void setOverview(@javax.annotation.Nullable String overview) {
+    this.overview = JsonNullable.<String>of(overview);
+  }
+
+  public BaseItemDto taglines(@javax.annotation.Nullable List<String> taglines) {
+    this.taglines = JsonNullable.<List<String>>of(taglines);
+    
+    return this;
+  }
+
+  public BaseItemDto addTaglinesItem(String taglinesItem) {
+    if (this.taglines == null || !this.taglines.isPresent()) {
+      this.taglines = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getOverview_JsonNullable() {
-        return overview;
+    try {
+      this.taglines.get().add(taglinesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    public void setOverview_JsonNullable(JsonNullable<String> overview) {
-        this.overview = overview;
-    }
+  /**
+   * Gets or sets the taglines.
+   * @return taglines
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setOverview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
-    }
-
-    public BaseItemDto taglines(@javax.annotation.Nullable List<String> taglines) {
-        this.taglines = JsonNullable.<List<String>> of(taglines);
-
-        return this;
-    }
-
-    public BaseItemDto addTaglinesItem(String taglinesItem) {
-        if (this.taglines == null || !this.taglines.isPresent()) {
-            this.taglines = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.taglines.get().add(taglinesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the taglines.
-     * 
-     * @return taglines
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getTaglines() {
+  public List<String> getTaglines() {
         return taglines.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TAGLINES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getTaglines_JsonNullable() {
+    return taglines;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TAGLINES)
+  public void setTaglines_JsonNullable(JsonNullable<List<String>> taglines) {
+    this.taglines = taglines;
+  }
+
+  public void setTaglines(@javax.annotation.Nullable List<String> taglines) {
+    this.taglines = JsonNullable.<List<String>>of(taglines);
+  }
+
+  public BaseItemDto genres(@javax.annotation.Nullable List<String> genres) {
+    this.genres = JsonNullable.<List<String>>of(genres);
+    
+    return this;
+  }
+
+  public BaseItemDto addGenresItem(String genresItem) {
+    if (this.genres == null || !this.genres.isPresent()) {
+      this.genres = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_TAGLINES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<String>> getTaglines_JsonNullable() {
-        return taglines;
+    try {
+      this.genres.get().add(genresItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TAGLINES)
-    public void setTaglines_JsonNullable(JsonNullable<List<String>> taglines) {
-        this.taglines = taglines;
-    }
+  /**
+   * Gets or sets the genres.
+   * @return genres
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setTaglines(@javax.annotation.Nullable List<String> taglines) {
-        this.taglines = JsonNullable.<List<String>> of(taglines);
-    }
-
-    public BaseItemDto genres(@javax.annotation.Nullable List<String> genres) {
-        this.genres = JsonNullable.<List<String>> of(genres);
-
-        return this;
-    }
-
-    public BaseItemDto addGenresItem(String genresItem) {
-        if (this.genres == null || !this.genres.isPresent()) {
-            this.genres = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.genres.get().add(genresItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the genres.
-     * 
-     * @return genres
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getGenres() {
+  public List<String> getGenres() {
         return genres.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_GENRES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getGenres_JsonNullable() {
-        return genres;
-    }
+  public JsonNullable<List<String>> getGenres_JsonNullable() {
+    return genres;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  public void setGenres_JsonNullable(JsonNullable<List<String>> genres) {
+    this.genres = genres;
+  }
 
-    @JsonProperty(JSON_PROPERTY_GENRES)
-    public void setGenres_JsonNullable(JsonNullable<List<String>> genres) {
-        this.genres = genres;
-    }
+  public void setGenres(@javax.annotation.Nullable List<String> genres) {
+    this.genres = JsonNullable.<List<String>>of(genres);
+  }
 
-    public void setGenres(@javax.annotation.Nullable List<String> genres) {
-        this.genres = JsonNullable.<List<String>> of(genres);
-    }
+  public BaseItemDto communityRating(@javax.annotation.Nullable Float communityRating) {
+    this.communityRating = JsonNullable.<Float>of(communityRating);
+    
+    return this;
+  }
 
-    public BaseItemDto communityRating(@javax.annotation.Nullable Float communityRating) {
-        this.communityRating = JsonNullable.<Float> of(communityRating);
+  /**
+   * Gets or sets the community rating.
+   * @return communityRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the community rating.
-     * 
-     * @return communityRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Float getCommunityRating() {
+  public Float getCommunityRating() {
         return communityRating.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Float> getCommunityRating_JsonNullable() {
-        return communityRating;
-    }
+  public JsonNullable<Float> getCommunityRating_JsonNullable() {
+    return communityRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  public void setCommunityRating_JsonNullable(JsonNullable<Float> communityRating) {
+    this.communityRating = communityRating;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
-    public void setCommunityRating_JsonNullable(JsonNullable<Float> communityRating) {
-        this.communityRating = communityRating;
-    }
+  public void setCommunityRating(@javax.annotation.Nullable Float communityRating) {
+    this.communityRating = JsonNullable.<Float>of(communityRating);
+  }
 
-    public void setCommunityRating(@javax.annotation.Nullable Float communityRating) {
-        this.communityRating = JsonNullable.<Float> of(communityRating);
-    }
+  public BaseItemDto cumulativeRunTimeTicks(@javax.annotation.Nullable Long cumulativeRunTimeTicks) {
+    this.cumulativeRunTimeTicks = JsonNullable.<Long>of(cumulativeRunTimeTicks);
+    
+    return this;
+  }
 
-    public BaseItemDto cumulativeRunTimeTicks(@javax.annotation.Nullable Long cumulativeRunTimeTicks) {
-        this.cumulativeRunTimeTicks = JsonNullable.<Long> of(cumulativeRunTimeTicks);
+  /**
+   * Gets or sets the cumulative run time ticks.
+   * @return cumulativeRunTimeTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the cumulative run time ticks.
-     * 
-     * @return cumulativeRunTimeTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getCumulativeRunTimeTicks() {
+  public Long getCumulativeRunTimeTicks() {
         return cumulativeRunTimeTicks.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getCumulativeRunTimeTicks_JsonNullable() {
-        return cumulativeRunTimeTicks;
-    }
+  public JsonNullable<Long> getCumulativeRunTimeTicks_JsonNullable() {
+    return cumulativeRunTimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
+  public void setCumulativeRunTimeTicks_JsonNullable(JsonNullable<Long> cumulativeRunTimeTicks) {
+    this.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
-    public void setCumulativeRunTimeTicks_JsonNullable(JsonNullable<Long> cumulativeRunTimeTicks) {
-        this.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
-    }
+  public void setCumulativeRunTimeTicks(@javax.annotation.Nullable Long cumulativeRunTimeTicks) {
+    this.cumulativeRunTimeTicks = JsonNullable.<Long>of(cumulativeRunTimeTicks);
+  }
 
-    public void setCumulativeRunTimeTicks(@javax.annotation.Nullable Long cumulativeRunTimeTicks) {
-        this.cumulativeRunTimeTicks = JsonNullable.<Long> of(cumulativeRunTimeTicks);
-    }
+  public BaseItemDto runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
+    this.runTimeTicks = JsonNullable.<Long>of(runTimeTicks);
+    
+    return this;
+  }
 
-    public BaseItemDto runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
+  /**
+   * Gets or sets the run time ticks.
+   * @return runTimeTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the run time ticks.
-     * 
-     * @return runTimeTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getRunTimeTicks() {
+  public Long getRunTimeTicks() {
         return runTimeTicks.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
-        return runTimeTicks;
-    }
+  public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
+    return runTimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+  public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
+    this.runTimeTicks = runTimeTicks;
+  }
 
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
-    public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
-        this.runTimeTicks = runTimeTicks;
-    }
+  public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
+    this.runTimeTicks = JsonNullable.<Long>of(runTimeTicks);
+  }
 
-    public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-    }
+  public BaseItemDto playAccess(@javax.annotation.Nullable PlayAccess playAccess) {
+    this.playAccess = JsonNullable.<PlayAccess>of(playAccess);
+    
+    return this;
+  }
 
-    public BaseItemDto playAccess(@javax.annotation.Nullable PlayAccess playAccess) {
-        this.playAccess = JsonNullable.<PlayAccess> of(playAccess);
+  /**
+   * Gets or sets the play access.
+   * @return playAccess
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the play access.
-     * 
-     * @return playAccess
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlayAccess getPlayAccess() {
+  public PlayAccess getPlayAccess() {
         return playAccess.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_ACCESS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PLAY_ACCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PlayAccess> getPlayAccess_JsonNullable() {
-        return playAccess;
-    }
+  public JsonNullable<PlayAccess> getPlayAccess_JsonNullable() {
+    return playAccess;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_ACCESS)
+  public void setPlayAccess_JsonNullable(JsonNullable<PlayAccess> playAccess) {
+    this.playAccess = playAccess;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_ACCESS)
-    public void setPlayAccess_JsonNullable(JsonNullable<PlayAccess> playAccess) {
-        this.playAccess = playAccess;
-    }
+  public void setPlayAccess(@javax.annotation.Nullable PlayAccess playAccess) {
+    this.playAccess = JsonNullable.<PlayAccess>of(playAccess);
+  }
 
-    public void setPlayAccess(@javax.annotation.Nullable PlayAccess playAccess) {
-        this.playAccess = JsonNullable.<PlayAccess> of(playAccess);
-    }
+  public BaseItemDto aspectRatio(@javax.annotation.Nullable String aspectRatio) {
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
+    
+    return this;
+  }
 
-    public BaseItemDto aspectRatio(@javax.annotation.Nullable String aspectRatio) {
-        this.aspectRatio = JsonNullable.<String> of(aspectRatio);
+  /**
+   * Gets or sets the aspect ratio.
+   * @return aspectRatio
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the aspect ratio.
-     * 
-     * @return aspectRatio
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAspectRatio() {
+  public String getAspectRatio() {
         return aspectRatio.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAspectRatio_JsonNullable() {
-        return aspectRatio;
-    }
+  public JsonNullable<String> getAspectRatio_JsonNullable() {
+    return aspectRatio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
+    this.aspectRatio = aspectRatio;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
-    public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
-        this.aspectRatio = aspectRatio;
-    }
+  public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
+  }
 
-    public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
-        this.aspectRatio = JsonNullable.<String> of(aspectRatio);
-    }
+  public BaseItemDto productionYear(@javax.annotation.Nullable Integer productionYear) {
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
+    
+    return this;
+  }
 
-    public BaseItemDto productionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
+  /**
+   * Gets or sets the production year.
+   * @return productionYear
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the production year.
-     * 
-     * @return productionYear
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getProductionYear() {
+  public Integer getProductionYear() {
         return productionYear.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getProductionYear_JsonNullable() {
-        return productionYear;
-    }
+  public JsonNullable<Integer> getProductionYear_JsonNullable() {
+    return productionYear;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
+    this.productionYear = productionYear;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
-    public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
-        this.productionYear = productionYear;
-    }
+  public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
+  }
 
-    public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
-    }
+  public BaseItemDto isPlaceHolder(@javax.annotation.Nullable Boolean isPlaceHolder) {
+    this.isPlaceHolder = JsonNullable.<Boolean>of(isPlaceHolder);
+    
+    return this;
+  }
 
-    public BaseItemDto isPlaceHolder(@javax.annotation.Nullable Boolean isPlaceHolder) {
-        this.isPlaceHolder = JsonNullable.<Boolean> of(isPlaceHolder);
+  /**
+   * Gets or sets a value indicating whether this instance is place holder.
+   * @return isPlaceHolder
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is place holder.
-     * 
-     * @return isPlaceHolder
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsPlaceHolder() {
+  public Boolean getIsPlaceHolder() {
         return isPlaceHolder.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_PLACE_HOLDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_PLACE_HOLDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsPlaceHolder_JsonNullable() {
-        return isPlaceHolder;
-    }
+  public JsonNullable<Boolean> getIsPlaceHolder_JsonNullable() {
+    return isPlaceHolder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_PLACE_HOLDER)
+  public void setIsPlaceHolder_JsonNullable(JsonNullable<Boolean> isPlaceHolder) {
+    this.isPlaceHolder = isPlaceHolder;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_PLACE_HOLDER)
-    public void setIsPlaceHolder_JsonNullable(JsonNullable<Boolean> isPlaceHolder) {
-        this.isPlaceHolder = isPlaceHolder;
-    }
+  public void setIsPlaceHolder(@javax.annotation.Nullable Boolean isPlaceHolder) {
+    this.isPlaceHolder = JsonNullable.<Boolean>of(isPlaceHolder);
+  }
 
-    public void setIsPlaceHolder(@javax.annotation.Nullable Boolean isPlaceHolder) {
-        this.isPlaceHolder = JsonNullable.<Boolean> of(isPlaceHolder);
-    }
+  public BaseItemDto number(@javax.annotation.Nullable String number) {
+    this.number = JsonNullable.<String>of(number);
+    
+    return this;
+  }
 
-    public BaseItemDto number(@javax.annotation.Nullable String number) {
-        this.number = JsonNullable.<String> of(number);
+  /**
+   * Gets or sets the number.
+   * @return number
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the number.
-     * 
-     * @return number
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNumber() {
+  public String getNumber() {
         return number.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getNumber_JsonNullable() {
-        return number;
-    }
+  public JsonNullable<String> getNumber_JsonNullable() {
+    return number;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NUMBER)
+  public void setNumber_JsonNullable(JsonNullable<String> number) {
+    this.number = number;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NUMBER)
-    public void setNumber_JsonNullable(JsonNullable<String> number) {
-        this.number = number;
-    }
+  public void setNumber(@javax.annotation.Nullable String number) {
+    this.number = JsonNullable.<String>of(number);
+  }
 
-    public void setNumber(@javax.annotation.Nullable String number) {
-        this.number = JsonNullable.<String> of(number);
-    }
+  public BaseItemDto channelNumber(@javax.annotation.Nullable String channelNumber) {
+    this.channelNumber = JsonNullable.<String>of(channelNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto channelNumber(@javax.annotation.Nullable String channelNumber) {
-        this.channelNumber = JsonNullable.<String> of(channelNumber);
+  /**
+   * Get channelNumber
+   * @return channelNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get channelNumber
-     * 
-     * @return channelNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelNumber() {
+  public String getChannelNumber() {
         return channelNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelNumber_JsonNullable() {
-        return channelNumber;
-    }
+  public JsonNullable<String> getChannelNumber_JsonNullable() {
+    return channelNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_NUMBER)
+  public void setChannelNumber_JsonNullable(JsonNullable<String> channelNumber) {
+    this.channelNumber = channelNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NUMBER)
-    public void setChannelNumber_JsonNullable(JsonNullable<String> channelNumber) {
-        this.channelNumber = channelNumber;
-    }
+  public void setChannelNumber(@javax.annotation.Nullable String channelNumber) {
+    this.channelNumber = JsonNullable.<String>of(channelNumber);
+  }
 
-    public void setChannelNumber(@javax.annotation.Nullable String channelNumber) {
-        this.channelNumber = JsonNullable.<String> of(channelNumber);
-    }
+  public BaseItemDto indexNumber(@javax.annotation.Nullable Integer indexNumber) {
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
+  /**
+   * Gets or sets the index number.
+   * @return indexNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the index number.
-     * 
-     * @return indexNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumber() {
+  public Integer getIndexNumber() {
         return indexNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumber_JsonNullable() {
-        return indexNumber;
-    }
+  public JsonNullable<Integer> getIndexNumber_JsonNullable() {
+    return indexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    this.indexNumber = indexNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
-        this.indexNumber = indexNumber;
-    }
+  public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
+  }
 
-    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
-    }
+  public BaseItemDto indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+    
+    return this;
+  }
 
-    public BaseItemDto indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-        this.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
+  /**
+   * Gets or sets the index number end.
+   * @return indexNumberEnd
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the index number end.
-     * 
-     * @return indexNumberEnd
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumberEnd() {
+  public Integer getIndexNumberEnd() {
         return indexNumberEnd.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumberEnd_JsonNullable() {
-        return indexNumberEnd;
-    }
+  public JsonNullable<Integer> getIndexNumberEnd_JsonNullable() {
+    return indexNumberEnd;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  public void setIndexNumberEnd_JsonNullable(JsonNullable<Integer> indexNumberEnd) {
+    this.indexNumberEnd = indexNumberEnd;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
-    public void setIndexNumberEnd_JsonNullable(JsonNullable<Integer> indexNumberEnd) {
-        this.indexNumberEnd = indexNumberEnd;
-    }
+  public void setIndexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+  }
 
-    public void setIndexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-        this.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
-    }
+  public BaseItemDto parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+    
+    return this;
+  }
 
-    public BaseItemDto parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
+  /**
+   * Gets or sets the parent index number.
+   * @return parentIndexNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent index number.
-     * 
-     * @return parentIndexNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getParentIndexNumber() {
+  public Integer getParentIndexNumber() {
         return parentIndexNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
+    return parentIndexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    this.parentIndexNumber = parentIndexNumber;
+  }
+
+  public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+  }
+
+  public BaseItemDto remoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
+    this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(remoteTrailers);
+    
+    return this;
+  }
+
+  public BaseItemDto addRemoteTrailersItem(MediaUrl remoteTrailersItem) {
+    if (this.remoteTrailers == null || !this.remoteTrailers.isPresent()) {
+      this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
-        return parentIndexNumber;
+    try {
+      this.remoteTrailers.get().add(remoteTrailersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
-        this.parentIndexNumber = parentIndexNumber;
-    }
+  /**
+   * Gets or sets the trailer urls.
+   * @return remoteTrailers
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-    }
-
-    public BaseItemDto remoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-        this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
-
-        return this;
-    }
-
-    public BaseItemDto addRemoteTrailersItem(MediaUrl remoteTrailersItem) {
-        if (this.remoteTrailers == null || !this.remoteTrailers.isPresent()) {
-            this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(new ArrayList<>());
-        }
-        try {
-            this.remoteTrailers.get().add(remoteTrailersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the trailer urls.
-     * 
-     * @return remoteTrailers
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaUrl> getRemoteTrailers() {
+  public List<MediaUrl> getRemoteTrailers() {
         return remoteTrailers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<MediaUrl>> getRemoteTrailers_JsonNullable() {
+    return remoteTrailers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
+  public void setRemoteTrailers_JsonNullable(JsonNullable<List<MediaUrl>> remoteTrailers) {
+    this.remoteTrailers = remoteTrailers;
+  }
+
+  public void setRemoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
+    this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(remoteTrailers);
+  }
+
+  public BaseItemDto providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+    
+    return this;
+  }
+
+  public BaseItemDto putProviderIdsItem(String key, String providerIdsItem) {
+    if (this.providerIds == null || !this.providerIds.isPresent()) {
+      this.providerIds = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<MediaUrl>> getRemoteTrailers_JsonNullable() {
-        return remoteTrailers;
+    try {
+      this.providerIds.get().put(key, providerIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
-    public void setRemoteTrailers_JsonNullable(JsonNullable<List<MediaUrl>> remoteTrailers) {
-        this.remoteTrailers = remoteTrailers;
-    }
+  /**
+   * Gets or sets the provider ids.
+   * @return providerIds
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setRemoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-        this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
-    }
-
-    public BaseItemDto providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-
-        return this;
-    }
-
-    public BaseItemDto putProviderIdsItem(String key, String providerIdsItem) {
-        if (this.providerIds == null || !this.providerIds.isPresent()) {
-            this.providerIds = JsonNullable.<Map<String, String>> of(new HashMap<>());
-        }
-        try {
-            this.providerIds.get().put(key, providerIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the provider ids.
-     * 
-     * @return providerIds
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getProviderIds() {
+  public Map<String, String> getProviderIds() {
         return providerIds.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
-        return providerIds;
-    }
+  public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
+    return providerIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    this.providerIds = providerIds;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
-        this.providerIds = providerIds;
-    }
+  public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+  }
 
-    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-    }
+  public BaseItemDto isHD(@javax.annotation.Nullable Boolean isHD) {
+    this.isHD = JsonNullable.<Boolean>of(isHD);
+    
+    return this;
+  }
 
-    public BaseItemDto isHD(@javax.annotation.Nullable Boolean isHD) {
-        this.isHD = JsonNullable.<Boolean> of(isHD);
+  /**
+   * Gets or sets a value indicating whether this instance is HD.
+   * @return isHD
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is HD.
-     * 
-     * @return isHD
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsHD() {
+  public Boolean getIsHD() {
         return isHD.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_H_D)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_H_D)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsHD_JsonNullable() {
-        return isHD;
-    }
+  public JsonNullable<Boolean> getIsHD_JsonNullable() {
+    return isHD;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_H_D)
+  public void setIsHD_JsonNullable(JsonNullable<Boolean> isHD) {
+    this.isHD = isHD;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_H_D)
-    public void setIsHD_JsonNullable(JsonNullable<Boolean> isHD) {
-        this.isHD = isHD;
-    }
+  public void setIsHD(@javax.annotation.Nullable Boolean isHD) {
+    this.isHD = JsonNullable.<Boolean>of(isHD);
+  }
 
-    public void setIsHD(@javax.annotation.Nullable Boolean isHD) {
-        this.isHD = JsonNullable.<Boolean> of(isHD);
-    }
+  public BaseItemDto isFolder(@javax.annotation.Nullable Boolean isFolder) {
+    this.isFolder = JsonNullable.<Boolean>of(isFolder);
+    
+    return this;
+  }
 
-    public BaseItemDto isFolder(@javax.annotation.Nullable Boolean isFolder) {
-        this.isFolder = JsonNullable.<Boolean> of(isFolder);
+  /**
+   * Gets or sets a value indicating whether this instance is folder.
+   * @return isFolder
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is folder.
-     * 
-     * @return isFolder
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsFolder() {
+  public Boolean getIsFolder() {
         return isFolder.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_FOLDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_FOLDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsFolder_JsonNullable() {
-        return isFolder;
-    }
+  public JsonNullable<Boolean> getIsFolder_JsonNullable() {
+    return isFolder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_FOLDER)
+  public void setIsFolder_JsonNullable(JsonNullable<Boolean> isFolder) {
+    this.isFolder = isFolder;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_FOLDER)
-    public void setIsFolder_JsonNullable(JsonNullable<Boolean> isFolder) {
-        this.isFolder = isFolder;
-    }
+  public void setIsFolder(@javax.annotation.Nullable Boolean isFolder) {
+    this.isFolder = JsonNullable.<Boolean>of(isFolder);
+  }
 
-    public void setIsFolder(@javax.annotation.Nullable Boolean isFolder) {
-        this.isFolder = JsonNullable.<Boolean> of(isFolder);
-    }
+  public BaseItemDto parentId(@javax.annotation.Nullable UUID parentId) {
+    this.parentId = JsonNullable.<UUID>of(parentId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentId(@javax.annotation.Nullable UUID parentId) {
-        this.parentId = JsonNullable.<UUID> of(parentId);
+  /**
+   * Gets or sets the parent id.
+   * @return parentId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent id.
-     * 
-     * @return parentId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getParentId() {
+  public UUID getParentId() {
         return parentId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getParentId_JsonNullable() {
+    return parentId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_ID)
+  public void setParentId_JsonNullable(JsonNullable<UUID> parentId) {
+    this.parentId = parentId;
+  }
+
+  public void setParentId(@javax.annotation.Nullable UUID parentId) {
+    this.parentId = JsonNullable.<UUID>of(parentId);
+  }
+
+  public BaseItemDto type(@javax.annotation.Nullable BaseItemKind type) {
+    
+    this.type = type;
+    return this;
+  }
+
+  /**
+   * Gets or sets the type.
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public BaseItemKind getType() {
+    return type;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(@javax.annotation.Nullable BaseItemKind type) {
+    this.type = type;
+  }
+
+  public BaseItemDto people(@javax.annotation.Nullable List<BaseItemPerson> people) {
+    this.people = JsonNullable.<List<BaseItemPerson>>of(people);
+    
+    return this;
+  }
+
+  public BaseItemDto addPeopleItem(BaseItemPerson peopleItem) {
+    if (this.people == null || !this.people.isPresent()) {
+      this.people = JsonNullable.<List<BaseItemPerson>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PARENT_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<UUID> getParentId_JsonNullable() {
-        return parentId;
+    try {
+      this.people.get().add(peopleItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_ID)
-    public void setParentId_JsonNullable(JsonNullable<UUID> parentId) {
-        this.parentId = parentId;
-    }
+  /**
+   * Gets or sets the people.
+   * @return people
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setParentId(@javax.annotation.Nullable UUID parentId) {
-        this.parentId = JsonNullable.<UUID> of(parentId);
-    }
-
-    public BaseItemDto type(@javax.annotation.Nullable BaseItemKind type) {
-
-        this.type = type;
-        return this;
-    }
-
-    /**
-     * Gets or sets the type.
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public BaseItemKind getType() {
-        return type;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setType(@javax.annotation.Nullable BaseItemKind type) {
-        this.type = type;
-    }
-
-    public BaseItemDto people(@javax.annotation.Nullable List<BaseItemPerson> people) {
-        this.people = JsonNullable.<List<BaseItemPerson>> of(people);
-
-        return this;
-    }
-
-    public BaseItemDto addPeopleItem(BaseItemPerson peopleItem) {
-        if (this.people == null || !this.people.isPresent()) {
-            this.people = JsonNullable.<List<BaseItemPerson>> of(new ArrayList<>());
-        }
-        try {
-            this.people.get().add(peopleItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the people.
-     * 
-     * @return people
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<BaseItemPerson> getPeople() {
+  public List<BaseItemPerson> getPeople() {
         return people.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PEOPLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<BaseItemPerson>> getPeople_JsonNullable() {
+    return people;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PEOPLE)
+  public void setPeople_JsonNullable(JsonNullable<List<BaseItemPerson>> people) {
+    this.people = people;
+  }
+
+  public void setPeople(@javax.annotation.Nullable List<BaseItemPerson> people) {
+    this.people = JsonNullable.<List<BaseItemPerson>>of(people);
+  }
+
+  public BaseItemDto studios(@javax.annotation.Nullable List<NameGuidPair> studios) {
+    this.studios = JsonNullable.<List<NameGuidPair>>of(studios);
+    
+    return this;
+  }
+
+  public BaseItemDto addStudiosItem(NameGuidPair studiosItem) {
+    if (this.studios == null || !this.studios.isPresent()) {
+      this.studios = JsonNullable.<List<NameGuidPair>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PEOPLE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<BaseItemPerson>> getPeople_JsonNullable() {
-        return people;
+    try {
+      this.studios.get().add(studiosItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PEOPLE)
-    public void setPeople_JsonNullable(JsonNullable<List<BaseItemPerson>> people) {
-        this.people = people;
-    }
+  /**
+   * Gets or sets the studios.
+   * @return studios
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setPeople(@javax.annotation.Nullable List<BaseItemPerson> people) {
-        this.people = JsonNullable.<List<BaseItemPerson>> of(people);
-    }
-
-    public BaseItemDto studios(@javax.annotation.Nullable List<NameGuidPair> studios) {
-        this.studios = JsonNullable.<List<NameGuidPair>> of(studios);
-
-        return this;
-    }
-
-    public BaseItemDto addStudiosItem(NameGuidPair studiosItem) {
-        if (this.studios == null || !this.studios.isPresent()) {
-            this.studios = JsonNullable.<List<NameGuidPair>> of(new ArrayList<>());
-        }
-        try {
-            this.studios.get().add(studiosItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the studios.
-     * 
-     * @return studios
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<NameGuidPair> getStudios() {
+  public List<NameGuidPair> getStudios() {
         return studios.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_STUDIOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<NameGuidPair>> getStudios_JsonNullable() {
+    return studios;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_STUDIOS)
+  public void setStudios_JsonNullable(JsonNullable<List<NameGuidPair>> studios) {
+    this.studios = studios;
+  }
+
+  public void setStudios(@javax.annotation.Nullable List<NameGuidPair> studios) {
+    this.studios = JsonNullable.<List<NameGuidPair>>of(studios);
+  }
+
+  public BaseItemDto genreItems(@javax.annotation.Nullable List<NameGuidPair> genreItems) {
+    this.genreItems = JsonNullable.<List<NameGuidPair>>of(genreItems);
+    
+    return this;
+  }
+
+  public BaseItemDto addGenreItemsItem(NameGuidPair genreItemsItem) {
+    if (this.genreItems == null || !this.genreItems.isPresent()) {
+      this.genreItems = JsonNullable.<List<NameGuidPair>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_STUDIOS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<NameGuidPair>> getStudios_JsonNullable() {
-        return studios;
+    try {
+      this.genreItems.get().add(genreItemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_STUDIOS)
-    public void setStudios_JsonNullable(JsonNullable<List<NameGuidPair>> studios) {
-        this.studios = studios;
-    }
+  /**
+   * Get genreItems
+   * @return genreItems
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setStudios(@javax.annotation.Nullable List<NameGuidPair> studios) {
-        this.studios = JsonNullable.<List<NameGuidPair>> of(studios);
-    }
-
-    public BaseItemDto genreItems(@javax.annotation.Nullable List<NameGuidPair> genreItems) {
-        this.genreItems = JsonNullable.<List<NameGuidPair>> of(genreItems);
-
-        return this;
-    }
-
-    public BaseItemDto addGenreItemsItem(NameGuidPair genreItemsItem) {
-        if (this.genreItems == null || !this.genreItems.isPresent()) {
-            this.genreItems = JsonNullable.<List<NameGuidPair>> of(new ArrayList<>());
-        }
-        try {
-            this.genreItems.get().add(genreItemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get genreItems
-     * 
-     * @return genreItems
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<NameGuidPair> getGenreItems() {
+  public List<NameGuidPair> getGenreItems() {
         return genreItems.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_GENRE_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_GENRE_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<NameGuidPair>> getGenreItems_JsonNullable() {
-        return genreItems;
-    }
+  public JsonNullable<List<NameGuidPair>> getGenreItems_JsonNullable() {
+    return genreItems;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_GENRE_ITEMS)
+  public void setGenreItems_JsonNullable(JsonNullable<List<NameGuidPair>> genreItems) {
+    this.genreItems = genreItems;
+  }
 
-    @JsonProperty(JSON_PROPERTY_GENRE_ITEMS)
-    public void setGenreItems_JsonNullable(JsonNullable<List<NameGuidPair>> genreItems) {
-        this.genreItems = genreItems;
-    }
+  public void setGenreItems(@javax.annotation.Nullable List<NameGuidPair> genreItems) {
+    this.genreItems = JsonNullable.<List<NameGuidPair>>of(genreItems);
+  }
 
-    public void setGenreItems(@javax.annotation.Nullable List<NameGuidPair> genreItems) {
-        this.genreItems = JsonNullable.<List<NameGuidPair>> of(genreItems);
-    }
+  public BaseItemDto parentLogoItemId(@javax.annotation.Nullable UUID parentLogoItemId) {
+    this.parentLogoItemId = JsonNullable.<UUID>of(parentLogoItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentLogoItemId(@javax.annotation.Nullable UUID parentLogoItemId) {
-        this.parentLogoItemId = JsonNullable.<UUID> of(parentLogoItemId);
+  /**
+   * Gets or sets wether the item has a logo, this will hold the Id of the Parent that has one.
+   * @return parentLogoItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets wether the item has a logo, this will hold the Id of the Parent that has one.
-     * 
-     * @return parentLogoItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getParentLogoItemId() {
+  public UUID getParentLogoItemId() {
         return parentLogoItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getParentLogoItemId_JsonNullable() {
-        return parentLogoItemId;
-    }
+  public JsonNullable<UUID> getParentLogoItemId_JsonNullable() {
+    return parentLogoItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
+  public void setParentLogoItemId_JsonNullable(JsonNullable<UUID> parentLogoItemId) {
+    this.parentLogoItemId = parentLogoItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
-    public void setParentLogoItemId_JsonNullable(JsonNullable<UUID> parentLogoItemId) {
-        this.parentLogoItemId = parentLogoItemId;
-    }
+  public void setParentLogoItemId(@javax.annotation.Nullable UUID parentLogoItemId) {
+    this.parentLogoItemId = JsonNullable.<UUID>of(parentLogoItemId);
+  }
 
-    public void setParentLogoItemId(@javax.annotation.Nullable UUID parentLogoItemId) {
-        this.parentLogoItemId = JsonNullable.<UUID> of(parentLogoItemId);
-    }
+  public BaseItemDto parentBackdropItemId(@javax.annotation.Nullable UUID parentBackdropItemId) {
+    this.parentBackdropItemId = JsonNullable.<UUID>of(parentBackdropItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentBackdropItemId(@javax.annotation.Nullable UUID parentBackdropItemId) {
-        this.parentBackdropItemId = JsonNullable.<UUID> of(parentBackdropItemId);
+  /**
+   * Gets or sets wether the item has any backdrops, this will hold the Id of the Parent that has one.
+   * @return parentBackdropItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets wether the item has any backdrops, this will hold the Id of the Parent that has one.
-     * 
-     * @return parentBackdropItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getParentBackdropItemId() {
+  public UUID getParentBackdropItemId() {
         return parentBackdropItemId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getParentBackdropItemId_JsonNullable() {
+    return parentBackdropItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+  public void setParentBackdropItemId_JsonNullable(JsonNullable<UUID> parentBackdropItemId) {
+    this.parentBackdropItemId = parentBackdropItemId;
+  }
+
+  public void setParentBackdropItemId(@javax.annotation.Nullable UUID parentBackdropItemId) {
+    this.parentBackdropItemId = JsonNullable.<UUID>of(parentBackdropItemId);
+  }
+
+  public BaseItemDto parentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
+    this.parentBackdropImageTags = JsonNullable.<List<String>>of(parentBackdropImageTags);
+    
+    return this;
+  }
+
+  public BaseItemDto addParentBackdropImageTagsItem(String parentBackdropImageTagsItem) {
+    if (this.parentBackdropImageTags == null || !this.parentBackdropImageTags.isPresent()) {
+      this.parentBackdropImageTags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<UUID> getParentBackdropItemId_JsonNullable() {
-        return parentBackdropItemId;
+    try {
+      this.parentBackdropImageTags.get().add(parentBackdropImageTagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
-    public void setParentBackdropItemId_JsonNullable(JsonNullable<UUID> parentBackdropItemId) {
-        this.parentBackdropItemId = parentBackdropItemId;
-    }
+  /**
+   * Gets or sets the parent backdrop image tags.
+   * @return parentBackdropImageTags
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setParentBackdropItemId(@javax.annotation.Nullable UUID parentBackdropItemId) {
-        this.parentBackdropItemId = JsonNullable.<UUID> of(parentBackdropItemId);
-    }
-
-    public BaseItemDto parentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
-        this.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
-
-        return this;
-    }
-
-    public BaseItemDto addParentBackdropImageTagsItem(String parentBackdropImageTagsItem) {
-        if (this.parentBackdropImageTags == null || !this.parentBackdropImageTags.isPresent()) {
-            this.parentBackdropImageTags = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.parentBackdropImageTags.get().add(parentBackdropImageTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent backdrop image tags.
-     * 
-     * @return parentBackdropImageTags
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getParentBackdropImageTags() {
+  public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getParentBackdropImageTags_JsonNullable() {
-        return parentBackdropImageTags;
-    }
+  public JsonNullable<List<String>> getParentBackdropImageTags_JsonNullable() {
+    return parentBackdropImageTags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+  public void setParentBackdropImageTags_JsonNullable(JsonNullable<List<String>> parentBackdropImageTags) {
+    this.parentBackdropImageTags = parentBackdropImageTags;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
-    public void setParentBackdropImageTags_JsonNullable(JsonNullable<List<String>> parentBackdropImageTags) {
-        this.parentBackdropImageTags = parentBackdropImageTags;
-    }
+  public void setParentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
+    this.parentBackdropImageTags = JsonNullable.<List<String>>of(parentBackdropImageTags);
+  }
 
-    public void setParentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
-        this.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
-    }
+  public BaseItemDto localTrailerCount(@javax.annotation.Nullable Integer localTrailerCount) {
+    this.localTrailerCount = JsonNullable.<Integer>of(localTrailerCount);
+    
+    return this;
+  }
 
-    public BaseItemDto localTrailerCount(@javax.annotation.Nullable Integer localTrailerCount) {
-        this.localTrailerCount = JsonNullable.<Integer> of(localTrailerCount);
+  /**
+   * Gets or sets the local trailer count.
+   * @return localTrailerCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the local trailer count.
-     * 
-     * @return localTrailerCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getLocalTrailerCount() {
+  public Integer getLocalTrailerCount() {
         return localTrailerCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_TRAILER_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOCAL_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getLocalTrailerCount_JsonNullable() {
-        return localTrailerCount;
-    }
+  public JsonNullable<Integer> getLocalTrailerCount_JsonNullable() {
+    return localTrailerCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCAL_TRAILER_COUNT)
+  public void setLocalTrailerCount_JsonNullable(JsonNullable<Integer> localTrailerCount) {
+    this.localTrailerCount = localTrailerCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_TRAILER_COUNT)
-    public void setLocalTrailerCount_JsonNullable(JsonNullable<Integer> localTrailerCount) {
-        this.localTrailerCount = localTrailerCount;
-    }
+  public void setLocalTrailerCount(@javax.annotation.Nullable Integer localTrailerCount) {
+    this.localTrailerCount = JsonNullable.<Integer>of(localTrailerCount);
+  }
 
-    public void setLocalTrailerCount(@javax.annotation.Nullable Integer localTrailerCount) {
-        this.localTrailerCount = JsonNullable.<Integer> of(localTrailerCount);
-    }
+  public BaseItemDto userData(@javax.annotation.Nullable UserItemDataDto userData) {
+    this.userData = JsonNullable.<UserItemDataDto>of(userData);
+    
+    return this;
+  }
 
-    public BaseItemDto userData(@javax.annotation.Nullable UserItemDataDto userData) {
-        this.userData = JsonNullable.<UserItemDataDto> of(userData);
+  /**
+   * Gets or sets the user data for this item based on the user it&#39;s being requested for.
+   * @return userData
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the user data for this item based on the user it&#39;s being requested for.
-     * 
-     * @return userData
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UserItemDataDto getUserData() {
+  public UserItemDataDto getUserData() {
         return userData.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_USER_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UserItemDataDto> getUserData_JsonNullable() {
-        return userData;
-    }
+  public JsonNullable<UserItemDataDto> getUserData_JsonNullable() {
+    return userData;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_DATA)
+  public void setUserData_JsonNullable(JsonNullable<UserItemDataDto> userData) {
+    this.userData = userData;
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_DATA)
-    public void setUserData_JsonNullable(JsonNullable<UserItemDataDto> userData) {
-        this.userData = userData;
-    }
+  public void setUserData(@javax.annotation.Nullable UserItemDataDto userData) {
+    this.userData = JsonNullable.<UserItemDataDto>of(userData);
+  }
 
-    public void setUserData(@javax.annotation.Nullable UserItemDataDto userData) {
-        this.userData = JsonNullable.<UserItemDataDto> of(userData);
-    }
+  public BaseItemDto recursiveItemCount(@javax.annotation.Nullable Integer recursiveItemCount) {
+    this.recursiveItemCount = JsonNullable.<Integer>of(recursiveItemCount);
+    
+    return this;
+  }
 
-    public BaseItemDto recursiveItemCount(@javax.annotation.Nullable Integer recursiveItemCount) {
-        this.recursiveItemCount = JsonNullable.<Integer> of(recursiveItemCount);
+  /**
+   * Gets or sets the recursive item count.
+   * @return recursiveItemCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the recursive item count.
-     * 
-     * @return recursiveItemCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getRecursiveItemCount() {
+  public Integer getRecursiveItemCount() {
         return recursiveItemCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getRecursiveItemCount_JsonNullable() {
-        return recursiveItemCount;
-    }
+  public JsonNullable<Integer> getRecursiveItemCount_JsonNullable() {
+    return recursiveItemCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
+  public void setRecursiveItemCount_JsonNullable(JsonNullable<Integer> recursiveItemCount) {
+    this.recursiveItemCount = recursiveItemCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
-    public void setRecursiveItemCount_JsonNullable(JsonNullable<Integer> recursiveItemCount) {
-        this.recursiveItemCount = recursiveItemCount;
-    }
+  public void setRecursiveItemCount(@javax.annotation.Nullable Integer recursiveItemCount) {
+    this.recursiveItemCount = JsonNullable.<Integer>of(recursiveItemCount);
+  }
 
-    public void setRecursiveItemCount(@javax.annotation.Nullable Integer recursiveItemCount) {
-        this.recursiveItemCount = JsonNullable.<Integer> of(recursiveItemCount);
-    }
+  public BaseItemDto childCount(@javax.annotation.Nullable Integer childCount) {
+    this.childCount = JsonNullable.<Integer>of(childCount);
+    
+    return this;
+  }
 
-    public BaseItemDto childCount(@javax.annotation.Nullable Integer childCount) {
-        this.childCount = JsonNullable.<Integer> of(childCount);
+  /**
+   * Gets or sets the child count.
+   * @return childCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the child count.
-     * 
-     * @return childCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getChildCount() {
+  public Integer getChildCount() {
         return childCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHILD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHILD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getChildCount_JsonNullable() {
-        return childCount;
-    }
+  public JsonNullable<Integer> getChildCount_JsonNullable() {
+    return childCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHILD_COUNT)
+  public void setChildCount_JsonNullable(JsonNullable<Integer> childCount) {
+    this.childCount = childCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHILD_COUNT)
-    public void setChildCount_JsonNullable(JsonNullable<Integer> childCount) {
-        this.childCount = childCount;
-    }
+  public void setChildCount(@javax.annotation.Nullable Integer childCount) {
+    this.childCount = JsonNullable.<Integer>of(childCount);
+  }
 
-    public void setChildCount(@javax.annotation.Nullable Integer childCount) {
-        this.childCount = JsonNullable.<Integer> of(childCount);
-    }
+  public BaseItemDto seriesName(@javax.annotation.Nullable String seriesName) {
+    this.seriesName = JsonNullable.<String>of(seriesName);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesName(@javax.annotation.Nullable String seriesName) {
-        this.seriesName = JsonNullable.<String> of(seriesName);
+  /**
+   * Gets or sets the name of the series.
+   * @return seriesName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the name of the series.
-     * 
-     * @return seriesName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesName() {
+  public String getSeriesName() {
         return seriesName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesName_JsonNullable() {
-        return seriesName;
-    }
+  public JsonNullable<String> getSeriesName_JsonNullable() {
+    return seriesName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_NAME)
+  public void setSeriesName_JsonNullable(JsonNullable<String> seriesName) {
+    this.seriesName = seriesName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_NAME)
-    public void setSeriesName_JsonNullable(JsonNullable<String> seriesName) {
-        this.seriesName = seriesName;
-    }
+  public void setSeriesName(@javax.annotation.Nullable String seriesName) {
+    this.seriesName = JsonNullable.<String>of(seriesName);
+  }
 
-    public void setSeriesName(@javax.annotation.Nullable String seriesName) {
-        this.seriesName = JsonNullable.<String> of(seriesName);
-    }
+  public BaseItemDto seriesId(@javax.annotation.Nullable UUID seriesId) {
+    this.seriesId = JsonNullable.<UUID>of(seriesId);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesId(@javax.annotation.Nullable UUID seriesId) {
-        this.seriesId = JsonNullable.<UUID> of(seriesId);
+  /**
+   * Gets or sets the series id.
+   * @return seriesId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series id.
-     * 
-     * @return seriesId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getSeriesId() {
+  public UUID getSeriesId() {
         return seriesId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getSeriesId_JsonNullable() {
-        return seriesId;
-    }
+  public JsonNullable<UUID> getSeriesId_JsonNullable() {
+    return seriesId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_ID)
+  public void setSeriesId_JsonNullable(JsonNullable<UUID> seriesId) {
+    this.seriesId = seriesId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_ID)
-    public void setSeriesId_JsonNullable(JsonNullable<UUID> seriesId) {
-        this.seriesId = seriesId;
-    }
+  public void setSeriesId(@javax.annotation.Nullable UUID seriesId) {
+    this.seriesId = JsonNullable.<UUID>of(seriesId);
+  }
 
-    public void setSeriesId(@javax.annotation.Nullable UUID seriesId) {
-        this.seriesId = JsonNullable.<UUID> of(seriesId);
-    }
+  public BaseItemDto seasonId(@javax.annotation.Nullable UUID seasonId) {
+    this.seasonId = JsonNullable.<UUID>of(seasonId);
+    
+    return this;
+  }
 
-    public BaseItemDto seasonId(@javax.annotation.Nullable UUID seasonId) {
-        this.seasonId = JsonNullable.<UUID> of(seasonId);
+  /**
+   * Gets or sets the season identifier.
+   * @return seasonId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the season identifier.
-     * 
-     * @return seasonId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getSeasonId() {
+  public UUID getSeasonId() {
         return seasonId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEASON_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SEASON_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getSeasonId_JsonNullable() {
-        return seasonId;
-    }
+  public JsonNullable<UUID> getSeasonId_JsonNullable() {
+    return seasonId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEASON_ID)
+  public void setSeasonId_JsonNullable(JsonNullable<UUID> seasonId) {
+    this.seasonId = seasonId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEASON_ID)
-    public void setSeasonId_JsonNullable(JsonNullable<UUID> seasonId) {
-        this.seasonId = seasonId;
-    }
+  public void setSeasonId(@javax.annotation.Nullable UUID seasonId) {
+    this.seasonId = JsonNullable.<UUID>of(seasonId);
+  }
 
-    public void setSeasonId(@javax.annotation.Nullable UUID seasonId) {
-        this.seasonId = JsonNullable.<UUID> of(seasonId);
-    }
+  public BaseItemDto specialFeatureCount(@javax.annotation.Nullable Integer specialFeatureCount) {
+    this.specialFeatureCount = JsonNullable.<Integer>of(specialFeatureCount);
+    
+    return this;
+  }
 
-    public BaseItemDto specialFeatureCount(@javax.annotation.Nullable Integer specialFeatureCount) {
-        this.specialFeatureCount = JsonNullable.<Integer> of(specialFeatureCount);
+  /**
+   * Gets or sets the special feature count.
+   * @return specialFeatureCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the special feature count.
-     * 
-     * @return specialFeatureCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSpecialFeatureCount() {
+  public Integer getSpecialFeatureCount() {
         return specialFeatureCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSpecialFeatureCount_JsonNullable() {
-        return specialFeatureCount;
-    }
+  public JsonNullable<Integer> getSpecialFeatureCount_JsonNullable() {
+    return specialFeatureCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
+  public void setSpecialFeatureCount_JsonNullable(JsonNullable<Integer> specialFeatureCount) {
+    this.specialFeatureCount = specialFeatureCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
-    public void setSpecialFeatureCount_JsonNullable(JsonNullable<Integer> specialFeatureCount) {
-        this.specialFeatureCount = specialFeatureCount;
-    }
+  public void setSpecialFeatureCount(@javax.annotation.Nullable Integer specialFeatureCount) {
+    this.specialFeatureCount = JsonNullable.<Integer>of(specialFeatureCount);
+  }
 
-    public void setSpecialFeatureCount(@javax.annotation.Nullable Integer specialFeatureCount) {
-        this.specialFeatureCount = JsonNullable.<Integer> of(specialFeatureCount);
-    }
+  public BaseItemDto displayPreferencesId(@javax.annotation.Nullable String displayPreferencesId) {
+    this.displayPreferencesId = JsonNullable.<String>of(displayPreferencesId);
+    
+    return this;
+  }
 
-    public BaseItemDto displayPreferencesId(@javax.annotation.Nullable String displayPreferencesId) {
-        this.displayPreferencesId = JsonNullable.<String> of(displayPreferencesId);
+  /**
+   * Gets or sets the display preferences id.
+   * @return displayPreferencesId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the display preferences id.
-     * 
-     * @return displayPreferencesId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDisplayPreferencesId() {
+  public String getDisplayPreferencesId() {
         return displayPreferencesId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDisplayPreferencesId_JsonNullable() {
-        return displayPreferencesId;
-    }
+  public JsonNullable<String> getDisplayPreferencesId_JsonNullable() {
+    return displayPreferencesId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
+  public void setDisplayPreferencesId_JsonNullable(JsonNullable<String> displayPreferencesId) {
+    this.displayPreferencesId = displayPreferencesId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
-    public void setDisplayPreferencesId_JsonNullable(JsonNullable<String> displayPreferencesId) {
-        this.displayPreferencesId = displayPreferencesId;
-    }
+  public void setDisplayPreferencesId(@javax.annotation.Nullable String displayPreferencesId) {
+    this.displayPreferencesId = JsonNullable.<String>of(displayPreferencesId);
+  }
 
-    public void setDisplayPreferencesId(@javax.annotation.Nullable String displayPreferencesId) {
-        this.displayPreferencesId = JsonNullable.<String> of(displayPreferencesId);
-    }
+  public BaseItemDto status(@javax.annotation.Nullable String status) {
+    this.status = JsonNullable.<String>of(status);
+    
+    return this;
+  }
 
-    public BaseItemDto status(@javax.annotation.Nullable String status) {
-        this.status = JsonNullable.<String> of(status);
+  /**
+   * Gets or sets the status.
+   * @return status
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the status.
-     * 
-     * @return status
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getStatus() {
+  public String getStatus() {
         return status.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getStatus_JsonNullable() {
-        return status;
-    }
+  public JsonNullable<String> getStatus_JsonNullable() {
+    return status;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  public void setStatus_JsonNullable(JsonNullable<String> status) {
+    this.status = status;
+  }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
-    public void setStatus_JsonNullable(JsonNullable<String> status) {
-        this.status = status;
-    }
+  public void setStatus(@javax.annotation.Nullable String status) {
+    this.status = JsonNullable.<String>of(status);
+  }
 
-    public void setStatus(@javax.annotation.Nullable String status) {
-        this.status = JsonNullable.<String> of(status);
-    }
+  public BaseItemDto airTime(@javax.annotation.Nullable String airTime) {
+    this.airTime = JsonNullable.<String>of(airTime);
+    
+    return this;
+  }
 
-    public BaseItemDto airTime(@javax.annotation.Nullable String airTime) {
-        this.airTime = JsonNullable.<String> of(airTime);
+  /**
+   * Gets or sets the air time.
+   * @return airTime
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the air time.
-     * 
-     * @return airTime
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAirTime() {
+  public String getAirTime() {
         return airTime.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AIR_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAirTime_JsonNullable() {
+    return airTime;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AIR_TIME)
+  public void setAirTime_JsonNullable(JsonNullable<String> airTime) {
+    this.airTime = airTime;
+  }
+
+  public void setAirTime(@javax.annotation.Nullable String airTime) {
+    this.airTime = JsonNullable.<String>of(airTime);
+  }
+
+  public BaseItemDto airDays(@javax.annotation.Nullable List<DayOfWeek> airDays) {
+    this.airDays = JsonNullable.<List<DayOfWeek>>of(airDays);
+    
+    return this;
+  }
+
+  public BaseItemDto addAirDaysItem(DayOfWeek airDaysItem) {
+    if (this.airDays == null || !this.airDays.isPresent()) {
+      this.airDays = JsonNullable.<List<DayOfWeek>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_AIR_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getAirTime_JsonNullable() {
-        return airTime;
+    try {
+      this.airDays.get().add(airDaysItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIR_TIME)
-    public void setAirTime_JsonNullable(JsonNullable<String> airTime) {
-        this.airTime = airTime;
-    }
+  /**
+   * Gets or sets the air days.
+   * @return airDays
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setAirTime(@javax.annotation.Nullable String airTime) {
-        this.airTime = JsonNullable.<String> of(airTime);
-    }
-
-    public BaseItemDto airDays(@javax.annotation.Nullable List<DayOfWeek> airDays) {
-        this.airDays = JsonNullable.<List<DayOfWeek>> of(airDays);
-
-        return this;
-    }
-
-    public BaseItemDto addAirDaysItem(DayOfWeek airDaysItem) {
-        if (this.airDays == null || !this.airDays.isPresent()) {
-            this.airDays = JsonNullable.<List<DayOfWeek>> of(new ArrayList<>());
-        }
-        try {
-            this.airDays.get().add(airDaysItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the air days.
-     * 
-     * @return airDays
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<DayOfWeek> getAirDays() {
+  public List<DayOfWeek> getAirDays() {
         return airDays.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AIR_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<DayOfWeek>> getAirDays_JsonNullable() {
+    return airDays;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AIR_DAYS)
+  public void setAirDays_JsonNullable(JsonNullable<List<DayOfWeek>> airDays) {
+    this.airDays = airDays;
+  }
+
+  public void setAirDays(@javax.annotation.Nullable List<DayOfWeek> airDays) {
+    this.airDays = JsonNullable.<List<DayOfWeek>>of(airDays);
+  }
+
+  public BaseItemDto tags(@javax.annotation.Nullable List<String> tags) {
+    this.tags = JsonNullable.<List<String>>of(tags);
+    
+    return this;
+  }
+
+  public BaseItemDto addTagsItem(String tagsItem) {
+    if (this.tags == null || !this.tags.isPresent()) {
+      this.tags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_AIR_DAYS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<DayOfWeek>> getAirDays_JsonNullable() {
-        return airDays;
+    try {
+      this.tags.get().add(tagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AIR_DAYS)
-    public void setAirDays_JsonNullable(JsonNullable<List<DayOfWeek>> airDays) {
-        this.airDays = airDays;
-    }
+  /**
+   * Gets or sets the tags.
+   * @return tags
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setAirDays(@javax.annotation.Nullable List<DayOfWeek> airDays) {
-        this.airDays = JsonNullable.<List<DayOfWeek>> of(airDays);
-    }
-
-    public BaseItemDto tags(@javax.annotation.Nullable List<String> tags) {
-        this.tags = JsonNullable.<List<String>> of(tags);
-
-        return this;
-    }
-
-    public BaseItemDto addTagsItem(String tagsItem) {
-        if (this.tags == null || !this.tags.isPresent()) {
-            this.tags = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.tags.get().add(tagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the tags.
-     * 
-     * @return tags
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getTags() {
+  public List<String> getTags() {
         return tags.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TAGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getTags_JsonNullable() {
-        return tags;
-    }
+  public JsonNullable<List<String>> getTags_JsonNullable() {
+    return tags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
+    this.tags = tags;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TAGS)
-    public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
-        this.tags = tags;
-    }
+  public void setTags(@javax.annotation.Nullable List<String> tags) {
+    this.tags = JsonNullable.<List<String>>of(tags);
+  }
 
-    public void setTags(@javax.annotation.Nullable List<String> tags) {
-        this.tags = JsonNullable.<List<String>> of(tags);
-    }
+  public BaseItemDto primaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
+    this.primaryImageAspectRatio = JsonNullable.<Double>of(primaryImageAspectRatio);
+    
+    return this;
+  }
 
-    public BaseItemDto primaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
+  /**
+   * Gets or sets the primary image aspect ratio, after image enhancements.
+   * @return primaryImageAspectRatio
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the primary image aspect ratio, after image enhancements.
-     * 
-     * @return primaryImageAspectRatio
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getPrimaryImageAspectRatio() {
+  public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getPrimaryImageAspectRatio_JsonNullable() {
+    return primaryImageAspectRatio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+  public void setPrimaryImageAspectRatio_JsonNullable(JsonNullable<Double> primaryImageAspectRatio) {
+    this.primaryImageAspectRatio = primaryImageAspectRatio;
+  }
+
+  public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
+    this.primaryImageAspectRatio = JsonNullable.<Double>of(primaryImageAspectRatio);
+  }
+
+  public BaseItemDto artists(@javax.annotation.Nullable List<String> artists) {
+    this.artists = JsonNullable.<List<String>>of(artists);
+    
+    return this;
+  }
+
+  public BaseItemDto addArtistsItem(String artistsItem) {
+    if (this.artists == null || !this.artists.isPresent()) {
+      this.artists = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Double> getPrimaryImageAspectRatio_JsonNullable() {
-        return primaryImageAspectRatio;
+    try {
+      this.artists.get().add(artistsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
-    public void setPrimaryImageAspectRatio_JsonNullable(JsonNullable<Double> primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = primaryImageAspectRatio;
-    }
+  /**
+   * Gets or sets the artists.
+   * @return artists
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
-    }
-
-    public BaseItemDto artists(@javax.annotation.Nullable List<String> artists) {
-        this.artists = JsonNullable.<List<String>> of(artists);
-
-        return this;
-    }
-
-    public BaseItemDto addArtistsItem(String artistsItem) {
-        if (this.artists == null || !this.artists.isPresent()) {
-            this.artists = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.artists.get().add(artistsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the artists.
-     * 
-     * @return artists
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getArtists() {
+  public List<String> getArtists() {
         return artists.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getArtists_JsonNullable() {
+    return artists;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  public void setArtists_JsonNullable(JsonNullable<List<String>> artists) {
+    this.artists = artists;
+  }
+
+  public void setArtists(@javax.annotation.Nullable List<String> artists) {
+    this.artists = JsonNullable.<List<String>>of(artists);
+  }
+
+  public BaseItemDto artistItems(@javax.annotation.Nullable List<NameGuidPair> artistItems) {
+    this.artistItems = JsonNullable.<List<NameGuidPair>>of(artistItems);
+    
+    return this;
+  }
+
+  public BaseItemDto addArtistItemsItem(NameGuidPair artistItemsItem) {
+    if (this.artistItems == null || !this.artistItems.isPresent()) {
+      this.artistItems = JsonNullable.<List<NameGuidPair>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<String>> getArtists_JsonNullable() {
-        return artists;
+    try {
+      this.artistItems.get().add(artistItemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
-    public void setArtists_JsonNullable(JsonNullable<List<String>> artists) {
-        this.artists = artists;
-    }
+  /**
+   * Gets or sets the artist items.
+   * @return artistItems
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setArtists(@javax.annotation.Nullable List<String> artists) {
-        this.artists = JsonNullable.<List<String>> of(artists);
-    }
-
-    public BaseItemDto artistItems(@javax.annotation.Nullable List<NameGuidPair> artistItems) {
-        this.artistItems = JsonNullable.<List<NameGuidPair>> of(artistItems);
-
-        return this;
-    }
-
-    public BaseItemDto addArtistItemsItem(NameGuidPair artistItemsItem) {
-        if (this.artistItems == null || !this.artistItems.isPresent()) {
-            this.artistItems = JsonNullable.<List<NameGuidPair>> of(new ArrayList<>());
-        }
-        try {
-            this.artistItems.get().add(artistItemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the artist items.
-     * 
-     * @return artistItems
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<NameGuidPair> getArtistItems() {
+  public List<NameGuidPair> getArtistItems() {
         return artistItems.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ARTIST_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<NameGuidPair>> getArtistItems_JsonNullable() {
-        return artistItems;
-    }
+  public JsonNullable<List<NameGuidPair>> getArtistItems_JsonNullable() {
+    return artistItems;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTIST_ITEMS)
+  public void setArtistItems_JsonNullable(JsonNullable<List<NameGuidPair>> artistItems) {
+    this.artistItems = artistItems;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_ITEMS)
-    public void setArtistItems_JsonNullable(JsonNullable<List<NameGuidPair>> artistItems) {
-        this.artistItems = artistItems;
-    }
+  public void setArtistItems(@javax.annotation.Nullable List<NameGuidPair> artistItems) {
+    this.artistItems = JsonNullable.<List<NameGuidPair>>of(artistItems);
+  }
 
-    public void setArtistItems(@javax.annotation.Nullable List<NameGuidPair> artistItems) {
-        this.artistItems = JsonNullable.<List<NameGuidPair>> of(artistItems);
-    }
+  public BaseItemDto album(@javax.annotation.Nullable String album) {
+    this.album = JsonNullable.<String>of(album);
+    
+    return this;
+  }
 
-    public BaseItemDto album(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
+  /**
+   * Gets or sets the album.
+   * @return album
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the album.
-     * 
-     * @return album
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbum() {
+  public String getAlbum() {
         return album.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALBUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbum_JsonNullable() {
-        return album;
-    }
+  public JsonNullable<String> getAlbum_JsonNullable() {
+    return album;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM)
+  public void setAlbum_JsonNullable(JsonNullable<String> album) {
+    this.album = album;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM)
-    public void setAlbum_JsonNullable(JsonNullable<String> album) {
-        this.album = album;
-    }
+  public void setAlbum(@javax.annotation.Nullable String album) {
+    this.album = JsonNullable.<String>of(album);
+  }
 
-    public void setAlbum(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
-    }
+  public BaseItemDto collectionType(@javax.annotation.Nullable String collectionType) {
+    this.collectionType = JsonNullable.<String>of(collectionType);
+    
+    return this;
+  }
 
-    public BaseItemDto collectionType(@javax.annotation.Nullable String collectionType) {
-        this.collectionType = JsonNullable.<String> of(collectionType);
+  /**
+   * Gets or sets the type of the collection.
+   * @return collectionType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the collection.
-     * 
-     * @return collectionType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCollectionType() {
+  public String getCollectionType() {
         return collectionType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCollectionType_JsonNullable() {
-        return collectionType;
-    }
+  public JsonNullable<String> getCollectionType_JsonNullable() {
+    return collectionType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+  public void setCollectionType_JsonNullable(JsonNullable<String> collectionType) {
+    this.collectionType = collectionType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
-    public void setCollectionType_JsonNullable(JsonNullable<String> collectionType) {
-        this.collectionType = collectionType;
-    }
+  public void setCollectionType(@javax.annotation.Nullable String collectionType) {
+    this.collectionType = JsonNullable.<String>of(collectionType);
+  }
 
-    public void setCollectionType(@javax.annotation.Nullable String collectionType) {
-        this.collectionType = JsonNullable.<String> of(collectionType);
-    }
+  public BaseItemDto displayOrder(@javax.annotation.Nullable String displayOrder) {
+    this.displayOrder = JsonNullable.<String>of(displayOrder);
+    
+    return this;
+  }
 
-    public BaseItemDto displayOrder(@javax.annotation.Nullable String displayOrder) {
-        this.displayOrder = JsonNullable.<String> of(displayOrder);
+  /**
+   * Gets or sets the display order.
+   * @return displayOrder
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the display order.
-     * 
-     * @return displayOrder
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDisplayOrder() {
+  public String getDisplayOrder() {
         return displayOrder.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_ORDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DISPLAY_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDisplayOrder_JsonNullable() {
-        return displayOrder;
-    }
+  public JsonNullable<String> getDisplayOrder_JsonNullable() {
+    return displayOrder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_ORDER)
+  public void setDisplayOrder_JsonNullable(JsonNullable<String> displayOrder) {
+    this.displayOrder = displayOrder;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_ORDER)
-    public void setDisplayOrder_JsonNullable(JsonNullable<String> displayOrder) {
-        this.displayOrder = displayOrder;
-    }
+  public void setDisplayOrder(@javax.annotation.Nullable String displayOrder) {
+    this.displayOrder = JsonNullable.<String>of(displayOrder);
+  }
 
-    public void setDisplayOrder(@javax.annotation.Nullable String displayOrder) {
-        this.displayOrder = JsonNullable.<String> of(displayOrder);
-    }
+  public BaseItemDto albumId(@javax.annotation.Nullable UUID albumId) {
+    this.albumId = JsonNullable.<UUID>of(albumId);
+    
+    return this;
+  }
 
-    public BaseItemDto albumId(@javax.annotation.Nullable UUID albumId) {
-        this.albumId = JsonNullable.<UUID> of(albumId);
+  /**
+   * Gets or sets the album id.
+   * @return albumId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the album id.
-     * 
-     * @return albumId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getAlbumId() {
+  public UUID getAlbumId() {
         return albumId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALBUM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getAlbumId_JsonNullable() {
-        return albumId;
-    }
+  public JsonNullable<UUID> getAlbumId_JsonNullable() {
+    return albumId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ID)
+  public void setAlbumId_JsonNullable(JsonNullable<UUID> albumId) {
+    this.albumId = albumId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ID)
-    public void setAlbumId_JsonNullable(JsonNullable<UUID> albumId) {
-        this.albumId = albumId;
-    }
+  public void setAlbumId(@javax.annotation.Nullable UUID albumId) {
+    this.albumId = JsonNullable.<UUID>of(albumId);
+  }
 
-    public void setAlbumId(@javax.annotation.Nullable UUID albumId) {
-        this.albumId = JsonNullable.<UUID> of(albumId);
-    }
+  public BaseItemDto albumPrimaryImageTag(@javax.annotation.Nullable String albumPrimaryImageTag) {
+    this.albumPrimaryImageTag = JsonNullable.<String>of(albumPrimaryImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto albumPrimaryImageTag(@javax.annotation.Nullable String albumPrimaryImageTag) {
-        this.albumPrimaryImageTag = JsonNullable.<String> of(albumPrimaryImageTag);
+  /**
+   * Gets or sets the album image tag.
+   * @return albumPrimaryImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the album image tag.
-     * 
-     * @return albumPrimaryImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbumPrimaryImageTag() {
+  public String getAlbumPrimaryImageTag() {
         return albumPrimaryImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbumPrimaryImageTag_JsonNullable() {
-        return albumPrimaryImageTag;
-    }
+  public JsonNullable<String> getAlbumPrimaryImageTag_JsonNullable() {
+    return albumPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
+  public void setAlbumPrimaryImageTag_JsonNullable(JsonNullable<String> albumPrimaryImageTag) {
+    this.albumPrimaryImageTag = albumPrimaryImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
-    public void setAlbumPrimaryImageTag_JsonNullable(JsonNullable<String> albumPrimaryImageTag) {
-        this.albumPrimaryImageTag = albumPrimaryImageTag;
-    }
+  public void setAlbumPrimaryImageTag(@javax.annotation.Nullable String albumPrimaryImageTag) {
+    this.albumPrimaryImageTag = JsonNullable.<String>of(albumPrimaryImageTag);
+  }
 
-    public void setAlbumPrimaryImageTag(@javax.annotation.Nullable String albumPrimaryImageTag) {
-        this.albumPrimaryImageTag = JsonNullable.<String> of(albumPrimaryImageTag);
-    }
+  public BaseItemDto seriesPrimaryImageTag(@javax.annotation.Nullable String seriesPrimaryImageTag) {
+    this.seriesPrimaryImageTag = JsonNullable.<String>of(seriesPrimaryImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesPrimaryImageTag(@javax.annotation.Nullable String seriesPrimaryImageTag) {
-        this.seriesPrimaryImageTag = JsonNullable.<String> of(seriesPrimaryImageTag);
+  /**
+   * Gets or sets the series primary image tag.
+   * @return seriesPrimaryImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series primary image tag.
-     * 
-     * @return seriesPrimaryImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesPrimaryImageTag() {
+  public String getSeriesPrimaryImageTag() {
         return seriesPrimaryImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesPrimaryImageTag_JsonNullable() {
-        return seriesPrimaryImageTag;
-    }
+  public JsonNullable<String> getSeriesPrimaryImageTag_JsonNullable() {
+    return seriesPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
+  public void setSeriesPrimaryImageTag_JsonNullable(JsonNullable<String> seriesPrimaryImageTag) {
+    this.seriesPrimaryImageTag = seriesPrimaryImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
-    public void setSeriesPrimaryImageTag_JsonNullable(JsonNullable<String> seriesPrimaryImageTag) {
-        this.seriesPrimaryImageTag = seriesPrimaryImageTag;
-    }
+  public void setSeriesPrimaryImageTag(@javax.annotation.Nullable String seriesPrimaryImageTag) {
+    this.seriesPrimaryImageTag = JsonNullable.<String>of(seriesPrimaryImageTag);
+  }
 
-    public void setSeriesPrimaryImageTag(@javax.annotation.Nullable String seriesPrimaryImageTag) {
-        this.seriesPrimaryImageTag = JsonNullable.<String> of(seriesPrimaryImageTag);
-    }
+  public BaseItemDto albumArtist(@javax.annotation.Nullable String albumArtist) {
+    this.albumArtist = JsonNullable.<String>of(albumArtist);
+    
+    return this;
+  }
 
-    public BaseItemDto albumArtist(@javax.annotation.Nullable String albumArtist) {
-        this.albumArtist = JsonNullable.<String> of(albumArtist);
+  /**
+   * Gets or sets the album artist.
+   * @return albumArtist
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the album artist.
-     * 
-     * @return albumArtist
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbumArtist() {
+  public String getAlbumArtist() {
         return albumArtist.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAlbumArtist_JsonNullable() {
+    return albumArtist;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  public void setAlbumArtist_JsonNullable(JsonNullable<String> albumArtist) {
+    this.albumArtist = albumArtist;
+  }
+
+  public void setAlbumArtist(@javax.annotation.Nullable String albumArtist) {
+    this.albumArtist = JsonNullable.<String>of(albumArtist);
+  }
+
+  public BaseItemDto albumArtists(@javax.annotation.Nullable List<NameGuidPair> albumArtists) {
+    this.albumArtists = JsonNullable.<List<NameGuidPair>>of(albumArtists);
+    
+    return this;
+  }
+
+  public BaseItemDto addAlbumArtistsItem(NameGuidPair albumArtistsItem) {
+    if (this.albumArtists == null || !this.albumArtists.isPresent()) {
+      this.albumArtists = JsonNullable.<List<NameGuidPair>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getAlbumArtist_JsonNullable() {
-        return albumArtist;
+    try {
+      this.albumArtists.get().add(albumArtistsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
-    public void setAlbumArtist_JsonNullable(JsonNullable<String> albumArtist) {
-        this.albumArtist = albumArtist;
-    }
+  /**
+   * Gets or sets the album artists.
+   * @return albumArtists
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setAlbumArtist(@javax.annotation.Nullable String albumArtist) {
-        this.albumArtist = JsonNullable.<String> of(albumArtist);
-    }
-
-    public BaseItemDto albumArtists(@javax.annotation.Nullable List<NameGuidPair> albumArtists) {
-        this.albumArtists = JsonNullable.<List<NameGuidPair>> of(albumArtists);
-
-        return this;
-    }
-
-    public BaseItemDto addAlbumArtistsItem(NameGuidPair albumArtistsItem) {
-        if (this.albumArtists == null || !this.albumArtists.isPresent()) {
-            this.albumArtists = JsonNullable.<List<NameGuidPair>> of(new ArrayList<>());
-        }
-        try {
-            this.albumArtists.get().add(albumArtistsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the album artists.
-     * 
-     * @return albumArtists
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<NameGuidPair> getAlbumArtists() {
+  public List<NameGuidPair> getAlbumArtists() {
         return albumArtists.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<NameGuidPair>> getAlbumArtists_JsonNullable() {
-        return albumArtists;
-    }
+  public JsonNullable<List<NameGuidPair>> getAlbumArtists_JsonNullable() {
+    return albumArtists;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+  public void setAlbumArtists_JsonNullable(JsonNullable<List<NameGuidPair>> albumArtists) {
+    this.albumArtists = albumArtists;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
-    public void setAlbumArtists_JsonNullable(JsonNullable<List<NameGuidPair>> albumArtists) {
-        this.albumArtists = albumArtists;
-    }
+  public void setAlbumArtists(@javax.annotation.Nullable List<NameGuidPair> albumArtists) {
+    this.albumArtists = JsonNullable.<List<NameGuidPair>>of(albumArtists);
+  }
 
-    public void setAlbumArtists(@javax.annotation.Nullable List<NameGuidPair> albumArtists) {
-        this.albumArtists = JsonNullable.<List<NameGuidPair>> of(albumArtists);
-    }
+  public BaseItemDto seasonName(@javax.annotation.Nullable String seasonName) {
+    this.seasonName = JsonNullable.<String>of(seasonName);
+    
+    return this;
+  }
 
-    public BaseItemDto seasonName(@javax.annotation.Nullable String seasonName) {
-        this.seasonName = JsonNullable.<String> of(seasonName);
+  /**
+   * Gets or sets the name of the season.
+   * @return seasonName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the name of the season.
-     * 
-     * @return seasonName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeasonName() {
+  public String getSeasonName() {
         return seasonName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEASON_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSeasonName_JsonNullable() {
+    return seasonName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEASON_NAME)
+  public void setSeasonName_JsonNullable(JsonNullable<String> seasonName) {
+    this.seasonName = seasonName;
+  }
+
+  public void setSeasonName(@javax.annotation.Nullable String seasonName) {
+    this.seasonName = JsonNullable.<String>of(seasonName);
+  }
+
+  public BaseItemDto mediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
+    this.mediaStreams = JsonNullable.<List<MediaStream>>of(mediaStreams);
+    
+    return this;
+  }
+
+  public BaseItemDto addMediaStreamsItem(MediaStream mediaStreamsItem) {
+    if (this.mediaStreams == null || !this.mediaStreams.isPresent()) {
+      this.mediaStreams = JsonNullable.<List<MediaStream>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_SEASON_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getSeasonName_JsonNullable() {
-        return seasonName;
+    try {
+      this.mediaStreams.get().add(mediaStreamsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEASON_NAME)
-    public void setSeasonName_JsonNullable(JsonNullable<String> seasonName) {
-        this.seasonName = seasonName;
-    }
+  /**
+   * Gets or sets the media streams.
+   * @return mediaStreams
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setSeasonName(@javax.annotation.Nullable String seasonName) {
-        this.seasonName = JsonNullable.<String> of(seasonName);
-    }
-
-    public BaseItemDto mediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-        this.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
-
-        return this;
-    }
-
-    public BaseItemDto addMediaStreamsItem(MediaStream mediaStreamsItem) {
-        if (this.mediaStreams == null || !this.mediaStreams.isPresent()) {
-            this.mediaStreams = JsonNullable.<List<MediaStream>> of(new ArrayList<>());
-        }
-        try {
-            this.mediaStreams.get().add(mediaStreamsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the media streams.
-     * 
-     * @return mediaStreams
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaStream> getMediaStreams() {
+  public List<MediaStream> getMediaStreams() {
         return mediaStreams.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MediaStream>> getMediaStreams_JsonNullable() {
-        return mediaStreams;
-    }
+  public JsonNullable<List<MediaStream>> getMediaStreams_JsonNullable() {
+    return mediaStreams;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+  public void setMediaStreams_JsonNullable(JsonNullable<List<MediaStream>> mediaStreams) {
+    this.mediaStreams = mediaStreams;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
-    public void setMediaStreams_JsonNullable(JsonNullable<List<MediaStream>> mediaStreams) {
-        this.mediaStreams = mediaStreams;
-    }
+  public void setMediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
+    this.mediaStreams = JsonNullable.<List<MediaStream>>of(mediaStreams);
+  }
 
-    public void setMediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-        this.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
-    }
+  public BaseItemDto videoType(@javax.annotation.Nullable VideoType videoType) {
+    this.videoType = JsonNullable.<VideoType>of(videoType);
+    
+    return this;
+  }
 
-    public BaseItemDto videoType(@javax.annotation.Nullable VideoType videoType) {
-        this.videoType = JsonNullable.<VideoType> of(videoType);
+  /**
+   * Gets or sets the type of the video.
+   * @return videoType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the video.
-     * 
-     * @return videoType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public VideoType getVideoType() {
+  public VideoType getVideoType() {
         return videoType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<VideoType> getVideoType_JsonNullable() {
-        return videoType;
-    }
+  public JsonNullable<VideoType> getVideoType_JsonNullable() {
+    return videoType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+  public void setVideoType_JsonNullable(JsonNullable<VideoType> videoType) {
+    this.videoType = videoType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
-    public void setVideoType_JsonNullable(JsonNullable<VideoType> videoType) {
-        this.videoType = videoType;
-    }
+  public void setVideoType(@javax.annotation.Nullable VideoType videoType) {
+    this.videoType = JsonNullable.<VideoType>of(videoType);
+  }
 
-    public void setVideoType(@javax.annotation.Nullable VideoType videoType) {
-        this.videoType = JsonNullable.<VideoType> of(videoType);
-    }
+  public BaseItemDto partCount(@javax.annotation.Nullable Integer partCount) {
+    this.partCount = JsonNullable.<Integer>of(partCount);
+    
+    return this;
+  }
 
-    public BaseItemDto partCount(@javax.annotation.Nullable Integer partCount) {
-        this.partCount = JsonNullable.<Integer> of(partCount);
+  /**
+   * Gets or sets the part count.
+   * @return partCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the part count.
-     * 
-     * @return partCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getPartCount() {
+  public Integer getPartCount() {
         return partCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PART_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PART_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getPartCount_JsonNullable() {
-        return partCount;
-    }
+  public JsonNullable<Integer> getPartCount_JsonNullable() {
+    return partCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PART_COUNT)
+  public void setPartCount_JsonNullable(JsonNullable<Integer> partCount) {
+    this.partCount = partCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PART_COUNT)
-    public void setPartCount_JsonNullable(JsonNullable<Integer> partCount) {
-        this.partCount = partCount;
-    }
+  public void setPartCount(@javax.annotation.Nullable Integer partCount) {
+    this.partCount = JsonNullable.<Integer>of(partCount);
+  }
 
-    public void setPartCount(@javax.annotation.Nullable Integer partCount) {
-        this.partCount = JsonNullable.<Integer> of(partCount);
-    }
+  public BaseItemDto mediaSourceCount(@javax.annotation.Nullable Integer mediaSourceCount) {
+    this.mediaSourceCount = JsonNullable.<Integer>of(mediaSourceCount);
+    
+    return this;
+  }
 
-    public BaseItemDto mediaSourceCount(@javax.annotation.Nullable Integer mediaSourceCount) {
-        this.mediaSourceCount = JsonNullable.<Integer> of(mediaSourceCount);
+  /**
+   * Get mediaSourceCount
+   * @return mediaSourceCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get mediaSourceCount
-     * 
-     * @return mediaSourceCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMediaSourceCount() {
+  public Integer getMediaSourceCount() {
         return mediaSourceCount.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMediaSourceCount_JsonNullable() {
+    return mediaSourceCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_COUNT)
+  public void setMediaSourceCount_JsonNullable(JsonNullable<Integer> mediaSourceCount) {
+    this.mediaSourceCount = mediaSourceCount;
+  }
+
+  public void setMediaSourceCount(@javax.annotation.Nullable Integer mediaSourceCount) {
+    this.mediaSourceCount = JsonNullable.<Integer>of(mediaSourceCount);
+  }
+
+  public BaseItemDto imageTags(@javax.annotation.Nullable Map<String, String> imageTags) {
+    this.imageTags = JsonNullable.<Map<String, String>>of(imageTags);
+    
+    return this;
+  }
+
+  public BaseItemDto putImageTagsItem(String key, String imageTagsItem) {
+    if (this.imageTags == null || !this.imageTags.isPresent()) {
+      this.imageTags = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Integer> getMediaSourceCount_JsonNullable() {
-        return mediaSourceCount;
+    try {
+      this.imageTags.get().put(key, imageTagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_COUNT)
-    public void setMediaSourceCount_JsonNullable(JsonNullable<Integer> mediaSourceCount) {
-        this.mediaSourceCount = mediaSourceCount;
-    }
+  /**
+   * Gets or sets the image tags.
+   * @return imageTags
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setMediaSourceCount(@javax.annotation.Nullable Integer mediaSourceCount) {
-        this.mediaSourceCount = JsonNullable.<Integer> of(mediaSourceCount);
-    }
-
-    public BaseItemDto imageTags(@javax.annotation.Nullable Map<String, String> imageTags) {
-        this.imageTags = JsonNullable.<Map<String, String>> of(imageTags);
-
-        return this;
-    }
-
-    public BaseItemDto putImageTagsItem(String key, String imageTagsItem) {
-        if (this.imageTags == null || !this.imageTags.isPresent()) {
-            this.imageTags = JsonNullable.<Map<String, String>> of(new HashMap<>());
-        }
-        try {
-            this.imageTags.get().put(key, imageTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the image tags.
-     * 
-     * @return imageTags
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getImageTags() {
+  public Map<String, String> getImageTags() {
         return imageTags.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Map<String, String>> getImageTags_JsonNullable() {
+    return imageTags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
+  public void setImageTags_JsonNullable(JsonNullable<Map<String, String>> imageTags) {
+    this.imageTags = imageTags;
+  }
+
+  public void setImageTags(@javax.annotation.Nullable Map<String, String> imageTags) {
+    this.imageTags = JsonNullable.<Map<String, String>>of(imageTags);
+  }
+
+  public BaseItemDto backdropImageTags(@javax.annotation.Nullable List<String> backdropImageTags) {
+    this.backdropImageTags = JsonNullable.<List<String>>of(backdropImageTags);
+    
+    return this;
+  }
+
+  public BaseItemDto addBackdropImageTagsItem(String backdropImageTagsItem) {
+    if (this.backdropImageTags == null || !this.backdropImageTags.isPresent()) {
+      this.backdropImageTags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Map<String, String>> getImageTags_JsonNullable() {
-        return imageTags;
+    try {
+      this.backdropImageTags.get().add(backdropImageTagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
-    public void setImageTags_JsonNullable(JsonNullable<Map<String, String>> imageTags) {
-        this.imageTags = imageTags;
-    }
+  /**
+   * Gets or sets the backdrop image tags.
+   * @return backdropImageTags
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setImageTags(@javax.annotation.Nullable Map<String, String> imageTags) {
-        this.imageTags = JsonNullable.<Map<String, String>> of(imageTags);
-    }
-
-    public BaseItemDto backdropImageTags(@javax.annotation.Nullable List<String> backdropImageTags) {
-        this.backdropImageTags = JsonNullable.<List<String>> of(backdropImageTags);
-
-        return this;
-    }
-
-    public BaseItemDto addBackdropImageTagsItem(String backdropImageTagsItem) {
-        if (this.backdropImageTags == null || !this.backdropImageTags.isPresent()) {
-            this.backdropImageTags = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.backdropImageTags.get().add(backdropImageTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the backdrop image tags.
-     * 
-     * @return backdropImageTags
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getBackdropImageTags() {
+  public List<String> getBackdropImageTags() {
         return backdropImageTags.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getBackdropImageTags_JsonNullable() {
+    return backdropImageTags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
+  public void setBackdropImageTags_JsonNullable(JsonNullable<List<String>> backdropImageTags) {
+    this.backdropImageTags = backdropImageTags;
+  }
+
+  public void setBackdropImageTags(@javax.annotation.Nullable List<String> backdropImageTags) {
+    this.backdropImageTags = JsonNullable.<List<String>>of(backdropImageTags);
+  }
+
+  public BaseItemDto screenshotImageTags(@javax.annotation.Nullable List<String> screenshotImageTags) {
+    this.screenshotImageTags = JsonNullable.<List<String>>of(screenshotImageTags);
+    
+    return this;
+  }
+
+  public BaseItemDto addScreenshotImageTagsItem(String screenshotImageTagsItem) {
+    if (this.screenshotImageTags == null || !this.screenshotImageTags.isPresent()) {
+      this.screenshotImageTags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<String>> getBackdropImageTags_JsonNullable() {
-        return backdropImageTags;
+    try {
+      this.screenshotImageTags.get().add(screenshotImageTagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
-    public void setBackdropImageTags_JsonNullable(JsonNullable<List<String>> backdropImageTags) {
-        this.backdropImageTags = backdropImageTags;
-    }
+  /**
+   * Gets or sets the screenshot image tags.
+   * @return screenshotImageTags
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setBackdropImageTags(@javax.annotation.Nullable List<String> backdropImageTags) {
-        this.backdropImageTags = JsonNullable.<List<String>> of(backdropImageTags);
-    }
-
-    public BaseItemDto screenshotImageTags(@javax.annotation.Nullable List<String> screenshotImageTags) {
-        this.screenshotImageTags = JsonNullable.<List<String>> of(screenshotImageTags);
-
-        return this;
-    }
-
-    public BaseItemDto addScreenshotImageTagsItem(String screenshotImageTagsItem) {
-        if (this.screenshotImageTags == null || !this.screenshotImageTags.isPresent()) {
-            this.screenshotImageTags = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.screenshotImageTags.get().add(screenshotImageTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the screenshot image tags.
-     * 
-     * @return screenshotImageTags
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getScreenshotImageTags() {
+  public List<String> getScreenshotImageTags() {
         return screenshotImageTags.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getScreenshotImageTags_JsonNullable() {
-        return screenshotImageTags;
-    }
+  public JsonNullable<List<String>> getScreenshotImageTags_JsonNullable() {
+    return screenshotImageTags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
+  public void setScreenshotImageTags_JsonNullable(JsonNullable<List<String>> screenshotImageTags) {
+    this.screenshotImageTags = screenshotImageTags;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
-    public void setScreenshotImageTags_JsonNullable(JsonNullable<List<String>> screenshotImageTags) {
-        this.screenshotImageTags = screenshotImageTags;
-    }
+  public void setScreenshotImageTags(@javax.annotation.Nullable List<String> screenshotImageTags) {
+    this.screenshotImageTags = JsonNullable.<List<String>>of(screenshotImageTags);
+  }
 
-    public void setScreenshotImageTags(@javax.annotation.Nullable List<String> screenshotImageTags) {
-        this.screenshotImageTags = JsonNullable.<List<String>> of(screenshotImageTags);
-    }
+  public BaseItemDto parentLogoImageTag(@javax.annotation.Nullable String parentLogoImageTag) {
+    this.parentLogoImageTag = JsonNullable.<String>of(parentLogoImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto parentLogoImageTag(@javax.annotation.Nullable String parentLogoImageTag) {
-        this.parentLogoImageTag = JsonNullable.<String> of(parentLogoImageTag);
+  /**
+   * Gets or sets the parent logo image tag.
+   * @return parentLogoImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent logo image tag.
-     * 
-     * @return parentLogoImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentLogoImageTag() {
+  public String getParentLogoImageTag() {
         return parentLogoImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getParentLogoImageTag_JsonNullable() {
-        return parentLogoImageTag;
-    }
+  public JsonNullable<String> getParentLogoImageTag_JsonNullable() {
+    return parentLogoImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
+  public void setParentLogoImageTag_JsonNullable(JsonNullable<String> parentLogoImageTag) {
+    this.parentLogoImageTag = parentLogoImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
-    public void setParentLogoImageTag_JsonNullable(JsonNullable<String> parentLogoImageTag) {
-        this.parentLogoImageTag = parentLogoImageTag;
-    }
+  public void setParentLogoImageTag(@javax.annotation.Nullable String parentLogoImageTag) {
+    this.parentLogoImageTag = JsonNullable.<String>of(parentLogoImageTag);
+  }
 
-    public void setParentLogoImageTag(@javax.annotation.Nullable String parentLogoImageTag) {
-        this.parentLogoImageTag = JsonNullable.<String> of(parentLogoImageTag);
-    }
+  public BaseItemDto parentArtItemId(@javax.annotation.Nullable UUID parentArtItemId) {
+    this.parentArtItemId = JsonNullable.<UUID>of(parentArtItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentArtItemId(@javax.annotation.Nullable UUID parentArtItemId) {
-        this.parentArtItemId = JsonNullable.<UUID> of(parentArtItemId);
+  /**
+   * Gets or sets wether the item has fan art, this will hold the Id of the Parent that has one.
+   * @return parentArtItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets wether the item has fan art, this will hold the Id of the Parent that has one.
-     * 
-     * @return parentArtItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getParentArtItemId() {
+  public UUID getParentArtItemId() {
         return parentArtItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_ART_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_ART_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getParentArtItemId_JsonNullable() {
-        return parentArtItemId;
-    }
+  public JsonNullable<UUID> getParentArtItemId_JsonNullable() {
+    return parentArtItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_ART_ITEM_ID)
+  public void setParentArtItemId_JsonNullable(JsonNullable<UUID> parentArtItemId) {
+    this.parentArtItemId = parentArtItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_ART_ITEM_ID)
-    public void setParentArtItemId_JsonNullable(JsonNullable<UUID> parentArtItemId) {
-        this.parentArtItemId = parentArtItemId;
-    }
+  public void setParentArtItemId(@javax.annotation.Nullable UUID parentArtItemId) {
+    this.parentArtItemId = JsonNullable.<UUID>of(parentArtItemId);
+  }
 
-    public void setParentArtItemId(@javax.annotation.Nullable UUID parentArtItemId) {
-        this.parentArtItemId = JsonNullable.<UUID> of(parentArtItemId);
-    }
+  public BaseItemDto parentArtImageTag(@javax.annotation.Nullable String parentArtImageTag) {
+    this.parentArtImageTag = JsonNullable.<String>of(parentArtImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto parentArtImageTag(@javax.annotation.Nullable String parentArtImageTag) {
-        this.parentArtImageTag = JsonNullable.<String> of(parentArtImageTag);
+  /**
+   * Gets or sets the parent art image tag.
+   * @return parentArtImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent art image tag.
-     * 
-     * @return parentArtImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentArtImageTag() {
+  public String getParentArtImageTag() {
         return parentArtImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getParentArtImageTag_JsonNullable() {
-        return parentArtImageTag;
-    }
+  public JsonNullable<String> getParentArtImageTag_JsonNullable() {
+    return parentArtImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
+  public void setParentArtImageTag_JsonNullable(JsonNullable<String> parentArtImageTag) {
+    this.parentArtImageTag = parentArtImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
-    public void setParentArtImageTag_JsonNullable(JsonNullable<String> parentArtImageTag) {
-        this.parentArtImageTag = parentArtImageTag;
-    }
+  public void setParentArtImageTag(@javax.annotation.Nullable String parentArtImageTag) {
+    this.parentArtImageTag = JsonNullable.<String>of(parentArtImageTag);
+  }
 
-    public void setParentArtImageTag(@javax.annotation.Nullable String parentArtImageTag) {
-        this.parentArtImageTag = JsonNullable.<String> of(parentArtImageTag);
-    }
+  public BaseItemDto seriesThumbImageTag(@javax.annotation.Nullable String seriesThumbImageTag) {
+    this.seriesThumbImageTag = JsonNullable.<String>of(seriesThumbImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesThumbImageTag(@javax.annotation.Nullable String seriesThumbImageTag) {
-        this.seriesThumbImageTag = JsonNullable.<String> of(seriesThumbImageTag);
+  /**
+   * Gets or sets the series thumb image tag.
+   * @return seriesThumbImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series thumb image tag.
-     * 
-     * @return seriesThumbImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesThumbImageTag() {
+  public String getSeriesThumbImageTag() {
         return seriesThumbImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesThumbImageTag_JsonNullable() {
-        return seriesThumbImageTag;
-    }
+  public JsonNullable<String> getSeriesThumbImageTag_JsonNullable() {
+    return seriesThumbImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
+  public void setSeriesThumbImageTag_JsonNullable(JsonNullable<String> seriesThumbImageTag) {
+    this.seriesThumbImageTag = seriesThumbImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
-    public void setSeriesThumbImageTag_JsonNullable(JsonNullable<String> seriesThumbImageTag) {
-        this.seriesThumbImageTag = seriesThumbImageTag;
-    }
+  public void setSeriesThumbImageTag(@javax.annotation.Nullable String seriesThumbImageTag) {
+    this.seriesThumbImageTag = JsonNullable.<String>of(seriesThumbImageTag);
+  }
 
-    public void setSeriesThumbImageTag(@javax.annotation.Nullable String seriesThumbImageTag) {
-        this.seriesThumbImageTag = JsonNullable.<String> of(seriesThumbImageTag);
-    }
+  public BaseItemDto imageBlurHashes(@javax.annotation.Nullable BaseItemDtoImageBlurHashes imageBlurHashes) {
+    this.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes>of(imageBlurHashes);
+    
+    return this;
+  }
 
-    public BaseItemDto imageBlurHashes(@javax.annotation.Nullable BaseItemDtoImageBlurHashes imageBlurHashes) {
-        this.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes> of(imageBlurHashes);
+  /**
+   * Get imageBlurHashes
+   * @return imageBlurHashes
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get imageBlurHashes
-     * 
-     * @return imageBlurHashes
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDtoImageBlurHashes getImageBlurHashes() {
+  public BaseItemDtoImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDtoImageBlurHashes> getImageBlurHashes_JsonNullable() {
-        return imageBlurHashes;
-    }
+  public JsonNullable<BaseItemDtoImageBlurHashes> getImageBlurHashes_JsonNullable() {
+    return imageBlurHashes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+  public void setImageBlurHashes_JsonNullable(JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes) {
+    this.imageBlurHashes = imageBlurHashes;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
-    public void setImageBlurHashes_JsonNullable(JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes) {
-        this.imageBlurHashes = imageBlurHashes;
-    }
+  public void setImageBlurHashes(@javax.annotation.Nullable BaseItemDtoImageBlurHashes imageBlurHashes) {
+    this.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes>of(imageBlurHashes);
+  }
 
-    public void setImageBlurHashes(@javax.annotation.Nullable BaseItemDtoImageBlurHashes imageBlurHashes) {
-        this.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes> of(imageBlurHashes);
-    }
+  public BaseItemDto seriesStudio(@javax.annotation.Nullable String seriesStudio) {
+    this.seriesStudio = JsonNullable.<String>of(seriesStudio);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesStudio(@javax.annotation.Nullable String seriesStudio) {
-        this.seriesStudio = JsonNullable.<String> of(seriesStudio);
+  /**
+   * Gets or sets the series studio.
+   * @return seriesStudio
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series studio.
-     * 
-     * @return seriesStudio
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesStudio() {
+  public String getSeriesStudio() {
         return seriesStudio.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_STUDIO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_STUDIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesStudio_JsonNullable() {
-        return seriesStudio;
-    }
+  public JsonNullable<String> getSeriesStudio_JsonNullable() {
+    return seriesStudio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_STUDIO)
+  public void setSeriesStudio_JsonNullable(JsonNullable<String> seriesStudio) {
+    this.seriesStudio = seriesStudio;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_STUDIO)
-    public void setSeriesStudio_JsonNullable(JsonNullable<String> seriesStudio) {
-        this.seriesStudio = seriesStudio;
-    }
+  public void setSeriesStudio(@javax.annotation.Nullable String seriesStudio) {
+    this.seriesStudio = JsonNullable.<String>of(seriesStudio);
+  }
 
-    public void setSeriesStudio(@javax.annotation.Nullable String seriesStudio) {
-        this.seriesStudio = JsonNullable.<String> of(seriesStudio);
-    }
+  public BaseItemDto parentThumbItemId(@javax.annotation.Nullable UUID parentThumbItemId) {
+    this.parentThumbItemId = JsonNullable.<UUID>of(parentThumbItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentThumbItemId(@javax.annotation.Nullable UUID parentThumbItemId) {
-        this.parentThumbItemId = JsonNullable.<UUID> of(parentThumbItemId);
+  /**
+   * Gets or sets the parent thumb item id.
+   * @return parentThumbItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent thumb item id.
-     * 
-     * @return parentThumbItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getParentThumbItemId() {
+  public UUID getParentThumbItemId() {
         return parentThumbItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getParentThumbItemId_JsonNullable() {
-        return parentThumbItemId;
-    }
+  public JsonNullable<UUID> getParentThumbItemId_JsonNullable() {
+    return parentThumbItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
+  public void setParentThumbItemId_JsonNullable(JsonNullable<UUID> parentThumbItemId) {
+    this.parentThumbItemId = parentThumbItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
-    public void setParentThumbItemId_JsonNullable(JsonNullable<UUID> parentThumbItemId) {
-        this.parentThumbItemId = parentThumbItemId;
-    }
+  public void setParentThumbItemId(@javax.annotation.Nullable UUID parentThumbItemId) {
+    this.parentThumbItemId = JsonNullable.<UUID>of(parentThumbItemId);
+  }
 
-    public void setParentThumbItemId(@javax.annotation.Nullable UUID parentThumbItemId) {
-        this.parentThumbItemId = JsonNullable.<UUID> of(parentThumbItemId);
-    }
+  public BaseItemDto parentThumbImageTag(@javax.annotation.Nullable String parentThumbImageTag) {
+    this.parentThumbImageTag = JsonNullable.<String>of(parentThumbImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto parentThumbImageTag(@javax.annotation.Nullable String parentThumbImageTag) {
-        this.parentThumbImageTag = JsonNullable.<String> of(parentThumbImageTag);
+  /**
+   * Gets or sets the parent thumb image tag.
+   * @return parentThumbImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent thumb image tag.
-     * 
-     * @return parentThumbImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentThumbImageTag() {
+  public String getParentThumbImageTag() {
         return parentThumbImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getParentThumbImageTag_JsonNullable() {
-        return parentThumbImageTag;
-    }
+  public JsonNullable<String> getParentThumbImageTag_JsonNullable() {
+    return parentThumbImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
+  public void setParentThumbImageTag_JsonNullable(JsonNullable<String> parentThumbImageTag) {
+    this.parentThumbImageTag = parentThumbImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
-    public void setParentThumbImageTag_JsonNullable(JsonNullable<String> parentThumbImageTag) {
-        this.parentThumbImageTag = parentThumbImageTag;
-    }
+  public void setParentThumbImageTag(@javax.annotation.Nullable String parentThumbImageTag) {
+    this.parentThumbImageTag = JsonNullable.<String>of(parentThumbImageTag);
+  }
 
-    public void setParentThumbImageTag(@javax.annotation.Nullable String parentThumbImageTag) {
-        this.parentThumbImageTag = JsonNullable.<String> of(parentThumbImageTag);
-    }
+  public BaseItemDto parentPrimaryImageItemId(@javax.annotation.Nullable String parentPrimaryImageItemId) {
+    this.parentPrimaryImageItemId = JsonNullable.<String>of(parentPrimaryImageItemId);
+    
+    return this;
+  }
 
-    public BaseItemDto parentPrimaryImageItemId(@javax.annotation.Nullable String parentPrimaryImageItemId) {
-        this.parentPrimaryImageItemId = JsonNullable.<String> of(parentPrimaryImageItemId);
+  /**
+   * Gets or sets the parent primary image item identifier.
+   * @return parentPrimaryImageItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent primary image item identifier.
-     * 
-     * @return parentPrimaryImageItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentPrimaryImageItemId() {
+  public String getParentPrimaryImageItemId() {
         return parentPrimaryImageItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getParentPrimaryImageItemId_JsonNullable() {
-        return parentPrimaryImageItemId;
-    }
+  public JsonNullable<String> getParentPrimaryImageItemId_JsonNullable() {
+    return parentPrimaryImageItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
+  public void setParentPrimaryImageItemId_JsonNullable(JsonNullable<String> parentPrimaryImageItemId) {
+    this.parentPrimaryImageItemId = parentPrimaryImageItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
-    public void setParentPrimaryImageItemId_JsonNullable(JsonNullable<String> parentPrimaryImageItemId) {
-        this.parentPrimaryImageItemId = parentPrimaryImageItemId;
-    }
+  public void setParentPrimaryImageItemId(@javax.annotation.Nullable String parentPrimaryImageItemId) {
+    this.parentPrimaryImageItemId = JsonNullable.<String>of(parentPrimaryImageItemId);
+  }
 
-    public void setParentPrimaryImageItemId(@javax.annotation.Nullable String parentPrimaryImageItemId) {
-        this.parentPrimaryImageItemId = JsonNullable.<String> of(parentPrimaryImageItemId);
-    }
+  public BaseItemDto parentPrimaryImageTag(@javax.annotation.Nullable String parentPrimaryImageTag) {
+    this.parentPrimaryImageTag = JsonNullable.<String>of(parentPrimaryImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto parentPrimaryImageTag(@javax.annotation.Nullable String parentPrimaryImageTag) {
-        this.parentPrimaryImageTag = JsonNullable.<String> of(parentPrimaryImageTag);
+  /**
+   * Gets or sets the parent primary image tag.
+   * @return parentPrimaryImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the parent primary image tag.
-     * 
-     * @return parentPrimaryImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentPrimaryImageTag() {
+  public String getParentPrimaryImageTag() {
         return parentPrimaryImageTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getParentPrimaryImageTag_JsonNullable() {
+    return parentPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
+  public void setParentPrimaryImageTag_JsonNullable(JsonNullable<String> parentPrimaryImageTag) {
+    this.parentPrimaryImageTag = parentPrimaryImageTag;
+  }
+
+  public void setParentPrimaryImageTag(@javax.annotation.Nullable String parentPrimaryImageTag) {
+    this.parentPrimaryImageTag = JsonNullable.<String>of(parentPrimaryImageTag);
+  }
+
+  public BaseItemDto chapters(@javax.annotation.Nullable List<ChapterInfo> chapters) {
+    this.chapters = JsonNullable.<List<ChapterInfo>>of(chapters);
+    
+    return this;
+  }
+
+  public BaseItemDto addChaptersItem(ChapterInfo chaptersItem) {
+    if (this.chapters == null || !this.chapters.isPresent()) {
+      this.chapters = JsonNullable.<List<ChapterInfo>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getParentPrimaryImageTag_JsonNullable() {
-        return parentPrimaryImageTag;
+    try {
+      this.chapters.get().add(chaptersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
-    public void setParentPrimaryImageTag_JsonNullable(JsonNullable<String> parentPrimaryImageTag) {
-        this.parentPrimaryImageTag = parentPrimaryImageTag;
-    }
+  /**
+   * Gets or sets the chapters.
+   * @return chapters
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setParentPrimaryImageTag(@javax.annotation.Nullable String parentPrimaryImageTag) {
-        this.parentPrimaryImageTag = JsonNullable.<String> of(parentPrimaryImageTag);
-    }
-
-    public BaseItemDto chapters(@javax.annotation.Nullable List<ChapterInfo> chapters) {
-        this.chapters = JsonNullable.<List<ChapterInfo>> of(chapters);
-
-        return this;
-    }
-
-    public BaseItemDto addChaptersItem(ChapterInfo chaptersItem) {
-        if (this.chapters == null || !this.chapters.isPresent()) {
-            this.chapters = JsonNullable.<List<ChapterInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.chapters.get().add(chaptersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the chapters.
-     * 
-     * @return chapters
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ChapterInfo> getChapters() {
+  public List<ChapterInfo> getChapters() {
         return chapters.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHAPTERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHAPTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ChapterInfo>> getChapters_JsonNullable() {
-        return chapters;
-    }
+  public JsonNullable<List<ChapterInfo>> getChapters_JsonNullable() {
+    return chapters;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHAPTERS)
+  public void setChapters_JsonNullable(JsonNullable<List<ChapterInfo>> chapters) {
+    this.chapters = chapters;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHAPTERS)
-    public void setChapters_JsonNullable(JsonNullable<List<ChapterInfo>> chapters) {
-        this.chapters = chapters;
-    }
+  public void setChapters(@javax.annotation.Nullable List<ChapterInfo> chapters) {
+    this.chapters = JsonNullable.<List<ChapterInfo>>of(chapters);
+  }
 
-    public void setChapters(@javax.annotation.Nullable List<ChapterInfo> chapters) {
-        this.chapters = JsonNullable.<List<ChapterInfo>> of(chapters);
-    }
+  public BaseItemDto locationType(@javax.annotation.Nullable LocationType locationType) {
+    this.locationType = JsonNullable.<LocationType>of(locationType);
+    
+    return this;
+  }
 
-    public BaseItemDto locationType(@javax.annotation.Nullable LocationType locationType) {
-        this.locationType = JsonNullable.<LocationType> of(locationType);
+  /**
+   * Gets or sets the type of the location.
+   * @return locationType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the location.
-     * 
-     * @return locationType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public LocationType getLocationType() {
+  public LocationType getLocationType() {
         return locationType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCATION_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOCATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<LocationType> getLocationType_JsonNullable() {
-        return locationType;
-    }
+  public JsonNullable<LocationType> getLocationType_JsonNullable() {
+    return locationType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCATION_TYPE)
+  public void setLocationType_JsonNullable(JsonNullable<LocationType> locationType) {
+    this.locationType = locationType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCATION_TYPE)
-    public void setLocationType_JsonNullable(JsonNullable<LocationType> locationType) {
-        this.locationType = locationType;
-    }
+  public void setLocationType(@javax.annotation.Nullable LocationType locationType) {
+    this.locationType = JsonNullable.<LocationType>of(locationType);
+  }
 
-    public void setLocationType(@javax.annotation.Nullable LocationType locationType) {
-        this.locationType = JsonNullable.<LocationType> of(locationType);
-    }
+  public BaseItemDto isoType(@javax.annotation.Nullable IsoType isoType) {
+    this.isoType = JsonNullable.<IsoType>of(isoType);
+    
+    return this;
+  }
 
-    public BaseItemDto isoType(@javax.annotation.Nullable IsoType isoType) {
-        this.isoType = JsonNullable.<IsoType> of(isoType);
+  /**
+   * Gets or sets the type of the iso.
+   * @return isoType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the iso.
-     * 
-     * @return isoType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public IsoType getIsoType() {
+  public IsoType getIsoType() {
         return isoType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ISO_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<IsoType> getIsoType_JsonNullable() {
-        return isoType;
-    }
+  public JsonNullable<IsoType> getIsoType_JsonNullable() {
+    return isoType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+  public void setIsoType_JsonNullable(JsonNullable<IsoType> isoType) {
+    this.isoType = isoType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ISO_TYPE)
-    public void setIsoType_JsonNullable(JsonNullable<IsoType> isoType) {
-        this.isoType = isoType;
-    }
+  public void setIsoType(@javax.annotation.Nullable IsoType isoType) {
+    this.isoType = JsonNullable.<IsoType>of(isoType);
+  }
 
-    public void setIsoType(@javax.annotation.Nullable IsoType isoType) {
-        this.isoType = JsonNullable.<IsoType> of(isoType);
-    }
+  public BaseItemDto mediaType(@javax.annotation.Nullable String mediaType) {
+    this.mediaType = JsonNullable.<String>of(mediaType);
+    
+    return this;
+  }
 
-    public BaseItemDto mediaType(@javax.annotation.Nullable String mediaType) {
-        this.mediaType = JsonNullable.<String> of(mediaType);
+  /**
+   * Gets or sets the type of the media.
+   * @return mediaType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the media.
-     * 
-     * @return mediaType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMediaType() {
+  public String getMediaType() {
         return mediaType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMediaType_JsonNullable() {
-        return mediaType;
-    }
+  public JsonNullable<String> getMediaType_JsonNullable() {
+    return mediaType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  public void setMediaType_JsonNullable(JsonNullable<String> mediaType) {
+    this.mediaType = mediaType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
-    public void setMediaType_JsonNullable(JsonNullable<String> mediaType) {
-        this.mediaType = mediaType;
-    }
+  public void setMediaType(@javax.annotation.Nullable String mediaType) {
+    this.mediaType = JsonNullable.<String>of(mediaType);
+  }
 
-    public void setMediaType(@javax.annotation.Nullable String mediaType) {
-        this.mediaType = JsonNullable.<String> of(mediaType);
-    }
+  public BaseItemDto endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
+    this.endDate = JsonNullable.<OffsetDateTime>of(endDate);
+    
+    return this;
+  }
 
-    public BaseItemDto endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-        this.endDate = JsonNullable.<OffsetDateTime> of(endDate);
+  /**
+   * Gets or sets the end date.
+   * @return endDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the end date.
-     * 
-     * @return endDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getEndDate() {
+  public OffsetDateTime getEndDate() {
         return endDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_END_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getEndDate_JsonNullable() {
+    return endDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_END_DATE)
+  public void setEndDate_JsonNullable(JsonNullable<OffsetDateTime> endDate) {
+    this.endDate = endDate;
+  }
+
+  public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
+    this.endDate = JsonNullable.<OffsetDateTime>of(endDate);
+  }
+
+  public BaseItemDto lockedFields(@javax.annotation.Nullable List<MetadataField> lockedFields) {
+    this.lockedFields = JsonNullable.<List<MetadataField>>of(lockedFields);
+    
+    return this;
+  }
+
+  public BaseItemDto addLockedFieldsItem(MetadataField lockedFieldsItem) {
+    if (this.lockedFields == null || !this.lockedFields.isPresent()) {
+      this.lockedFields = JsonNullable.<List<MetadataField>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_END_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<OffsetDateTime> getEndDate_JsonNullable() {
-        return endDate;
+    try {
+      this.lockedFields.get().add(lockedFieldsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_END_DATE)
-    public void setEndDate_JsonNullable(JsonNullable<OffsetDateTime> endDate) {
-        this.endDate = endDate;
-    }
+  /**
+   * Gets or sets the locked fields.
+   * @return lockedFields
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-        this.endDate = JsonNullable.<OffsetDateTime> of(endDate);
-    }
-
-    public BaseItemDto lockedFields(@javax.annotation.Nullable List<MetadataField> lockedFields) {
-        this.lockedFields = JsonNullable.<List<MetadataField>> of(lockedFields);
-
-        return this;
-    }
-
-    public BaseItemDto addLockedFieldsItem(MetadataField lockedFieldsItem) {
-        if (this.lockedFields == null || !this.lockedFields.isPresent()) {
-            this.lockedFields = JsonNullable.<List<MetadataField>> of(new ArrayList<>());
-        }
-        try {
-            this.lockedFields.get().add(lockedFieldsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the locked fields.
-     * 
-     * @return lockedFields
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MetadataField> getLockedFields() {
+  public List<MetadataField> getLockedFields() {
         return lockedFields.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCKED_FIELDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOCKED_FIELDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MetadataField>> getLockedFields_JsonNullable() {
-        return lockedFields;
-    }
+  public JsonNullable<List<MetadataField>> getLockedFields_JsonNullable() {
+    return lockedFields;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCKED_FIELDS)
+  public void setLockedFields_JsonNullable(JsonNullable<List<MetadataField>> lockedFields) {
+    this.lockedFields = lockedFields;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCKED_FIELDS)
-    public void setLockedFields_JsonNullable(JsonNullable<List<MetadataField>> lockedFields) {
-        this.lockedFields = lockedFields;
-    }
+  public void setLockedFields(@javax.annotation.Nullable List<MetadataField> lockedFields) {
+    this.lockedFields = JsonNullable.<List<MetadataField>>of(lockedFields);
+  }
 
-    public void setLockedFields(@javax.annotation.Nullable List<MetadataField> lockedFields) {
-        this.lockedFields = JsonNullable.<List<MetadataField>> of(lockedFields);
-    }
+  public BaseItemDto trailerCount(@javax.annotation.Nullable Integer trailerCount) {
+    this.trailerCount = JsonNullable.<Integer>of(trailerCount);
+    
+    return this;
+  }
 
-    public BaseItemDto trailerCount(@javax.annotation.Nullable Integer trailerCount) {
-        this.trailerCount = JsonNullable.<Integer> of(trailerCount);
+  /**
+   * Gets or sets the trailer count.
+   * @return trailerCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the trailer count.
-     * 
-     * @return trailerCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getTrailerCount() {
+  public Integer getTrailerCount() {
         return trailerCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getTrailerCount_JsonNullable() {
-        return trailerCount;
-    }
+  public JsonNullable<Integer> getTrailerCount_JsonNullable() {
+    return trailerCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  public void setTrailerCount_JsonNullable(JsonNullable<Integer> trailerCount) {
+    this.trailerCount = trailerCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
-    public void setTrailerCount_JsonNullable(JsonNullable<Integer> trailerCount) {
-        this.trailerCount = trailerCount;
-    }
+  public void setTrailerCount(@javax.annotation.Nullable Integer trailerCount) {
+    this.trailerCount = JsonNullable.<Integer>of(trailerCount);
+  }
 
-    public void setTrailerCount(@javax.annotation.Nullable Integer trailerCount) {
-        this.trailerCount = JsonNullable.<Integer> of(trailerCount);
-    }
+  public BaseItemDto movieCount(@javax.annotation.Nullable Integer movieCount) {
+    this.movieCount = JsonNullable.<Integer>of(movieCount);
+    
+    return this;
+  }
 
-    public BaseItemDto movieCount(@javax.annotation.Nullable Integer movieCount) {
-        this.movieCount = JsonNullable.<Integer> of(movieCount);
+  /**
+   * Gets or sets the movie count.
+   * @return movieCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the movie count.
-     * 
-     * @return movieCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMovieCount() {
+  public Integer getMovieCount() {
         return movieCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMovieCount_JsonNullable() {
-        return movieCount;
-    }
+  public JsonNullable<Integer> getMovieCount_JsonNullable() {
+    return movieCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  public void setMovieCount_JsonNullable(JsonNullable<Integer> movieCount) {
+    this.movieCount = movieCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
-    public void setMovieCount_JsonNullable(JsonNullable<Integer> movieCount) {
-        this.movieCount = movieCount;
-    }
+  public void setMovieCount(@javax.annotation.Nullable Integer movieCount) {
+    this.movieCount = JsonNullable.<Integer>of(movieCount);
+  }
 
-    public void setMovieCount(@javax.annotation.Nullable Integer movieCount) {
-        this.movieCount = JsonNullable.<Integer> of(movieCount);
-    }
+  public BaseItemDto seriesCount(@javax.annotation.Nullable Integer seriesCount) {
+    this.seriesCount = JsonNullable.<Integer>of(seriesCount);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesCount(@javax.annotation.Nullable Integer seriesCount) {
-        this.seriesCount = JsonNullable.<Integer> of(seriesCount);
+  /**
+   * Gets or sets the series count.
+   * @return seriesCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series count.
-     * 
-     * @return seriesCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSeriesCount() {
+  public Integer getSeriesCount() {
         return seriesCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSeriesCount_JsonNullable() {
-        return seriesCount;
-    }
+  public JsonNullable<Integer> getSeriesCount_JsonNullable() {
+    return seriesCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  public void setSeriesCount_JsonNullable(JsonNullable<Integer> seriesCount) {
+    this.seriesCount = seriesCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
-    public void setSeriesCount_JsonNullable(JsonNullable<Integer> seriesCount) {
-        this.seriesCount = seriesCount;
-    }
+  public void setSeriesCount(@javax.annotation.Nullable Integer seriesCount) {
+    this.seriesCount = JsonNullable.<Integer>of(seriesCount);
+  }
 
-    public void setSeriesCount(@javax.annotation.Nullable Integer seriesCount) {
-        this.seriesCount = JsonNullable.<Integer> of(seriesCount);
-    }
+  public BaseItemDto programCount(@javax.annotation.Nullable Integer programCount) {
+    this.programCount = JsonNullable.<Integer>of(programCount);
+    
+    return this;
+  }
 
-    public BaseItemDto programCount(@javax.annotation.Nullable Integer programCount) {
-        this.programCount = JsonNullable.<Integer> of(programCount);
+  /**
+   * Get programCount
+   * @return programCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get programCount
-     * 
-     * @return programCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getProgramCount() {
+  public Integer getProgramCount() {
         return programCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getProgramCount_JsonNullable() {
-        return programCount;
-    }
+  public JsonNullable<Integer> getProgramCount_JsonNullable() {
+    return programCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  public void setProgramCount_JsonNullable(JsonNullable<Integer> programCount) {
+    this.programCount = programCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
-    public void setProgramCount_JsonNullable(JsonNullable<Integer> programCount) {
-        this.programCount = programCount;
-    }
+  public void setProgramCount(@javax.annotation.Nullable Integer programCount) {
+    this.programCount = JsonNullable.<Integer>of(programCount);
+  }
 
-    public void setProgramCount(@javax.annotation.Nullable Integer programCount) {
-        this.programCount = JsonNullable.<Integer> of(programCount);
-    }
+  public BaseItemDto episodeCount(@javax.annotation.Nullable Integer episodeCount) {
+    this.episodeCount = JsonNullable.<Integer>of(episodeCount);
+    
+    return this;
+  }
 
-    public BaseItemDto episodeCount(@javax.annotation.Nullable Integer episodeCount) {
-        this.episodeCount = JsonNullable.<Integer> of(episodeCount);
+  /**
+   * Gets or sets the episode count.
+   * @return episodeCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the episode count.
-     * 
-     * @return episodeCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getEpisodeCount() {
+  public Integer getEpisodeCount() {
         return episodeCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getEpisodeCount_JsonNullable() {
-        return episodeCount;
-    }
+  public JsonNullable<Integer> getEpisodeCount_JsonNullable() {
+    return episodeCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  public void setEpisodeCount_JsonNullable(JsonNullable<Integer> episodeCount) {
+    this.episodeCount = episodeCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
-    public void setEpisodeCount_JsonNullable(JsonNullable<Integer> episodeCount) {
-        this.episodeCount = episodeCount;
-    }
+  public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
+    this.episodeCount = JsonNullable.<Integer>of(episodeCount);
+  }
 
-    public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
-        this.episodeCount = JsonNullable.<Integer> of(episodeCount);
-    }
+  public BaseItemDto songCount(@javax.annotation.Nullable Integer songCount) {
+    this.songCount = JsonNullable.<Integer>of(songCount);
+    
+    return this;
+  }
 
-    public BaseItemDto songCount(@javax.annotation.Nullable Integer songCount) {
-        this.songCount = JsonNullable.<Integer> of(songCount);
+  /**
+   * Gets or sets the song count.
+   * @return songCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the song count.
-     * 
-     * @return songCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSongCount() {
+  public Integer getSongCount() {
         return songCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSongCount_JsonNullable() {
-        return songCount;
-    }
+  public JsonNullable<Integer> getSongCount_JsonNullable() {
+    return songCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  public void setSongCount_JsonNullable(JsonNullable<Integer> songCount) {
+    this.songCount = songCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
-    public void setSongCount_JsonNullable(JsonNullable<Integer> songCount) {
-        this.songCount = songCount;
-    }
+  public void setSongCount(@javax.annotation.Nullable Integer songCount) {
+    this.songCount = JsonNullable.<Integer>of(songCount);
+  }
 
-    public void setSongCount(@javax.annotation.Nullable Integer songCount) {
-        this.songCount = JsonNullable.<Integer> of(songCount);
-    }
+  public BaseItemDto albumCount(@javax.annotation.Nullable Integer albumCount) {
+    this.albumCount = JsonNullable.<Integer>of(albumCount);
+    
+    return this;
+  }
 
-    public BaseItemDto albumCount(@javax.annotation.Nullable Integer albumCount) {
-        this.albumCount = JsonNullable.<Integer> of(albumCount);
+  /**
+   * Gets or sets the album count.
+   * @return albumCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the album count.
-     * 
-     * @return albumCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAlbumCount() {
+  public Integer getAlbumCount() {
         return albumCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAlbumCount_JsonNullable() {
-        return albumCount;
-    }
+  public JsonNullable<Integer> getAlbumCount_JsonNullable() {
+    return albumCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  public void setAlbumCount_JsonNullable(JsonNullable<Integer> albumCount) {
+    this.albumCount = albumCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
-    public void setAlbumCount_JsonNullable(JsonNullable<Integer> albumCount) {
-        this.albumCount = albumCount;
-    }
+  public void setAlbumCount(@javax.annotation.Nullable Integer albumCount) {
+    this.albumCount = JsonNullable.<Integer>of(albumCount);
+  }
 
-    public void setAlbumCount(@javax.annotation.Nullable Integer albumCount) {
-        this.albumCount = JsonNullable.<Integer> of(albumCount);
-    }
+  public BaseItemDto artistCount(@javax.annotation.Nullable Integer artistCount) {
+    this.artistCount = JsonNullable.<Integer>of(artistCount);
+    
+    return this;
+  }
 
-    public BaseItemDto artistCount(@javax.annotation.Nullable Integer artistCount) {
-        this.artistCount = JsonNullable.<Integer> of(artistCount);
+  /**
+   * Get artistCount
+   * @return artistCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get artistCount
-     * 
-     * @return artistCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getArtistCount() {
+  public Integer getArtistCount() {
         return artistCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getArtistCount_JsonNullable() {
-        return artistCount;
-    }
+  public JsonNullable<Integer> getArtistCount_JsonNullable() {
+    return artistCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  public void setArtistCount_JsonNullable(JsonNullable<Integer> artistCount) {
+    this.artistCount = artistCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
-    public void setArtistCount_JsonNullable(JsonNullable<Integer> artistCount) {
-        this.artistCount = artistCount;
-    }
+  public void setArtistCount(@javax.annotation.Nullable Integer artistCount) {
+    this.artistCount = JsonNullable.<Integer>of(artistCount);
+  }
 
-    public void setArtistCount(@javax.annotation.Nullable Integer artistCount) {
-        this.artistCount = JsonNullable.<Integer> of(artistCount);
-    }
+  public BaseItemDto musicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
+    this.musicVideoCount = JsonNullable.<Integer>of(musicVideoCount);
+    
+    return this;
+  }
 
-    public BaseItemDto musicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
-        this.musicVideoCount = JsonNullable.<Integer> of(musicVideoCount);
+  /**
+   * Gets or sets the music video count.
+   * @return musicVideoCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the music video count.
-     * 
-     * @return musicVideoCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMusicVideoCount() {
+  public Integer getMusicVideoCount() {
         return musicVideoCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMusicVideoCount_JsonNullable() {
-        return musicVideoCount;
-    }
+  public JsonNullable<Integer> getMusicVideoCount_JsonNullable() {
+    return musicVideoCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  public void setMusicVideoCount_JsonNullable(JsonNullable<Integer> musicVideoCount) {
+    this.musicVideoCount = musicVideoCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
-    public void setMusicVideoCount_JsonNullable(JsonNullable<Integer> musicVideoCount) {
-        this.musicVideoCount = musicVideoCount;
-    }
+  public void setMusicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
+    this.musicVideoCount = JsonNullable.<Integer>of(musicVideoCount);
+  }
 
-    public void setMusicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
-        this.musicVideoCount = JsonNullable.<Integer> of(musicVideoCount);
-    }
+  public BaseItemDto lockData(@javax.annotation.Nullable Boolean lockData) {
+    this.lockData = JsonNullable.<Boolean>of(lockData);
+    
+    return this;
+  }
 
-    public BaseItemDto lockData(@javax.annotation.Nullable Boolean lockData) {
-        this.lockData = JsonNullable.<Boolean> of(lockData);
+  /**
+   * Gets or sets a value indicating whether [enable internet providers].
+   * @return lockData
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether [enable internet providers].
-     * 
-     * @return lockData
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getLockData() {
+  public Boolean getLockData() {
         return lockData.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCK_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOCK_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getLockData_JsonNullable() {
-        return lockData;
-    }
+  public JsonNullable<Boolean> getLockData_JsonNullable() {
+    return lockData;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCK_DATA)
+  public void setLockData_JsonNullable(JsonNullable<Boolean> lockData) {
+    this.lockData = lockData;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCK_DATA)
-    public void setLockData_JsonNullable(JsonNullable<Boolean> lockData) {
-        this.lockData = lockData;
-    }
+  public void setLockData(@javax.annotation.Nullable Boolean lockData) {
+    this.lockData = JsonNullable.<Boolean>of(lockData);
+  }
 
-    public void setLockData(@javax.annotation.Nullable Boolean lockData) {
-        this.lockData = JsonNullable.<Boolean> of(lockData);
-    }
+  public BaseItemDto width(@javax.annotation.Nullable Integer width) {
+    this.width = JsonNullable.<Integer>of(width);
+    
+    return this;
+  }
 
-    public BaseItemDto width(@javax.annotation.Nullable Integer width) {
-        this.width = JsonNullable.<Integer> of(width);
+  /**
+   * Get width
+   * @return width
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get width
-     * 
-     * @return width
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getWidth() {
+  public Integer getWidth() {
         return width.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getWidth_JsonNullable() {
-        return width;
-    }
+  public JsonNullable<Integer> getWidth_JsonNullable() {
+    return width;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    this.width = width;
+  }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
-    public void setWidth_JsonNullable(JsonNullable<Integer> width) {
-        this.width = width;
-    }
+  public void setWidth(@javax.annotation.Nullable Integer width) {
+    this.width = JsonNullable.<Integer>of(width);
+  }
 
-    public void setWidth(@javax.annotation.Nullable Integer width) {
-        this.width = JsonNullable.<Integer> of(width);
-    }
+  public BaseItemDto height(@javax.annotation.Nullable Integer height) {
+    this.height = JsonNullable.<Integer>of(height);
+    
+    return this;
+  }
 
-    public BaseItemDto height(@javax.annotation.Nullable Integer height) {
-        this.height = JsonNullable.<Integer> of(height);
+  /**
+   * Get height
+   * @return height
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get height
-     * 
-     * @return height
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getHeight() {
+  public Integer getHeight() {
         return height.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getHeight_JsonNullable() {
-        return height;
-    }
+  public JsonNullable<Integer> getHeight_JsonNullable() {
+    return height;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    this.height = height;
+  }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
-    public void setHeight_JsonNullable(JsonNullable<Integer> height) {
-        this.height = height;
-    }
+  public void setHeight(@javax.annotation.Nullable Integer height) {
+    this.height = JsonNullable.<Integer>of(height);
+  }
 
-    public void setHeight(@javax.annotation.Nullable Integer height) {
-        this.height = JsonNullable.<Integer> of(height);
-    }
+  public BaseItemDto cameraMake(@javax.annotation.Nullable String cameraMake) {
+    this.cameraMake = JsonNullable.<String>of(cameraMake);
+    
+    return this;
+  }
 
-    public BaseItemDto cameraMake(@javax.annotation.Nullable String cameraMake) {
-        this.cameraMake = JsonNullable.<String> of(cameraMake);
+  /**
+   * Get cameraMake
+   * @return cameraMake
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get cameraMake
-     * 
-     * @return cameraMake
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCameraMake() {
+  public String getCameraMake() {
         return cameraMake.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAMERA_MAKE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CAMERA_MAKE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCameraMake_JsonNullable() {
-        return cameraMake;
-    }
+  public JsonNullable<String> getCameraMake_JsonNullable() {
+    return cameraMake;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CAMERA_MAKE)
+  public void setCameraMake_JsonNullable(JsonNullable<String> cameraMake) {
+    this.cameraMake = cameraMake;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAMERA_MAKE)
-    public void setCameraMake_JsonNullable(JsonNullable<String> cameraMake) {
-        this.cameraMake = cameraMake;
-    }
+  public void setCameraMake(@javax.annotation.Nullable String cameraMake) {
+    this.cameraMake = JsonNullable.<String>of(cameraMake);
+  }
 
-    public void setCameraMake(@javax.annotation.Nullable String cameraMake) {
-        this.cameraMake = JsonNullable.<String> of(cameraMake);
-    }
+  public BaseItemDto cameraModel(@javax.annotation.Nullable String cameraModel) {
+    this.cameraModel = JsonNullable.<String>of(cameraModel);
+    
+    return this;
+  }
 
-    public BaseItemDto cameraModel(@javax.annotation.Nullable String cameraModel) {
-        this.cameraModel = JsonNullable.<String> of(cameraModel);
+  /**
+   * Get cameraModel
+   * @return cameraModel
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get cameraModel
-     * 
-     * @return cameraModel
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCameraModel() {
+  public String getCameraModel() {
         return cameraModel.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAMERA_MODEL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CAMERA_MODEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCameraModel_JsonNullable() {
-        return cameraModel;
-    }
+  public JsonNullable<String> getCameraModel_JsonNullable() {
+    return cameraModel;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CAMERA_MODEL)
+  public void setCameraModel_JsonNullable(JsonNullable<String> cameraModel) {
+    this.cameraModel = cameraModel;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAMERA_MODEL)
-    public void setCameraModel_JsonNullable(JsonNullable<String> cameraModel) {
-        this.cameraModel = cameraModel;
-    }
+  public void setCameraModel(@javax.annotation.Nullable String cameraModel) {
+    this.cameraModel = JsonNullable.<String>of(cameraModel);
+  }
 
-    public void setCameraModel(@javax.annotation.Nullable String cameraModel) {
-        this.cameraModel = JsonNullable.<String> of(cameraModel);
-    }
+  public BaseItemDto software(@javax.annotation.Nullable String software) {
+    this.software = JsonNullable.<String>of(software);
+    
+    return this;
+  }
 
-    public BaseItemDto software(@javax.annotation.Nullable String software) {
-        this.software = JsonNullable.<String> of(software);
+  /**
+   * Get software
+   * @return software
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get software
-     * 
-     * @return software
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSoftware() {
+  public String getSoftware() {
         return software.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOFTWARE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SOFTWARE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSoftware_JsonNullable() {
-        return software;
-    }
+  public JsonNullable<String> getSoftware_JsonNullable() {
+    return software;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOFTWARE)
+  public void setSoftware_JsonNullable(JsonNullable<String> software) {
+    this.software = software;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOFTWARE)
-    public void setSoftware_JsonNullable(JsonNullable<String> software) {
-        this.software = software;
-    }
+  public void setSoftware(@javax.annotation.Nullable String software) {
+    this.software = JsonNullable.<String>of(software);
+  }
 
-    public void setSoftware(@javax.annotation.Nullable String software) {
-        this.software = JsonNullable.<String> of(software);
-    }
+  public BaseItemDto exposureTime(@javax.annotation.Nullable Double exposureTime) {
+    this.exposureTime = JsonNullable.<Double>of(exposureTime);
+    
+    return this;
+  }
 
-    public BaseItemDto exposureTime(@javax.annotation.Nullable Double exposureTime) {
-        this.exposureTime = JsonNullable.<Double> of(exposureTime);
+  /**
+   * Get exposureTime
+   * @return exposureTime
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get exposureTime
-     * 
-     * @return exposureTime
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getExposureTime() {
+  public Double getExposureTime() {
         return exposureTime.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_EXPOSURE_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_EXPOSURE_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getExposureTime_JsonNullable() {
-        return exposureTime;
-    }
+  public JsonNullable<Double> getExposureTime_JsonNullable() {
+    return exposureTime;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EXPOSURE_TIME)
+  public void setExposureTime_JsonNullable(JsonNullable<Double> exposureTime) {
+    this.exposureTime = exposureTime;
+  }
 
-    @JsonProperty(JSON_PROPERTY_EXPOSURE_TIME)
-    public void setExposureTime_JsonNullable(JsonNullable<Double> exposureTime) {
-        this.exposureTime = exposureTime;
-    }
+  public void setExposureTime(@javax.annotation.Nullable Double exposureTime) {
+    this.exposureTime = JsonNullable.<Double>of(exposureTime);
+  }
 
-    public void setExposureTime(@javax.annotation.Nullable Double exposureTime) {
-        this.exposureTime = JsonNullable.<Double> of(exposureTime);
-    }
+  public BaseItemDto focalLength(@javax.annotation.Nullable Double focalLength) {
+    this.focalLength = JsonNullable.<Double>of(focalLength);
+    
+    return this;
+  }
 
-    public BaseItemDto focalLength(@javax.annotation.Nullable Double focalLength) {
-        this.focalLength = JsonNullable.<Double> of(focalLength);
+  /**
+   * Get focalLength
+   * @return focalLength
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get focalLength
-     * 
-     * @return focalLength
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getFocalLength() {
+  public Double getFocalLength() {
         return focalLength.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FOCAL_LENGTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FOCAL_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getFocalLength_JsonNullable() {
-        return focalLength;
-    }
+  public JsonNullable<Double> getFocalLength_JsonNullable() {
+    return focalLength;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FOCAL_LENGTH)
+  public void setFocalLength_JsonNullable(JsonNullable<Double> focalLength) {
+    this.focalLength = focalLength;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FOCAL_LENGTH)
-    public void setFocalLength_JsonNullable(JsonNullable<Double> focalLength) {
-        this.focalLength = focalLength;
-    }
+  public void setFocalLength(@javax.annotation.Nullable Double focalLength) {
+    this.focalLength = JsonNullable.<Double>of(focalLength);
+  }
 
-    public void setFocalLength(@javax.annotation.Nullable Double focalLength) {
-        this.focalLength = JsonNullable.<Double> of(focalLength);
-    }
+  public BaseItemDto imageOrientation(@javax.annotation.Nullable ImageOrientation imageOrientation) {
+    this.imageOrientation = JsonNullable.<ImageOrientation>of(imageOrientation);
+    
+    return this;
+  }
 
-    public BaseItemDto imageOrientation(@javax.annotation.Nullable ImageOrientation imageOrientation) {
-        this.imageOrientation = JsonNullable.<ImageOrientation> of(imageOrientation);
+  /**
+   * Get imageOrientation
+   * @return imageOrientation
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get imageOrientation
-     * 
-     * @return imageOrientation
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ImageOrientation getImageOrientation() {
+  public ImageOrientation getImageOrientation() {
         return imageOrientation.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_ORIENTATION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IMAGE_ORIENTATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ImageOrientation> getImageOrientation_JsonNullable() {
-        return imageOrientation;
-    }
+  public JsonNullable<ImageOrientation> getImageOrientation_JsonNullable() {
+    return imageOrientation;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_ORIENTATION)
+  public void setImageOrientation_JsonNullable(JsonNullable<ImageOrientation> imageOrientation) {
+    this.imageOrientation = imageOrientation;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_ORIENTATION)
-    public void setImageOrientation_JsonNullable(JsonNullable<ImageOrientation> imageOrientation) {
-        this.imageOrientation = imageOrientation;
-    }
+  public void setImageOrientation(@javax.annotation.Nullable ImageOrientation imageOrientation) {
+    this.imageOrientation = JsonNullable.<ImageOrientation>of(imageOrientation);
+  }
 
-    public void setImageOrientation(@javax.annotation.Nullable ImageOrientation imageOrientation) {
-        this.imageOrientation = JsonNullable.<ImageOrientation> of(imageOrientation);
-    }
+  public BaseItemDto aperture(@javax.annotation.Nullable Double aperture) {
+    this.aperture = JsonNullable.<Double>of(aperture);
+    
+    return this;
+  }
 
-    public BaseItemDto aperture(@javax.annotation.Nullable Double aperture) {
-        this.aperture = JsonNullable.<Double> of(aperture);
+  /**
+   * Get aperture
+   * @return aperture
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get aperture
-     * 
-     * @return aperture
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getAperture() {
+  public Double getAperture() {
         return aperture.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_APERTURE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_APERTURE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getAperture_JsonNullable() {
-        return aperture;
-    }
+  public JsonNullable<Double> getAperture_JsonNullable() {
+    return aperture;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APERTURE)
+  public void setAperture_JsonNullable(JsonNullable<Double> aperture) {
+    this.aperture = aperture;
+  }
 
-    @JsonProperty(JSON_PROPERTY_APERTURE)
-    public void setAperture_JsonNullable(JsonNullable<Double> aperture) {
-        this.aperture = aperture;
-    }
+  public void setAperture(@javax.annotation.Nullable Double aperture) {
+    this.aperture = JsonNullable.<Double>of(aperture);
+  }
 
-    public void setAperture(@javax.annotation.Nullable Double aperture) {
-        this.aperture = JsonNullable.<Double> of(aperture);
-    }
+  public BaseItemDto shutterSpeed(@javax.annotation.Nullable Double shutterSpeed) {
+    this.shutterSpeed = JsonNullable.<Double>of(shutterSpeed);
+    
+    return this;
+  }
 
-    public BaseItemDto shutterSpeed(@javax.annotation.Nullable Double shutterSpeed) {
-        this.shutterSpeed = JsonNullable.<Double> of(shutterSpeed);
+  /**
+   * Get shutterSpeed
+   * @return shutterSpeed
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get shutterSpeed
-     * 
-     * @return shutterSpeed
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getShutterSpeed() {
+  public Double getShutterSpeed() {
         return shutterSpeed.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SHUTTER_SPEED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SHUTTER_SPEED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getShutterSpeed_JsonNullable() {
-        return shutterSpeed;
-    }
+  public JsonNullable<Double> getShutterSpeed_JsonNullable() {
+    return shutterSpeed;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SHUTTER_SPEED)
+  public void setShutterSpeed_JsonNullable(JsonNullable<Double> shutterSpeed) {
+    this.shutterSpeed = shutterSpeed;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SHUTTER_SPEED)
-    public void setShutterSpeed_JsonNullable(JsonNullable<Double> shutterSpeed) {
-        this.shutterSpeed = shutterSpeed;
-    }
+  public void setShutterSpeed(@javax.annotation.Nullable Double shutterSpeed) {
+    this.shutterSpeed = JsonNullable.<Double>of(shutterSpeed);
+  }
 
-    public void setShutterSpeed(@javax.annotation.Nullable Double shutterSpeed) {
-        this.shutterSpeed = JsonNullable.<Double> of(shutterSpeed);
-    }
+  public BaseItemDto latitude(@javax.annotation.Nullable Double latitude) {
+    this.latitude = JsonNullable.<Double>of(latitude);
+    
+    return this;
+  }
 
-    public BaseItemDto latitude(@javax.annotation.Nullable Double latitude) {
-        this.latitude = JsonNullable.<Double> of(latitude);
+  /**
+   * Get latitude
+   * @return latitude
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get latitude
-     * 
-     * @return latitude
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getLatitude() {
+  public Double getLatitude() {
         return latitude.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LATITUDE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LATITUDE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getLatitude_JsonNullable() {
-        return latitude;
-    }
+  public JsonNullable<Double> getLatitude_JsonNullable() {
+    return latitude;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LATITUDE)
+  public void setLatitude_JsonNullable(JsonNullable<Double> latitude) {
+    this.latitude = latitude;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LATITUDE)
-    public void setLatitude_JsonNullable(JsonNullable<Double> latitude) {
-        this.latitude = latitude;
-    }
+  public void setLatitude(@javax.annotation.Nullable Double latitude) {
+    this.latitude = JsonNullable.<Double>of(latitude);
+  }
 
-    public void setLatitude(@javax.annotation.Nullable Double latitude) {
-        this.latitude = JsonNullable.<Double> of(latitude);
-    }
+  public BaseItemDto longitude(@javax.annotation.Nullable Double longitude) {
+    this.longitude = JsonNullable.<Double>of(longitude);
+    
+    return this;
+  }
 
-    public BaseItemDto longitude(@javax.annotation.Nullable Double longitude) {
-        this.longitude = JsonNullable.<Double> of(longitude);
+  /**
+   * Get longitude
+   * @return longitude
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get longitude
-     * 
-     * @return longitude
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getLongitude() {
+  public Double getLongitude() {
         return longitude.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LONGITUDE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LONGITUDE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getLongitude_JsonNullable() {
-        return longitude;
-    }
+  public JsonNullable<Double> getLongitude_JsonNullable() {
+    return longitude;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LONGITUDE)
+  public void setLongitude_JsonNullable(JsonNullable<Double> longitude) {
+    this.longitude = longitude;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LONGITUDE)
-    public void setLongitude_JsonNullable(JsonNullable<Double> longitude) {
-        this.longitude = longitude;
-    }
+  public void setLongitude(@javax.annotation.Nullable Double longitude) {
+    this.longitude = JsonNullable.<Double>of(longitude);
+  }
 
-    public void setLongitude(@javax.annotation.Nullable Double longitude) {
-        this.longitude = JsonNullable.<Double> of(longitude);
-    }
+  public BaseItemDto altitude(@javax.annotation.Nullable Double altitude) {
+    this.altitude = JsonNullable.<Double>of(altitude);
+    
+    return this;
+  }
 
-    public BaseItemDto altitude(@javax.annotation.Nullable Double altitude) {
-        this.altitude = JsonNullable.<Double> of(altitude);
+  /**
+   * Get altitude
+   * @return altitude
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get altitude
-     * 
-     * @return altitude
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getAltitude() {
+  public Double getAltitude() {
         return altitude.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALTITUDE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ALTITUDE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getAltitude_JsonNullable() {
-        return altitude;
-    }
+  public JsonNullable<Double> getAltitude_JsonNullable() {
+    return altitude;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALTITUDE)
+  public void setAltitude_JsonNullable(JsonNullable<Double> altitude) {
+    this.altitude = altitude;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ALTITUDE)
-    public void setAltitude_JsonNullable(JsonNullable<Double> altitude) {
-        this.altitude = altitude;
-    }
+  public void setAltitude(@javax.annotation.Nullable Double altitude) {
+    this.altitude = JsonNullable.<Double>of(altitude);
+  }
 
-    public void setAltitude(@javax.annotation.Nullable Double altitude) {
-        this.altitude = JsonNullable.<Double> of(altitude);
-    }
+  public BaseItemDto isoSpeedRating(@javax.annotation.Nullable Integer isoSpeedRating) {
+    this.isoSpeedRating = JsonNullable.<Integer>of(isoSpeedRating);
+    
+    return this;
+  }
 
-    public BaseItemDto isoSpeedRating(@javax.annotation.Nullable Integer isoSpeedRating) {
-        this.isoSpeedRating = JsonNullable.<Integer> of(isoSpeedRating);
+  /**
+   * Get isoSpeedRating
+   * @return isoSpeedRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get isoSpeedRating
-     * 
-     * @return isoSpeedRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIsoSpeedRating() {
+  public Integer getIsoSpeedRating() {
         return isoSpeedRating.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ISO_SPEED_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ISO_SPEED_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIsoSpeedRating_JsonNullable() {
-        return isoSpeedRating;
-    }
+  public JsonNullable<Integer> getIsoSpeedRating_JsonNullable() {
+    return isoSpeedRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ISO_SPEED_RATING)
+  public void setIsoSpeedRating_JsonNullable(JsonNullable<Integer> isoSpeedRating) {
+    this.isoSpeedRating = isoSpeedRating;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ISO_SPEED_RATING)
-    public void setIsoSpeedRating_JsonNullable(JsonNullable<Integer> isoSpeedRating) {
-        this.isoSpeedRating = isoSpeedRating;
-    }
+  public void setIsoSpeedRating(@javax.annotation.Nullable Integer isoSpeedRating) {
+    this.isoSpeedRating = JsonNullable.<Integer>of(isoSpeedRating);
+  }
 
-    public void setIsoSpeedRating(@javax.annotation.Nullable Integer isoSpeedRating) {
-        this.isoSpeedRating = JsonNullable.<Integer> of(isoSpeedRating);
-    }
+  public BaseItemDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
+    this.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+    
+    return this;
+  }
 
-    public BaseItemDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
+  /**
+   * Gets or sets the series timer identifier.
+   * @return seriesTimerId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the series timer identifier.
-     * 
-     * @return seriesTimerId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesTimerId() {
+  public String getSeriesTimerId() {
         return seriesTimerId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesTimerId_JsonNullable() {
-        return seriesTimerId;
-    }
+  public JsonNullable<String> getSeriesTimerId_JsonNullable() {
+    return seriesTimerId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+  public void setSeriesTimerId_JsonNullable(JsonNullable<String> seriesTimerId) {
+    this.seriesTimerId = seriesTimerId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
-    public void setSeriesTimerId_JsonNullable(JsonNullable<String> seriesTimerId) {
-        this.seriesTimerId = seriesTimerId;
-    }
+  public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
+    this.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+  }
 
-    public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-    }
+  public BaseItemDto programId(@javax.annotation.Nullable String programId) {
+    this.programId = JsonNullable.<String>of(programId);
+    
+    return this;
+  }
 
-    public BaseItemDto programId(@javax.annotation.Nullable String programId) {
-        this.programId = JsonNullable.<String> of(programId);
+  /**
+   * Gets or sets the program identifier.
+   * @return programId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the program identifier.
-     * 
-     * @return programId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProgramId() {
+  public String getProgramId() {
         return programId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProgramId_JsonNullable() {
-        return programId;
-    }
+  public JsonNullable<String> getProgramId_JsonNullable() {
+    return programId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+  public void setProgramId_JsonNullable(JsonNullable<String> programId) {
+    this.programId = programId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    public void setProgramId_JsonNullable(JsonNullable<String> programId) {
-        this.programId = programId;
-    }
+  public void setProgramId(@javax.annotation.Nullable String programId) {
+    this.programId = JsonNullable.<String>of(programId);
+  }
 
-    public void setProgramId(@javax.annotation.Nullable String programId) {
-        this.programId = JsonNullable.<String> of(programId);
-    }
+  public BaseItemDto channelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
+    this.channelPrimaryImageTag = JsonNullable.<String>of(channelPrimaryImageTag);
+    
+    return this;
+  }
 
-    public BaseItemDto channelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
-        this.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
+  /**
+   * Gets or sets the channel primary image tag.
+   * @return channelPrimaryImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the channel primary image tag.
-     * 
-     * @return channelPrimaryImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelPrimaryImageTag() {
+  public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelPrimaryImageTag_JsonNullable() {
-        return channelPrimaryImageTag;
-    }
+  public JsonNullable<String> getChannelPrimaryImageTag_JsonNullable() {
+    return channelPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+  public void setChannelPrimaryImageTag_JsonNullable(JsonNullable<String> channelPrimaryImageTag) {
+    this.channelPrimaryImageTag = channelPrimaryImageTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
-    public void setChannelPrimaryImageTag_JsonNullable(JsonNullable<String> channelPrimaryImageTag) {
-        this.channelPrimaryImageTag = channelPrimaryImageTag;
-    }
+  public void setChannelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
+    this.channelPrimaryImageTag = JsonNullable.<String>of(channelPrimaryImageTag);
+  }
 
-    public void setChannelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
-        this.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
-    }
+  public BaseItemDto startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
+    this.startDate = JsonNullable.<OffsetDateTime>of(startDate);
+    
+    return this;
+  }
 
-    public BaseItemDto startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-        this.startDate = JsonNullable.<OffsetDateTime> of(startDate);
+  /**
+   * Gets or sets the start date of the recording, in UTC.
+   * @return startDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the start date of the recording, in UTC.
-     * 
-     * @return startDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getStartDate() {
+  public OffsetDateTime getStartDate() {
         return startDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_START_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getStartDate_JsonNullable() {
-        return startDate;
-    }
+  public JsonNullable<OffsetDateTime> getStartDate_JsonNullable() {
+    return startDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_START_DATE)
+  public void setStartDate_JsonNullable(JsonNullable<OffsetDateTime> startDate) {
+    this.startDate = startDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
-    public void setStartDate_JsonNullable(JsonNullable<OffsetDateTime> startDate) {
-        this.startDate = startDate;
-    }
+  public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
+    this.startDate = JsonNullable.<OffsetDateTime>of(startDate);
+  }
 
-    public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-        this.startDate = JsonNullable.<OffsetDateTime> of(startDate);
-    }
+  public BaseItemDto completionPercentage(@javax.annotation.Nullable Double completionPercentage) {
+    this.completionPercentage = JsonNullable.<Double>of(completionPercentage);
+    
+    return this;
+  }
 
-    public BaseItemDto completionPercentage(@javax.annotation.Nullable Double completionPercentage) {
-        this.completionPercentage = JsonNullable.<Double> of(completionPercentage);
+  /**
+   * Gets or sets the completion percentage.
+   * @return completionPercentage
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the completion percentage.
-     * 
-     * @return completionPercentage
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getCompletionPercentage() {
+  public Double getCompletionPercentage() {
         return completionPercentage.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getCompletionPercentage_JsonNullable() {
-        return completionPercentage;
-    }
+  public JsonNullable<Double> getCompletionPercentage_JsonNullable() {
+    return completionPercentage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+  public void setCompletionPercentage_JsonNullable(JsonNullable<Double> completionPercentage) {
+    this.completionPercentage = completionPercentage;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
-    public void setCompletionPercentage_JsonNullable(JsonNullable<Double> completionPercentage) {
-        this.completionPercentage = completionPercentage;
-    }
+  public void setCompletionPercentage(@javax.annotation.Nullable Double completionPercentage) {
+    this.completionPercentage = JsonNullable.<Double>of(completionPercentage);
+  }
 
-    public void setCompletionPercentage(@javax.annotation.Nullable Double completionPercentage) {
-        this.completionPercentage = JsonNullable.<Double> of(completionPercentage);
-    }
+  public BaseItemDto isRepeat(@javax.annotation.Nullable Boolean isRepeat) {
+    this.isRepeat = JsonNullable.<Boolean>of(isRepeat);
+    
+    return this;
+  }
 
-    public BaseItemDto isRepeat(@javax.annotation.Nullable Boolean isRepeat) {
-        this.isRepeat = JsonNullable.<Boolean> of(isRepeat);
+  /**
+   * Gets or sets a value indicating whether this instance is repeat.
+   * @return isRepeat
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is repeat.
-     * 
-     * @return isRepeat
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsRepeat() {
+  public Boolean getIsRepeat() {
         return isRepeat.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_REPEAT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_REPEAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsRepeat_JsonNullable() {
-        return isRepeat;
-    }
+  public JsonNullable<Boolean> getIsRepeat_JsonNullable() {
+    return isRepeat;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_REPEAT)
+  public void setIsRepeat_JsonNullable(JsonNullable<Boolean> isRepeat) {
+    this.isRepeat = isRepeat;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_REPEAT)
-    public void setIsRepeat_JsonNullable(JsonNullable<Boolean> isRepeat) {
-        this.isRepeat = isRepeat;
-    }
+  public void setIsRepeat(@javax.annotation.Nullable Boolean isRepeat) {
+    this.isRepeat = JsonNullable.<Boolean>of(isRepeat);
+  }
 
-    public void setIsRepeat(@javax.annotation.Nullable Boolean isRepeat) {
-        this.isRepeat = JsonNullable.<Boolean> of(isRepeat);
-    }
+  public BaseItemDto episodeTitle(@javax.annotation.Nullable String episodeTitle) {
+    this.episodeTitle = JsonNullable.<String>of(episodeTitle);
+    
+    return this;
+  }
 
-    public BaseItemDto episodeTitle(@javax.annotation.Nullable String episodeTitle) {
-        this.episodeTitle = JsonNullable.<String> of(episodeTitle);
+  /**
+   * Gets or sets the episode title.
+   * @return episodeTitle
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the episode title.
-     * 
-     * @return episodeTitle
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getEpisodeTitle() {
+  public String getEpisodeTitle() {
         return episodeTitle.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_TITLE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_EPISODE_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getEpisodeTitle_JsonNullable() {
-        return episodeTitle;
-    }
+  public JsonNullable<String> getEpisodeTitle_JsonNullable() {
+    return episodeTitle;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EPISODE_TITLE)
+  public void setEpisodeTitle_JsonNullable(JsonNullable<String> episodeTitle) {
+    this.episodeTitle = episodeTitle;
+  }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_TITLE)
-    public void setEpisodeTitle_JsonNullable(JsonNullable<String> episodeTitle) {
-        this.episodeTitle = episodeTitle;
-    }
+  public void setEpisodeTitle(@javax.annotation.Nullable String episodeTitle) {
+    this.episodeTitle = JsonNullable.<String>of(episodeTitle);
+  }
 
-    public void setEpisodeTitle(@javax.annotation.Nullable String episodeTitle) {
-        this.episodeTitle = JsonNullable.<String> of(episodeTitle);
-    }
+  public BaseItemDto channelType(@javax.annotation.Nullable ChannelType channelType) {
+    this.channelType = JsonNullable.<ChannelType>of(channelType);
+    
+    return this;
+  }
 
-    public BaseItemDto channelType(@javax.annotation.Nullable ChannelType channelType) {
-        this.channelType = JsonNullable.<ChannelType> of(channelType);
+  /**
+   * Gets or sets the type of the channel.
+   * @return channelType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the channel.
-     * 
-     * @return channelType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ChannelType getChannelType() {
+  public ChannelType getChannelType() {
         return channelType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ChannelType> getChannelType_JsonNullable() {
-        return channelType;
-    }
+  public JsonNullable<ChannelType> getChannelType_JsonNullable() {
+    return channelType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_TYPE)
+  public void setChannelType_JsonNullable(JsonNullable<ChannelType> channelType) {
+    this.channelType = channelType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_TYPE)
-    public void setChannelType_JsonNullable(JsonNullable<ChannelType> channelType) {
-        this.channelType = channelType;
-    }
+  public void setChannelType(@javax.annotation.Nullable ChannelType channelType) {
+    this.channelType = JsonNullable.<ChannelType>of(channelType);
+  }
 
-    public void setChannelType(@javax.annotation.Nullable ChannelType channelType) {
-        this.channelType = JsonNullable.<ChannelType> of(channelType);
-    }
+  public BaseItemDto audio(@javax.annotation.Nullable ProgramAudio audio) {
+    this.audio = JsonNullable.<ProgramAudio>of(audio);
+    
+    return this;
+  }
 
-    public BaseItemDto audio(@javax.annotation.Nullable ProgramAudio audio) {
-        this.audio = JsonNullable.<ProgramAudio> of(audio);
+  /**
+   * Gets or sets the audio.
+   * @return audio
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the audio.
-     * 
-     * @return audio
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ProgramAudio getAudio() {
+  public ProgramAudio getAudio() {
         return audio.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AUDIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ProgramAudio> getAudio_JsonNullable() {
-        return audio;
-    }
+  public JsonNullable<ProgramAudio> getAudio_JsonNullable() {
+    return audio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO)
+  public void setAudio_JsonNullable(JsonNullable<ProgramAudio> audio) {
+    this.audio = audio;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO)
-    public void setAudio_JsonNullable(JsonNullable<ProgramAudio> audio) {
-        this.audio = audio;
-    }
+  public void setAudio(@javax.annotation.Nullable ProgramAudio audio) {
+    this.audio = JsonNullable.<ProgramAudio>of(audio);
+  }
 
-    public void setAudio(@javax.annotation.Nullable ProgramAudio audio) {
-        this.audio = JsonNullable.<ProgramAudio> of(audio);
-    }
+  public BaseItemDto isMovie(@javax.annotation.Nullable Boolean isMovie) {
+    this.isMovie = JsonNullable.<Boolean>of(isMovie);
+    
+    return this;
+  }
 
-    public BaseItemDto isMovie(@javax.annotation.Nullable Boolean isMovie) {
-        this.isMovie = JsonNullable.<Boolean> of(isMovie);
+  /**
+   * Gets or sets a value indicating whether this instance is movie.
+   * @return isMovie
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is movie.
-     * 
-     * @return isMovie
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsMovie() {
+  public Boolean getIsMovie() {
         return isMovie.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsMovie_JsonNullable() {
-        return isMovie;
-    }
+  public JsonNullable<Boolean> getIsMovie_JsonNullable() {
+    return isMovie;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+  public void setIsMovie_JsonNullable(JsonNullable<Boolean> isMovie) {
+    this.isMovie = isMovie;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
-    public void setIsMovie_JsonNullable(JsonNullable<Boolean> isMovie) {
-        this.isMovie = isMovie;
-    }
+  public void setIsMovie(@javax.annotation.Nullable Boolean isMovie) {
+    this.isMovie = JsonNullable.<Boolean>of(isMovie);
+  }
 
-    public void setIsMovie(@javax.annotation.Nullable Boolean isMovie) {
-        this.isMovie = JsonNullable.<Boolean> of(isMovie);
-    }
+  public BaseItemDto isSports(@javax.annotation.Nullable Boolean isSports) {
+    this.isSports = JsonNullable.<Boolean>of(isSports);
+    
+    return this;
+  }
 
-    public BaseItemDto isSports(@javax.annotation.Nullable Boolean isSports) {
-        this.isSports = JsonNullable.<Boolean> of(isSports);
+  /**
+   * Gets or sets a value indicating whether this instance is sports.
+   * @return isSports
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is sports.
-     * 
-     * @return isSports
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsSports() {
+  public Boolean getIsSports() {
         return isSports.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsSports_JsonNullable() {
-        return isSports;
-    }
+  public JsonNullable<Boolean> getIsSports_JsonNullable() {
+    return isSports;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+  public void setIsSports_JsonNullable(JsonNullable<Boolean> isSports) {
+    this.isSports = isSports;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
-    public void setIsSports_JsonNullable(JsonNullable<Boolean> isSports) {
-        this.isSports = isSports;
-    }
+  public void setIsSports(@javax.annotation.Nullable Boolean isSports) {
+    this.isSports = JsonNullable.<Boolean>of(isSports);
+  }
 
-    public void setIsSports(@javax.annotation.Nullable Boolean isSports) {
-        this.isSports = JsonNullable.<Boolean> of(isSports);
-    }
+  public BaseItemDto isSeries(@javax.annotation.Nullable Boolean isSeries) {
+    this.isSeries = JsonNullable.<Boolean>of(isSeries);
+    
+    return this;
+  }
 
-    public BaseItemDto isSeries(@javax.annotation.Nullable Boolean isSeries) {
-        this.isSeries = JsonNullable.<Boolean> of(isSeries);
+  /**
+   * Gets or sets a value indicating whether this instance is series.
+   * @return isSeries
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is series.
-     * 
-     * @return isSeries
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsSeries() {
+  public Boolean getIsSeries() {
         return isSeries.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_SERIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsSeries_JsonNullable() {
-        return isSeries;
-    }
+  public JsonNullable<Boolean> getIsSeries_JsonNullable() {
+    return isSeries;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_SERIES)
+  public void setIsSeries_JsonNullable(JsonNullable<Boolean> isSeries) {
+    this.isSeries = isSeries;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
-    public void setIsSeries_JsonNullable(JsonNullable<Boolean> isSeries) {
-        this.isSeries = isSeries;
-    }
+  public void setIsSeries(@javax.annotation.Nullable Boolean isSeries) {
+    this.isSeries = JsonNullable.<Boolean>of(isSeries);
+  }
 
-    public void setIsSeries(@javax.annotation.Nullable Boolean isSeries) {
-        this.isSeries = JsonNullable.<Boolean> of(isSeries);
-    }
+  public BaseItemDto isLive(@javax.annotation.Nullable Boolean isLive) {
+    this.isLive = JsonNullable.<Boolean>of(isLive);
+    
+    return this;
+  }
 
-    public BaseItemDto isLive(@javax.annotation.Nullable Boolean isLive) {
-        this.isLive = JsonNullable.<Boolean> of(isLive);
+  /**
+   * Gets or sets a value indicating whether this instance is live.
+   * @return isLive
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is live.
-     * 
-     * @return isLive
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsLive() {
+  public Boolean getIsLive() {
         return isLive.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_LIVE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_LIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsLive_JsonNullable() {
-        return isLive;
-    }
+  public JsonNullable<Boolean> getIsLive_JsonNullable() {
+    return isLive;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_LIVE)
+  public void setIsLive_JsonNullable(JsonNullable<Boolean> isLive) {
+    this.isLive = isLive;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_LIVE)
-    public void setIsLive_JsonNullable(JsonNullable<Boolean> isLive) {
-        this.isLive = isLive;
-    }
+  public void setIsLive(@javax.annotation.Nullable Boolean isLive) {
+    this.isLive = JsonNullable.<Boolean>of(isLive);
+  }
 
-    public void setIsLive(@javax.annotation.Nullable Boolean isLive) {
-        this.isLive = JsonNullable.<Boolean> of(isLive);
-    }
+  public BaseItemDto isNews(@javax.annotation.Nullable Boolean isNews) {
+    this.isNews = JsonNullable.<Boolean>of(isNews);
+    
+    return this;
+  }
 
-    public BaseItemDto isNews(@javax.annotation.Nullable Boolean isNews) {
-        this.isNews = JsonNullable.<Boolean> of(isNews);
+  /**
+   * Gets or sets a value indicating whether this instance is news.
+   * @return isNews
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is news.
-     * 
-     * @return isNews
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsNews() {
+  public Boolean getIsNews() {
         return isNews.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_NEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsNews_JsonNullable() {
-        return isNews;
-    }
+  public JsonNullable<Boolean> getIsNews_JsonNullable() {
+    return isNews;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_NEWS)
+  public void setIsNews_JsonNullable(JsonNullable<Boolean> isNews) {
+    this.isNews = isNews;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
-    public void setIsNews_JsonNullable(JsonNullable<Boolean> isNews) {
-        this.isNews = isNews;
-    }
+  public void setIsNews(@javax.annotation.Nullable Boolean isNews) {
+    this.isNews = JsonNullable.<Boolean>of(isNews);
+  }
 
-    public void setIsNews(@javax.annotation.Nullable Boolean isNews) {
-        this.isNews = JsonNullable.<Boolean> of(isNews);
-    }
+  public BaseItemDto isKids(@javax.annotation.Nullable Boolean isKids) {
+    this.isKids = JsonNullable.<Boolean>of(isKids);
+    
+    return this;
+  }
 
-    public BaseItemDto isKids(@javax.annotation.Nullable Boolean isKids) {
-        this.isKids = JsonNullable.<Boolean> of(isKids);
+  /**
+   * Gets or sets a value indicating whether this instance is kids.
+   * @return isKids
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is kids.
-     * 
-     * @return isKids
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsKids() {
+  public Boolean getIsKids() {
         return isKids.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_KIDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsKids_JsonNullable() {
-        return isKids;
-    }
+  public JsonNullable<Boolean> getIsKids_JsonNullable() {
+    return isKids;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_KIDS)
+  public void setIsKids_JsonNullable(JsonNullable<Boolean> isKids) {
+    this.isKids = isKids;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
-    public void setIsKids_JsonNullable(JsonNullable<Boolean> isKids) {
-        this.isKids = isKids;
-    }
+  public void setIsKids(@javax.annotation.Nullable Boolean isKids) {
+    this.isKids = JsonNullable.<Boolean>of(isKids);
+  }
 
-    public void setIsKids(@javax.annotation.Nullable Boolean isKids) {
-        this.isKids = JsonNullable.<Boolean> of(isKids);
-    }
+  public BaseItemDto isPremiere(@javax.annotation.Nullable Boolean isPremiere) {
+    this.isPremiere = JsonNullable.<Boolean>of(isPremiere);
+    
+    return this;
+  }
 
-    public BaseItemDto isPremiere(@javax.annotation.Nullable Boolean isPremiere) {
-        this.isPremiere = JsonNullable.<Boolean> of(isPremiere);
+  /**
+   * Gets or sets a value indicating whether this instance is premiere.
+   * @return isPremiere
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this instance is premiere.
-     * 
-     * @return isPremiere
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsPremiere() {
+  public Boolean getIsPremiere() {
         return isPremiere.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_PREMIERE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_PREMIERE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsPremiere_JsonNullable() {
-        return isPremiere;
-    }
+  public JsonNullable<Boolean> getIsPremiere_JsonNullable() {
+    return isPremiere;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_PREMIERE)
+  public void setIsPremiere_JsonNullable(JsonNullable<Boolean> isPremiere) {
+    this.isPremiere = isPremiere;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_PREMIERE)
-    public void setIsPremiere_JsonNullable(JsonNullable<Boolean> isPremiere) {
-        this.isPremiere = isPremiere;
-    }
+  public void setIsPremiere(@javax.annotation.Nullable Boolean isPremiere) {
+    this.isPremiere = JsonNullable.<Boolean>of(isPremiere);
+  }
 
-    public void setIsPremiere(@javax.annotation.Nullable Boolean isPremiere) {
-        this.isPremiere = JsonNullable.<Boolean> of(isPremiere);
-    }
+  public BaseItemDto timerId(@javax.annotation.Nullable String timerId) {
+    this.timerId = JsonNullable.<String>of(timerId);
+    
+    return this;
+  }
 
-    public BaseItemDto timerId(@javax.annotation.Nullable String timerId) {
-        this.timerId = JsonNullable.<String> of(timerId);
+  /**
+   * Gets or sets the timer identifier.
+   * @return timerId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the timer identifier.
-     * 
-     * @return timerId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTimerId() {
+  public String getTimerId() {
         return timerId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIMER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTimerId_JsonNullable() {
+    return timerId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIMER_ID)
+  public void setTimerId_JsonNullable(JsonNullable<String> timerId) {
+    this.timerId = timerId;
+  }
+
+  public void setTimerId(@javax.annotation.Nullable String timerId) {
+    this.timerId = JsonNullable.<String>of(timerId);
+  }
+
+  public BaseItemDto currentProgram(@javax.annotation.Nullable BaseItemDto currentProgram) {
+    this.currentProgram = JsonNullable.<BaseItemDto>of(currentProgram);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the current program.
+   * @return currentProgram
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public BaseItemDto getCurrentProgram() {
+        return currentProgram.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<BaseItemDto> getCurrentProgram_JsonNullable() {
+    return currentProgram;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRAM)
+  public void setCurrentProgram_JsonNullable(JsonNullable<BaseItemDto> currentProgram) {
+    this.currentProgram = currentProgram;
+  }
+
+  public void setCurrentProgram(@javax.annotation.Nullable BaseItemDto currentProgram) {
+    this.currentProgram = JsonNullable.<BaseItemDto>of(currentProgram);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    BaseItemDto baseItemDto = (BaseItemDto) o;
+    return equalsNullable(this.name, baseItemDto.name) &&
+        equalsNullable(this.originalTitle, baseItemDto.originalTitle) &&
+        equalsNullable(this.serverId, baseItemDto.serverId) &&
+        Objects.equals(this.id, baseItemDto.id) &&
+        equalsNullable(this.etag, baseItemDto.etag) &&
+        equalsNullable(this.sourceType, baseItemDto.sourceType) &&
+        equalsNullable(this.playlistItemId, baseItemDto.playlistItemId) &&
+        equalsNullable(this.dateCreated, baseItemDto.dateCreated) &&
+        equalsNullable(this.dateLastMediaAdded, baseItemDto.dateLastMediaAdded) &&
+        equalsNullable(this.extraType, baseItemDto.extraType) &&
+        equalsNullable(this.airsBeforeSeasonNumber, baseItemDto.airsBeforeSeasonNumber) &&
+        equalsNullable(this.airsAfterSeasonNumber, baseItemDto.airsAfterSeasonNumber) &&
+        equalsNullable(this.airsBeforeEpisodeNumber, baseItemDto.airsBeforeEpisodeNumber) &&
+        equalsNullable(this.canDelete, baseItemDto.canDelete) &&
+        equalsNullable(this.canDownload, baseItemDto.canDownload) &&
+        equalsNullable(this.hasSubtitles, baseItemDto.hasSubtitles) &&
+        equalsNullable(this.preferredMetadataLanguage, baseItemDto.preferredMetadataLanguage) &&
+        equalsNullable(this.preferredMetadataCountryCode, baseItemDto.preferredMetadataCountryCode) &&
+        equalsNullable(this.supportsSync, baseItemDto.supportsSync) &&
+        equalsNullable(this.container, baseItemDto.container) &&
+        equalsNullable(this.sortName, baseItemDto.sortName) &&
+        equalsNullable(this.forcedSortName, baseItemDto.forcedSortName) &&
+        equalsNullable(this.video3DFormat, baseItemDto.video3DFormat) &&
+        equalsNullable(this.premiereDate, baseItemDto.premiereDate) &&
+        equalsNullable(this.externalUrls, baseItemDto.externalUrls) &&
+        equalsNullable(this.mediaSources, baseItemDto.mediaSources) &&
+        equalsNullable(this.criticRating, baseItemDto.criticRating) &&
+        equalsNullable(this.productionLocations, baseItemDto.productionLocations) &&
+        equalsNullable(this.path, baseItemDto.path) &&
+        equalsNullable(this.enableMediaSourceDisplay, baseItemDto.enableMediaSourceDisplay) &&
+        equalsNullable(this.officialRating, baseItemDto.officialRating) &&
+        equalsNullable(this.customRating, baseItemDto.customRating) &&
+        equalsNullable(this.channelId, baseItemDto.channelId) &&
+        equalsNullable(this.channelName, baseItemDto.channelName) &&
+        equalsNullable(this.overview, baseItemDto.overview) &&
+        equalsNullable(this.taglines, baseItemDto.taglines) &&
+        equalsNullable(this.genres, baseItemDto.genres) &&
+        equalsNullable(this.communityRating, baseItemDto.communityRating) &&
+        equalsNullable(this.cumulativeRunTimeTicks, baseItemDto.cumulativeRunTimeTicks) &&
+        equalsNullable(this.runTimeTicks, baseItemDto.runTimeTicks) &&
+        equalsNullable(this.playAccess, baseItemDto.playAccess) &&
+        equalsNullable(this.aspectRatio, baseItemDto.aspectRatio) &&
+        equalsNullable(this.productionYear, baseItemDto.productionYear) &&
+        equalsNullable(this.isPlaceHolder, baseItemDto.isPlaceHolder) &&
+        equalsNullable(this.number, baseItemDto.number) &&
+        equalsNullable(this.channelNumber, baseItemDto.channelNumber) &&
+        equalsNullable(this.indexNumber, baseItemDto.indexNumber) &&
+        equalsNullable(this.indexNumberEnd, baseItemDto.indexNumberEnd) &&
+        equalsNullable(this.parentIndexNumber, baseItemDto.parentIndexNumber) &&
+        equalsNullable(this.remoteTrailers, baseItemDto.remoteTrailers) &&
+        equalsNullable(this.providerIds, baseItemDto.providerIds) &&
+        equalsNullable(this.isHD, baseItemDto.isHD) &&
+        equalsNullable(this.isFolder, baseItemDto.isFolder) &&
+        equalsNullable(this.parentId, baseItemDto.parentId) &&
+        Objects.equals(this.type, baseItemDto.type) &&
+        equalsNullable(this.people, baseItemDto.people) &&
+        equalsNullable(this.studios, baseItemDto.studios) &&
+        equalsNullable(this.genreItems, baseItemDto.genreItems) &&
+        equalsNullable(this.parentLogoItemId, baseItemDto.parentLogoItemId) &&
+        equalsNullable(this.parentBackdropItemId, baseItemDto.parentBackdropItemId) &&
+        equalsNullable(this.parentBackdropImageTags, baseItemDto.parentBackdropImageTags) &&
+        equalsNullable(this.localTrailerCount, baseItemDto.localTrailerCount) &&
+        equalsNullable(this.userData, baseItemDto.userData) &&
+        equalsNullable(this.recursiveItemCount, baseItemDto.recursiveItemCount) &&
+        equalsNullable(this.childCount, baseItemDto.childCount) &&
+        equalsNullable(this.seriesName, baseItemDto.seriesName) &&
+        equalsNullable(this.seriesId, baseItemDto.seriesId) &&
+        equalsNullable(this.seasonId, baseItemDto.seasonId) &&
+        equalsNullable(this.specialFeatureCount, baseItemDto.specialFeatureCount) &&
+        equalsNullable(this.displayPreferencesId, baseItemDto.displayPreferencesId) &&
+        equalsNullable(this.status, baseItemDto.status) &&
+        equalsNullable(this.airTime, baseItemDto.airTime) &&
+        equalsNullable(this.airDays, baseItemDto.airDays) &&
+        equalsNullable(this.tags, baseItemDto.tags) &&
+        equalsNullable(this.primaryImageAspectRatio, baseItemDto.primaryImageAspectRatio) &&
+        equalsNullable(this.artists, baseItemDto.artists) &&
+        equalsNullable(this.artistItems, baseItemDto.artistItems) &&
+        equalsNullable(this.album, baseItemDto.album) &&
+        equalsNullable(this.collectionType, baseItemDto.collectionType) &&
+        equalsNullable(this.displayOrder, baseItemDto.displayOrder) &&
+        equalsNullable(this.albumId, baseItemDto.albumId) &&
+        equalsNullable(this.albumPrimaryImageTag, baseItemDto.albumPrimaryImageTag) &&
+        equalsNullable(this.seriesPrimaryImageTag, baseItemDto.seriesPrimaryImageTag) &&
+        equalsNullable(this.albumArtist, baseItemDto.albumArtist) &&
+        equalsNullable(this.albumArtists, baseItemDto.albumArtists) &&
+        equalsNullable(this.seasonName, baseItemDto.seasonName) &&
+        equalsNullable(this.mediaStreams, baseItemDto.mediaStreams) &&
+        equalsNullable(this.videoType, baseItemDto.videoType) &&
+        equalsNullable(this.partCount, baseItemDto.partCount) &&
+        equalsNullable(this.mediaSourceCount, baseItemDto.mediaSourceCount) &&
+        equalsNullable(this.imageTags, baseItemDto.imageTags) &&
+        equalsNullable(this.backdropImageTags, baseItemDto.backdropImageTags) &&
+        equalsNullable(this.screenshotImageTags, baseItemDto.screenshotImageTags) &&
+        equalsNullable(this.parentLogoImageTag, baseItemDto.parentLogoImageTag) &&
+        equalsNullable(this.parentArtItemId, baseItemDto.parentArtItemId) &&
+        equalsNullable(this.parentArtImageTag, baseItemDto.parentArtImageTag) &&
+        equalsNullable(this.seriesThumbImageTag, baseItemDto.seriesThumbImageTag) &&
+        equalsNullable(this.imageBlurHashes, baseItemDto.imageBlurHashes) &&
+        equalsNullable(this.seriesStudio, baseItemDto.seriesStudio) &&
+        equalsNullable(this.parentThumbItemId, baseItemDto.parentThumbItemId) &&
+        equalsNullable(this.parentThumbImageTag, baseItemDto.parentThumbImageTag) &&
+        equalsNullable(this.parentPrimaryImageItemId, baseItemDto.parentPrimaryImageItemId) &&
+        equalsNullable(this.parentPrimaryImageTag, baseItemDto.parentPrimaryImageTag) &&
+        equalsNullable(this.chapters, baseItemDto.chapters) &&
+        equalsNullable(this.locationType, baseItemDto.locationType) &&
+        equalsNullable(this.isoType, baseItemDto.isoType) &&
+        equalsNullable(this.mediaType, baseItemDto.mediaType) &&
+        equalsNullable(this.endDate, baseItemDto.endDate) &&
+        equalsNullable(this.lockedFields, baseItemDto.lockedFields) &&
+        equalsNullable(this.trailerCount, baseItemDto.trailerCount) &&
+        equalsNullable(this.movieCount, baseItemDto.movieCount) &&
+        equalsNullable(this.seriesCount, baseItemDto.seriesCount) &&
+        equalsNullable(this.programCount, baseItemDto.programCount) &&
+        equalsNullable(this.episodeCount, baseItemDto.episodeCount) &&
+        equalsNullable(this.songCount, baseItemDto.songCount) &&
+        equalsNullable(this.albumCount, baseItemDto.albumCount) &&
+        equalsNullable(this.artistCount, baseItemDto.artistCount) &&
+        equalsNullable(this.musicVideoCount, baseItemDto.musicVideoCount) &&
+        equalsNullable(this.lockData, baseItemDto.lockData) &&
+        equalsNullable(this.width, baseItemDto.width) &&
+        equalsNullable(this.height, baseItemDto.height) &&
+        equalsNullable(this.cameraMake, baseItemDto.cameraMake) &&
+        equalsNullable(this.cameraModel, baseItemDto.cameraModel) &&
+        equalsNullable(this.software, baseItemDto.software) &&
+        equalsNullable(this.exposureTime, baseItemDto.exposureTime) &&
+        equalsNullable(this.focalLength, baseItemDto.focalLength) &&
+        equalsNullable(this.imageOrientation, baseItemDto.imageOrientation) &&
+        equalsNullable(this.aperture, baseItemDto.aperture) &&
+        equalsNullable(this.shutterSpeed, baseItemDto.shutterSpeed) &&
+        equalsNullable(this.latitude, baseItemDto.latitude) &&
+        equalsNullable(this.longitude, baseItemDto.longitude) &&
+        equalsNullable(this.altitude, baseItemDto.altitude) &&
+        equalsNullable(this.isoSpeedRating, baseItemDto.isoSpeedRating) &&
+        equalsNullable(this.seriesTimerId, baseItemDto.seriesTimerId) &&
+        equalsNullable(this.programId, baseItemDto.programId) &&
+        equalsNullable(this.channelPrimaryImageTag, baseItemDto.channelPrimaryImageTag) &&
+        equalsNullable(this.startDate, baseItemDto.startDate) &&
+        equalsNullable(this.completionPercentage, baseItemDto.completionPercentage) &&
+        equalsNullable(this.isRepeat, baseItemDto.isRepeat) &&
+        equalsNullable(this.episodeTitle, baseItemDto.episodeTitle) &&
+        equalsNullable(this.channelType, baseItemDto.channelType) &&
+        equalsNullable(this.audio, baseItemDto.audio) &&
+        equalsNullable(this.isMovie, baseItemDto.isMovie) &&
+        equalsNullable(this.isSports, baseItemDto.isSports) &&
+        equalsNullable(this.isSeries, baseItemDto.isSeries) &&
+        equalsNullable(this.isLive, baseItemDto.isLive) &&
+        equalsNullable(this.isNews, baseItemDto.isNews) &&
+        equalsNullable(this.isKids, baseItemDto.isKids) &&
+        equalsNullable(this.isPremiere, baseItemDto.isPremiere) &&
+        equalsNullable(this.timerId, baseItemDto.timerId) &&
+        equalsNullable(this.currentProgram, baseItemDto.currentProgram);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(originalTitle), hashCodeNullable(serverId), id, hashCodeNullable(etag), hashCodeNullable(sourceType), hashCodeNullable(playlistItemId), hashCodeNullable(dateCreated), hashCodeNullable(dateLastMediaAdded), hashCodeNullable(extraType), hashCodeNullable(airsBeforeSeasonNumber), hashCodeNullable(airsAfterSeasonNumber), hashCodeNullable(airsBeforeEpisodeNumber), hashCodeNullable(canDelete), hashCodeNullable(canDownload), hashCodeNullable(hasSubtitles), hashCodeNullable(preferredMetadataLanguage), hashCodeNullable(preferredMetadataCountryCode), hashCodeNullable(supportsSync), hashCodeNullable(container), hashCodeNullable(sortName), hashCodeNullable(forcedSortName), hashCodeNullable(video3DFormat), hashCodeNullable(premiereDate), hashCodeNullable(externalUrls), hashCodeNullable(mediaSources), hashCodeNullable(criticRating), hashCodeNullable(productionLocations), hashCodeNullable(path), hashCodeNullable(enableMediaSourceDisplay), hashCodeNullable(officialRating), hashCodeNullable(customRating), hashCodeNullable(channelId), hashCodeNullable(channelName), hashCodeNullable(overview), hashCodeNullable(taglines), hashCodeNullable(genres), hashCodeNullable(communityRating), hashCodeNullable(cumulativeRunTimeTicks), hashCodeNullable(runTimeTicks), hashCodeNullable(playAccess), hashCodeNullable(aspectRatio), hashCodeNullable(productionYear), hashCodeNullable(isPlaceHolder), hashCodeNullable(number), hashCodeNullable(channelNumber), hashCodeNullable(indexNumber), hashCodeNullable(indexNumberEnd), hashCodeNullable(parentIndexNumber), hashCodeNullable(remoteTrailers), hashCodeNullable(providerIds), hashCodeNullable(isHD), hashCodeNullable(isFolder), hashCodeNullable(parentId), type, hashCodeNullable(people), hashCodeNullable(studios), hashCodeNullable(genreItems), hashCodeNullable(parentLogoItemId), hashCodeNullable(parentBackdropItemId), hashCodeNullable(parentBackdropImageTags), hashCodeNullable(localTrailerCount), hashCodeNullable(userData), hashCodeNullable(recursiveItemCount), hashCodeNullable(childCount), hashCodeNullable(seriesName), hashCodeNullable(seriesId), hashCodeNullable(seasonId), hashCodeNullable(specialFeatureCount), hashCodeNullable(displayPreferencesId), hashCodeNullable(status), hashCodeNullable(airTime), hashCodeNullable(airDays), hashCodeNullable(tags), hashCodeNullable(primaryImageAspectRatio), hashCodeNullable(artists), hashCodeNullable(artistItems), hashCodeNullable(album), hashCodeNullable(collectionType), hashCodeNullable(displayOrder), hashCodeNullable(albumId), hashCodeNullable(albumPrimaryImageTag), hashCodeNullable(seriesPrimaryImageTag), hashCodeNullable(albumArtist), hashCodeNullable(albumArtists), hashCodeNullable(seasonName), hashCodeNullable(mediaStreams), hashCodeNullable(videoType), hashCodeNullable(partCount), hashCodeNullable(mediaSourceCount), hashCodeNullable(imageTags), hashCodeNullable(backdropImageTags), hashCodeNullable(screenshotImageTags), hashCodeNullable(parentLogoImageTag), hashCodeNullable(parentArtItemId), hashCodeNullable(parentArtImageTag), hashCodeNullable(seriesThumbImageTag), hashCodeNullable(imageBlurHashes), hashCodeNullable(seriesStudio), hashCodeNullable(parentThumbItemId), hashCodeNullable(parentThumbImageTag), hashCodeNullable(parentPrimaryImageItemId), hashCodeNullable(parentPrimaryImageTag), hashCodeNullable(chapters), hashCodeNullable(locationType), hashCodeNullable(isoType), hashCodeNullable(mediaType), hashCodeNullable(endDate), hashCodeNullable(lockedFields), hashCodeNullable(trailerCount), hashCodeNullable(movieCount), hashCodeNullable(seriesCount), hashCodeNullable(programCount), hashCodeNullable(episodeCount), hashCodeNullable(songCount), hashCodeNullable(albumCount), hashCodeNullable(artistCount), hashCodeNullable(musicVideoCount), hashCodeNullable(lockData), hashCodeNullable(width), hashCodeNullable(height), hashCodeNullable(cameraMake), hashCodeNullable(cameraModel), hashCodeNullable(software), hashCodeNullable(exposureTime), hashCodeNullable(focalLength), hashCodeNullable(imageOrientation), hashCodeNullable(aperture), hashCodeNullable(shutterSpeed), hashCodeNullable(latitude), hashCodeNullable(longitude), hashCodeNullable(altitude), hashCodeNullable(isoSpeedRating), hashCodeNullable(seriesTimerId), hashCodeNullable(programId), hashCodeNullable(channelPrimaryImageTag), hashCodeNullable(startDate), hashCodeNullable(completionPercentage), hashCodeNullable(isRepeat), hashCodeNullable(episodeTitle), hashCodeNullable(channelType), hashCodeNullable(audio), hashCodeNullable(isMovie), hashCodeNullable(isSports), hashCodeNullable(isSeries), hashCodeNullable(isLive), hashCodeNullable(isNews), hashCodeNullable(isKids), hashCodeNullable(isPremiere), hashCodeNullable(timerId), hashCodeNullable(currentProgram));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class BaseItemDto {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    originalTitle: ").append(toIndentedString(originalTitle)).append("\n");
+    sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    etag: ").append(toIndentedString(etag)).append("\n");
+    sb.append("    sourceType: ").append(toIndentedString(sourceType)).append("\n");
+    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+    sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
+    sb.append("    dateLastMediaAdded: ").append(toIndentedString(dateLastMediaAdded)).append("\n");
+    sb.append("    extraType: ").append(toIndentedString(extraType)).append("\n");
+    sb.append("    airsBeforeSeasonNumber: ").append(toIndentedString(airsBeforeSeasonNumber)).append("\n");
+    sb.append("    airsAfterSeasonNumber: ").append(toIndentedString(airsAfterSeasonNumber)).append("\n");
+    sb.append("    airsBeforeEpisodeNumber: ").append(toIndentedString(airsBeforeEpisodeNumber)).append("\n");
+    sb.append("    canDelete: ").append(toIndentedString(canDelete)).append("\n");
+    sb.append("    canDownload: ").append(toIndentedString(canDownload)).append("\n");
+    sb.append("    hasSubtitles: ").append(toIndentedString(hasSubtitles)).append("\n");
+    sb.append("    preferredMetadataLanguage: ").append(toIndentedString(preferredMetadataLanguage)).append("\n");
+    sb.append("    preferredMetadataCountryCode: ").append(toIndentedString(preferredMetadataCountryCode)).append("\n");
+    sb.append("    supportsSync: ").append(toIndentedString(supportsSync)).append("\n");
+    sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("    sortName: ").append(toIndentedString(sortName)).append("\n");
+    sb.append("    forcedSortName: ").append(toIndentedString(forcedSortName)).append("\n");
+    sb.append("    video3DFormat: ").append(toIndentedString(video3DFormat)).append("\n");
+    sb.append("    premiereDate: ").append(toIndentedString(premiereDate)).append("\n");
+    sb.append("    externalUrls: ").append(toIndentedString(externalUrls)).append("\n");
+    sb.append("    mediaSources: ").append(toIndentedString(mediaSources)).append("\n");
+    sb.append("    criticRating: ").append(toIndentedString(criticRating)).append("\n");
+    sb.append("    productionLocations: ").append(toIndentedString(productionLocations)).append("\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    enableMediaSourceDisplay: ").append(toIndentedString(enableMediaSourceDisplay)).append("\n");
+    sb.append("    officialRating: ").append(toIndentedString(officialRating)).append("\n");
+    sb.append("    customRating: ").append(toIndentedString(customRating)).append("\n");
+    sb.append("    channelId: ").append(toIndentedString(channelId)).append("\n");
+    sb.append("    channelName: ").append(toIndentedString(channelName)).append("\n");
+    sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
+    sb.append("    taglines: ").append(toIndentedString(taglines)).append("\n");
+    sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
+    sb.append("    communityRating: ").append(toIndentedString(communityRating)).append("\n");
+    sb.append("    cumulativeRunTimeTicks: ").append(toIndentedString(cumulativeRunTimeTicks)).append("\n");
+    sb.append("    runTimeTicks: ").append(toIndentedString(runTimeTicks)).append("\n");
+    sb.append("    playAccess: ").append(toIndentedString(playAccess)).append("\n");
+    sb.append("    aspectRatio: ").append(toIndentedString(aspectRatio)).append("\n");
+    sb.append("    productionYear: ").append(toIndentedString(productionYear)).append("\n");
+    sb.append("    isPlaceHolder: ").append(toIndentedString(isPlaceHolder)).append("\n");
+    sb.append("    number: ").append(toIndentedString(number)).append("\n");
+    sb.append("    channelNumber: ").append(toIndentedString(channelNumber)).append("\n");
+    sb.append("    indexNumber: ").append(toIndentedString(indexNumber)).append("\n");
+    sb.append("    indexNumberEnd: ").append(toIndentedString(indexNumberEnd)).append("\n");
+    sb.append("    parentIndexNumber: ").append(toIndentedString(parentIndexNumber)).append("\n");
+    sb.append("    remoteTrailers: ").append(toIndentedString(remoteTrailers)).append("\n");
+    sb.append("    providerIds: ").append(toIndentedString(providerIds)).append("\n");
+    sb.append("    isHD: ").append(toIndentedString(isHD)).append("\n");
+    sb.append("    isFolder: ").append(toIndentedString(isFolder)).append("\n");
+    sb.append("    parentId: ").append(toIndentedString(parentId)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    people: ").append(toIndentedString(people)).append("\n");
+    sb.append("    studios: ").append(toIndentedString(studios)).append("\n");
+    sb.append("    genreItems: ").append(toIndentedString(genreItems)).append("\n");
+    sb.append("    parentLogoItemId: ").append(toIndentedString(parentLogoItemId)).append("\n");
+    sb.append("    parentBackdropItemId: ").append(toIndentedString(parentBackdropItemId)).append("\n");
+    sb.append("    parentBackdropImageTags: ").append(toIndentedString(parentBackdropImageTags)).append("\n");
+    sb.append("    localTrailerCount: ").append(toIndentedString(localTrailerCount)).append("\n");
+    sb.append("    userData: ").append(toIndentedString(userData)).append("\n");
+    sb.append("    recursiveItemCount: ").append(toIndentedString(recursiveItemCount)).append("\n");
+    sb.append("    childCount: ").append(toIndentedString(childCount)).append("\n");
+    sb.append("    seriesName: ").append(toIndentedString(seriesName)).append("\n");
+    sb.append("    seriesId: ").append(toIndentedString(seriesId)).append("\n");
+    sb.append("    seasonId: ").append(toIndentedString(seasonId)).append("\n");
+    sb.append("    specialFeatureCount: ").append(toIndentedString(specialFeatureCount)).append("\n");
+    sb.append("    displayPreferencesId: ").append(toIndentedString(displayPreferencesId)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    airTime: ").append(toIndentedString(airTime)).append("\n");
+    sb.append("    airDays: ").append(toIndentedString(airDays)).append("\n");
+    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    primaryImageAspectRatio: ").append(toIndentedString(primaryImageAspectRatio)).append("\n");
+    sb.append("    artists: ").append(toIndentedString(artists)).append("\n");
+    sb.append("    artistItems: ").append(toIndentedString(artistItems)).append("\n");
+    sb.append("    album: ").append(toIndentedString(album)).append("\n");
+    sb.append("    collectionType: ").append(toIndentedString(collectionType)).append("\n");
+    sb.append("    displayOrder: ").append(toIndentedString(displayOrder)).append("\n");
+    sb.append("    albumId: ").append(toIndentedString(albumId)).append("\n");
+    sb.append("    albumPrimaryImageTag: ").append(toIndentedString(albumPrimaryImageTag)).append("\n");
+    sb.append("    seriesPrimaryImageTag: ").append(toIndentedString(seriesPrimaryImageTag)).append("\n");
+    sb.append("    albumArtist: ").append(toIndentedString(albumArtist)).append("\n");
+    sb.append("    albumArtists: ").append(toIndentedString(albumArtists)).append("\n");
+    sb.append("    seasonName: ").append(toIndentedString(seasonName)).append("\n");
+    sb.append("    mediaStreams: ").append(toIndentedString(mediaStreams)).append("\n");
+    sb.append("    videoType: ").append(toIndentedString(videoType)).append("\n");
+    sb.append("    partCount: ").append(toIndentedString(partCount)).append("\n");
+    sb.append("    mediaSourceCount: ").append(toIndentedString(mediaSourceCount)).append("\n");
+    sb.append("    imageTags: ").append(toIndentedString(imageTags)).append("\n");
+    sb.append("    backdropImageTags: ").append(toIndentedString(backdropImageTags)).append("\n");
+    sb.append("    screenshotImageTags: ").append(toIndentedString(screenshotImageTags)).append("\n");
+    sb.append("    parentLogoImageTag: ").append(toIndentedString(parentLogoImageTag)).append("\n");
+    sb.append("    parentArtItemId: ").append(toIndentedString(parentArtItemId)).append("\n");
+    sb.append("    parentArtImageTag: ").append(toIndentedString(parentArtImageTag)).append("\n");
+    sb.append("    seriesThumbImageTag: ").append(toIndentedString(seriesThumbImageTag)).append("\n");
+    sb.append("    imageBlurHashes: ").append(toIndentedString(imageBlurHashes)).append("\n");
+    sb.append("    seriesStudio: ").append(toIndentedString(seriesStudio)).append("\n");
+    sb.append("    parentThumbItemId: ").append(toIndentedString(parentThumbItemId)).append("\n");
+    sb.append("    parentThumbImageTag: ").append(toIndentedString(parentThumbImageTag)).append("\n");
+    sb.append("    parentPrimaryImageItemId: ").append(toIndentedString(parentPrimaryImageItemId)).append("\n");
+    sb.append("    parentPrimaryImageTag: ").append(toIndentedString(parentPrimaryImageTag)).append("\n");
+    sb.append("    chapters: ").append(toIndentedString(chapters)).append("\n");
+    sb.append("    locationType: ").append(toIndentedString(locationType)).append("\n");
+    sb.append("    isoType: ").append(toIndentedString(isoType)).append("\n");
+    sb.append("    mediaType: ").append(toIndentedString(mediaType)).append("\n");
+    sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
+    sb.append("    lockedFields: ").append(toIndentedString(lockedFields)).append("\n");
+    sb.append("    trailerCount: ").append(toIndentedString(trailerCount)).append("\n");
+    sb.append("    movieCount: ").append(toIndentedString(movieCount)).append("\n");
+    sb.append("    seriesCount: ").append(toIndentedString(seriesCount)).append("\n");
+    sb.append("    programCount: ").append(toIndentedString(programCount)).append("\n");
+    sb.append("    episodeCount: ").append(toIndentedString(episodeCount)).append("\n");
+    sb.append("    songCount: ").append(toIndentedString(songCount)).append("\n");
+    sb.append("    albumCount: ").append(toIndentedString(albumCount)).append("\n");
+    sb.append("    artistCount: ").append(toIndentedString(artistCount)).append("\n");
+    sb.append("    musicVideoCount: ").append(toIndentedString(musicVideoCount)).append("\n");
+    sb.append("    lockData: ").append(toIndentedString(lockData)).append("\n");
+    sb.append("    width: ").append(toIndentedString(width)).append("\n");
+    sb.append("    height: ").append(toIndentedString(height)).append("\n");
+    sb.append("    cameraMake: ").append(toIndentedString(cameraMake)).append("\n");
+    sb.append("    cameraModel: ").append(toIndentedString(cameraModel)).append("\n");
+    sb.append("    software: ").append(toIndentedString(software)).append("\n");
+    sb.append("    exposureTime: ").append(toIndentedString(exposureTime)).append("\n");
+    sb.append("    focalLength: ").append(toIndentedString(focalLength)).append("\n");
+    sb.append("    imageOrientation: ").append(toIndentedString(imageOrientation)).append("\n");
+    sb.append("    aperture: ").append(toIndentedString(aperture)).append("\n");
+    sb.append("    shutterSpeed: ").append(toIndentedString(shutterSpeed)).append("\n");
+    sb.append("    latitude: ").append(toIndentedString(latitude)).append("\n");
+    sb.append("    longitude: ").append(toIndentedString(longitude)).append("\n");
+    sb.append("    altitude: ").append(toIndentedString(altitude)).append("\n");
+    sb.append("    isoSpeedRating: ").append(toIndentedString(isoSpeedRating)).append("\n");
+    sb.append("    seriesTimerId: ").append(toIndentedString(seriesTimerId)).append("\n");
+    sb.append("    programId: ").append(toIndentedString(programId)).append("\n");
+    sb.append("    channelPrimaryImageTag: ").append(toIndentedString(channelPrimaryImageTag)).append("\n");
+    sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
+    sb.append("    completionPercentage: ").append(toIndentedString(completionPercentage)).append("\n");
+    sb.append("    isRepeat: ").append(toIndentedString(isRepeat)).append("\n");
+    sb.append("    episodeTitle: ").append(toIndentedString(episodeTitle)).append("\n");
+    sb.append("    channelType: ").append(toIndentedString(channelType)).append("\n");
+    sb.append("    audio: ").append(toIndentedString(audio)).append("\n");
+    sb.append("    isMovie: ").append(toIndentedString(isMovie)).append("\n");
+    sb.append("    isSports: ").append(toIndentedString(isSports)).append("\n");
+    sb.append("    isSeries: ").append(toIndentedString(isSeries)).append("\n");
+    sb.append("    isLive: ").append(toIndentedString(isLive)).append("\n");
+    sb.append("    isNews: ").append(toIndentedString(isNews)).append("\n");
+    sb.append("    isKids: ").append(toIndentedString(isKids)).append("\n");
+    sb.append("    isPremiere: ").append(toIndentedString(isPremiere)).append("\n");
+    sb.append("    timerId: ").append(toIndentedString(timerId)).append("\n");
+    sb.append("    currentProgram: ").append(toIndentedString(currentProgram)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private BaseItemDto instance;
+
+    public Builder() {
+      this(new BaseItemDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getTimerId_JsonNullable() {
-        return timerId;
+    protected Builder(BaseItemDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMER_ID)
-    public void setTimerId_JsonNullable(JsonNullable<String> timerId) {
-        this.timerId = timerId;
+    public BaseItemDto.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public BaseItemDto.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public BaseItemDto.Builder originalTitle(String originalTitle) {
+      this.instance.originalTitle = JsonNullable.<String>of(originalTitle);
+      return this;
+    }
+    public BaseItemDto.Builder originalTitle(JsonNullable<String> originalTitle) {
+      this.instance.originalTitle = originalTitle;
+      return this;
+    }
+    public BaseItemDto.Builder serverId(String serverId) {
+      this.instance.serverId = JsonNullable.<String>of(serverId);
+      return this;
+    }
+    public BaseItemDto.Builder serverId(JsonNullable<String> serverId) {
+      this.instance.serverId = serverId;
+      return this;
+    }
+    public BaseItemDto.Builder id(UUID id) {
+      this.instance.id = id;
+      return this;
+    }
+    public BaseItemDto.Builder etag(String etag) {
+      this.instance.etag = JsonNullable.<String>of(etag);
+      return this;
+    }
+    public BaseItemDto.Builder etag(JsonNullable<String> etag) {
+      this.instance.etag = etag;
+      return this;
+    }
+    public BaseItemDto.Builder sourceType(String sourceType) {
+      this.instance.sourceType = JsonNullable.<String>of(sourceType);
+      return this;
+    }
+    public BaseItemDto.Builder sourceType(JsonNullable<String> sourceType) {
+      this.instance.sourceType = sourceType;
+      return this;
+    }
+    public BaseItemDto.Builder playlistItemId(String playlistItemId) {
+      this.instance.playlistItemId = JsonNullable.<String>of(playlistItemId);
+      return this;
+    }
+    public BaseItemDto.Builder playlistItemId(JsonNullable<String> playlistItemId) {
+      this.instance.playlistItemId = playlistItemId;
+      return this;
+    }
+    public BaseItemDto.Builder dateCreated(OffsetDateTime dateCreated) {
+      this.instance.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+      return this;
+    }
+    public BaseItemDto.Builder dateCreated(JsonNullable<OffsetDateTime> dateCreated) {
+      this.instance.dateCreated = dateCreated;
+      return this;
+    }
+    public BaseItemDto.Builder dateLastMediaAdded(OffsetDateTime dateLastMediaAdded) {
+      this.instance.dateLastMediaAdded = JsonNullable.<OffsetDateTime>of(dateLastMediaAdded);
+      return this;
+    }
+    public BaseItemDto.Builder dateLastMediaAdded(JsonNullable<OffsetDateTime> dateLastMediaAdded) {
+      this.instance.dateLastMediaAdded = dateLastMediaAdded;
+      return this;
+    }
+    public BaseItemDto.Builder extraType(String extraType) {
+      this.instance.extraType = JsonNullable.<String>of(extraType);
+      return this;
+    }
+    public BaseItemDto.Builder extraType(JsonNullable<String> extraType) {
+      this.instance.extraType = extraType;
+      return this;
+    }
+    public BaseItemDto.Builder airsBeforeSeasonNumber(Integer airsBeforeSeasonNumber) {
+      this.instance.airsBeforeSeasonNumber = JsonNullable.<Integer>of(airsBeforeSeasonNumber);
+      return this;
+    }
+    public BaseItemDto.Builder airsBeforeSeasonNumber(JsonNullable<Integer> airsBeforeSeasonNumber) {
+      this.instance.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
+      return this;
+    }
+    public BaseItemDto.Builder airsAfterSeasonNumber(Integer airsAfterSeasonNumber) {
+      this.instance.airsAfterSeasonNumber = JsonNullable.<Integer>of(airsAfterSeasonNumber);
+      return this;
+    }
+    public BaseItemDto.Builder airsAfterSeasonNumber(JsonNullable<Integer> airsAfterSeasonNumber) {
+      this.instance.airsAfterSeasonNumber = airsAfterSeasonNumber;
+      return this;
+    }
+    public BaseItemDto.Builder airsBeforeEpisodeNumber(Integer airsBeforeEpisodeNumber) {
+      this.instance.airsBeforeEpisodeNumber = JsonNullable.<Integer>of(airsBeforeEpisodeNumber);
+      return this;
+    }
+    public BaseItemDto.Builder airsBeforeEpisodeNumber(JsonNullable<Integer> airsBeforeEpisodeNumber) {
+      this.instance.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
+      return this;
+    }
+    public BaseItemDto.Builder canDelete(Boolean canDelete) {
+      this.instance.canDelete = JsonNullable.<Boolean>of(canDelete);
+      return this;
+    }
+    public BaseItemDto.Builder canDelete(JsonNullable<Boolean> canDelete) {
+      this.instance.canDelete = canDelete;
+      return this;
+    }
+    public BaseItemDto.Builder canDownload(Boolean canDownload) {
+      this.instance.canDownload = JsonNullable.<Boolean>of(canDownload);
+      return this;
+    }
+    public BaseItemDto.Builder canDownload(JsonNullable<Boolean> canDownload) {
+      this.instance.canDownload = canDownload;
+      return this;
+    }
+    public BaseItemDto.Builder hasSubtitles(Boolean hasSubtitles) {
+      this.instance.hasSubtitles = JsonNullable.<Boolean>of(hasSubtitles);
+      return this;
+    }
+    public BaseItemDto.Builder hasSubtitles(JsonNullable<Boolean> hasSubtitles) {
+      this.instance.hasSubtitles = hasSubtitles;
+      return this;
+    }
+    public BaseItemDto.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
+      this.instance.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
+      return this;
+    }
+    public BaseItemDto.Builder preferredMetadataLanguage(JsonNullable<String> preferredMetadataLanguage) {
+      this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
+      return this;
+    }
+    public BaseItemDto.Builder preferredMetadataCountryCode(String preferredMetadataCountryCode) {
+      this.instance.preferredMetadataCountryCode = JsonNullable.<String>of(preferredMetadataCountryCode);
+      return this;
+    }
+    public BaseItemDto.Builder preferredMetadataCountryCode(JsonNullable<String> preferredMetadataCountryCode) {
+      this.instance.preferredMetadataCountryCode = preferredMetadataCountryCode;
+      return this;
+    }
+    public BaseItemDto.Builder supportsSync(Boolean supportsSync) {
+      this.instance.supportsSync = JsonNullable.<Boolean>of(supportsSync);
+      return this;
+    }
+    public BaseItemDto.Builder supportsSync(JsonNullable<Boolean> supportsSync) {
+      this.instance.supportsSync = supportsSync;
+      return this;
+    }
+    public BaseItemDto.Builder container(String container) {
+      this.instance.container = JsonNullable.<String>of(container);
+      return this;
+    }
+    public BaseItemDto.Builder container(JsonNullable<String> container) {
+      this.instance.container = container;
+      return this;
+    }
+    public BaseItemDto.Builder sortName(String sortName) {
+      this.instance.sortName = JsonNullable.<String>of(sortName);
+      return this;
+    }
+    public BaseItemDto.Builder sortName(JsonNullable<String> sortName) {
+      this.instance.sortName = sortName;
+      return this;
+    }
+    public BaseItemDto.Builder forcedSortName(String forcedSortName) {
+      this.instance.forcedSortName = JsonNullable.<String>of(forcedSortName);
+      return this;
+    }
+    public BaseItemDto.Builder forcedSortName(JsonNullable<String> forcedSortName) {
+      this.instance.forcedSortName = forcedSortName;
+      return this;
+    }
+    public BaseItemDto.Builder video3DFormat(Video3DFormat video3DFormat) {
+      this.instance.video3DFormat = JsonNullable.<Video3DFormat>of(video3DFormat);
+      return this;
+    }
+    public BaseItemDto.Builder video3DFormat(JsonNullable<Video3DFormat> video3DFormat) {
+      this.instance.video3DFormat = video3DFormat;
+      return this;
+    }
+    public BaseItemDto.Builder premiereDate(OffsetDateTime premiereDate) {
+      this.instance.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+      return this;
+    }
+    public BaseItemDto.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
+      this.instance.premiereDate = premiereDate;
+      return this;
+    }
+    public BaseItemDto.Builder externalUrls(List<ExternalUrl> externalUrls) {
+      this.instance.externalUrls = JsonNullable.<List<ExternalUrl>>of(externalUrls);
+      return this;
+    }
+    public BaseItemDto.Builder externalUrls(JsonNullable<List<ExternalUrl>> externalUrls) {
+      this.instance.externalUrls = externalUrls;
+      return this;
+    }
+    public BaseItemDto.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
+      this.instance.mediaSources = JsonNullable.<List<MediaSourceInfo>>of(mediaSources);
+      return this;
+    }
+    public BaseItemDto.Builder mediaSources(JsonNullable<List<MediaSourceInfo>> mediaSources) {
+      this.instance.mediaSources = mediaSources;
+      return this;
+    }
+    public BaseItemDto.Builder criticRating(Float criticRating) {
+      this.instance.criticRating = JsonNullable.<Float>of(criticRating);
+      return this;
+    }
+    public BaseItemDto.Builder criticRating(JsonNullable<Float> criticRating) {
+      this.instance.criticRating = criticRating;
+      return this;
+    }
+    public BaseItemDto.Builder productionLocations(List<String> productionLocations) {
+      this.instance.productionLocations = JsonNullable.<List<String>>of(productionLocations);
+      return this;
+    }
+    public BaseItemDto.Builder productionLocations(JsonNullable<List<String>> productionLocations) {
+      this.instance.productionLocations = productionLocations;
+      return this;
+    }
+    public BaseItemDto.Builder path(String path) {
+      this.instance.path = JsonNullable.<String>of(path);
+      return this;
+    }
+    public BaseItemDto.Builder path(JsonNullable<String> path) {
+      this.instance.path = path;
+      return this;
+    }
+    public BaseItemDto.Builder enableMediaSourceDisplay(Boolean enableMediaSourceDisplay) {
+      this.instance.enableMediaSourceDisplay = JsonNullable.<Boolean>of(enableMediaSourceDisplay);
+      return this;
+    }
+    public BaseItemDto.Builder enableMediaSourceDisplay(JsonNullable<Boolean> enableMediaSourceDisplay) {
+      this.instance.enableMediaSourceDisplay = enableMediaSourceDisplay;
+      return this;
+    }
+    public BaseItemDto.Builder officialRating(String officialRating) {
+      this.instance.officialRating = JsonNullable.<String>of(officialRating);
+      return this;
+    }
+    public BaseItemDto.Builder officialRating(JsonNullable<String> officialRating) {
+      this.instance.officialRating = officialRating;
+      return this;
+    }
+    public BaseItemDto.Builder customRating(String customRating) {
+      this.instance.customRating = JsonNullable.<String>of(customRating);
+      return this;
+    }
+    public BaseItemDto.Builder customRating(JsonNullable<String> customRating) {
+      this.instance.customRating = customRating;
+      return this;
+    }
+    public BaseItemDto.Builder channelId(UUID channelId) {
+      this.instance.channelId = JsonNullable.<UUID>of(channelId);
+      return this;
+    }
+    public BaseItemDto.Builder channelId(JsonNullable<UUID> channelId) {
+      this.instance.channelId = channelId;
+      return this;
+    }
+    public BaseItemDto.Builder channelName(String channelName) {
+      this.instance.channelName = JsonNullable.<String>of(channelName);
+      return this;
+    }
+    public BaseItemDto.Builder channelName(JsonNullable<String> channelName) {
+      this.instance.channelName = channelName;
+      return this;
+    }
+    public BaseItemDto.Builder overview(String overview) {
+      this.instance.overview = JsonNullable.<String>of(overview);
+      return this;
+    }
+    public BaseItemDto.Builder overview(JsonNullable<String> overview) {
+      this.instance.overview = overview;
+      return this;
+    }
+    public BaseItemDto.Builder taglines(List<String> taglines) {
+      this.instance.taglines = JsonNullable.<List<String>>of(taglines);
+      return this;
+    }
+    public BaseItemDto.Builder taglines(JsonNullable<List<String>> taglines) {
+      this.instance.taglines = taglines;
+      return this;
+    }
+    public BaseItemDto.Builder genres(List<String> genres) {
+      this.instance.genres = JsonNullable.<List<String>>of(genres);
+      return this;
+    }
+    public BaseItemDto.Builder genres(JsonNullable<List<String>> genres) {
+      this.instance.genres = genres;
+      return this;
+    }
+    public BaseItemDto.Builder communityRating(Float communityRating) {
+      this.instance.communityRating = JsonNullable.<Float>of(communityRating);
+      return this;
+    }
+    public BaseItemDto.Builder communityRating(JsonNullable<Float> communityRating) {
+      this.instance.communityRating = communityRating;
+      return this;
+    }
+    public BaseItemDto.Builder cumulativeRunTimeTicks(Long cumulativeRunTimeTicks) {
+      this.instance.cumulativeRunTimeTicks = JsonNullable.<Long>of(cumulativeRunTimeTicks);
+      return this;
+    }
+    public BaseItemDto.Builder cumulativeRunTimeTicks(JsonNullable<Long> cumulativeRunTimeTicks) {
+      this.instance.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
+      return this;
+    }
+    public BaseItemDto.Builder runTimeTicks(Long runTimeTicks) {
+      this.instance.runTimeTicks = JsonNullable.<Long>of(runTimeTicks);
+      return this;
+    }
+    public BaseItemDto.Builder runTimeTicks(JsonNullable<Long> runTimeTicks) {
+      this.instance.runTimeTicks = runTimeTicks;
+      return this;
+    }
+    public BaseItemDto.Builder playAccess(PlayAccess playAccess) {
+      this.instance.playAccess = JsonNullable.<PlayAccess>of(playAccess);
+      return this;
+    }
+    public BaseItemDto.Builder playAccess(JsonNullable<PlayAccess> playAccess) {
+      this.instance.playAccess = playAccess;
+      return this;
+    }
+    public BaseItemDto.Builder aspectRatio(String aspectRatio) {
+      this.instance.aspectRatio = JsonNullable.<String>of(aspectRatio);
+      return this;
+    }
+    public BaseItemDto.Builder aspectRatio(JsonNullable<String> aspectRatio) {
+      this.instance.aspectRatio = aspectRatio;
+      return this;
+    }
+    public BaseItemDto.Builder productionYear(Integer productionYear) {
+      this.instance.productionYear = JsonNullable.<Integer>of(productionYear);
+      return this;
+    }
+    public BaseItemDto.Builder productionYear(JsonNullable<Integer> productionYear) {
+      this.instance.productionYear = productionYear;
+      return this;
+    }
+    public BaseItemDto.Builder isPlaceHolder(Boolean isPlaceHolder) {
+      this.instance.isPlaceHolder = JsonNullable.<Boolean>of(isPlaceHolder);
+      return this;
+    }
+    public BaseItemDto.Builder isPlaceHolder(JsonNullable<Boolean> isPlaceHolder) {
+      this.instance.isPlaceHolder = isPlaceHolder;
+      return this;
+    }
+    public BaseItemDto.Builder number(String number) {
+      this.instance.number = JsonNullable.<String>of(number);
+      return this;
+    }
+    public BaseItemDto.Builder number(JsonNullable<String> number) {
+      this.instance.number = number;
+      return this;
+    }
+    public BaseItemDto.Builder channelNumber(String channelNumber) {
+      this.instance.channelNumber = JsonNullable.<String>of(channelNumber);
+      return this;
+    }
+    public BaseItemDto.Builder channelNumber(JsonNullable<String> channelNumber) {
+      this.instance.channelNumber = channelNumber;
+      return this;
+    }
+    public BaseItemDto.Builder indexNumber(Integer indexNumber) {
+      this.instance.indexNumber = JsonNullable.<Integer>of(indexNumber);
+      return this;
+    }
+    public BaseItemDto.Builder indexNumber(JsonNullable<Integer> indexNumber) {
+      this.instance.indexNumber = indexNumber;
+      return this;
+    }
+    public BaseItemDto.Builder indexNumberEnd(Integer indexNumberEnd) {
+      this.instance.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+      return this;
+    }
+    public BaseItemDto.Builder indexNumberEnd(JsonNullable<Integer> indexNumberEnd) {
+      this.instance.indexNumberEnd = indexNumberEnd;
+      return this;
+    }
+    public BaseItemDto.Builder parentIndexNumber(Integer parentIndexNumber) {
+      this.instance.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+      return this;
+    }
+    public BaseItemDto.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
+      this.instance.parentIndexNumber = parentIndexNumber;
+      return this;
+    }
+    public BaseItemDto.Builder remoteTrailers(List<MediaUrl> remoteTrailers) {
+      this.instance.remoteTrailers = JsonNullable.<List<MediaUrl>>of(remoteTrailers);
+      return this;
+    }
+    public BaseItemDto.Builder remoteTrailers(JsonNullable<List<MediaUrl>> remoteTrailers) {
+      this.instance.remoteTrailers = remoteTrailers;
+      return this;
+    }
+    public BaseItemDto.Builder providerIds(Map<String, String> providerIds) {
+      this.instance.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+      return this;
+    }
+    public BaseItemDto.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
+      this.instance.providerIds = providerIds;
+      return this;
+    }
+    public BaseItemDto.Builder isHD(Boolean isHD) {
+      this.instance.isHD = JsonNullable.<Boolean>of(isHD);
+      return this;
+    }
+    public BaseItemDto.Builder isHD(JsonNullable<Boolean> isHD) {
+      this.instance.isHD = isHD;
+      return this;
+    }
+    public BaseItemDto.Builder isFolder(Boolean isFolder) {
+      this.instance.isFolder = JsonNullable.<Boolean>of(isFolder);
+      return this;
+    }
+    public BaseItemDto.Builder isFolder(JsonNullable<Boolean> isFolder) {
+      this.instance.isFolder = isFolder;
+      return this;
+    }
+    public BaseItemDto.Builder parentId(UUID parentId) {
+      this.instance.parentId = JsonNullable.<UUID>of(parentId);
+      return this;
+    }
+    public BaseItemDto.Builder parentId(JsonNullable<UUID> parentId) {
+      this.instance.parentId = parentId;
+      return this;
+    }
+    public BaseItemDto.Builder type(BaseItemKind type) {
+      this.instance.type = type;
+      return this;
+    }
+    public BaseItemDto.Builder people(List<BaseItemPerson> people) {
+      this.instance.people = JsonNullable.<List<BaseItemPerson>>of(people);
+      return this;
+    }
+    public BaseItemDto.Builder people(JsonNullable<List<BaseItemPerson>> people) {
+      this.instance.people = people;
+      return this;
+    }
+    public BaseItemDto.Builder studios(List<NameGuidPair> studios) {
+      this.instance.studios = JsonNullable.<List<NameGuidPair>>of(studios);
+      return this;
+    }
+    public BaseItemDto.Builder studios(JsonNullable<List<NameGuidPair>> studios) {
+      this.instance.studios = studios;
+      return this;
+    }
+    public BaseItemDto.Builder genreItems(List<NameGuidPair> genreItems) {
+      this.instance.genreItems = JsonNullable.<List<NameGuidPair>>of(genreItems);
+      return this;
+    }
+    public BaseItemDto.Builder genreItems(JsonNullable<List<NameGuidPair>> genreItems) {
+      this.instance.genreItems = genreItems;
+      return this;
+    }
+    public BaseItemDto.Builder parentLogoItemId(UUID parentLogoItemId) {
+      this.instance.parentLogoItemId = JsonNullable.<UUID>of(parentLogoItemId);
+      return this;
+    }
+    public BaseItemDto.Builder parentLogoItemId(JsonNullable<UUID> parentLogoItemId) {
+      this.instance.parentLogoItemId = parentLogoItemId;
+      return this;
+    }
+    public BaseItemDto.Builder parentBackdropItemId(UUID parentBackdropItemId) {
+      this.instance.parentBackdropItemId = JsonNullable.<UUID>of(parentBackdropItemId);
+      return this;
+    }
+    public BaseItemDto.Builder parentBackdropItemId(JsonNullable<UUID> parentBackdropItemId) {
+      this.instance.parentBackdropItemId = parentBackdropItemId;
+      return this;
+    }
+    public BaseItemDto.Builder parentBackdropImageTags(List<String> parentBackdropImageTags) {
+      this.instance.parentBackdropImageTags = JsonNullable.<List<String>>of(parentBackdropImageTags);
+      return this;
+    }
+    public BaseItemDto.Builder parentBackdropImageTags(JsonNullable<List<String>> parentBackdropImageTags) {
+      this.instance.parentBackdropImageTags = parentBackdropImageTags;
+      return this;
+    }
+    public BaseItemDto.Builder localTrailerCount(Integer localTrailerCount) {
+      this.instance.localTrailerCount = JsonNullable.<Integer>of(localTrailerCount);
+      return this;
+    }
+    public BaseItemDto.Builder localTrailerCount(JsonNullable<Integer> localTrailerCount) {
+      this.instance.localTrailerCount = localTrailerCount;
+      return this;
+    }
+    public BaseItemDto.Builder userData(UserItemDataDto userData) {
+      this.instance.userData = JsonNullable.<UserItemDataDto>of(userData);
+      return this;
+    }
+    public BaseItemDto.Builder userData(JsonNullable<UserItemDataDto> userData) {
+      this.instance.userData = userData;
+      return this;
+    }
+    public BaseItemDto.Builder recursiveItemCount(Integer recursiveItemCount) {
+      this.instance.recursiveItemCount = JsonNullable.<Integer>of(recursiveItemCount);
+      return this;
+    }
+    public BaseItemDto.Builder recursiveItemCount(JsonNullable<Integer> recursiveItemCount) {
+      this.instance.recursiveItemCount = recursiveItemCount;
+      return this;
+    }
+    public BaseItemDto.Builder childCount(Integer childCount) {
+      this.instance.childCount = JsonNullable.<Integer>of(childCount);
+      return this;
+    }
+    public BaseItemDto.Builder childCount(JsonNullable<Integer> childCount) {
+      this.instance.childCount = childCount;
+      return this;
+    }
+    public BaseItemDto.Builder seriesName(String seriesName) {
+      this.instance.seriesName = JsonNullable.<String>of(seriesName);
+      return this;
+    }
+    public BaseItemDto.Builder seriesName(JsonNullable<String> seriesName) {
+      this.instance.seriesName = seriesName;
+      return this;
+    }
+    public BaseItemDto.Builder seriesId(UUID seriesId) {
+      this.instance.seriesId = JsonNullable.<UUID>of(seriesId);
+      return this;
+    }
+    public BaseItemDto.Builder seriesId(JsonNullable<UUID> seriesId) {
+      this.instance.seriesId = seriesId;
+      return this;
+    }
+    public BaseItemDto.Builder seasonId(UUID seasonId) {
+      this.instance.seasonId = JsonNullable.<UUID>of(seasonId);
+      return this;
+    }
+    public BaseItemDto.Builder seasonId(JsonNullable<UUID> seasonId) {
+      this.instance.seasonId = seasonId;
+      return this;
+    }
+    public BaseItemDto.Builder specialFeatureCount(Integer specialFeatureCount) {
+      this.instance.specialFeatureCount = JsonNullable.<Integer>of(specialFeatureCount);
+      return this;
+    }
+    public BaseItemDto.Builder specialFeatureCount(JsonNullable<Integer> specialFeatureCount) {
+      this.instance.specialFeatureCount = specialFeatureCount;
+      return this;
+    }
+    public BaseItemDto.Builder displayPreferencesId(String displayPreferencesId) {
+      this.instance.displayPreferencesId = JsonNullable.<String>of(displayPreferencesId);
+      return this;
+    }
+    public BaseItemDto.Builder displayPreferencesId(JsonNullable<String> displayPreferencesId) {
+      this.instance.displayPreferencesId = displayPreferencesId;
+      return this;
+    }
+    public BaseItemDto.Builder status(String status) {
+      this.instance.status = JsonNullable.<String>of(status);
+      return this;
+    }
+    public BaseItemDto.Builder status(JsonNullable<String> status) {
+      this.instance.status = status;
+      return this;
+    }
+    public BaseItemDto.Builder airTime(String airTime) {
+      this.instance.airTime = JsonNullable.<String>of(airTime);
+      return this;
+    }
+    public BaseItemDto.Builder airTime(JsonNullable<String> airTime) {
+      this.instance.airTime = airTime;
+      return this;
+    }
+    public BaseItemDto.Builder airDays(List<DayOfWeek> airDays) {
+      this.instance.airDays = JsonNullable.<List<DayOfWeek>>of(airDays);
+      return this;
+    }
+    public BaseItemDto.Builder airDays(JsonNullable<List<DayOfWeek>> airDays) {
+      this.instance.airDays = airDays;
+      return this;
+    }
+    public BaseItemDto.Builder tags(List<String> tags) {
+      this.instance.tags = JsonNullable.<List<String>>of(tags);
+      return this;
+    }
+    public BaseItemDto.Builder tags(JsonNullable<List<String>> tags) {
+      this.instance.tags = tags;
+      return this;
+    }
+    public BaseItemDto.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
+      this.instance.primaryImageAspectRatio = JsonNullable.<Double>of(primaryImageAspectRatio);
+      return this;
+    }
+    public BaseItemDto.Builder primaryImageAspectRatio(JsonNullable<Double> primaryImageAspectRatio) {
+      this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
+      return this;
+    }
+    public BaseItemDto.Builder artists(List<String> artists) {
+      this.instance.artists = JsonNullable.<List<String>>of(artists);
+      return this;
+    }
+    public BaseItemDto.Builder artists(JsonNullable<List<String>> artists) {
+      this.instance.artists = artists;
+      return this;
+    }
+    public BaseItemDto.Builder artistItems(List<NameGuidPair> artistItems) {
+      this.instance.artistItems = JsonNullable.<List<NameGuidPair>>of(artistItems);
+      return this;
+    }
+    public BaseItemDto.Builder artistItems(JsonNullable<List<NameGuidPair>> artistItems) {
+      this.instance.artistItems = artistItems;
+      return this;
+    }
+    public BaseItemDto.Builder album(String album) {
+      this.instance.album = JsonNullable.<String>of(album);
+      return this;
+    }
+    public BaseItemDto.Builder album(JsonNullable<String> album) {
+      this.instance.album = album;
+      return this;
+    }
+    public BaseItemDto.Builder collectionType(String collectionType) {
+      this.instance.collectionType = JsonNullable.<String>of(collectionType);
+      return this;
+    }
+    public BaseItemDto.Builder collectionType(JsonNullable<String> collectionType) {
+      this.instance.collectionType = collectionType;
+      return this;
+    }
+    public BaseItemDto.Builder displayOrder(String displayOrder) {
+      this.instance.displayOrder = JsonNullable.<String>of(displayOrder);
+      return this;
+    }
+    public BaseItemDto.Builder displayOrder(JsonNullable<String> displayOrder) {
+      this.instance.displayOrder = displayOrder;
+      return this;
+    }
+    public BaseItemDto.Builder albumId(UUID albumId) {
+      this.instance.albumId = JsonNullable.<UUID>of(albumId);
+      return this;
+    }
+    public BaseItemDto.Builder albumId(JsonNullable<UUID> albumId) {
+      this.instance.albumId = albumId;
+      return this;
+    }
+    public BaseItemDto.Builder albumPrimaryImageTag(String albumPrimaryImageTag) {
+      this.instance.albumPrimaryImageTag = JsonNullable.<String>of(albumPrimaryImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder albumPrimaryImageTag(JsonNullable<String> albumPrimaryImageTag) {
+      this.instance.albumPrimaryImageTag = albumPrimaryImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder seriesPrimaryImageTag(String seriesPrimaryImageTag) {
+      this.instance.seriesPrimaryImageTag = JsonNullable.<String>of(seriesPrimaryImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder seriesPrimaryImageTag(JsonNullable<String> seriesPrimaryImageTag) {
+      this.instance.seriesPrimaryImageTag = seriesPrimaryImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder albumArtist(String albumArtist) {
+      this.instance.albumArtist = JsonNullable.<String>of(albumArtist);
+      return this;
+    }
+    public BaseItemDto.Builder albumArtist(JsonNullable<String> albumArtist) {
+      this.instance.albumArtist = albumArtist;
+      return this;
+    }
+    public BaseItemDto.Builder albumArtists(List<NameGuidPair> albumArtists) {
+      this.instance.albumArtists = JsonNullable.<List<NameGuidPair>>of(albumArtists);
+      return this;
+    }
+    public BaseItemDto.Builder albumArtists(JsonNullable<List<NameGuidPair>> albumArtists) {
+      this.instance.albumArtists = albumArtists;
+      return this;
+    }
+    public BaseItemDto.Builder seasonName(String seasonName) {
+      this.instance.seasonName = JsonNullable.<String>of(seasonName);
+      return this;
+    }
+    public BaseItemDto.Builder seasonName(JsonNullable<String> seasonName) {
+      this.instance.seasonName = seasonName;
+      return this;
+    }
+    public BaseItemDto.Builder mediaStreams(List<MediaStream> mediaStreams) {
+      this.instance.mediaStreams = JsonNullable.<List<MediaStream>>of(mediaStreams);
+      return this;
+    }
+    public BaseItemDto.Builder mediaStreams(JsonNullable<List<MediaStream>> mediaStreams) {
+      this.instance.mediaStreams = mediaStreams;
+      return this;
+    }
+    public BaseItemDto.Builder videoType(VideoType videoType) {
+      this.instance.videoType = JsonNullable.<VideoType>of(videoType);
+      return this;
+    }
+    public BaseItemDto.Builder videoType(JsonNullable<VideoType> videoType) {
+      this.instance.videoType = videoType;
+      return this;
+    }
+    public BaseItemDto.Builder partCount(Integer partCount) {
+      this.instance.partCount = JsonNullable.<Integer>of(partCount);
+      return this;
+    }
+    public BaseItemDto.Builder partCount(JsonNullable<Integer> partCount) {
+      this.instance.partCount = partCount;
+      return this;
+    }
+    public BaseItemDto.Builder mediaSourceCount(Integer mediaSourceCount) {
+      this.instance.mediaSourceCount = JsonNullable.<Integer>of(mediaSourceCount);
+      return this;
+    }
+    public BaseItemDto.Builder mediaSourceCount(JsonNullable<Integer> mediaSourceCount) {
+      this.instance.mediaSourceCount = mediaSourceCount;
+      return this;
+    }
+    public BaseItemDto.Builder imageTags(Map<String, String> imageTags) {
+      this.instance.imageTags = JsonNullable.<Map<String, String>>of(imageTags);
+      return this;
+    }
+    public BaseItemDto.Builder imageTags(JsonNullable<Map<String, String>> imageTags) {
+      this.instance.imageTags = imageTags;
+      return this;
+    }
+    public BaseItemDto.Builder backdropImageTags(List<String> backdropImageTags) {
+      this.instance.backdropImageTags = JsonNullable.<List<String>>of(backdropImageTags);
+      return this;
+    }
+    public BaseItemDto.Builder backdropImageTags(JsonNullable<List<String>> backdropImageTags) {
+      this.instance.backdropImageTags = backdropImageTags;
+      return this;
+    }
+    public BaseItemDto.Builder screenshotImageTags(List<String> screenshotImageTags) {
+      this.instance.screenshotImageTags = JsonNullable.<List<String>>of(screenshotImageTags);
+      return this;
+    }
+    public BaseItemDto.Builder screenshotImageTags(JsonNullable<List<String>> screenshotImageTags) {
+      this.instance.screenshotImageTags = screenshotImageTags;
+      return this;
+    }
+    public BaseItemDto.Builder parentLogoImageTag(String parentLogoImageTag) {
+      this.instance.parentLogoImageTag = JsonNullable.<String>of(parentLogoImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder parentLogoImageTag(JsonNullable<String> parentLogoImageTag) {
+      this.instance.parentLogoImageTag = parentLogoImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder parentArtItemId(UUID parentArtItemId) {
+      this.instance.parentArtItemId = JsonNullable.<UUID>of(parentArtItemId);
+      return this;
+    }
+    public BaseItemDto.Builder parentArtItemId(JsonNullable<UUID> parentArtItemId) {
+      this.instance.parentArtItemId = parentArtItemId;
+      return this;
+    }
+    public BaseItemDto.Builder parentArtImageTag(String parentArtImageTag) {
+      this.instance.parentArtImageTag = JsonNullable.<String>of(parentArtImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder parentArtImageTag(JsonNullable<String> parentArtImageTag) {
+      this.instance.parentArtImageTag = parentArtImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder seriesThumbImageTag(String seriesThumbImageTag) {
+      this.instance.seriesThumbImageTag = JsonNullable.<String>of(seriesThumbImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder seriesThumbImageTag(JsonNullable<String> seriesThumbImageTag) {
+      this.instance.seriesThumbImageTag = seriesThumbImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder imageBlurHashes(BaseItemDtoImageBlurHashes imageBlurHashes) {
+      this.instance.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes>of(imageBlurHashes);
+      return this;
+    }
+    public BaseItemDto.Builder imageBlurHashes(JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes) {
+      this.instance.imageBlurHashes = imageBlurHashes;
+      return this;
+    }
+    public BaseItemDto.Builder seriesStudio(String seriesStudio) {
+      this.instance.seriesStudio = JsonNullable.<String>of(seriesStudio);
+      return this;
+    }
+    public BaseItemDto.Builder seriesStudio(JsonNullable<String> seriesStudio) {
+      this.instance.seriesStudio = seriesStudio;
+      return this;
+    }
+    public BaseItemDto.Builder parentThumbItemId(UUID parentThumbItemId) {
+      this.instance.parentThumbItemId = JsonNullable.<UUID>of(parentThumbItemId);
+      return this;
+    }
+    public BaseItemDto.Builder parentThumbItemId(JsonNullable<UUID> parentThumbItemId) {
+      this.instance.parentThumbItemId = parentThumbItemId;
+      return this;
+    }
+    public BaseItemDto.Builder parentThumbImageTag(String parentThumbImageTag) {
+      this.instance.parentThumbImageTag = JsonNullable.<String>of(parentThumbImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder parentThumbImageTag(JsonNullable<String> parentThumbImageTag) {
+      this.instance.parentThumbImageTag = parentThumbImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder parentPrimaryImageItemId(String parentPrimaryImageItemId) {
+      this.instance.parentPrimaryImageItemId = JsonNullable.<String>of(parentPrimaryImageItemId);
+      return this;
+    }
+    public BaseItemDto.Builder parentPrimaryImageItemId(JsonNullable<String> parentPrimaryImageItemId) {
+      this.instance.parentPrimaryImageItemId = parentPrimaryImageItemId;
+      return this;
+    }
+    public BaseItemDto.Builder parentPrimaryImageTag(String parentPrimaryImageTag) {
+      this.instance.parentPrimaryImageTag = JsonNullable.<String>of(parentPrimaryImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder parentPrimaryImageTag(JsonNullable<String> parentPrimaryImageTag) {
+      this.instance.parentPrimaryImageTag = parentPrimaryImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder chapters(List<ChapterInfo> chapters) {
+      this.instance.chapters = JsonNullable.<List<ChapterInfo>>of(chapters);
+      return this;
+    }
+    public BaseItemDto.Builder chapters(JsonNullable<List<ChapterInfo>> chapters) {
+      this.instance.chapters = chapters;
+      return this;
+    }
+    public BaseItemDto.Builder locationType(LocationType locationType) {
+      this.instance.locationType = JsonNullable.<LocationType>of(locationType);
+      return this;
+    }
+    public BaseItemDto.Builder locationType(JsonNullable<LocationType> locationType) {
+      this.instance.locationType = locationType;
+      return this;
+    }
+    public BaseItemDto.Builder isoType(IsoType isoType) {
+      this.instance.isoType = JsonNullable.<IsoType>of(isoType);
+      return this;
+    }
+    public BaseItemDto.Builder isoType(JsonNullable<IsoType> isoType) {
+      this.instance.isoType = isoType;
+      return this;
+    }
+    public BaseItemDto.Builder mediaType(String mediaType) {
+      this.instance.mediaType = JsonNullable.<String>of(mediaType);
+      return this;
+    }
+    public BaseItemDto.Builder mediaType(JsonNullable<String> mediaType) {
+      this.instance.mediaType = mediaType;
+      return this;
+    }
+    public BaseItemDto.Builder endDate(OffsetDateTime endDate) {
+      this.instance.endDate = JsonNullable.<OffsetDateTime>of(endDate);
+      return this;
+    }
+    public BaseItemDto.Builder endDate(JsonNullable<OffsetDateTime> endDate) {
+      this.instance.endDate = endDate;
+      return this;
+    }
+    public BaseItemDto.Builder lockedFields(List<MetadataField> lockedFields) {
+      this.instance.lockedFields = JsonNullable.<List<MetadataField>>of(lockedFields);
+      return this;
+    }
+    public BaseItemDto.Builder lockedFields(JsonNullable<List<MetadataField>> lockedFields) {
+      this.instance.lockedFields = lockedFields;
+      return this;
+    }
+    public BaseItemDto.Builder trailerCount(Integer trailerCount) {
+      this.instance.trailerCount = JsonNullable.<Integer>of(trailerCount);
+      return this;
+    }
+    public BaseItemDto.Builder trailerCount(JsonNullable<Integer> trailerCount) {
+      this.instance.trailerCount = trailerCount;
+      return this;
+    }
+    public BaseItemDto.Builder movieCount(Integer movieCount) {
+      this.instance.movieCount = JsonNullable.<Integer>of(movieCount);
+      return this;
+    }
+    public BaseItemDto.Builder movieCount(JsonNullable<Integer> movieCount) {
+      this.instance.movieCount = movieCount;
+      return this;
+    }
+    public BaseItemDto.Builder seriesCount(Integer seriesCount) {
+      this.instance.seriesCount = JsonNullable.<Integer>of(seriesCount);
+      return this;
+    }
+    public BaseItemDto.Builder seriesCount(JsonNullable<Integer> seriesCount) {
+      this.instance.seriesCount = seriesCount;
+      return this;
+    }
+    public BaseItemDto.Builder programCount(Integer programCount) {
+      this.instance.programCount = JsonNullable.<Integer>of(programCount);
+      return this;
+    }
+    public BaseItemDto.Builder programCount(JsonNullable<Integer> programCount) {
+      this.instance.programCount = programCount;
+      return this;
+    }
+    public BaseItemDto.Builder episodeCount(Integer episodeCount) {
+      this.instance.episodeCount = JsonNullable.<Integer>of(episodeCount);
+      return this;
+    }
+    public BaseItemDto.Builder episodeCount(JsonNullable<Integer> episodeCount) {
+      this.instance.episodeCount = episodeCount;
+      return this;
+    }
+    public BaseItemDto.Builder songCount(Integer songCount) {
+      this.instance.songCount = JsonNullable.<Integer>of(songCount);
+      return this;
+    }
+    public BaseItemDto.Builder songCount(JsonNullable<Integer> songCount) {
+      this.instance.songCount = songCount;
+      return this;
+    }
+    public BaseItemDto.Builder albumCount(Integer albumCount) {
+      this.instance.albumCount = JsonNullable.<Integer>of(albumCount);
+      return this;
+    }
+    public BaseItemDto.Builder albumCount(JsonNullable<Integer> albumCount) {
+      this.instance.albumCount = albumCount;
+      return this;
+    }
+    public BaseItemDto.Builder artistCount(Integer artistCount) {
+      this.instance.artistCount = JsonNullable.<Integer>of(artistCount);
+      return this;
+    }
+    public BaseItemDto.Builder artistCount(JsonNullable<Integer> artistCount) {
+      this.instance.artistCount = artistCount;
+      return this;
+    }
+    public BaseItemDto.Builder musicVideoCount(Integer musicVideoCount) {
+      this.instance.musicVideoCount = JsonNullable.<Integer>of(musicVideoCount);
+      return this;
+    }
+    public BaseItemDto.Builder musicVideoCount(JsonNullable<Integer> musicVideoCount) {
+      this.instance.musicVideoCount = musicVideoCount;
+      return this;
+    }
+    public BaseItemDto.Builder lockData(Boolean lockData) {
+      this.instance.lockData = JsonNullable.<Boolean>of(lockData);
+      return this;
+    }
+    public BaseItemDto.Builder lockData(JsonNullable<Boolean> lockData) {
+      this.instance.lockData = lockData;
+      return this;
+    }
+    public BaseItemDto.Builder width(Integer width) {
+      this.instance.width = JsonNullable.<Integer>of(width);
+      return this;
+    }
+    public BaseItemDto.Builder width(JsonNullable<Integer> width) {
+      this.instance.width = width;
+      return this;
+    }
+    public BaseItemDto.Builder height(Integer height) {
+      this.instance.height = JsonNullable.<Integer>of(height);
+      return this;
+    }
+    public BaseItemDto.Builder height(JsonNullable<Integer> height) {
+      this.instance.height = height;
+      return this;
+    }
+    public BaseItemDto.Builder cameraMake(String cameraMake) {
+      this.instance.cameraMake = JsonNullable.<String>of(cameraMake);
+      return this;
+    }
+    public BaseItemDto.Builder cameraMake(JsonNullable<String> cameraMake) {
+      this.instance.cameraMake = cameraMake;
+      return this;
+    }
+    public BaseItemDto.Builder cameraModel(String cameraModel) {
+      this.instance.cameraModel = JsonNullable.<String>of(cameraModel);
+      return this;
+    }
+    public BaseItemDto.Builder cameraModel(JsonNullable<String> cameraModel) {
+      this.instance.cameraModel = cameraModel;
+      return this;
+    }
+    public BaseItemDto.Builder software(String software) {
+      this.instance.software = JsonNullable.<String>of(software);
+      return this;
+    }
+    public BaseItemDto.Builder software(JsonNullable<String> software) {
+      this.instance.software = software;
+      return this;
+    }
+    public BaseItemDto.Builder exposureTime(Double exposureTime) {
+      this.instance.exposureTime = JsonNullable.<Double>of(exposureTime);
+      return this;
+    }
+    public BaseItemDto.Builder exposureTime(JsonNullable<Double> exposureTime) {
+      this.instance.exposureTime = exposureTime;
+      return this;
+    }
+    public BaseItemDto.Builder focalLength(Double focalLength) {
+      this.instance.focalLength = JsonNullable.<Double>of(focalLength);
+      return this;
+    }
+    public BaseItemDto.Builder focalLength(JsonNullable<Double> focalLength) {
+      this.instance.focalLength = focalLength;
+      return this;
+    }
+    public BaseItemDto.Builder imageOrientation(ImageOrientation imageOrientation) {
+      this.instance.imageOrientation = JsonNullable.<ImageOrientation>of(imageOrientation);
+      return this;
+    }
+    public BaseItemDto.Builder imageOrientation(JsonNullable<ImageOrientation> imageOrientation) {
+      this.instance.imageOrientation = imageOrientation;
+      return this;
+    }
+    public BaseItemDto.Builder aperture(Double aperture) {
+      this.instance.aperture = JsonNullable.<Double>of(aperture);
+      return this;
+    }
+    public BaseItemDto.Builder aperture(JsonNullable<Double> aperture) {
+      this.instance.aperture = aperture;
+      return this;
+    }
+    public BaseItemDto.Builder shutterSpeed(Double shutterSpeed) {
+      this.instance.shutterSpeed = JsonNullable.<Double>of(shutterSpeed);
+      return this;
+    }
+    public BaseItemDto.Builder shutterSpeed(JsonNullable<Double> shutterSpeed) {
+      this.instance.shutterSpeed = shutterSpeed;
+      return this;
+    }
+    public BaseItemDto.Builder latitude(Double latitude) {
+      this.instance.latitude = JsonNullable.<Double>of(latitude);
+      return this;
+    }
+    public BaseItemDto.Builder latitude(JsonNullable<Double> latitude) {
+      this.instance.latitude = latitude;
+      return this;
+    }
+    public BaseItemDto.Builder longitude(Double longitude) {
+      this.instance.longitude = JsonNullable.<Double>of(longitude);
+      return this;
+    }
+    public BaseItemDto.Builder longitude(JsonNullable<Double> longitude) {
+      this.instance.longitude = longitude;
+      return this;
+    }
+    public BaseItemDto.Builder altitude(Double altitude) {
+      this.instance.altitude = JsonNullable.<Double>of(altitude);
+      return this;
+    }
+    public BaseItemDto.Builder altitude(JsonNullable<Double> altitude) {
+      this.instance.altitude = altitude;
+      return this;
+    }
+    public BaseItemDto.Builder isoSpeedRating(Integer isoSpeedRating) {
+      this.instance.isoSpeedRating = JsonNullable.<Integer>of(isoSpeedRating);
+      return this;
+    }
+    public BaseItemDto.Builder isoSpeedRating(JsonNullable<Integer> isoSpeedRating) {
+      this.instance.isoSpeedRating = isoSpeedRating;
+      return this;
+    }
+    public BaseItemDto.Builder seriesTimerId(String seriesTimerId) {
+      this.instance.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+      return this;
+    }
+    public BaseItemDto.Builder seriesTimerId(JsonNullable<String> seriesTimerId) {
+      this.instance.seriesTimerId = seriesTimerId;
+      return this;
+    }
+    public BaseItemDto.Builder programId(String programId) {
+      this.instance.programId = JsonNullable.<String>of(programId);
+      return this;
+    }
+    public BaseItemDto.Builder programId(JsonNullable<String> programId) {
+      this.instance.programId = programId;
+      return this;
+    }
+    public BaseItemDto.Builder channelPrimaryImageTag(String channelPrimaryImageTag) {
+      this.instance.channelPrimaryImageTag = JsonNullable.<String>of(channelPrimaryImageTag);
+      return this;
+    }
+    public BaseItemDto.Builder channelPrimaryImageTag(JsonNullable<String> channelPrimaryImageTag) {
+      this.instance.channelPrimaryImageTag = channelPrimaryImageTag;
+      return this;
+    }
+    public BaseItemDto.Builder startDate(OffsetDateTime startDate) {
+      this.instance.startDate = JsonNullable.<OffsetDateTime>of(startDate);
+      return this;
+    }
+    public BaseItemDto.Builder startDate(JsonNullable<OffsetDateTime> startDate) {
+      this.instance.startDate = startDate;
+      return this;
+    }
+    public BaseItemDto.Builder completionPercentage(Double completionPercentage) {
+      this.instance.completionPercentage = JsonNullable.<Double>of(completionPercentage);
+      return this;
+    }
+    public BaseItemDto.Builder completionPercentage(JsonNullable<Double> completionPercentage) {
+      this.instance.completionPercentage = completionPercentage;
+      return this;
+    }
+    public BaseItemDto.Builder isRepeat(Boolean isRepeat) {
+      this.instance.isRepeat = JsonNullable.<Boolean>of(isRepeat);
+      return this;
+    }
+    public BaseItemDto.Builder isRepeat(JsonNullable<Boolean> isRepeat) {
+      this.instance.isRepeat = isRepeat;
+      return this;
+    }
+    public BaseItemDto.Builder episodeTitle(String episodeTitle) {
+      this.instance.episodeTitle = JsonNullable.<String>of(episodeTitle);
+      return this;
+    }
+    public BaseItemDto.Builder episodeTitle(JsonNullable<String> episodeTitle) {
+      this.instance.episodeTitle = episodeTitle;
+      return this;
+    }
+    public BaseItemDto.Builder channelType(ChannelType channelType) {
+      this.instance.channelType = JsonNullable.<ChannelType>of(channelType);
+      return this;
+    }
+    public BaseItemDto.Builder channelType(JsonNullable<ChannelType> channelType) {
+      this.instance.channelType = channelType;
+      return this;
+    }
+    public BaseItemDto.Builder audio(ProgramAudio audio) {
+      this.instance.audio = JsonNullable.<ProgramAudio>of(audio);
+      return this;
+    }
+    public BaseItemDto.Builder audio(JsonNullable<ProgramAudio> audio) {
+      this.instance.audio = audio;
+      return this;
+    }
+    public BaseItemDto.Builder isMovie(Boolean isMovie) {
+      this.instance.isMovie = JsonNullable.<Boolean>of(isMovie);
+      return this;
+    }
+    public BaseItemDto.Builder isMovie(JsonNullable<Boolean> isMovie) {
+      this.instance.isMovie = isMovie;
+      return this;
+    }
+    public BaseItemDto.Builder isSports(Boolean isSports) {
+      this.instance.isSports = JsonNullable.<Boolean>of(isSports);
+      return this;
+    }
+    public BaseItemDto.Builder isSports(JsonNullable<Boolean> isSports) {
+      this.instance.isSports = isSports;
+      return this;
+    }
+    public BaseItemDto.Builder isSeries(Boolean isSeries) {
+      this.instance.isSeries = JsonNullable.<Boolean>of(isSeries);
+      return this;
+    }
+    public BaseItemDto.Builder isSeries(JsonNullable<Boolean> isSeries) {
+      this.instance.isSeries = isSeries;
+      return this;
+    }
+    public BaseItemDto.Builder isLive(Boolean isLive) {
+      this.instance.isLive = JsonNullable.<Boolean>of(isLive);
+      return this;
+    }
+    public BaseItemDto.Builder isLive(JsonNullable<Boolean> isLive) {
+      this.instance.isLive = isLive;
+      return this;
+    }
+    public BaseItemDto.Builder isNews(Boolean isNews) {
+      this.instance.isNews = JsonNullable.<Boolean>of(isNews);
+      return this;
+    }
+    public BaseItemDto.Builder isNews(JsonNullable<Boolean> isNews) {
+      this.instance.isNews = isNews;
+      return this;
+    }
+    public BaseItemDto.Builder isKids(Boolean isKids) {
+      this.instance.isKids = JsonNullable.<Boolean>of(isKids);
+      return this;
+    }
+    public BaseItemDto.Builder isKids(JsonNullable<Boolean> isKids) {
+      this.instance.isKids = isKids;
+      return this;
+    }
+    public BaseItemDto.Builder isPremiere(Boolean isPremiere) {
+      this.instance.isPremiere = JsonNullable.<Boolean>of(isPremiere);
+      return this;
+    }
+    public BaseItemDto.Builder isPremiere(JsonNullable<Boolean> isPremiere) {
+      this.instance.isPremiere = isPremiere;
+      return this;
+    }
+    public BaseItemDto.Builder timerId(String timerId) {
+      this.instance.timerId = JsonNullable.<String>of(timerId);
+      return this;
+    }
+    public BaseItemDto.Builder timerId(JsonNullable<String> timerId) {
+      this.instance.timerId = timerId;
+      return this;
+    }
+    public BaseItemDto.Builder currentProgram(BaseItemDto currentProgram) {
+      this.instance.currentProgram = JsonNullable.<BaseItemDto>of(currentProgram);
+      return this;
+    }
+    public BaseItemDto.Builder currentProgram(JsonNullable<BaseItemDto> currentProgram) {
+      this.instance.currentProgram = currentProgram;
+      return this;
     }
 
-    public void setTimerId(@javax.annotation.Nullable String timerId) {
-        this.timerId = JsonNullable.<String> of(timerId);
-    }
-
-    public BaseItemDto currentProgram(@javax.annotation.Nullable BaseItemDto currentProgram) {
-        this.currentProgram = JsonNullable.<BaseItemDto> of(currentProgram);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the current program.
-     * 
-     * @return currentProgram
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getCurrentProgram() {
-        return currentProgram.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRAM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<BaseItemDto> getCurrentProgram_JsonNullable() {
-        return currentProgram;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRAM)
-    public void setCurrentProgram_JsonNullable(JsonNullable<BaseItemDto> currentProgram) {
-        this.currentProgram = currentProgram;
-    }
-
-    public void setCurrentProgram(@javax.annotation.Nullable BaseItemDto currentProgram) {
-        this.currentProgram = JsonNullable.<BaseItemDto> of(currentProgram);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BaseItemDto baseItemDto = (BaseItemDto) o;
-        return equalsNullable(this.name, baseItemDto.name)
-                && equalsNullable(this.originalTitle, baseItemDto.originalTitle)
-                && equalsNullable(this.serverId, baseItemDto.serverId) && Objects.equals(this.id, baseItemDto.id)
-                && equalsNullable(this.etag, baseItemDto.etag)
-                && equalsNullable(this.sourceType, baseItemDto.sourceType)
-                && equalsNullable(this.playlistItemId, baseItemDto.playlistItemId)
-                && equalsNullable(this.dateCreated, baseItemDto.dateCreated)
-                && equalsNullable(this.dateLastMediaAdded, baseItemDto.dateLastMediaAdded)
-                && equalsNullable(this.extraType, baseItemDto.extraType)
-                && equalsNullable(this.airsBeforeSeasonNumber, baseItemDto.airsBeforeSeasonNumber)
-                && equalsNullable(this.airsAfterSeasonNumber, baseItemDto.airsAfterSeasonNumber)
-                && equalsNullable(this.airsBeforeEpisodeNumber, baseItemDto.airsBeforeEpisodeNumber)
-                && equalsNullable(this.canDelete, baseItemDto.canDelete)
-                && equalsNullable(this.canDownload, baseItemDto.canDownload)
-                && equalsNullable(this.hasSubtitles, baseItemDto.hasSubtitles)
-                && equalsNullable(this.preferredMetadataLanguage, baseItemDto.preferredMetadataLanguage)
-                && equalsNullable(this.preferredMetadataCountryCode, baseItemDto.preferredMetadataCountryCode)
-                && equalsNullable(this.supportsSync, baseItemDto.supportsSync)
-                && equalsNullable(this.container, baseItemDto.container)
-                && equalsNullable(this.sortName, baseItemDto.sortName)
-                && equalsNullable(this.forcedSortName, baseItemDto.forcedSortName)
-                && equalsNullable(this.video3DFormat, baseItemDto.video3DFormat)
-                && equalsNullable(this.premiereDate, baseItemDto.premiereDate)
-                && equalsNullable(this.externalUrls, baseItemDto.externalUrls)
-                && equalsNullable(this.mediaSources, baseItemDto.mediaSources)
-                && equalsNullable(this.criticRating, baseItemDto.criticRating)
-                && equalsNullable(this.productionLocations, baseItemDto.productionLocations)
-                && equalsNullable(this.path, baseItemDto.path)
-                && equalsNullable(this.enableMediaSourceDisplay, baseItemDto.enableMediaSourceDisplay)
-                && equalsNullable(this.officialRating, baseItemDto.officialRating)
-                && equalsNullable(this.customRating, baseItemDto.customRating)
-                && equalsNullable(this.channelId, baseItemDto.channelId)
-                && equalsNullable(this.channelName, baseItemDto.channelName)
-                && equalsNullable(this.overview, baseItemDto.overview)
-                && equalsNullable(this.taglines, baseItemDto.taglines)
-                && equalsNullable(this.genres, baseItemDto.genres)
-                && equalsNullable(this.communityRating, baseItemDto.communityRating)
-                && equalsNullable(this.cumulativeRunTimeTicks, baseItemDto.cumulativeRunTimeTicks)
-                && equalsNullable(this.runTimeTicks, baseItemDto.runTimeTicks)
-                && equalsNullable(this.playAccess, baseItemDto.playAccess)
-                && equalsNullable(this.aspectRatio, baseItemDto.aspectRatio)
-                && equalsNullable(this.productionYear, baseItemDto.productionYear)
-                && equalsNullable(this.isPlaceHolder, baseItemDto.isPlaceHolder)
-                && equalsNullable(this.number, baseItemDto.number)
-                && equalsNullable(this.channelNumber, baseItemDto.channelNumber)
-                && equalsNullable(this.indexNumber, baseItemDto.indexNumber)
-                && equalsNullable(this.indexNumberEnd, baseItemDto.indexNumberEnd)
-                && equalsNullable(this.parentIndexNumber, baseItemDto.parentIndexNumber)
-                && equalsNullable(this.remoteTrailers, baseItemDto.remoteTrailers)
-                && equalsNullable(this.providerIds, baseItemDto.providerIds)
-                && equalsNullable(this.isHD, baseItemDto.isHD) && equalsNullable(this.isFolder, baseItemDto.isFolder)
-                && equalsNullable(this.parentId, baseItemDto.parentId) && Objects.equals(this.type, baseItemDto.type)
-                && equalsNullable(this.people, baseItemDto.people) && equalsNullable(this.studios, baseItemDto.studios)
-                && equalsNullable(this.genreItems, baseItemDto.genreItems)
-                && equalsNullable(this.parentLogoItemId, baseItemDto.parentLogoItemId)
-                && equalsNullable(this.parentBackdropItemId, baseItemDto.parentBackdropItemId)
-                && equalsNullable(this.parentBackdropImageTags, baseItemDto.parentBackdropImageTags)
-                && equalsNullable(this.localTrailerCount, baseItemDto.localTrailerCount)
-                && equalsNullable(this.userData, baseItemDto.userData)
-                && equalsNullable(this.recursiveItemCount, baseItemDto.recursiveItemCount)
-                && equalsNullable(this.childCount, baseItemDto.childCount)
-                && equalsNullable(this.seriesName, baseItemDto.seriesName)
-                && equalsNullable(this.seriesId, baseItemDto.seriesId)
-                && equalsNullable(this.seasonId, baseItemDto.seasonId)
-                && equalsNullable(this.specialFeatureCount, baseItemDto.specialFeatureCount)
-                && equalsNullable(this.displayPreferencesId, baseItemDto.displayPreferencesId)
-                && equalsNullable(this.status, baseItemDto.status) && equalsNullable(this.airTime, baseItemDto.airTime)
-                && equalsNullable(this.airDays, baseItemDto.airDays) && equalsNullable(this.tags, baseItemDto.tags)
-                && equalsNullable(this.primaryImageAspectRatio, baseItemDto.primaryImageAspectRatio)
-                && equalsNullable(this.artists, baseItemDto.artists)
-                && equalsNullable(this.artistItems, baseItemDto.artistItems)
-                && equalsNullable(this.album, baseItemDto.album)
-                && equalsNullable(this.collectionType, baseItemDto.collectionType)
-                && equalsNullable(this.displayOrder, baseItemDto.displayOrder)
-                && equalsNullable(this.albumId, baseItemDto.albumId)
-                && equalsNullable(this.albumPrimaryImageTag, baseItemDto.albumPrimaryImageTag)
-                && equalsNullable(this.seriesPrimaryImageTag, baseItemDto.seriesPrimaryImageTag)
-                && equalsNullable(this.albumArtist, baseItemDto.albumArtist)
-                && equalsNullable(this.albumArtists, baseItemDto.albumArtists)
-                && equalsNullable(this.seasonName, baseItemDto.seasonName)
-                && equalsNullable(this.mediaStreams, baseItemDto.mediaStreams)
-                && equalsNullable(this.videoType, baseItemDto.videoType)
-                && equalsNullable(this.partCount, baseItemDto.partCount)
-                && equalsNullable(this.mediaSourceCount, baseItemDto.mediaSourceCount)
-                && equalsNullable(this.imageTags, baseItemDto.imageTags)
-                && equalsNullable(this.backdropImageTags, baseItemDto.backdropImageTags)
-                && equalsNullable(this.screenshotImageTags, baseItemDto.screenshotImageTags)
-                && equalsNullable(this.parentLogoImageTag, baseItemDto.parentLogoImageTag)
-                && equalsNullable(this.parentArtItemId, baseItemDto.parentArtItemId)
-                && equalsNullable(this.parentArtImageTag, baseItemDto.parentArtImageTag)
-                && equalsNullable(this.seriesThumbImageTag, baseItemDto.seriesThumbImageTag)
-                && equalsNullable(this.imageBlurHashes, baseItemDto.imageBlurHashes)
-                && equalsNullable(this.seriesStudio, baseItemDto.seriesStudio)
-                && equalsNullable(this.parentThumbItemId, baseItemDto.parentThumbItemId)
-                && equalsNullable(this.parentThumbImageTag, baseItemDto.parentThumbImageTag)
-                && equalsNullable(this.parentPrimaryImageItemId, baseItemDto.parentPrimaryImageItemId)
-                && equalsNullable(this.parentPrimaryImageTag, baseItemDto.parentPrimaryImageTag)
-                && equalsNullable(this.chapters, baseItemDto.chapters)
-                && equalsNullable(this.locationType, baseItemDto.locationType)
-                && equalsNullable(this.isoType, baseItemDto.isoType)
-                && equalsNullable(this.mediaType, baseItemDto.mediaType)
-                && equalsNullable(this.endDate, baseItemDto.endDate)
-                && equalsNullable(this.lockedFields, baseItemDto.lockedFields)
-                && equalsNullable(this.trailerCount, baseItemDto.trailerCount)
-                && equalsNullable(this.movieCount, baseItemDto.movieCount)
-                && equalsNullable(this.seriesCount, baseItemDto.seriesCount)
-                && equalsNullable(this.programCount, baseItemDto.programCount)
-                && equalsNullable(this.episodeCount, baseItemDto.episodeCount)
-                && equalsNullable(this.songCount, baseItemDto.songCount)
-                && equalsNullable(this.albumCount, baseItemDto.albumCount)
-                && equalsNullable(this.artistCount, baseItemDto.artistCount)
-                && equalsNullable(this.musicVideoCount, baseItemDto.musicVideoCount)
-                && equalsNullable(this.lockData, baseItemDto.lockData) && equalsNullable(this.width, baseItemDto.width)
-                && equalsNullable(this.height, baseItemDto.height)
-                && equalsNullable(this.cameraMake, baseItemDto.cameraMake)
-                && equalsNullable(this.cameraModel, baseItemDto.cameraModel)
-                && equalsNullable(this.software, baseItemDto.software)
-                && equalsNullable(this.exposureTime, baseItemDto.exposureTime)
-                && equalsNullable(this.focalLength, baseItemDto.focalLength)
-                && equalsNullable(this.imageOrientation, baseItemDto.imageOrientation)
-                && equalsNullable(this.aperture, baseItemDto.aperture)
-                && equalsNullable(this.shutterSpeed, baseItemDto.shutterSpeed)
-                && equalsNullable(this.latitude, baseItemDto.latitude)
-                && equalsNullable(this.longitude, baseItemDto.longitude)
-                && equalsNullable(this.altitude, baseItemDto.altitude)
-                && equalsNullable(this.isoSpeedRating, baseItemDto.isoSpeedRating)
-                && equalsNullable(this.seriesTimerId, baseItemDto.seriesTimerId)
-                && equalsNullable(this.programId, baseItemDto.programId)
-                && equalsNullable(this.channelPrimaryImageTag, baseItemDto.channelPrimaryImageTag)
-                && equalsNullable(this.startDate, baseItemDto.startDate)
-                && equalsNullable(this.completionPercentage, baseItemDto.completionPercentage)
-                && equalsNullable(this.isRepeat, baseItemDto.isRepeat)
-                && equalsNullable(this.episodeTitle, baseItemDto.episodeTitle)
-                && equalsNullable(this.channelType, baseItemDto.channelType)
-                && equalsNullable(this.audio, baseItemDto.audio) && equalsNullable(this.isMovie, baseItemDto.isMovie)
-                && equalsNullable(this.isSports, baseItemDto.isSports)
-                && equalsNullable(this.isSeries, baseItemDto.isSeries)
-                && equalsNullable(this.isLive, baseItemDto.isLive) && equalsNullable(this.isNews, baseItemDto.isNews)
-                && equalsNullable(this.isKids, baseItemDto.isKids)
-                && equalsNullable(this.isPremiere, baseItemDto.isPremiere)
-                && equalsNullable(this.timerId, baseItemDto.timerId)
-                && equalsNullable(this.currentProgram, baseItemDto.currentProgram);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(originalTitle), hashCodeNullable(serverId), id,
-                hashCodeNullable(etag), hashCodeNullable(sourceType), hashCodeNullable(playlistItemId),
-                hashCodeNullable(dateCreated), hashCodeNullable(dateLastMediaAdded), hashCodeNullable(extraType),
-                hashCodeNullable(airsBeforeSeasonNumber), hashCodeNullable(airsAfterSeasonNumber),
-                hashCodeNullable(airsBeforeEpisodeNumber), hashCodeNullable(canDelete), hashCodeNullable(canDownload),
-                hashCodeNullable(hasSubtitles), hashCodeNullable(preferredMetadataLanguage),
-                hashCodeNullable(preferredMetadataCountryCode), hashCodeNullable(supportsSync),
-                hashCodeNullable(container), hashCodeNullable(sortName), hashCodeNullable(forcedSortName),
-                hashCodeNullable(video3DFormat), hashCodeNullable(premiereDate), hashCodeNullable(externalUrls),
-                hashCodeNullable(mediaSources), hashCodeNullable(criticRating), hashCodeNullable(productionLocations),
-                hashCodeNullable(path), hashCodeNullable(enableMediaSourceDisplay), hashCodeNullable(officialRating),
-                hashCodeNullable(customRating), hashCodeNullable(channelId), hashCodeNullable(channelName),
-                hashCodeNullable(overview), hashCodeNullable(taglines), hashCodeNullable(genres),
-                hashCodeNullable(communityRating), hashCodeNullable(cumulativeRunTimeTicks),
-                hashCodeNullable(runTimeTicks), hashCodeNullable(playAccess), hashCodeNullable(aspectRatio),
-                hashCodeNullable(productionYear), hashCodeNullable(isPlaceHolder), hashCodeNullable(number),
-                hashCodeNullable(channelNumber), hashCodeNullable(indexNumber), hashCodeNullable(indexNumberEnd),
-                hashCodeNullable(parentIndexNumber), hashCodeNullable(remoteTrailers), hashCodeNullable(providerIds),
-                hashCodeNullable(isHD), hashCodeNullable(isFolder), hashCodeNullable(parentId), type,
-                hashCodeNullable(people), hashCodeNullable(studios), hashCodeNullable(genreItems),
-                hashCodeNullable(parentLogoItemId), hashCodeNullable(parentBackdropItemId),
-                hashCodeNullable(parentBackdropImageTags), hashCodeNullable(localTrailerCount),
-                hashCodeNullable(userData), hashCodeNullable(recursiveItemCount), hashCodeNullable(childCount),
-                hashCodeNullable(seriesName), hashCodeNullable(seriesId), hashCodeNullable(seasonId),
-                hashCodeNullable(specialFeatureCount), hashCodeNullable(displayPreferencesId), hashCodeNullable(status),
-                hashCodeNullable(airTime), hashCodeNullable(airDays), hashCodeNullable(tags),
-                hashCodeNullable(primaryImageAspectRatio), hashCodeNullable(artists), hashCodeNullable(artistItems),
-                hashCodeNullable(album), hashCodeNullable(collectionType), hashCodeNullable(displayOrder),
-                hashCodeNullable(albumId), hashCodeNullable(albumPrimaryImageTag),
-                hashCodeNullable(seriesPrimaryImageTag), hashCodeNullable(albumArtist), hashCodeNullable(albumArtists),
-                hashCodeNullable(seasonName), hashCodeNullable(mediaStreams), hashCodeNullable(videoType),
-                hashCodeNullable(partCount), hashCodeNullable(mediaSourceCount), hashCodeNullable(imageTags),
-                hashCodeNullable(backdropImageTags), hashCodeNullable(screenshotImageTags),
-                hashCodeNullable(parentLogoImageTag), hashCodeNullable(parentArtItemId),
-                hashCodeNullable(parentArtImageTag), hashCodeNullable(seriesThumbImageTag),
-                hashCodeNullable(imageBlurHashes), hashCodeNullable(seriesStudio), hashCodeNullable(parentThumbItemId),
-                hashCodeNullable(parentThumbImageTag), hashCodeNullable(parentPrimaryImageItemId),
-                hashCodeNullable(parentPrimaryImageTag), hashCodeNullable(chapters), hashCodeNullable(locationType),
-                hashCodeNullable(isoType), hashCodeNullable(mediaType), hashCodeNullable(endDate),
-                hashCodeNullable(lockedFields), hashCodeNullable(trailerCount), hashCodeNullable(movieCount),
-                hashCodeNullable(seriesCount), hashCodeNullable(programCount), hashCodeNullable(episodeCount),
-                hashCodeNullable(songCount), hashCodeNullable(albumCount), hashCodeNullable(artistCount),
-                hashCodeNullable(musicVideoCount), hashCodeNullable(lockData), hashCodeNullable(width),
-                hashCodeNullable(height), hashCodeNullable(cameraMake), hashCodeNullable(cameraModel),
-                hashCodeNullable(software), hashCodeNullable(exposureTime), hashCodeNullable(focalLength),
-                hashCodeNullable(imageOrientation), hashCodeNullable(aperture), hashCodeNullable(shutterSpeed),
-                hashCodeNullable(latitude), hashCodeNullable(longitude), hashCodeNullable(altitude),
-                hashCodeNullable(isoSpeedRating), hashCodeNullable(seriesTimerId), hashCodeNullable(programId),
-                hashCodeNullable(channelPrimaryImageTag), hashCodeNullable(startDate),
-                hashCodeNullable(completionPercentage), hashCodeNullable(isRepeat), hashCodeNullable(episodeTitle),
-                hashCodeNullable(channelType), hashCodeNullable(audio), hashCodeNullable(isMovie),
-                hashCodeNullable(isSports), hashCodeNullable(isSeries), hashCodeNullable(isLive),
-                hashCodeNullable(isNews), hashCodeNullable(isKids), hashCodeNullable(isPremiere),
-                hashCodeNullable(timerId), hashCodeNullable(currentProgram));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built BaseItemDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public BaseItemDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class BaseItemDto {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    originalTitle: ").append(toIndentedString(originalTitle)).append("\n");
-        sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    etag: ").append(toIndentedString(etag)).append("\n");
-        sb.append("    sourceType: ").append(toIndentedString(sourceType)).append("\n");
-        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-        sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
-        sb.append("    dateLastMediaAdded: ").append(toIndentedString(dateLastMediaAdded)).append("\n");
-        sb.append("    extraType: ").append(toIndentedString(extraType)).append("\n");
-        sb.append("    airsBeforeSeasonNumber: ").append(toIndentedString(airsBeforeSeasonNumber)).append("\n");
-        sb.append("    airsAfterSeasonNumber: ").append(toIndentedString(airsAfterSeasonNumber)).append("\n");
-        sb.append("    airsBeforeEpisodeNumber: ").append(toIndentedString(airsBeforeEpisodeNumber)).append("\n");
-        sb.append("    canDelete: ").append(toIndentedString(canDelete)).append("\n");
-        sb.append("    canDownload: ").append(toIndentedString(canDownload)).append("\n");
-        sb.append("    hasSubtitles: ").append(toIndentedString(hasSubtitles)).append("\n");
-        sb.append("    preferredMetadataLanguage: ").append(toIndentedString(preferredMetadataLanguage)).append("\n");
-        sb.append("    preferredMetadataCountryCode: ").append(toIndentedString(preferredMetadataCountryCode))
-                .append("\n");
-        sb.append("    supportsSync: ").append(toIndentedString(supportsSync)).append("\n");
-        sb.append("    container: ").append(toIndentedString(container)).append("\n");
-        sb.append("    sortName: ").append(toIndentedString(sortName)).append("\n");
-        sb.append("    forcedSortName: ").append(toIndentedString(forcedSortName)).append("\n");
-        sb.append("    video3DFormat: ").append(toIndentedString(video3DFormat)).append("\n");
-        sb.append("    premiereDate: ").append(toIndentedString(premiereDate)).append("\n");
-        sb.append("    externalUrls: ").append(toIndentedString(externalUrls)).append("\n");
-        sb.append("    mediaSources: ").append(toIndentedString(mediaSources)).append("\n");
-        sb.append("    criticRating: ").append(toIndentedString(criticRating)).append("\n");
-        sb.append("    productionLocations: ").append(toIndentedString(productionLocations)).append("\n");
-        sb.append("    path: ").append(toIndentedString(path)).append("\n");
-        sb.append("    enableMediaSourceDisplay: ").append(toIndentedString(enableMediaSourceDisplay)).append("\n");
-        sb.append("    officialRating: ").append(toIndentedString(officialRating)).append("\n");
-        sb.append("    customRating: ").append(toIndentedString(customRating)).append("\n");
-        sb.append("    channelId: ").append(toIndentedString(channelId)).append("\n");
-        sb.append("    channelName: ").append(toIndentedString(channelName)).append("\n");
-        sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
-        sb.append("    taglines: ").append(toIndentedString(taglines)).append("\n");
-        sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
-        sb.append("    communityRating: ").append(toIndentedString(communityRating)).append("\n");
-        sb.append("    cumulativeRunTimeTicks: ").append(toIndentedString(cumulativeRunTimeTicks)).append("\n");
-        sb.append("    runTimeTicks: ").append(toIndentedString(runTimeTicks)).append("\n");
-        sb.append("    playAccess: ").append(toIndentedString(playAccess)).append("\n");
-        sb.append("    aspectRatio: ").append(toIndentedString(aspectRatio)).append("\n");
-        sb.append("    productionYear: ").append(toIndentedString(productionYear)).append("\n");
-        sb.append("    isPlaceHolder: ").append(toIndentedString(isPlaceHolder)).append("\n");
-        sb.append("    number: ").append(toIndentedString(number)).append("\n");
-        sb.append("    channelNumber: ").append(toIndentedString(channelNumber)).append("\n");
-        sb.append("    indexNumber: ").append(toIndentedString(indexNumber)).append("\n");
-        sb.append("    indexNumberEnd: ").append(toIndentedString(indexNumberEnd)).append("\n");
-        sb.append("    parentIndexNumber: ").append(toIndentedString(parentIndexNumber)).append("\n");
-        sb.append("    remoteTrailers: ").append(toIndentedString(remoteTrailers)).append("\n");
-        sb.append("    providerIds: ").append(toIndentedString(providerIds)).append("\n");
-        sb.append("    isHD: ").append(toIndentedString(isHD)).append("\n");
-        sb.append("    isFolder: ").append(toIndentedString(isFolder)).append("\n");
-        sb.append("    parentId: ").append(toIndentedString(parentId)).append("\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    people: ").append(toIndentedString(people)).append("\n");
-        sb.append("    studios: ").append(toIndentedString(studios)).append("\n");
-        sb.append("    genreItems: ").append(toIndentedString(genreItems)).append("\n");
-        sb.append("    parentLogoItemId: ").append(toIndentedString(parentLogoItemId)).append("\n");
-        sb.append("    parentBackdropItemId: ").append(toIndentedString(parentBackdropItemId)).append("\n");
-        sb.append("    parentBackdropImageTags: ").append(toIndentedString(parentBackdropImageTags)).append("\n");
-        sb.append("    localTrailerCount: ").append(toIndentedString(localTrailerCount)).append("\n");
-        sb.append("    userData: ").append(toIndentedString(userData)).append("\n");
-        sb.append("    recursiveItemCount: ").append(toIndentedString(recursiveItemCount)).append("\n");
-        sb.append("    childCount: ").append(toIndentedString(childCount)).append("\n");
-        sb.append("    seriesName: ").append(toIndentedString(seriesName)).append("\n");
-        sb.append("    seriesId: ").append(toIndentedString(seriesId)).append("\n");
-        sb.append("    seasonId: ").append(toIndentedString(seasonId)).append("\n");
-        sb.append("    specialFeatureCount: ").append(toIndentedString(specialFeatureCount)).append("\n");
-        sb.append("    displayPreferencesId: ").append(toIndentedString(displayPreferencesId)).append("\n");
-        sb.append("    status: ").append(toIndentedString(status)).append("\n");
-        sb.append("    airTime: ").append(toIndentedString(airTime)).append("\n");
-        sb.append("    airDays: ").append(toIndentedString(airDays)).append("\n");
-        sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
-        sb.append("    primaryImageAspectRatio: ").append(toIndentedString(primaryImageAspectRatio)).append("\n");
-        sb.append("    artists: ").append(toIndentedString(artists)).append("\n");
-        sb.append("    artistItems: ").append(toIndentedString(artistItems)).append("\n");
-        sb.append("    album: ").append(toIndentedString(album)).append("\n");
-        sb.append("    collectionType: ").append(toIndentedString(collectionType)).append("\n");
-        sb.append("    displayOrder: ").append(toIndentedString(displayOrder)).append("\n");
-        sb.append("    albumId: ").append(toIndentedString(albumId)).append("\n");
-        sb.append("    albumPrimaryImageTag: ").append(toIndentedString(albumPrimaryImageTag)).append("\n");
-        sb.append("    seriesPrimaryImageTag: ").append(toIndentedString(seriesPrimaryImageTag)).append("\n");
-        sb.append("    albumArtist: ").append(toIndentedString(albumArtist)).append("\n");
-        sb.append("    albumArtists: ").append(toIndentedString(albumArtists)).append("\n");
-        sb.append("    seasonName: ").append(toIndentedString(seasonName)).append("\n");
-        sb.append("    mediaStreams: ").append(toIndentedString(mediaStreams)).append("\n");
-        sb.append("    videoType: ").append(toIndentedString(videoType)).append("\n");
-        sb.append("    partCount: ").append(toIndentedString(partCount)).append("\n");
-        sb.append("    mediaSourceCount: ").append(toIndentedString(mediaSourceCount)).append("\n");
-        sb.append("    imageTags: ").append(toIndentedString(imageTags)).append("\n");
-        sb.append("    backdropImageTags: ").append(toIndentedString(backdropImageTags)).append("\n");
-        sb.append("    screenshotImageTags: ").append(toIndentedString(screenshotImageTags)).append("\n");
-        sb.append("    parentLogoImageTag: ").append(toIndentedString(parentLogoImageTag)).append("\n");
-        sb.append("    parentArtItemId: ").append(toIndentedString(parentArtItemId)).append("\n");
-        sb.append("    parentArtImageTag: ").append(toIndentedString(parentArtImageTag)).append("\n");
-        sb.append("    seriesThumbImageTag: ").append(toIndentedString(seriesThumbImageTag)).append("\n");
-        sb.append("    imageBlurHashes: ").append(toIndentedString(imageBlurHashes)).append("\n");
-        sb.append("    seriesStudio: ").append(toIndentedString(seriesStudio)).append("\n");
-        sb.append("    parentThumbItemId: ").append(toIndentedString(parentThumbItemId)).append("\n");
-        sb.append("    parentThumbImageTag: ").append(toIndentedString(parentThumbImageTag)).append("\n");
-        sb.append("    parentPrimaryImageItemId: ").append(toIndentedString(parentPrimaryImageItemId)).append("\n");
-        sb.append("    parentPrimaryImageTag: ").append(toIndentedString(parentPrimaryImageTag)).append("\n");
-        sb.append("    chapters: ").append(toIndentedString(chapters)).append("\n");
-        sb.append("    locationType: ").append(toIndentedString(locationType)).append("\n");
-        sb.append("    isoType: ").append(toIndentedString(isoType)).append("\n");
-        sb.append("    mediaType: ").append(toIndentedString(mediaType)).append("\n");
-        sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
-        sb.append("    lockedFields: ").append(toIndentedString(lockedFields)).append("\n");
-        sb.append("    trailerCount: ").append(toIndentedString(trailerCount)).append("\n");
-        sb.append("    movieCount: ").append(toIndentedString(movieCount)).append("\n");
-        sb.append("    seriesCount: ").append(toIndentedString(seriesCount)).append("\n");
-        sb.append("    programCount: ").append(toIndentedString(programCount)).append("\n");
-        sb.append("    episodeCount: ").append(toIndentedString(episodeCount)).append("\n");
-        sb.append("    songCount: ").append(toIndentedString(songCount)).append("\n");
-        sb.append("    albumCount: ").append(toIndentedString(albumCount)).append("\n");
-        sb.append("    artistCount: ").append(toIndentedString(artistCount)).append("\n");
-        sb.append("    musicVideoCount: ").append(toIndentedString(musicVideoCount)).append("\n");
-        sb.append("    lockData: ").append(toIndentedString(lockData)).append("\n");
-        sb.append("    width: ").append(toIndentedString(width)).append("\n");
-        sb.append("    height: ").append(toIndentedString(height)).append("\n");
-        sb.append("    cameraMake: ").append(toIndentedString(cameraMake)).append("\n");
-        sb.append("    cameraModel: ").append(toIndentedString(cameraModel)).append("\n");
-        sb.append("    software: ").append(toIndentedString(software)).append("\n");
-        sb.append("    exposureTime: ").append(toIndentedString(exposureTime)).append("\n");
-        sb.append("    focalLength: ").append(toIndentedString(focalLength)).append("\n");
-        sb.append("    imageOrientation: ").append(toIndentedString(imageOrientation)).append("\n");
-        sb.append("    aperture: ").append(toIndentedString(aperture)).append("\n");
-        sb.append("    shutterSpeed: ").append(toIndentedString(shutterSpeed)).append("\n");
-        sb.append("    latitude: ").append(toIndentedString(latitude)).append("\n");
-        sb.append("    longitude: ").append(toIndentedString(longitude)).append("\n");
-        sb.append("    altitude: ").append(toIndentedString(altitude)).append("\n");
-        sb.append("    isoSpeedRating: ").append(toIndentedString(isoSpeedRating)).append("\n");
-        sb.append("    seriesTimerId: ").append(toIndentedString(seriesTimerId)).append("\n");
-        sb.append("    programId: ").append(toIndentedString(programId)).append("\n");
-        sb.append("    channelPrimaryImageTag: ").append(toIndentedString(channelPrimaryImageTag)).append("\n");
-        sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
-        sb.append("    completionPercentage: ").append(toIndentedString(completionPercentage)).append("\n");
-        sb.append("    isRepeat: ").append(toIndentedString(isRepeat)).append("\n");
-        sb.append("    episodeTitle: ").append(toIndentedString(episodeTitle)).append("\n");
-        sb.append("    channelType: ").append(toIndentedString(channelType)).append("\n");
-        sb.append("    audio: ").append(toIndentedString(audio)).append("\n");
-        sb.append("    isMovie: ").append(toIndentedString(isMovie)).append("\n");
-        sb.append("    isSports: ").append(toIndentedString(isSports)).append("\n");
-        sb.append("    isSeries: ").append(toIndentedString(isSeries)).append("\n");
-        sb.append("    isLive: ").append(toIndentedString(isLive)).append("\n");
-        sb.append("    isNews: ").append(toIndentedString(isNews)).append("\n");
-        sb.append("    isKids: ").append(toIndentedString(isKids)).append("\n");
-        sb.append("    isPremiere: ").append(toIndentedString(isPremiere)).append("\n");
-        sb.append("    timerId: ").append(toIndentedString(timerId)).append("\n");
-        sb.append("    currentProgram: ").append(toIndentedString(currentProgram)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
+
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static BaseItemDto.Builder builder() {
+    return new BaseItemDto.Builder();
+  }
+
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public BaseItemDto.Builder toBuilder() {
+    return new BaseItemDto.Builder()
+      .name(getName())
+      .originalTitle(getOriginalTitle())
+      .serverId(getServerId())
+      .id(getId())
+      .etag(getEtag())
+      .sourceType(getSourceType())
+      .playlistItemId(getPlaylistItemId())
+      .dateCreated(getDateCreated())
+      .dateLastMediaAdded(getDateLastMediaAdded())
+      .extraType(getExtraType())
+      .airsBeforeSeasonNumber(getAirsBeforeSeasonNumber())
+      .airsAfterSeasonNumber(getAirsAfterSeasonNumber())
+      .airsBeforeEpisodeNumber(getAirsBeforeEpisodeNumber())
+      .canDelete(getCanDelete())
+      .canDownload(getCanDownload())
+      .hasSubtitles(getHasSubtitles())
+      .preferredMetadataLanguage(getPreferredMetadataLanguage())
+      .preferredMetadataCountryCode(getPreferredMetadataCountryCode())
+      .supportsSync(getSupportsSync())
+      .container(getContainer())
+      .sortName(getSortName())
+      .forcedSortName(getForcedSortName())
+      .video3DFormat(getVideo3DFormat())
+      .premiereDate(getPremiereDate())
+      .externalUrls(getExternalUrls())
+      .mediaSources(getMediaSources())
+      .criticRating(getCriticRating())
+      .productionLocations(getProductionLocations())
+      .path(getPath())
+      .enableMediaSourceDisplay(getEnableMediaSourceDisplay())
+      .officialRating(getOfficialRating())
+      .customRating(getCustomRating())
+      .channelId(getChannelId())
+      .channelName(getChannelName())
+      .overview(getOverview())
+      .taglines(getTaglines())
+      .genres(getGenres())
+      .communityRating(getCommunityRating())
+      .cumulativeRunTimeTicks(getCumulativeRunTimeTicks())
+      .runTimeTicks(getRunTimeTicks())
+      .playAccess(getPlayAccess())
+      .aspectRatio(getAspectRatio())
+      .productionYear(getProductionYear())
+      .isPlaceHolder(getIsPlaceHolder())
+      .number(getNumber())
+      .channelNumber(getChannelNumber())
+      .indexNumber(getIndexNumber())
+      .indexNumberEnd(getIndexNumberEnd())
+      .parentIndexNumber(getParentIndexNumber())
+      .remoteTrailers(getRemoteTrailers())
+      .providerIds(getProviderIds())
+      .isHD(getIsHD())
+      .isFolder(getIsFolder())
+      .parentId(getParentId())
+      .type(getType())
+      .people(getPeople())
+      .studios(getStudios())
+      .genreItems(getGenreItems())
+      .parentLogoItemId(getParentLogoItemId())
+      .parentBackdropItemId(getParentBackdropItemId())
+      .parentBackdropImageTags(getParentBackdropImageTags())
+      .localTrailerCount(getLocalTrailerCount())
+      .userData(getUserData())
+      .recursiveItemCount(getRecursiveItemCount())
+      .childCount(getChildCount())
+      .seriesName(getSeriesName())
+      .seriesId(getSeriesId())
+      .seasonId(getSeasonId())
+      .specialFeatureCount(getSpecialFeatureCount())
+      .displayPreferencesId(getDisplayPreferencesId())
+      .status(getStatus())
+      .airTime(getAirTime())
+      .airDays(getAirDays())
+      .tags(getTags())
+      .primaryImageAspectRatio(getPrimaryImageAspectRatio())
+      .artists(getArtists())
+      .artistItems(getArtistItems())
+      .album(getAlbum())
+      .collectionType(getCollectionType())
+      .displayOrder(getDisplayOrder())
+      .albumId(getAlbumId())
+      .albumPrimaryImageTag(getAlbumPrimaryImageTag())
+      .seriesPrimaryImageTag(getSeriesPrimaryImageTag())
+      .albumArtist(getAlbumArtist())
+      .albumArtists(getAlbumArtists())
+      .seasonName(getSeasonName())
+      .mediaStreams(getMediaStreams())
+      .videoType(getVideoType())
+      .partCount(getPartCount())
+      .mediaSourceCount(getMediaSourceCount())
+      .imageTags(getImageTags())
+      .backdropImageTags(getBackdropImageTags())
+      .screenshotImageTags(getScreenshotImageTags())
+      .parentLogoImageTag(getParentLogoImageTag())
+      .parentArtItemId(getParentArtItemId())
+      .parentArtImageTag(getParentArtImageTag())
+      .seriesThumbImageTag(getSeriesThumbImageTag())
+      .imageBlurHashes(getImageBlurHashes())
+      .seriesStudio(getSeriesStudio())
+      .parentThumbItemId(getParentThumbItemId())
+      .parentThumbImageTag(getParentThumbImageTag())
+      .parentPrimaryImageItemId(getParentPrimaryImageItemId())
+      .parentPrimaryImageTag(getParentPrimaryImageTag())
+      .chapters(getChapters())
+      .locationType(getLocationType())
+      .isoType(getIsoType())
+      .mediaType(getMediaType())
+      .endDate(getEndDate())
+      .lockedFields(getLockedFields())
+      .trailerCount(getTrailerCount())
+      .movieCount(getMovieCount())
+      .seriesCount(getSeriesCount())
+      .programCount(getProgramCount())
+      .episodeCount(getEpisodeCount())
+      .songCount(getSongCount())
+      .albumCount(getAlbumCount())
+      .artistCount(getArtistCount())
+      .musicVideoCount(getMusicVideoCount())
+      .lockData(getLockData())
+      .width(getWidth())
+      .height(getHeight())
+      .cameraMake(getCameraMake())
+      .cameraModel(getCameraModel())
+      .software(getSoftware())
+      .exposureTime(getExposureTime())
+      .focalLength(getFocalLength())
+      .imageOrientation(getImageOrientation())
+      .aperture(getAperture())
+      .shutterSpeed(getShutterSpeed())
+      .latitude(getLatitude())
+      .longitude(getLongitude())
+      .altitude(getAltitude())
+      .isoSpeedRating(getIsoSpeedRating())
+      .seriesTimerId(getSeriesTimerId())
+      .programId(getProgramId())
+      .channelPrimaryImageTag(getChannelPrimaryImageTag())
+      .startDate(getStartDate())
+      .completionPercentage(getCompletionPercentage())
+      .isRepeat(getIsRepeat())
+      .episodeTitle(getEpisodeTitle())
+      .channelType(getChannelType())
+      .audio(getAudio())
+      .isMovie(getIsMovie())
+      .isSports(getIsSports())
+      .isSeries(getIsSeries())
+      .isLive(getIsLive())
+      .isNews(getIsNews())
+      .isKids(getIsKids())
+      .isPremiere(getIsPremiere())
+      .timerId(getTimerId())
+      .currentProgram(getCurrentProgram());
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
 
-    public static class Builder {
-
-        private BaseItemDto instance;
-
-        public Builder() {
-            this(new BaseItemDto());
-        }
-
-        protected Builder(BaseItemDto instance) {
-            this.instance = instance;
-        }
-
-        public BaseItemDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public BaseItemDto.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public BaseItemDto.Builder originalTitle(String originalTitle) {
-            this.instance.originalTitle = JsonNullable.<String> of(originalTitle);
-            return this;
-        }
-
-        public BaseItemDto.Builder originalTitle(JsonNullable<String> originalTitle) {
-            this.instance.originalTitle = originalTitle;
-            return this;
-        }
-
-        public BaseItemDto.Builder serverId(String serverId) {
-            this.instance.serverId = JsonNullable.<String> of(serverId);
-            return this;
-        }
-
-        public BaseItemDto.Builder serverId(JsonNullable<String> serverId) {
-            this.instance.serverId = serverId;
-            return this;
-        }
-
-        public BaseItemDto.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public BaseItemDto.Builder etag(String etag) {
-            this.instance.etag = JsonNullable.<String> of(etag);
-            return this;
-        }
-
-        public BaseItemDto.Builder etag(JsonNullable<String> etag) {
-            this.instance.etag = etag;
-            return this;
-        }
-
-        public BaseItemDto.Builder sourceType(String sourceType) {
-            this.instance.sourceType = JsonNullable.<String> of(sourceType);
-            return this;
-        }
-
-        public BaseItemDto.Builder sourceType(JsonNullable<String> sourceType) {
-            this.instance.sourceType = sourceType;
-            return this;
-        }
-
-        public BaseItemDto.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = JsonNullable.<String> of(playlistItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder playlistItemId(JsonNullable<String> playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
-            return this;
-        }
-
-        public BaseItemDto.Builder dateCreated(JsonNullable<OffsetDateTime> dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public BaseItemDto.Builder dateLastMediaAdded(OffsetDateTime dateLastMediaAdded) {
-            this.instance.dateLastMediaAdded = JsonNullable.<OffsetDateTime> of(dateLastMediaAdded);
-            return this;
-        }
-
-        public BaseItemDto.Builder dateLastMediaAdded(JsonNullable<OffsetDateTime> dateLastMediaAdded) {
-            this.instance.dateLastMediaAdded = dateLastMediaAdded;
-            return this;
-        }
-
-        public BaseItemDto.Builder extraType(String extraType) {
-            this.instance.extraType = JsonNullable.<String> of(extraType);
-            return this;
-        }
-
-        public BaseItemDto.Builder extraType(JsonNullable<String> extraType) {
-            this.instance.extraType = extraType;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeSeasonNumber(Integer airsBeforeSeasonNumber) {
-            this.instance.airsBeforeSeasonNumber = JsonNullable.<Integer> of(airsBeforeSeasonNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeSeasonNumber(JsonNullable<Integer> airsBeforeSeasonNumber) {
-            this.instance.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsAfterSeasonNumber(Integer airsAfterSeasonNumber) {
-            this.instance.airsAfterSeasonNumber = JsonNullable.<Integer> of(airsAfterSeasonNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder airsAfterSeasonNumber(JsonNullable<Integer> airsAfterSeasonNumber) {
-            this.instance.airsAfterSeasonNumber = airsAfterSeasonNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeEpisodeNumber(Integer airsBeforeEpisodeNumber) {
-            this.instance.airsBeforeEpisodeNumber = JsonNullable.<Integer> of(airsBeforeEpisodeNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder airsBeforeEpisodeNumber(JsonNullable<Integer> airsBeforeEpisodeNumber) {
-            this.instance.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder canDelete(Boolean canDelete) {
-            this.instance.canDelete = JsonNullable.<Boolean> of(canDelete);
-            return this;
-        }
-
-        public BaseItemDto.Builder canDelete(JsonNullable<Boolean> canDelete) {
-            this.instance.canDelete = canDelete;
-            return this;
-        }
-
-        public BaseItemDto.Builder canDownload(Boolean canDownload) {
-            this.instance.canDownload = JsonNullable.<Boolean> of(canDownload);
-            return this;
-        }
-
-        public BaseItemDto.Builder canDownload(JsonNullable<Boolean> canDownload) {
-            this.instance.canDownload = canDownload;
-            return this;
-        }
-
-        public BaseItemDto.Builder hasSubtitles(Boolean hasSubtitles) {
-            this.instance.hasSubtitles = JsonNullable.<Boolean> of(hasSubtitles);
-            return this;
-        }
-
-        public BaseItemDto.Builder hasSubtitles(JsonNullable<Boolean> hasSubtitles) {
-            this.instance.hasSubtitles = hasSubtitles;
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataLanguage(JsonNullable<String> preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataCountryCode(String preferredMetadataCountryCode) {
-            this.instance.preferredMetadataCountryCode = JsonNullable.<String> of(preferredMetadataCountryCode);
-            return this;
-        }
-
-        public BaseItemDto.Builder preferredMetadataCountryCode(JsonNullable<String> preferredMetadataCountryCode) {
-            this.instance.preferredMetadataCountryCode = preferredMetadataCountryCode;
-            return this;
-        }
-
-        public BaseItemDto.Builder supportsSync(Boolean supportsSync) {
-            this.instance.supportsSync = JsonNullable.<Boolean> of(supportsSync);
-            return this;
-        }
-
-        public BaseItemDto.Builder supportsSync(JsonNullable<Boolean> supportsSync) {
-            this.instance.supportsSync = supportsSync;
-            return this;
-        }
-
-        public BaseItemDto.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public BaseItemDto.Builder container(JsonNullable<String> container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public BaseItemDto.Builder sortName(String sortName) {
-            this.instance.sortName = JsonNullable.<String> of(sortName);
-            return this;
-        }
-
-        public BaseItemDto.Builder sortName(JsonNullable<String> sortName) {
-            this.instance.sortName = sortName;
-            return this;
-        }
-
-        public BaseItemDto.Builder forcedSortName(String forcedSortName) {
-            this.instance.forcedSortName = JsonNullable.<String> of(forcedSortName);
-            return this;
-        }
-
-        public BaseItemDto.Builder forcedSortName(JsonNullable<String> forcedSortName) {
-            this.instance.forcedSortName = forcedSortName;
-            return this;
-        }
-
-        public BaseItemDto.Builder video3DFormat(Video3DFormat video3DFormat) {
-            this.instance.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
-            return this;
-        }
-
-        public BaseItemDto.Builder video3DFormat(JsonNullable<Video3DFormat> video3DFormat) {
-            this.instance.video3DFormat = video3DFormat;
-            return this;
-        }
-
-        public BaseItemDto.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-            return this;
-        }
-
-        public BaseItemDto.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
-            this.instance.premiereDate = premiereDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder externalUrls(List<ExternalUrl> externalUrls) {
-            this.instance.externalUrls = JsonNullable.<List<ExternalUrl>> of(externalUrls);
-            return this;
-        }
-
-        public BaseItemDto.Builder externalUrls(JsonNullable<List<ExternalUrl>> externalUrls) {
-            this.instance.externalUrls = externalUrls;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
-            this.instance.mediaSources = JsonNullable.<List<MediaSourceInfo>> of(mediaSources);
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSources(JsonNullable<List<MediaSourceInfo>> mediaSources) {
-            this.instance.mediaSources = mediaSources;
-            return this;
-        }
-
-        public BaseItemDto.Builder criticRating(Float criticRating) {
-            this.instance.criticRating = JsonNullable.<Float> of(criticRating);
-            return this;
-        }
-
-        public BaseItemDto.Builder criticRating(JsonNullable<Float> criticRating) {
-            this.instance.criticRating = criticRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder productionLocations(List<String> productionLocations) {
-            this.instance.productionLocations = JsonNullable.<List<String>> of(productionLocations);
-            return this;
-        }
-
-        public BaseItemDto.Builder productionLocations(JsonNullable<List<String>> productionLocations) {
-            this.instance.productionLocations = productionLocations;
-            return this;
-        }
-
-        public BaseItemDto.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public BaseItemDto.Builder path(JsonNullable<String> path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public BaseItemDto.Builder enableMediaSourceDisplay(Boolean enableMediaSourceDisplay) {
-            this.instance.enableMediaSourceDisplay = JsonNullable.<Boolean> of(enableMediaSourceDisplay);
-            return this;
-        }
-
-        public BaseItemDto.Builder enableMediaSourceDisplay(JsonNullable<Boolean> enableMediaSourceDisplay) {
-            this.instance.enableMediaSourceDisplay = enableMediaSourceDisplay;
-            return this;
-        }
-
-        public BaseItemDto.Builder officialRating(String officialRating) {
-            this.instance.officialRating = JsonNullable.<String> of(officialRating);
-            return this;
-        }
-
-        public BaseItemDto.Builder officialRating(JsonNullable<String> officialRating) {
-            this.instance.officialRating = officialRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder customRating(String customRating) {
-            this.instance.customRating = JsonNullable.<String> of(customRating);
-            return this;
-        }
-
-        public BaseItemDto.Builder customRating(JsonNullable<String> customRating) {
-            this.instance.customRating = customRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelId(UUID channelId) {
-            this.instance.channelId = JsonNullable.<UUID> of(channelId);
-            return this;
-        }
-
-        public BaseItemDto.Builder channelId(JsonNullable<UUID> channelId) {
-            this.instance.channelId = channelId;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelName(String channelName) {
-            this.instance.channelName = JsonNullable.<String> of(channelName);
-            return this;
-        }
-
-        public BaseItemDto.Builder channelName(JsonNullable<String> channelName) {
-            this.instance.channelName = channelName;
-            return this;
-        }
-
-        public BaseItemDto.Builder overview(String overview) {
-            this.instance.overview = JsonNullable.<String> of(overview);
-            return this;
-        }
-
-        public BaseItemDto.Builder overview(JsonNullable<String> overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public BaseItemDto.Builder taglines(List<String> taglines) {
-            this.instance.taglines = JsonNullable.<List<String>> of(taglines);
-            return this;
-        }
-
-        public BaseItemDto.Builder taglines(JsonNullable<List<String>> taglines) {
-            this.instance.taglines = taglines;
-            return this;
-        }
-
-        public BaseItemDto.Builder genres(List<String> genres) {
-            this.instance.genres = JsonNullable.<List<String>> of(genres);
-            return this;
-        }
-
-        public BaseItemDto.Builder genres(JsonNullable<List<String>> genres) {
-            this.instance.genres = genres;
-            return this;
-        }
-
-        public BaseItemDto.Builder communityRating(Float communityRating) {
-            this.instance.communityRating = JsonNullable.<Float> of(communityRating);
-            return this;
-        }
-
-        public BaseItemDto.Builder communityRating(JsonNullable<Float> communityRating) {
-            this.instance.communityRating = communityRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder cumulativeRunTimeTicks(Long cumulativeRunTimeTicks) {
-            this.instance.cumulativeRunTimeTicks = JsonNullable.<Long> of(cumulativeRunTimeTicks);
-            return this;
-        }
-
-        public BaseItemDto.Builder cumulativeRunTimeTicks(JsonNullable<Long> cumulativeRunTimeTicks) {
-            this.instance.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
-            return this;
-        }
-
-        public BaseItemDto.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-            return this;
-        }
-
-        public BaseItemDto.Builder runTimeTicks(JsonNullable<Long> runTimeTicks) {
-            this.instance.runTimeTicks = runTimeTicks;
-            return this;
-        }
-
-        public BaseItemDto.Builder playAccess(PlayAccess playAccess) {
-            this.instance.playAccess = JsonNullable.<PlayAccess> of(playAccess);
-            return this;
-        }
-
-        public BaseItemDto.Builder playAccess(JsonNullable<PlayAccess> playAccess) {
-            this.instance.playAccess = playAccess;
-            return this;
-        }
-
-        public BaseItemDto.Builder aspectRatio(String aspectRatio) {
-            this.instance.aspectRatio = JsonNullable.<String> of(aspectRatio);
-            return this;
-        }
-
-        public BaseItemDto.Builder aspectRatio(JsonNullable<String> aspectRatio) {
-            this.instance.aspectRatio = aspectRatio;
-            return this;
-        }
-
-        public BaseItemDto.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = JsonNullable.<Integer> of(productionYear);
-            return this;
-        }
-
-        public BaseItemDto.Builder productionYear(JsonNullable<Integer> productionYear) {
-            this.instance.productionYear = productionYear;
-            return this;
-        }
-
-        public BaseItemDto.Builder isPlaceHolder(Boolean isPlaceHolder) {
-            this.instance.isPlaceHolder = JsonNullable.<Boolean> of(isPlaceHolder);
-            return this;
-        }
-
-        public BaseItemDto.Builder isPlaceHolder(JsonNullable<Boolean> isPlaceHolder) {
-            this.instance.isPlaceHolder = isPlaceHolder;
-            return this;
-        }
-
-        public BaseItemDto.Builder number(String number) {
-            this.instance.number = JsonNullable.<String> of(number);
-            return this;
-        }
-
-        public BaseItemDto.Builder number(JsonNullable<String> number) {
-            this.instance.number = number;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelNumber(String channelNumber) {
-            this.instance.channelNumber = JsonNullable.<String> of(channelNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder channelNumber(JsonNullable<String> channelNumber) {
-            this.instance.channelNumber = channelNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = JsonNullable.<Integer> of(indexNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumber(JsonNullable<Integer> indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumberEnd(Integer indexNumberEnd) {
-            this.instance.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
-            return this;
-        }
-
-        public BaseItemDto.Builder indexNumberEnd(JsonNullable<Integer> indexNumberEnd) {
-            this.instance.indexNumberEnd = indexNumberEnd;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public BaseItemDto.Builder remoteTrailers(List<MediaUrl> remoteTrailers) {
-            this.instance.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
-            return this;
-        }
-
-        public BaseItemDto.Builder remoteTrailers(JsonNullable<List<MediaUrl>> remoteTrailers) {
-            this.instance.remoteTrailers = remoteTrailers;
-            return this;
-        }
-
-        public BaseItemDto.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-            return this;
-        }
-
-        public BaseItemDto.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
-            this.instance.providerIds = providerIds;
-            return this;
-        }
-
-        public BaseItemDto.Builder isHD(Boolean isHD) {
-            this.instance.isHD = JsonNullable.<Boolean> of(isHD);
-            return this;
-        }
-
-        public BaseItemDto.Builder isHD(JsonNullable<Boolean> isHD) {
-            this.instance.isHD = isHD;
-            return this;
-        }
-
-        public BaseItemDto.Builder isFolder(Boolean isFolder) {
-            this.instance.isFolder = JsonNullable.<Boolean> of(isFolder);
-            return this;
-        }
-
-        public BaseItemDto.Builder isFolder(JsonNullable<Boolean> isFolder) {
-            this.instance.isFolder = isFolder;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentId(UUID parentId) {
-            this.instance.parentId = JsonNullable.<UUID> of(parentId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentId(JsonNullable<UUID> parentId) {
-            this.instance.parentId = parentId;
-            return this;
-        }
-
-        public BaseItemDto.Builder type(BaseItemKind type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public BaseItemDto.Builder people(List<BaseItemPerson> people) {
-            this.instance.people = JsonNullable.<List<BaseItemPerson>> of(people);
-            return this;
-        }
-
-        public BaseItemDto.Builder people(JsonNullable<List<BaseItemPerson>> people) {
-            this.instance.people = people;
-            return this;
-        }
-
-        public BaseItemDto.Builder studios(List<NameGuidPair> studios) {
-            this.instance.studios = JsonNullable.<List<NameGuidPair>> of(studios);
-            return this;
-        }
-
-        public BaseItemDto.Builder studios(JsonNullable<List<NameGuidPair>> studios) {
-            this.instance.studios = studios;
-            return this;
-        }
-
-        public BaseItemDto.Builder genreItems(List<NameGuidPair> genreItems) {
-            this.instance.genreItems = JsonNullable.<List<NameGuidPair>> of(genreItems);
-            return this;
-        }
-
-        public BaseItemDto.Builder genreItems(JsonNullable<List<NameGuidPair>> genreItems) {
-            this.instance.genreItems = genreItems;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoItemId(UUID parentLogoItemId) {
-            this.instance.parentLogoItemId = JsonNullable.<UUID> of(parentLogoItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoItemId(JsonNullable<UUID> parentLogoItemId) {
-            this.instance.parentLogoItemId = parentLogoItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropItemId(UUID parentBackdropItemId) {
-            this.instance.parentBackdropItemId = JsonNullable.<UUID> of(parentBackdropItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropItemId(JsonNullable<UUID> parentBackdropItemId) {
-            this.instance.parentBackdropItemId = parentBackdropItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropImageTags(List<String> parentBackdropImageTags) {
-            this.instance.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentBackdropImageTags(JsonNullable<List<String>> parentBackdropImageTags) {
-            this.instance.parentBackdropImageTags = parentBackdropImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder localTrailerCount(Integer localTrailerCount) {
-            this.instance.localTrailerCount = JsonNullable.<Integer> of(localTrailerCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder localTrailerCount(JsonNullable<Integer> localTrailerCount) {
-            this.instance.localTrailerCount = localTrailerCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder userData(UserItemDataDto userData) {
-            this.instance.userData = JsonNullable.<UserItemDataDto> of(userData);
-            return this;
-        }
-
-        public BaseItemDto.Builder userData(JsonNullable<UserItemDataDto> userData) {
-            this.instance.userData = userData;
-            return this;
-        }
-
-        public BaseItemDto.Builder recursiveItemCount(Integer recursiveItemCount) {
-            this.instance.recursiveItemCount = JsonNullable.<Integer> of(recursiveItemCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder recursiveItemCount(JsonNullable<Integer> recursiveItemCount) {
-            this.instance.recursiveItemCount = recursiveItemCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder childCount(Integer childCount) {
-            this.instance.childCount = JsonNullable.<Integer> of(childCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder childCount(JsonNullable<Integer> childCount) {
-            this.instance.childCount = childCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesName(String seriesName) {
-            this.instance.seriesName = JsonNullable.<String> of(seriesName);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesName(JsonNullable<String> seriesName) {
-            this.instance.seriesName = seriesName;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesId(UUID seriesId) {
-            this.instance.seriesId = JsonNullable.<UUID> of(seriesId);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesId(JsonNullable<UUID> seriesId) {
-            this.instance.seriesId = seriesId;
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonId(UUID seasonId) {
-            this.instance.seasonId = JsonNullable.<UUID> of(seasonId);
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonId(JsonNullable<UUID> seasonId) {
-            this.instance.seasonId = seasonId;
-            return this;
-        }
-
-        public BaseItemDto.Builder specialFeatureCount(Integer specialFeatureCount) {
-            this.instance.specialFeatureCount = JsonNullable.<Integer> of(specialFeatureCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder specialFeatureCount(JsonNullable<Integer> specialFeatureCount) {
-            this.instance.specialFeatureCount = specialFeatureCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder displayPreferencesId(String displayPreferencesId) {
-            this.instance.displayPreferencesId = JsonNullable.<String> of(displayPreferencesId);
-            return this;
-        }
-
-        public BaseItemDto.Builder displayPreferencesId(JsonNullable<String> displayPreferencesId) {
-            this.instance.displayPreferencesId = displayPreferencesId;
-            return this;
-        }
-
-        public BaseItemDto.Builder status(String status) {
-            this.instance.status = JsonNullable.<String> of(status);
-            return this;
-        }
-
-        public BaseItemDto.Builder status(JsonNullable<String> status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        public BaseItemDto.Builder airTime(String airTime) {
-            this.instance.airTime = JsonNullable.<String> of(airTime);
-            return this;
-        }
-
-        public BaseItemDto.Builder airTime(JsonNullable<String> airTime) {
-            this.instance.airTime = airTime;
-            return this;
-        }
-
-        public BaseItemDto.Builder airDays(List<DayOfWeek> airDays) {
-            this.instance.airDays = JsonNullable.<List<DayOfWeek>> of(airDays);
-            return this;
-        }
-
-        public BaseItemDto.Builder airDays(JsonNullable<List<DayOfWeek>> airDays) {
-            this.instance.airDays = airDays;
-            return this;
-        }
-
-        public BaseItemDto.Builder tags(List<String> tags) {
-            this.instance.tags = JsonNullable.<List<String>> of(tags);
-            return this;
-        }
-
-        public BaseItemDto.Builder tags(JsonNullable<List<String>> tags) {
-            this.instance.tags = tags;
-            return this;
-        }
-
-        public BaseItemDto.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
-            return this;
-        }
-
-        public BaseItemDto.Builder primaryImageAspectRatio(JsonNullable<Double> primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
-            return this;
-        }
-
-        public BaseItemDto.Builder artists(List<String> artists) {
-            this.instance.artists = JsonNullable.<List<String>> of(artists);
-            return this;
-        }
-
-        public BaseItemDto.Builder artists(JsonNullable<List<String>> artists) {
-            this.instance.artists = artists;
-            return this;
-        }
-
-        public BaseItemDto.Builder artistItems(List<NameGuidPair> artistItems) {
-            this.instance.artistItems = JsonNullable.<List<NameGuidPair>> of(artistItems);
-            return this;
-        }
-
-        public BaseItemDto.Builder artistItems(JsonNullable<List<NameGuidPair>> artistItems) {
-            this.instance.artistItems = artistItems;
-            return this;
-        }
-
-        public BaseItemDto.Builder album(String album) {
-            this.instance.album = JsonNullable.<String> of(album);
-            return this;
-        }
-
-        public BaseItemDto.Builder album(JsonNullable<String> album) {
-            this.instance.album = album;
-            return this;
-        }
-
-        public BaseItemDto.Builder collectionType(String collectionType) {
-            this.instance.collectionType = JsonNullable.<String> of(collectionType);
-            return this;
-        }
-
-        public BaseItemDto.Builder collectionType(JsonNullable<String> collectionType) {
-            this.instance.collectionType = collectionType;
-            return this;
-        }
-
-        public BaseItemDto.Builder displayOrder(String displayOrder) {
-            this.instance.displayOrder = JsonNullable.<String> of(displayOrder);
-            return this;
-        }
-
-        public BaseItemDto.Builder displayOrder(JsonNullable<String> displayOrder) {
-            this.instance.displayOrder = displayOrder;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumId(UUID albumId) {
-            this.instance.albumId = JsonNullable.<UUID> of(albumId);
-            return this;
-        }
-
-        public BaseItemDto.Builder albumId(JsonNullable<UUID> albumId) {
-            this.instance.albumId = albumId;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumPrimaryImageTag(String albumPrimaryImageTag) {
-            this.instance.albumPrimaryImageTag = JsonNullable.<String> of(albumPrimaryImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder albumPrimaryImageTag(JsonNullable<String> albumPrimaryImageTag) {
-            this.instance.albumPrimaryImageTag = albumPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesPrimaryImageTag(String seriesPrimaryImageTag) {
-            this.instance.seriesPrimaryImageTag = JsonNullable.<String> of(seriesPrimaryImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesPrimaryImageTag(JsonNullable<String> seriesPrimaryImageTag) {
-            this.instance.seriesPrimaryImageTag = seriesPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtist(String albumArtist) {
-            this.instance.albumArtist = JsonNullable.<String> of(albumArtist);
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtist(JsonNullable<String> albumArtist) {
-            this.instance.albumArtist = albumArtist;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtists(List<NameGuidPair> albumArtists) {
-            this.instance.albumArtists = JsonNullable.<List<NameGuidPair>> of(albumArtists);
-            return this;
-        }
-
-        public BaseItemDto.Builder albumArtists(JsonNullable<List<NameGuidPair>> albumArtists) {
-            this.instance.albumArtists = albumArtists;
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonName(String seasonName) {
-            this.instance.seasonName = JsonNullable.<String> of(seasonName);
-            return this;
-        }
-
-        public BaseItemDto.Builder seasonName(JsonNullable<String> seasonName) {
-            this.instance.seasonName = seasonName;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaStreams(List<MediaStream> mediaStreams) {
-            this.instance.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaStreams(JsonNullable<List<MediaStream>> mediaStreams) {
-            this.instance.mediaStreams = mediaStreams;
-            return this;
-        }
-
-        public BaseItemDto.Builder videoType(VideoType videoType) {
-            this.instance.videoType = JsonNullable.<VideoType> of(videoType);
-            return this;
-        }
-
-        public BaseItemDto.Builder videoType(JsonNullable<VideoType> videoType) {
-            this.instance.videoType = videoType;
-            return this;
-        }
-
-        public BaseItemDto.Builder partCount(Integer partCount) {
-            this.instance.partCount = JsonNullable.<Integer> of(partCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder partCount(JsonNullable<Integer> partCount) {
-            this.instance.partCount = partCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSourceCount(Integer mediaSourceCount) {
-            this.instance.mediaSourceCount = JsonNullable.<Integer> of(mediaSourceCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaSourceCount(JsonNullable<Integer> mediaSourceCount) {
-            this.instance.mediaSourceCount = mediaSourceCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageTags(Map<String, String> imageTags) {
-            this.instance.imageTags = JsonNullable.<Map<String, String>> of(imageTags);
-            return this;
-        }
-
-        public BaseItemDto.Builder imageTags(JsonNullable<Map<String, String>> imageTags) {
-            this.instance.imageTags = imageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder backdropImageTags(List<String> backdropImageTags) {
-            this.instance.backdropImageTags = JsonNullable.<List<String>> of(backdropImageTags);
-            return this;
-        }
-
-        public BaseItemDto.Builder backdropImageTags(JsonNullable<List<String>> backdropImageTags) {
-            this.instance.backdropImageTags = backdropImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder screenshotImageTags(List<String> screenshotImageTags) {
-            this.instance.screenshotImageTags = JsonNullable.<List<String>> of(screenshotImageTags);
-            return this;
-        }
-
-        public BaseItemDto.Builder screenshotImageTags(JsonNullable<List<String>> screenshotImageTags) {
-            this.instance.screenshotImageTags = screenshotImageTags;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoImageTag(String parentLogoImageTag) {
-            this.instance.parentLogoImageTag = JsonNullable.<String> of(parentLogoImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentLogoImageTag(JsonNullable<String> parentLogoImageTag) {
-            this.instance.parentLogoImageTag = parentLogoImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtItemId(UUID parentArtItemId) {
-            this.instance.parentArtItemId = JsonNullable.<UUID> of(parentArtItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtItemId(JsonNullable<UUID> parentArtItemId) {
-            this.instance.parentArtItemId = parentArtItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtImageTag(String parentArtImageTag) {
-            this.instance.parentArtImageTag = JsonNullable.<String> of(parentArtImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentArtImageTag(JsonNullable<String> parentArtImageTag) {
-            this.instance.parentArtImageTag = parentArtImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesThumbImageTag(String seriesThumbImageTag) {
-            this.instance.seriesThumbImageTag = JsonNullable.<String> of(seriesThumbImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesThumbImageTag(JsonNullable<String> seriesThumbImageTag) {
-            this.instance.seriesThumbImageTag = seriesThumbImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageBlurHashes(BaseItemDtoImageBlurHashes imageBlurHashes) {
-            this.instance.imageBlurHashes = JsonNullable.<BaseItemDtoImageBlurHashes> of(imageBlurHashes);
-            return this;
-        }
-
-        public BaseItemDto.Builder imageBlurHashes(JsonNullable<BaseItemDtoImageBlurHashes> imageBlurHashes) {
-            this.instance.imageBlurHashes = imageBlurHashes;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesStudio(String seriesStudio) {
-            this.instance.seriesStudio = JsonNullable.<String> of(seriesStudio);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesStudio(JsonNullable<String> seriesStudio) {
-            this.instance.seriesStudio = seriesStudio;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbItemId(UUID parentThumbItemId) {
-            this.instance.parentThumbItemId = JsonNullable.<UUID> of(parentThumbItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbItemId(JsonNullable<UUID> parentThumbItemId) {
-            this.instance.parentThumbItemId = parentThumbItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbImageTag(String parentThumbImageTag) {
-            this.instance.parentThumbImageTag = JsonNullable.<String> of(parentThumbImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentThumbImageTag(JsonNullable<String> parentThumbImageTag) {
-            this.instance.parentThumbImageTag = parentThumbImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageItemId(String parentPrimaryImageItemId) {
-            this.instance.parentPrimaryImageItemId = JsonNullable.<String> of(parentPrimaryImageItemId);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageItemId(JsonNullable<String> parentPrimaryImageItemId) {
-            this.instance.parentPrimaryImageItemId = parentPrimaryImageItemId;
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageTag(String parentPrimaryImageTag) {
-            this.instance.parentPrimaryImageTag = JsonNullable.<String> of(parentPrimaryImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder parentPrimaryImageTag(JsonNullable<String> parentPrimaryImageTag) {
-            this.instance.parentPrimaryImageTag = parentPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder chapters(List<ChapterInfo> chapters) {
-            this.instance.chapters = JsonNullable.<List<ChapterInfo>> of(chapters);
-            return this;
-        }
-
-        public BaseItemDto.Builder chapters(JsonNullable<List<ChapterInfo>> chapters) {
-            this.instance.chapters = chapters;
-            return this;
-        }
-
-        public BaseItemDto.Builder locationType(LocationType locationType) {
-            this.instance.locationType = JsonNullable.<LocationType> of(locationType);
-            return this;
-        }
-
-        public BaseItemDto.Builder locationType(JsonNullable<LocationType> locationType) {
-            this.instance.locationType = locationType;
-            return this;
-        }
-
-        public BaseItemDto.Builder isoType(IsoType isoType) {
-            this.instance.isoType = JsonNullable.<IsoType> of(isoType);
-            return this;
-        }
-
-        public BaseItemDto.Builder isoType(JsonNullable<IsoType> isoType) {
-            this.instance.isoType = isoType;
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaType(String mediaType) {
-            this.instance.mediaType = JsonNullable.<String> of(mediaType);
-            return this;
-        }
-
-        public BaseItemDto.Builder mediaType(JsonNullable<String> mediaType) {
-            this.instance.mediaType = mediaType;
-            return this;
-        }
-
-        public BaseItemDto.Builder endDate(OffsetDateTime endDate) {
-            this.instance.endDate = JsonNullable.<OffsetDateTime> of(endDate);
-            return this;
-        }
-
-        public BaseItemDto.Builder endDate(JsonNullable<OffsetDateTime> endDate) {
-            this.instance.endDate = endDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder lockedFields(List<MetadataField> lockedFields) {
-            this.instance.lockedFields = JsonNullable.<List<MetadataField>> of(lockedFields);
-            return this;
-        }
-
-        public BaseItemDto.Builder lockedFields(JsonNullable<List<MetadataField>> lockedFields) {
-            this.instance.lockedFields = lockedFields;
-            return this;
-        }
-
-        public BaseItemDto.Builder trailerCount(Integer trailerCount) {
-            this.instance.trailerCount = JsonNullable.<Integer> of(trailerCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder trailerCount(JsonNullable<Integer> trailerCount) {
-            this.instance.trailerCount = trailerCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder movieCount(Integer movieCount) {
-            this.instance.movieCount = JsonNullable.<Integer> of(movieCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder movieCount(JsonNullable<Integer> movieCount) {
-            this.instance.movieCount = movieCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesCount(Integer seriesCount) {
-            this.instance.seriesCount = JsonNullable.<Integer> of(seriesCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesCount(JsonNullable<Integer> seriesCount) {
-            this.instance.seriesCount = seriesCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder programCount(Integer programCount) {
-            this.instance.programCount = JsonNullable.<Integer> of(programCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder programCount(JsonNullable<Integer> programCount) {
-            this.instance.programCount = programCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = JsonNullable.<Integer> of(episodeCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeCount(JsonNullable<Integer> episodeCount) {
-            this.instance.episodeCount = episodeCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder songCount(Integer songCount) {
-            this.instance.songCount = JsonNullable.<Integer> of(songCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder songCount(JsonNullable<Integer> songCount) {
-            this.instance.songCount = songCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder albumCount(Integer albumCount) {
-            this.instance.albumCount = JsonNullable.<Integer> of(albumCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder albumCount(JsonNullable<Integer> albumCount) {
-            this.instance.albumCount = albumCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder artistCount(Integer artistCount) {
-            this.instance.artistCount = JsonNullable.<Integer> of(artistCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder artistCount(JsonNullable<Integer> artistCount) {
-            this.instance.artistCount = artistCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder musicVideoCount(Integer musicVideoCount) {
-            this.instance.musicVideoCount = JsonNullable.<Integer> of(musicVideoCount);
-            return this;
-        }
-
-        public BaseItemDto.Builder musicVideoCount(JsonNullable<Integer> musicVideoCount) {
-            this.instance.musicVideoCount = musicVideoCount;
-            return this;
-        }
-
-        public BaseItemDto.Builder lockData(Boolean lockData) {
-            this.instance.lockData = JsonNullable.<Boolean> of(lockData);
-            return this;
-        }
-
-        public BaseItemDto.Builder lockData(JsonNullable<Boolean> lockData) {
-            this.instance.lockData = lockData;
-            return this;
-        }
-
-        public BaseItemDto.Builder width(Integer width) {
-            this.instance.width = JsonNullable.<Integer> of(width);
-            return this;
-        }
-
-        public BaseItemDto.Builder width(JsonNullable<Integer> width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public BaseItemDto.Builder height(Integer height) {
-            this.instance.height = JsonNullable.<Integer> of(height);
-            return this;
-        }
-
-        public BaseItemDto.Builder height(JsonNullable<Integer> height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraMake(String cameraMake) {
-            this.instance.cameraMake = JsonNullable.<String> of(cameraMake);
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraMake(JsonNullable<String> cameraMake) {
-            this.instance.cameraMake = cameraMake;
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraModel(String cameraModel) {
-            this.instance.cameraModel = JsonNullable.<String> of(cameraModel);
-            return this;
-        }
-
-        public BaseItemDto.Builder cameraModel(JsonNullable<String> cameraModel) {
-            this.instance.cameraModel = cameraModel;
-            return this;
-        }
-
-        public BaseItemDto.Builder software(String software) {
-            this.instance.software = JsonNullable.<String> of(software);
-            return this;
-        }
-
-        public BaseItemDto.Builder software(JsonNullable<String> software) {
-            this.instance.software = software;
-            return this;
-        }
-
-        public BaseItemDto.Builder exposureTime(Double exposureTime) {
-            this.instance.exposureTime = JsonNullable.<Double> of(exposureTime);
-            return this;
-        }
-
-        public BaseItemDto.Builder exposureTime(JsonNullable<Double> exposureTime) {
-            this.instance.exposureTime = exposureTime;
-            return this;
-        }
-
-        public BaseItemDto.Builder focalLength(Double focalLength) {
-            this.instance.focalLength = JsonNullable.<Double> of(focalLength);
-            return this;
-        }
-
-        public BaseItemDto.Builder focalLength(JsonNullable<Double> focalLength) {
-            this.instance.focalLength = focalLength;
-            return this;
-        }
-
-        public BaseItemDto.Builder imageOrientation(ImageOrientation imageOrientation) {
-            this.instance.imageOrientation = JsonNullable.<ImageOrientation> of(imageOrientation);
-            return this;
-        }
-
-        public BaseItemDto.Builder imageOrientation(JsonNullable<ImageOrientation> imageOrientation) {
-            this.instance.imageOrientation = imageOrientation;
-            return this;
-        }
-
-        public BaseItemDto.Builder aperture(Double aperture) {
-            this.instance.aperture = JsonNullable.<Double> of(aperture);
-            return this;
-        }
-
-        public BaseItemDto.Builder aperture(JsonNullable<Double> aperture) {
-            this.instance.aperture = aperture;
-            return this;
-        }
-
-        public BaseItemDto.Builder shutterSpeed(Double shutterSpeed) {
-            this.instance.shutterSpeed = JsonNullable.<Double> of(shutterSpeed);
-            return this;
-        }
-
-        public BaseItemDto.Builder shutterSpeed(JsonNullable<Double> shutterSpeed) {
-            this.instance.shutterSpeed = shutterSpeed;
-            return this;
-        }
-
-        public BaseItemDto.Builder latitude(Double latitude) {
-            this.instance.latitude = JsonNullable.<Double> of(latitude);
-            return this;
-        }
-
-        public BaseItemDto.Builder latitude(JsonNullable<Double> latitude) {
-            this.instance.latitude = latitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder longitude(Double longitude) {
-            this.instance.longitude = JsonNullable.<Double> of(longitude);
-            return this;
-        }
-
-        public BaseItemDto.Builder longitude(JsonNullable<Double> longitude) {
-            this.instance.longitude = longitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder altitude(Double altitude) {
-            this.instance.altitude = JsonNullable.<Double> of(altitude);
-            return this;
-        }
-
-        public BaseItemDto.Builder altitude(JsonNullable<Double> altitude) {
-            this.instance.altitude = altitude;
-            return this;
-        }
-
-        public BaseItemDto.Builder isoSpeedRating(Integer isoSpeedRating) {
-            this.instance.isoSpeedRating = JsonNullable.<Integer> of(isoSpeedRating);
-            return this;
-        }
-
-        public BaseItemDto.Builder isoSpeedRating(JsonNullable<Integer> isoSpeedRating) {
-            this.instance.isoSpeedRating = isoSpeedRating;
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesTimerId(String seriesTimerId) {
-            this.instance.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-            return this;
-        }
-
-        public BaseItemDto.Builder seriesTimerId(JsonNullable<String> seriesTimerId) {
-            this.instance.seriesTimerId = seriesTimerId;
-            return this;
-        }
-
-        public BaseItemDto.Builder programId(String programId) {
-            this.instance.programId = JsonNullable.<String> of(programId);
-            return this;
-        }
-
-        public BaseItemDto.Builder programId(JsonNullable<String> programId) {
-            this.instance.programId = programId;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelPrimaryImageTag(String channelPrimaryImageTag) {
-            this.instance.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
-            return this;
-        }
-
-        public BaseItemDto.Builder channelPrimaryImageTag(JsonNullable<String> channelPrimaryImageTag) {
-            this.instance.channelPrimaryImageTag = channelPrimaryImageTag;
-            return this;
-        }
-
-        public BaseItemDto.Builder startDate(OffsetDateTime startDate) {
-            this.instance.startDate = JsonNullable.<OffsetDateTime> of(startDate);
-            return this;
-        }
-
-        public BaseItemDto.Builder startDate(JsonNullable<OffsetDateTime> startDate) {
-            this.instance.startDate = startDate;
-            return this;
-        }
-
-        public BaseItemDto.Builder completionPercentage(Double completionPercentage) {
-            this.instance.completionPercentage = JsonNullable.<Double> of(completionPercentage);
-            return this;
-        }
-
-        public BaseItemDto.Builder completionPercentage(JsonNullable<Double> completionPercentage) {
-            this.instance.completionPercentage = completionPercentage;
-            return this;
-        }
-
-        public BaseItemDto.Builder isRepeat(Boolean isRepeat) {
-            this.instance.isRepeat = JsonNullable.<Boolean> of(isRepeat);
-            return this;
-        }
-
-        public BaseItemDto.Builder isRepeat(JsonNullable<Boolean> isRepeat) {
-            this.instance.isRepeat = isRepeat;
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeTitle(String episodeTitle) {
-            this.instance.episodeTitle = JsonNullable.<String> of(episodeTitle);
-            return this;
-        }
-
-        public BaseItemDto.Builder episodeTitle(JsonNullable<String> episodeTitle) {
-            this.instance.episodeTitle = episodeTitle;
-            return this;
-        }
-
-        public BaseItemDto.Builder channelType(ChannelType channelType) {
-            this.instance.channelType = JsonNullable.<ChannelType> of(channelType);
-            return this;
-        }
-
-        public BaseItemDto.Builder channelType(JsonNullable<ChannelType> channelType) {
-            this.instance.channelType = channelType;
-            return this;
-        }
-
-        public BaseItemDto.Builder audio(ProgramAudio audio) {
-            this.instance.audio = JsonNullable.<ProgramAudio> of(audio);
-            return this;
-        }
-
-        public BaseItemDto.Builder audio(JsonNullable<ProgramAudio> audio) {
-            this.instance.audio = audio;
-            return this;
-        }
-
-        public BaseItemDto.Builder isMovie(Boolean isMovie) {
-            this.instance.isMovie = JsonNullable.<Boolean> of(isMovie);
-            return this;
-        }
-
-        public BaseItemDto.Builder isMovie(JsonNullable<Boolean> isMovie) {
-            this.instance.isMovie = isMovie;
-            return this;
-        }
-
-        public BaseItemDto.Builder isSports(Boolean isSports) {
-            this.instance.isSports = JsonNullable.<Boolean> of(isSports);
-            return this;
-        }
-
-        public BaseItemDto.Builder isSports(JsonNullable<Boolean> isSports) {
-            this.instance.isSports = isSports;
-            return this;
-        }
-
-        public BaseItemDto.Builder isSeries(Boolean isSeries) {
-            this.instance.isSeries = JsonNullable.<Boolean> of(isSeries);
-            return this;
-        }
-
-        public BaseItemDto.Builder isSeries(JsonNullable<Boolean> isSeries) {
-            this.instance.isSeries = isSeries;
-            return this;
-        }
-
-        public BaseItemDto.Builder isLive(Boolean isLive) {
-            this.instance.isLive = JsonNullable.<Boolean> of(isLive);
-            return this;
-        }
-
-        public BaseItemDto.Builder isLive(JsonNullable<Boolean> isLive) {
-            this.instance.isLive = isLive;
-            return this;
-        }
-
-        public BaseItemDto.Builder isNews(Boolean isNews) {
-            this.instance.isNews = JsonNullable.<Boolean> of(isNews);
-            return this;
-        }
-
-        public BaseItemDto.Builder isNews(JsonNullable<Boolean> isNews) {
-            this.instance.isNews = isNews;
-            return this;
-        }
-
-        public BaseItemDto.Builder isKids(Boolean isKids) {
-            this.instance.isKids = JsonNullable.<Boolean> of(isKids);
-            return this;
-        }
-
-        public BaseItemDto.Builder isKids(JsonNullable<Boolean> isKids) {
-            this.instance.isKids = isKids;
-            return this;
-        }
-
-        public BaseItemDto.Builder isPremiere(Boolean isPremiere) {
-            this.instance.isPremiere = JsonNullable.<Boolean> of(isPremiere);
-            return this;
-        }
-
-        public BaseItemDto.Builder isPremiere(JsonNullable<Boolean> isPremiere) {
-            this.instance.isPremiere = isPremiere;
-            return this;
-        }
-
-        public BaseItemDto.Builder timerId(String timerId) {
-            this.instance.timerId = JsonNullable.<String> of(timerId);
-            return this;
-        }
-
-        public BaseItemDto.Builder timerId(JsonNullable<String> timerId) {
-            this.instance.timerId = timerId;
-            return this;
-        }
-
-        public BaseItemDto.Builder currentProgram(BaseItemDto currentProgram) {
-            this.instance.currentProgram = JsonNullable.<BaseItemDto> of(currentProgram);
-            return this;
-        }
-
-        public BaseItemDto.Builder currentProgram(JsonNullable<BaseItemDto> currentProgram) {
-            this.instance.currentProgram = currentProgram;
-            return this;
-        }
-
-        /**
-         * returns a built BaseItemDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public BaseItemDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BaseItemDto.Builder builder() {
-        return new BaseItemDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BaseItemDto.Builder toBuilder() {
-        return new BaseItemDto.Builder().name(getName()).originalTitle(getOriginalTitle()).serverId(getServerId())
-                .id(getId()).etag(getEtag()).sourceType(getSourceType()).playlistItemId(getPlaylistItemId())
-                .dateCreated(getDateCreated()).dateLastMediaAdded(getDateLastMediaAdded()).extraType(getExtraType())
-                .airsBeforeSeasonNumber(getAirsBeforeSeasonNumber()).airsAfterSeasonNumber(getAirsAfterSeasonNumber())
-                .airsBeforeEpisodeNumber(getAirsBeforeEpisodeNumber()).canDelete(getCanDelete())
-                .canDownload(getCanDownload()).hasSubtitles(getHasSubtitles())
-                .preferredMetadataLanguage(getPreferredMetadataLanguage())
-                .preferredMetadataCountryCode(getPreferredMetadataCountryCode()).supportsSync(getSupportsSync())
-                .container(getContainer()).sortName(getSortName()).forcedSortName(getForcedSortName())
-                .video3DFormat(getVideo3DFormat()).premiereDate(getPremiereDate()).externalUrls(getExternalUrls())
-                .mediaSources(getMediaSources()).criticRating(getCriticRating())
-                .productionLocations(getProductionLocations()).path(getPath())
-                .enableMediaSourceDisplay(getEnableMediaSourceDisplay()).officialRating(getOfficialRating())
-                .customRating(getCustomRating()).channelId(getChannelId()).channelName(getChannelName())
-                .overview(getOverview()).taglines(getTaglines()).genres(getGenres())
-                .communityRating(getCommunityRating()).cumulativeRunTimeTicks(getCumulativeRunTimeTicks())
-                .runTimeTicks(getRunTimeTicks()).playAccess(getPlayAccess()).aspectRatio(getAspectRatio())
-                .productionYear(getProductionYear()).isPlaceHolder(getIsPlaceHolder()).number(getNumber())
-                .channelNumber(getChannelNumber()).indexNumber(getIndexNumber()).indexNumberEnd(getIndexNumberEnd())
-                .parentIndexNumber(getParentIndexNumber()).remoteTrailers(getRemoteTrailers())
-                .providerIds(getProviderIds()).isHD(getIsHD()).isFolder(getIsFolder()).parentId(getParentId())
-                .type(getType()).people(getPeople()).studios(getStudios()).genreItems(getGenreItems())
-                .parentLogoItemId(getParentLogoItemId()).parentBackdropItemId(getParentBackdropItemId())
-                .parentBackdropImageTags(getParentBackdropImageTags()).localTrailerCount(getLocalTrailerCount())
-                .userData(getUserData()).recursiveItemCount(getRecursiveItemCount()).childCount(getChildCount())
-                .seriesName(getSeriesName()).seriesId(getSeriesId()).seasonId(getSeasonId())
-                .specialFeatureCount(getSpecialFeatureCount()).displayPreferencesId(getDisplayPreferencesId())
-                .status(getStatus()).airTime(getAirTime()).airDays(getAirDays()).tags(getTags())
-                .primaryImageAspectRatio(getPrimaryImageAspectRatio()).artists(getArtists())
-                .artistItems(getArtistItems()).album(getAlbum()).collectionType(getCollectionType())
-                .displayOrder(getDisplayOrder()).albumId(getAlbumId()).albumPrimaryImageTag(getAlbumPrimaryImageTag())
-                .seriesPrimaryImageTag(getSeriesPrimaryImageTag()).albumArtist(getAlbumArtist())
-                .albumArtists(getAlbumArtists()).seasonName(getSeasonName()).mediaStreams(getMediaStreams())
-                .videoType(getVideoType()).partCount(getPartCount()).mediaSourceCount(getMediaSourceCount())
-                .imageTags(getImageTags()).backdropImageTags(getBackdropImageTags())
-                .screenshotImageTags(getScreenshotImageTags()).parentLogoImageTag(getParentLogoImageTag())
-                .parentArtItemId(getParentArtItemId()).parentArtImageTag(getParentArtImageTag())
-                .seriesThumbImageTag(getSeriesThumbImageTag()).imageBlurHashes(getImageBlurHashes())
-                .seriesStudio(getSeriesStudio()).parentThumbItemId(getParentThumbItemId())
-                .parentThumbImageTag(getParentThumbImageTag()).parentPrimaryImageItemId(getParentPrimaryImageItemId())
-                .parentPrimaryImageTag(getParentPrimaryImageTag()).chapters(getChapters())
-                .locationType(getLocationType()).isoType(getIsoType()).mediaType(getMediaType()).endDate(getEndDate())
-                .lockedFields(getLockedFields()).trailerCount(getTrailerCount()).movieCount(getMovieCount())
-                .seriesCount(getSeriesCount()).programCount(getProgramCount()).episodeCount(getEpisodeCount())
-                .songCount(getSongCount()).albumCount(getAlbumCount()).artistCount(getArtistCount())
-                .musicVideoCount(getMusicVideoCount()).lockData(getLockData()).width(getWidth()).height(getHeight())
-                .cameraMake(getCameraMake()).cameraModel(getCameraModel()).software(getSoftware())
-                .exposureTime(getExposureTime()).focalLength(getFocalLength()).imageOrientation(getImageOrientation())
-                .aperture(getAperture()).shutterSpeed(getShutterSpeed()).latitude(getLatitude())
-                .longitude(getLongitude()).altitude(getAltitude()).isoSpeedRating(getIsoSpeedRating())
-                .seriesTimerId(getSeriesTimerId()).programId(getProgramId())
-                .channelPrimaryImageTag(getChannelPrimaryImageTag()).startDate(getStartDate())
-                .completionPercentage(getCompletionPercentage()).isRepeat(getIsRepeat()).episodeTitle(getEpisodeTitle())
-                .channelType(getChannelType()).audio(getAudio()).isMovie(getIsMovie()).isSports(getIsSports())
-                .isSeries(getIsSeries()).isLive(getIsLive()).isNews(getIsNews()).isKids(getIsKids())
-                .isPremiere(getIsPremiere()).timerId(getTimerId()).currentProgram(getCurrentProgram());
-    }
 }
+

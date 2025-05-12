@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,42 +29,43 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum HardwareEncodingType.
  */
 public enum HardwareEncodingType {
+  
+  AMF("AMF"),
+  
+  QSV("QSV"),
+  
+  NVENC("NVENC"),
+  
+  V4_L2_M2_M("V4L2M2M"),
+  
+  VAAPI("VAAPI"),
+  
+  VIDEO_TOOL_BOX("VideoToolBox");
 
-    AMF("AMF"),
+  private String value;
 
-    QSV("QSV"),
+  HardwareEncodingType(String value) {
+    this.value = value;
+  }
 
-    NVENC("NVENC"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    V4_L2_M2_M("V4L2M2M"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    VAAPI("VAAPI"),
-
-    VIDEO_TOOL_BOX("VideoToolBox");
-
-    private String value;
-
-    HardwareEncodingType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static HardwareEncodingType fromValue(String value) {
+    for (HardwareEncodingType b : HardwareEncodingType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static HardwareEncodingType fromValue(String value) {
-        for (HardwareEncodingType b : HardwareEncodingType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

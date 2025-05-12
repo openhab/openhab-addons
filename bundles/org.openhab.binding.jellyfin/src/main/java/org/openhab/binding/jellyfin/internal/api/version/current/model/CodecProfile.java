@@ -17,395 +17,404 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.CodecType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ProfileCondition;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Defines the MediaBrowser.Model.Dlna.CodecProfile.
  */
-@JsonPropertyOrder({ CodecProfile.JSON_PROPERTY_TYPE, CodecProfile.JSON_PROPERTY_CONDITIONS,
-        CodecProfile.JSON_PROPERTY_APPLY_CONDITIONS, CodecProfile.JSON_PROPERTY_CODEC,
-        CodecProfile.JSON_PROPERTY_CONTAINER, CodecProfile.JSON_PROPERTY_SUB_CONTAINER })
+@JsonPropertyOrder({
+  CodecProfile.JSON_PROPERTY_TYPE,
+  CodecProfile.JSON_PROPERTY_CONDITIONS,
+  CodecProfile.JSON_PROPERTY_APPLY_CONDITIONS,
+  CodecProfile.JSON_PROPERTY_CODEC,
+  CodecProfile.JSON_PROPERTY_CONTAINER,
+  CodecProfile.JSON_PROPERTY_SUB_CONTAINER
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CodecProfile {
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private CodecType type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private CodecType type;
 
-    public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
-    @javax.annotation.Nullable
-    private List<ProfileCondition> conditions = new ArrayList<>();
+  public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
+  @javax.annotation.Nullable
+  private List<ProfileCondition> conditions = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_APPLY_CONDITIONS = "ApplyConditions";
-    @javax.annotation.Nullable
-    private List<ProfileCondition> applyConditions = new ArrayList<>();
+  public static final String JSON_PROPERTY_APPLY_CONDITIONS = "ApplyConditions";
+  @javax.annotation.Nullable
+  private List<ProfileCondition> applyConditions = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_CODEC = "Codec";
-    @javax.annotation.Nullable
-    private JsonNullable<String> codec = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CODEC = "Codec";
+  @javax.annotation.Nullable
+  private JsonNullable<String> codec = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  @javax.annotation.Nullable
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
-    @javax.annotation.Nullable
-    private JsonNullable<String> subContainer = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
+  @javax.annotation.Nullable
+  private JsonNullable<String> subContainer = JsonNullable.<String>undefined();
 
-    public CodecProfile() {
+  public CodecProfile() {
+  }
+
+  public CodecProfile type(@javax.annotation.Nullable CodecType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+  /**
+   * Gets or sets the MediaBrowser.Model.Dlna.CodecType which this container must meet.
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public CodecType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(@javax.annotation.Nullable CodecType type) {
+    this.type = type;
+  }
+
+  public CodecProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+    
+    this.conditions = conditions;
+    return this;
+  }
+
+  public CodecProfile addConditionsItem(ProfileCondition conditionsItem) {
+    if (this.conditions == null) {
+      this.conditions = new ArrayList<>();
     }
+    this.conditions.add(conditionsItem);
+    return this;
+  }
 
-    public CodecProfile type(@javax.annotation.Nullable CodecType type) {
+  /**
+   * Gets or sets the list of MediaBrowser.Model.Dlna.ProfileCondition which this profile must meet.
+   * @return conditions
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.type = type;
-        return this;
+  public List<ProfileCondition> getConditions() {
+    return conditions;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+    this.conditions = conditions;
+  }
+
+  public CodecProfile applyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
+    
+    this.applyConditions = applyConditions;
+    return this;
+  }
+
+  public CodecProfile addApplyConditionsItem(ProfileCondition applyConditionsItem) {
+    if (this.applyConditions == null) {
+      this.applyConditions = new ArrayList<>();
     }
+    this.applyConditions.add(applyConditionsItem);
+    return this;
+  }
 
-    /**
-     * Gets or sets the MediaBrowser.Model.Dlna.CodecType which this container must meet.
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets the list of MediaBrowser.Model.Dlna.ProfileCondition to apply if this profile is met.
+   * @return applyConditions
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public CodecType getType() {
-        return type;
-    }
+  public List<ProfileCondition> getApplyConditions() {
+    return applyConditions;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setType(@javax.annotation.Nullable CodecType type) {
-        this.type = type;
-    }
 
-    public CodecProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+  @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApplyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
+    this.applyConditions = applyConditions;
+  }
 
-        this.conditions = conditions;
-        return this;
-    }
+  public CodecProfile codec(@javax.annotation.Nullable String codec) {
+    this.codec = JsonNullable.<String>of(codec);
+    
+    return this;
+  }
 
-    public CodecProfile addConditionsItem(ProfileCondition conditionsItem) {
-        if (this.conditions == null) {
-            this.conditions = new ArrayList<>();
-        }
-        this.conditions.add(conditionsItem);
-        return this;
-    }
+  /**
+   * Gets or sets the codec(s) that this profile applies to.
+   * @return codec
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the list of MediaBrowser.Model.Dlna.ProfileCondition which this profile must meet.
-     * 
-     * @return conditions
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ProfileCondition> getConditions() {
-        return conditions;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = conditions;
-    }
-
-    public CodecProfile applyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-
-        this.applyConditions = applyConditions;
-        return this;
-    }
-
-    public CodecProfile addApplyConditionsItem(ProfileCondition applyConditionsItem) {
-        if (this.applyConditions == null) {
-            this.applyConditions = new ArrayList<>();
-        }
-        this.applyConditions.add(applyConditionsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the list of MediaBrowser.Model.Dlna.ProfileCondition to apply if this profile is met.
-     * 
-     * @return applyConditions
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ProfileCondition> getApplyConditions() {
-        return applyConditions;
-    }
-
-    @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setApplyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-        this.applyConditions = applyConditions;
-    }
-
-    public CodecProfile codec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the codec(s) that this profile applies to.
-     * 
-     * @return codec
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCodec() {
+  public String getCodec() {
         return codec.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCodec_JsonNullable() {
-        return codec;
-    }
+  public JsonNullable<String> getCodec_JsonNullable() {
+    return codec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    this.codec = codec;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
-    public void setCodec_JsonNullable(JsonNullable<String> codec) {
-        this.codec = codec;
-    }
+  public void setCodec(@javax.annotation.Nullable String codec) {
+    this.codec = JsonNullable.<String>of(codec);
+  }
 
-    public void setCodec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
-    }
+  public CodecProfile container(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+    
+    return this;
+  }
 
-    public CodecProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
+  /**
+   * Gets or sets the container(s) which this profile will be applied to.
+   * @return container
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the container(s) which this profile will be applied to.
-     * 
-     * @return container
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
+  public String getContainer() {
         return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
+    return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
+  }
+
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+  }
+
+  public CodecProfile subContainer(@javax.annotation.Nullable String subContainer) {
+    this.subContainer = JsonNullable.<String>of(subContainer);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the sub-container(s) which this profile will be applied to.
+   * @return subContainer
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getSubContainer() {
+        return subContainer.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSubContainer_JsonNullable() {
+    return subContainer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+  public void setSubContainer_JsonNullable(JsonNullable<String> subContainer) {
+    this.subContainer = subContainer;
+  }
+
+  public void setSubContainer(@javax.annotation.Nullable String subContainer) {
+    this.subContainer = JsonNullable.<String>of(subContainer);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CodecProfile codecProfile = (CodecProfile) o;
+    return Objects.equals(this.type, codecProfile.type) &&
+        Objects.equals(this.conditions, codecProfile.conditions) &&
+        Objects.equals(this.applyConditions, codecProfile.applyConditions) &&
+        equalsNullable(this.codec, codecProfile.codec) &&
+        equalsNullable(this.container, codecProfile.container) &&
+        equalsNullable(this.subContainer, codecProfile.subContainer);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, conditions, applyConditions, hashCodeNullable(codec), hashCodeNullable(container), hashCodeNullable(subContainer));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class CodecProfile {\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    conditions: ").append(toIndentedString(conditions)).append("\n");
+    sb.append("    applyConditions: ").append(toIndentedString(applyConditions)).append("\n");
+    sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
+    sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("    subContainer: ").append(toIndentedString(subContainer)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private CodecProfile instance;
+
+    public Builder() {
+      this(new CodecProfile());
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getContainer_JsonNullable() {
-        return container;
+    protected Builder(CodecProfile instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
-        this.container = container;
+    public CodecProfile.Builder type(CodecType type) {
+      this.instance.type = type;
+      return this;
+    }
+    public CodecProfile.Builder conditions(List<ProfileCondition> conditions) {
+      this.instance.conditions = conditions;
+      return this;
+    }
+    public CodecProfile.Builder applyConditions(List<ProfileCondition> applyConditions) {
+      this.instance.applyConditions = applyConditions;
+      return this;
+    }
+    public CodecProfile.Builder codec(String codec) {
+      this.instance.codec = JsonNullable.<String>of(codec);
+      return this;
+    }
+    public CodecProfile.Builder codec(JsonNullable<String> codec) {
+      this.instance.codec = codec;
+      return this;
+    }
+    public CodecProfile.Builder container(String container) {
+      this.instance.container = JsonNullable.<String>of(container);
+      return this;
+    }
+    public CodecProfile.Builder container(JsonNullable<String> container) {
+      this.instance.container = container;
+      return this;
+    }
+    public CodecProfile.Builder subContainer(String subContainer) {
+      this.instance.subContainer = JsonNullable.<String>of(subContainer);
+      return this;
+    }
+    public CodecProfile.Builder subContainer(JsonNullable<String> subContainer) {
+      this.instance.subContainer = subContainer;
+      return this;
     }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
-    public CodecProfile subContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the sub-container(s) which this profile will be applied to.
-     * 
-     * @return subContainer
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSubContainer() {
-        return subContainer.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getSubContainer_JsonNullable() {
-        return subContainer;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
-    public void setSubContainer_JsonNullable(JsonNullable<String> subContainer) {
-        this.subContainer = subContainer;
-    }
-
-    public void setSubContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CodecProfile codecProfile = (CodecProfile) o;
-        return Objects.equals(this.type, codecProfile.type) && Objects.equals(this.conditions, codecProfile.conditions)
-                && Objects.equals(this.applyConditions, codecProfile.applyConditions)
-                && equalsNullable(this.codec, codecProfile.codec)
-                && equalsNullable(this.container, codecProfile.container)
-                && equalsNullable(this.subContainer, codecProfile.subContainer);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, conditions, applyConditions, hashCodeNullable(codec), hashCodeNullable(container),
-                hashCodeNullable(subContainer));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built CodecProfile instance.
+    *
+    * The builder is not reusable.
+    */
+    public CodecProfile build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class CodecProfile {\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    conditions: ").append(toIndentedString(conditions)).append("\n");
-        sb.append("    applyConditions: ").append(toIndentedString(applyConditions)).append("\n");
-        sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
-        sb.append("    container: ").append(toIndentedString(container)).append("\n");
-        sb.append("    subContainer: ").append(toIndentedString(subContainer)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static CodecProfile.Builder builder() {
+    return new CodecProfile.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public CodecProfile.Builder toBuilder() {
+    return new CodecProfile.Builder()
+      .type(getType())
+      .conditions(getConditions())
+      .applyConditions(getApplyConditions())
+      .codec(getCodec())
+      .container(getContainer())
+      .subContainer(getSubContainer());
+  }
 
-        private CodecProfile instance;
 
-        public Builder() {
-            this(new CodecProfile());
-        }
-
-        protected Builder(CodecProfile instance) {
-            this.instance = instance;
-        }
-
-        public CodecProfile.Builder type(CodecType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public CodecProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = conditions;
-            return this;
-        }
-
-        public CodecProfile.Builder applyConditions(List<ProfileCondition> applyConditions) {
-            this.instance.applyConditions = applyConditions;
-            return this;
-        }
-
-        public CodecProfile.Builder codec(String codec) {
-            this.instance.codec = JsonNullable.<String> of(codec);
-            return this;
-        }
-
-        public CodecProfile.Builder codec(JsonNullable<String> codec) {
-            this.instance.codec = codec;
-            return this;
-        }
-
-        public CodecProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public CodecProfile.Builder container(JsonNullable<String> container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public CodecProfile.Builder subContainer(String subContainer) {
-            this.instance.subContainer = JsonNullable.<String> of(subContainer);
-            return this;
-        }
-
-        public CodecProfile.Builder subContainer(JsonNullable<String> subContainer) {
-            this.instance.subContainer = subContainer;
-            return this;
-        }
-
-        /**
-         * returns a built CodecProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public CodecProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CodecProfile.Builder builder() {
-        return new CodecProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CodecProfile.Builder toBuilder() {
-        return new CodecProfile.Builder().type(getType()).conditions(getConditions())
-                .applyConditions(getApplyConditions()).codec(getCodec()).container(getContainer())
-                .subContainer(getSubContainer());
-    }
 }
+

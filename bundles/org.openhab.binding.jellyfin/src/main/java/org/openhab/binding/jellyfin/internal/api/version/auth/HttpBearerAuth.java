@@ -38,16 +38,15 @@ public class HttpBearerAuth implements Authentication {
     }
 
     @Override
-    public void applyToParams(MultiValueMap<String, String> queryParams, HttpHeaders headerParams,
-            MultiValueMap<String, String> cookieParams) {
+    public void applyToParams(MultiValueMap<String, String> queryParams, HttpHeaders headerParams, MultiValueMap<String, String> cookieParams) {
         if (bearerToken == null) {
             return;
         }
-        headerParams.add(HttpHeaders.AUTHORIZATION,
-                (scheme != null ? upperCaseBearer(scheme) + " " : "") + bearerToken);
+        headerParams.add(HttpHeaders.AUTHORIZATION, (scheme != null ? upperCaseBearer(scheme) + " " : "") + bearerToken);
     }
 
     private static String upperCaseBearer(String scheme) {
         return ("bearer".equalsIgnoreCase(scheme)) ? "Bearer" : scheme;
     }
+
 }

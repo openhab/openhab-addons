@@ -17,663 +17,653 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.CodecProfile;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ContainerProfile;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.DirectPlayProfile;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SubtitleProfile;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TranscodingProfile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device
- * is able to play. &lt;br /&gt; Specifically, it defines the supported &lt;see
- * cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and
- * &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt; (video
- * and/or audio, including codec profiles and levels) the device is able to direct play (without transcoding or
- * remuxing), as well as which &lt;see
- * cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode
- * to&lt;/see&gt; in case it isn&#39;t.
+ * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device is able to play.  &lt;br /&gt;  Specifically, it defines the supported &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and  &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt; (video and/or audio, including codec profiles and levels)  the device is able to direct play (without transcoding or remuxing),  as well as which &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode to&lt;/see&gt; in case it isn&#39;t.
  */
-@JsonPropertyOrder({ DeviceProfile.JSON_PROPERTY_NAME, DeviceProfile.JSON_PROPERTY_ID,
-        DeviceProfile.JSON_PROPERTY_MAX_STREAMING_BITRATE, DeviceProfile.JSON_PROPERTY_MAX_STATIC_BITRATE,
-        DeviceProfile.JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE,
-        DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
-        DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES, DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
-        DeviceProfile.JSON_PROPERTY_CODEC_PROFILES, DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES })
+@JsonPropertyOrder({
+  DeviceProfile.JSON_PROPERTY_NAME,
+  DeviceProfile.JSON_PROPERTY_ID,
+  DeviceProfile.JSON_PROPERTY_MAX_STREAMING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
+  DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CODEC_PROFILES,
+  DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceProfile {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> id = JsonNullable.<UUID> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> id = JsonNullable.<UUID>undefined();
 
-    public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
-    @javax.annotation.Nullable
-    private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
+  public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
+  @javax.annotation.Nullable
+  private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
-    @javax.annotation.Nullable
-    private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
+  public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
+  @javax.annotation.Nullable
+  private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
-    @javax.annotation.Nullable
-    private List<ContainerProfile> containerProfiles = new ArrayList<>();
+  public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
+  @javax.annotation.Nullable
+  private List<ContainerProfile> containerProfiles = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
-    @javax.annotation.Nullable
-    private List<CodecProfile> codecProfiles = new ArrayList<>();
+  public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
+  @javax.annotation.Nullable
+  private List<CodecProfile> codecProfiles = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
-    @javax.annotation.Nullable
-    private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
+  public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
+  @javax.annotation.Nullable
+  private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
 
-    public DeviceProfile() {
-    }
+  public DeviceProfile() {
+  }
 
-    public DeviceProfile name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public DeviceProfile name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name of this device profile. User profiles must have a unique name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name of this device profile. User profiles must have a unique name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public DeviceProfile id(@javax.annotation.Nullable UUID id) {
+    this.id = JsonNullable.<UUID>of(id);
+    
+    return this;
+  }
 
-    public DeviceProfile id(@javax.annotation.Nullable UUID id) {
-        this.id = JsonNullable.<UUID> of(id);
+  /**
+   * Gets or sets the unique internal identifier.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the unique internal identifier.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getId() {
+  public UUID getId() {
         return id.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getId_JsonNullable() {
-        return id;
-    }
+  public JsonNullable<UUID> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<UUID> id) {
+    this.id = id;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<UUID> id) {
-        this.id = id;
-    }
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = JsonNullable.<UUID>of(id);
+  }
 
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = JsonNullable.<UUID> of(id);
-    }
+  public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
+    
+    return this;
+  }
 
-    public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
+  /**
+   * Gets or sets the maximum allowed bitrate for all streamed content.
+   * @return maxStreamingBitrate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum allowed bitrate for all streamed content.
-     * 
-     * @return maxStreamingBitrate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStreamingBitrate() {
+  public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
-        return maxStreamingBitrate;
-    }
+  public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
+    return maxStreamingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    this.maxStreamingBitrate = maxStreamingBitrate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
-        this.maxStreamingBitrate = maxStreamingBitrate;
-    }
+  public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
+  }
 
-    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-    }
+  public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
+    
+    return this;
+  }
 
-    public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
+  /**
+   * Gets or sets the maximum allowed bitrate for statically streamed content (&#x3D; direct played files).
+   * @return maxStaticBitrate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum allowed bitrate for statically streamed content (&#x3D; direct played files).
-     * 
-     * @return maxStaticBitrate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticBitrate() {
+  public Integer getMaxStaticBitrate() {
         return maxStaticBitrate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
-        return maxStaticBitrate;
-    }
+  public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
+    return maxStaticBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
+    this.maxStaticBitrate = maxStaticBitrate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
-    public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
-        this.maxStaticBitrate = maxStaticBitrate;
-    }
+  public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
+  }
 
-    public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
-    }
+  public DeviceProfile musicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
+    
+    return this;
+  }
 
-    public DeviceProfile musicStreamingTranscodingBitrate(
-            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
+  /**
+   * Gets or sets the maximum allowed bitrate for transcoded music streams.
+   * @return musicStreamingTranscodingBitrate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum allowed bitrate for transcoded music streams.
-     * 
-     * @return musicStreamingTranscodingBitrate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMusicStreamingTranscodingBitrate() {
+  public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
-        return musicStreamingTranscodingBitrate;
-    }
+  public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
+    return musicStreamingTranscodingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  public void setMusicStreamingTranscodingBitrate_JsonNullable(JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
-    public void setMusicStreamingTranscodingBitrate_JsonNullable(
-            JsonNullable<Integer> musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
-    }
+  public void setMusicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
+  }
 
-    public void setMusicStreamingTranscodingBitrate(
-            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
-    }
+  public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
+    
+    return this;
+  }
 
-    public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
+  /**
+   * Gets or sets the maximum allowed bitrate for statically streamed (&#x3D; direct played) music files.
+   * @return maxStaticMusicBitrate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum allowed bitrate for statically streamed (&#x3D; direct played) music files.
-     * 
-     * @return maxStaticMusicBitrate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticMusicBitrate() {
+  public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
+    return maxStaticMusicBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
+    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+  }
+
+  public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
+  }
+
+  public DeviceProfile directPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
+    
+    this.directPlayProfiles = directPlayProfiles;
+    return this;
+  }
+
+  public DeviceProfile addDirectPlayProfilesItem(DirectPlayProfile directPlayProfilesItem) {
+    if (this.directPlayProfiles == null) {
+      this.directPlayProfiles = new ArrayList<>();
+    }
+    this.directPlayProfiles.add(directPlayProfilesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the direct play profiles.
+   * @return directPlayProfiles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<DirectPlayProfile> getDirectPlayProfiles() {
+    return directPlayProfiles;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDirectPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
+    this.directPlayProfiles = directPlayProfiles;
+  }
+
+  public DeviceProfile transcodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
+    
+    this.transcodingProfiles = transcodingProfiles;
+    return this;
+  }
+
+  public DeviceProfile addTranscodingProfilesItem(TranscodingProfile transcodingProfilesItem) {
+    if (this.transcodingProfiles == null) {
+      this.transcodingProfiles = new ArrayList<>();
+    }
+    this.transcodingProfiles.add(transcodingProfilesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the transcoding profiles.
+   * @return transcodingProfiles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<TranscodingProfile> getTranscodingProfiles() {
+    return transcodingProfiles;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTranscodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
+    this.transcodingProfiles = transcodingProfiles;
+  }
+
+  public DeviceProfile containerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
+    
+    this.containerProfiles = containerProfiles;
+    return this;
+  }
+
+  public DeviceProfile addContainerProfilesItem(ContainerProfile containerProfilesItem) {
+    if (this.containerProfiles == null) {
+      this.containerProfiles = new ArrayList<>();
+    }
+    this.containerProfiles.add(containerProfilesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the container profiles. Failing to meet these optional conditions causes transcoding to occur.
+   * @return containerProfiles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ContainerProfile> getContainerProfiles() {
+    return containerProfiles;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
+    this.containerProfiles = containerProfiles;
+  }
+
+  public DeviceProfile codecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
+    
+    this.codecProfiles = codecProfiles;
+    return this;
+  }
+
+  public DeviceProfile addCodecProfilesItem(CodecProfile codecProfilesItem) {
+    if (this.codecProfiles == null) {
+      this.codecProfiles = new ArrayList<>();
+    }
+    this.codecProfiles.add(codecProfilesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the codec profiles.
+   * @return codecProfiles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<CodecProfile> getCodecProfiles() {
+    return codecProfiles;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCodecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
+    this.codecProfiles = codecProfiles;
+  }
+
+  public DeviceProfile subtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
+    
+    this.subtitleProfiles = subtitleProfiles;
+    return this;
+  }
+
+  public DeviceProfile addSubtitleProfilesItem(SubtitleProfile subtitleProfilesItem) {
+    if (this.subtitleProfiles == null) {
+      this.subtitleProfiles = new ArrayList<>();
+    }
+    this.subtitleProfiles.add(subtitleProfilesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the subtitle profiles.
+   * @return subtitleProfiles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<SubtitleProfile> getSubtitleProfiles() {
+    return subtitleProfiles;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
+    this.subtitleProfiles = subtitleProfiles;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DeviceProfile deviceProfile = (DeviceProfile) o;
+    return equalsNullable(this.name, deviceProfile.name) &&
+        equalsNullable(this.id, deviceProfile.id) &&
+        equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate) &&
+        equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate) &&
+        equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate) &&
+        equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate) &&
+        Objects.equals(this.directPlayProfiles, deviceProfile.directPlayProfiles) &&
+        Objects.equals(this.transcodingProfiles, deviceProfile.transcodingProfiles) &&
+        Objects.equals(this.containerProfiles, deviceProfile.containerProfiles) &&
+        Objects.equals(this.codecProfiles, deviceProfile.codecProfiles) &&
+        Objects.equals(this.subtitleProfiles, deviceProfile.subtitleProfiles);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(maxStreamingBitrate), hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate), hashCodeNullable(maxStaticMusicBitrate), directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles, subtitleProfiles);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DeviceProfile {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    maxStreamingBitrate: ").append(toIndentedString(maxStreamingBitrate)).append("\n");
+    sb.append("    maxStaticBitrate: ").append(toIndentedString(maxStaticBitrate)).append("\n");
+    sb.append("    musicStreamingTranscodingBitrate: ").append(toIndentedString(musicStreamingTranscodingBitrate)).append("\n");
+    sb.append("    maxStaticMusicBitrate: ").append(toIndentedString(maxStaticMusicBitrate)).append("\n");
+    sb.append("    directPlayProfiles: ").append(toIndentedString(directPlayProfiles)).append("\n");
+    sb.append("    transcodingProfiles: ").append(toIndentedString(transcodingProfiles)).append("\n");
+    sb.append("    containerProfiles: ").append(toIndentedString(containerProfiles)).append("\n");
+    sb.append("    codecProfiles: ").append(toIndentedString(codecProfiles)).append("\n");
+    sb.append("    subtitleProfiles: ").append(toIndentedString(subtitleProfiles)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DeviceProfile instance;
+
+    public Builder() {
+      this(new DeviceProfile());
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
-        return maxStaticMusicBitrate;
+    protected Builder(DeviceProfile instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
-    public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+    public DeviceProfile.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public DeviceProfile.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public DeviceProfile.Builder id(UUID id) {
+      this.instance.id = JsonNullable.<UUID>of(id);
+      return this;
+    }
+    public DeviceProfile.Builder id(JsonNullable<UUID> id) {
+      this.instance.id = id;
+      return this;
+    }
+    public DeviceProfile.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
+      this.instance.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
+      return this;
+    }
+    public DeviceProfile.Builder maxStreamingBitrate(JsonNullable<Integer> maxStreamingBitrate) {
+      this.instance.maxStreamingBitrate = maxStreamingBitrate;
+      return this;
+    }
+    public DeviceProfile.Builder maxStaticBitrate(Integer maxStaticBitrate) {
+      this.instance.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
+      return this;
+    }
+    public DeviceProfile.Builder maxStaticBitrate(JsonNullable<Integer> maxStaticBitrate) {
+      this.instance.maxStaticBitrate = maxStaticBitrate;
+      return this;
+    }
+    public DeviceProfile.Builder musicStreamingTranscodingBitrate(Integer musicStreamingTranscodingBitrate) {
+      this.instance.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
+      return this;
+    }
+    public DeviceProfile.Builder musicStreamingTranscodingBitrate(JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+      this.instance.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+      return this;
+    }
+    public DeviceProfile.Builder maxStaticMusicBitrate(Integer maxStaticMusicBitrate) {
+      this.instance.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
+      return this;
+    }
+    public DeviceProfile.Builder maxStaticMusicBitrate(JsonNullable<Integer> maxStaticMusicBitrate) {
+      this.instance.maxStaticMusicBitrate = maxStaticMusicBitrate;
+      return this;
+    }
+    public DeviceProfile.Builder directPlayProfiles(List<DirectPlayProfile> directPlayProfiles) {
+      this.instance.directPlayProfiles = directPlayProfiles;
+      return this;
+    }
+    public DeviceProfile.Builder transcodingProfiles(List<TranscodingProfile> transcodingProfiles) {
+      this.instance.transcodingProfiles = transcodingProfiles;
+      return this;
+    }
+    public DeviceProfile.Builder containerProfiles(List<ContainerProfile> containerProfiles) {
+      this.instance.containerProfiles = containerProfiles;
+      return this;
+    }
+    public DeviceProfile.Builder codecProfiles(List<CodecProfile> codecProfiles) {
+      this.instance.codecProfiles = codecProfiles;
+      return this;
+    }
+    public DeviceProfile.Builder subtitleProfiles(List<SubtitleProfile> subtitleProfiles) {
+      this.instance.subtitleProfiles = subtitleProfiles;
+      return this;
     }
 
-    public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
-    }
-
-    public DeviceProfile directPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
-
-        this.directPlayProfiles = directPlayProfiles;
-        return this;
-    }
-
-    public DeviceProfile addDirectPlayProfilesItem(DirectPlayProfile directPlayProfilesItem) {
-        if (this.directPlayProfiles == null) {
-            this.directPlayProfiles = new ArrayList<>();
-        }
-        this.directPlayProfiles.add(directPlayProfilesItem);
-        return this;
-    }
 
     /**
-     * Gets or sets the direct play profiles.
-     * 
-     * @return directPlayProfiles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<DirectPlayProfile> getDirectPlayProfiles() {
-        return directPlayProfiles;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDirectPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
-        this.directPlayProfiles = directPlayProfiles;
-    }
-
-    public DeviceProfile transcodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
-
-        this.transcodingProfiles = transcodingProfiles;
-        return this;
-    }
-
-    public DeviceProfile addTranscodingProfilesItem(TranscodingProfile transcodingProfilesItem) {
-        if (this.transcodingProfiles == null) {
-            this.transcodingProfiles = new ArrayList<>();
-        }
-        this.transcodingProfiles.add(transcodingProfilesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the transcoding profiles.
-     * 
-     * @return transcodingProfiles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<TranscodingProfile> getTranscodingProfiles() {
-        return transcodingProfiles;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTranscodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
-        this.transcodingProfiles = transcodingProfiles;
-    }
-
-    public DeviceProfile containerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
-
-        this.containerProfiles = containerProfiles;
-        return this;
-    }
-
-    public DeviceProfile addContainerProfilesItem(ContainerProfile containerProfilesItem) {
-        if (this.containerProfiles == null) {
-            this.containerProfiles = new ArrayList<>();
-        }
-        this.containerProfiles.add(containerProfilesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the container profiles. Failing to meet these optional conditions causes transcoding to occur.
-     * 
-     * @return containerProfiles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ContainerProfile> getContainerProfiles() {
-        return containerProfiles;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setContainerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
-        this.containerProfiles = containerProfiles;
-    }
-
-    public DeviceProfile codecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
-
-        this.codecProfiles = codecProfiles;
-        return this;
-    }
-
-    public DeviceProfile addCodecProfilesItem(CodecProfile codecProfilesItem) {
-        if (this.codecProfiles == null) {
-            this.codecProfiles = new ArrayList<>();
-        }
-        this.codecProfiles.add(codecProfilesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the codec profiles.
-     * 
-     * @return codecProfiles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<CodecProfile> getCodecProfiles() {
-        return codecProfiles;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCodecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
-        this.codecProfiles = codecProfiles;
-    }
-
-    public DeviceProfile subtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
-
-        this.subtitleProfiles = subtitleProfiles;
-        return this;
-    }
-
-    public DeviceProfile addSubtitleProfilesItem(SubtitleProfile subtitleProfilesItem) {
-        if (this.subtitleProfiles == null) {
-            this.subtitleProfiles = new ArrayList<>();
-        }
-        this.subtitleProfiles.add(subtitleProfilesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the subtitle profiles.
-     * 
-     * @return subtitleProfiles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<SubtitleProfile> getSubtitleProfiles() {
-        return subtitleProfiles;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSubtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
-        this.subtitleProfiles = subtitleProfiles;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DeviceProfile deviceProfile = (DeviceProfile) o;
-        return equalsNullable(this.name, deviceProfile.name) && equalsNullable(this.id, deviceProfile.id)
-                && equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate)
-                && equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate)
-                && equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate)
-                && equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate)
-                && Objects.equals(this.directPlayProfiles, deviceProfile.directPlayProfiles)
-                && Objects.equals(this.transcodingProfiles, deviceProfile.transcodingProfiles)
-                && Objects.equals(this.containerProfiles, deviceProfile.containerProfiles)
-                && Objects.equals(this.codecProfiles, deviceProfile.codecProfiles)
-                && Objects.equals(this.subtitleProfiles, deviceProfile.subtitleProfiles);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(maxStreamingBitrate),
-                hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate),
-                hashCodeNullable(maxStaticMusicBitrate), directPlayProfiles, transcodingProfiles, containerProfiles,
-                codecProfiles, subtitleProfiles);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built DeviceProfile instance.
+    *
+    * The builder is not reusable.
+    */
+    public DeviceProfile build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DeviceProfile {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    maxStreamingBitrate: ").append(toIndentedString(maxStreamingBitrate)).append("\n");
-        sb.append("    maxStaticBitrate: ").append(toIndentedString(maxStaticBitrate)).append("\n");
-        sb.append("    musicStreamingTranscodingBitrate: ").append(toIndentedString(musicStreamingTranscodingBitrate))
-                .append("\n");
-        sb.append("    maxStaticMusicBitrate: ").append(toIndentedString(maxStaticMusicBitrate)).append("\n");
-        sb.append("    directPlayProfiles: ").append(toIndentedString(directPlayProfiles)).append("\n");
-        sb.append("    transcodingProfiles: ").append(toIndentedString(transcodingProfiles)).append("\n");
-        sb.append("    containerProfiles: ").append(toIndentedString(containerProfiles)).append("\n");
-        sb.append("    codecProfiles: ").append(toIndentedString(codecProfiles)).append("\n");
-        sb.append("    subtitleProfiles: ").append(toIndentedString(subtitleProfiles)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DeviceProfile.Builder builder() {
+    return new DeviceProfile.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DeviceProfile.Builder toBuilder() {
+    return new DeviceProfile.Builder()
+      .name(getName())
+      .id(getId())
+      .maxStreamingBitrate(getMaxStreamingBitrate())
+      .maxStaticBitrate(getMaxStaticBitrate())
+      .musicStreamingTranscodingBitrate(getMusicStreamingTranscodingBitrate())
+      .maxStaticMusicBitrate(getMaxStaticMusicBitrate())
+      .directPlayProfiles(getDirectPlayProfiles())
+      .transcodingProfiles(getTranscodingProfiles())
+      .containerProfiles(getContainerProfiles())
+      .codecProfiles(getCodecProfiles())
+      .subtitleProfiles(getSubtitleProfiles());
+  }
 
-        private DeviceProfile instance;
 
-        public Builder() {
-            this(new DeviceProfile());
-        }
-
-        protected Builder(DeviceProfile instance) {
-            this.instance = instance;
-        }
-
-        public DeviceProfile.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public DeviceProfile.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public DeviceProfile.Builder id(UUID id) {
-            this.instance.id = JsonNullable.<UUID> of(id);
-            return this;
-        }
-
-        public DeviceProfile.Builder id(JsonNullable<UUID> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStreamingBitrate(JsonNullable<Integer> maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = maxStreamingBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticBitrate(Integer maxStaticBitrate) {
-            this.instance.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticBitrate(JsonNullable<Integer> maxStaticBitrate) {
-            this.instance.maxStaticBitrate = maxStaticBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder musicStreamingTranscodingBitrate(Integer musicStreamingTranscodingBitrate) {
-            this.instance.musicStreamingTranscodingBitrate = JsonNullable
-                    .<Integer> of(musicStreamingTranscodingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder musicStreamingTranscodingBitrate(
-                JsonNullable<Integer> musicStreamingTranscodingBitrate) {
-            this.instance.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticMusicBitrate(Integer maxStaticMusicBitrate) {
-            this.instance.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticMusicBitrate(JsonNullable<Integer> maxStaticMusicBitrate) {
-            this.instance.maxStaticMusicBitrate = maxStaticMusicBitrate;
-            return this;
-        }
-
-        public DeviceProfile.Builder directPlayProfiles(List<DirectPlayProfile> directPlayProfiles) {
-            this.instance.directPlayProfiles = directPlayProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder transcodingProfiles(List<TranscodingProfile> transcodingProfiles) {
-            this.instance.transcodingProfiles = transcodingProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder containerProfiles(List<ContainerProfile> containerProfiles) {
-            this.instance.containerProfiles = containerProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder codecProfiles(List<CodecProfile> codecProfiles) {
-            this.instance.codecProfiles = codecProfiles;
-            return this;
-        }
-
-        public DeviceProfile.Builder subtitleProfiles(List<SubtitleProfile> subtitleProfiles) {
-            this.instance.subtitleProfiles = subtitleProfiles;
-            return this;
-        }
-
-        /**
-         * returns a built DeviceProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public DeviceProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DeviceProfile.Builder builder() {
-        return new DeviceProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DeviceProfile.Builder toBuilder() {
-        return new DeviceProfile.Builder().name(getName()).id(getId()).maxStreamingBitrate(getMaxStreamingBitrate())
-                .maxStaticBitrate(getMaxStaticBitrate())
-                .musicStreamingTranscodingBitrate(getMusicStreamingTranscodingBitrate())
-                .maxStaticMusicBitrate(getMaxStaticMusicBitrate()).directPlayProfiles(getDirectPlayProfiles())
-                .transcodingProfiles(getTranscodingProfiles()).containerProfiles(getContainerProfiles())
-                .codecProfiles(getCodecProfiles()).subtitleProfiles(getSubtitleProfiles());
-    }
 }
+

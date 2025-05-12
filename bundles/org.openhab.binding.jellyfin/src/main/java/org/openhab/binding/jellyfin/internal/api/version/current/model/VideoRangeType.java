@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,48 +29,49 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing types of video ranges.
  */
 public enum VideoRangeType {
+  
+  UNKNOWN("Unknown"),
+  
+  SDR("SDR"),
+  
+  HDR10("HDR10"),
+  
+  HLG("HLG"),
+  
+  DOVI("DOVI"),
+  
+  DOVI_WITH_HDR10("DOVIWithHDR10"),
+  
+  DOVI_WITH_HLG("DOVIWithHLG"),
+  
+  DOVI_WITH_SDR("DOVIWithSDR"),
+  
+  HDR10_PLUS("HDR10Plus");
 
-    UNKNOWN("Unknown"),
+  private String value;
 
-    SDR("SDR"),
+  VideoRangeType(String value) {
+    this.value = value;
+  }
 
-    HDR10("HDR10"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    HLG("HLG"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    DOVI("DOVI"),
-
-    DOVI_WITH_HDR10("DOVIWithHDR10"),
-
-    DOVI_WITH_HLG("DOVIWithHLG"),
-
-    DOVI_WITH_SDR("DOVIWithSDR"),
-
-    HDR10_PLUS("HDR10Plus");
-
-    private String value;
-
-    VideoRangeType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static VideoRangeType fromValue(String value) {
+    for (VideoRangeType b : VideoRangeType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static VideoRangeType fromValue(String value) {
-        for (VideoRangeType b : VideoRangeType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

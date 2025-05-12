@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,42 +29,43 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RecommendationType
  */
 public enum RecommendationType {
+  
+  SIMILAR_TO_RECENTLY_PLAYED("SimilarToRecentlyPlayed"),
+  
+  SIMILAR_TO_LIKED_ITEM("SimilarToLikedItem"),
+  
+  HAS_DIRECTOR_FROM_RECENTLY_PLAYED("HasDirectorFromRecentlyPlayed"),
+  
+  HAS_ACTOR_FROM_RECENTLY_PLAYED("HasActorFromRecentlyPlayed"),
+  
+  HAS_LIKED_DIRECTOR("HasLikedDirector"),
+  
+  HAS_LIKED_ACTOR("HasLikedActor");
 
-    SIMILAR_TO_RECENTLY_PLAYED("SimilarToRecentlyPlayed"),
+  private String value;
 
-    SIMILAR_TO_LIKED_ITEM("SimilarToLikedItem"),
+  RecommendationType(String value) {
+    this.value = value;
+  }
 
-    HAS_DIRECTOR_FROM_RECENTLY_PLAYED("HasDirectorFromRecentlyPlayed"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    HAS_ACTOR_FROM_RECENTLY_PLAYED("HasActorFromRecentlyPlayed"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    HAS_LIKED_DIRECTOR("HasLikedDirector"),
-
-    HAS_LIKED_ACTOR("HasLikedActor");
-
-    private String value;
-
-    RecommendationType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static RecommendationType fromValue(String value) {
+    for (RecommendationType b : RecommendationType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static RecommendationType fromValue(String value) {
-        for (RecommendationType b : RecommendationType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

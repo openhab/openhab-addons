@@ -18,170 +18,183 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * EndPointInfo
  */
-@JsonPropertyOrder({ EndPointInfo.JSON_PROPERTY_IS_LOCAL, EndPointInfo.JSON_PROPERTY_IS_IN_NETWORK })
+@JsonPropertyOrder({
+  EndPointInfo.JSON_PROPERTY_IS_LOCAL,
+  EndPointInfo.JSON_PROPERTY_IS_IN_NETWORK
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class EndPointInfo {
-    public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
-    @javax.annotation.Nullable
-    private Boolean isLocal;
+  public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
+  @javax.annotation.Nullable
+  private Boolean isLocal;
 
-    public static final String JSON_PROPERTY_IS_IN_NETWORK = "IsInNetwork";
-    @javax.annotation.Nullable
-    private Boolean isInNetwork;
+  public static final String JSON_PROPERTY_IS_IN_NETWORK = "IsInNetwork";
+  @javax.annotation.Nullable
+  private Boolean isInNetwork;
 
-    public EndPointInfo() {
+  public EndPointInfo() {
+  }
+
+  public EndPointInfo isLocal(@javax.annotation.Nullable Boolean isLocal) {
+    
+    this.isLocal = isLocal;
+    return this;
+  }
+
+  /**
+   * Get isLocal
+   * @return isLocal
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsLocal() {
+    return isLocal;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsLocal(@javax.annotation.Nullable Boolean isLocal) {
+    this.isLocal = isLocal;
+  }
+
+  public EndPointInfo isInNetwork(@javax.annotation.Nullable Boolean isInNetwork) {
+    
+    this.isInNetwork = isInNetwork;
+    return this;
+  }
+
+  /**
+   * Get isInNetwork
+   * @return isInNetwork
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsInNetwork() {
+    return isInNetwork;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsInNetwork(@javax.annotation.Nullable Boolean isInNetwork) {
+    this.isInNetwork = isInNetwork;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    EndPointInfo endPointInfo = (EndPointInfo) o;
+    return Objects.equals(this.isLocal, endPointInfo.isLocal) &&
+        Objects.equals(this.isInNetwork, endPointInfo.isInNetwork);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(isLocal, isInNetwork);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class EndPointInfo {\n");
+    sb.append("    isLocal: ").append(toIndentedString(isLocal)).append("\n");
+    sb.append("    isInNetwork: ").append(toIndentedString(isInNetwork)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private EndPointInfo instance;
+
+    public Builder() {
+      this(new EndPointInfo());
     }
 
-    public EndPointInfo isLocal(@javax.annotation.Nullable Boolean isLocal) {
-
-        this.isLocal = isLocal;
-        return this;
+    protected Builder(EndPointInfo instance) {
+      this.instance = instance;
     }
+
+    public EndPointInfo.Builder isLocal(Boolean isLocal) {
+      this.instance.isLocal = isLocal;
+      return this;
+    }
+    public EndPointInfo.Builder isInNetwork(Boolean isInNetwork) {
+      this.instance.isInNetwork = isInNetwork;
+      return this;
+    }
+
 
     /**
-     * Get isLocal
-     * 
-     * @return isLocal
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_LOCAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsLocal() {
-        return isLocal;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_LOCAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsLocal(@javax.annotation.Nullable Boolean isLocal) {
-        this.isLocal = isLocal;
-    }
-
-    public EndPointInfo isInNetwork(@javax.annotation.Nullable Boolean isInNetwork) {
-
-        this.isInNetwork = isInNetwork;
-        return this;
-    }
-
-    /**
-     * Get isInNetwork
-     * 
-     * @return isInNetwork
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsInNetwork() {
-        return isInNetwork;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsInNetwork(@javax.annotation.Nullable Boolean isInNetwork) {
-        this.isInNetwork = isInNetwork;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        EndPointInfo endPointInfo = (EndPointInfo) o;
-        return Objects.equals(this.isLocal, endPointInfo.isLocal)
-                && Objects.equals(this.isInNetwork, endPointInfo.isInNetwork);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(isLocal, isInNetwork);
+    * returns a built EndPointInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public EndPointInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class EndPointInfo {\n");
-        sb.append("    isLocal: ").append(toIndentedString(isLocal)).append("\n");
-        sb.append("    isInNetwork: ").append(toIndentedString(isInNetwork)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static EndPointInfo.Builder builder() {
+    return new EndPointInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public EndPointInfo.Builder toBuilder() {
+    return new EndPointInfo.Builder()
+      .isLocal(getIsLocal())
+      .isInNetwork(getIsInNetwork());
+  }
 
-        private EndPointInfo instance;
 
-        public Builder() {
-            this(new EndPointInfo());
-        }
-
-        protected Builder(EndPointInfo instance) {
-            this.instance = instance;
-        }
-
-        public EndPointInfo.Builder isLocal(Boolean isLocal) {
-            this.instance.isLocal = isLocal;
-            return this;
-        }
-
-        public EndPointInfo.Builder isInNetwork(Boolean isInNetwork) {
-            this.instance.isInNetwork = isInNetwork;
-            return this;
-        }
-
-        /**
-         * returns a built EndPointInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public EndPointInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static EndPointInfo.Builder builder() {
-        return new EndPointInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public EndPointInfo.Builder toBuilder() {
-        return new EndPointInfo.Builder().isLocal(getIsLocal()).isInNetwork(getIsInNetwork());
-    }
 }
+

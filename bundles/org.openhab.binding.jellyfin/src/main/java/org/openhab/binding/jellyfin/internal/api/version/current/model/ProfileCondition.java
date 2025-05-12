@@ -17,275 +17,287 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ProfileConditionType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ProfileConditionValue;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * ProfileCondition
  */
-@JsonPropertyOrder({ ProfileCondition.JSON_PROPERTY_CONDITION, ProfileCondition.JSON_PROPERTY_PROPERTY,
-        ProfileCondition.JSON_PROPERTY_VALUE, ProfileCondition.JSON_PROPERTY_IS_REQUIRED })
+@JsonPropertyOrder({
+  ProfileCondition.JSON_PROPERTY_CONDITION,
+  ProfileCondition.JSON_PROPERTY_PROPERTY,
+  ProfileCondition.JSON_PROPERTY_VALUE,
+  ProfileCondition.JSON_PROPERTY_IS_REQUIRED
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ProfileCondition {
-    public static final String JSON_PROPERTY_CONDITION = "Condition";
-    @javax.annotation.Nullable
-    private ProfileConditionType condition;
+  public static final String JSON_PROPERTY_CONDITION = "Condition";
+  @javax.annotation.Nullable
+  private ProfileConditionType condition;
 
-    public static final String JSON_PROPERTY_PROPERTY = "Property";
-    @javax.annotation.Nullable
-    private ProfileConditionValue property;
+  public static final String JSON_PROPERTY_PROPERTY = "Property";
+  @javax.annotation.Nullable
+  private ProfileConditionValue property;
 
-    public static final String JSON_PROPERTY_VALUE = "Value";
-    @javax.annotation.Nullable
-    private JsonNullable<String> value = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VALUE = "Value";
+  @javax.annotation.Nullable
+  private JsonNullable<String> value = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
-    @javax.annotation.Nullable
-    private Boolean isRequired;
+  public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
+  @javax.annotation.Nullable
+  private Boolean isRequired;
 
-    public ProfileCondition() {
-    }
+  public ProfileCondition() {
+  }
 
-    public ProfileCondition condition(@javax.annotation.Nullable ProfileConditionType condition) {
+  public ProfileCondition condition(@javax.annotation.Nullable ProfileConditionType condition) {
+    
+    this.condition = condition;
+    return this;
+  }
 
-        this.condition = condition;
-        return this;
-    }
+  /**
+   * Get condition
+   * @return condition
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Get condition
-     * 
-     * @return condition
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CONDITION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public ProfileConditionType getCondition() {
+    return condition;
+  }
 
-    public ProfileConditionType getCondition() {
-        return condition;
-    }
 
-    @JsonProperty(JSON_PROPERTY_CONDITION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCondition(@javax.annotation.Nullable ProfileConditionType condition) {
-        this.condition = condition;
-    }
+  @JsonProperty(JSON_PROPERTY_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCondition(@javax.annotation.Nullable ProfileConditionType condition) {
+    this.condition = condition;
+  }
 
-    public ProfileCondition property(@javax.annotation.Nullable ProfileConditionValue property) {
+  public ProfileCondition property(@javax.annotation.Nullable ProfileConditionValue property) {
+    
+    this.property = property;
+    return this;
+  }
 
-        this.property = property;
-        return this;
-    }
+  /**
+   * Get property
+   * @return property
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Get property
-     * 
-     * @return property
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROPERTY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public ProfileConditionValue getProperty() {
+    return property;
+  }
 
-    public ProfileConditionValue getProperty() {
-        return property;
-    }
 
-    @JsonProperty(JSON_PROPERTY_PROPERTY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProperty(@javax.annotation.Nullable ProfileConditionValue property) {
-        this.property = property;
-    }
+  @JsonProperty(JSON_PROPERTY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProperty(@javax.annotation.Nullable ProfileConditionValue property) {
+    this.property = property;
+  }
 
-    public ProfileCondition value(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
+  public ProfileCondition value(@javax.annotation.Nullable String value) {
+    this.value = JsonNullable.<String>of(value);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get value
+   * @return value
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get value
-     * 
-     * @return value
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getValue() {
+  public String getValue() {
         return value.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getValue_JsonNullable() {
+    return value;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  public void setValue_JsonNullable(JsonNullable<String> value) {
+    this.value = value;
+  }
+
+  public void setValue(@javax.annotation.Nullable String value) {
+    this.value = JsonNullable.<String>of(value);
+  }
+
+  public ProfileCondition isRequired(@javax.annotation.Nullable Boolean isRequired) {
+    
+    this.isRequired = isRequired;
+    return this;
+  }
+
+  /**
+   * Get isRequired
+   * @return isRequired
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsRequired() {
+    return isRequired;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsRequired(@javax.annotation.Nullable Boolean isRequired) {
+    this.isRequired = isRequired;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ProfileCondition profileCondition = (ProfileCondition) o;
+    return Objects.equals(this.condition, profileCondition.condition) &&
+        Objects.equals(this.property, profileCondition.property) &&
+        equalsNullable(this.value, profileCondition.value) &&
+        Objects.equals(this.isRequired, profileCondition.isRequired);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(condition, property, hashCodeNullable(value), isRequired);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ProfileCondition {\n");
+    sb.append("    condition: ").append(toIndentedString(condition)).append("\n");
+    sb.append("    property: ").append(toIndentedString(property)).append("\n");
+    sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    isRequired: ").append(toIndentedString(isRequired)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ProfileCondition instance;
+
+    public Builder() {
+      this(new ProfileCondition());
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getValue_JsonNullable() {
-        return value;
+    protected Builder(ProfileCondition instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
-    public void setValue_JsonNullable(JsonNullable<String> value) {
-        this.value = value;
+    public ProfileCondition.Builder condition(ProfileConditionType condition) {
+      this.instance.condition = condition;
+      return this;
+    }
+    public ProfileCondition.Builder property(ProfileConditionValue property) {
+      this.instance.property = property;
+      return this;
+    }
+    public ProfileCondition.Builder value(String value) {
+      this.instance.value = JsonNullable.<String>of(value);
+      return this;
+    }
+    public ProfileCondition.Builder value(JsonNullable<String> value) {
+      this.instance.value = value;
+      return this;
+    }
+    public ProfileCondition.Builder isRequired(Boolean isRequired) {
+      this.instance.isRequired = isRequired;
+      return this;
     }
 
-    public void setValue(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
-    }
-
-    public ProfileCondition isRequired(@javax.annotation.Nullable Boolean isRequired) {
-
-        this.isRequired = isRequired;
-        return this;
-    }
 
     /**
-     * Get isRequired
-     * 
-     * @return isRequired
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsRequired() {
-        return isRequired;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsRequired(@javax.annotation.Nullable Boolean isRequired) {
-        this.isRequired = isRequired;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ProfileCondition profileCondition = (ProfileCondition) o;
-        return Objects.equals(this.condition, profileCondition.condition)
-                && Objects.equals(this.property, profileCondition.property)
-                && equalsNullable(this.value, profileCondition.value)
-                && Objects.equals(this.isRequired, profileCondition.isRequired);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(condition, property, hashCodeNullable(value), isRequired);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built ProfileCondition instance.
+    *
+    * The builder is not reusable.
+    */
+    public ProfileCondition build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ProfileCondition {\n");
-        sb.append("    condition: ").append(toIndentedString(condition)).append("\n");
-        sb.append("    property: ").append(toIndentedString(property)).append("\n");
-        sb.append("    value: ").append(toIndentedString(value)).append("\n");
-        sb.append("    isRequired: ").append(toIndentedString(isRequired)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ProfileCondition.Builder builder() {
+    return new ProfileCondition.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ProfileCondition.Builder toBuilder() {
+    return new ProfileCondition.Builder()
+      .condition(getCondition())
+      .property(getProperty())
+      .value(getValue())
+      .isRequired(getIsRequired());
+  }
 
-        private ProfileCondition instance;
 
-        public Builder() {
-            this(new ProfileCondition());
-        }
-
-        protected Builder(ProfileCondition instance) {
-            this.instance = instance;
-        }
-
-        public ProfileCondition.Builder condition(ProfileConditionType condition) {
-            this.instance.condition = condition;
-            return this;
-        }
-
-        public ProfileCondition.Builder property(ProfileConditionValue property) {
-            this.instance.property = property;
-            return this;
-        }
-
-        public ProfileCondition.Builder value(String value) {
-            this.instance.value = JsonNullable.<String> of(value);
-            return this;
-        }
-
-        public ProfileCondition.Builder value(JsonNullable<String> value) {
-            this.instance.value = value;
-            return this;
-        }
-
-        public ProfileCondition.Builder isRequired(Boolean isRequired) {
-            this.instance.isRequired = isRequired;
-            return this;
-        }
-
-        /**
-         * returns a built ProfileCondition instance.
-         *
-         * The builder is not reusable.
-         */
-        public ProfileCondition build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ProfileCondition.Builder builder() {
-        return new ProfileCondition.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ProfileCondition.Builder toBuilder() {
-        return new ProfileCondition.Builder().condition(getCondition()).property(getProperty()).value(getValue())
-                .isRequired(getIsRequired());
-    }
 }
+

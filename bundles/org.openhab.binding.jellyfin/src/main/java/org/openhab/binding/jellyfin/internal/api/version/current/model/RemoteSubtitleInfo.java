@@ -17,934 +17,910 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * RemoteSubtitleInfo
  */
-@JsonPropertyOrder({ RemoteSubtitleInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
-        RemoteSubtitleInfo.JSON_PROPERTY_ID, RemoteSubtitleInfo.JSON_PROPERTY_PROVIDER_NAME,
-        RemoteSubtitleInfo.JSON_PROPERTY_NAME, RemoteSubtitleInfo.JSON_PROPERTY_FORMAT,
-        RemoteSubtitleInfo.JSON_PROPERTY_AUTHOR, RemoteSubtitleInfo.JSON_PROPERTY_COMMENT,
-        RemoteSubtitleInfo.JSON_PROPERTY_DATE_CREATED, RemoteSubtitleInfo.JSON_PROPERTY_COMMUNITY_RATING,
-        RemoteSubtitleInfo.JSON_PROPERTY_FRAME_RATE, RemoteSubtitleInfo.JSON_PROPERTY_DOWNLOAD_COUNT,
-        RemoteSubtitleInfo.JSON_PROPERTY_IS_HASH_MATCH, RemoteSubtitleInfo.JSON_PROPERTY_AI_TRANSLATED,
-        RemoteSubtitleInfo.JSON_PROPERTY_MACHINE_TRANSLATED, RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
-        RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED })
+@JsonPropertyOrder({
+  RemoteSubtitleInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_ID,
+  RemoteSubtitleInfo.JSON_PROPERTY_PROVIDER_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_FORMAT,
+  RemoteSubtitleInfo.JSON_PROPERTY_AUTHOR,
+  RemoteSubtitleInfo.JSON_PROPERTY_COMMENT,
+  RemoteSubtitleInfo.JSON_PROPERTY_DATE_CREATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_COMMUNITY_RATING,
+  RemoteSubtitleInfo.JSON_PROPERTY_FRAME_RATE,
+  RemoteSubtitleInfo.JSON_PROPERTY_DOWNLOAD_COUNT,
+  RemoteSubtitleInfo.JSON_PROPERTY_IS_HASH_MATCH,
+  RemoteSubtitleInfo.JSON_PROPERTY_AI_TRANSLATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_MACHINE_TRANSLATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
+  RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteSubtitleInfo {
-    public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> providerName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> providerName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_FORMAT = "Format";
-    @javax.annotation.Nullable
-    private JsonNullable<String> format = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_FORMAT = "Format";
+  @javax.annotation.Nullable
+  private JsonNullable<String> format = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_AUTHOR = "Author";
-    @javax.annotation.Nullable
-    private JsonNullable<String> author = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_AUTHOR = "Author";
+  @javax.annotation.Nullable
+  private JsonNullable<String> author = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_COMMENT = "Comment";
-    @javax.annotation.Nullable
-    private JsonNullable<String> comment = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_COMMENT = "Comment";
+  @javax.annotation.Nullable
+  private JsonNullable<String> comment = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> dateCreated = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> dateCreated = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
-    @javax.annotation.Nullable
-    private JsonNullable<Float> communityRating = JsonNullable.<Float> undefined();
+  public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
+  @javax.annotation.Nullable
+  private JsonNullable<Float> communityRating = JsonNullable.<Float>undefined();
 
-    public static final String JSON_PROPERTY_FRAME_RATE = "FrameRate";
-    @javax.annotation.Nullable
-    private JsonNullable<Float> frameRate = JsonNullable.<Float> undefined();
+  public static final String JSON_PROPERTY_FRAME_RATE = "FrameRate";
+  @javax.annotation.Nullable
+  private JsonNullable<Float> frameRate = JsonNullable.<Float>undefined();
 
-    public static final String JSON_PROPERTY_DOWNLOAD_COUNT = "DownloadCount";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> downloadCount = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_DOWNLOAD_COUNT = "DownloadCount";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> downloadCount = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_IS_HASH_MATCH = "IsHashMatch";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isHashMatch = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_HASH_MATCH = "IsHashMatch";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isHashMatch = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_AI_TRANSLATED = "AiTranslated";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> aiTranslated = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_AI_TRANSLATED = "AiTranslated";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> aiTranslated = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_MACHINE_TRANSLATED = "MachineTranslated";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> machineTranslated = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_MACHINE_TRANSLATED = "MachineTranslated";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> machineTranslated = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_FORCED = "Forced";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> forced = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_FORCED = "Forced";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> forced = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_HEARING_IMPAIRED = "HearingImpaired";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> hearingImpaired = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_HEARING_IMPAIRED = "HearingImpaired";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> hearingImpaired = JsonNullable.<Boolean>undefined();
 
-    public RemoteSubtitleInfo() {
-    }
+  public RemoteSubtitleInfo() {
+  }
 
-    public RemoteSubtitleInfo threeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
-        this.threeLetterISOLanguageName = JsonNullable.<String> of(threeLetterISOLanguageName);
+  public RemoteSubtitleInfo threeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
+    this.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get threeLetterISOLanguageName
+   * @return threeLetterISOLanguageName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get threeLetterISOLanguageName
-     * 
-     * @return threeLetterISOLanguageName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThreeLetterISOLanguageName() {
+  public String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
-        return threeLetterISOLanguageName;
-    }
+  public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
+    return threeLetterISOLanguageName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+  public void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
+    this.threeLetterISOLanguageName = threeLetterISOLanguageName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-    public void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
-        this.threeLetterISOLanguageName = threeLetterISOLanguageName;
-    }
+  public void setThreeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
+    this.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
+  }
 
-    public void setThreeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
-        this.threeLetterISOLanguageName = JsonNullable.<String> of(threeLetterISOLanguageName);
-    }
+  public RemoteSubtitleInfo id(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
+  /**
+   * Get id
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get id
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
+  public String getId() {
         return id.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
-        return id;
-    }
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
+  public RemoteSubtitleInfo providerName(@javax.annotation.Nullable String providerName) {
+    this.providerName = JsonNullable.<String>of(providerName);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo providerName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
+  /**
+   * Get providerName
+   * @return providerName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get providerName
-     * 
-     * @return providerName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderName() {
+  public String getProviderName() {
         return providerName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProviderName_JsonNullable() {
-        return providerName;
-    }
+  public JsonNullable<String> getProviderName_JsonNullable() {
+    return providerName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
+    this.providerName = providerName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
-        this.providerName = providerName;
-    }
+  public void setProviderName(@javax.annotation.Nullable String providerName) {
+    this.providerName = JsonNullable.<String>of(providerName);
+  }
 
-    public void setProviderName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
-    }
+  public RemoteSubtitleInfo name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  /**
+   * Get name
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get name
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public RemoteSubtitleInfo format(@javax.annotation.Nullable String format) {
+    this.format = JsonNullable.<String>of(format);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo format(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
+  /**
+   * Get format
+   * @return format
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get format
-     * 
-     * @return format
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFormat() {
+  public String getFormat() {
         return format.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFormat_JsonNullable() {
-        return format;
-    }
+  public JsonNullable<String> getFormat_JsonNullable() {
+    return format;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  public void setFormat_JsonNullable(JsonNullable<String> format) {
+    this.format = format;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
-    public void setFormat_JsonNullable(JsonNullable<String> format) {
-        this.format = format;
-    }
+  public void setFormat(@javax.annotation.Nullable String format) {
+    this.format = JsonNullable.<String>of(format);
+  }
 
-    public void setFormat(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
-    }
+  public RemoteSubtitleInfo author(@javax.annotation.Nullable String author) {
+    this.author = JsonNullable.<String>of(author);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo author(@javax.annotation.Nullable String author) {
-        this.author = JsonNullable.<String> of(author);
+  /**
+   * Get author
+   * @return author
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get author
-     * 
-     * @return author
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAuthor() {
+  public String getAuthor() {
         return author.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAuthor_JsonNullable() {
-        return author;
-    }
+  public JsonNullable<String> getAuthor_JsonNullable() {
+    return author;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  public void setAuthor_JsonNullable(JsonNullable<String> author) {
+    this.author = author;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
-    public void setAuthor_JsonNullable(JsonNullable<String> author) {
-        this.author = author;
-    }
+  public void setAuthor(@javax.annotation.Nullable String author) {
+    this.author = JsonNullable.<String>of(author);
+  }
 
-    public void setAuthor(@javax.annotation.Nullable String author) {
-        this.author = JsonNullable.<String> of(author);
-    }
+  public RemoteSubtitleInfo comment(@javax.annotation.Nullable String comment) {
+    this.comment = JsonNullable.<String>of(comment);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo comment(@javax.annotation.Nullable String comment) {
-        this.comment = JsonNullable.<String> of(comment);
+  /**
+   * Get comment
+   * @return comment
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get comment
-     * 
-     * @return comment
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getComment() {
+  public String getComment() {
         return comment.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getComment_JsonNullable() {
-        return comment;
-    }
+  public JsonNullable<String> getComment_JsonNullable() {
+    return comment;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  public void setComment_JsonNullable(JsonNullable<String> comment) {
+    this.comment = comment;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
-    public void setComment_JsonNullable(JsonNullable<String> comment) {
-        this.comment = comment;
-    }
+  public void setComment(@javax.annotation.Nullable String comment) {
+    this.comment = JsonNullable.<String>of(comment);
+  }
 
-    public void setComment(@javax.annotation.Nullable String comment) {
-        this.comment = JsonNullable.<String> of(comment);
-    }
+  public RemoteSubtitleInfo dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-        this.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
+  /**
+   * Get dateCreated
+   * @return dateCreated
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get dateCreated
-     * 
-     * @return dateCreated
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getDateCreated() {
+  public OffsetDateTime getDateCreated() {
         return dateCreated.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getDateCreated_JsonNullable() {
-        return dateCreated;
-    }
+  public JsonNullable<OffsetDateTime> getDateCreated_JsonNullable() {
+    return dateCreated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  public void setDateCreated_JsonNullable(JsonNullable<OffsetDateTime> dateCreated) {
+    this.dateCreated = dateCreated;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    public void setDateCreated_JsonNullable(JsonNullable<OffsetDateTime> dateCreated) {
-        this.dateCreated = dateCreated;
-    }
+  public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+  }
 
-    public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-        this.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
-    }
+  public RemoteSubtitleInfo communityRating(@javax.annotation.Nullable Float communityRating) {
+    this.communityRating = JsonNullable.<Float>of(communityRating);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo communityRating(@javax.annotation.Nullable Float communityRating) {
-        this.communityRating = JsonNullable.<Float> of(communityRating);
+  /**
+   * Get communityRating
+   * @return communityRating
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get communityRating
-     * 
-     * @return communityRating
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Float getCommunityRating() {
+  public Float getCommunityRating() {
         return communityRating.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Float> getCommunityRating_JsonNullable() {
-        return communityRating;
-    }
+  public JsonNullable<Float> getCommunityRating_JsonNullable() {
+    return communityRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  public void setCommunityRating_JsonNullable(JsonNullable<Float> communityRating) {
+    this.communityRating = communityRating;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
-    public void setCommunityRating_JsonNullable(JsonNullable<Float> communityRating) {
-        this.communityRating = communityRating;
-    }
+  public void setCommunityRating(@javax.annotation.Nullable Float communityRating) {
+    this.communityRating = JsonNullable.<Float>of(communityRating);
+  }
 
-    public void setCommunityRating(@javax.annotation.Nullable Float communityRating) {
-        this.communityRating = JsonNullable.<Float> of(communityRating);
-    }
+  public RemoteSubtitleInfo frameRate(@javax.annotation.Nullable Float frameRate) {
+    this.frameRate = JsonNullable.<Float>of(frameRate);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo frameRate(@javax.annotation.Nullable Float frameRate) {
-        this.frameRate = JsonNullable.<Float> of(frameRate);
+  /**
+   * Get frameRate
+   * @return frameRate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get frameRate
-     * 
-     * @return frameRate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Float getFrameRate() {
+  public Float getFrameRate() {
         return frameRate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FRAME_RATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Float> getFrameRate_JsonNullable() {
-        return frameRate;
-    }
+  public JsonNullable<Float> getFrameRate_JsonNullable() {
+    return frameRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+  public void setFrameRate_JsonNullable(JsonNullable<Float> frameRate) {
+    this.frameRate = frameRate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FRAME_RATE)
-    public void setFrameRate_JsonNullable(JsonNullable<Float> frameRate) {
-        this.frameRate = frameRate;
-    }
+  public void setFrameRate(@javax.annotation.Nullable Float frameRate) {
+    this.frameRate = JsonNullable.<Float>of(frameRate);
+  }
 
-    public void setFrameRate(@javax.annotation.Nullable Float frameRate) {
-        this.frameRate = JsonNullable.<Float> of(frameRate);
-    }
+  public RemoteSubtitleInfo downloadCount(@javax.annotation.Nullable Integer downloadCount) {
+    this.downloadCount = JsonNullable.<Integer>of(downloadCount);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo downloadCount(@javax.annotation.Nullable Integer downloadCount) {
-        this.downloadCount = JsonNullable.<Integer> of(downloadCount);
+  /**
+   * Get downloadCount
+   * @return downloadCount
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get downloadCount
-     * 
-     * @return downloadCount
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getDownloadCount() {
+  public Integer getDownloadCount() {
         return downloadCount.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getDownloadCount_JsonNullable() {
-        return downloadCount;
-    }
+  public JsonNullable<Integer> getDownloadCount_JsonNullable() {
+    return downloadCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+  public void setDownloadCount_JsonNullable(JsonNullable<Integer> downloadCount) {
+    this.downloadCount = downloadCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
-    public void setDownloadCount_JsonNullable(JsonNullable<Integer> downloadCount) {
-        this.downloadCount = downloadCount;
-    }
+  public void setDownloadCount(@javax.annotation.Nullable Integer downloadCount) {
+    this.downloadCount = JsonNullable.<Integer>of(downloadCount);
+  }
 
-    public void setDownloadCount(@javax.annotation.Nullable Integer downloadCount) {
-        this.downloadCount = JsonNullable.<Integer> of(downloadCount);
-    }
+  public RemoteSubtitleInfo isHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
+    this.isHashMatch = JsonNullable.<Boolean>of(isHashMatch);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo isHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
-        this.isHashMatch = JsonNullable.<Boolean> of(isHashMatch);
+  /**
+   * Get isHashMatch
+   * @return isHashMatch
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get isHashMatch
-     * 
-     * @return isHashMatch
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsHashMatch() {
+  public Boolean getIsHashMatch() {
         return isHashMatch.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsHashMatch_JsonNullable() {
-        return isHashMatch;
-    }
+  public JsonNullable<Boolean> getIsHashMatch_JsonNullable() {
+    return isHashMatch;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+  public void setIsHashMatch_JsonNullable(JsonNullable<Boolean> isHashMatch) {
+    this.isHashMatch = isHashMatch;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
-    public void setIsHashMatch_JsonNullable(JsonNullable<Boolean> isHashMatch) {
-        this.isHashMatch = isHashMatch;
-    }
+  public void setIsHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
+    this.isHashMatch = JsonNullable.<Boolean>of(isHashMatch);
+  }
 
-    public void setIsHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
-        this.isHashMatch = JsonNullable.<Boolean> of(isHashMatch);
-    }
+  public RemoteSubtitleInfo aiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
+    this.aiTranslated = JsonNullable.<Boolean>of(aiTranslated);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo aiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
-        this.aiTranslated = JsonNullable.<Boolean> of(aiTranslated);
+  /**
+   * Get aiTranslated
+   * @return aiTranslated
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get aiTranslated
-     * 
-     * @return aiTranslated
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getAiTranslated() {
+  public Boolean getAiTranslated() {
         return aiTranslated.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getAiTranslated_JsonNullable() {
-        return aiTranslated;
-    }
+  public JsonNullable<Boolean> getAiTranslated_JsonNullable() {
+    return aiTranslated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+  public void setAiTranslated_JsonNullable(JsonNullable<Boolean> aiTranslated) {
+    this.aiTranslated = aiTranslated;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
-    public void setAiTranslated_JsonNullable(JsonNullable<Boolean> aiTranslated) {
-        this.aiTranslated = aiTranslated;
-    }
+  public void setAiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
+    this.aiTranslated = JsonNullable.<Boolean>of(aiTranslated);
+  }
 
-    public void setAiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
-        this.aiTranslated = JsonNullable.<Boolean> of(aiTranslated);
-    }
+  public RemoteSubtitleInfo machineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
+    this.machineTranslated = JsonNullable.<Boolean>of(machineTranslated);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo machineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
-        this.machineTranslated = JsonNullable.<Boolean> of(machineTranslated);
+  /**
+   * Get machineTranslated
+   * @return machineTranslated
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get machineTranslated
-     * 
-     * @return machineTranslated
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getMachineTranslated() {
+  public Boolean getMachineTranslated() {
         return machineTranslated.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getMachineTranslated_JsonNullable() {
-        return machineTranslated;
-    }
+  public JsonNullable<Boolean> getMachineTranslated_JsonNullable() {
+    return machineTranslated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+  public void setMachineTranslated_JsonNullable(JsonNullable<Boolean> machineTranslated) {
+    this.machineTranslated = machineTranslated;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
-    public void setMachineTranslated_JsonNullable(JsonNullable<Boolean> machineTranslated) {
-        this.machineTranslated = machineTranslated;
-    }
+  public void setMachineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
+    this.machineTranslated = JsonNullable.<Boolean>of(machineTranslated);
+  }
 
-    public void setMachineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
-        this.machineTranslated = JsonNullable.<Boolean> of(machineTranslated);
-    }
+  public RemoteSubtitleInfo forced(@javax.annotation.Nullable Boolean forced) {
+    this.forced = JsonNullable.<Boolean>of(forced);
+    
+    return this;
+  }
 
-    public RemoteSubtitleInfo forced(@javax.annotation.Nullable Boolean forced) {
-        this.forced = JsonNullable.<Boolean> of(forced);
+  /**
+   * Get forced
+   * @return forced
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get forced
-     * 
-     * @return forced
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getForced() {
+  public Boolean getForced() {
         return forced.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FORCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getForced_JsonNullable() {
+    return forced;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORCED)
+  public void setForced_JsonNullable(JsonNullable<Boolean> forced) {
+    this.forced = forced;
+  }
+
+  public void setForced(@javax.annotation.Nullable Boolean forced) {
+    this.forced = JsonNullable.<Boolean>of(forced);
+  }
+
+  public RemoteSubtitleInfo hearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
+    this.hearingImpaired = JsonNullable.<Boolean>of(hearingImpaired);
+    
+    return this;
+  }
+
+  /**
+   * Get hearingImpaired
+   * @return hearingImpaired
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public Boolean getHearingImpaired() {
+        return hearingImpaired.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getHearingImpaired_JsonNullable() {
+    return hearingImpaired;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+  public void setHearingImpaired_JsonNullable(JsonNullable<Boolean> hearingImpaired) {
+    this.hearingImpaired = hearingImpaired;
+  }
+
+  public void setHearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
+    this.hearingImpaired = JsonNullable.<Boolean>of(hearingImpaired);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RemoteSubtitleInfo remoteSubtitleInfo = (RemoteSubtitleInfo) o;
+    return equalsNullable(this.threeLetterISOLanguageName, remoteSubtitleInfo.threeLetterISOLanguageName) &&
+        equalsNullable(this.id, remoteSubtitleInfo.id) &&
+        equalsNullable(this.providerName, remoteSubtitleInfo.providerName) &&
+        equalsNullable(this.name, remoteSubtitleInfo.name) &&
+        equalsNullable(this.format, remoteSubtitleInfo.format) &&
+        equalsNullable(this.author, remoteSubtitleInfo.author) &&
+        equalsNullable(this.comment, remoteSubtitleInfo.comment) &&
+        equalsNullable(this.dateCreated, remoteSubtitleInfo.dateCreated) &&
+        equalsNullable(this.communityRating, remoteSubtitleInfo.communityRating) &&
+        equalsNullable(this.frameRate, remoteSubtitleInfo.frameRate) &&
+        equalsNullable(this.downloadCount, remoteSubtitleInfo.downloadCount) &&
+        equalsNullable(this.isHashMatch, remoteSubtitleInfo.isHashMatch) &&
+        equalsNullable(this.aiTranslated, remoteSubtitleInfo.aiTranslated) &&
+        equalsNullable(this.machineTranslated, remoteSubtitleInfo.machineTranslated) &&
+        equalsNullable(this.forced, remoteSubtitleInfo.forced) &&
+        equalsNullable(this.hearingImpaired, remoteSubtitleInfo.hearingImpaired);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(threeLetterISOLanguageName), hashCodeNullable(id), hashCodeNullable(providerName), hashCodeNullable(name), hashCodeNullable(format), hashCodeNullable(author), hashCodeNullable(comment), hashCodeNullable(dateCreated), hashCodeNullable(communityRating), hashCodeNullable(frameRate), hashCodeNullable(downloadCount), hashCodeNullable(isHashMatch), hashCodeNullable(aiTranslated), hashCodeNullable(machineTranslated), hashCodeNullable(forced), hashCodeNullable(hearingImpaired));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class RemoteSubtitleInfo {\n");
+    sb.append("    threeLetterISOLanguageName: ").append(toIndentedString(threeLetterISOLanguageName)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    providerName: ").append(toIndentedString(providerName)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    format: ").append(toIndentedString(format)).append("\n");
+    sb.append("    author: ").append(toIndentedString(author)).append("\n");
+    sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+    sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
+    sb.append("    communityRating: ").append(toIndentedString(communityRating)).append("\n");
+    sb.append("    frameRate: ").append(toIndentedString(frameRate)).append("\n");
+    sb.append("    downloadCount: ").append(toIndentedString(downloadCount)).append("\n");
+    sb.append("    isHashMatch: ").append(toIndentedString(isHashMatch)).append("\n");
+    sb.append("    aiTranslated: ").append(toIndentedString(aiTranslated)).append("\n");
+    sb.append("    machineTranslated: ").append(toIndentedString(machineTranslated)).append("\n");
+    sb.append("    forced: ").append(toIndentedString(forced)).append("\n");
+    sb.append("    hearingImpaired: ").append(toIndentedString(hearingImpaired)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private RemoteSubtitleInfo instance;
+
+    public Builder() {
+      this(new RemoteSubtitleInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_FORCED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Boolean> getForced_JsonNullable() {
-        return forced;
+    protected Builder(RemoteSubtitleInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORCED)
-    public void setForced_JsonNullable(JsonNullable<Boolean> forced) {
-        this.forced = forced;
+    public RemoteSubtitleInfo.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
+      this.instance.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder threeLetterISOLanguageName(JsonNullable<String> threeLetterISOLanguageName) {
+      this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder id(String id) {
+      this.instance.id = JsonNullable.<String>of(id);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder id(JsonNullable<String> id) {
+      this.instance.id = id;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder providerName(String providerName) {
+      this.instance.providerName = JsonNullable.<String>of(providerName);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder providerName(JsonNullable<String> providerName) {
+      this.instance.providerName = providerName;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder format(String format) {
+      this.instance.format = JsonNullable.<String>of(format);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder format(JsonNullable<String> format) {
+      this.instance.format = format;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder author(String author) {
+      this.instance.author = JsonNullable.<String>of(author);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder author(JsonNullable<String> author) {
+      this.instance.author = author;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder comment(String comment) {
+      this.instance.comment = JsonNullable.<String>of(comment);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder comment(JsonNullable<String> comment) {
+      this.instance.comment = comment;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder dateCreated(OffsetDateTime dateCreated) {
+      this.instance.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder dateCreated(JsonNullable<OffsetDateTime> dateCreated) {
+      this.instance.dateCreated = dateCreated;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder communityRating(Float communityRating) {
+      this.instance.communityRating = JsonNullable.<Float>of(communityRating);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder communityRating(JsonNullable<Float> communityRating) {
+      this.instance.communityRating = communityRating;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder frameRate(Float frameRate) {
+      this.instance.frameRate = JsonNullable.<Float>of(frameRate);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder frameRate(JsonNullable<Float> frameRate) {
+      this.instance.frameRate = frameRate;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder downloadCount(Integer downloadCount) {
+      this.instance.downloadCount = JsonNullable.<Integer>of(downloadCount);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder downloadCount(JsonNullable<Integer> downloadCount) {
+      this.instance.downloadCount = downloadCount;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder isHashMatch(Boolean isHashMatch) {
+      this.instance.isHashMatch = JsonNullable.<Boolean>of(isHashMatch);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder isHashMatch(JsonNullable<Boolean> isHashMatch) {
+      this.instance.isHashMatch = isHashMatch;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder aiTranslated(Boolean aiTranslated) {
+      this.instance.aiTranslated = JsonNullable.<Boolean>of(aiTranslated);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder aiTranslated(JsonNullable<Boolean> aiTranslated) {
+      this.instance.aiTranslated = aiTranslated;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder machineTranslated(Boolean machineTranslated) {
+      this.instance.machineTranslated = JsonNullable.<Boolean>of(machineTranslated);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder machineTranslated(JsonNullable<Boolean> machineTranslated) {
+      this.instance.machineTranslated = machineTranslated;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder forced(Boolean forced) {
+      this.instance.forced = JsonNullable.<Boolean>of(forced);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder forced(JsonNullable<Boolean> forced) {
+      this.instance.forced = forced;
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder hearingImpaired(Boolean hearingImpaired) {
+      this.instance.hearingImpaired = JsonNullable.<Boolean>of(hearingImpaired);
+      return this;
+    }
+    public RemoteSubtitleInfo.Builder hearingImpaired(JsonNullable<Boolean> hearingImpaired) {
+      this.instance.hearingImpaired = hearingImpaired;
+      return this;
     }
 
-    public void setForced(@javax.annotation.Nullable Boolean forced) {
-        this.forced = JsonNullable.<Boolean> of(forced);
-    }
-
-    public RemoteSubtitleInfo hearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
-        this.hearingImpaired = JsonNullable.<Boolean> of(hearingImpaired);
-
-        return this;
-    }
 
     /**
-     * Get hearingImpaired
-     * 
-     * @return hearingImpaired
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getHearingImpaired() {
-        return hearingImpaired.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Boolean> getHearingImpaired_JsonNullable() {
-        return hearingImpaired;
-    }
-
-    @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
-    public void setHearingImpaired_JsonNullable(JsonNullable<Boolean> hearingImpaired) {
-        this.hearingImpaired = hearingImpaired;
-    }
-
-    public void setHearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
-        this.hearingImpaired = JsonNullable.<Boolean> of(hearingImpaired);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RemoteSubtitleInfo remoteSubtitleInfo = (RemoteSubtitleInfo) o;
-        return equalsNullable(this.threeLetterISOLanguageName, remoteSubtitleInfo.threeLetterISOLanguageName)
-                && equalsNullable(this.id, remoteSubtitleInfo.id)
-                && equalsNullable(this.providerName, remoteSubtitleInfo.providerName)
-                && equalsNullable(this.name, remoteSubtitleInfo.name)
-                && equalsNullable(this.format, remoteSubtitleInfo.format)
-                && equalsNullable(this.author, remoteSubtitleInfo.author)
-                && equalsNullable(this.comment, remoteSubtitleInfo.comment)
-                && equalsNullable(this.dateCreated, remoteSubtitleInfo.dateCreated)
-                && equalsNullable(this.communityRating, remoteSubtitleInfo.communityRating)
-                && equalsNullable(this.frameRate, remoteSubtitleInfo.frameRate)
-                && equalsNullable(this.downloadCount, remoteSubtitleInfo.downloadCount)
-                && equalsNullable(this.isHashMatch, remoteSubtitleInfo.isHashMatch)
-                && equalsNullable(this.aiTranslated, remoteSubtitleInfo.aiTranslated)
-                && equalsNullable(this.machineTranslated, remoteSubtitleInfo.machineTranslated)
-                && equalsNullable(this.forced, remoteSubtitleInfo.forced)
-                && equalsNullable(this.hearingImpaired, remoteSubtitleInfo.hearingImpaired);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(threeLetterISOLanguageName), hashCodeNullable(id),
-                hashCodeNullable(providerName), hashCodeNullable(name), hashCodeNullable(format),
-                hashCodeNullable(author), hashCodeNullable(comment), hashCodeNullable(dateCreated),
-                hashCodeNullable(communityRating), hashCodeNullable(frameRate), hashCodeNullable(downloadCount),
-                hashCodeNullable(isHashMatch), hashCodeNullable(aiTranslated), hashCodeNullable(machineTranslated),
-                hashCodeNullable(forced), hashCodeNullable(hearingImpaired));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built RemoteSubtitleInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public RemoteSubtitleInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class RemoteSubtitleInfo {\n");
-        sb.append("    threeLetterISOLanguageName: ").append(toIndentedString(threeLetterISOLanguageName)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    providerName: ").append(toIndentedString(providerName)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    format: ").append(toIndentedString(format)).append("\n");
-        sb.append("    author: ").append(toIndentedString(author)).append("\n");
-        sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
-        sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
-        sb.append("    communityRating: ").append(toIndentedString(communityRating)).append("\n");
-        sb.append("    frameRate: ").append(toIndentedString(frameRate)).append("\n");
-        sb.append("    downloadCount: ").append(toIndentedString(downloadCount)).append("\n");
-        sb.append("    isHashMatch: ").append(toIndentedString(isHashMatch)).append("\n");
-        sb.append("    aiTranslated: ").append(toIndentedString(aiTranslated)).append("\n");
-        sb.append("    machineTranslated: ").append(toIndentedString(machineTranslated)).append("\n");
-        sb.append("    forced: ").append(toIndentedString(forced)).append("\n");
-        sb.append("    hearingImpaired: ").append(toIndentedString(hearingImpaired)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static RemoteSubtitleInfo.Builder builder() {
+    return new RemoteSubtitleInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public RemoteSubtitleInfo.Builder toBuilder() {
+    return new RemoteSubtitleInfo.Builder()
+      .threeLetterISOLanguageName(getThreeLetterISOLanguageName())
+      .id(getId())
+      .providerName(getProviderName())
+      .name(getName())
+      .format(getFormat())
+      .author(getAuthor())
+      .comment(getComment())
+      .dateCreated(getDateCreated())
+      .communityRating(getCommunityRating())
+      .frameRate(getFrameRate())
+      .downloadCount(getDownloadCount())
+      .isHashMatch(getIsHashMatch())
+      .aiTranslated(getAiTranslated())
+      .machineTranslated(getMachineTranslated())
+      .forced(getForced())
+      .hearingImpaired(getHearingImpaired());
+  }
 
-        private RemoteSubtitleInfo instance;
 
-        public Builder() {
-            this(new RemoteSubtitleInfo());
-        }
-
-        protected Builder(RemoteSubtitleInfo instance) {
-            this.instance = instance;
-        }
-
-        public RemoteSubtitleInfo.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
-            this.instance.threeLetterISOLanguageName = JsonNullable.<String> of(threeLetterISOLanguageName);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder threeLetterISOLanguageName(JsonNullable<String> threeLetterISOLanguageName) {
-            this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder id(JsonNullable<String> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder providerName(String providerName) {
-            this.instance.providerName = JsonNullable.<String> of(providerName);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder providerName(JsonNullable<String> providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder format(String format) {
-            this.instance.format = JsonNullable.<String> of(format);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder format(JsonNullable<String> format) {
-            this.instance.format = format;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder author(String author) {
-            this.instance.author = JsonNullable.<String> of(author);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder author(JsonNullable<String> author) {
-            this.instance.author = author;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder comment(String comment) {
-            this.instance.comment = JsonNullable.<String> of(comment);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder comment(JsonNullable<String> comment) {
-            this.instance.comment = comment;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = JsonNullable.<OffsetDateTime> of(dateCreated);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder dateCreated(JsonNullable<OffsetDateTime> dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder communityRating(Float communityRating) {
-            this.instance.communityRating = JsonNullable.<Float> of(communityRating);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder communityRating(JsonNullable<Float> communityRating) {
-            this.instance.communityRating = communityRating;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder frameRate(Float frameRate) {
-            this.instance.frameRate = JsonNullable.<Float> of(frameRate);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder frameRate(JsonNullable<Float> frameRate) {
-            this.instance.frameRate = frameRate;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder downloadCount(Integer downloadCount) {
-            this.instance.downloadCount = JsonNullable.<Integer> of(downloadCount);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder downloadCount(JsonNullable<Integer> downloadCount) {
-            this.instance.downloadCount = downloadCount;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder isHashMatch(Boolean isHashMatch) {
-            this.instance.isHashMatch = JsonNullable.<Boolean> of(isHashMatch);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder isHashMatch(JsonNullable<Boolean> isHashMatch) {
-            this.instance.isHashMatch = isHashMatch;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder aiTranslated(Boolean aiTranslated) {
-            this.instance.aiTranslated = JsonNullable.<Boolean> of(aiTranslated);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder aiTranslated(JsonNullable<Boolean> aiTranslated) {
-            this.instance.aiTranslated = aiTranslated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder machineTranslated(Boolean machineTranslated) {
-            this.instance.machineTranslated = JsonNullable.<Boolean> of(machineTranslated);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder machineTranslated(JsonNullable<Boolean> machineTranslated) {
-            this.instance.machineTranslated = machineTranslated;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder forced(Boolean forced) {
-            this.instance.forced = JsonNullable.<Boolean> of(forced);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder forced(JsonNullable<Boolean> forced) {
-            this.instance.forced = forced;
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder hearingImpaired(Boolean hearingImpaired) {
-            this.instance.hearingImpaired = JsonNullable.<Boolean> of(hearingImpaired);
-            return this;
-        }
-
-        public RemoteSubtitleInfo.Builder hearingImpaired(JsonNullable<Boolean> hearingImpaired) {
-            this.instance.hearingImpaired = hearingImpaired;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteSubtitleInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteSubtitleInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteSubtitleInfo.Builder builder() {
-        return new RemoteSubtitleInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteSubtitleInfo.Builder toBuilder() {
-        return new RemoteSubtitleInfo.Builder().threeLetterISOLanguageName(getThreeLetterISOLanguageName()).id(getId())
-                .providerName(getProviderName()).name(getName()).format(getFormat()).author(getAuthor())
-                .comment(getComment()).dateCreated(getDateCreated()).communityRating(getCommunityRating())
-                .frameRate(getFrameRate()).downloadCount(getDownloadCount()).isHashMatch(getIsHashMatch())
-                .aiTranslated(getAiTranslated()).machineTranslated(getMachineTranslated()).forced(getForced())
-                .hearingImpaired(getHearingImpaired());
-    }
 }
+

@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,34 +29,35 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlaybackOrder.
  */
 public enum PlaybackOrder {
+  
+  DEFAULT("Default"),
+  
+  SHUFFLE("Shuffle");
 
-    DEFAULT("Default"),
+  private String value;
 
-    SHUFFLE("Shuffle");
+  PlaybackOrder(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    PlaybackOrder(String value) {
-        this.value = value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static PlaybackOrder fromValue(String value) {
+    for (PlaybackOrder b : PlaybackOrder.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PlaybackOrder fromValue(String value) {
-        for (PlaybackOrder b : PlaybackOrder.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

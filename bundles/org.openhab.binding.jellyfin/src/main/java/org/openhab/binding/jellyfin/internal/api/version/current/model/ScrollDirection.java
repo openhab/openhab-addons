@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,34 +29,35 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing the axis that should be scrolled.
  */
 public enum ScrollDirection {
+  
+  HORIZONTAL("Horizontal"),
+  
+  VERTICAL("Vertical");
 
-    HORIZONTAL("Horizontal"),
+  private String value;
 
-    VERTICAL("Vertical");
+  ScrollDirection(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    ScrollDirection(String value) {
-        this.value = value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static ScrollDirection fromValue(String value) {
+    for (ScrollDirection b : ScrollDirection.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ScrollDirection fromValue(String value) {
-        for (ScrollDirection b : ScrollDirection.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

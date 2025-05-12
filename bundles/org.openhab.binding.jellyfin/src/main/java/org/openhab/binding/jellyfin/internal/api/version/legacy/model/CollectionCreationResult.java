@@ -18,135 +18,147 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.UUID;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * CollectionCreationResult
  */
-@JsonPropertyOrder({ CollectionCreationResult.JSON_PROPERTY_ID })
+@JsonPropertyOrder({
+  CollectionCreationResult.JSON_PROPERTY_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CollectionCreationResult {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private UUID id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private UUID id;
 
-    public CollectionCreationResult() {
+  public CollectionCreationResult() {
+  }
+
+  public CollectionCreationResult id(@javax.annotation.Nullable UUID id) {
+    
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getId() {
+    return id;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = id;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CollectionCreationResult collectionCreationResult = (CollectionCreationResult) o;
+    return Objects.equals(this.id, collectionCreationResult.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class CollectionCreationResult {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private CollectionCreationResult instance;
+
+    public Builder() {
+      this(new CollectionCreationResult());
     }
 
-    public CollectionCreationResult id(@javax.annotation.Nullable UUID id) {
-
-        this.id = id;
-        return this;
+    protected Builder(CollectionCreationResult instance) {
+      this.instance = instance;
     }
+
+    public CollectionCreationResult.Builder id(UUID id) {
+      this.instance.id = id;
+      return this;
+    }
+
 
     /**
-     * Get id
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getId() {
-        return id;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CollectionCreationResult collectionCreationResult = (CollectionCreationResult) o;
-        return Objects.equals(this.id, collectionCreationResult.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    * returns a built CollectionCreationResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public CollectionCreationResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class CollectionCreationResult {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static CollectionCreationResult.Builder builder() {
+    return new CollectionCreationResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public CollectionCreationResult.Builder toBuilder() {
+    return new CollectionCreationResult.Builder()
+      .id(getId());
+  }
 
-        private CollectionCreationResult instance;
 
-        public Builder() {
-            this(new CollectionCreationResult());
-        }
-
-        protected Builder(CollectionCreationResult instance) {
-            this.instance = instance;
-        }
-
-        public CollectionCreationResult.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        /**
-         * returns a built CollectionCreationResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public CollectionCreationResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CollectionCreationResult.Builder builder() {
-        return new CollectionCreationResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CollectionCreationResult.Builder toBuilder() {
-        return new CollectionCreationResult.Builder().id(getId());
-    }
 }
+

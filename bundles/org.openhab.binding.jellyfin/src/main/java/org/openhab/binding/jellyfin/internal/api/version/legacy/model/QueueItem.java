@@ -17,201 +17,212 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * QueueItem
  */
-@JsonPropertyOrder({ QueueItem.JSON_PROPERTY_ID, QueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID })
+@JsonPropertyOrder({
+  QueueItem.JSON_PROPERTY_ID,
+  QueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueueItem {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private UUID id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private UUID id;
 
-    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> playlistItemId = JsonNullable.<String>undefined();
 
-    public QueueItem() {
-    }
+  public QueueItem() {
+  }
 
-    public QueueItem id(@javax.annotation.Nullable UUID id) {
+  public QueueItem id(@javax.annotation.Nullable UUID id) {
+    
+    this.id = id;
+    return this;
+  }
 
-        this.id = id;
-        return this;
-    }
+  /**
+   * Get id
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Get id
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public UUID getId() {
+    return id;
+  }
 
-    public UUID getId() {
-        return id;
-    }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = id;
-    }
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = id;
+  }
 
-    public QueueItem playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+  public QueueItem playlistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get playlistItemId
+   * @return playlistItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get playlistItemId
-     * 
-     * @return playlistItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaylistItemId() {
+  public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    return playlistItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
+    this.playlistItemId = playlistItemId;
+  }
+
+  public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    QueueItem queueItem = (QueueItem) o;
+    return Objects.equals(this.id, queueItem.id) &&
+        equalsNullable(this.playlistItemId, queueItem.playlistItemId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, hashCodeNullable(playlistItemId));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class QueueItem {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private QueueItem instance;
+
+    public Builder() {
+      this(new QueueItem());
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getPlaylistItemId_JsonNullable() {
-        return playlistItemId;
+    protected Builder(QueueItem instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
-        this.playlistItemId = playlistItemId;
+    public QueueItem.Builder id(UUID id) {
+      this.instance.id = id;
+      return this;
+    }
+    public QueueItem.Builder playlistItemId(String playlistItemId) {
+      this.instance.playlistItemId = JsonNullable.<String>of(playlistItemId);
+      return this;
+    }
+    public QueueItem.Builder playlistItemId(JsonNullable<String> playlistItemId) {
+      this.instance.playlistItemId = playlistItemId;
+      return this;
     }
 
-    public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        QueueItem queueItem = (QueueItem) o;
-        return Objects.equals(this.id, queueItem.id) && equalsNullable(this.playlistItemId, queueItem.playlistItemId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(playlistItemId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built QueueItem instance.
+    *
+    * The builder is not reusable.
+    */
+    public QueueItem build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class QueueItem {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static QueueItem.Builder builder() {
+    return new QueueItem.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public QueueItem.Builder toBuilder() {
+    return new QueueItem.Builder()
+      .id(getId())
+      .playlistItemId(getPlaylistItemId());
+  }
 
-        private QueueItem instance;
 
-        public Builder() {
-            this(new QueueItem());
-        }
-
-        protected Builder(QueueItem instance) {
-            this.instance = instance;
-        }
-
-        public QueueItem.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public QueueItem.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = JsonNullable.<String> of(playlistItemId);
-            return this;
-        }
-
-        public QueueItem.Builder playlistItemId(JsonNullable<String> playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        /**
-         * returns a built QueueItem instance.
-         *
-         * The builder is not reusable.
-         */
-        public QueueItem build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QueueItem.Builder builder() {
-        return new QueueItem.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QueueItem.Builder toBuilder() {
-        return new QueueItem.Builder().id(getId()).playlistItemId(getPlaylistItemId());
-    }
 }
+

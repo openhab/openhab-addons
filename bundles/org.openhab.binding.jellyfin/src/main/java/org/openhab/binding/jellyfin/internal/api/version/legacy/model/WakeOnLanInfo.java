@@ -17,201 +17,211 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Provides the MAC address and port for wake-on-LAN functionality.
  */
-@JsonPropertyOrder({ WakeOnLanInfo.JSON_PROPERTY_MAC_ADDRESS, WakeOnLanInfo.JSON_PROPERTY_PORT })
+@JsonPropertyOrder({
+  WakeOnLanInfo.JSON_PROPERTY_MAC_ADDRESS,
+  WakeOnLanInfo.JSON_PROPERTY_PORT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class WakeOnLanInfo {
-    public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
-    @javax.annotation.Nullable
-    private JsonNullable<String> macAddress = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
+  @javax.annotation.Nullable
+  private JsonNullable<String> macAddress = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PORT = "Port";
-    @javax.annotation.Nullable
-    private Integer port;
+  public static final String JSON_PROPERTY_PORT = "Port";
+  @javax.annotation.Nullable
+  private Integer port;
 
-    public WakeOnLanInfo() {
-    }
+  public WakeOnLanInfo() {
+  }
 
-    public WakeOnLanInfo macAddress(@javax.annotation.Nullable String macAddress) {
-        this.macAddress = JsonNullable.<String> of(macAddress);
+  public WakeOnLanInfo macAddress(@javax.annotation.Nullable String macAddress) {
+    this.macAddress = JsonNullable.<String>of(macAddress);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets the MAC address of the device.
+   * @return macAddress
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets the MAC address of the device.
-     * 
-     * @return macAddress
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMacAddress() {
+  public String getMacAddress() {
         return macAddress.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMacAddress_JsonNullable() {
+    return macAddress;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
+  public void setMacAddress_JsonNullable(JsonNullable<String> macAddress) {
+    this.macAddress = macAddress;
+  }
+
+  public void setMacAddress(@javax.annotation.Nullable String macAddress) {
+    this.macAddress = JsonNullable.<String>of(macAddress);
+  }
+
+  public WakeOnLanInfo port(@javax.annotation.Nullable Integer port) {
+    
+    this.port = port;
+    return this;
+  }
+
+  /**
+   * Gets or sets the wake-on-LAN port.
+   * @return port
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPort() {
+    return port;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPort(@javax.annotation.Nullable Integer port) {
+    this.port = port;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    WakeOnLanInfo wakeOnLanInfo = (WakeOnLanInfo) o;
+    return equalsNullable(this.macAddress, wakeOnLanInfo.macAddress) &&
+        Objects.equals(this.port, wakeOnLanInfo.port);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(macAddress), port);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class WakeOnLanInfo {\n");
+    sb.append("    macAddress: ").append(toIndentedString(macAddress)).append("\n");
+    sb.append("    port: ").append(toIndentedString(port)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private WakeOnLanInfo instance;
+
+    public Builder() {
+      this(new WakeOnLanInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getMacAddress_JsonNullable() {
-        return macAddress;
+    protected Builder(WakeOnLanInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
-    public void setMacAddress_JsonNullable(JsonNullable<String> macAddress) {
-        this.macAddress = macAddress;
+    public WakeOnLanInfo.Builder macAddress(String macAddress) {
+      this.instance.macAddress = JsonNullable.<String>of(macAddress);
+      return this;
+    }
+    public WakeOnLanInfo.Builder macAddress(JsonNullable<String> macAddress) {
+      this.instance.macAddress = macAddress;
+      return this;
+    }
+    public WakeOnLanInfo.Builder port(Integer port) {
+      this.instance.port = port;
+      return this;
     }
 
-    public void setMacAddress(@javax.annotation.Nullable String macAddress) {
-        this.macAddress = JsonNullable.<String> of(macAddress);
-    }
-
-    public WakeOnLanInfo port(@javax.annotation.Nullable Integer port) {
-
-        this.port = port;
-        return this;
-    }
 
     /**
-     * Gets or sets the wake-on-LAN port.
-     * 
-     * @return port
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PORT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getPort() {
-        return port;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PORT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPort(@javax.annotation.Nullable Integer port) {
-        this.port = port;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        WakeOnLanInfo wakeOnLanInfo = (WakeOnLanInfo) o;
-        return equalsNullable(this.macAddress, wakeOnLanInfo.macAddress)
-                && Objects.equals(this.port, wakeOnLanInfo.port);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(macAddress), port);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built WakeOnLanInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public WakeOnLanInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class WakeOnLanInfo {\n");
-        sb.append("    macAddress: ").append(toIndentedString(macAddress)).append("\n");
-        sb.append("    port: ").append(toIndentedString(port)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static WakeOnLanInfo.Builder builder() {
+    return new WakeOnLanInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public WakeOnLanInfo.Builder toBuilder() {
+    return new WakeOnLanInfo.Builder()
+      .macAddress(getMacAddress())
+      .port(getPort());
+  }
 
-        private WakeOnLanInfo instance;
 
-        public Builder() {
-            this(new WakeOnLanInfo());
-        }
-
-        protected Builder(WakeOnLanInfo instance) {
-            this.instance = instance;
-        }
-
-        public WakeOnLanInfo.Builder macAddress(String macAddress) {
-            this.instance.macAddress = JsonNullable.<String> of(macAddress);
-            return this;
-        }
-
-        public WakeOnLanInfo.Builder macAddress(JsonNullable<String> macAddress) {
-            this.instance.macAddress = macAddress;
-            return this;
-        }
-
-        public WakeOnLanInfo.Builder port(Integer port) {
-            this.instance.port = port;
-            return this;
-        }
-
-        /**
-         * returns a built WakeOnLanInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public WakeOnLanInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static WakeOnLanInfo.Builder builder() {
-        return new WakeOnLanInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public WakeOnLanInfo.Builder toBuilder() {
-        return new WakeOnLanInfo.Builder().macAddress(getMacAddress()).port(getPort());
-    }
 }
+

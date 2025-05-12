@@ -17,183 +17,196 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.NotificationDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * A list of notifications with the total record count for pagination.
  */
-@JsonPropertyOrder({ NotificationResultDto.JSON_PROPERTY_NOTIFICATIONS,
-        NotificationResultDto.JSON_PROPERTY_TOTAL_RECORD_COUNT })
+@JsonPropertyOrder({
+  NotificationResultDto.JSON_PROPERTY_NOTIFICATIONS,
+  NotificationResultDto.JSON_PROPERTY_TOTAL_RECORD_COUNT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationResultDto {
-    public static final String JSON_PROPERTY_NOTIFICATIONS = "Notifications";
-    @javax.annotation.Nullable
-    private List<NotificationDto> notifications = new ArrayList<>();
+  public static final String JSON_PROPERTY_NOTIFICATIONS = "Notifications";
+  @javax.annotation.Nullable
+  private List<NotificationDto> notifications = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @javax.annotation.Nullable
-    private Integer totalRecordCount;
+  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+  @javax.annotation.Nullable
+  private Integer totalRecordCount;
 
-    public NotificationResultDto() {
+  public NotificationResultDto() {
+  }
+
+  public NotificationResultDto notifications(@javax.annotation.Nullable List<NotificationDto> notifications) {
+    
+    this.notifications = notifications;
+    return this;
+  }
+
+  public NotificationResultDto addNotificationsItem(NotificationDto notificationsItem) {
+    if (this.notifications == null) {
+      this.notifications = new ArrayList<>();
+    }
+    this.notifications.add(notificationsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the current page of notifications.
+   * @return notifications
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<NotificationDto> getNotifications() {
+    return notifications;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNotifications(@javax.annotation.Nullable List<NotificationDto> notifications) {
+    this.notifications = notifications;
+  }
+
+  public NotificationResultDto totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    
+    this.totalRecordCount = totalRecordCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the total number of notifications.
+   * @return totalRecordCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTotalRecordCount() {
+    return totalRecordCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    this.totalRecordCount = totalRecordCount;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    NotificationResultDto notificationResultDto = (NotificationResultDto) o;
+    return Objects.equals(this.notifications, notificationResultDto.notifications) &&
+        Objects.equals(this.totalRecordCount, notificationResultDto.totalRecordCount);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(notifications, totalRecordCount);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class NotificationResultDto {\n");
+    sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
+    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private NotificationResultDto instance;
+
+    public Builder() {
+      this(new NotificationResultDto());
     }
 
-    public NotificationResultDto notifications(@javax.annotation.Nullable List<NotificationDto> notifications) {
-
-        this.notifications = notifications;
-        return this;
+    protected Builder(NotificationResultDto instance) {
+      this.instance = instance;
     }
 
-    public NotificationResultDto addNotificationsItem(NotificationDto notificationsItem) {
-        if (this.notifications == null) {
-            this.notifications = new ArrayList<>();
-        }
-        this.notifications.add(notificationsItem);
-        return this;
+    public NotificationResultDto.Builder notifications(List<NotificationDto> notifications) {
+      this.instance.notifications = notifications;
+      return this;
     }
+    public NotificationResultDto.Builder totalRecordCount(Integer totalRecordCount) {
+      this.instance.totalRecordCount = totalRecordCount;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the current page of notifications.
-     * 
-     * @return notifications
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<NotificationDto> getNotifications() {
-        return notifications;
-    }
-
-    @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setNotifications(@javax.annotation.Nullable List<NotificationDto> notifications) {
-        this.notifications = notifications;
-    }
-
-    public NotificationResultDto totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-
-        this.totalRecordCount = totalRecordCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the total number of notifications.
-     * 
-     * @return totalRecordCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTotalRecordCount() {
-        return totalRecordCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-        this.totalRecordCount = totalRecordCount;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        NotificationResultDto notificationResultDto = (NotificationResultDto) o;
-        return Objects.equals(this.notifications, notificationResultDto.notifications)
-                && Objects.equals(this.totalRecordCount, notificationResultDto.totalRecordCount);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(notifications, totalRecordCount);
+    * returns a built NotificationResultDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public NotificationResultDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class NotificationResultDto {\n");
-        sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
-        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static NotificationResultDto.Builder builder() {
+    return new NotificationResultDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public NotificationResultDto.Builder toBuilder() {
+    return new NotificationResultDto.Builder()
+      .notifications(getNotifications())
+      .totalRecordCount(getTotalRecordCount());
+  }
 
-        private NotificationResultDto instance;
 
-        public Builder() {
-            this(new NotificationResultDto());
-        }
-
-        protected Builder(NotificationResultDto instance) {
-            this.instance = instance;
-        }
-
-        public NotificationResultDto.Builder notifications(List<NotificationDto> notifications) {
-            this.instance.notifications = notifications;
-            return this;
-        }
-
-        public NotificationResultDto.Builder totalRecordCount(Integer totalRecordCount) {
-            this.instance.totalRecordCount = totalRecordCount;
-            return this;
-        }
-
-        /**
-         * returns a built NotificationResultDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public NotificationResultDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static NotificationResultDto.Builder builder() {
-        return new NotificationResultDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public NotificationResultDto.Builder toBuilder() {
-        return new NotificationResultDto.Builder().notifications(getNotifications())
-                .totalRecordCount(getTotalRecordCount());
-    }
 }
+

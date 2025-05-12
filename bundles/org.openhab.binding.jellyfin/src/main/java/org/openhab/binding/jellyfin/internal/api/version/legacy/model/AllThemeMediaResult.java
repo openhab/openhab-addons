@@ -17,270 +17,273 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ThemeMediaResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * AllThemeMediaResult
  */
-@JsonPropertyOrder({ AllThemeMediaResult.JSON_PROPERTY_THEME_VIDEOS_RESULT,
-        AllThemeMediaResult.JSON_PROPERTY_THEME_SONGS_RESULT,
-        AllThemeMediaResult.JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT })
+@JsonPropertyOrder({
+  AllThemeMediaResult.JSON_PROPERTY_THEME_VIDEOS_RESULT,
+  AllThemeMediaResult.JSON_PROPERTY_THEME_SONGS_RESULT,
+  AllThemeMediaResult.JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AllThemeMediaResult {
-    public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
-    @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> themeVideosResult = JsonNullable.<ThemeMediaResult> undefined();
+  public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
+  @javax.annotation.Nullable
+  private JsonNullable<ThemeMediaResult> themeVideosResult = JsonNullable.<ThemeMediaResult>undefined();
 
-    public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
-    @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> themeSongsResult = JsonNullable.<ThemeMediaResult> undefined();
+  public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
+  @javax.annotation.Nullable
+  private JsonNullable<ThemeMediaResult> themeSongsResult = JsonNullable.<ThemeMediaResult>undefined();
 
-    public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
-    @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> soundtrackSongsResult = JsonNullable.<ThemeMediaResult> undefined();
+  public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
+  @javax.annotation.Nullable
+  private JsonNullable<ThemeMediaResult> soundtrackSongsResult = JsonNullable.<ThemeMediaResult>undefined();
 
-    public AllThemeMediaResult() {
-    }
+  public AllThemeMediaResult() {
+  }
 
-    public AllThemeMediaResult themeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
-        this.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
+  public AllThemeMediaResult themeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
+    this.themeVideosResult = JsonNullable.<ThemeMediaResult>of(themeVideosResult);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Class ThemeMediaResult.
+   * @return themeVideosResult
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Class ThemeMediaResult.
-     * 
-     * @return themeVideosResult
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getThemeVideosResult() {
+  public ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ThemeMediaResult> getThemeVideosResult_JsonNullable() {
-        return themeVideosResult;
-    }
+  public JsonNullable<ThemeMediaResult> getThemeVideosResult_JsonNullable() {
+    return themeVideosResult;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
+  public void setThemeVideosResult_JsonNullable(JsonNullable<ThemeMediaResult> themeVideosResult) {
+    this.themeVideosResult = themeVideosResult;
+  }
 
-    @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
-    public void setThemeVideosResult_JsonNullable(JsonNullable<ThemeMediaResult> themeVideosResult) {
-        this.themeVideosResult = themeVideosResult;
-    }
+  public void setThemeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
+    this.themeVideosResult = JsonNullable.<ThemeMediaResult>of(themeVideosResult);
+  }
 
-    public void setThemeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
-        this.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
-    }
+  public AllThemeMediaResult themeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
+    this.themeSongsResult = JsonNullable.<ThemeMediaResult>of(themeSongsResult);
+    
+    return this;
+  }
 
-    public AllThemeMediaResult themeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
-        this.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
+  /**
+   * Class ThemeMediaResult.
+   * @return themeSongsResult
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Class ThemeMediaResult.
-     * 
-     * @return themeSongsResult
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getThemeSongsResult() {
+  public ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<ThemeMediaResult> getThemeSongsResult_JsonNullable() {
+    return themeSongsResult;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
+  public void setThemeSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> themeSongsResult) {
+    this.themeSongsResult = themeSongsResult;
+  }
+
+  public void setThemeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
+    this.themeSongsResult = JsonNullable.<ThemeMediaResult>of(themeSongsResult);
+  }
+
+  public AllThemeMediaResult soundtrackSongsResult(@javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
+    this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult>of(soundtrackSongsResult);
+    
+    return this;
+  }
+
+  /**
+   * Class ThemeMediaResult.
+   * @return soundtrackSongsResult
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public ThemeMediaResult getSoundtrackSongsResult() {
+        return soundtrackSongsResult.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<ThemeMediaResult> getSoundtrackSongsResult_JsonNullable() {
+    return soundtrackSongsResult;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
+  public void setSoundtrackSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
+    this.soundtrackSongsResult = soundtrackSongsResult;
+  }
+
+  public void setSoundtrackSongsResult(@javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
+    this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult>of(soundtrackSongsResult);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    AllThemeMediaResult allThemeMediaResult = (AllThemeMediaResult) o;
+    return equalsNullable(this.themeVideosResult, allThemeMediaResult.themeVideosResult) &&
+        equalsNullable(this.themeSongsResult, allThemeMediaResult.themeSongsResult) &&
+        equalsNullable(this.soundtrackSongsResult, allThemeMediaResult.soundtrackSongsResult);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(themeVideosResult), hashCodeNullable(themeSongsResult), hashCodeNullable(soundtrackSongsResult));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class AllThemeMediaResult {\n");
+    sb.append("    themeVideosResult: ").append(toIndentedString(themeVideosResult)).append("\n");
+    sb.append("    themeSongsResult: ").append(toIndentedString(themeSongsResult)).append("\n");
+    sb.append("    soundtrackSongsResult: ").append(toIndentedString(soundtrackSongsResult)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private AllThemeMediaResult instance;
+
+    public Builder() {
+      this(new AllThemeMediaResult());
     }
 
-    @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<ThemeMediaResult> getThemeSongsResult_JsonNullable() {
-        return themeSongsResult;
+    protected Builder(AllThemeMediaResult instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
-    public void setThemeSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> themeSongsResult) {
-        this.themeSongsResult = themeSongsResult;
+    public AllThemeMediaResult.Builder themeVideosResult(ThemeMediaResult themeVideosResult) {
+      this.instance.themeVideosResult = JsonNullable.<ThemeMediaResult>of(themeVideosResult);
+      return this;
+    }
+    public AllThemeMediaResult.Builder themeVideosResult(JsonNullable<ThemeMediaResult> themeVideosResult) {
+      this.instance.themeVideosResult = themeVideosResult;
+      return this;
+    }
+    public AllThemeMediaResult.Builder themeSongsResult(ThemeMediaResult themeSongsResult) {
+      this.instance.themeSongsResult = JsonNullable.<ThemeMediaResult>of(themeSongsResult);
+      return this;
+    }
+    public AllThemeMediaResult.Builder themeSongsResult(JsonNullable<ThemeMediaResult> themeSongsResult) {
+      this.instance.themeSongsResult = themeSongsResult;
+      return this;
+    }
+    public AllThemeMediaResult.Builder soundtrackSongsResult(ThemeMediaResult soundtrackSongsResult) {
+      this.instance.soundtrackSongsResult = JsonNullable.<ThemeMediaResult>of(soundtrackSongsResult);
+      return this;
+    }
+    public AllThemeMediaResult.Builder soundtrackSongsResult(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
+      this.instance.soundtrackSongsResult = soundtrackSongsResult;
+      return this;
     }
 
-    public void setThemeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
-        this.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
-    }
-
-    public AllThemeMediaResult soundtrackSongsResult(
-            @javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
-        this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
-
-        return this;
-    }
 
     /**
-     * Class ThemeMediaResult.
-     * 
-     * @return soundtrackSongsResult
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getSoundtrackSongsResult() {
-        return soundtrackSongsResult.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<ThemeMediaResult> getSoundtrackSongsResult_JsonNullable() {
-        return soundtrackSongsResult;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
-    public void setSoundtrackSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
-        this.soundtrackSongsResult = soundtrackSongsResult;
-    }
-
-    public void setSoundtrackSongsResult(@javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
-        this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AllThemeMediaResult allThemeMediaResult = (AllThemeMediaResult) o;
-        return equalsNullable(this.themeVideosResult, allThemeMediaResult.themeVideosResult)
-                && equalsNullable(this.themeSongsResult, allThemeMediaResult.themeSongsResult)
-                && equalsNullable(this.soundtrackSongsResult, allThemeMediaResult.soundtrackSongsResult);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(themeVideosResult), hashCodeNullable(themeSongsResult),
-                hashCodeNullable(soundtrackSongsResult));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built AllThemeMediaResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public AllThemeMediaResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class AllThemeMediaResult {\n");
-        sb.append("    themeVideosResult: ").append(toIndentedString(themeVideosResult)).append("\n");
-        sb.append("    themeSongsResult: ").append(toIndentedString(themeSongsResult)).append("\n");
-        sb.append("    soundtrackSongsResult: ").append(toIndentedString(soundtrackSongsResult)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static AllThemeMediaResult.Builder builder() {
+    return new AllThemeMediaResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public AllThemeMediaResult.Builder toBuilder() {
+    return new AllThemeMediaResult.Builder()
+      .themeVideosResult(getThemeVideosResult())
+      .themeSongsResult(getThemeSongsResult())
+      .soundtrackSongsResult(getSoundtrackSongsResult());
+  }
 
-        private AllThemeMediaResult instance;
 
-        public Builder() {
-            this(new AllThemeMediaResult());
-        }
-
-        protected Builder(AllThemeMediaResult instance) {
-            this.instance = instance;
-        }
-
-        public AllThemeMediaResult.Builder themeVideosResult(ThemeMediaResult themeVideosResult) {
-            this.instance.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeVideosResult(JsonNullable<ThemeMediaResult> themeVideosResult) {
-            this.instance.themeVideosResult = themeVideosResult;
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeSongsResult(ThemeMediaResult themeSongsResult) {
-            this.instance.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeSongsResult(JsonNullable<ThemeMediaResult> themeSongsResult) {
-            this.instance.themeSongsResult = themeSongsResult;
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder soundtrackSongsResult(ThemeMediaResult soundtrackSongsResult) {
-            this.instance.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder soundtrackSongsResult(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
-            this.instance.soundtrackSongsResult = soundtrackSongsResult;
-            return this;
-        }
-
-        /**
-         * returns a built AllThemeMediaResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public AllThemeMediaResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AllThemeMediaResult.Builder builder() {
-        return new AllThemeMediaResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AllThemeMediaResult.Builder toBuilder() {
-        return new AllThemeMediaResult.Builder().themeVideosResult(getThemeVideosResult())
-                .themeSongsResult(getThemeSongsResult()).soundtrackSongsResult(getSoundtrackSongsResult());
-    }
 }
+

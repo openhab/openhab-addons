@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,40 +29,41 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing an algorithm to downmix surround sound to stereo.
  */
 public enum DownMixStereoAlgorithms {
+  
+  NONE("None"),
+  
+  DAVE750("Dave750"),
+  
+  NIGHTMODE_DIALOGUE("NightmodeDialogue"),
+  
+  RFC7845("Rfc7845"),
+  
+  AC4("Ac4");
 
-    NONE("None"),
+  private String value;
 
-    DAVE750("Dave750"),
+  DownMixStereoAlgorithms(String value) {
+    this.value = value;
+  }
 
-    NIGHTMODE_DIALOGUE("NightmodeDialogue"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    RFC7845("Rfc7845"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    AC4("Ac4");
-
-    private String value;
-
-    DownMixStereoAlgorithms(String value) {
-        this.value = value;
+  @JsonCreator
+  public static DownMixStereoAlgorithms fromValue(String value) {
+    for (DownMixStereoAlgorithms b : DownMixStereoAlgorithms.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static DownMixStereoAlgorithms fromValue(String value) {
-        for (DownMixStereoAlgorithms b : DownMixStereoAlgorithms.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

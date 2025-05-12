@@ -17,220 +17,233 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class PlayRequestDto.
  */
-@JsonPropertyOrder({ PlayRequestDto.JSON_PROPERTY_PLAYING_QUEUE, PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
-        PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS })
+@JsonPropertyOrder({
+  PlayRequestDto.JSON_PROPERTY_PLAYING_QUEUE,
+  PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
+  PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlayRequestDto {
-    public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
-    @javax.annotation.Nullable
-    private List<UUID> playingQueue = new ArrayList<>();
+  public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
+  @javax.annotation.Nullable
+  private List<UUID> playingQueue = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_PLAYING_ITEM_POSITION = "PlayingItemPosition";
-    @javax.annotation.Nullable
-    private Integer playingItemPosition;
+  public static final String JSON_PROPERTY_PLAYING_ITEM_POSITION = "PlayingItemPosition";
+  @javax.annotation.Nullable
+  private Integer playingItemPosition;
 
-    public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
-    @javax.annotation.Nullable
-    private Long startPositionTicks;
+  public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
+  @javax.annotation.Nullable
+  private Long startPositionTicks;
 
-    public PlayRequestDto() {
+  public PlayRequestDto() {
+  }
+
+  public PlayRequestDto playingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
+    
+    this.playingQueue = playingQueue;
+    return this;
+  }
+
+  public PlayRequestDto addPlayingQueueItem(UUID playingQueueItem) {
+    if (this.playingQueue == null) {
+      this.playingQueue = new ArrayList<>();
+    }
+    this.playingQueue.add(playingQueueItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the playing queue.
+   * @return playingQueue
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<UUID> getPlayingQueue() {
+    return playingQueue;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlayingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
+    this.playingQueue = playingQueue;
+  }
+
+  public PlayRequestDto playingItemPosition(@javax.annotation.Nullable Integer playingItemPosition) {
+    
+    this.playingItemPosition = playingItemPosition;
+    return this;
+  }
+
+  /**
+   * Gets or sets the position of the playing item in the queue.
+   * @return playingItemPosition
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPlayingItemPosition() {
+    return playingItemPosition;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlayingItemPosition(@javax.annotation.Nullable Integer playingItemPosition) {
+    this.playingItemPosition = playingItemPosition;
+  }
+
+  public PlayRequestDto startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
+    
+    this.startPositionTicks = startPositionTicks;
+    return this;
+  }
+
+  /**
+   * Gets or sets the start position ticks.
+   * @return startPositionTicks
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Long getStartPositionTicks() {
+    return startPositionTicks;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
+    this.startPositionTicks = startPositionTicks;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PlayRequestDto playRequestDto = (PlayRequestDto) o;
+    return Objects.equals(this.playingQueue, playRequestDto.playingQueue) &&
+        Objects.equals(this.playingItemPosition, playRequestDto.playingItemPosition) &&
+        Objects.equals(this.startPositionTicks, playRequestDto.startPositionTicks);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(playingQueue, playingItemPosition, startPositionTicks);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PlayRequestDto {\n");
+    sb.append("    playingQueue: ").append(toIndentedString(playingQueue)).append("\n");
+    sb.append("    playingItemPosition: ").append(toIndentedString(playingItemPosition)).append("\n");
+    sb.append("    startPositionTicks: ").append(toIndentedString(startPositionTicks)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PlayRequestDto instance;
+
+    public Builder() {
+      this(new PlayRequestDto());
     }
 
-    public PlayRequestDto playingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
-
-        this.playingQueue = playingQueue;
-        return this;
+    protected Builder(PlayRequestDto instance) {
+      this.instance = instance;
     }
 
-    public PlayRequestDto addPlayingQueueItem(UUID playingQueueItem) {
-        if (this.playingQueue == null) {
-            this.playingQueue = new ArrayList<>();
-        }
-        this.playingQueue.add(playingQueueItem);
-        return this;
+    public PlayRequestDto.Builder playingQueue(List<UUID> playingQueue) {
+      this.instance.playingQueue = playingQueue;
+      return this;
     }
+    public PlayRequestDto.Builder playingItemPosition(Integer playingItemPosition) {
+      this.instance.playingItemPosition = playingItemPosition;
+      return this;
+    }
+    public PlayRequestDto.Builder startPositionTicks(Long startPositionTicks) {
+      this.instance.startPositionTicks = startPositionTicks;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the playing queue.
-     * 
-     * @return playingQueue
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<UUID> getPlayingQueue() {
-        return playingQueue;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPlayingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
-        this.playingQueue = playingQueue;
-    }
-
-    public PlayRequestDto playingItemPosition(@javax.annotation.Nullable Integer playingItemPosition) {
-
-        this.playingItemPosition = playingItemPosition;
-        return this;
-    }
-
-    /**
-     * Gets or sets the position of the playing item in the queue.
-     * 
-     * @return playingItemPosition
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getPlayingItemPosition() {
-        return playingItemPosition;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPlayingItemPosition(@javax.annotation.Nullable Integer playingItemPosition) {
-        this.playingItemPosition = playingItemPosition;
-    }
-
-    public PlayRequestDto startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-
-        this.startPositionTicks = startPositionTicks;
-        return this;
-    }
-
-    /**
-     * Gets or sets the start position ticks.
-     * 
-     * @return startPositionTicks
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Long getStartPositionTicks() {
-        return startPositionTicks;
-    }
-
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-        this.startPositionTicks = startPositionTicks;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PlayRequestDto playRequestDto = (PlayRequestDto) o;
-        return Objects.equals(this.playingQueue, playRequestDto.playingQueue)
-                && Objects.equals(this.playingItemPosition, playRequestDto.playingItemPosition)
-                && Objects.equals(this.startPositionTicks, playRequestDto.startPositionTicks);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(playingQueue, playingItemPosition, startPositionTicks);
+    * returns a built PlayRequestDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public PlayRequestDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PlayRequestDto {\n");
-        sb.append("    playingQueue: ").append(toIndentedString(playingQueue)).append("\n");
-        sb.append("    playingItemPosition: ").append(toIndentedString(playingItemPosition)).append("\n");
-        sb.append("    startPositionTicks: ").append(toIndentedString(startPositionTicks)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PlayRequestDto.Builder builder() {
+    return new PlayRequestDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PlayRequestDto.Builder toBuilder() {
+    return new PlayRequestDto.Builder()
+      .playingQueue(getPlayingQueue())
+      .playingItemPosition(getPlayingItemPosition())
+      .startPositionTicks(getStartPositionTicks());
+  }
 
-        private PlayRequestDto instance;
 
-        public Builder() {
-            this(new PlayRequestDto());
-        }
-
-        protected Builder(PlayRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public PlayRequestDto.Builder playingQueue(List<UUID> playingQueue) {
-            this.instance.playingQueue = playingQueue;
-            return this;
-        }
-
-        public PlayRequestDto.Builder playingItemPosition(Integer playingItemPosition) {
-            this.instance.playingItemPosition = playingItemPosition;
-            return this;
-        }
-
-        public PlayRequestDto.Builder startPositionTicks(Long startPositionTicks) {
-            this.instance.startPositionTicks = startPositionTicks;
-            return this;
-        }
-
-        /**
-         * returns a built PlayRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlayRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlayRequestDto.Builder builder() {
-        return new PlayRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlayRequestDto.Builder toBuilder() {
-        return new PlayRequestDto.Builder().playingQueue(getPlayingQueue())
-                .playingItemPosition(getPlayingItemPosition()).startPositionTicks(getStartPositionTicks());
-    }
 }
+

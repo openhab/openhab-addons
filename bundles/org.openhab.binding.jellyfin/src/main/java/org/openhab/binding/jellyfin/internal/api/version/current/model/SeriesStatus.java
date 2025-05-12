@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,36 +29,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The status of a series.
  */
 public enum SeriesStatus {
+  
+  CONTINUING("Continuing"),
+  
+  ENDED("Ended"),
+  
+  UNRELEASED("Unreleased");
 
-    CONTINUING("Continuing"),
+  private String value;
 
-    ENDED("Ended"),
+  SeriesStatus(String value) {
+    this.value = value;
+  }
 
-    UNRELEASED("Unreleased");
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    private String value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    SeriesStatus(String value) {
-        this.value = value;
+  @JsonCreator
+  public static SeriesStatus fromValue(String value) {
+    for (SeriesStatus b : SeriesStatus.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static SeriesStatus fromValue(String value) {
-        for (SeriesStatus b : SeriesStatus.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

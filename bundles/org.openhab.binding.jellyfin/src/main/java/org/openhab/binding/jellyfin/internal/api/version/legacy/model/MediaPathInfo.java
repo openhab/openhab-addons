@@ -17,201 +17,211 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * MediaPathInfo
  */
-@JsonPropertyOrder({ MediaPathInfo.JSON_PROPERTY_PATH, MediaPathInfo.JSON_PROPERTY_NETWORK_PATH })
+@JsonPropertyOrder({
+  MediaPathInfo.JSON_PROPERTY_PATH,
+  MediaPathInfo.JSON_PROPERTY_NETWORK_PATH
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaPathInfo {
-    public static final String JSON_PROPERTY_PATH = "Path";
-    @javax.annotation.Nullable
-    private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  @javax.annotation.Nullable
+  private String path;
 
-    public static final String JSON_PROPERTY_NETWORK_PATH = "NetworkPath";
-    @javax.annotation.Nullable
-    private JsonNullable<String> networkPath = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NETWORK_PATH = "NetworkPath";
+  @javax.annotation.Nullable
+  private JsonNullable<String> networkPath = JsonNullable.<String>undefined();
 
-    public MediaPathInfo() {
-    }
+  public MediaPathInfo() {
+  }
 
-    public MediaPathInfo path(@javax.annotation.Nullable String path) {
+  public MediaPathInfo path(@javax.annotation.Nullable String path) {
+    
+    this.path = path;
+    return this;
+  }
 
-        this.path = path;
-        return this;
-    }
+  /**
+   * Get path
+   * @return path
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Get path
-     * 
-     * @return path
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getPath() {
+    return path;
+  }
 
-    public String getPath() {
-        return path;
-    }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = path;
-    }
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPath(@javax.annotation.Nullable String path) {
+    this.path = path;
+  }
 
-    public MediaPathInfo networkPath(@javax.annotation.Nullable String networkPath) {
-        this.networkPath = JsonNullable.<String> of(networkPath);
+  public MediaPathInfo networkPath(@javax.annotation.Nullable String networkPath) {
+    this.networkPath = JsonNullable.<String>of(networkPath);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get networkPath
+   * @return networkPath
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get networkPath
-     * 
-     * @return networkPath
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNetworkPath() {
+  public String getNetworkPath() {
         return networkPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getNetworkPath_JsonNullable() {
+    return networkPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
+  public void setNetworkPath_JsonNullable(JsonNullable<String> networkPath) {
+    this.networkPath = networkPath;
+  }
+
+  public void setNetworkPath(@javax.annotation.Nullable String networkPath) {
+    this.networkPath = JsonNullable.<String>of(networkPath);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MediaPathInfo mediaPathInfo = (MediaPathInfo) o;
+    return Objects.equals(this.path, mediaPathInfo.path) &&
+        equalsNullable(this.networkPath, mediaPathInfo.networkPath);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(path, hashCodeNullable(networkPath));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class MediaPathInfo {\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    networkPath: ").append(toIndentedString(networkPath)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private MediaPathInfo instance;
+
+    public Builder() {
+      this(new MediaPathInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getNetworkPath_JsonNullable() {
-        return networkPath;
+    protected Builder(MediaPathInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
-    public void setNetworkPath_JsonNullable(JsonNullable<String> networkPath) {
-        this.networkPath = networkPath;
+    public MediaPathInfo.Builder path(String path) {
+      this.instance.path = path;
+      return this;
+    }
+    public MediaPathInfo.Builder networkPath(String networkPath) {
+      this.instance.networkPath = JsonNullable.<String>of(networkPath);
+      return this;
+    }
+    public MediaPathInfo.Builder networkPath(JsonNullable<String> networkPath) {
+      this.instance.networkPath = networkPath;
+      return this;
     }
 
-    public void setNetworkPath(@javax.annotation.Nullable String networkPath) {
-        this.networkPath = JsonNullable.<String> of(networkPath);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MediaPathInfo mediaPathInfo = (MediaPathInfo) o;
-        return Objects.equals(this.path, mediaPathInfo.path)
-                && equalsNullable(this.networkPath, mediaPathInfo.networkPath);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(path, hashCodeNullable(networkPath));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built MediaPathInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public MediaPathInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class MediaPathInfo {\n");
-        sb.append("    path: ").append(toIndentedString(path)).append("\n");
-        sb.append("    networkPath: ").append(toIndentedString(networkPath)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static MediaPathInfo.Builder builder() {
+    return new MediaPathInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public MediaPathInfo.Builder toBuilder() {
+    return new MediaPathInfo.Builder()
+      .path(getPath())
+      .networkPath(getNetworkPath());
+  }
 
-        private MediaPathInfo instance;
 
-        public Builder() {
-            this(new MediaPathInfo());
-        }
-
-        protected Builder(MediaPathInfo instance) {
-            this.instance = instance;
-        }
-
-        public MediaPathInfo.Builder path(String path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        public MediaPathInfo.Builder networkPath(String networkPath) {
-            this.instance.networkPath = JsonNullable.<String> of(networkPath);
-            return this;
-        }
-
-        public MediaPathInfo.Builder networkPath(JsonNullable<String> networkPath) {
-            this.instance.networkPath = networkPath;
-            return this;
-        }
-
-        /**
-         * returns a built MediaPathInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaPathInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaPathInfo.Builder builder() {
-        return new MediaPathInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaPathInfo.Builder toBuilder() {
-        return new MediaPathInfo.Builder().path(getPath()).networkPath(getNetworkPath());
-    }
 }
+

@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,36 +29,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing video ranges.
  */
 public enum VideoRange {
+  
+  UNKNOWN("Unknown"),
+  
+  SDR("SDR"),
+  
+  HDR("HDR");
 
-    UNKNOWN("Unknown"),
+  private String value;
 
-    SDR("SDR"),
+  VideoRange(String value) {
+    this.value = value;
+  }
 
-    HDR("HDR");
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    private String value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    VideoRange(String value) {
-        this.value = value;
+  @JsonCreator
+  public static VideoRange fromValue(String value) {
+    for (VideoRange b : VideoRange.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static VideoRange fromValue(String value) {
-        for (VideoRange b : VideoRange.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

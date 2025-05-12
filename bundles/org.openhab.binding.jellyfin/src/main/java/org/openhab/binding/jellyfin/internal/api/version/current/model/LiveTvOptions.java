@@ -17,849 +17,829 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ListingsProviderInfo;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TunerHostInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * LiveTvOptions
  */
-@JsonPropertyOrder({ LiveTvOptions.JSON_PROPERTY_GUIDE_DAYS, LiveTvOptions.JSON_PROPERTY_RECORDING_PATH,
-        LiveTvOptions.JSON_PROPERTY_MOVIE_RECORDING_PATH, LiveTvOptions.JSON_PROPERTY_SERIES_RECORDING_PATH,
-        LiveTvOptions.JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS,
-        LiveTvOptions.JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS,
-        LiveTvOptions.JSON_PROPERTY_TUNER_HOSTS, LiveTvOptions.JSON_PROPERTY_LISTING_PROVIDERS,
-        LiveTvOptions.JSON_PROPERTY_PRE_PADDING_SECONDS, LiveTvOptions.JSON_PROPERTY_POST_PADDING_SECONDS,
-        LiveTvOptions.JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR,
-        LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS,
-        LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_N_F_O, LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_IMAGES })
+@JsonPropertyOrder({
+  LiveTvOptions.JSON_PROPERTY_GUIDE_DAYS,
+  LiveTvOptions.JSON_PROPERTY_RECORDING_PATH,
+  LiveTvOptions.JSON_PROPERTY_MOVIE_RECORDING_PATH,
+  LiveTvOptions.JSON_PROPERTY_SERIES_RECORDING_PATH,
+  LiveTvOptions.JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS,
+  LiveTvOptions.JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS,
+  LiveTvOptions.JSON_PROPERTY_TUNER_HOSTS,
+  LiveTvOptions.JSON_PROPERTY_LISTING_PROVIDERS,
+  LiveTvOptions.JSON_PROPERTY_PRE_PADDING_SECONDS,
+  LiveTvOptions.JSON_PROPERTY_POST_PADDING_SECONDS,
+  LiveTvOptions.JSON_PROPERTY_MEDIA_LOCATIONS_CREATED,
+  LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR,
+  LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS,
+  LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_N_F_O,
+  LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_IMAGES
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LiveTvOptions {
-    public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> guideDays = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> guideDays = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_RECORDING_PATH = "RecordingPath";
-    @javax.annotation.Nullable
-    private JsonNullable<String> recordingPath = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_RECORDING_PATH = "RecordingPath";
+  @javax.annotation.Nullable
+  private JsonNullable<String> recordingPath = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_MOVIE_RECORDING_PATH = "MovieRecordingPath";
-    @javax.annotation.Nullable
-    private JsonNullable<String> movieRecordingPath = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MOVIE_RECORDING_PATH = "MovieRecordingPath";
+  @javax.annotation.Nullable
+  private JsonNullable<String> movieRecordingPath = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SERIES_RECORDING_PATH = "SeriesRecordingPath";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesRecordingPath = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SERIES_RECORDING_PATH = "SeriesRecordingPath";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesRecordingPath = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS = "EnableRecordingSubfolders";
-    @javax.annotation.Nullable
-    private Boolean enableRecordingSubfolders;
+  public static final String JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS = "EnableRecordingSubfolders";
+  @javax.annotation.Nullable
+  private Boolean enableRecordingSubfolders;
 
-    public static final String JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS = "EnableOriginalAudioWithEncodedRecordings";
-    @javax.annotation.Nullable
-    private Boolean enableOriginalAudioWithEncodedRecordings;
+  public static final String JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS = "EnableOriginalAudioWithEncodedRecordings";
+  @javax.annotation.Nullable
+  private Boolean enableOriginalAudioWithEncodedRecordings;
 
-    public static final String JSON_PROPERTY_TUNER_HOSTS = "TunerHosts";
-    @javax.annotation.Nullable
-    private JsonNullable<List<TunerHostInfo>> tunerHosts = JsonNullable.<List<TunerHostInfo>> undefined();
+  public static final String JSON_PROPERTY_TUNER_HOSTS = "TunerHosts";
+  @javax.annotation.Nullable
+  private JsonNullable<List<TunerHostInfo>> tunerHosts = JsonNullable.<List<TunerHostInfo>>undefined();
 
-    public static final String JSON_PROPERTY_LISTING_PROVIDERS = "ListingProviders";
-    @javax.annotation.Nullable
-    private JsonNullable<List<ListingsProviderInfo>> listingProviders = JsonNullable
-            .<List<ListingsProviderInfo>> undefined();
+  public static final String JSON_PROPERTY_LISTING_PROVIDERS = "ListingProviders";
+  @javax.annotation.Nullable
+  private JsonNullable<List<ListingsProviderInfo>> listingProviders = JsonNullable.<List<ListingsProviderInfo>>undefined();
 
-    public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
-    @javax.annotation.Nullable
-    private Integer prePaddingSeconds;
+  public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
+  @javax.annotation.Nullable
+  private Integer prePaddingSeconds;
 
-    public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
-    @javax.annotation.Nullable
-    private Integer postPaddingSeconds;
+  public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
+  @javax.annotation.Nullable
+  private Integer postPaddingSeconds;
 
-    public static final String JSON_PROPERTY_MEDIA_LOCATIONS_CREATED = "MediaLocationsCreated";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> mediaLocationsCreated = JsonNullable.<List<String>> undefined();
+  public static final String JSON_PROPERTY_MEDIA_LOCATIONS_CREATED = "MediaLocationsCreated";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> mediaLocationsCreated = JsonNullable.<List<String>>undefined();
 
-    public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR = "RecordingPostProcessor";
-    @javax.annotation.Nullable
-    private JsonNullable<String> recordingPostProcessor = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR = "RecordingPostProcessor";
+  @javax.annotation.Nullable
+  private JsonNullable<String> recordingPostProcessor = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS = "RecordingPostProcessorArguments";
-    @javax.annotation.Nullable
-    private JsonNullable<String> recordingPostProcessorArguments = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS = "RecordingPostProcessorArguments";
+  @javax.annotation.Nullable
+  private JsonNullable<String> recordingPostProcessorArguments = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SAVE_RECORDING_N_F_O = "SaveRecordingNFO";
-    @javax.annotation.Nullable
-    private Boolean saveRecordingNFO;
+  public static final String JSON_PROPERTY_SAVE_RECORDING_N_F_O = "SaveRecordingNFO";
+  @javax.annotation.Nullable
+  private Boolean saveRecordingNFO;
 
-    public static final String JSON_PROPERTY_SAVE_RECORDING_IMAGES = "SaveRecordingImages";
-    @javax.annotation.Nullable
-    private Boolean saveRecordingImages;
+  public static final String JSON_PROPERTY_SAVE_RECORDING_IMAGES = "SaveRecordingImages";
+  @javax.annotation.Nullable
+  private Boolean saveRecordingImages;
 
-    public LiveTvOptions() {
-    }
+  public LiveTvOptions() {
+  }
 
-    public LiveTvOptions guideDays(@javax.annotation.Nullable Integer guideDays) {
-        this.guideDays = JsonNullable.<Integer> of(guideDays);
+  public LiveTvOptions guideDays(@javax.annotation.Nullable Integer guideDays) {
+    this.guideDays = JsonNullable.<Integer>of(guideDays);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get guideDays
+   * @return guideDays
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get guideDays
-     * 
-     * @return guideDays
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getGuideDays() {
+  public Integer getGuideDays() {
         return guideDays.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getGuideDays_JsonNullable() {
-        return guideDays;
-    }
+  public JsonNullable<Integer> getGuideDays_JsonNullable() {
+    return guideDays;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
+  public void setGuideDays_JsonNullable(JsonNullable<Integer> guideDays) {
+    this.guideDays = guideDays;
+  }
 
-    @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
-    public void setGuideDays_JsonNullable(JsonNullable<Integer> guideDays) {
-        this.guideDays = guideDays;
-    }
+  public void setGuideDays(@javax.annotation.Nullable Integer guideDays) {
+    this.guideDays = JsonNullable.<Integer>of(guideDays);
+  }
 
-    public void setGuideDays(@javax.annotation.Nullable Integer guideDays) {
-        this.guideDays = JsonNullable.<Integer> of(guideDays);
-    }
+  public LiveTvOptions recordingPath(@javax.annotation.Nullable String recordingPath) {
+    this.recordingPath = JsonNullable.<String>of(recordingPath);
+    
+    return this;
+  }
 
-    public LiveTvOptions recordingPath(@javax.annotation.Nullable String recordingPath) {
-        this.recordingPath = JsonNullable.<String> of(recordingPath);
+  /**
+   * Get recordingPath
+   * @return recordingPath
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get recordingPath
-     * 
-     * @return recordingPath
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRecordingPath() {
+  public String getRecordingPath() {
         return recordingPath.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getRecordingPath_JsonNullable() {
-        return recordingPath;
-    }
+  public JsonNullable<String> getRecordingPath_JsonNullable() {
+    return recordingPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
+  public void setRecordingPath_JsonNullable(JsonNullable<String> recordingPath) {
+    this.recordingPath = recordingPath;
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
-    public void setRecordingPath_JsonNullable(JsonNullable<String> recordingPath) {
-        this.recordingPath = recordingPath;
-    }
+  public void setRecordingPath(@javax.annotation.Nullable String recordingPath) {
+    this.recordingPath = JsonNullable.<String>of(recordingPath);
+  }
 
-    public void setRecordingPath(@javax.annotation.Nullable String recordingPath) {
-        this.recordingPath = JsonNullable.<String> of(recordingPath);
-    }
+  public LiveTvOptions movieRecordingPath(@javax.annotation.Nullable String movieRecordingPath) {
+    this.movieRecordingPath = JsonNullable.<String>of(movieRecordingPath);
+    
+    return this;
+  }
 
-    public LiveTvOptions movieRecordingPath(@javax.annotation.Nullable String movieRecordingPath) {
-        this.movieRecordingPath = JsonNullable.<String> of(movieRecordingPath);
+  /**
+   * Get movieRecordingPath
+   * @return movieRecordingPath
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get movieRecordingPath
-     * 
-     * @return movieRecordingPath
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMovieRecordingPath() {
+  public String getMovieRecordingPath() {
         return movieRecordingPath.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMovieRecordingPath_JsonNullable() {
-        return movieRecordingPath;
-    }
+  public JsonNullable<String> getMovieRecordingPath_JsonNullable() {
+    return movieRecordingPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
+  public void setMovieRecordingPath_JsonNullable(JsonNullable<String> movieRecordingPath) {
+    this.movieRecordingPath = movieRecordingPath;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
-    public void setMovieRecordingPath_JsonNullable(JsonNullable<String> movieRecordingPath) {
-        this.movieRecordingPath = movieRecordingPath;
-    }
+  public void setMovieRecordingPath(@javax.annotation.Nullable String movieRecordingPath) {
+    this.movieRecordingPath = JsonNullable.<String>of(movieRecordingPath);
+  }
 
-    public void setMovieRecordingPath(@javax.annotation.Nullable String movieRecordingPath) {
-        this.movieRecordingPath = JsonNullable.<String> of(movieRecordingPath);
-    }
+  public LiveTvOptions seriesRecordingPath(@javax.annotation.Nullable String seriesRecordingPath) {
+    this.seriesRecordingPath = JsonNullable.<String>of(seriesRecordingPath);
+    
+    return this;
+  }
 
-    public LiveTvOptions seriesRecordingPath(@javax.annotation.Nullable String seriesRecordingPath) {
-        this.seriesRecordingPath = JsonNullable.<String> of(seriesRecordingPath);
+  /**
+   * Get seriesRecordingPath
+   * @return seriesRecordingPath
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get seriesRecordingPath
-     * 
-     * @return seriesRecordingPath
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesRecordingPath() {
+  public String getSeriesRecordingPath() {
         return seriesRecordingPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSeriesRecordingPath_JsonNullable() {
+    return seriesRecordingPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
+  public void setSeriesRecordingPath_JsonNullable(JsonNullable<String> seriesRecordingPath) {
+    this.seriesRecordingPath = seriesRecordingPath;
+  }
+
+  public void setSeriesRecordingPath(@javax.annotation.Nullable String seriesRecordingPath) {
+    this.seriesRecordingPath = JsonNullable.<String>of(seriesRecordingPath);
+  }
+
+  public LiveTvOptions enableRecordingSubfolders(@javax.annotation.Nullable Boolean enableRecordingSubfolders) {
+    
+    this.enableRecordingSubfolders = enableRecordingSubfolders;
+    return this;
+  }
+
+  /**
+   * Get enableRecordingSubfolders
+   * @return enableRecordingSubfolders
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnableRecordingSubfolders() {
+    return enableRecordingSubfolders;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableRecordingSubfolders(@javax.annotation.Nullable Boolean enableRecordingSubfolders) {
+    this.enableRecordingSubfolders = enableRecordingSubfolders;
+  }
+
+  public LiveTvOptions enableOriginalAudioWithEncodedRecordings(@javax.annotation.Nullable Boolean enableOriginalAudioWithEncodedRecordings) {
+    
+    this.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
+    return this;
+  }
+
+  /**
+   * Get enableOriginalAudioWithEncodedRecordings
+   * @return enableOriginalAudioWithEncodedRecordings
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnableOriginalAudioWithEncodedRecordings() {
+    return enableOriginalAudioWithEncodedRecordings;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableOriginalAudioWithEncodedRecordings(@javax.annotation.Nullable Boolean enableOriginalAudioWithEncodedRecordings) {
+    this.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
+  }
+
+  public LiveTvOptions tunerHosts(@javax.annotation.Nullable List<TunerHostInfo> tunerHosts) {
+    this.tunerHosts = JsonNullable.<List<TunerHostInfo>>of(tunerHosts);
+    
+    return this;
+  }
+
+  public LiveTvOptions addTunerHostsItem(TunerHostInfo tunerHostsItem) {
+    if (this.tunerHosts == null || !this.tunerHosts.isPresent()) {
+      this.tunerHosts = JsonNullable.<List<TunerHostInfo>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getSeriesRecordingPath_JsonNullable() {
-        return seriesRecordingPath;
+    try {
+      this.tunerHosts.get().add(tunerHostsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
-    public void setSeriesRecordingPath_JsonNullable(JsonNullable<String> seriesRecordingPath) {
-        this.seriesRecordingPath = seriesRecordingPath;
-    }
+  /**
+   * Get tunerHosts
+   * @return tunerHosts
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setSeriesRecordingPath(@javax.annotation.Nullable String seriesRecordingPath) {
-        this.seriesRecordingPath = JsonNullable.<String> of(seriesRecordingPath);
-    }
-
-    public LiveTvOptions enableRecordingSubfolders(@javax.annotation.Nullable Boolean enableRecordingSubfolders) {
-
-        this.enableRecordingSubfolders = enableRecordingSubfolders;
-        return this;
-    }
-
-    /**
-     * Get enableRecordingSubfolders
-     * 
-     * @return enableRecordingSubfolders
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnableRecordingSubfolders() {
-        return enableRecordingSubfolders;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableRecordingSubfolders(@javax.annotation.Nullable Boolean enableRecordingSubfolders) {
-        this.enableRecordingSubfolders = enableRecordingSubfolders;
-    }
-
-    public LiveTvOptions enableOriginalAudioWithEncodedRecordings(
-            @javax.annotation.Nullable Boolean enableOriginalAudioWithEncodedRecordings) {
-
-        this.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
-        return this;
-    }
-
-    /**
-     * Get enableOriginalAudioWithEncodedRecordings
-     * 
-     * @return enableOriginalAudioWithEncodedRecordings
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnableOriginalAudioWithEncodedRecordings() {
-        return enableOriginalAudioWithEncodedRecordings;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableOriginalAudioWithEncodedRecordings(
-            @javax.annotation.Nullable Boolean enableOriginalAudioWithEncodedRecordings) {
-        this.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
-    }
-
-    public LiveTvOptions tunerHosts(@javax.annotation.Nullable List<TunerHostInfo> tunerHosts) {
-        this.tunerHosts = JsonNullable.<List<TunerHostInfo>> of(tunerHosts);
-
-        return this;
-    }
-
-    public LiveTvOptions addTunerHostsItem(TunerHostInfo tunerHostsItem) {
-        if (this.tunerHosts == null || !this.tunerHosts.isPresent()) {
-            this.tunerHosts = JsonNullable.<List<TunerHostInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.tunerHosts.get().add(tunerHostsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get tunerHosts
-     * 
-     * @return tunerHosts
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<TunerHostInfo> getTunerHosts() {
+  public List<TunerHostInfo> getTunerHosts() {
         return tunerHosts.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<TunerHostInfo>> getTunerHosts_JsonNullable() {
+    return tunerHosts;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
+  public void setTunerHosts_JsonNullable(JsonNullable<List<TunerHostInfo>> tunerHosts) {
+    this.tunerHosts = tunerHosts;
+  }
+
+  public void setTunerHosts(@javax.annotation.Nullable List<TunerHostInfo> tunerHosts) {
+    this.tunerHosts = JsonNullable.<List<TunerHostInfo>>of(tunerHosts);
+  }
+
+  public LiveTvOptions listingProviders(@javax.annotation.Nullable List<ListingsProviderInfo> listingProviders) {
+    this.listingProviders = JsonNullable.<List<ListingsProviderInfo>>of(listingProviders);
+    
+    return this;
+  }
+
+  public LiveTvOptions addListingProvidersItem(ListingsProviderInfo listingProvidersItem) {
+    if (this.listingProviders == null || !this.listingProviders.isPresent()) {
+      this.listingProviders = JsonNullable.<List<ListingsProviderInfo>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<TunerHostInfo>> getTunerHosts_JsonNullable() {
-        return tunerHosts;
+    try {
+      this.listingProviders.get().add(listingProvidersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
-    public void setTunerHosts_JsonNullable(JsonNullable<List<TunerHostInfo>> tunerHosts) {
-        this.tunerHosts = tunerHosts;
-    }
+  /**
+   * Get listingProviders
+   * @return listingProviders
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setTunerHosts(@javax.annotation.Nullable List<TunerHostInfo> tunerHosts) {
-        this.tunerHosts = JsonNullable.<List<TunerHostInfo>> of(tunerHosts);
-    }
-
-    public LiveTvOptions listingProviders(@javax.annotation.Nullable List<ListingsProviderInfo> listingProviders) {
-        this.listingProviders = JsonNullable.<List<ListingsProviderInfo>> of(listingProviders);
-
-        return this;
-    }
-
-    public LiveTvOptions addListingProvidersItem(ListingsProviderInfo listingProvidersItem) {
-        if (this.listingProviders == null || !this.listingProviders.isPresent()) {
-            this.listingProviders = JsonNullable.<List<ListingsProviderInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.listingProviders.get().add(listingProvidersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get listingProviders
-     * 
-     * @return listingProviders
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ListingsProviderInfo> getListingProviders() {
+  public List<ListingsProviderInfo> getListingProviders() {
         return listingProviders.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<ListingsProviderInfo>> getListingProviders_JsonNullable() {
+    return listingProviders;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
+  public void setListingProviders_JsonNullable(JsonNullable<List<ListingsProviderInfo>> listingProviders) {
+    this.listingProviders = listingProviders;
+  }
+
+  public void setListingProviders(@javax.annotation.Nullable List<ListingsProviderInfo> listingProviders) {
+    this.listingProviders = JsonNullable.<List<ListingsProviderInfo>>of(listingProviders);
+  }
+
+  public LiveTvOptions prePaddingSeconds(@javax.annotation.Nullable Integer prePaddingSeconds) {
+    
+    this.prePaddingSeconds = prePaddingSeconds;
+    return this;
+  }
+
+  /**
+   * Get prePaddingSeconds
+   * @return prePaddingSeconds
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPrePaddingSeconds() {
+    return prePaddingSeconds;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPrePaddingSeconds(@javax.annotation.Nullable Integer prePaddingSeconds) {
+    this.prePaddingSeconds = prePaddingSeconds;
+  }
+
+  public LiveTvOptions postPaddingSeconds(@javax.annotation.Nullable Integer postPaddingSeconds) {
+    
+    this.postPaddingSeconds = postPaddingSeconds;
+    return this;
+  }
+
+  /**
+   * Get postPaddingSeconds
+   * @return postPaddingSeconds
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPostPaddingSeconds() {
+    return postPaddingSeconds;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPostPaddingSeconds(@javax.annotation.Nullable Integer postPaddingSeconds) {
+    this.postPaddingSeconds = postPaddingSeconds;
+  }
+
+  public LiveTvOptions mediaLocationsCreated(@javax.annotation.Nullable List<String> mediaLocationsCreated) {
+    this.mediaLocationsCreated = JsonNullable.<List<String>>of(mediaLocationsCreated);
+    
+    return this;
+  }
+
+  public LiveTvOptions addMediaLocationsCreatedItem(String mediaLocationsCreatedItem) {
+    if (this.mediaLocationsCreated == null || !this.mediaLocationsCreated.isPresent()) {
+      this.mediaLocationsCreated = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<ListingsProviderInfo>> getListingProviders_JsonNullable() {
-        return listingProviders;
+    try {
+      this.mediaLocationsCreated.get().add(mediaLocationsCreatedItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
-    public void setListingProviders_JsonNullable(JsonNullable<List<ListingsProviderInfo>> listingProviders) {
-        this.listingProviders = listingProviders;
-    }
+  /**
+   * Get mediaLocationsCreated
+   * @return mediaLocationsCreated
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setListingProviders(@javax.annotation.Nullable List<ListingsProviderInfo> listingProviders) {
-        this.listingProviders = JsonNullable.<List<ListingsProviderInfo>> of(listingProviders);
-    }
-
-    public LiveTvOptions prePaddingSeconds(@javax.annotation.Nullable Integer prePaddingSeconds) {
-
-        this.prePaddingSeconds = prePaddingSeconds;
-        return this;
-    }
-
-    /**
-     * Get prePaddingSeconds
-     * 
-     * @return prePaddingSeconds
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getPrePaddingSeconds() {
-        return prePaddingSeconds;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPrePaddingSeconds(@javax.annotation.Nullable Integer prePaddingSeconds) {
-        this.prePaddingSeconds = prePaddingSeconds;
-    }
-
-    public LiveTvOptions postPaddingSeconds(@javax.annotation.Nullable Integer postPaddingSeconds) {
-
-        this.postPaddingSeconds = postPaddingSeconds;
-        return this;
-    }
-
-    /**
-     * Get postPaddingSeconds
-     * 
-     * @return postPaddingSeconds
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getPostPaddingSeconds() {
-        return postPaddingSeconds;
-    }
-
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPostPaddingSeconds(@javax.annotation.Nullable Integer postPaddingSeconds) {
-        this.postPaddingSeconds = postPaddingSeconds;
-    }
-
-    public LiveTvOptions mediaLocationsCreated(@javax.annotation.Nullable List<String> mediaLocationsCreated) {
-        this.mediaLocationsCreated = JsonNullable.<List<String>> of(mediaLocationsCreated);
-
-        return this;
-    }
-
-    public LiveTvOptions addMediaLocationsCreatedItem(String mediaLocationsCreatedItem) {
-        if (this.mediaLocationsCreated == null || !this.mediaLocationsCreated.isPresent()) {
-            this.mediaLocationsCreated = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.mediaLocationsCreated.get().add(mediaLocationsCreatedItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get mediaLocationsCreated
-     * 
-     * @return mediaLocationsCreated
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getMediaLocationsCreated() {
+  public List<String> getMediaLocationsCreated() {
         return mediaLocationsCreated.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getMediaLocationsCreated_JsonNullable() {
-        return mediaLocationsCreated;
-    }
+  public JsonNullable<List<String>> getMediaLocationsCreated_JsonNullable() {
+    return mediaLocationsCreated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
+  public void setMediaLocationsCreated_JsonNullable(JsonNullable<List<String>> mediaLocationsCreated) {
+    this.mediaLocationsCreated = mediaLocationsCreated;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
-    public void setMediaLocationsCreated_JsonNullable(JsonNullable<List<String>> mediaLocationsCreated) {
-        this.mediaLocationsCreated = mediaLocationsCreated;
-    }
+  public void setMediaLocationsCreated(@javax.annotation.Nullable List<String> mediaLocationsCreated) {
+    this.mediaLocationsCreated = JsonNullable.<List<String>>of(mediaLocationsCreated);
+  }
 
-    public void setMediaLocationsCreated(@javax.annotation.Nullable List<String> mediaLocationsCreated) {
-        this.mediaLocationsCreated = JsonNullable.<List<String>> of(mediaLocationsCreated);
-    }
+  public LiveTvOptions recordingPostProcessor(@javax.annotation.Nullable String recordingPostProcessor) {
+    this.recordingPostProcessor = JsonNullable.<String>of(recordingPostProcessor);
+    
+    return this;
+  }
 
-    public LiveTvOptions recordingPostProcessor(@javax.annotation.Nullable String recordingPostProcessor) {
-        this.recordingPostProcessor = JsonNullable.<String> of(recordingPostProcessor);
+  /**
+   * Get recordingPostProcessor
+   * @return recordingPostProcessor
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get recordingPostProcessor
-     * 
-     * @return recordingPostProcessor
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRecordingPostProcessor() {
+  public String getRecordingPostProcessor() {
         return recordingPostProcessor.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getRecordingPostProcessor_JsonNullable() {
-        return recordingPostProcessor;
-    }
+  public JsonNullable<String> getRecordingPostProcessor_JsonNullable() {
+    return recordingPostProcessor;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
+  public void setRecordingPostProcessor_JsonNullable(JsonNullable<String> recordingPostProcessor) {
+    this.recordingPostProcessor = recordingPostProcessor;
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
-    public void setRecordingPostProcessor_JsonNullable(JsonNullable<String> recordingPostProcessor) {
-        this.recordingPostProcessor = recordingPostProcessor;
-    }
+  public void setRecordingPostProcessor(@javax.annotation.Nullable String recordingPostProcessor) {
+    this.recordingPostProcessor = JsonNullable.<String>of(recordingPostProcessor);
+  }
 
-    public void setRecordingPostProcessor(@javax.annotation.Nullable String recordingPostProcessor) {
-        this.recordingPostProcessor = JsonNullable.<String> of(recordingPostProcessor);
-    }
+  public LiveTvOptions recordingPostProcessorArguments(@javax.annotation.Nullable String recordingPostProcessorArguments) {
+    this.recordingPostProcessorArguments = JsonNullable.<String>of(recordingPostProcessorArguments);
+    
+    return this;
+  }
 
-    public LiveTvOptions recordingPostProcessorArguments(
-            @javax.annotation.Nullable String recordingPostProcessorArguments) {
-        this.recordingPostProcessorArguments = JsonNullable.<String> of(recordingPostProcessorArguments);
+  /**
+   * Get recordingPostProcessorArguments
+   * @return recordingPostProcessorArguments
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get recordingPostProcessorArguments
-     * 
-     * @return recordingPostProcessorArguments
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRecordingPostProcessorArguments() {
+  public String getRecordingPostProcessorArguments() {
         return recordingPostProcessorArguments.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getRecordingPostProcessorArguments_JsonNullable() {
+    return recordingPostProcessorArguments;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
+  public void setRecordingPostProcessorArguments_JsonNullable(JsonNullable<String> recordingPostProcessorArguments) {
+    this.recordingPostProcessorArguments = recordingPostProcessorArguments;
+  }
+
+  public void setRecordingPostProcessorArguments(@javax.annotation.Nullable String recordingPostProcessorArguments) {
+    this.recordingPostProcessorArguments = JsonNullable.<String>of(recordingPostProcessorArguments);
+  }
+
+  public LiveTvOptions saveRecordingNFO(@javax.annotation.Nullable Boolean saveRecordingNFO) {
+    
+    this.saveRecordingNFO = saveRecordingNFO;
+    return this;
+  }
+
+  /**
+   * Get saveRecordingNFO
+   * @return saveRecordingNFO
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSaveRecordingNFO() {
+    return saveRecordingNFO;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSaveRecordingNFO(@javax.annotation.Nullable Boolean saveRecordingNFO) {
+    this.saveRecordingNFO = saveRecordingNFO;
+  }
+
+  public LiveTvOptions saveRecordingImages(@javax.annotation.Nullable Boolean saveRecordingImages) {
+    
+    this.saveRecordingImages = saveRecordingImages;
+    return this;
+  }
+
+  /**
+   * Get saveRecordingImages
+   * @return saveRecordingImages
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSaveRecordingImages() {
+    return saveRecordingImages;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSaveRecordingImages(@javax.annotation.Nullable Boolean saveRecordingImages) {
+    this.saveRecordingImages = saveRecordingImages;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LiveTvOptions liveTvOptions = (LiveTvOptions) o;
+    return equalsNullable(this.guideDays, liveTvOptions.guideDays) &&
+        equalsNullable(this.recordingPath, liveTvOptions.recordingPath) &&
+        equalsNullable(this.movieRecordingPath, liveTvOptions.movieRecordingPath) &&
+        equalsNullable(this.seriesRecordingPath, liveTvOptions.seriesRecordingPath) &&
+        Objects.equals(this.enableRecordingSubfolders, liveTvOptions.enableRecordingSubfolders) &&
+        Objects.equals(this.enableOriginalAudioWithEncodedRecordings, liveTvOptions.enableOriginalAudioWithEncodedRecordings) &&
+        equalsNullable(this.tunerHosts, liveTvOptions.tunerHosts) &&
+        equalsNullable(this.listingProviders, liveTvOptions.listingProviders) &&
+        Objects.equals(this.prePaddingSeconds, liveTvOptions.prePaddingSeconds) &&
+        Objects.equals(this.postPaddingSeconds, liveTvOptions.postPaddingSeconds) &&
+        equalsNullable(this.mediaLocationsCreated, liveTvOptions.mediaLocationsCreated) &&
+        equalsNullable(this.recordingPostProcessor, liveTvOptions.recordingPostProcessor) &&
+        equalsNullable(this.recordingPostProcessorArguments, liveTvOptions.recordingPostProcessorArguments) &&
+        Objects.equals(this.saveRecordingNFO, liveTvOptions.saveRecordingNFO) &&
+        Objects.equals(this.saveRecordingImages, liveTvOptions.saveRecordingImages);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(guideDays), hashCodeNullable(recordingPath), hashCodeNullable(movieRecordingPath), hashCodeNullable(seriesRecordingPath), enableRecordingSubfolders, enableOriginalAudioWithEncodedRecordings, hashCodeNullable(tunerHosts), hashCodeNullable(listingProviders), prePaddingSeconds, postPaddingSeconds, hashCodeNullable(mediaLocationsCreated), hashCodeNullable(recordingPostProcessor), hashCodeNullable(recordingPostProcessorArguments), saveRecordingNFO, saveRecordingImages);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class LiveTvOptions {\n");
+    sb.append("    guideDays: ").append(toIndentedString(guideDays)).append("\n");
+    sb.append("    recordingPath: ").append(toIndentedString(recordingPath)).append("\n");
+    sb.append("    movieRecordingPath: ").append(toIndentedString(movieRecordingPath)).append("\n");
+    sb.append("    seriesRecordingPath: ").append(toIndentedString(seriesRecordingPath)).append("\n");
+    sb.append("    enableRecordingSubfolders: ").append(toIndentedString(enableRecordingSubfolders)).append("\n");
+    sb.append("    enableOriginalAudioWithEncodedRecordings: ").append(toIndentedString(enableOriginalAudioWithEncodedRecordings)).append("\n");
+    sb.append("    tunerHosts: ").append(toIndentedString(tunerHosts)).append("\n");
+    sb.append("    listingProviders: ").append(toIndentedString(listingProviders)).append("\n");
+    sb.append("    prePaddingSeconds: ").append(toIndentedString(prePaddingSeconds)).append("\n");
+    sb.append("    postPaddingSeconds: ").append(toIndentedString(postPaddingSeconds)).append("\n");
+    sb.append("    mediaLocationsCreated: ").append(toIndentedString(mediaLocationsCreated)).append("\n");
+    sb.append("    recordingPostProcessor: ").append(toIndentedString(recordingPostProcessor)).append("\n");
+    sb.append("    recordingPostProcessorArguments: ").append(toIndentedString(recordingPostProcessorArguments)).append("\n");
+    sb.append("    saveRecordingNFO: ").append(toIndentedString(saveRecordingNFO)).append("\n");
+    sb.append("    saveRecordingImages: ").append(toIndentedString(saveRecordingImages)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private LiveTvOptions instance;
+
+    public Builder() {
+      this(new LiveTvOptions());
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getRecordingPostProcessorArguments_JsonNullable() {
-        return recordingPostProcessorArguments;
+    protected Builder(LiveTvOptions instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
-    public void setRecordingPostProcessorArguments_JsonNullable(JsonNullable<String> recordingPostProcessorArguments) {
-        this.recordingPostProcessorArguments = recordingPostProcessorArguments;
+    public LiveTvOptions.Builder guideDays(Integer guideDays) {
+      this.instance.guideDays = JsonNullable.<Integer>of(guideDays);
+      return this;
+    }
+    public LiveTvOptions.Builder guideDays(JsonNullable<Integer> guideDays) {
+      this.instance.guideDays = guideDays;
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPath(String recordingPath) {
+      this.instance.recordingPath = JsonNullable.<String>of(recordingPath);
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPath(JsonNullable<String> recordingPath) {
+      this.instance.recordingPath = recordingPath;
+      return this;
+    }
+    public LiveTvOptions.Builder movieRecordingPath(String movieRecordingPath) {
+      this.instance.movieRecordingPath = JsonNullable.<String>of(movieRecordingPath);
+      return this;
+    }
+    public LiveTvOptions.Builder movieRecordingPath(JsonNullable<String> movieRecordingPath) {
+      this.instance.movieRecordingPath = movieRecordingPath;
+      return this;
+    }
+    public LiveTvOptions.Builder seriesRecordingPath(String seriesRecordingPath) {
+      this.instance.seriesRecordingPath = JsonNullable.<String>of(seriesRecordingPath);
+      return this;
+    }
+    public LiveTvOptions.Builder seriesRecordingPath(JsonNullable<String> seriesRecordingPath) {
+      this.instance.seriesRecordingPath = seriesRecordingPath;
+      return this;
+    }
+    public LiveTvOptions.Builder enableRecordingSubfolders(Boolean enableRecordingSubfolders) {
+      this.instance.enableRecordingSubfolders = enableRecordingSubfolders;
+      return this;
+    }
+    public LiveTvOptions.Builder enableOriginalAudioWithEncodedRecordings(Boolean enableOriginalAudioWithEncodedRecordings) {
+      this.instance.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
+      return this;
+    }
+    public LiveTvOptions.Builder tunerHosts(List<TunerHostInfo> tunerHosts) {
+      this.instance.tunerHosts = JsonNullable.<List<TunerHostInfo>>of(tunerHosts);
+      return this;
+    }
+    public LiveTvOptions.Builder tunerHosts(JsonNullable<List<TunerHostInfo>> tunerHosts) {
+      this.instance.tunerHosts = tunerHosts;
+      return this;
+    }
+    public LiveTvOptions.Builder listingProviders(List<ListingsProviderInfo> listingProviders) {
+      this.instance.listingProviders = JsonNullable.<List<ListingsProviderInfo>>of(listingProviders);
+      return this;
+    }
+    public LiveTvOptions.Builder listingProviders(JsonNullable<List<ListingsProviderInfo>> listingProviders) {
+      this.instance.listingProviders = listingProviders;
+      return this;
+    }
+    public LiveTvOptions.Builder prePaddingSeconds(Integer prePaddingSeconds) {
+      this.instance.prePaddingSeconds = prePaddingSeconds;
+      return this;
+    }
+    public LiveTvOptions.Builder postPaddingSeconds(Integer postPaddingSeconds) {
+      this.instance.postPaddingSeconds = postPaddingSeconds;
+      return this;
+    }
+    public LiveTvOptions.Builder mediaLocationsCreated(List<String> mediaLocationsCreated) {
+      this.instance.mediaLocationsCreated = JsonNullable.<List<String>>of(mediaLocationsCreated);
+      return this;
+    }
+    public LiveTvOptions.Builder mediaLocationsCreated(JsonNullable<List<String>> mediaLocationsCreated) {
+      this.instance.mediaLocationsCreated = mediaLocationsCreated;
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPostProcessor(String recordingPostProcessor) {
+      this.instance.recordingPostProcessor = JsonNullable.<String>of(recordingPostProcessor);
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPostProcessor(JsonNullable<String> recordingPostProcessor) {
+      this.instance.recordingPostProcessor = recordingPostProcessor;
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPostProcessorArguments(String recordingPostProcessorArguments) {
+      this.instance.recordingPostProcessorArguments = JsonNullable.<String>of(recordingPostProcessorArguments);
+      return this;
+    }
+    public LiveTvOptions.Builder recordingPostProcessorArguments(JsonNullable<String> recordingPostProcessorArguments) {
+      this.instance.recordingPostProcessorArguments = recordingPostProcessorArguments;
+      return this;
+    }
+    public LiveTvOptions.Builder saveRecordingNFO(Boolean saveRecordingNFO) {
+      this.instance.saveRecordingNFO = saveRecordingNFO;
+      return this;
+    }
+    public LiveTvOptions.Builder saveRecordingImages(Boolean saveRecordingImages) {
+      this.instance.saveRecordingImages = saveRecordingImages;
+      return this;
     }
 
-    public void setRecordingPostProcessorArguments(@javax.annotation.Nullable String recordingPostProcessorArguments) {
-        this.recordingPostProcessorArguments = JsonNullable.<String> of(recordingPostProcessorArguments);
-    }
-
-    public LiveTvOptions saveRecordingNFO(@javax.annotation.Nullable Boolean saveRecordingNFO) {
-
-        this.saveRecordingNFO = saveRecordingNFO;
-        return this;
-    }
 
     /**
-     * Get saveRecordingNFO
-     * 
-     * @return saveRecordingNFO
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSaveRecordingNFO() {
-        return saveRecordingNFO;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSaveRecordingNFO(@javax.annotation.Nullable Boolean saveRecordingNFO) {
-        this.saveRecordingNFO = saveRecordingNFO;
-    }
-
-    public LiveTvOptions saveRecordingImages(@javax.annotation.Nullable Boolean saveRecordingImages) {
-
-        this.saveRecordingImages = saveRecordingImages;
-        return this;
-    }
-
-    /**
-     * Get saveRecordingImages
-     * 
-     * @return saveRecordingImages
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSaveRecordingImages() {
-        return saveRecordingImages;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSaveRecordingImages(@javax.annotation.Nullable Boolean saveRecordingImages) {
-        this.saveRecordingImages = saveRecordingImages;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        LiveTvOptions liveTvOptions = (LiveTvOptions) o;
-        return equalsNullable(this.guideDays, liveTvOptions.guideDays)
-                && equalsNullable(this.recordingPath, liveTvOptions.recordingPath)
-                && equalsNullable(this.movieRecordingPath, liveTvOptions.movieRecordingPath)
-                && equalsNullable(this.seriesRecordingPath, liveTvOptions.seriesRecordingPath)
-                && Objects.equals(this.enableRecordingSubfolders, liveTvOptions.enableRecordingSubfolders)
-                && Objects.equals(this.enableOriginalAudioWithEncodedRecordings,
-                        liveTvOptions.enableOriginalAudioWithEncodedRecordings)
-                && equalsNullable(this.tunerHosts, liveTvOptions.tunerHosts)
-                && equalsNullable(this.listingProviders, liveTvOptions.listingProviders)
-                && Objects.equals(this.prePaddingSeconds, liveTvOptions.prePaddingSeconds)
-                && Objects.equals(this.postPaddingSeconds, liveTvOptions.postPaddingSeconds)
-                && equalsNullable(this.mediaLocationsCreated, liveTvOptions.mediaLocationsCreated)
-                && equalsNullable(this.recordingPostProcessor, liveTvOptions.recordingPostProcessor)
-                && equalsNullable(this.recordingPostProcessorArguments, liveTvOptions.recordingPostProcessorArguments)
-                && Objects.equals(this.saveRecordingNFO, liveTvOptions.saveRecordingNFO)
-                && Objects.equals(this.saveRecordingImages, liveTvOptions.saveRecordingImages);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(guideDays), hashCodeNullable(recordingPath),
-                hashCodeNullable(movieRecordingPath), hashCodeNullable(seriesRecordingPath), enableRecordingSubfolders,
-                enableOriginalAudioWithEncodedRecordings, hashCodeNullable(tunerHosts),
-                hashCodeNullable(listingProviders), prePaddingSeconds, postPaddingSeconds,
-                hashCodeNullable(mediaLocationsCreated), hashCodeNullable(recordingPostProcessor),
-                hashCodeNullable(recordingPostProcessorArguments), saveRecordingNFO, saveRecordingImages);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built LiveTvOptions instance.
+    *
+    * The builder is not reusable.
+    */
+    public LiveTvOptions build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class LiveTvOptions {\n");
-        sb.append("    guideDays: ").append(toIndentedString(guideDays)).append("\n");
-        sb.append("    recordingPath: ").append(toIndentedString(recordingPath)).append("\n");
-        sb.append("    movieRecordingPath: ").append(toIndentedString(movieRecordingPath)).append("\n");
-        sb.append("    seriesRecordingPath: ").append(toIndentedString(seriesRecordingPath)).append("\n");
-        sb.append("    enableRecordingSubfolders: ").append(toIndentedString(enableRecordingSubfolders)).append("\n");
-        sb.append("    enableOriginalAudioWithEncodedRecordings: ")
-                .append(toIndentedString(enableOriginalAudioWithEncodedRecordings)).append("\n");
-        sb.append("    tunerHosts: ").append(toIndentedString(tunerHosts)).append("\n");
-        sb.append("    listingProviders: ").append(toIndentedString(listingProviders)).append("\n");
-        sb.append("    prePaddingSeconds: ").append(toIndentedString(prePaddingSeconds)).append("\n");
-        sb.append("    postPaddingSeconds: ").append(toIndentedString(postPaddingSeconds)).append("\n");
-        sb.append("    mediaLocationsCreated: ").append(toIndentedString(mediaLocationsCreated)).append("\n");
-        sb.append("    recordingPostProcessor: ").append(toIndentedString(recordingPostProcessor)).append("\n");
-        sb.append("    recordingPostProcessorArguments: ").append(toIndentedString(recordingPostProcessorArguments))
-                .append("\n");
-        sb.append("    saveRecordingNFO: ").append(toIndentedString(saveRecordingNFO)).append("\n");
-        sb.append("    saveRecordingImages: ").append(toIndentedString(saveRecordingImages)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static LiveTvOptions.Builder builder() {
+    return new LiveTvOptions.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public LiveTvOptions.Builder toBuilder() {
+    return new LiveTvOptions.Builder()
+      .guideDays(getGuideDays())
+      .recordingPath(getRecordingPath())
+      .movieRecordingPath(getMovieRecordingPath())
+      .seriesRecordingPath(getSeriesRecordingPath())
+      .enableRecordingSubfolders(getEnableRecordingSubfolders())
+      .enableOriginalAudioWithEncodedRecordings(getEnableOriginalAudioWithEncodedRecordings())
+      .tunerHosts(getTunerHosts())
+      .listingProviders(getListingProviders())
+      .prePaddingSeconds(getPrePaddingSeconds())
+      .postPaddingSeconds(getPostPaddingSeconds())
+      .mediaLocationsCreated(getMediaLocationsCreated())
+      .recordingPostProcessor(getRecordingPostProcessor())
+      .recordingPostProcessorArguments(getRecordingPostProcessorArguments())
+      .saveRecordingNFO(getSaveRecordingNFO())
+      .saveRecordingImages(getSaveRecordingImages());
+  }
 
-        private LiveTvOptions instance;
 
-        public Builder() {
-            this(new LiveTvOptions());
-        }
-
-        protected Builder(LiveTvOptions instance) {
-            this.instance = instance;
-        }
-
-        public LiveTvOptions.Builder guideDays(Integer guideDays) {
-            this.instance.guideDays = JsonNullable.<Integer> of(guideDays);
-            return this;
-        }
-
-        public LiveTvOptions.Builder guideDays(JsonNullable<Integer> guideDays) {
-            this.instance.guideDays = guideDays;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPath(String recordingPath) {
-            this.instance.recordingPath = JsonNullable.<String> of(recordingPath);
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPath(JsonNullable<String> recordingPath) {
-            this.instance.recordingPath = recordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder movieRecordingPath(String movieRecordingPath) {
-            this.instance.movieRecordingPath = JsonNullable.<String> of(movieRecordingPath);
-            return this;
-        }
-
-        public LiveTvOptions.Builder movieRecordingPath(JsonNullable<String> movieRecordingPath) {
-            this.instance.movieRecordingPath = movieRecordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder seriesRecordingPath(String seriesRecordingPath) {
-            this.instance.seriesRecordingPath = JsonNullable.<String> of(seriesRecordingPath);
-            return this;
-        }
-
-        public LiveTvOptions.Builder seriesRecordingPath(JsonNullable<String> seriesRecordingPath) {
-            this.instance.seriesRecordingPath = seriesRecordingPath;
-            return this;
-        }
-
-        public LiveTvOptions.Builder enableRecordingSubfolders(Boolean enableRecordingSubfolders) {
-            this.instance.enableRecordingSubfolders = enableRecordingSubfolders;
-            return this;
-        }
-
-        public LiveTvOptions.Builder enableOriginalAudioWithEncodedRecordings(
-                Boolean enableOriginalAudioWithEncodedRecordings) {
-            this.instance.enableOriginalAudioWithEncodedRecordings = enableOriginalAudioWithEncodedRecordings;
-            return this;
-        }
-
-        public LiveTvOptions.Builder tunerHosts(List<TunerHostInfo> tunerHosts) {
-            this.instance.tunerHosts = JsonNullable.<List<TunerHostInfo>> of(tunerHosts);
-            return this;
-        }
-
-        public LiveTvOptions.Builder tunerHosts(JsonNullable<List<TunerHostInfo>> tunerHosts) {
-            this.instance.tunerHosts = tunerHosts;
-            return this;
-        }
-
-        public LiveTvOptions.Builder listingProviders(List<ListingsProviderInfo> listingProviders) {
-            this.instance.listingProviders = JsonNullable.<List<ListingsProviderInfo>> of(listingProviders);
-            return this;
-        }
-
-        public LiveTvOptions.Builder listingProviders(JsonNullable<List<ListingsProviderInfo>> listingProviders) {
-            this.instance.listingProviders = listingProviders;
-            return this;
-        }
-
-        public LiveTvOptions.Builder prePaddingSeconds(Integer prePaddingSeconds) {
-            this.instance.prePaddingSeconds = prePaddingSeconds;
-            return this;
-        }
-
-        public LiveTvOptions.Builder postPaddingSeconds(Integer postPaddingSeconds) {
-            this.instance.postPaddingSeconds = postPaddingSeconds;
-            return this;
-        }
-
-        public LiveTvOptions.Builder mediaLocationsCreated(List<String> mediaLocationsCreated) {
-            this.instance.mediaLocationsCreated = JsonNullable.<List<String>> of(mediaLocationsCreated);
-            return this;
-        }
-
-        public LiveTvOptions.Builder mediaLocationsCreated(JsonNullable<List<String>> mediaLocationsCreated) {
-            this.instance.mediaLocationsCreated = mediaLocationsCreated;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessor(String recordingPostProcessor) {
-            this.instance.recordingPostProcessor = JsonNullable.<String> of(recordingPostProcessor);
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessor(JsonNullable<String> recordingPostProcessor) {
-            this.instance.recordingPostProcessor = recordingPostProcessor;
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessorArguments(String recordingPostProcessorArguments) {
-            this.instance.recordingPostProcessorArguments = JsonNullable.<String> of(recordingPostProcessorArguments);
-            return this;
-        }
-
-        public LiveTvOptions.Builder recordingPostProcessorArguments(
-                JsonNullable<String> recordingPostProcessorArguments) {
-            this.instance.recordingPostProcessorArguments = recordingPostProcessorArguments;
-            return this;
-        }
-
-        public LiveTvOptions.Builder saveRecordingNFO(Boolean saveRecordingNFO) {
-            this.instance.saveRecordingNFO = saveRecordingNFO;
-            return this;
-        }
-
-        public LiveTvOptions.Builder saveRecordingImages(Boolean saveRecordingImages) {
-            this.instance.saveRecordingImages = saveRecordingImages;
-            return this;
-        }
-
-        /**
-         * returns a built LiveTvOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public LiveTvOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LiveTvOptions.Builder builder() {
-        return new LiveTvOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LiveTvOptions.Builder toBuilder() {
-        return new LiveTvOptions.Builder().guideDays(getGuideDays()).recordingPath(getRecordingPath())
-                .movieRecordingPath(getMovieRecordingPath()).seriesRecordingPath(getSeriesRecordingPath())
-                .enableRecordingSubfolders(getEnableRecordingSubfolders())
-                .enableOriginalAudioWithEncodedRecordings(getEnableOriginalAudioWithEncodedRecordings())
-                .tunerHosts(getTunerHosts()).listingProviders(getListingProviders())
-                .prePaddingSeconds(getPrePaddingSeconds()).postPaddingSeconds(getPostPaddingSeconds())
-                .mediaLocationsCreated(getMediaLocationsCreated()).recordingPostProcessor(getRecordingPostProcessor())
-                .recordingPostProcessorArguments(getRecordingPostProcessorArguments())
-                .saveRecordingNFO(getSaveRecordingNFO()).saveRecordingImages(getSaveRecordingImages());
-    }
 }
+

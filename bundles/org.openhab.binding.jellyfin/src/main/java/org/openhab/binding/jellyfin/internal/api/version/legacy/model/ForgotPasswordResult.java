@@ -17,254 +17,262 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ForgotPasswordAction;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * ForgotPasswordResult
  */
-@JsonPropertyOrder({ ForgotPasswordResult.JSON_PROPERTY_ACTION, ForgotPasswordResult.JSON_PROPERTY_PIN_FILE,
-        ForgotPasswordResult.JSON_PROPERTY_PIN_EXPIRATION_DATE })
+@JsonPropertyOrder({
+  ForgotPasswordResult.JSON_PROPERTY_ACTION,
+  ForgotPasswordResult.JSON_PROPERTY_PIN_FILE,
+  ForgotPasswordResult.JSON_PROPERTY_PIN_EXPIRATION_DATE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ForgotPasswordResult {
-    public static final String JSON_PROPERTY_ACTION = "Action";
-    @javax.annotation.Nullable
-    private ForgotPasswordAction action;
+  public static final String JSON_PROPERTY_ACTION = "Action";
+  @javax.annotation.Nullable
+  private ForgotPasswordAction action;
 
-    public static final String JSON_PROPERTY_PIN_FILE = "PinFile";
-    @javax.annotation.Nullable
-    private JsonNullable<String> pinFile = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PIN_FILE = "PinFile";
+  @javax.annotation.Nullable
+  private JsonNullable<String> pinFile = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PIN_EXPIRATION_DATE = "PinExpirationDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> pinExpirationDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_PIN_EXPIRATION_DATE = "PinExpirationDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> pinExpirationDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public ForgotPasswordResult() {
-    }
+  public ForgotPasswordResult() {
+  }
 
-    public ForgotPasswordResult action(@javax.annotation.Nullable ForgotPasswordAction action) {
+  public ForgotPasswordResult action(@javax.annotation.Nullable ForgotPasswordAction action) {
+    
+    this.action = action;
+    return this;
+  }
 
-        this.action = action;
-        return this;
-    }
+  /**
+   * Gets or sets the action.
+   * @return action
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the action.
-     * 
-     * @return action
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ACTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public ForgotPasswordAction getAction() {
+    return action;
+  }
 
-    public ForgotPasswordAction getAction() {
-        return action;
-    }
 
-    @JsonProperty(JSON_PROPERTY_ACTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setAction(@javax.annotation.Nullable ForgotPasswordAction action) {
-        this.action = action;
-    }
+  @JsonProperty(JSON_PROPERTY_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAction(@javax.annotation.Nullable ForgotPasswordAction action) {
+    this.action = action;
+  }
 
-    public ForgotPasswordResult pinFile(@javax.annotation.Nullable String pinFile) {
-        this.pinFile = JsonNullable.<String> of(pinFile);
+  public ForgotPasswordResult pinFile(@javax.annotation.Nullable String pinFile) {
+    this.pinFile = JsonNullable.<String>of(pinFile);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the pin file.
+   * @return pinFile
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the pin file.
-     * 
-     * @return pinFile
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPinFile() {
+  public String getPinFile() {
         return pinFile.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PIN_FILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPinFile_JsonNullable() {
+    return pinFile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PIN_FILE)
+  public void setPinFile_JsonNullable(JsonNullable<String> pinFile) {
+    this.pinFile = pinFile;
+  }
+
+  public void setPinFile(@javax.annotation.Nullable String pinFile) {
+    this.pinFile = JsonNullable.<String>of(pinFile);
+  }
+
+  public ForgotPasswordResult pinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
+    this.pinExpirationDate = JsonNullable.<OffsetDateTime>of(pinExpirationDate);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the pin expiration date.
+   * @return pinExpirationDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public OffsetDateTime getPinExpirationDate() {
+        return pinExpirationDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getPinExpirationDate_JsonNullable() {
+    return pinExpirationDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+  public void setPinExpirationDate_JsonNullable(JsonNullable<OffsetDateTime> pinExpirationDate) {
+    this.pinExpirationDate = pinExpirationDate;
+  }
+
+  public void setPinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
+    this.pinExpirationDate = JsonNullable.<OffsetDateTime>of(pinExpirationDate);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ForgotPasswordResult forgotPasswordResult = (ForgotPasswordResult) o;
+    return Objects.equals(this.action, forgotPasswordResult.action) &&
+        equalsNullable(this.pinFile, forgotPasswordResult.pinFile) &&
+        equalsNullable(this.pinExpirationDate, forgotPasswordResult.pinExpirationDate);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(action, hashCodeNullable(pinFile), hashCodeNullable(pinExpirationDate));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ForgotPasswordResult {\n");
+    sb.append("    action: ").append(toIndentedString(action)).append("\n");
+    sb.append("    pinFile: ").append(toIndentedString(pinFile)).append("\n");
+    sb.append("    pinExpirationDate: ").append(toIndentedString(pinExpirationDate)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ForgotPasswordResult instance;
+
+    public Builder() {
+      this(new ForgotPasswordResult());
     }
 
-    @JsonProperty(JSON_PROPERTY_PIN_FILE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getPinFile_JsonNullable() {
-        return pinFile;
+    protected Builder(ForgotPasswordResult instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_PIN_FILE)
-    public void setPinFile_JsonNullable(JsonNullable<String> pinFile) {
-        this.pinFile = pinFile;
+    public ForgotPasswordResult.Builder action(ForgotPasswordAction action) {
+      this.instance.action = action;
+      return this;
+    }
+    public ForgotPasswordResult.Builder pinFile(String pinFile) {
+      this.instance.pinFile = JsonNullable.<String>of(pinFile);
+      return this;
+    }
+    public ForgotPasswordResult.Builder pinFile(JsonNullable<String> pinFile) {
+      this.instance.pinFile = pinFile;
+      return this;
+    }
+    public ForgotPasswordResult.Builder pinExpirationDate(OffsetDateTime pinExpirationDate) {
+      this.instance.pinExpirationDate = JsonNullable.<OffsetDateTime>of(pinExpirationDate);
+      return this;
+    }
+    public ForgotPasswordResult.Builder pinExpirationDate(JsonNullable<OffsetDateTime> pinExpirationDate) {
+      this.instance.pinExpirationDate = pinExpirationDate;
+      return this;
     }
 
-    public void setPinFile(@javax.annotation.Nullable String pinFile) {
-        this.pinFile = JsonNullable.<String> of(pinFile);
-    }
-
-    public ForgotPasswordResult pinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
-        this.pinExpirationDate = JsonNullable.<OffsetDateTime> of(pinExpirationDate);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the pin expiration date.
-     * 
-     * @return pinExpirationDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getPinExpirationDate() {
-        return pinExpirationDate.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<OffsetDateTime> getPinExpirationDate_JsonNullable() {
-        return pinExpirationDate;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
-    public void setPinExpirationDate_JsonNullable(JsonNullable<OffsetDateTime> pinExpirationDate) {
-        this.pinExpirationDate = pinExpirationDate;
-    }
-
-    public void setPinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
-        this.pinExpirationDate = JsonNullable.<OffsetDateTime> of(pinExpirationDate);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ForgotPasswordResult forgotPasswordResult = (ForgotPasswordResult) o;
-        return Objects.equals(this.action, forgotPasswordResult.action)
-                && equalsNullable(this.pinFile, forgotPasswordResult.pinFile)
-                && equalsNullable(this.pinExpirationDate, forgotPasswordResult.pinExpirationDate);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(action, hashCodeNullable(pinFile), hashCodeNullable(pinExpirationDate));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built ForgotPasswordResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public ForgotPasswordResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ForgotPasswordResult {\n");
-        sb.append("    action: ").append(toIndentedString(action)).append("\n");
-        sb.append("    pinFile: ").append(toIndentedString(pinFile)).append("\n");
-        sb.append("    pinExpirationDate: ").append(toIndentedString(pinExpirationDate)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ForgotPasswordResult.Builder builder() {
+    return new ForgotPasswordResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ForgotPasswordResult.Builder toBuilder() {
+    return new ForgotPasswordResult.Builder()
+      .action(getAction())
+      .pinFile(getPinFile())
+      .pinExpirationDate(getPinExpirationDate());
+  }
 
-        private ForgotPasswordResult instance;
 
-        public Builder() {
-            this(new ForgotPasswordResult());
-        }
-
-        protected Builder(ForgotPasswordResult instance) {
-            this.instance = instance;
-        }
-
-        public ForgotPasswordResult.Builder action(ForgotPasswordAction action) {
-            this.instance.action = action;
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinFile(String pinFile) {
-            this.instance.pinFile = JsonNullable.<String> of(pinFile);
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinFile(JsonNullable<String> pinFile) {
-            this.instance.pinFile = pinFile;
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinExpirationDate(OffsetDateTime pinExpirationDate) {
-            this.instance.pinExpirationDate = JsonNullable.<OffsetDateTime> of(pinExpirationDate);
-            return this;
-        }
-
-        public ForgotPasswordResult.Builder pinExpirationDate(JsonNullable<OffsetDateTime> pinExpirationDate) {
-            this.instance.pinExpirationDate = pinExpirationDate;
-            return this;
-        }
-
-        /**
-         * returns a built ForgotPasswordResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public ForgotPasswordResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ForgotPasswordResult.Builder builder() {
-        return new ForgotPasswordResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ForgotPasswordResult.Builder toBuilder() {
-        return new ForgotPasswordResult.Builder().action(getAction()).pinFile(getPinFile())
-                .pinExpirationDate(getPinExpirationDate());
-    }
 }
+

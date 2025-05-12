@@ -17,239 +17,250 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.GroupUpdateType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class GroupUpdate.
  */
-@JsonPropertyOrder({ ObjectGroupUpdate.JSON_PROPERTY_GROUP_ID, ObjectGroupUpdate.JSON_PROPERTY_TYPE,
-        ObjectGroupUpdate.JSON_PROPERTY_DATA })
+@JsonPropertyOrder({
+  ObjectGroupUpdate.JSON_PROPERTY_GROUP_ID,
+  ObjectGroupUpdate.JSON_PROPERTY_TYPE,
+  ObjectGroupUpdate.JSON_PROPERTY_DATA
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ObjectGroupUpdate {
-    public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @javax.annotation.Nullable
-    private UUID groupId;
+  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
+  @javax.annotation.Nullable
+  private UUID groupId;
 
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private GroupUpdateType type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private GroupUpdateType type;
 
-    public static final String JSON_PROPERTY_DATA = "Data";
-    @javax.annotation.Nullable
-    private JsonNullable<Object> data = JsonNullable.<Object> of(null);
+  public static final String JSON_PROPERTY_DATA = "Data";
+  @javax.annotation.Nullable
+  private JsonNullable<Object> data = JsonNullable.<Object>of(null);
 
-    public ObjectGroupUpdate() {
-    }
+  public ObjectGroupUpdate() {
+  }
 
-    public ObjectGroupUpdate groupId(@javax.annotation.Nullable UUID groupId) {
+  public ObjectGroupUpdate groupId(@javax.annotation.Nullable UUID groupId) {
+    
+    this.groupId = groupId;
+    return this;
+  }
 
-        this.groupId = groupId;
-        return this;
-    }
+  /**
+   * Gets the group identifier.
+   * @return groupId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GROUP_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets the group identifier.
-     * 
-     * @return groupId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public UUID getGroupId() {
+    return groupId;
+  }
 
-    public UUID getGroupId() {
-        return groupId;
-    }
 
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setGroupId(@javax.annotation.Nullable UUID groupId) {
-        this.groupId = groupId;
-    }
+  @JsonProperty(JSON_PROPERTY_GROUP_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGroupId(@javax.annotation.Nullable UUID groupId) {
+    this.groupId = groupId;
+  }
 
-    public ObjectGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
+  public ObjectGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
+    
+    this.type = type;
+    return this;
+  }
 
-        this.type = type;
-        return this;
-    }
+  /**
+   * Gets the update type.
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets the update type.
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public GroupUpdateType getType() {
+    return type;
+  }
 
-    public GroupUpdateType getType() {
-        return type;
-    }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setType(@javax.annotation.Nullable GroupUpdateType type) {
-        this.type = type;
-    }
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(@javax.annotation.Nullable GroupUpdateType type) {
+    this.type = type;
+  }
 
-    public ObjectGroupUpdate data(@javax.annotation.Nullable Object data) {
-        this.data = JsonNullable.<Object> of(data);
+  public ObjectGroupUpdate data(@javax.annotation.Nullable Object data) {
+    this.data = JsonNullable.<Object>of(data);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets the update data.
+   * @return data
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets the update data.
-     * 
-     * @return data
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Object getData() {
+  public Object getData() {
         return data.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Object> getData_JsonNullable() {
+    return data;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA)
+  public void setData_JsonNullable(JsonNullable<Object> data) {
+    this.data = data;
+  }
+
+  public void setData(@javax.annotation.Nullable Object data) {
+    this.data = JsonNullable.<Object>of(data);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ObjectGroupUpdate objectGroupUpdate = (ObjectGroupUpdate) o;
+    return Objects.equals(this.groupId, objectGroupUpdate.groupId) &&
+        Objects.equals(this.type, objectGroupUpdate.type) &&
+        equalsNullable(this.data, objectGroupUpdate.data);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(groupId, type, hashCodeNullable(data));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ObjectGroupUpdate {\n");
+    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ObjectGroupUpdate instance;
+
+    public Builder() {
+      this(new ObjectGroupUpdate());
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Object> getData_JsonNullable() {
-        return data;
+    protected Builder(ObjectGroupUpdate instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<Object> data) {
-        this.data = data;
+    public ObjectGroupUpdate.Builder groupId(UUID groupId) {
+      this.instance.groupId = groupId;
+      return this;
+    }
+    public ObjectGroupUpdate.Builder type(GroupUpdateType type) {
+      this.instance.type = type;
+      return this;
+    }
+    public ObjectGroupUpdate.Builder data(Object data) {
+      this.instance.data = JsonNullable.<Object>of(data);
+      return this;
+    }
+    public ObjectGroupUpdate.Builder data(JsonNullable<Object> data) {
+      this.instance.data = data;
+      return this;
     }
 
-    public void setData(@javax.annotation.Nullable Object data) {
-        this.data = JsonNullable.<Object> of(data);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ObjectGroupUpdate objectGroupUpdate = (ObjectGroupUpdate) o;
-        return Objects.equals(this.groupId, objectGroupUpdate.groupId)
-                && Objects.equals(this.type, objectGroupUpdate.type)
-                && equalsNullable(this.data, objectGroupUpdate.data);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(groupId, type, hashCodeNullable(data));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built ObjectGroupUpdate instance.
+    *
+    * The builder is not reusable.
+    */
+    public ObjectGroupUpdate build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ObjectGroupUpdate {\n");
-        sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    data: ").append(toIndentedString(data)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ObjectGroupUpdate.Builder builder() {
+    return new ObjectGroupUpdate.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ObjectGroupUpdate.Builder toBuilder() {
+    return new ObjectGroupUpdate.Builder()
+      .groupId(getGroupId())
+      .type(getType())
+      .data(getData());
+  }
 
-        private ObjectGroupUpdate instance;
 
-        public Builder() {
-            this(new ObjectGroupUpdate());
-        }
-
-        protected Builder(ObjectGroupUpdate instance) {
-            this.instance = instance;
-        }
-
-        public ObjectGroupUpdate.Builder groupId(UUID groupId) {
-            this.instance.groupId = groupId;
-            return this;
-        }
-
-        public ObjectGroupUpdate.Builder type(GroupUpdateType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public ObjectGroupUpdate.Builder data(Object data) {
-            this.instance.data = JsonNullable.<Object> of(data);
-            return this;
-        }
-
-        public ObjectGroupUpdate.Builder data(JsonNullable<Object> data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        /**
-         * returns a built ObjectGroupUpdate instance.
-         *
-         * The builder is not reusable.
-         */
-        public ObjectGroupUpdate build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ObjectGroupUpdate.Builder builder() {
-        return new ObjectGroupUpdate.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ObjectGroupUpdate.Builder toBuilder() {
-        return new ObjectGroupUpdate.Builder().groupId(getGroupId()).type(getType()).data(getData());
-    }
 }
+

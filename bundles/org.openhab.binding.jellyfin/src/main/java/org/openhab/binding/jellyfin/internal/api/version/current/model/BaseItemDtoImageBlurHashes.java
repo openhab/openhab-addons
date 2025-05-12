@@ -17,685 +17,698 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.HashMap;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * Gets or sets the blurhashes for the image tags. Maps image type to dictionary mapping image tag to blurhash value.
+ * Gets or sets the blurhashes for the image tags.  Maps image type to dictionary mapping image tag to blurhash value.
  */
-@JsonPropertyOrder({ BaseItemDtoImageBlurHashes.JSON_PROPERTY_PRIMARY, BaseItemDtoImageBlurHashes.JSON_PROPERTY_ART,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_BACKDROP, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BANNER,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_LOGO, BaseItemDtoImageBlurHashes.JSON_PROPERTY_THUMB,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_DISC, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_SCREENSHOT, BaseItemDtoImageBlurHashes.JSON_PROPERTY_MENU,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_CHAPTER, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX_REAR,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_PROFILE })
+@JsonPropertyOrder({
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_PRIMARY,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_ART,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_BACKDROP,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_BANNER,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_LOGO,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_THUMB,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_DISC,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_SCREENSHOT,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_MENU,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_CHAPTER,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX_REAR,
+  BaseItemDtoImageBlurHashes.JSON_PROPERTY_PROFILE
+})
 @JsonTypeName("BaseItemDto_ImageBlurHashes")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemDtoImageBlurHashes {
-    public static final String JSON_PROPERTY_PRIMARY = "Primary";
-    @javax.annotation.Nullable
-    private Map<String, String> primary = new HashMap<>();
+  public static final String JSON_PROPERTY_PRIMARY = "Primary";
+  @javax.annotation.Nullable
+  private Map<String, String> primary = new HashMap<>();
 
-    public static final String JSON_PROPERTY_ART = "Art";
-    @javax.annotation.Nullable
-    private Map<String, String> art = new HashMap<>();
+  public static final String JSON_PROPERTY_ART = "Art";
+  @javax.annotation.Nullable
+  private Map<String, String> art = new HashMap<>();
 
-    public static final String JSON_PROPERTY_BACKDROP = "Backdrop";
-    @javax.annotation.Nullable
-    private Map<String, String> backdrop = new HashMap<>();
+  public static final String JSON_PROPERTY_BACKDROP = "Backdrop";
+  @javax.annotation.Nullable
+  private Map<String, String> backdrop = new HashMap<>();
 
-    public static final String JSON_PROPERTY_BANNER = "Banner";
-    @javax.annotation.Nullable
-    private Map<String, String> banner = new HashMap<>();
+  public static final String JSON_PROPERTY_BANNER = "Banner";
+  @javax.annotation.Nullable
+  private Map<String, String> banner = new HashMap<>();
 
-    public static final String JSON_PROPERTY_LOGO = "Logo";
-    @javax.annotation.Nullable
-    private Map<String, String> logo = new HashMap<>();
+  public static final String JSON_PROPERTY_LOGO = "Logo";
+  @javax.annotation.Nullable
+  private Map<String, String> logo = new HashMap<>();
 
-    public static final String JSON_PROPERTY_THUMB = "Thumb";
-    @javax.annotation.Nullable
-    private Map<String, String> thumb = new HashMap<>();
+  public static final String JSON_PROPERTY_THUMB = "Thumb";
+  @javax.annotation.Nullable
+  private Map<String, String> thumb = new HashMap<>();
 
-    public static final String JSON_PROPERTY_DISC = "Disc";
-    @javax.annotation.Nullable
-    private Map<String, String> disc = new HashMap<>();
+  public static final String JSON_PROPERTY_DISC = "Disc";
+  @javax.annotation.Nullable
+  private Map<String, String> disc = new HashMap<>();
 
-    public static final String JSON_PROPERTY_BOX = "Box";
-    @javax.annotation.Nullable
-    private Map<String, String> box = new HashMap<>();
+  public static final String JSON_PROPERTY_BOX = "Box";
+  @javax.annotation.Nullable
+  private Map<String, String> box = new HashMap<>();
 
-    public static final String JSON_PROPERTY_SCREENSHOT = "Screenshot";
-    @javax.annotation.Nullable
-    private Map<String, String> screenshot = new HashMap<>();
+  public static final String JSON_PROPERTY_SCREENSHOT = "Screenshot";
+  @javax.annotation.Nullable
+  private Map<String, String> screenshot = new HashMap<>();
 
-    public static final String JSON_PROPERTY_MENU = "Menu";
-    @javax.annotation.Nullable
-    private Map<String, String> menu = new HashMap<>();
+  public static final String JSON_PROPERTY_MENU = "Menu";
+  @javax.annotation.Nullable
+  private Map<String, String> menu = new HashMap<>();
 
-    public static final String JSON_PROPERTY_CHAPTER = "Chapter";
-    @javax.annotation.Nullable
-    private Map<String, String> chapter = new HashMap<>();
+  public static final String JSON_PROPERTY_CHAPTER = "Chapter";
+  @javax.annotation.Nullable
+  private Map<String, String> chapter = new HashMap<>();
 
-    public static final String JSON_PROPERTY_BOX_REAR = "BoxRear";
-    @javax.annotation.Nullable
-    private Map<String, String> boxRear = new HashMap<>();
+  public static final String JSON_PROPERTY_BOX_REAR = "BoxRear";
+  @javax.annotation.Nullable
+  private Map<String, String> boxRear = new HashMap<>();
 
-    public static final String JSON_PROPERTY_PROFILE = "Profile";
-    @javax.annotation.Nullable
-    private Map<String, String> profile = new HashMap<>();
+  public static final String JSON_PROPERTY_PROFILE = "Profile";
+  @javax.annotation.Nullable
+  private Map<String, String> profile = new HashMap<>();
 
-    public BaseItemDtoImageBlurHashes() {
+  public BaseItemDtoImageBlurHashes() {
+  }
+
+  public BaseItemDtoImageBlurHashes primary(@javax.annotation.Nullable Map<String, String> primary) {
+    
+    this.primary = primary;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putPrimaryItem(String key, String primaryItem) {
+    if (this.primary == null) {
+      this.primary = new HashMap<>();
+    }
+    this.primary.put(key, primaryItem);
+    return this;
+  }
+
+  /**
+   * Get primary
+   * @return primary
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PRIMARY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getPrimary() {
+    return primary;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPrimary(@javax.annotation.Nullable Map<String, String> primary) {
+    this.primary = primary;
+  }
+
+  public BaseItemDtoImageBlurHashes art(@javax.annotation.Nullable Map<String, String> art) {
+    
+    this.art = art;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putArtItem(String key, String artItem) {
+    if (this.art == null) {
+      this.art = new HashMap<>();
+    }
+    this.art.put(key, artItem);
+    return this;
+  }
+
+  /**
+   * Get art
+   * @return art
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ART)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getArt() {
+    return art;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ART)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setArt(@javax.annotation.Nullable Map<String, String> art) {
+    this.art = art;
+  }
+
+  public BaseItemDtoImageBlurHashes backdrop(@javax.annotation.Nullable Map<String, String> backdrop) {
+    
+    this.backdrop = backdrop;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putBackdropItem(String key, String backdropItem) {
+    if (this.backdrop == null) {
+      this.backdrop = new HashMap<>();
+    }
+    this.backdrop.put(key, backdropItem);
+    return this;
+  }
+
+  /**
+   * Get backdrop
+   * @return backdrop
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BACKDROP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getBackdrop() {
+    return backdrop;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BACKDROP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBackdrop(@javax.annotation.Nullable Map<String, String> backdrop) {
+    this.backdrop = backdrop;
+  }
+
+  public BaseItemDtoImageBlurHashes banner(@javax.annotation.Nullable Map<String, String> banner) {
+    
+    this.banner = banner;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putBannerItem(String key, String bannerItem) {
+    if (this.banner == null) {
+      this.banner = new HashMap<>();
+    }
+    this.banner.put(key, bannerItem);
+    return this;
+  }
+
+  /**
+   * Get banner
+   * @return banner
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BANNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getBanner() {
+    return banner;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BANNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBanner(@javax.annotation.Nullable Map<String, String> banner) {
+    this.banner = banner;
+  }
+
+  public BaseItemDtoImageBlurHashes logo(@javax.annotation.Nullable Map<String, String> logo) {
+    
+    this.logo = logo;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putLogoItem(String key, String logoItem) {
+    if (this.logo == null) {
+      this.logo = new HashMap<>();
+    }
+    this.logo.put(key, logoItem);
+    return this;
+  }
+
+  /**
+   * Get logo
+   * @return logo
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LOGO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getLogo() {
+    return logo;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LOGO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLogo(@javax.annotation.Nullable Map<String, String> logo) {
+    this.logo = logo;
+  }
+
+  public BaseItemDtoImageBlurHashes thumb(@javax.annotation.Nullable Map<String, String> thumb) {
+    
+    this.thumb = thumb;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putThumbItem(String key, String thumbItem) {
+    if (this.thumb == null) {
+      this.thumb = new HashMap<>();
+    }
+    this.thumb.put(key, thumbItem);
+    return this;
+  }
+
+  /**
+   * Get thumb
+   * @return thumb
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_THUMB)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getThumb() {
+    return thumb;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_THUMB)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setThumb(@javax.annotation.Nullable Map<String, String> thumb) {
+    this.thumb = thumb;
+  }
+
+  public BaseItemDtoImageBlurHashes disc(@javax.annotation.Nullable Map<String, String> disc) {
+    
+    this.disc = disc;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putDiscItem(String key, String discItem) {
+    if (this.disc == null) {
+      this.disc = new HashMap<>();
+    }
+    this.disc.put(key, discItem);
+    return this;
+  }
+
+  /**
+   * Get disc
+   * @return disc
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getDisc() {
+    return disc;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DISC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDisc(@javax.annotation.Nullable Map<String, String> disc) {
+    this.disc = disc;
+  }
+
+  public BaseItemDtoImageBlurHashes box(@javax.annotation.Nullable Map<String, String> box) {
+    
+    this.box = box;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putBoxItem(String key, String boxItem) {
+    if (this.box == null) {
+      this.box = new HashMap<>();
+    }
+    this.box.put(key, boxItem);
+    return this;
+  }
+
+  /**
+   * Get box
+   * @return box
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getBox() {
+    return box;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BOX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBox(@javax.annotation.Nullable Map<String, String> box) {
+    this.box = box;
+  }
+
+  public BaseItemDtoImageBlurHashes screenshot(@javax.annotation.Nullable Map<String, String> screenshot) {
+    
+    this.screenshot = screenshot;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putScreenshotItem(String key, String screenshotItem) {
+    if (this.screenshot == null) {
+      this.screenshot = new HashMap<>();
+    }
+    this.screenshot.put(key, screenshotItem);
+    return this;
+  }
+
+  /**
+   * Get screenshot
+   * @return screenshot
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SCREENSHOT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getScreenshot() {
+    return screenshot;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SCREENSHOT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScreenshot(@javax.annotation.Nullable Map<String, String> screenshot) {
+    this.screenshot = screenshot;
+  }
+
+  public BaseItemDtoImageBlurHashes menu(@javax.annotation.Nullable Map<String, String> menu) {
+    
+    this.menu = menu;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putMenuItem(String key, String menuItem) {
+    if (this.menu == null) {
+      this.menu = new HashMap<>();
+    }
+    this.menu.put(key, menuItem);
+    return this;
+  }
+
+  /**
+   * Get menu
+   * @return menu
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getMenu() {
+    return menu;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMenu(@javax.annotation.Nullable Map<String, String> menu) {
+    this.menu = menu;
+  }
+
+  public BaseItemDtoImageBlurHashes chapter(@javax.annotation.Nullable Map<String, String> chapter) {
+    
+    this.chapter = chapter;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putChapterItem(String key, String chapterItem) {
+    if (this.chapter == null) {
+      this.chapter = new HashMap<>();
+    }
+    this.chapter.put(key, chapterItem);
+    return this;
+  }
+
+  /**
+   * Get chapter
+   * @return chapter
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CHAPTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getChapter() {
+    return chapter;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CHAPTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChapter(@javax.annotation.Nullable Map<String, String> chapter) {
+    this.chapter = chapter;
+  }
+
+  public BaseItemDtoImageBlurHashes boxRear(@javax.annotation.Nullable Map<String, String> boxRear) {
+    
+    this.boxRear = boxRear;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putBoxRearItem(String key, String boxRearItem) {
+    if (this.boxRear == null) {
+      this.boxRear = new HashMap<>();
+    }
+    this.boxRear.put(key, boxRearItem);
+    return this;
+  }
+
+  /**
+   * Get boxRear
+   * @return boxRear
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOX_REAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getBoxRear() {
+    return boxRear;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BOX_REAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBoxRear(@javax.annotation.Nullable Map<String, String> boxRear) {
+    this.boxRear = boxRear;
+  }
+
+  public BaseItemDtoImageBlurHashes profile(@javax.annotation.Nullable Map<String, String> profile) {
+    
+    this.profile = profile;
+    return this;
+  }
+
+  public BaseItemDtoImageBlurHashes putProfileItem(String key, String profileItem) {
+    if (this.profile == null) {
+      this.profile = new HashMap<>();
+    }
+    this.profile.put(key, profileItem);
+    return this;
+  }
+
+  /**
+   * Get profile
+   * @return profile
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROFILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, String> getProfile() {
+    return profile;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROFILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProfile(@javax.annotation.Nullable Map<String, String> profile) {
+    this.profile = profile;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    BaseItemDtoImageBlurHashes baseItemDtoImageBlurHashes = (BaseItemDtoImageBlurHashes) o;
+    return Objects.equals(this.primary, baseItemDtoImageBlurHashes.primary) &&
+        Objects.equals(this.art, baseItemDtoImageBlurHashes.art) &&
+        Objects.equals(this.backdrop, baseItemDtoImageBlurHashes.backdrop) &&
+        Objects.equals(this.banner, baseItemDtoImageBlurHashes.banner) &&
+        Objects.equals(this.logo, baseItemDtoImageBlurHashes.logo) &&
+        Objects.equals(this.thumb, baseItemDtoImageBlurHashes.thumb) &&
+        Objects.equals(this.disc, baseItemDtoImageBlurHashes.disc) &&
+        Objects.equals(this.box, baseItemDtoImageBlurHashes.box) &&
+        Objects.equals(this.screenshot, baseItemDtoImageBlurHashes.screenshot) &&
+        Objects.equals(this.menu, baseItemDtoImageBlurHashes.menu) &&
+        Objects.equals(this.chapter, baseItemDtoImageBlurHashes.chapter) &&
+        Objects.equals(this.boxRear, baseItemDtoImageBlurHashes.boxRear) &&
+        Objects.equals(this.profile, baseItemDtoImageBlurHashes.profile);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(primary, art, backdrop, banner, logo, thumb, disc, box, screenshot, menu, chapter, boxRear, profile);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class BaseItemDtoImageBlurHashes {\n");
+    sb.append("    primary: ").append(toIndentedString(primary)).append("\n");
+    sb.append("    art: ").append(toIndentedString(art)).append("\n");
+    sb.append("    backdrop: ").append(toIndentedString(backdrop)).append("\n");
+    sb.append("    banner: ").append(toIndentedString(banner)).append("\n");
+    sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
+    sb.append("    thumb: ").append(toIndentedString(thumb)).append("\n");
+    sb.append("    disc: ").append(toIndentedString(disc)).append("\n");
+    sb.append("    box: ").append(toIndentedString(box)).append("\n");
+    sb.append("    screenshot: ").append(toIndentedString(screenshot)).append("\n");
+    sb.append("    menu: ").append(toIndentedString(menu)).append("\n");
+    sb.append("    chapter: ").append(toIndentedString(chapter)).append("\n");
+    sb.append("    boxRear: ").append(toIndentedString(boxRear)).append("\n");
+    sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private BaseItemDtoImageBlurHashes instance;
+
+    public Builder() {
+      this(new BaseItemDtoImageBlurHashes());
     }
 
-    public BaseItemDtoImageBlurHashes primary(@javax.annotation.Nullable Map<String, String> primary) {
-
-        this.primary = primary;
-        return this;
+    protected Builder(BaseItemDtoImageBlurHashes instance) {
+      this.instance = instance;
     }
 
-    public BaseItemDtoImageBlurHashes putPrimaryItem(String key, String primaryItem) {
-        if (this.primary == null) {
-            this.primary = new HashMap<>();
-        }
-        this.primary.put(key, primaryItem);
-        return this;
+    public BaseItemDtoImageBlurHashes.Builder primary(Map<String, String> primary) {
+      this.instance.primary = primary;
+      return this;
     }
+    public BaseItemDtoImageBlurHashes.Builder art(Map<String, String> art) {
+      this.instance.art = art;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder backdrop(Map<String, String> backdrop) {
+      this.instance.backdrop = backdrop;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder banner(Map<String, String> banner) {
+      this.instance.banner = banner;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder logo(Map<String, String> logo) {
+      this.instance.logo = logo;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder thumb(Map<String, String> thumb) {
+      this.instance.thumb = thumb;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder disc(Map<String, String> disc) {
+      this.instance.disc = disc;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder box(Map<String, String> box) {
+      this.instance.box = box;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder screenshot(Map<String, String> screenshot) {
+      this.instance.screenshot = screenshot;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder menu(Map<String, String> menu) {
+      this.instance.menu = menu;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder chapter(Map<String, String> chapter) {
+      this.instance.chapter = chapter;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder boxRear(Map<String, String> boxRear) {
+      this.instance.boxRear = boxRear;
+      return this;
+    }
+    public BaseItemDtoImageBlurHashes.Builder profile(Map<String, String> profile) {
+      this.instance.profile = profile;
+      return this;
+    }
+
 
     /**
-     * Get primary
-     * 
-     * @return primary
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PRIMARY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getPrimary() {
-        return primary;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PRIMARY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPrimary(@javax.annotation.Nullable Map<String, String> primary) {
-        this.primary = primary;
-    }
-
-    public BaseItemDtoImageBlurHashes art(@javax.annotation.Nullable Map<String, String> art) {
-
-        this.art = art;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putArtItem(String key, String artItem) {
-        if (this.art == null) {
-            this.art = new HashMap<>();
-        }
-        this.art.put(key, artItem);
-        return this;
-    }
-
-    /**
-     * Get art
-     * 
-     * @return art
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ART)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getArt() {
-        return art;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ART)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setArt(@javax.annotation.Nullable Map<String, String> art) {
-        this.art = art;
-    }
-
-    public BaseItemDtoImageBlurHashes backdrop(@javax.annotation.Nullable Map<String, String> backdrop) {
-
-        this.backdrop = backdrop;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putBackdropItem(String key, String backdropItem) {
-        if (this.backdrop == null) {
-            this.backdrop = new HashMap<>();
-        }
-        this.backdrop.put(key, backdropItem);
-        return this;
-    }
-
-    /**
-     * Get backdrop
-     * 
-     * @return backdrop
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BACKDROP)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getBackdrop() {
-        return backdrop;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BACKDROP)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBackdrop(@javax.annotation.Nullable Map<String, String> backdrop) {
-        this.backdrop = backdrop;
-    }
-
-    public BaseItemDtoImageBlurHashes banner(@javax.annotation.Nullable Map<String, String> banner) {
-
-        this.banner = banner;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putBannerItem(String key, String bannerItem) {
-        if (this.banner == null) {
-            this.banner = new HashMap<>();
-        }
-        this.banner.put(key, bannerItem);
-        return this;
-    }
-
-    /**
-     * Get banner
-     * 
-     * @return banner
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BANNER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getBanner() {
-        return banner;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BANNER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBanner(@javax.annotation.Nullable Map<String, String> banner) {
-        this.banner = banner;
-    }
-
-    public BaseItemDtoImageBlurHashes logo(@javax.annotation.Nullable Map<String, String> logo) {
-
-        this.logo = logo;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putLogoItem(String key, String logoItem) {
-        if (this.logo == null) {
-            this.logo = new HashMap<>();
-        }
-        this.logo.put(key, logoItem);
-        return this;
-    }
-
-    /**
-     * Get logo
-     * 
-     * @return logo
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LOGO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getLogo() {
-        return logo;
-    }
-
-    @JsonProperty(JSON_PROPERTY_LOGO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setLogo(@javax.annotation.Nullable Map<String, String> logo) {
-        this.logo = logo;
-    }
-
-    public BaseItemDtoImageBlurHashes thumb(@javax.annotation.Nullable Map<String, String> thumb) {
-
-        this.thumb = thumb;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putThumbItem(String key, String thumbItem) {
-        if (this.thumb == null) {
-            this.thumb = new HashMap<>();
-        }
-        this.thumb.put(key, thumbItem);
-        return this;
-    }
-
-    /**
-     * Get thumb
-     * 
-     * @return thumb
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_THUMB)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getThumb() {
-        return thumb;
-    }
-
-    @JsonProperty(JSON_PROPERTY_THUMB)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setThumb(@javax.annotation.Nullable Map<String, String> thumb) {
-        this.thumb = thumb;
-    }
-
-    public BaseItemDtoImageBlurHashes disc(@javax.annotation.Nullable Map<String, String> disc) {
-
-        this.disc = disc;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putDiscItem(String key, String discItem) {
-        if (this.disc == null) {
-            this.disc = new HashMap<>();
-        }
-        this.disc.put(key, discItem);
-        return this;
-    }
-
-    /**
-     * Get disc
-     * 
-     * @return disc
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DISC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getDisc() {
-        return disc;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DISC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDisc(@javax.annotation.Nullable Map<String, String> disc) {
-        this.disc = disc;
-    }
-
-    public BaseItemDtoImageBlurHashes box(@javax.annotation.Nullable Map<String, String> box) {
-
-        this.box = box;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putBoxItem(String key, String boxItem) {
-        if (this.box == null) {
-            this.box = new HashMap<>();
-        }
-        this.box.put(key, boxItem);
-        return this;
-    }
-
-    /**
-     * Get box
-     * 
-     * @return box
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BOX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getBox() {
-        return box;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BOX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBox(@javax.annotation.Nullable Map<String, String> box) {
-        this.box = box;
-    }
-
-    public BaseItemDtoImageBlurHashes screenshot(@javax.annotation.Nullable Map<String, String> screenshot) {
-
-        this.screenshot = screenshot;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putScreenshotItem(String key, String screenshotItem) {
-        if (this.screenshot == null) {
-            this.screenshot = new HashMap<>();
-        }
-        this.screenshot.put(key, screenshotItem);
-        return this;
-    }
-
-    /**
-     * Get screenshot
-     * 
-     * @return screenshot
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getScreenshot() {
-        return screenshot;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setScreenshot(@javax.annotation.Nullable Map<String, String> screenshot) {
-        this.screenshot = screenshot;
-    }
-
-    public BaseItemDtoImageBlurHashes menu(@javax.annotation.Nullable Map<String, String> menu) {
-
-        this.menu = menu;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putMenuItem(String key, String menuItem) {
-        if (this.menu == null) {
-            this.menu = new HashMap<>();
-        }
-        this.menu.put(key, menuItem);
-        return this;
-    }
-
-    /**
-     * Get menu
-     * 
-     * @return menu
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MENU)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getMenu() {
-        return menu;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MENU)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMenu(@javax.annotation.Nullable Map<String, String> menu) {
-        this.menu = menu;
-    }
-
-    public BaseItemDtoImageBlurHashes chapter(@javax.annotation.Nullable Map<String, String> chapter) {
-
-        this.chapter = chapter;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putChapterItem(String key, String chapterItem) {
-        if (this.chapter == null) {
-            this.chapter = new HashMap<>();
-        }
-        this.chapter.put(key, chapterItem);
-        return this;
-    }
-
-    /**
-     * Get chapter
-     * 
-     * @return chapter
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CHAPTER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getChapter() {
-        return chapter;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CHAPTER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setChapter(@javax.annotation.Nullable Map<String, String> chapter) {
-        this.chapter = chapter;
-    }
-
-    public BaseItemDtoImageBlurHashes boxRear(@javax.annotation.Nullable Map<String, String> boxRear) {
-
-        this.boxRear = boxRear;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putBoxRearItem(String key, String boxRearItem) {
-        if (this.boxRear == null) {
-            this.boxRear = new HashMap<>();
-        }
-        this.boxRear.put(key, boxRearItem);
-        return this;
-    }
-
-    /**
-     * Get boxRear
-     * 
-     * @return boxRear
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BOX_REAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getBoxRear() {
-        return boxRear;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BOX_REAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBoxRear(@javax.annotation.Nullable Map<String, String> boxRear) {
-        this.boxRear = boxRear;
-    }
-
-    public BaseItemDtoImageBlurHashes profile(@javax.annotation.Nullable Map<String, String> profile) {
-
-        this.profile = profile;
-        return this;
-    }
-
-    public BaseItemDtoImageBlurHashes putProfileItem(String key, String profileItem) {
-        if (this.profile == null) {
-            this.profile = new HashMap<>();
-        }
-        this.profile.put(key, profileItem);
-        return this;
-    }
-
-    /**
-     * Get profile
-     * 
-     * @return profile
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROFILE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Map<String, String> getProfile() {
-        return profile;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROFILE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProfile(@javax.annotation.Nullable Map<String, String> profile) {
-        this.profile = profile;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BaseItemDtoImageBlurHashes baseItemDtoImageBlurHashes = (BaseItemDtoImageBlurHashes) o;
-        return Objects.equals(this.primary, baseItemDtoImageBlurHashes.primary)
-                && Objects.equals(this.art, baseItemDtoImageBlurHashes.art)
-                && Objects.equals(this.backdrop, baseItemDtoImageBlurHashes.backdrop)
-                && Objects.equals(this.banner, baseItemDtoImageBlurHashes.banner)
-                && Objects.equals(this.logo, baseItemDtoImageBlurHashes.logo)
-                && Objects.equals(this.thumb, baseItemDtoImageBlurHashes.thumb)
-                && Objects.equals(this.disc, baseItemDtoImageBlurHashes.disc)
-                && Objects.equals(this.box, baseItemDtoImageBlurHashes.box)
-                && Objects.equals(this.screenshot, baseItemDtoImageBlurHashes.screenshot)
-                && Objects.equals(this.menu, baseItemDtoImageBlurHashes.menu)
-                && Objects.equals(this.chapter, baseItemDtoImageBlurHashes.chapter)
-                && Objects.equals(this.boxRear, baseItemDtoImageBlurHashes.boxRear)
-                && Objects.equals(this.profile, baseItemDtoImageBlurHashes.profile);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(primary, art, backdrop, banner, logo, thumb, disc, box, screenshot, menu, chapter, boxRear,
-                profile);
+    * returns a built BaseItemDtoImageBlurHashes instance.
+    *
+    * The builder is not reusable.
+    */
+    public BaseItemDtoImageBlurHashes build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class BaseItemDtoImageBlurHashes {\n");
-        sb.append("    primary: ").append(toIndentedString(primary)).append("\n");
-        sb.append("    art: ").append(toIndentedString(art)).append("\n");
-        sb.append("    backdrop: ").append(toIndentedString(backdrop)).append("\n");
-        sb.append("    banner: ").append(toIndentedString(banner)).append("\n");
-        sb.append("    logo: ").append(toIndentedString(logo)).append("\n");
-        sb.append("    thumb: ").append(toIndentedString(thumb)).append("\n");
-        sb.append("    disc: ").append(toIndentedString(disc)).append("\n");
-        sb.append("    box: ").append(toIndentedString(box)).append("\n");
-        sb.append("    screenshot: ").append(toIndentedString(screenshot)).append("\n");
-        sb.append("    menu: ").append(toIndentedString(menu)).append("\n");
-        sb.append("    chapter: ").append(toIndentedString(chapter)).append("\n");
-        sb.append("    boxRear: ").append(toIndentedString(boxRear)).append("\n");
-        sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static BaseItemDtoImageBlurHashes.Builder builder() {
+    return new BaseItemDtoImageBlurHashes.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public BaseItemDtoImageBlurHashes.Builder toBuilder() {
+    return new BaseItemDtoImageBlurHashes.Builder()
+      .primary(getPrimary())
+      .art(getArt())
+      .backdrop(getBackdrop())
+      .banner(getBanner())
+      .logo(getLogo())
+      .thumb(getThumb())
+      .disc(getDisc())
+      .box(getBox())
+      .screenshot(getScreenshot())
+      .menu(getMenu())
+      .chapter(getChapter())
+      .boxRear(getBoxRear())
+      .profile(getProfile());
+  }
 
-        private BaseItemDtoImageBlurHashes instance;
 
-        public Builder() {
-            this(new BaseItemDtoImageBlurHashes());
-        }
-
-        protected Builder(BaseItemDtoImageBlurHashes instance) {
-            this.instance = instance;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder primary(Map<String, String> primary) {
-            this.instance.primary = primary;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder art(Map<String, String> art) {
-            this.instance.art = art;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder backdrop(Map<String, String> backdrop) {
-            this.instance.backdrop = backdrop;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder banner(Map<String, String> banner) {
-            this.instance.banner = banner;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder logo(Map<String, String> logo) {
-            this.instance.logo = logo;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder thumb(Map<String, String> thumb) {
-            this.instance.thumb = thumb;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder disc(Map<String, String> disc) {
-            this.instance.disc = disc;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder box(Map<String, String> box) {
-            this.instance.box = box;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder screenshot(Map<String, String> screenshot) {
-            this.instance.screenshot = screenshot;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder menu(Map<String, String> menu) {
-            this.instance.menu = menu;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder chapter(Map<String, String> chapter) {
-            this.instance.chapter = chapter;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder boxRear(Map<String, String> boxRear) {
-            this.instance.boxRear = boxRear;
-            return this;
-        }
-
-        public BaseItemDtoImageBlurHashes.Builder profile(Map<String, String> profile) {
-            this.instance.profile = profile;
-            return this;
-        }
-
-        /**
-         * returns a built BaseItemDtoImageBlurHashes instance.
-         *
-         * The builder is not reusable.
-         */
-        public BaseItemDtoImageBlurHashes build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BaseItemDtoImageBlurHashes.Builder builder() {
-        return new BaseItemDtoImageBlurHashes.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BaseItemDtoImageBlurHashes.Builder toBuilder() {
-        return new BaseItemDtoImageBlurHashes.Builder().primary(getPrimary()).art(getArt()).backdrop(getBackdrop())
-                .banner(getBanner()).logo(getLogo()).thumb(getThumb()).disc(getDisc()).box(getBox())
-                .screenshot(getScreenshot()).menu(getMenu()).chapter(getChapter()).boxRear(getBoxRear())
-                .profile(getProfile());
-    }
 }
+

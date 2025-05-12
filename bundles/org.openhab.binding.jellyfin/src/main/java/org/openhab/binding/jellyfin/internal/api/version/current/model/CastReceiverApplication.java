@@ -18,170 +18,183 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The cast receiver application model.
  */
-@JsonPropertyOrder({ CastReceiverApplication.JSON_PROPERTY_ID, CastReceiverApplication.JSON_PROPERTY_NAME })
+@JsonPropertyOrder({
+  CastReceiverApplication.JSON_PROPERTY_ID,
+  CastReceiverApplication.JSON_PROPERTY_NAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CastReceiverApplication {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private String id;
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public CastReceiverApplication() {
+  public CastReceiverApplication() {
+  }
+
+  public CastReceiverApplication id(@javax.annotation.Nullable String id) {
+    
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Gets or sets the cast receiver application id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = id;
+  }
+
+  public CastReceiverApplication name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Gets or sets the cast receiver application name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CastReceiverApplication castReceiverApplication = (CastReceiverApplication) o;
+    return Objects.equals(this.id, castReceiverApplication.id) &&
+        Objects.equals(this.name, castReceiverApplication.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class CastReceiverApplication {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private CastReceiverApplication instance;
+
+    public Builder() {
+      this(new CastReceiverApplication());
     }
 
-    public CastReceiverApplication id(@javax.annotation.Nullable String id) {
-
-        this.id = id;
-        return this;
+    protected Builder(CastReceiverApplication instance) {
+      this.instance = instance;
     }
+
+    public CastReceiverApplication.Builder id(String id) {
+      this.instance.id = id;
+      return this;
+    }
+    public CastReceiverApplication.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the cast receiver application id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getId() {
-        return id;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = id;
-    }
-
-    public CastReceiverApplication name(@javax.annotation.Nullable String name) {
-
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Gets or sets the cast receiver application name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CastReceiverApplication castReceiverApplication = (CastReceiverApplication) o;
-        return Objects.equals(this.id, castReceiverApplication.id)
-                && Objects.equals(this.name, castReceiverApplication.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
+    * returns a built CastReceiverApplication instance.
+    *
+    * The builder is not reusable.
+    */
+    public CastReceiverApplication build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class CastReceiverApplication {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static CastReceiverApplication.Builder builder() {
+    return new CastReceiverApplication.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public CastReceiverApplication.Builder toBuilder() {
+    return new CastReceiverApplication.Builder()
+      .id(getId())
+      .name(getName());
+  }
 
-        private CastReceiverApplication instance;
 
-        public Builder() {
-            this(new CastReceiverApplication());
-        }
-
-        protected Builder(CastReceiverApplication instance) {
-            this.instance = instance;
-        }
-
-        public CastReceiverApplication.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public CastReceiverApplication.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        /**
-         * returns a built CastReceiverApplication instance.
-         *
-         * The builder is not reusable.
-         */
-        public CastReceiverApplication build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CastReceiverApplication.Builder builder() {
-        return new CastReceiverApplication.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CastReceiverApplication.Builder toBuilder() {
-        return new CastReceiverApplication.Builder().id(getId()).name(getName());
-    }
 }
+

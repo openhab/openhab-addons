@@ -17,756 +17,743 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * RemoteSearchResult
  */
-@JsonPropertyOrder({ RemoteSearchResult.JSON_PROPERTY_NAME, RemoteSearchResult.JSON_PROPERTY_PROVIDER_IDS,
-        RemoteSearchResult.JSON_PROPERTY_PRODUCTION_YEAR, RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER,
-        RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER_END, RemoteSearchResult.JSON_PROPERTY_PARENT_INDEX_NUMBER,
-        RemoteSearchResult.JSON_PROPERTY_PREMIERE_DATE, RemoteSearchResult.JSON_PROPERTY_IMAGE_URL,
-        RemoteSearchResult.JSON_PROPERTY_SEARCH_PROVIDER_NAME, RemoteSearchResult.JSON_PROPERTY_OVERVIEW,
-        RemoteSearchResult.JSON_PROPERTY_ALBUM_ARTIST, RemoteSearchResult.JSON_PROPERTY_ARTISTS })
+@JsonPropertyOrder({
+  RemoteSearchResult.JSON_PROPERTY_NAME,
+  RemoteSearchResult.JSON_PROPERTY_PROVIDER_IDS,
+  RemoteSearchResult.JSON_PROPERTY_PRODUCTION_YEAR,
+  RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER,
+  RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER_END,
+  RemoteSearchResult.JSON_PROPERTY_PARENT_INDEX_NUMBER,
+  RemoteSearchResult.JSON_PROPERTY_PREMIERE_DATE,
+  RemoteSearchResult.JSON_PROPERTY_IMAGE_URL,
+  RemoteSearchResult.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
+  RemoteSearchResult.JSON_PROPERTY_OVERVIEW,
+  RemoteSearchResult.JSON_PROPERTY_ALBUM_ARTIST,
+  RemoteSearchResult.JSON_PROPERTY_ARTISTS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteSearchResult {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
-    @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
+  public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+  @javax.annotation.Nullable
+  private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>>undefined();
 
-    public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> productionYear = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> productionYear = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> indexNumber = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_IMAGE_URL = "ImageUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> imageUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_IMAGE_URL = "ImageUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> imageUrl = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> searchProviderName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_OVERVIEW = "Overview";
-    @javax.annotation.Nullable
-    private JsonNullable<String> overview = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+  @javax.annotation.Nullable
+  private JsonNullable<String> overview = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
-    @javax.annotation.Nullable
-    private JsonNullable<RemoteSearchResult> albumArtist = JsonNullable.<RemoteSearchResult> undefined();
+  public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
+  @javax.annotation.Nullable
+  private JsonNullable<RemoteSearchResult> albumArtist = JsonNullable.<RemoteSearchResult>undefined();
 
-    public static final String JSON_PROPERTY_ARTISTS = "Artists";
-    @javax.annotation.Nullable
-    private JsonNullable<List<RemoteSearchResult>> artists = JsonNullable.<List<RemoteSearchResult>> undefined();
+  public static final String JSON_PROPERTY_ARTISTS = "Artists";
+  @javax.annotation.Nullable
+  private JsonNullable<List<RemoteSearchResult>> artists = JsonNullable.<List<RemoteSearchResult>>undefined();
 
-    public RemoteSearchResult() {
-    }
+  public RemoteSearchResult() {
+  }
 
-    public RemoteSearchResult name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public RemoteSearchResult name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
+
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
+
+  public RemoteSearchResult providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+    
+    return this;
+  }
+
+  public RemoteSearchResult putProviderIdsItem(String key, String providerIdsItem) {
+    if (this.providerIds == null || !this.providerIds.isPresent()) {
+      this.providerIds = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
+    try {
+      this.providerIds.get().put(key, providerIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  /**
+   * Gets or sets the provider ids.
+   * @return providerIds
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
-    public RemoteSearchResult providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-
-        return this;
-    }
-
-    public RemoteSearchResult putProviderIdsItem(String key, String providerIdsItem) {
-        if (this.providerIds == null || !this.providerIds.isPresent()) {
-            this.providerIds = JsonNullable.<Map<String, String>> of(new HashMap<>());
-        }
-        try {
-            this.providerIds.get().put(key, providerIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the provider ids.
-     * 
-     * @return providerIds
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getProviderIds() {
+  public Map<String, String> getProviderIds() {
         return providerIds.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
-        return providerIds;
-    }
+  public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
+    return providerIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    this.providerIds = providerIds;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
-        this.providerIds = providerIds;
-    }
+  public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+  }
 
-    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-    }
+  public RemoteSearchResult productionYear(@javax.annotation.Nullable Integer productionYear) {
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
+    
+    return this;
+  }
 
-    public RemoteSearchResult productionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
+  /**
+   * Gets or sets the year.
+   * @return productionYear
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the year.
-     * 
-     * @return productionYear
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getProductionYear() {
+  public Integer getProductionYear() {
         return productionYear.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getProductionYear_JsonNullable() {
-        return productionYear;
-    }
+  public JsonNullable<Integer> getProductionYear_JsonNullable() {
+    return productionYear;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
+    this.productionYear = productionYear;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
-    public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
-        this.productionYear = productionYear;
-    }
+  public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
+  }
 
-    public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
-    }
+  public RemoteSearchResult indexNumber(@javax.annotation.Nullable Integer indexNumber) {
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
+    
+    return this;
+  }
 
-    public RemoteSearchResult indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
+  /**
+   * Get indexNumber
+   * @return indexNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get indexNumber
-     * 
-     * @return indexNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumber() {
+  public Integer getIndexNumber() {
         return indexNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumber_JsonNullable() {
-        return indexNumber;
-    }
+  public JsonNullable<Integer> getIndexNumber_JsonNullable() {
+    return indexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    this.indexNumber = indexNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
-        this.indexNumber = indexNumber;
-    }
+  public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
+  }
 
-    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
-    }
+  public RemoteSearchResult indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+    
+    return this;
+  }
 
-    public RemoteSearchResult indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-        this.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
+  /**
+   * Get indexNumberEnd
+   * @return indexNumberEnd
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get indexNumberEnd
-     * 
-     * @return indexNumberEnd
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumberEnd() {
+  public Integer getIndexNumberEnd() {
         return indexNumberEnd.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumberEnd_JsonNullable() {
-        return indexNumberEnd;
-    }
+  public JsonNullable<Integer> getIndexNumberEnd_JsonNullable() {
+    return indexNumberEnd;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  public void setIndexNumberEnd_JsonNullable(JsonNullable<Integer> indexNumberEnd) {
+    this.indexNumberEnd = indexNumberEnd;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
-    public void setIndexNumberEnd_JsonNullable(JsonNullable<Integer> indexNumberEnd) {
-        this.indexNumberEnd = indexNumberEnd;
-    }
+  public void setIndexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+  }
 
-    public void setIndexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-        this.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
-    }
+  public RemoteSearchResult parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+    
+    return this;
+  }
 
-    public RemoteSearchResult parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
+  /**
+   * Get parentIndexNumber
+   * @return parentIndexNumber
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get parentIndexNumber
-     * 
-     * @return parentIndexNumber
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getParentIndexNumber() {
+  public Integer getParentIndexNumber() {
         return parentIndexNumber.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
-        return parentIndexNumber;
-    }
+  public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
+    return parentIndexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    this.parentIndexNumber = parentIndexNumber;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
-        this.parentIndexNumber = parentIndexNumber;
-    }
+  public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+  }
 
-    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-    }
+  public RemoteSearchResult premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+    
+    return this;
+  }
 
-    public RemoteSearchResult premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+  /**
+   * Get premiereDate
+   * @return premiereDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get premiereDate
-     * 
-     * @return premiereDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getPremiereDate() {
+  public OffsetDateTime getPremiereDate() {
         return premiereDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
-        return premiereDate;
-    }
+  public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
+    return premiereDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
+    this.premiereDate = premiereDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
-        this.premiereDate = premiereDate;
-    }
+  public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+  }
 
-    public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-    }
+  public RemoteSearchResult imageUrl(@javax.annotation.Nullable String imageUrl) {
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
+    
+    return this;
+  }
 
-    public RemoteSearchResult imageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
+  /**
+   * Get imageUrl
+   * @return imageUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get imageUrl
-     * 
-     * @return imageUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getImageUrl() {
+  public String getImageUrl() {
         return imageUrl.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getImageUrl_JsonNullable() {
-        return imageUrl;
-    }
+  public JsonNullable<String> getImageUrl_JsonNullable() {
+    return imageUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
-    public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+  public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
+  }
 
-    public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
-    }
+  public RemoteSearchResult searchProviderName(@javax.annotation.Nullable String searchProviderName) {
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
+    
+    return this;
+  }
 
-    public RemoteSearchResult searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+  /**
+   * Get searchProviderName
+   * @return searchProviderName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get searchProviderName
-     * 
-     * @return searchProviderName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSearchProviderName() {
+  public String getSearchProviderName() {
         return searchProviderName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSearchProviderName_JsonNullable() {
-        return searchProviderName;
-    }
+  public JsonNullable<String> getSearchProviderName_JsonNullable() {
+    return searchProviderName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
+    this.searchProviderName = searchProviderName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
-        this.searchProviderName = searchProviderName;
-    }
+  public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
+  }
 
-    public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
-    }
+  public RemoteSearchResult overview(@javax.annotation.Nullable String overview) {
+    this.overview = JsonNullable.<String>of(overview);
+    
+    return this;
+  }
 
-    public RemoteSearchResult overview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
+  /**
+   * Get overview
+   * @return overview
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get overview
-     * 
-     * @return overview
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOverview() {
+  public String getOverview() {
         return overview.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOverview_JsonNullable() {
-        return overview;
-    }
+  public JsonNullable<String> getOverview_JsonNullable() {
+    return overview;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  public void setOverview_JsonNullable(JsonNullable<String> overview) {
+    this.overview = overview;
+  }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    public void setOverview_JsonNullable(JsonNullable<String> overview) {
-        this.overview = overview;
-    }
+  public void setOverview(@javax.annotation.Nullable String overview) {
+    this.overview = JsonNullable.<String>of(overview);
+  }
 
-    public void setOverview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
-    }
+  public RemoteSearchResult albumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
+    this.albumArtist = JsonNullable.<RemoteSearchResult>of(albumArtist);
+    
+    return this;
+  }
 
-    public RemoteSearchResult albumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
-        this.albumArtist = JsonNullable.<RemoteSearchResult> of(albumArtist);
+  /**
+   * Get albumArtist
+   * @return albumArtist
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get albumArtist
-     * 
-     * @return albumArtist
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public RemoteSearchResult getAlbumArtist() {
+  public RemoteSearchResult getAlbumArtist() {
         return albumArtist.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<RemoteSearchResult> getAlbumArtist_JsonNullable() {
+    return albumArtist;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  public void setAlbumArtist_JsonNullable(JsonNullable<RemoteSearchResult> albumArtist) {
+    this.albumArtist = albumArtist;
+  }
+
+  public void setAlbumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
+    this.albumArtist = JsonNullable.<RemoteSearchResult>of(albumArtist);
+  }
+
+  public RemoteSearchResult artists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
+    this.artists = JsonNullable.<List<RemoteSearchResult>>of(artists);
+    
+    return this;
+  }
+
+  public RemoteSearchResult addArtistsItem(RemoteSearchResult artistsItem) {
+    if (this.artists == null || !this.artists.isPresent()) {
+      this.artists = JsonNullable.<List<RemoteSearchResult>>of(new ArrayList<>());
+    }
+    try {
+      this.artists.get().add(artistsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
+    return this;
+  }
+
+  /**
+   * Get artists
+   * @return artists
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public List<RemoteSearchResult> getArtists() {
+        return artists.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<RemoteSearchResult>> getArtists_JsonNullable() {
+    return artists;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  public void setArtists_JsonNullable(JsonNullable<List<RemoteSearchResult>> artists) {
+    this.artists = artists;
+  }
+
+  public void setArtists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
+    this.artists = JsonNullable.<List<RemoteSearchResult>>of(artists);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RemoteSearchResult remoteSearchResult = (RemoteSearchResult) o;
+    return equalsNullable(this.name, remoteSearchResult.name) &&
+        equalsNullable(this.providerIds, remoteSearchResult.providerIds) &&
+        equalsNullable(this.productionYear, remoteSearchResult.productionYear) &&
+        equalsNullable(this.indexNumber, remoteSearchResult.indexNumber) &&
+        equalsNullable(this.indexNumberEnd, remoteSearchResult.indexNumberEnd) &&
+        equalsNullable(this.parentIndexNumber, remoteSearchResult.parentIndexNumber) &&
+        equalsNullable(this.premiereDate, remoteSearchResult.premiereDate) &&
+        equalsNullable(this.imageUrl, remoteSearchResult.imageUrl) &&
+        equalsNullable(this.searchProviderName, remoteSearchResult.searchProviderName) &&
+        equalsNullable(this.overview, remoteSearchResult.overview) &&
+        equalsNullable(this.albumArtist, remoteSearchResult.albumArtist) &&
+        equalsNullable(this.artists, remoteSearchResult.artists);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(providerIds), hashCodeNullable(productionYear), hashCodeNullable(indexNumber), hashCodeNullable(indexNumberEnd), hashCodeNullable(parentIndexNumber), hashCodeNullable(premiereDate), hashCodeNullable(imageUrl), hashCodeNullable(searchProviderName), hashCodeNullable(overview), hashCodeNullable(albumArtist), hashCodeNullable(artists));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class RemoteSearchResult {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    providerIds: ").append(toIndentedString(providerIds)).append("\n");
+    sb.append("    productionYear: ").append(toIndentedString(productionYear)).append("\n");
+    sb.append("    indexNumber: ").append(toIndentedString(indexNumber)).append("\n");
+    sb.append("    indexNumberEnd: ").append(toIndentedString(indexNumberEnd)).append("\n");
+    sb.append("    parentIndexNumber: ").append(toIndentedString(parentIndexNumber)).append("\n");
+    sb.append("    premiereDate: ").append(toIndentedString(premiereDate)).append("\n");
+    sb.append("    imageUrl: ").append(toIndentedString(imageUrl)).append("\n");
+    sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
+    sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
+    sb.append("    albumArtist: ").append(toIndentedString(albumArtist)).append("\n");
+    sb.append("    artists: ").append(toIndentedString(artists)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private RemoteSearchResult instance;
+
+    public Builder() {
+      this(new RemoteSearchResult());
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<RemoteSearchResult> getAlbumArtist_JsonNullable() {
-        return albumArtist;
+    protected Builder(RemoteSearchResult instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
-    public void setAlbumArtist_JsonNullable(JsonNullable<RemoteSearchResult> albumArtist) {
-        this.albumArtist = albumArtist;
+    public RemoteSearchResult.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public RemoteSearchResult.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public RemoteSearchResult.Builder providerIds(Map<String, String> providerIds) {
+      this.instance.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
+      return this;
+    }
+    public RemoteSearchResult.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
+      this.instance.providerIds = providerIds;
+      return this;
+    }
+    public RemoteSearchResult.Builder productionYear(Integer productionYear) {
+      this.instance.productionYear = JsonNullable.<Integer>of(productionYear);
+      return this;
+    }
+    public RemoteSearchResult.Builder productionYear(JsonNullable<Integer> productionYear) {
+      this.instance.productionYear = productionYear;
+      return this;
+    }
+    public RemoteSearchResult.Builder indexNumber(Integer indexNumber) {
+      this.instance.indexNumber = JsonNullable.<Integer>of(indexNumber);
+      return this;
+    }
+    public RemoteSearchResult.Builder indexNumber(JsonNullable<Integer> indexNumber) {
+      this.instance.indexNumber = indexNumber;
+      return this;
+    }
+    public RemoteSearchResult.Builder indexNumberEnd(Integer indexNumberEnd) {
+      this.instance.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
+      return this;
+    }
+    public RemoteSearchResult.Builder indexNumberEnd(JsonNullable<Integer> indexNumberEnd) {
+      this.instance.indexNumberEnd = indexNumberEnd;
+      return this;
+    }
+    public RemoteSearchResult.Builder parentIndexNumber(Integer parentIndexNumber) {
+      this.instance.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
+      return this;
+    }
+    public RemoteSearchResult.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
+      this.instance.parentIndexNumber = parentIndexNumber;
+      return this;
+    }
+    public RemoteSearchResult.Builder premiereDate(OffsetDateTime premiereDate) {
+      this.instance.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
+      return this;
+    }
+    public RemoteSearchResult.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
+      this.instance.premiereDate = premiereDate;
+      return this;
+    }
+    public RemoteSearchResult.Builder imageUrl(String imageUrl) {
+      this.instance.imageUrl = JsonNullable.<String>of(imageUrl);
+      return this;
+    }
+    public RemoteSearchResult.Builder imageUrl(JsonNullable<String> imageUrl) {
+      this.instance.imageUrl = imageUrl;
+      return this;
+    }
+    public RemoteSearchResult.Builder searchProviderName(String searchProviderName) {
+      this.instance.searchProviderName = JsonNullable.<String>of(searchProviderName);
+      return this;
+    }
+    public RemoteSearchResult.Builder searchProviderName(JsonNullable<String> searchProviderName) {
+      this.instance.searchProviderName = searchProviderName;
+      return this;
+    }
+    public RemoteSearchResult.Builder overview(String overview) {
+      this.instance.overview = JsonNullable.<String>of(overview);
+      return this;
+    }
+    public RemoteSearchResult.Builder overview(JsonNullable<String> overview) {
+      this.instance.overview = overview;
+      return this;
+    }
+    public RemoteSearchResult.Builder albumArtist(RemoteSearchResult albumArtist) {
+      this.instance.albumArtist = JsonNullable.<RemoteSearchResult>of(albumArtist);
+      return this;
+    }
+    public RemoteSearchResult.Builder albumArtist(JsonNullable<RemoteSearchResult> albumArtist) {
+      this.instance.albumArtist = albumArtist;
+      return this;
+    }
+    public RemoteSearchResult.Builder artists(List<RemoteSearchResult> artists) {
+      this.instance.artists = JsonNullable.<List<RemoteSearchResult>>of(artists);
+      return this;
+    }
+    public RemoteSearchResult.Builder artists(JsonNullable<List<RemoteSearchResult>> artists) {
+      this.instance.artists = artists;
+      return this;
     }
 
-    public void setAlbumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
-        this.albumArtist = JsonNullable.<RemoteSearchResult> of(albumArtist);
-    }
-
-    public RemoteSearchResult artists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
-        this.artists = JsonNullable.<List<RemoteSearchResult>> of(artists);
-
-        return this;
-    }
-
-    public RemoteSearchResult addArtistsItem(RemoteSearchResult artistsItem) {
-        if (this.artists == null || !this.artists.isPresent()) {
-            this.artists = JsonNullable.<List<RemoteSearchResult>> of(new ArrayList<>());
-        }
-        try {
-            this.artists.get().add(artistsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
 
     /**
-     * Get artists
-     * 
-     * @return artists
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<RemoteSearchResult> getArtists() {
-        return artists.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<RemoteSearchResult>> getArtists_JsonNullable() {
-        return artists;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
-    public void setArtists_JsonNullable(JsonNullable<List<RemoteSearchResult>> artists) {
-        this.artists = artists;
-    }
-
-    public void setArtists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
-        this.artists = JsonNullable.<List<RemoteSearchResult>> of(artists);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RemoteSearchResult remoteSearchResult = (RemoteSearchResult) o;
-        return equalsNullable(this.name, remoteSearchResult.name)
-                && equalsNullable(this.providerIds, remoteSearchResult.providerIds)
-                && equalsNullable(this.productionYear, remoteSearchResult.productionYear)
-                && equalsNullable(this.indexNumber, remoteSearchResult.indexNumber)
-                && equalsNullable(this.indexNumberEnd, remoteSearchResult.indexNumberEnd)
-                && equalsNullable(this.parentIndexNumber, remoteSearchResult.parentIndexNumber)
-                && equalsNullable(this.premiereDate, remoteSearchResult.premiereDate)
-                && equalsNullable(this.imageUrl, remoteSearchResult.imageUrl)
-                && equalsNullable(this.searchProviderName, remoteSearchResult.searchProviderName)
-                && equalsNullable(this.overview, remoteSearchResult.overview)
-                && equalsNullable(this.albumArtist, remoteSearchResult.albumArtist)
-                && equalsNullable(this.artists, remoteSearchResult.artists);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(providerIds), hashCodeNullable(productionYear),
-                hashCodeNullable(indexNumber), hashCodeNullable(indexNumberEnd), hashCodeNullable(parentIndexNumber),
-                hashCodeNullable(premiereDate), hashCodeNullable(imageUrl), hashCodeNullable(searchProviderName),
-                hashCodeNullable(overview), hashCodeNullable(albumArtist), hashCodeNullable(artists));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built RemoteSearchResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public RemoteSearchResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class RemoteSearchResult {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    providerIds: ").append(toIndentedString(providerIds)).append("\n");
-        sb.append("    productionYear: ").append(toIndentedString(productionYear)).append("\n");
-        sb.append("    indexNumber: ").append(toIndentedString(indexNumber)).append("\n");
-        sb.append("    indexNumberEnd: ").append(toIndentedString(indexNumberEnd)).append("\n");
-        sb.append("    parentIndexNumber: ").append(toIndentedString(parentIndexNumber)).append("\n");
-        sb.append("    premiereDate: ").append(toIndentedString(premiereDate)).append("\n");
-        sb.append("    imageUrl: ").append(toIndentedString(imageUrl)).append("\n");
-        sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
-        sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
-        sb.append("    albumArtist: ").append(toIndentedString(albumArtist)).append("\n");
-        sb.append("    artists: ").append(toIndentedString(artists)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static RemoteSearchResult.Builder builder() {
+    return new RemoteSearchResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public RemoteSearchResult.Builder toBuilder() {
+    return new RemoteSearchResult.Builder()
+      .name(getName())
+      .providerIds(getProviderIds())
+      .productionYear(getProductionYear())
+      .indexNumber(getIndexNumber())
+      .indexNumberEnd(getIndexNumberEnd())
+      .parentIndexNumber(getParentIndexNumber())
+      .premiereDate(getPremiereDate())
+      .imageUrl(getImageUrl())
+      .searchProviderName(getSearchProviderName())
+      .overview(getOverview())
+      .albumArtist(getAlbumArtist())
+      .artists(getArtists());
+  }
 
-        private RemoteSearchResult instance;
 
-        public Builder() {
-            this(new RemoteSearchResult());
-        }
-
-        protected Builder(RemoteSearchResult instance) {
-            this.instance = instance;
-        }
-
-        public RemoteSearchResult.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
-            this.instance.providerIds = providerIds;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = JsonNullable.<Integer> of(productionYear);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder productionYear(JsonNullable<Integer> productionYear) {
-            this.instance.productionYear = productionYear;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = JsonNullable.<Integer> of(indexNumber);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumber(JsonNullable<Integer> indexNumber) {
-            this.instance.indexNumber = indexNumber;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumberEnd(Integer indexNumberEnd) {
-            this.instance.indexNumberEnd = JsonNullable.<Integer> of(indexNumberEnd);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder indexNumberEnd(JsonNullable<Integer> indexNumberEnd) {
-            this.instance.indexNumberEnd = indexNumberEnd;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
-            this.instance.parentIndexNumber = parentIndexNumber;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
-            this.instance.premiereDate = premiereDate;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder imageUrl(String imageUrl) {
-            this.instance.imageUrl = JsonNullable.<String> of(imageUrl);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder imageUrl(JsonNullable<String> imageUrl) {
-            this.instance.imageUrl = imageUrl;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = JsonNullable.<String> of(searchProviderName);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder searchProviderName(JsonNullable<String> searchProviderName) {
-            this.instance.searchProviderName = searchProviderName;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder overview(String overview) {
-            this.instance.overview = JsonNullable.<String> of(overview);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder overview(JsonNullable<String> overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder albumArtist(RemoteSearchResult albumArtist) {
-            this.instance.albumArtist = JsonNullable.<RemoteSearchResult> of(albumArtist);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder albumArtist(JsonNullable<RemoteSearchResult> albumArtist) {
-            this.instance.albumArtist = albumArtist;
-            return this;
-        }
-
-        public RemoteSearchResult.Builder artists(List<RemoteSearchResult> artists) {
-            this.instance.artists = JsonNullable.<List<RemoteSearchResult>> of(artists);
-            return this;
-        }
-
-        public RemoteSearchResult.Builder artists(JsonNullable<List<RemoteSearchResult>> artists) {
-            this.instance.artists = artists;
-            return this;
-        }
-
-        /**
-         * returns a built RemoteSearchResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public RemoteSearchResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RemoteSearchResult.Builder builder() {
-        return new RemoteSearchResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RemoteSearchResult.Builder toBuilder() {
-        return new RemoteSearchResult.Builder().name(getName()).providerIds(getProviderIds())
-                .productionYear(getProductionYear()).indexNumber(getIndexNumber()).indexNumberEnd(getIndexNumberEnd())
-                .parentIndexNumber(getParentIndexNumber()).premiereDate(getPremiereDate()).imageUrl(getImageUrl())
-                .searchProviderName(getSearchProviderName()).overview(getOverview()).albumArtist(getAlbumArtist())
-                .artists(getArtists());
-    }
 }
+

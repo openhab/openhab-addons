@@ -18,540 +18,553 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class LibrarySummary.
  */
-@JsonPropertyOrder({ ItemCounts.JSON_PROPERTY_MOVIE_COUNT, ItemCounts.JSON_PROPERTY_SERIES_COUNT,
-        ItemCounts.JSON_PROPERTY_EPISODE_COUNT, ItemCounts.JSON_PROPERTY_ARTIST_COUNT,
-        ItemCounts.JSON_PROPERTY_PROGRAM_COUNT, ItemCounts.JSON_PROPERTY_TRAILER_COUNT,
-        ItemCounts.JSON_PROPERTY_SONG_COUNT, ItemCounts.JSON_PROPERTY_ALBUM_COUNT,
-        ItemCounts.JSON_PROPERTY_MUSIC_VIDEO_COUNT, ItemCounts.JSON_PROPERTY_BOX_SET_COUNT,
-        ItemCounts.JSON_PROPERTY_BOOK_COUNT, ItemCounts.JSON_PROPERTY_ITEM_COUNT })
+@JsonPropertyOrder({
+  ItemCounts.JSON_PROPERTY_MOVIE_COUNT,
+  ItemCounts.JSON_PROPERTY_SERIES_COUNT,
+  ItemCounts.JSON_PROPERTY_EPISODE_COUNT,
+  ItemCounts.JSON_PROPERTY_ARTIST_COUNT,
+  ItemCounts.JSON_PROPERTY_PROGRAM_COUNT,
+  ItemCounts.JSON_PROPERTY_TRAILER_COUNT,
+  ItemCounts.JSON_PROPERTY_SONG_COUNT,
+  ItemCounts.JSON_PROPERTY_ALBUM_COUNT,
+  ItemCounts.JSON_PROPERTY_MUSIC_VIDEO_COUNT,
+  ItemCounts.JSON_PROPERTY_BOX_SET_COUNT,
+  ItemCounts.JSON_PROPERTY_BOOK_COUNT,
+  ItemCounts.JSON_PROPERTY_ITEM_COUNT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ItemCounts {
-    public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
-    @javax.annotation.Nullable
-    private Integer movieCount;
+  public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
+  @javax.annotation.Nullable
+  private Integer movieCount;
 
-    public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
-    @javax.annotation.Nullable
-    private Integer seriesCount;
+  public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
+  @javax.annotation.Nullable
+  private Integer seriesCount;
 
-    public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
-    @javax.annotation.Nullable
-    private Integer episodeCount;
+  public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
+  @javax.annotation.Nullable
+  private Integer episodeCount;
 
-    public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
-    @javax.annotation.Nullable
-    private Integer artistCount;
+  public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
+  @javax.annotation.Nullable
+  private Integer artistCount;
 
-    public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
-    @javax.annotation.Nullable
-    private Integer programCount;
+  public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
+  @javax.annotation.Nullable
+  private Integer programCount;
 
-    public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
-    @javax.annotation.Nullable
-    private Integer trailerCount;
+  public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
+  @javax.annotation.Nullable
+  private Integer trailerCount;
 
-    public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
-    @javax.annotation.Nullable
-    private Integer songCount;
+  public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
+  @javax.annotation.Nullable
+  private Integer songCount;
 
-    public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
-    @javax.annotation.Nullable
-    private Integer albumCount;
+  public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
+  @javax.annotation.Nullable
+  private Integer albumCount;
 
-    public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
-    @javax.annotation.Nullable
-    private Integer musicVideoCount;
+  public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
+  @javax.annotation.Nullable
+  private Integer musicVideoCount;
 
-    public static final String JSON_PROPERTY_BOX_SET_COUNT = "BoxSetCount";
-    @javax.annotation.Nullable
-    private Integer boxSetCount;
+  public static final String JSON_PROPERTY_BOX_SET_COUNT = "BoxSetCount";
+  @javax.annotation.Nullable
+  private Integer boxSetCount;
 
-    public static final String JSON_PROPERTY_BOOK_COUNT = "BookCount";
-    @javax.annotation.Nullable
-    private Integer bookCount;
+  public static final String JSON_PROPERTY_BOOK_COUNT = "BookCount";
+  @javax.annotation.Nullable
+  private Integer bookCount;
 
-    public static final String JSON_PROPERTY_ITEM_COUNT = "ItemCount";
-    @javax.annotation.Nullable
-    private Integer itemCount;
+  public static final String JSON_PROPERTY_ITEM_COUNT = "ItemCount";
+  @javax.annotation.Nullable
+  private Integer itemCount;
 
-    public ItemCounts() {
+  public ItemCounts() {
+  }
+
+  public ItemCounts movieCount(@javax.annotation.Nullable Integer movieCount) {
+    
+    this.movieCount = movieCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the movie count.
+   * @return movieCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMovieCount() {
+    return movieCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMovieCount(@javax.annotation.Nullable Integer movieCount) {
+    this.movieCount = movieCount;
+  }
+
+  public ItemCounts seriesCount(@javax.annotation.Nullable Integer seriesCount) {
+    
+    this.seriesCount = seriesCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the series count.
+   * @return seriesCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getSeriesCount() {
+    return seriesCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSeriesCount(@javax.annotation.Nullable Integer seriesCount) {
+    this.seriesCount = seriesCount;
+  }
+
+  public ItemCounts episodeCount(@javax.annotation.Nullable Integer episodeCount) {
+    
+    this.episodeCount = episodeCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the episode count.
+   * @return episodeCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getEpisodeCount() {
+    return episodeCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
+    this.episodeCount = episodeCount;
+  }
+
+  public ItemCounts artistCount(@javax.annotation.Nullable Integer artistCount) {
+    
+    this.artistCount = artistCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the artist count.
+   * @return artistCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getArtistCount() {
+    return artistCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setArtistCount(@javax.annotation.Nullable Integer artistCount) {
+    this.artistCount = artistCount;
+  }
+
+  public ItemCounts programCount(@javax.annotation.Nullable Integer programCount) {
+    
+    this.programCount = programCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the program count.
+   * @return programCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getProgramCount() {
+    return programCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProgramCount(@javax.annotation.Nullable Integer programCount) {
+    this.programCount = programCount;
+  }
+
+  public ItemCounts trailerCount(@javax.annotation.Nullable Integer trailerCount) {
+    
+    this.trailerCount = trailerCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the trailer count.
+   * @return trailerCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTrailerCount() {
+    return trailerCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTrailerCount(@javax.annotation.Nullable Integer trailerCount) {
+    this.trailerCount = trailerCount;
+  }
+
+  public ItemCounts songCount(@javax.annotation.Nullable Integer songCount) {
+    
+    this.songCount = songCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the song count.
+   * @return songCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getSongCount() {
+    return songCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSongCount(@javax.annotation.Nullable Integer songCount) {
+    this.songCount = songCount;
+  }
+
+  public ItemCounts albumCount(@javax.annotation.Nullable Integer albumCount) {
+    
+    this.albumCount = albumCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the album count.
+   * @return albumCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getAlbumCount() {
+    return albumCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAlbumCount(@javax.annotation.Nullable Integer albumCount) {
+    this.albumCount = albumCount;
+  }
+
+  public ItemCounts musicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
+    
+    this.musicVideoCount = musicVideoCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the music video count.
+   * @return musicVideoCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMusicVideoCount() {
+    return musicVideoCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMusicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
+    this.musicVideoCount = musicVideoCount;
+  }
+
+  public ItemCounts boxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
+    
+    this.boxSetCount = boxSetCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the box set count.
+   * @return boxSetCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getBoxSetCount() {
+    return boxSetCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBoxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
+    this.boxSetCount = boxSetCount;
+  }
+
+  public ItemCounts bookCount(@javax.annotation.Nullable Integer bookCount) {
+    
+    this.bookCount = bookCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the book count.
+   * @return bookCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getBookCount() {
+    return bookCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBookCount(@javax.annotation.Nullable Integer bookCount) {
+    this.bookCount = bookCount;
+  }
+
+  public ItemCounts itemCount(@javax.annotation.Nullable Integer itemCount) {
+    
+    this.itemCount = itemCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the item count.
+   * @return itemCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getItemCount() {
+    return itemCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemCount(@javax.annotation.Nullable Integer itemCount) {
+    this.itemCount = itemCount;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ItemCounts itemCounts = (ItemCounts) o;
+    return Objects.equals(this.movieCount, itemCounts.movieCount) &&
+        Objects.equals(this.seriesCount, itemCounts.seriesCount) &&
+        Objects.equals(this.episodeCount, itemCounts.episodeCount) &&
+        Objects.equals(this.artistCount, itemCounts.artistCount) &&
+        Objects.equals(this.programCount, itemCounts.programCount) &&
+        Objects.equals(this.trailerCount, itemCounts.trailerCount) &&
+        Objects.equals(this.songCount, itemCounts.songCount) &&
+        Objects.equals(this.albumCount, itemCounts.albumCount) &&
+        Objects.equals(this.musicVideoCount, itemCounts.musicVideoCount) &&
+        Objects.equals(this.boxSetCount, itemCounts.boxSetCount) &&
+        Objects.equals(this.bookCount, itemCounts.bookCount) &&
+        Objects.equals(this.itemCount, itemCounts.itemCount);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(movieCount, seriesCount, episodeCount, artistCount, programCount, trailerCount, songCount, albumCount, musicVideoCount, boxSetCount, bookCount, itemCount);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ItemCounts {\n");
+    sb.append("    movieCount: ").append(toIndentedString(movieCount)).append("\n");
+    sb.append("    seriesCount: ").append(toIndentedString(seriesCount)).append("\n");
+    sb.append("    episodeCount: ").append(toIndentedString(episodeCount)).append("\n");
+    sb.append("    artistCount: ").append(toIndentedString(artistCount)).append("\n");
+    sb.append("    programCount: ").append(toIndentedString(programCount)).append("\n");
+    sb.append("    trailerCount: ").append(toIndentedString(trailerCount)).append("\n");
+    sb.append("    songCount: ").append(toIndentedString(songCount)).append("\n");
+    sb.append("    albumCount: ").append(toIndentedString(albumCount)).append("\n");
+    sb.append("    musicVideoCount: ").append(toIndentedString(musicVideoCount)).append("\n");
+    sb.append("    boxSetCount: ").append(toIndentedString(boxSetCount)).append("\n");
+    sb.append("    bookCount: ").append(toIndentedString(bookCount)).append("\n");
+    sb.append("    itemCount: ").append(toIndentedString(itemCount)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ItemCounts instance;
+
+    public Builder() {
+      this(new ItemCounts());
     }
 
-    public ItemCounts movieCount(@javax.annotation.Nullable Integer movieCount) {
-
-        this.movieCount = movieCount;
-        return this;
+    protected Builder(ItemCounts instance) {
+      this.instance = instance;
     }
+
+    public ItemCounts.Builder movieCount(Integer movieCount) {
+      this.instance.movieCount = movieCount;
+      return this;
+    }
+    public ItemCounts.Builder seriesCount(Integer seriesCount) {
+      this.instance.seriesCount = seriesCount;
+      return this;
+    }
+    public ItemCounts.Builder episodeCount(Integer episodeCount) {
+      this.instance.episodeCount = episodeCount;
+      return this;
+    }
+    public ItemCounts.Builder artistCount(Integer artistCount) {
+      this.instance.artistCount = artistCount;
+      return this;
+    }
+    public ItemCounts.Builder programCount(Integer programCount) {
+      this.instance.programCount = programCount;
+      return this;
+    }
+    public ItemCounts.Builder trailerCount(Integer trailerCount) {
+      this.instance.trailerCount = trailerCount;
+      return this;
+    }
+    public ItemCounts.Builder songCount(Integer songCount) {
+      this.instance.songCount = songCount;
+      return this;
+    }
+    public ItemCounts.Builder albumCount(Integer albumCount) {
+      this.instance.albumCount = albumCount;
+      return this;
+    }
+    public ItemCounts.Builder musicVideoCount(Integer musicVideoCount) {
+      this.instance.musicVideoCount = musicVideoCount;
+      return this;
+    }
+    public ItemCounts.Builder boxSetCount(Integer boxSetCount) {
+      this.instance.boxSetCount = boxSetCount;
+      return this;
+    }
+    public ItemCounts.Builder bookCount(Integer bookCount) {
+      this.instance.bookCount = bookCount;
+      return this;
+    }
+    public ItemCounts.Builder itemCount(Integer itemCount) {
+      this.instance.itemCount = itemCount;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the movie count.
-     * 
-     * @return movieCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getMovieCount() {
-        return movieCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMovieCount(@javax.annotation.Nullable Integer movieCount) {
-        this.movieCount = movieCount;
-    }
-
-    public ItemCounts seriesCount(@javax.annotation.Nullable Integer seriesCount) {
-
-        this.seriesCount = seriesCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the series count.
-     * 
-     * @return seriesCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getSeriesCount() {
-        return seriesCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSeriesCount(@javax.annotation.Nullable Integer seriesCount) {
-        this.seriesCount = seriesCount;
-    }
-
-    public ItemCounts episodeCount(@javax.annotation.Nullable Integer episodeCount) {
-
-        this.episodeCount = episodeCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the episode count.
-     * 
-     * @return episodeCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getEpisodeCount() {
-        return episodeCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
-        this.episodeCount = episodeCount;
-    }
-
-    public ItemCounts artistCount(@javax.annotation.Nullable Integer artistCount) {
-
-        this.artistCount = artistCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the artist count.
-     * 
-     * @return artistCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getArtistCount() {
-        return artistCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setArtistCount(@javax.annotation.Nullable Integer artistCount) {
-        this.artistCount = artistCount;
-    }
-
-    public ItemCounts programCount(@javax.annotation.Nullable Integer programCount) {
-
-        this.programCount = programCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the program count.
-     * 
-     * @return programCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getProgramCount() {
-        return programCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProgramCount(@javax.annotation.Nullable Integer programCount) {
-        this.programCount = programCount;
-    }
-
-    public ItemCounts trailerCount(@javax.annotation.Nullable Integer trailerCount) {
-
-        this.trailerCount = trailerCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the trailer count.
-     * 
-     * @return trailerCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTrailerCount() {
-        return trailerCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTrailerCount(@javax.annotation.Nullable Integer trailerCount) {
-        this.trailerCount = trailerCount;
-    }
-
-    public ItemCounts songCount(@javax.annotation.Nullable Integer songCount) {
-
-        this.songCount = songCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the song count.
-     * 
-     * @return songCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getSongCount() {
-        return songCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSongCount(@javax.annotation.Nullable Integer songCount) {
-        this.songCount = songCount;
-    }
-
-    public ItemCounts albumCount(@javax.annotation.Nullable Integer albumCount) {
-
-        this.albumCount = albumCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the album count.
-     * 
-     * @return albumCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getAlbumCount() {
-        return albumCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setAlbumCount(@javax.annotation.Nullable Integer albumCount) {
-        this.albumCount = albumCount;
-    }
-
-    public ItemCounts musicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
-
-        this.musicVideoCount = musicVideoCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the music video count.
-     * 
-     * @return musicVideoCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getMusicVideoCount() {
-        return musicVideoCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMusicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
-        this.musicVideoCount = musicVideoCount;
-    }
-
-    public ItemCounts boxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
-
-        this.boxSetCount = boxSetCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the box set count.
-     * 
-     * @return boxSetCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getBoxSetCount() {
-        return boxSetCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBoxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
-        this.boxSetCount = boxSetCount;
-    }
-
-    public ItemCounts bookCount(@javax.annotation.Nullable Integer bookCount) {
-
-        this.bookCount = bookCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the book count.
-     * 
-     * @return bookCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getBookCount() {
-        return bookCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBookCount(@javax.annotation.Nullable Integer bookCount) {
-        this.bookCount = bookCount;
-    }
-
-    public ItemCounts itemCount(@javax.annotation.Nullable Integer itemCount) {
-
-        this.itemCount = itemCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the item count.
-     * 
-     * @return itemCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getItemCount() {
-        return itemCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setItemCount(@javax.annotation.Nullable Integer itemCount) {
-        this.itemCount = itemCount;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ItemCounts itemCounts = (ItemCounts) o;
-        return Objects.equals(this.movieCount, itemCounts.movieCount)
-                && Objects.equals(this.seriesCount, itemCounts.seriesCount)
-                && Objects.equals(this.episodeCount, itemCounts.episodeCount)
-                && Objects.equals(this.artistCount, itemCounts.artistCount)
-                && Objects.equals(this.programCount, itemCounts.programCount)
-                && Objects.equals(this.trailerCount, itemCounts.trailerCount)
-                && Objects.equals(this.songCount, itemCounts.songCount)
-                && Objects.equals(this.albumCount, itemCounts.albumCount)
-                && Objects.equals(this.musicVideoCount, itemCounts.musicVideoCount)
-                && Objects.equals(this.boxSetCount, itemCounts.boxSetCount)
-                && Objects.equals(this.bookCount, itemCounts.bookCount)
-                && Objects.equals(this.itemCount, itemCounts.itemCount);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(movieCount, seriesCount, episodeCount, artistCount, programCount, trailerCount, songCount,
-                albumCount, musicVideoCount, boxSetCount, bookCount, itemCount);
+    * returns a built ItemCounts instance.
+    *
+    * The builder is not reusable.
+    */
+    public ItemCounts build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ItemCounts {\n");
-        sb.append("    movieCount: ").append(toIndentedString(movieCount)).append("\n");
-        sb.append("    seriesCount: ").append(toIndentedString(seriesCount)).append("\n");
-        sb.append("    episodeCount: ").append(toIndentedString(episodeCount)).append("\n");
-        sb.append("    artistCount: ").append(toIndentedString(artistCount)).append("\n");
-        sb.append("    programCount: ").append(toIndentedString(programCount)).append("\n");
-        sb.append("    trailerCount: ").append(toIndentedString(trailerCount)).append("\n");
-        sb.append("    songCount: ").append(toIndentedString(songCount)).append("\n");
-        sb.append("    albumCount: ").append(toIndentedString(albumCount)).append("\n");
-        sb.append("    musicVideoCount: ").append(toIndentedString(musicVideoCount)).append("\n");
-        sb.append("    boxSetCount: ").append(toIndentedString(boxSetCount)).append("\n");
-        sb.append("    bookCount: ").append(toIndentedString(bookCount)).append("\n");
-        sb.append("    itemCount: ").append(toIndentedString(itemCount)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ItemCounts.Builder builder() {
+    return new ItemCounts.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ItemCounts.Builder toBuilder() {
+    return new ItemCounts.Builder()
+      .movieCount(getMovieCount())
+      .seriesCount(getSeriesCount())
+      .episodeCount(getEpisodeCount())
+      .artistCount(getArtistCount())
+      .programCount(getProgramCount())
+      .trailerCount(getTrailerCount())
+      .songCount(getSongCount())
+      .albumCount(getAlbumCount())
+      .musicVideoCount(getMusicVideoCount())
+      .boxSetCount(getBoxSetCount())
+      .bookCount(getBookCount())
+      .itemCount(getItemCount());
+  }
 
-        private ItemCounts instance;
 
-        public Builder() {
-            this(new ItemCounts());
-        }
-
-        protected Builder(ItemCounts instance) {
-            this.instance = instance;
-        }
-
-        public ItemCounts.Builder movieCount(Integer movieCount) {
-            this.instance.movieCount = movieCount;
-            return this;
-        }
-
-        public ItemCounts.Builder seriesCount(Integer seriesCount) {
-            this.instance.seriesCount = seriesCount;
-            return this;
-        }
-
-        public ItemCounts.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = episodeCount;
-            return this;
-        }
-
-        public ItemCounts.Builder artistCount(Integer artistCount) {
-            this.instance.artistCount = artistCount;
-            return this;
-        }
-
-        public ItemCounts.Builder programCount(Integer programCount) {
-            this.instance.programCount = programCount;
-            return this;
-        }
-
-        public ItemCounts.Builder trailerCount(Integer trailerCount) {
-            this.instance.trailerCount = trailerCount;
-            return this;
-        }
-
-        public ItemCounts.Builder songCount(Integer songCount) {
-            this.instance.songCount = songCount;
-            return this;
-        }
-
-        public ItemCounts.Builder albumCount(Integer albumCount) {
-            this.instance.albumCount = albumCount;
-            return this;
-        }
-
-        public ItemCounts.Builder musicVideoCount(Integer musicVideoCount) {
-            this.instance.musicVideoCount = musicVideoCount;
-            return this;
-        }
-
-        public ItemCounts.Builder boxSetCount(Integer boxSetCount) {
-            this.instance.boxSetCount = boxSetCount;
-            return this;
-        }
-
-        public ItemCounts.Builder bookCount(Integer bookCount) {
-            this.instance.bookCount = bookCount;
-            return this;
-        }
-
-        public ItemCounts.Builder itemCount(Integer itemCount) {
-            this.instance.itemCount = itemCount;
-            return this;
-        }
-
-        /**
-         * returns a built ItemCounts instance.
-         *
-         * The builder is not reusable.
-         */
-        public ItemCounts build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ItemCounts.Builder builder() {
-        return new ItemCounts.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ItemCounts.Builder toBuilder() {
-        return new ItemCounts.Builder().movieCount(getMovieCount()).seriesCount(getSeriesCount())
-                .episodeCount(getEpisodeCount()).artistCount(getArtistCount()).programCount(getProgramCount())
-                .trailerCount(getTrailerCount()).songCount(getSongCount()).albumCount(getAlbumCount())
-                .musicVideoCount(getMusicVideoCount()).boxSetCount(getBoxSetCount()).bookCount(getBookCount())
-                .itemCount(getItemCount());
-    }
 }
+

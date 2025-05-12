@@ -17,289 +17,298 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.DlnaProfileType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Defines the MediaBrowser.Model.Dlna.DirectPlayProfile.
  */
-@JsonPropertyOrder({ DirectPlayProfile.JSON_PROPERTY_CONTAINER, DirectPlayProfile.JSON_PROPERTY_AUDIO_CODEC,
-        DirectPlayProfile.JSON_PROPERTY_VIDEO_CODEC, DirectPlayProfile.JSON_PROPERTY_TYPE })
+@JsonPropertyOrder({
+  DirectPlayProfile.JSON_PROPERTY_CONTAINER,
+  DirectPlayProfile.JSON_PROPERTY_AUDIO_CODEC,
+  DirectPlayProfile.JSON_PROPERTY_VIDEO_CODEC,
+  DirectPlayProfile.JSON_PROPERTY_TYPE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DirectPlayProfile {
-    public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @javax.annotation.Nullable
-    private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  @javax.annotation.Nullable
+  private String container;
 
-    public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
-    @javax.annotation.Nullable
-    private JsonNullable<String> audioCodec = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
+  @javax.annotation.Nullable
+  private JsonNullable<String> audioCodec = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
-    @javax.annotation.Nullable
-    private JsonNullable<String> videoCodec = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
+  @javax.annotation.Nullable
+  private JsonNullable<String> videoCodec = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private DlnaProfileType type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private DlnaProfileType type;
 
-    public DirectPlayProfile() {
-    }
+  public DirectPlayProfile() {
+  }
 
-    public DirectPlayProfile container(@javax.annotation.Nullable String container) {
+  public DirectPlayProfile container(@javax.annotation.Nullable String container) {
+    
+    this.container = container;
+    return this;
+  }
 
-        this.container = container;
-        return this;
-    }
+  /**
+   * Gets or sets the container.
+   * @return container
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the container.
-     * 
-     * @return container
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getContainer() {
+    return container;
+  }
 
-    public String getContainer() {
-        return container;
-    }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = container;
-    }
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = container;
+  }
 
-    public DirectPlayProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
+  public DirectPlayProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
+    this.audioCodec = JsonNullable.<String>of(audioCodec);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the audio codec.
+   * @return audioCodec
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the audio codec.
-     * 
-     * @return audioCodec
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAudioCodec() {
+  public String getAudioCodec() {
         return audioCodec.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAudioCodec_JsonNullable() {
-        return audioCodec;
-    }
+  public JsonNullable<String> getAudioCodec_JsonNullable() {
+    return audioCodec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  public void setAudioCodec_JsonNullable(JsonNullable<String> audioCodec) {
+    this.audioCodec = audioCodec;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-    public void setAudioCodec_JsonNullable(JsonNullable<String> audioCodec) {
-        this.audioCodec = audioCodec;
-    }
+  public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
+    this.audioCodec = JsonNullable.<String>of(audioCodec);
+  }
 
-    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
-    }
+  public DirectPlayProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
+    this.videoCodec = JsonNullable.<String>of(videoCodec);
+    
+    return this;
+  }
 
-    public DirectPlayProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
+  /**
+   * Gets or sets the video codec.
+   * @return videoCodec
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the video codec.
-     * 
-     * @return videoCodec
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVideoCodec() {
+  public String getVideoCodec() {
         return videoCodec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVideoCodec_JsonNullable() {
+    return videoCodec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  public void setVideoCodec_JsonNullable(JsonNullable<String> videoCodec) {
+    this.videoCodec = videoCodec;
+  }
+
+  public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
+    this.videoCodec = JsonNullable.<String>of(videoCodec);
+  }
+
+  public DirectPlayProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+    
+    this.type = type;
+    return this;
+  }
+
+  /**
+   * Gets or sets the Dlna profile type.
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public DlnaProfileType getType() {
+    return type;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setType(@javax.annotation.Nullable DlnaProfileType type) {
+    this.type = type;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DirectPlayProfile directPlayProfile = (DirectPlayProfile) o;
+    return Objects.equals(this.container, directPlayProfile.container) &&
+        equalsNullable(this.audioCodec, directPlayProfile.audioCodec) &&
+        equalsNullable(this.videoCodec, directPlayProfile.videoCodec) &&
+        Objects.equals(this.type, directPlayProfile.type);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(container, hashCodeNullable(audioCodec), hashCodeNullable(videoCodec), type);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DirectPlayProfile {\n");
+    sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("    audioCodec: ").append(toIndentedString(audioCodec)).append("\n");
+    sb.append("    videoCodec: ").append(toIndentedString(videoCodec)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DirectPlayProfile instance;
+
+    public Builder() {
+      this(new DirectPlayProfile());
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getVideoCodec_JsonNullable() {
-        return videoCodec;
+    protected Builder(DirectPlayProfile instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-    public void setVideoCodec_JsonNullable(JsonNullable<String> videoCodec) {
-        this.videoCodec = videoCodec;
+    public DirectPlayProfile.Builder container(String container) {
+      this.instance.container = container;
+      return this;
+    }
+    public DirectPlayProfile.Builder audioCodec(String audioCodec) {
+      this.instance.audioCodec = JsonNullable.<String>of(audioCodec);
+      return this;
+    }
+    public DirectPlayProfile.Builder audioCodec(JsonNullable<String> audioCodec) {
+      this.instance.audioCodec = audioCodec;
+      return this;
+    }
+    public DirectPlayProfile.Builder videoCodec(String videoCodec) {
+      this.instance.videoCodec = JsonNullable.<String>of(videoCodec);
+      return this;
+    }
+    public DirectPlayProfile.Builder videoCodec(JsonNullable<String> videoCodec) {
+      this.instance.videoCodec = videoCodec;
+      return this;
+    }
+    public DirectPlayProfile.Builder type(DlnaProfileType type) {
+      this.instance.type = type;
+      return this;
     }
 
-    public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
-    }
-
-    public DirectPlayProfile type(@javax.annotation.Nullable DlnaProfileType type) {
-
-        this.type = type;
-        return this;
-    }
 
     /**
-     * Gets or sets the Dlna profile type.
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public DlnaProfileType getType() {
-        return type;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setType(@javax.annotation.Nullable DlnaProfileType type) {
-        this.type = type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DirectPlayProfile directPlayProfile = (DirectPlayProfile) o;
-        return Objects.equals(this.container, directPlayProfile.container)
-                && equalsNullable(this.audioCodec, directPlayProfile.audioCodec)
-                && equalsNullable(this.videoCodec, directPlayProfile.videoCodec)
-                && Objects.equals(this.type, directPlayProfile.type);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(container, hashCodeNullable(audioCodec), hashCodeNullable(videoCodec), type);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built DirectPlayProfile instance.
+    *
+    * The builder is not reusable.
+    */
+    public DirectPlayProfile build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DirectPlayProfile {\n");
-        sb.append("    container: ").append(toIndentedString(container)).append("\n");
-        sb.append("    audioCodec: ").append(toIndentedString(audioCodec)).append("\n");
-        sb.append("    videoCodec: ").append(toIndentedString(videoCodec)).append("\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DirectPlayProfile.Builder builder() {
+    return new DirectPlayProfile.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DirectPlayProfile.Builder toBuilder() {
+    return new DirectPlayProfile.Builder()
+      .container(getContainer())
+      .audioCodec(getAudioCodec())
+      .videoCodec(getVideoCodec())
+      .type(getType());
+  }
 
-        private DirectPlayProfile instance;
 
-        public Builder() {
-            this(new DirectPlayProfile());
-        }
-
-        protected Builder(DirectPlayProfile instance) {
-            this.instance = instance;
-        }
-
-        public DirectPlayProfile.Builder container(String container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder audioCodec(String audioCodec) {
-            this.instance.audioCodec = JsonNullable.<String> of(audioCodec);
-            return this;
-        }
-
-        public DirectPlayProfile.Builder audioCodec(JsonNullable<String> audioCodec) {
-            this.instance.audioCodec = audioCodec;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder videoCodec(String videoCodec) {
-            this.instance.videoCodec = JsonNullable.<String> of(videoCodec);
-            return this;
-        }
-
-        public DirectPlayProfile.Builder videoCodec(JsonNullable<String> videoCodec) {
-            this.instance.videoCodec = videoCodec;
-            return this;
-        }
-
-        public DirectPlayProfile.Builder type(DlnaProfileType type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        /**
-         * returns a built DirectPlayProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public DirectPlayProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DirectPlayProfile.Builder builder() {
-        return new DirectPlayProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DirectPlayProfile.Builder toBuilder() {
-        return new DirectPlayProfile.Builder().container(getContainer()).audioCodec(getAudioCodec())
-                .videoCodec(getVideoCodec()).type(getType());
-    }
 }
+

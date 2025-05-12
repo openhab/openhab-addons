@@ -18,134 +18,147 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.GroupShuffleMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class SetShuffleModeRequestDto.
  */
-@JsonPropertyOrder({ SetShuffleModeRequestDto.JSON_PROPERTY_MODE })
+@JsonPropertyOrder({
+  SetShuffleModeRequestDto.JSON_PROPERTY_MODE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SetShuffleModeRequestDto {
-    public static final String JSON_PROPERTY_MODE = "Mode";
-    @javax.annotation.Nullable
-    private GroupShuffleMode mode;
+  public static final String JSON_PROPERTY_MODE = "Mode";
+  @javax.annotation.Nullable
+  private GroupShuffleMode mode;
 
-    public SetShuffleModeRequestDto() {
+  public SetShuffleModeRequestDto() {
+  }
+
+  public SetShuffleModeRequestDto mode(@javax.annotation.Nullable GroupShuffleMode mode) {
+    
+    this.mode = mode;
+    return this;
+  }
+
+  /**
+   * Enum GroupShuffleMode.
+   * @return mode
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GroupShuffleMode getMode() {
+    return mode;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMode(@javax.annotation.Nullable GroupShuffleMode mode) {
+    this.mode = mode;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SetShuffleModeRequestDto setShuffleModeRequestDto = (SetShuffleModeRequestDto) o;
+    return Objects.equals(this.mode, setShuffleModeRequestDto.mode);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(mode);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SetShuffleModeRequestDto {\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SetShuffleModeRequestDto instance;
+
+    public Builder() {
+      this(new SetShuffleModeRequestDto());
     }
 
-    public SetShuffleModeRequestDto mode(@javax.annotation.Nullable GroupShuffleMode mode) {
-
-        this.mode = mode;
-        return this;
+    protected Builder(SetShuffleModeRequestDto instance) {
+      this.instance = instance;
     }
+
+    public SetShuffleModeRequestDto.Builder mode(GroupShuffleMode mode) {
+      this.instance.mode = mode;
+      return this;
+    }
+
 
     /**
-     * Enum GroupShuffleMode.
-     * 
-     * @return mode
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public GroupShuffleMode getMode() {
-        return mode;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMode(@javax.annotation.Nullable GroupShuffleMode mode) {
-        this.mode = mode;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SetShuffleModeRequestDto setShuffleModeRequestDto = (SetShuffleModeRequestDto) o;
-        return Objects.equals(this.mode, setShuffleModeRequestDto.mode);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mode);
+    * returns a built SetShuffleModeRequestDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public SetShuffleModeRequestDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SetShuffleModeRequestDto {\n");
-        sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SetShuffleModeRequestDto.Builder builder() {
+    return new SetShuffleModeRequestDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SetShuffleModeRequestDto.Builder toBuilder() {
+    return new SetShuffleModeRequestDto.Builder()
+      .mode(getMode());
+  }
 
-        private SetShuffleModeRequestDto instance;
 
-        public Builder() {
-            this(new SetShuffleModeRequestDto());
-        }
-
-        protected Builder(SetShuffleModeRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public SetShuffleModeRequestDto.Builder mode(GroupShuffleMode mode) {
-            this.instance.mode = mode;
-            return this;
-        }
-
-        /**
-         * returns a built SetShuffleModeRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public SetShuffleModeRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SetShuffleModeRequestDto.Builder builder() {
-        return new SetShuffleModeRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SetShuffleModeRequestDto.Builder toBuilder() {
-        return new SetShuffleModeRequestDto.Builder().mode(getMode());
-    }
 }
+

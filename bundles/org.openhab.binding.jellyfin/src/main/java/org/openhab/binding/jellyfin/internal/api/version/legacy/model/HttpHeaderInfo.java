@@ -17,251 +17,261 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.HeaderMatchType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * HttpHeaderInfo
  */
-@JsonPropertyOrder({ HttpHeaderInfo.JSON_PROPERTY_NAME, HttpHeaderInfo.JSON_PROPERTY_VALUE,
-        HttpHeaderInfo.JSON_PROPERTY_MATCH })
+@JsonPropertyOrder({
+  HttpHeaderInfo.JSON_PROPERTY_NAME,
+  HttpHeaderInfo.JSON_PROPERTY_VALUE,
+  HttpHeaderInfo.JSON_PROPERTY_MATCH
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class HttpHeaderInfo {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_VALUE = "Value";
-    @javax.annotation.Nullable
-    private JsonNullable<String> value = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VALUE = "Value";
+  @javax.annotation.Nullable
+  private JsonNullable<String> value = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_MATCH = "Match";
-    @javax.annotation.Nullable
-    private HeaderMatchType match;
+  public static final String JSON_PROPERTY_MATCH = "Match";
+  @javax.annotation.Nullable
+  private HeaderMatchType match;
 
-    public HttpHeaderInfo() {
-    }
+  public HttpHeaderInfo() {
+  }
 
-    public HttpHeaderInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public HttpHeaderInfo name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get name
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get name
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public HttpHeaderInfo value(@javax.annotation.Nullable String value) {
+    this.value = JsonNullable.<String>of(value);
+    
+    return this;
+  }
 
-    public HttpHeaderInfo value(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
+  /**
+   * Get value
+   * @return value
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get value
-     * 
-     * @return value
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getValue() {
+  public String getValue() {
         return value.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getValue_JsonNullable() {
+    return value;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  public void setValue_JsonNullable(JsonNullable<String> value) {
+    this.value = value;
+  }
+
+  public void setValue(@javax.annotation.Nullable String value) {
+    this.value = JsonNullable.<String>of(value);
+  }
+
+  public HttpHeaderInfo match(@javax.annotation.Nullable HeaderMatchType match) {
+    
+    this.match = match;
+    return this;
+  }
+
+  /**
+   * Get match
+   * @return match
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public HeaderMatchType getMatch() {
+    return match;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMatch(@javax.annotation.Nullable HeaderMatchType match) {
+    this.match = match;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    HttpHeaderInfo httpHeaderInfo = (HttpHeaderInfo) o;
+    return equalsNullable(this.name, httpHeaderInfo.name) &&
+        equalsNullable(this.value, httpHeaderInfo.value) &&
+        Objects.equals(this.match, httpHeaderInfo.match);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(value), match);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class HttpHeaderInfo {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    match: ").append(toIndentedString(match)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private HttpHeaderInfo instance;
+
+    public Builder() {
+      this(new HttpHeaderInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getValue_JsonNullable() {
-        return value;
+    protected Builder(HttpHeaderInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
-    public void setValue_JsonNullable(JsonNullable<String> value) {
-        this.value = value;
+    public HttpHeaderInfo.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public HttpHeaderInfo.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public HttpHeaderInfo.Builder value(String value) {
+      this.instance.value = JsonNullable.<String>of(value);
+      return this;
+    }
+    public HttpHeaderInfo.Builder value(JsonNullable<String> value) {
+      this.instance.value = value;
+      return this;
+    }
+    public HttpHeaderInfo.Builder match(HeaderMatchType match) {
+      this.instance.match = match;
+      return this;
     }
 
-    public void setValue(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
-    }
-
-    public HttpHeaderInfo match(@javax.annotation.Nullable HeaderMatchType match) {
-
-        this.match = match;
-        return this;
-    }
 
     /**
-     * Get match
-     * 
-     * @return match
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MATCH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public HeaderMatchType getMatch() {
-        return match;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MATCH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMatch(@javax.annotation.Nullable HeaderMatchType match) {
-        this.match = match;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        HttpHeaderInfo httpHeaderInfo = (HttpHeaderInfo) o;
-        return equalsNullable(this.name, httpHeaderInfo.name) && equalsNullable(this.value, httpHeaderInfo.value)
-                && Objects.equals(this.match, httpHeaderInfo.match);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(value), match);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built HttpHeaderInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public HttpHeaderInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class HttpHeaderInfo {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    value: ").append(toIndentedString(value)).append("\n");
-        sb.append("    match: ").append(toIndentedString(match)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static HttpHeaderInfo.Builder builder() {
+    return new HttpHeaderInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public HttpHeaderInfo.Builder toBuilder() {
+    return new HttpHeaderInfo.Builder()
+      .name(getName())
+      .value(getValue())
+      .match(getMatch());
+  }
 
-        private HttpHeaderInfo instance;
 
-        public Builder() {
-            this(new HttpHeaderInfo());
-        }
-
-        protected Builder(HttpHeaderInfo instance) {
-            this.instance = instance;
-        }
-
-        public HttpHeaderInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public HttpHeaderInfo.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public HttpHeaderInfo.Builder value(String value) {
-            this.instance.value = JsonNullable.<String> of(value);
-            return this;
-        }
-
-        public HttpHeaderInfo.Builder value(JsonNullable<String> value) {
-            this.instance.value = value;
-            return this;
-        }
-
-        public HttpHeaderInfo.Builder match(HeaderMatchType match) {
-            this.instance.match = match;
-            return this;
-        }
-
-        /**
-         * returns a built HttpHeaderInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public HttpHeaderInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static HttpHeaderInfo.Builder builder() {
-        return new HttpHeaderInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public HttpHeaderInfo.Builder toBuilder() {
-        return new HttpHeaderInfo.Builder().name(getName()).value(getValue()).match(getMatch());
-    }
 }
+

@@ -18,134 +18,146 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class IgnoreWaitRequestDto.
  */
-@JsonPropertyOrder({ IgnoreWaitRequestDto.JSON_PROPERTY_IGNORE_WAIT })
+@JsonPropertyOrder({
+  IgnoreWaitRequestDto.JSON_PROPERTY_IGNORE_WAIT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class IgnoreWaitRequestDto {
-    public static final String JSON_PROPERTY_IGNORE_WAIT = "IgnoreWait";
-    @javax.annotation.Nullable
-    private Boolean ignoreWait;
+  public static final String JSON_PROPERTY_IGNORE_WAIT = "IgnoreWait";
+  @javax.annotation.Nullable
+  private Boolean ignoreWait;
 
-    public IgnoreWaitRequestDto() {
+  public IgnoreWaitRequestDto() {
+  }
+
+  public IgnoreWaitRequestDto ignoreWait(@javax.annotation.Nullable Boolean ignoreWait) {
+    
+    this.ignoreWait = ignoreWait;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the client should be ignored.
+   * @return ignoreWait
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIgnoreWait() {
+    return ignoreWait;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIgnoreWait(@javax.annotation.Nullable Boolean ignoreWait) {
+    this.ignoreWait = ignoreWait;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    IgnoreWaitRequestDto ignoreWaitRequestDto = (IgnoreWaitRequestDto) o;
+    return Objects.equals(this.ignoreWait, ignoreWaitRequestDto.ignoreWait);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(ignoreWait);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class IgnoreWaitRequestDto {\n");
+    sb.append("    ignoreWait: ").append(toIndentedString(ignoreWait)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private IgnoreWaitRequestDto instance;
+
+    public Builder() {
+      this(new IgnoreWaitRequestDto());
     }
 
-    public IgnoreWaitRequestDto ignoreWait(@javax.annotation.Nullable Boolean ignoreWait) {
-
-        this.ignoreWait = ignoreWait;
-        return this;
+    protected Builder(IgnoreWaitRequestDto instance) {
+      this.instance = instance;
     }
+
+    public IgnoreWaitRequestDto.Builder ignoreWait(Boolean ignoreWait) {
+      this.instance.ignoreWait = ignoreWait;
+      return this;
+    }
+
 
     /**
-     * Gets or sets a value indicating whether the client should be ignored.
-     * 
-     * @return ignoreWait
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIgnoreWait() {
-        return ignoreWait;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIgnoreWait(@javax.annotation.Nullable Boolean ignoreWait) {
-        this.ignoreWait = ignoreWait;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        IgnoreWaitRequestDto ignoreWaitRequestDto = (IgnoreWaitRequestDto) o;
-        return Objects.equals(this.ignoreWait, ignoreWaitRequestDto.ignoreWait);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(ignoreWait);
+    * returns a built IgnoreWaitRequestDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public IgnoreWaitRequestDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class IgnoreWaitRequestDto {\n");
-        sb.append("    ignoreWait: ").append(toIndentedString(ignoreWait)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static IgnoreWaitRequestDto.Builder builder() {
+    return new IgnoreWaitRequestDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public IgnoreWaitRequestDto.Builder toBuilder() {
+    return new IgnoreWaitRequestDto.Builder()
+      .ignoreWait(getIgnoreWait());
+  }
 
-        private IgnoreWaitRequestDto instance;
 
-        public Builder() {
-            this(new IgnoreWaitRequestDto());
-        }
-
-        protected Builder(IgnoreWaitRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public IgnoreWaitRequestDto.Builder ignoreWait(Boolean ignoreWait) {
-            this.instance.ignoreWait = ignoreWait;
-            return this;
-        }
-
-        /**
-         * returns a built IgnoreWaitRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public IgnoreWaitRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static IgnoreWaitRequestDto.Builder builder() {
-        return new IgnoreWaitRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public IgnoreWaitRequestDto.Builder toBuilder() {
-        return new IgnoreWaitRequestDto.Builder().ignoreWait(getIgnoreWait());
-    }
 }
+

@@ -17,214 +17,223 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * MediaUrl
  */
-@JsonPropertyOrder({ MediaUrl.JSON_PROPERTY_URL, MediaUrl.JSON_PROPERTY_NAME })
+@JsonPropertyOrder({
+  MediaUrl.JSON_PROPERTY_URL,
+  MediaUrl.JSON_PROPERTY_NAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaUrl {
-    public static final String JSON_PROPERTY_URL = "Url";
-    @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_URL = "Url";
+  @javax.annotation.Nullable
+  private JsonNullable<String> url = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public MediaUrl() {
-    }
+  public MediaUrl() {
+  }
 
-    public MediaUrl url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
+  public MediaUrl url(@javax.annotation.Nullable String url) {
+    this.url = JsonNullable.<String>of(url);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get url
+   * @return url
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get url
-     * 
-     * @return url
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
+  public String getUrl() {
         return url.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrl_JsonNullable() {
+    return url;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL)
+  public void setUrl_JsonNullable(JsonNullable<String> url) {
+    this.url = url;
+  }
+
+  public void setUrl(@javax.annotation.Nullable String url) {
+    this.url = JsonNullable.<String>of(url);
+  }
+
+  public MediaUrl name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
+
+  /**
+   * Get name
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
+
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MediaUrl mediaUrl = (MediaUrl) o;
+    return equalsNullable(this.url, mediaUrl.url) &&
+        equalsNullable(this.name, mediaUrl.name);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(url), hashCodeNullable(name));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class MediaUrl {\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private MediaUrl instance;
+
+    public Builder() {
+      this(new MediaUrl());
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getUrl_JsonNullable() {
-        return url;
+    protected Builder(MediaUrl instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
-        this.url = url;
+    public MediaUrl.Builder url(String url) {
+      this.instance.url = JsonNullable.<String>of(url);
+      return this;
+    }
+    public MediaUrl.Builder url(JsonNullable<String> url) {
+      this.instance.url = url;
+      return this;
+    }
+    public MediaUrl.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public MediaUrl.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
     }
 
-    public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
-    }
-
-    public MediaUrl name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-
-        return this;
-    }
 
     /**
-     * Get name
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
-
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MediaUrl mediaUrl = (MediaUrl) o;
-        return equalsNullable(this.url, mediaUrl.url) && equalsNullable(this.name, mediaUrl.name);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(url), hashCodeNullable(name));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built MediaUrl instance.
+    *
+    * The builder is not reusable.
+    */
+    public MediaUrl build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class MediaUrl {\n");
-        sb.append("    url: ").append(toIndentedString(url)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static MediaUrl.Builder builder() {
+    return new MediaUrl.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public MediaUrl.Builder toBuilder() {
+    return new MediaUrl.Builder()
+      .url(getUrl())
+      .name(getName());
+  }
 
-        private MediaUrl instance;
 
-        public Builder() {
-            this(new MediaUrl());
-        }
-
-        protected Builder(MediaUrl instance) {
-            this.instance = instance;
-        }
-
-        public MediaUrl.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public MediaUrl.Builder url(JsonNullable<String> url) {
-            this.instance.url = url;
-            return this;
-        }
-
-        public MediaUrl.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public MediaUrl.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        /**
-         * returns a built MediaUrl instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaUrl build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaUrl.Builder builder() {
-        return new MediaUrl.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaUrl.Builder toBuilder() {
-        return new MediaUrl.Builder().url(getUrl()).name(getName());
-    }
 }
+

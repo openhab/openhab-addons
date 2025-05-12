@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,56 +29,57 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Collection type.
  */
 public enum CollectionType {
+  
+  UNKNOWN("unknown"),
+  
+  MOVIES("movies"),
+  
+  TVSHOWS("tvshows"),
+  
+  MUSIC("music"),
+  
+  MUSICVIDEOS("musicvideos"),
+  
+  TRAILERS("trailers"),
+  
+  HOMEVIDEOS("homevideos"),
+  
+  BOXSETS("boxsets"),
+  
+  BOOKS("books"),
+  
+  PHOTOS("photos"),
+  
+  LIVETV("livetv"),
+  
+  PLAYLISTS("playlists"),
+  
+  FOLDERS("folders");
 
-    UNKNOWN("unknown"),
+  private String value;
 
-    MOVIES("movies"),
+  CollectionType(String value) {
+    this.value = value;
+  }
 
-    TVSHOWS("tvshows"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    MUSIC("music"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    MUSICVIDEOS("musicvideos"),
-
-    TRAILERS("trailers"),
-
-    HOMEVIDEOS("homevideos"),
-
-    BOXSETS("boxsets"),
-
-    BOOKS("books"),
-
-    PHOTOS("photos"),
-
-    LIVETV("livetv"),
-
-    PLAYLISTS("playlists"),
-
-    FOLDERS("folders");
-
-    private String value;
-
-    CollectionType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static CollectionType fromValue(String value) {
+    for (CollectionType b : CollectionType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static CollectionType fromValue(String value) {
-        for (CollectionType b : CollectionType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

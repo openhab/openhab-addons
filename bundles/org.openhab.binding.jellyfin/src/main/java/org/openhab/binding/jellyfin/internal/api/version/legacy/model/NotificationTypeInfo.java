@@ -17,341 +17,346 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * NotificationTypeInfo
  */
-@JsonPropertyOrder({ NotificationTypeInfo.JSON_PROPERTY_TYPE, NotificationTypeInfo.JSON_PROPERTY_NAME,
-        NotificationTypeInfo.JSON_PROPERTY_ENABLED, NotificationTypeInfo.JSON_PROPERTY_CATEGORY,
-        NotificationTypeInfo.JSON_PROPERTY_IS_BASED_ON_USER_EVENT })
+@JsonPropertyOrder({
+  NotificationTypeInfo.JSON_PROPERTY_TYPE,
+  NotificationTypeInfo.JSON_PROPERTY_NAME,
+  NotificationTypeInfo.JSON_PROPERTY_ENABLED,
+  NotificationTypeInfo.JSON_PROPERTY_CATEGORY,
+  NotificationTypeInfo.JSON_PROPERTY_IS_BASED_ON_USER_EVENT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationTypeInfo {
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ENABLED = "Enabled";
-    @javax.annotation.Nullable
-    private Boolean enabled;
+  public static final String JSON_PROPERTY_ENABLED = "Enabled";
+  @javax.annotation.Nullable
+  private Boolean enabled;
 
-    public static final String JSON_PROPERTY_CATEGORY = "Category";
-    @javax.annotation.Nullable
-    private JsonNullable<String> category = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CATEGORY = "Category";
+  @javax.annotation.Nullable
+  private JsonNullable<String> category = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_IS_BASED_ON_USER_EVENT = "IsBasedOnUserEvent";
-    @javax.annotation.Nullable
-    private Boolean isBasedOnUserEvent;
+  public static final String JSON_PROPERTY_IS_BASED_ON_USER_EVENT = "IsBasedOnUserEvent";
+  @javax.annotation.Nullable
+  private Boolean isBasedOnUserEvent;
 
-    public NotificationTypeInfo() {
-    }
+  public NotificationTypeInfo() {
+  }
 
-    public NotificationTypeInfo type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
+  public NotificationTypeInfo type(@javax.annotation.Nullable String type) {
+    this.type = JsonNullable.<String>of(type);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get type
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get type
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
+  public String getType() {
         return type.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
-        return type;
-    }
+  public JsonNullable<String> getType_JsonNullable() {
+    return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
-        this.type = type;
-    }
+  public void setType(@javax.annotation.Nullable String type) {
+    this.type = JsonNullable.<String>of(type);
+  }
 
-    public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
-    }
+  public NotificationTypeInfo name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-    public NotificationTypeInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  /**
+   * Get name
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get name
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public NotificationTypeInfo enabled(@javax.annotation.Nullable Boolean enabled) {
+    
+    this.enabled = enabled;
+    return this;
+  }
 
-    public NotificationTypeInfo enabled(@javax.annotation.Nullable Boolean enabled) {
+  /**
+   * Get enabled
+   * @return enabled
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.enabled = enabled;
-        return this;
-    }
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-    /**
-     * Get enabled
-     * 
-     * @return enabled
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
-        this.enabled = enabled;
-    }
+  public NotificationTypeInfo category(@javax.annotation.Nullable String category) {
+    this.category = JsonNullable.<String>of(category);
+    
+    return this;
+  }
 
-    public NotificationTypeInfo category(@javax.annotation.Nullable String category) {
-        this.category = JsonNullable.<String> of(category);
+  /**
+   * Get category
+   * @return category
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get category
-     * 
-     * @return category
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCategory() {
+  public String getCategory() {
         return category.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCategory_JsonNullable() {
+    return category;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  public void setCategory_JsonNullable(JsonNullable<String> category) {
+    this.category = category;
+  }
+
+  public void setCategory(@javax.annotation.Nullable String category) {
+    this.category = JsonNullable.<String>of(category);
+  }
+
+  public NotificationTypeInfo isBasedOnUserEvent(@javax.annotation.Nullable Boolean isBasedOnUserEvent) {
+    
+    this.isBasedOnUserEvent = isBasedOnUserEvent;
+    return this;
+  }
+
+  /**
+   * Get isBasedOnUserEvent
+   * @return isBasedOnUserEvent
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_BASED_ON_USER_EVENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsBasedOnUserEvent() {
+    return isBasedOnUserEvent;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_BASED_ON_USER_EVENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsBasedOnUserEvent(@javax.annotation.Nullable Boolean isBasedOnUserEvent) {
+    this.isBasedOnUserEvent = isBasedOnUserEvent;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    NotificationTypeInfo notificationTypeInfo = (NotificationTypeInfo) o;
+    return equalsNullable(this.type, notificationTypeInfo.type) &&
+        equalsNullable(this.name, notificationTypeInfo.name) &&
+        Objects.equals(this.enabled, notificationTypeInfo.enabled) &&
+        equalsNullable(this.category, notificationTypeInfo.category) &&
+        Objects.equals(this.isBasedOnUserEvent, notificationTypeInfo.isBasedOnUserEvent);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(type), hashCodeNullable(name), enabled, hashCodeNullable(category), isBasedOnUserEvent);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class NotificationTypeInfo {\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
+    sb.append("    category: ").append(toIndentedString(category)).append("\n");
+    sb.append("    isBasedOnUserEvent: ").append(toIndentedString(isBasedOnUserEvent)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private NotificationTypeInfo instance;
+
+    public Builder() {
+      this(new NotificationTypeInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getCategory_JsonNullable() {
-        return category;
+    protected Builder(NotificationTypeInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
-    public void setCategory_JsonNullable(JsonNullable<String> category) {
-        this.category = category;
+    public NotificationTypeInfo.Builder type(String type) {
+      this.instance.type = JsonNullable.<String>of(type);
+      return this;
+    }
+    public NotificationTypeInfo.Builder type(JsonNullable<String> type) {
+      this.instance.type = type;
+      return this;
+    }
+    public NotificationTypeInfo.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public NotificationTypeInfo.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public NotificationTypeInfo.Builder enabled(Boolean enabled) {
+      this.instance.enabled = enabled;
+      return this;
+    }
+    public NotificationTypeInfo.Builder category(String category) {
+      this.instance.category = JsonNullable.<String>of(category);
+      return this;
+    }
+    public NotificationTypeInfo.Builder category(JsonNullable<String> category) {
+      this.instance.category = category;
+      return this;
+    }
+    public NotificationTypeInfo.Builder isBasedOnUserEvent(Boolean isBasedOnUserEvent) {
+      this.instance.isBasedOnUserEvent = isBasedOnUserEvent;
+      return this;
     }
 
-    public void setCategory(@javax.annotation.Nullable String category) {
-        this.category = JsonNullable.<String> of(category);
-    }
-
-    public NotificationTypeInfo isBasedOnUserEvent(@javax.annotation.Nullable Boolean isBasedOnUserEvent) {
-
-        this.isBasedOnUserEvent = isBasedOnUserEvent;
-        return this;
-    }
 
     /**
-     * Get isBasedOnUserEvent
-     * 
-     * @return isBasedOnUserEvent
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_BASED_ON_USER_EVENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsBasedOnUserEvent() {
-        return isBasedOnUserEvent;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_BASED_ON_USER_EVENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsBasedOnUserEvent(@javax.annotation.Nullable Boolean isBasedOnUserEvent) {
-        this.isBasedOnUserEvent = isBasedOnUserEvent;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        NotificationTypeInfo notificationTypeInfo = (NotificationTypeInfo) o;
-        return equalsNullable(this.type, notificationTypeInfo.type)
-                && equalsNullable(this.name, notificationTypeInfo.name)
-                && Objects.equals(this.enabled, notificationTypeInfo.enabled)
-                && equalsNullable(this.category, notificationTypeInfo.category)
-                && Objects.equals(this.isBasedOnUserEvent, notificationTypeInfo.isBasedOnUserEvent);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(type), hashCodeNullable(name), enabled, hashCodeNullable(category),
-                isBasedOnUserEvent);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built NotificationTypeInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public NotificationTypeInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class NotificationTypeInfo {\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
-        sb.append("    category: ").append(toIndentedString(category)).append("\n");
-        sb.append("    isBasedOnUserEvent: ").append(toIndentedString(isBasedOnUserEvent)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static NotificationTypeInfo.Builder builder() {
+    return new NotificationTypeInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public NotificationTypeInfo.Builder toBuilder() {
+    return new NotificationTypeInfo.Builder()
+      .type(getType())
+      .name(getName())
+      .enabled(getEnabled())
+      .category(getCategory())
+      .isBasedOnUserEvent(getIsBasedOnUserEvent());
+  }
 
-        private NotificationTypeInfo instance;
 
-        public Builder() {
-            this(new NotificationTypeInfo());
-        }
-
-        protected Builder(NotificationTypeInfo instance) {
-            this.instance = instance;
-        }
-
-        public NotificationTypeInfo.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder type(JsonNullable<String> type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder enabled(Boolean enabled) {
-            this.instance.enabled = enabled;
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder category(String category) {
-            this.instance.category = JsonNullable.<String> of(category);
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder category(JsonNullable<String> category) {
-            this.instance.category = category;
-            return this;
-        }
-
-        public NotificationTypeInfo.Builder isBasedOnUserEvent(Boolean isBasedOnUserEvent) {
-            this.instance.isBasedOnUserEvent = isBasedOnUserEvent;
-            return this;
-        }
-
-        /**
-         * returns a built NotificationTypeInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public NotificationTypeInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static NotificationTypeInfo.Builder builder() {
-        return new NotificationTypeInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public NotificationTypeInfo.Builder toBuilder() {
-        return new NotificationTypeInfo.Builder().type(getType()).name(getName()).enabled(getEnabled())
-                .category(getCategory()).isBasedOnUserEvent(getIsBasedOnUserEvent());
-    }
 }
+

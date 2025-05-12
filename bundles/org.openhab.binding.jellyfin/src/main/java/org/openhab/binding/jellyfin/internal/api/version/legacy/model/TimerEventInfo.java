@@ -17,201 +17,212 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * TimerEventInfo
  */
-@JsonPropertyOrder({ TimerEventInfo.JSON_PROPERTY_ID, TimerEventInfo.JSON_PROPERTY_PROGRAM_ID })
+@JsonPropertyOrder({
+  TimerEventInfo.JSON_PROPERTY_ID,
+  TimerEventInfo.JSON_PROPERTY_PROGRAM_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TimerEventInfo {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private String id;
 
-    public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> programId = JsonNullable.<UUID> undefined();
+  public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> programId = JsonNullable.<UUID>undefined();
 
-    public TimerEventInfo() {
-    }
+  public TimerEventInfo() {
+  }
 
-    public TimerEventInfo id(@javax.annotation.Nullable String id) {
+  public TimerEventInfo id(@javax.annotation.Nullable String id) {
+    
+    this.id = id;
+    return this;
+  }
 
-        this.id = id;
-        return this;
-    }
+  /**
+   * Get id
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Get id
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getId() {
+    return id;
+  }
 
-    public String getId() {
-        return id;
-    }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = id;
-    }
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = id;
+  }
 
-    public TimerEventInfo programId(@javax.annotation.Nullable UUID programId) {
-        this.programId = JsonNullable.<UUID> of(programId);
+  public TimerEventInfo programId(@javax.annotation.Nullable UUID programId) {
+    this.programId = JsonNullable.<UUID>of(programId);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get programId
+   * @return programId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get programId
-     * 
-     * @return programId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getProgramId() {
+  public UUID getProgramId() {
         return programId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getProgramId_JsonNullable() {
+    return programId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+  public void setProgramId_JsonNullable(JsonNullable<UUID> programId) {
+    this.programId = programId;
+  }
+
+  public void setProgramId(@javax.annotation.Nullable UUID programId) {
+    this.programId = JsonNullable.<UUID>of(programId);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TimerEventInfo timerEventInfo = (TimerEventInfo) o;
+    return Objects.equals(this.id, timerEventInfo.id) &&
+        equalsNullable(this.programId, timerEventInfo.programId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, hashCodeNullable(programId));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TimerEventInfo {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    programId: ").append(toIndentedString(programId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private TimerEventInfo instance;
+
+    public Builder() {
+      this(new TimerEventInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<UUID> getProgramId_JsonNullable() {
-        return programId;
+    protected Builder(TimerEventInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    public void setProgramId_JsonNullable(JsonNullable<UUID> programId) {
-        this.programId = programId;
+    public TimerEventInfo.Builder id(String id) {
+      this.instance.id = id;
+      return this;
+    }
+    public TimerEventInfo.Builder programId(UUID programId) {
+      this.instance.programId = JsonNullable.<UUID>of(programId);
+      return this;
+    }
+    public TimerEventInfo.Builder programId(JsonNullable<UUID> programId) {
+      this.instance.programId = programId;
+      return this;
     }
 
-    public void setProgramId(@javax.annotation.Nullable UUID programId) {
-        this.programId = JsonNullable.<UUID> of(programId);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TimerEventInfo timerEventInfo = (TimerEventInfo) o;
-        return Objects.equals(this.id, timerEventInfo.id) && equalsNullable(this.programId, timerEventInfo.programId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(programId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built TimerEventInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public TimerEventInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TimerEventInfo {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    programId: ").append(toIndentedString(programId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static TimerEventInfo.Builder builder() {
+    return new TimerEventInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public TimerEventInfo.Builder toBuilder() {
+    return new TimerEventInfo.Builder()
+      .id(getId())
+      .programId(getProgramId());
+  }
 
-        private TimerEventInfo instance;
 
-        public Builder() {
-            this(new TimerEventInfo());
-        }
-
-        protected Builder(TimerEventInfo instance) {
-            this.instance = instance;
-        }
-
-        public TimerEventInfo.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public TimerEventInfo.Builder programId(UUID programId) {
-            this.instance.programId = JsonNullable.<UUID> of(programId);
-            return this;
-        }
-
-        public TimerEventInfo.Builder programId(JsonNullable<UUID> programId) {
-            this.instance.programId = programId;
-            return this;
-        }
-
-        /**
-         * returns a built TimerEventInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TimerEventInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TimerEventInfo.Builder builder() {
-        return new TimerEventInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TimerEventInfo.Builder toBuilder() {
-        return new TimerEventInfo.Builder().id(getId()).programId(getProgramId());
-    }
 }
+

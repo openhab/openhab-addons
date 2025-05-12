@@ -18,134 +18,146 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The quick connect request body.
  */
-@JsonPropertyOrder({ QuickConnectDto.JSON_PROPERTY_SECRET })
+@JsonPropertyOrder({
+  QuickConnectDto.JSON_PROPERTY_SECRET
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QuickConnectDto {
-    public static final String JSON_PROPERTY_SECRET = "Secret";
-    @javax.annotation.Nonnull
-    private String secret;
+  public static final String JSON_PROPERTY_SECRET = "Secret";
+  @javax.annotation.Nonnull
+  private String secret;
 
-    public QuickConnectDto() {
+  public QuickConnectDto() {
+  }
+
+  public QuickConnectDto secret(@javax.annotation.Nonnull String secret) {
+    
+    this.secret = secret;
+    return this;
+  }
+
+  /**
+   * Gets or sets the quick connect secret.
+   * @return secret
+   */
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_SECRET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getSecret() {
+    return secret;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SECRET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setSecret(@javax.annotation.Nonnull String secret) {
+    this.secret = secret;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    QuickConnectDto quickConnectDto = (QuickConnectDto) o;
+    return Objects.equals(this.secret, quickConnectDto.secret);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(secret);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class QuickConnectDto {\n");
+    sb.append("    secret: ").append(toIndentedString(secret)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private QuickConnectDto instance;
+
+    public Builder() {
+      this(new QuickConnectDto());
     }
 
-    public QuickConnectDto secret(@javax.annotation.Nonnull String secret) {
-
-        this.secret = secret;
-        return this;
+    protected Builder(QuickConnectDto instance) {
+      this.instance = instance;
     }
+
+    public QuickConnectDto.Builder secret(String secret) {
+      this.instance.secret = secret;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the quick connect secret.
-     * 
-     * @return secret
-     */
-    @javax.annotation.Nonnull
-    @JsonProperty(JSON_PROPERTY_SECRET)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-    public String getSecret() {
-        return secret;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SECRET)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public void setSecret(@javax.annotation.Nonnull String secret) {
-        this.secret = secret;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        QuickConnectDto quickConnectDto = (QuickConnectDto) o;
-        return Objects.equals(this.secret, quickConnectDto.secret);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(secret);
+    * returns a built QuickConnectDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public QuickConnectDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class QuickConnectDto {\n");
-        sb.append("    secret: ").append(toIndentedString(secret)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static QuickConnectDto.Builder builder() {
+    return new QuickConnectDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public QuickConnectDto.Builder toBuilder() {
+    return new QuickConnectDto.Builder()
+      .secret(getSecret());
+  }
 
-        private QuickConnectDto instance;
 
-        public Builder() {
-            this(new QuickConnectDto());
-        }
-
-        protected Builder(QuickConnectDto instance) {
-            this.instance = instance;
-        }
-
-        public QuickConnectDto.Builder secret(String secret) {
-            this.instance.secret = secret;
-            return this;
-        }
-
-        /**
-         * returns a built QuickConnectDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public QuickConnectDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QuickConnectDto.Builder builder() {
-        return new QuickConnectDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QuickConnectDto.Builder toBuilder() {
-        return new QuickConnectDto.Builder().secret(getSecret());
-    }
 }
+

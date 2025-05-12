@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,38 +29,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum TaskCompletionStatus.
  */
 public enum TaskCompletionStatus {
+  
+  COMPLETED("Completed"),
+  
+  FAILED("Failed"),
+  
+  CANCELLED("Cancelled"),
+  
+  ABORTED("Aborted");
 
-    COMPLETED("Completed"),
+  private String value;
 
-    FAILED("Failed"),
+  TaskCompletionStatus(String value) {
+    this.value = value;
+  }
 
-    CANCELLED("Cancelled"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    ABORTED("Aborted");
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    private String value;
-
-    TaskCompletionStatus(String value) {
-        this.value = value;
+  @JsonCreator
+  public static TaskCompletionStatus fromValue(String value) {
+    for (TaskCompletionStatus b : TaskCompletionStatus.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TaskCompletionStatus fromValue(String value) {
-        for (TaskCompletionStatus b : TaskCompletionStatus.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

@@ -17,512 +17,509 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * SubtitleOptions
  */
-@JsonPropertyOrder({ SubtitleOptions.JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT,
-        SubtitleOptions.JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES, SubtitleOptions.JSON_PROPERTY_DOWNLOAD_LANGUAGES,
-        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES,
-        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES, SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_USERNAME,
-        SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
-        SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
-        SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH })
+@JsonPropertyOrder({
+  SubtitleOptions.JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT,
+  SubtitleOptions.JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_LANGUAGES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES,
+  SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_USERNAME,
+  SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
+  SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
+  SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SubtitleOptions {
-    public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
-    @javax.annotation.Nullable
-    private Boolean skipIfEmbeddedSubtitlesPresent;
+  public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
+  @javax.annotation.Nullable
+  private Boolean skipIfEmbeddedSubtitlesPresent;
 
-    public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
-    @javax.annotation.Nullable
-    private Boolean skipIfAudioTrackMatches;
+  public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
+  @javax.annotation.Nullable
+  private Boolean skipIfAudioTrackMatches;
 
-    public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
-    @javax.annotation.Nullable
-    private JsonNullable<List<String>> downloadLanguages = JsonNullable.<List<String>> undefined();
+  public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
+  @javax.annotation.Nullable
+  private JsonNullable<List<String>> downloadLanguages = JsonNullable.<List<String>>undefined();
 
-    public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
-    @javax.annotation.Nullable
-    private Boolean downloadMovieSubtitles;
+  public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
+  @javax.annotation.Nullable
+  private Boolean downloadMovieSubtitles;
 
-    public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
-    @javax.annotation.Nullable
-    private Boolean downloadEpisodeSubtitles;
+  public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
+  @javax.annotation.Nullable
+  private Boolean downloadEpisodeSubtitles;
 
-    public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
-    @javax.annotation.Nullable
-    private JsonNullable<String> openSubtitlesUsername = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
+  @javax.annotation.Nullable
+  private JsonNullable<String> openSubtitlesUsername = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
-    @javax.annotation.Nullable
-    private JsonNullable<String> openSubtitlesPasswordHash = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
+  @javax.annotation.Nullable
+  private JsonNullable<String> openSubtitlesPasswordHash = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
-    @javax.annotation.Nullable
-    private Boolean isOpenSubtitleVipAccount;
+  public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
+  @javax.annotation.Nullable
+  private Boolean isOpenSubtitleVipAccount;
 
-    public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
-    @javax.annotation.Nullable
-    private Boolean requirePerfectMatch;
+  public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
+  @javax.annotation.Nullable
+  private Boolean requirePerfectMatch;
 
-    public SubtitleOptions() {
+  public SubtitleOptions() {
+  }
+
+  public SubtitleOptions skipIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
+    
+    this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
+    return this;
+  }
+
+  /**
+   * Get skipIfEmbeddedSubtitlesPresent
+   * @return skipIfEmbeddedSubtitlesPresent
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSkipIfEmbeddedSubtitlesPresent() {
+    return skipIfEmbeddedSubtitlesPresent;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSkipIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
+    this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
+  }
+
+  public SubtitleOptions skipIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipIfAudioTrackMatches) {
+    
+    this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
+    return this;
+  }
+
+  /**
+   * Get skipIfAudioTrackMatches
+   * @return skipIfAudioTrackMatches
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSkipIfAudioTrackMatches() {
+    return skipIfAudioTrackMatches;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSkipIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipIfAudioTrackMatches) {
+    this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
+  }
+
+  public SubtitleOptions downloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
+    this.downloadLanguages = JsonNullable.<List<String>>of(downloadLanguages);
+    
+    return this;
+  }
+
+  public SubtitleOptions addDownloadLanguagesItem(String downloadLanguagesItem) {
+    if (this.downloadLanguages == null || !this.downloadLanguages.isPresent()) {
+      this.downloadLanguages = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-
-    public SubtitleOptions skipIfEmbeddedSubtitlesPresent(
-            @javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
-
-        this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
-        return this;
+    try {
+      this.downloadLanguages.get().add(downloadLanguagesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    /**
-     * Get skipIfEmbeddedSubtitlesPresent
-     * 
-     * @return skipIfEmbeddedSubtitlesPresent
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Get downloadLanguages
+   * @return downloadLanguages
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public Boolean getSkipIfEmbeddedSubtitlesPresent() {
-        return skipIfEmbeddedSubtitlesPresent;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSkipIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
-        this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
-    }
-
-    public SubtitleOptions skipIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipIfAudioTrackMatches) {
-
-        this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
-        return this;
-    }
-
-    /**
-     * Get skipIfAudioTrackMatches
-     * 
-     * @return skipIfAudioTrackMatches
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSkipIfAudioTrackMatches() {
-        return skipIfAudioTrackMatches;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSkipIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipIfAudioTrackMatches) {
-        this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
-    }
-
-    public SubtitleOptions downloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-        this.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
-
-        return this;
-    }
-
-    public SubtitleOptions addDownloadLanguagesItem(String downloadLanguagesItem) {
-        if (this.downloadLanguages == null || !this.downloadLanguages.isPresent()) {
-            this.downloadLanguages = JsonNullable.<List<String>> of(new ArrayList<>());
-        }
-        try {
-            this.downloadLanguages.get().add(downloadLanguagesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Get downloadLanguages
-     * 
-     * @return downloadLanguages
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getDownloadLanguages() {
+  public List<String> getDownloadLanguages() {
         return downloadLanguages.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getDownloadLanguages_JsonNullable() {
-        return downloadLanguages;
-    }
+  public JsonNullable<List<String>> getDownloadLanguages_JsonNullable() {
+    return downloadLanguages;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+  public void setDownloadLanguages_JsonNullable(JsonNullable<List<String>> downloadLanguages) {
+    this.downloadLanguages = downloadLanguages;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
-    public void setDownloadLanguages_JsonNullable(JsonNullable<List<String>> downloadLanguages) {
-        this.downloadLanguages = downloadLanguages;
-    }
+  public void setDownloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
+    this.downloadLanguages = JsonNullable.<List<String>>of(downloadLanguages);
+  }
 
-    public void setDownloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-        this.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
-    }
+  public SubtitleOptions downloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
+    
+    this.downloadMovieSubtitles = downloadMovieSubtitles;
+    return this;
+  }
 
-    public SubtitleOptions downloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
+  /**
+   * Get downloadMovieSubtitles
+   * @return downloadMovieSubtitles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.downloadMovieSubtitles = downloadMovieSubtitles;
-        return this;
-    }
+  public Boolean getDownloadMovieSubtitles() {
+    return downloadMovieSubtitles;
+  }
 
-    /**
-     * Get downloadMovieSubtitles
-     * 
-     * @return downloadMovieSubtitles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getDownloadMovieSubtitles() {
-        return downloadMovieSubtitles;
-    }
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDownloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
+    this.downloadMovieSubtitles = downloadMovieSubtitles;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDownloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
-        this.downloadMovieSubtitles = downloadMovieSubtitles;
-    }
+  public SubtitleOptions downloadEpisodeSubtitles(@javax.annotation.Nullable Boolean downloadEpisodeSubtitles) {
+    
+    this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
+    return this;
+  }
 
-    public SubtitleOptions downloadEpisodeSubtitles(@javax.annotation.Nullable Boolean downloadEpisodeSubtitles) {
+  /**
+   * Get downloadEpisodeSubtitles
+   * @return downloadEpisodeSubtitles
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
-        return this;
-    }
+  public Boolean getDownloadEpisodeSubtitles() {
+    return downloadEpisodeSubtitles;
+  }
 
-    /**
-     * Get downloadEpisodeSubtitles
-     * 
-     * @return downloadEpisodeSubtitles
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getDownloadEpisodeSubtitles() {
-        return downloadEpisodeSubtitles;
-    }
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDownloadEpisodeSubtitles(@javax.annotation.Nullable Boolean downloadEpisodeSubtitles) {
+    this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDownloadEpisodeSubtitles(@javax.annotation.Nullable Boolean downloadEpisodeSubtitles) {
-        this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
-    }
+  public SubtitleOptions openSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
+    this.openSubtitlesUsername = JsonNullable.<String>of(openSubtitlesUsername);
+    
+    return this;
+  }
 
-    public SubtitleOptions openSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-        this.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
+  /**
+   * Get openSubtitlesUsername
+   * @return openSubtitlesUsername
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get openSubtitlesUsername
-     * 
-     * @return openSubtitlesUsername
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOpenSubtitlesUsername() {
+  public String getOpenSubtitlesUsername() {
         return openSubtitlesUsername.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOpenSubtitlesUsername_JsonNullable() {
-        return openSubtitlesUsername;
-    }
+  public JsonNullable<String> getOpenSubtitlesUsername_JsonNullable() {
+    return openSubtitlesUsername;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+  public void setOpenSubtitlesUsername_JsonNullable(JsonNullable<String> openSubtitlesUsername) {
+    this.openSubtitlesUsername = openSubtitlesUsername;
+  }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
-    public void setOpenSubtitlesUsername_JsonNullable(JsonNullable<String> openSubtitlesUsername) {
-        this.openSubtitlesUsername = openSubtitlesUsername;
-    }
+  public void setOpenSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
+    this.openSubtitlesUsername = JsonNullable.<String>of(openSubtitlesUsername);
+  }
 
-    public void setOpenSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-        this.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
-    }
+  public SubtitleOptions openSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
+    this.openSubtitlesPasswordHash = JsonNullable.<String>of(openSubtitlesPasswordHash);
+    
+    return this;
+  }
 
-    public SubtitleOptions openSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
+  /**
+   * Get openSubtitlesPasswordHash
+   * @return openSubtitlesPasswordHash
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get openSubtitlesPasswordHash
-     * 
-     * @return openSubtitlesPasswordHash
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOpenSubtitlesPasswordHash() {
+  public String getOpenSubtitlesPasswordHash() {
         return openSubtitlesPasswordHash.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOpenSubtitlesPasswordHash_JsonNullable() {
+    return openSubtitlesPasswordHash;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+  public void setOpenSubtitlesPasswordHash_JsonNullable(JsonNullable<String> openSubtitlesPasswordHash) {
+    this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+  }
+
+  public void setOpenSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
+    this.openSubtitlesPasswordHash = JsonNullable.<String>of(openSubtitlesPasswordHash);
+  }
+
+  public SubtitleOptions isOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
+    
+    this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
+    return this;
+  }
+
+  /**
+   * Get isOpenSubtitleVipAccount
+   * @return isOpenSubtitleVipAccount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsOpenSubtitleVipAccount() {
+    return isOpenSubtitleVipAccount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
+    this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
+  }
+
+  public SubtitleOptions requirePerfectMatch(@javax.annotation.Nullable Boolean requirePerfectMatch) {
+    
+    this.requirePerfectMatch = requirePerfectMatch;
+    return this;
+  }
+
+  /**
+   * Get requirePerfectMatch
+   * @return requirePerfectMatch
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getRequirePerfectMatch() {
+    return requirePerfectMatch;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRequirePerfectMatch(@javax.annotation.Nullable Boolean requirePerfectMatch) {
+    this.requirePerfectMatch = requirePerfectMatch;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SubtitleOptions subtitleOptions = (SubtitleOptions) o;
+    return Objects.equals(this.skipIfEmbeddedSubtitlesPresent, subtitleOptions.skipIfEmbeddedSubtitlesPresent) &&
+        Objects.equals(this.skipIfAudioTrackMatches, subtitleOptions.skipIfAudioTrackMatches) &&
+        equalsNullable(this.downloadLanguages, subtitleOptions.downloadLanguages) &&
+        Objects.equals(this.downloadMovieSubtitles, subtitleOptions.downloadMovieSubtitles) &&
+        Objects.equals(this.downloadEpisodeSubtitles, subtitleOptions.downloadEpisodeSubtitles) &&
+        equalsNullable(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername) &&
+        equalsNullable(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash) &&
+        Objects.equals(this.isOpenSubtitleVipAccount, subtitleOptions.isOpenSubtitleVipAccount) &&
+        Objects.equals(this.requirePerfectMatch, subtitleOptions.requirePerfectMatch);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches, hashCodeNullable(downloadLanguages), downloadMovieSubtitles, downloadEpisodeSubtitles, hashCodeNullable(openSubtitlesUsername), hashCodeNullable(openSubtitlesPasswordHash), isOpenSubtitleVipAccount, requirePerfectMatch);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SubtitleOptions {\n");
+    sb.append("    skipIfEmbeddedSubtitlesPresent: ").append(toIndentedString(skipIfEmbeddedSubtitlesPresent)).append("\n");
+    sb.append("    skipIfAudioTrackMatches: ").append(toIndentedString(skipIfAudioTrackMatches)).append("\n");
+    sb.append("    downloadLanguages: ").append(toIndentedString(downloadLanguages)).append("\n");
+    sb.append("    downloadMovieSubtitles: ").append(toIndentedString(downloadMovieSubtitles)).append("\n");
+    sb.append("    downloadEpisodeSubtitles: ").append(toIndentedString(downloadEpisodeSubtitles)).append("\n");
+    sb.append("    openSubtitlesUsername: ").append(toIndentedString(openSubtitlesUsername)).append("\n");
+    sb.append("    openSubtitlesPasswordHash: ").append(toIndentedString(openSubtitlesPasswordHash)).append("\n");
+    sb.append("    isOpenSubtitleVipAccount: ").append(toIndentedString(isOpenSubtitleVipAccount)).append("\n");
+    sb.append("    requirePerfectMatch: ").append(toIndentedString(requirePerfectMatch)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SubtitleOptions instance;
+
+    public Builder() {
+      this(new SubtitleOptions());
     }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getOpenSubtitlesPasswordHash_JsonNullable() {
-        return openSubtitlesPasswordHash;
+    protected Builder(SubtitleOptions instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
-    public void setOpenSubtitlesPasswordHash_JsonNullable(JsonNullable<String> openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+    public SubtitleOptions.Builder skipIfEmbeddedSubtitlesPresent(Boolean skipIfEmbeddedSubtitlesPresent) {
+      this.instance.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
+      return this;
+    }
+    public SubtitleOptions.Builder skipIfAudioTrackMatches(Boolean skipIfAudioTrackMatches) {
+      this.instance.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
+      return this;
+    }
+    public SubtitleOptions.Builder downloadLanguages(List<String> downloadLanguages) {
+      this.instance.downloadLanguages = JsonNullable.<List<String>>of(downloadLanguages);
+      return this;
+    }
+    public SubtitleOptions.Builder downloadLanguages(JsonNullable<List<String>> downloadLanguages) {
+      this.instance.downloadLanguages = downloadLanguages;
+      return this;
+    }
+    public SubtitleOptions.Builder downloadMovieSubtitles(Boolean downloadMovieSubtitles) {
+      this.instance.downloadMovieSubtitles = downloadMovieSubtitles;
+      return this;
+    }
+    public SubtitleOptions.Builder downloadEpisodeSubtitles(Boolean downloadEpisodeSubtitles) {
+      this.instance.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
+      return this;
+    }
+    public SubtitleOptions.Builder openSubtitlesUsername(String openSubtitlesUsername) {
+      this.instance.openSubtitlesUsername = JsonNullable.<String>of(openSubtitlesUsername);
+      return this;
+    }
+    public SubtitleOptions.Builder openSubtitlesUsername(JsonNullable<String> openSubtitlesUsername) {
+      this.instance.openSubtitlesUsername = openSubtitlesUsername;
+      return this;
+    }
+    public SubtitleOptions.Builder openSubtitlesPasswordHash(String openSubtitlesPasswordHash) {
+      this.instance.openSubtitlesPasswordHash = JsonNullable.<String>of(openSubtitlesPasswordHash);
+      return this;
+    }
+    public SubtitleOptions.Builder openSubtitlesPasswordHash(JsonNullable<String> openSubtitlesPasswordHash) {
+      this.instance.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+      return this;
+    }
+    public SubtitleOptions.Builder isOpenSubtitleVipAccount(Boolean isOpenSubtitleVipAccount) {
+      this.instance.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
+      return this;
+    }
+    public SubtitleOptions.Builder requirePerfectMatch(Boolean requirePerfectMatch) {
+      this.instance.requirePerfectMatch = requirePerfectMatch;
+      return this;
     }
 
-    public void setOpenSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
-    }
-
-    public SubtitleOptions isOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
-
-        this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
-        return this;
-    }
 
     /**
-     * Get isOpenSubtitleVipAccount
-     * 
-     * @return isOpenSubtitleVipAccount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsOpenSubtitleVipAccount() {
-        return isOpenSubtitleVipAccount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
-        this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
-    }
-
-    public SubtitleOptions requirePerfectMatch(@javax.annotation.Nullable Boolean requirePerfectMatch) {
-
-        this.requirePerfectMatch = requirePerfectMatch;
-        return this;
-    }
-
-    /**
-     * Get requirePerfectMatch
-     * 
-     * @return requirePerfectMatch
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getRequirePerfectMatch() {
-        return requirePerfectMatch;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRequirePerfectMatch(@javax.annotation.Nullable Boolean requirePerfectMatch) {
-        this.requirePerfectMatch = requirePerfectMatch;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SubtitleOptions subtitleOptions = (SubtitleOptions) o;
-        return Objects.equals(this.skipIfEmbeddedSubtitlesPresent, subtitleOptions.skipIfEmbeddedSubtitlesPresent)
-                && Objects.equals(this.skipIfAudioTrackMatches, subtitleOptions.skipIfAudioTrackMatches)
-                && equalsNullable(this.downloadLanguages, subtitleOptions.downloadLanguages)
-                && Objects.equals(this.downloadMovieSubtitles, subtitleOptions.downloadMovieSubtitles)
-                && Objects.equals(this.downloadEpisodeSubtitles, subtitleOptions.downloadEpisodeSubtitles)
-                && equalsNullable(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername)
-                && equalsNullable(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash)
-                && Objects.equals(this.isOpenSubtitleVipAccount, subtitleOptions.isOpenSubtitleVipAccount)
-                && Objects.equals(this.requirePerfectMatch, subtitleOptions.requirePerfectMatch);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches,
-                hashCodeNullable(downloadLanguages), downloadMovieSubtitles, downloadEpisodeSubtitles,
-                hashCodeNullable(openSubtitlesUsername), hashCodeNullable(openSubtitlesPasswordHash),
-                isOpenSubtitleVipAccount, requirePerfectMatch);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built SubtitleOptions instance.
+    *
+    * The builder is not reusable.
+    */
+    public SubtitleOptions build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SubtitleOptions {\n");
-        sb.append("    skipIfEmbeddedSubtitlesPresent: ").append(toIndentedString(skipIfEmbeddedSubtitlesPresent))
-                .append("\n");
-        sb.append("    skipIfAudioTrackMatches: ").append(toIndentedString(skipIfAudioTrackMatches)).append("\n");
-        sb.append("    downloadLanguages: ").append(toIndentedString(downloadLanguages)).append("\n");
-        sb.append("    downloadMovieSubtitles: ").append(toIndentedString(downloadMovieSubtitles)).append("\n");
-        sb.append("    downloadEpisodeSubtitles: ").append(toIndentedString(downloadEpisodeSubtitles)).append("\n");
-        sb.append("    openSubtitlesUsername: ").append(toIndentedString(openSubtitlesUsername)).append("\n");
-        sb.append("    openSubtitlesPasswordHash: ").append(toIndentedString(openSubtitlesPasswordHash)).append("\n");
-        sb.append("    isOpenSubtitleVipAccount: ").append(toIndentedString(isOpenSubtitleVipAccount)).append("\n");
-        sb.append("    requirePerfectMatch: ").append(toIndentedString(requirePerfectMatch)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SubtitleOptions.Builder builder() {
+    return new SubtitleOptions.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SubtitleOptions.Builder toBuilder() {
+    return new SubtitleOptions.Builder()
+      .skipIfEmbeddedSubtitlesPresent(getSkipIfEmbeddedSubtitlesPresent())
+      .skipIfAudioTrackMatches(getSkipIfAudioTrackMatches())
+      .downloadLanguages(getDownloadLanguages())
+      .downloadMovieSubtitles(getDownloadMovieSubtitles())
+      .downloadEpisodeSubtitles(getDownloadEpisodeSubtitles())
+      .openSubtitlesUsername(getOpenSubtitlesUsername())
+      .openSubtitlesPasswordHash(getOpenSubtitlesPasswordHash())
+      .isOpenSubtitleVipAccount(getIsOpenSubtitleVipAccount())
+      .requirePerfectMatch(getRequirePerfectMatch());
+  }
 
-        private SubtitleOptions instance;
 
-        public Builder() {
-            this(new SubtitleOptions());
-        }
-
-        protected Builder(SubtitleOptions instance) {
-            this.instance = instance;
-        }
-
-        public SubtitleOptions.Builder skipIfEmbeddedSubtitlesPresent(Boolean skipIfEmbeddedSubtitlesPresent) {
-            this.instance.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
-            return this;
-        }
-
-        public SubtitleOptions.Builder skipIfAudioTrackMatches(Boolean skipIfAudioTrackMatches) {
-            this.instance.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadLanguages(List<String> downloadLanguages) {
-            this.instance.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadLanguages(JsonNullable<List<String>> downloadLanguages) {
-            this.instance.downloadLanguages = downloadLanguages;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadMovieSubtitles(Boolean downloadMovieSubtitles) {
-            this.instance.downloadMovieSubtitles = downloadMovieSubtitles;
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadEpisodeSubtitles(Boolean downloadEpisodeSubtitles) {
-            this.instance.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesUsername(String openSubtitlesUsername) {
-            this.instance.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesUsername(JsonNullable<String> openSubtitlesUsername) {
-            this.instance.openSubtitlesUsername = openSubtitlesUsername;
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesPasswordHash(String openSubtitlesPasswordHash) {
-            this.instance.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesPasswordHash(JsonNullable<String> openSubtitlesPasswordHash) {
-            this.instance.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
-            return this;
-        }
-
-        public SubtitleOptions.Builder isOpenSubtitleVipAccount(Boolean isOpenSubtitleVipAccount) {
-            this.instance.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
-            return this;
-        }
-
-        public SubtitleOptions.Builder requirePerfectMatch(Boolean requirePerfectMatch) {
-            this.instance.requirePerfectMatch = requirePerfectMatch;
-            return this;
-        }
-
-        /**
-         * returns a built SubtitleOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public SubtitleOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SubtitleOptions.Builder builder() {
-        return new SubtitleOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SubtitleOptions.Builder toBuilder() {
-        return new SubtitleOptions.Builder().skipIfEmbeddedSubtitlesPresent(getSkipIfEmbeddedSubtitlesPresent())
-                .skipIfAudioTrackMatches(getSkipIfAudioTrackMatches()).downloadLanguages(getDownloadLanguages())
-                .downloadMovieSubtitles(getDownloadMovieSubtitles())
-                .downloadEpisodeSubtitles(getDownloadEpisodeSubtitles())
-                .openSubtitlesUsername(getOpenSubtitlesUsername())
-                .openSubtitlesPasswordHash(getOpenSubtitlesPasswordHash())
-                .isOpenSubtitleVipAccount(getIsOpenSubtitleVipAccount()).requirePerfectMatch(getRequirePerfectMatch());
-    }
 }
+

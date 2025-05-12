@@ -17,252 +17,265 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TaskInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Scheduled tasks info message.
  */
-@JsonPropertyOrder({ ScheduledTasksInfoMessage.JSON_PROPERTY_DATA, ScheduledTasksInfoMessage.JSON_PROPERTY_MESSAGE_ID,
-        ScheduledTasksInfoMessage.JSON_PROPERTY_MESSAGE_TYPE })
+@JsonPropertyOrder({
+  ScheduledTasksInfoMessage.JSON_PROPERTY_DATA,
+  ScheduledTasksInfoMessage.JSON_PROPERTY_MESSAGE_ID,
+  ScheduledTasksInfoMessage.JSON_PROPERTY_MESSAGE_TYPE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ScheduledTasksInfoMessage {
-    public static final String JSON_PROPERTY_DATA = "Data";
-    @javax.annotation.Nullable
-    private JsonNullable<List<TaskInfo>> data = JsonNullable.<List<TaskInfo>> undefined();
+  public static final String JSON_PROPERTY_DATA = "Data";
+  @javax.annotation.Nullable
+  private JsonNullable<List<TaskInfo>> data = JsonNullable.<List<TaskInfo>>undefined();
 
-    public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-    @javax.annotation.Nullable
-    private UUID messageId;
+  public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
+  @javax.annotation.Nullable
+  private UUID messageId;
 
-    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @javax.annotation.Nullable
-    private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO;
+  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+  @javax.annotation.Nullable
+  private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO;
 
-    public ScheduledTasksInfoMessage() {
+  public ScheduledTasksInfoMessage() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public ScheduledTasksInfoMessage(
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
+  ) {
+    this();
+    this.messageType = messageType;
+  }
+
+  public ScheduledTasksInfoMessage data(@javax.annotation.Nullable List<TaskInfo> data) {
+    this.data = JsonNullable.<List<TaskInfo>>of(data);
+    
+    return this;
+  }
+
+  public ScheduledTasksInfoMessage addDataItem(TaskInfo dataItem) {
+    if (this.data == null || !this.data.isPresent()) {
+      this.data = JsonNullable.<List<TaskInfo>>of(new ArrayList<>());
     }
-
-    /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public ScheduledTasksInfoMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
-        this();
-        this.messageType = messageType;
+    try {
+      this.data.get().add(dataItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    public ScheduledTasksInfoMessage data(@javax.annotation.Nullable List<TaskInfo> data) {
-        this.data = JsonNullable.<List<TaskInfo>> of(data);
+  /**
+   * Gets or sets the data.
+   * @return data
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    public ScheduledTasksInfoMessage addDataItem(TaskInfo dataItem) {
-        if (this.data == null || !this.data.isPresent()) {
-            this.data = JsonNullable.<List<TaskInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.data.get().add(dataItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the data.
-     * 
-     * @return data
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<TaskInfo> getData() {
+  public List<TaskInfo> getData() {
         return data.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<TaskInfo>> getData_JsonNullable() {
+    return data;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA)
+  public void setData_JsonNullable(JsonNullable<List<TaskInfo>> data) {
+    this.data = data;
+  }
+
+  public void setData(@javax.annotation.Nullable List<TaskInfo> data) {
+    this.data = JsonNullable.<List<TaskInfo>>of(data);
+  }
+
+  public ScheduledTasksInfoMessage messageId(@javax.annotation.Nullable UUID messageId) {
+    
+    this.messageId = messageId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the message id.
+   * @return messageId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getMessageId() {
+    return messageId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMessageId(@javax.annotation.Nullable UUID messageId) {
+    this.messageId = messageId;
+  }
+
+  /**
+   * The different kinds of messages that are used in the WebSocket api.
+   * @return messageType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SessionMessageType getMessageType() {
+    return messageType;
+  }
+
+
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ScheduledTasksInfoMessage scheduledTasksInfoMessage = (ScheduledTasksInfoMessage) o;
+    return equalsNullable(this.data, scheduledTasksInfoMessage.data) &&
+        Objects.equals(this.messageId, scheduledTasksInfoMessage.messageId) &&
+        Objects.equals(this.messageType, scheduledTasksInfoMessage.messageType);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(data), messageId, messageType);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ScheduledTasksInfoMessage {\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
+    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ScheduledTasksInfoMessage instance;
+
+    public Builder() {
+      this(new ScheduledTasksInfoMessage());
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<TaskInfo>> getData_JsonNullable() {
-        return data;
+    protected Builder(ScheduledTasksInfoMessage instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<List<TaskInfo>> data) {
-        this.data = data;
+    public ScheduledTasksInfoMessage.Builder data(List<TaskInfo> data) {
+      this.instance.data = JsonNullable.<List<TaskInfo>>of(data);
+      return this;
+    }
+    public ScheduledTasksInfoMessage.Builder data(JsonNullable<List<TaskInfo>> data) {
+      this.instance.data = data;
+      return this;
+    }
+    public ScheduledTasksInfoMessage.Builder messageId(UUID messageId) {
+      this.instance.messageId = messageId;
+      return this;
+    }
+    public ScheduledTasksInfoMessage.Builder messageType(SessionMessageType messageType) {
+      this.instance.messageType = messageType;
+      return this;
     }
 
-    public void setData(@javax.annotation.Nullable List<TaskInfo> data) {
-        this.data = JsonNullable.<List<TaskInfo>> of(data);
-    }
-
-    public ScheduledTasksInfoMessage messageId(@javax.annotation.Nullable UUID messageId) {
-
-        this.messageId = messageId;
-        return this;
-    }
 
     /**
-     * Gets or sets the message id.
-     * 
-     * @return messageId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMessageId(@javax.annotation.Nullable UUID messageId) {
-        this.messageId = messageId;
-    }
-
-    /**
-     * The different kinds of messages that are used in the WebSocket api.
-     * 
-     * @return messageType
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public SessionMessageType getMessageType() {
-        return messageType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ScheduledTasksInfoMessage scheduledTasksInfoMessage = (ScheduledTasksInfoMessage) o;
-        return equalsNullable(this.data, scheduledTasksInfoMessage.data)
-                && Objects.equals(this.messageId, scheduledTasksInfoMessage.messageId)
-                && Objects.equals(this.messageType, scheduledTasksInfoMessage.messageType);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built ScheduledTasksInfoMessage instance.
+    *
+    * The builder is not reusable.
+    */
+    public ScheduledTasksInfoMessage build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ScheduledTasksInfoMessage {\n");
-        sb.append("    data: ").append(toIndentedString(data)).append("\n");
-        sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
-        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ScheduledTasksInfoMessage.Builder builder() {
+    return new ScheduledTasksInfoMessage.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ScheduledTasksInfoMessage.Builder toBuilder() {
+    return new ScheduledTasksInfoMessage.Builder()
+      .data(getData())
+      .messageId(getMessageId())
+      .messageType(getMessageType());
+  }
 
-        private ScheduledTasksInfoMessage instance;
 
-        public Builder() {
-            this(new ScheduledTasksInfoMessage());
-        }
-
-        protected Builder(ScheduledTasksInfoMessage instance) {
-            this.instance = instance;
-        }
-
-        public ScheduledTasksInfoMessage.Builder data(List<TaskInfo> data) {
-            this.instance.data = JsonNullable.<List<TaskInfo>> of(data);
-            return this;
-        }
-
-        public ScheduledTasksInfoMessage.Builder data(JsonNullable<List<TaskInfo>> data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        public ScheduledTasksInfoMessage.Builder messageId(UUID messageId) {
-            this.instance.messageId = messageId;
-            return this;
-        }
-
-        public ScheduledTasksInfoMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built ScheduledTasksInfoMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public ScheduledTasksInfoMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ScheduledTasksInfoMessage.Builder builder() {
-        return new ScheduledTasksInfoMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ScheduledTasksInfoMessage.Builder toBuilder() {
-        return new ScheduledTasksInfoMessage.Builder().data(getData()).messageId(getMessageId())
-                .messageType(getMessageType());
-    }
 }
+

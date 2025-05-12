@@ -17,275 +17,286 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * LogFile
  */
-@JsonPropertyOrder({ LogFile.JSON_PROPERTY_DATE_CREATED, LogFile.JSON_PROPERTY_DATE_MODIFIED,
-        LogFile.JSON_PROPERTY_SIZE, LogFile.JSON_PROPERTY_NAME })
+@JsonPropertyOrder({
+  LogFile.JSON_PROPERTY_DATE_CREATED,
+  LogFile.JSON_PROPERTY_DATE_MODIFIED,
+  LogFile.JSON_PROPERTY_SIZE,
+  LogFile.JSON_PROPERTY_NAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LogFile {
-    public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @javax.annotation.Nullable
-    private OffsetDateTime dateCreated;
+  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
+  @javax.annotation.Nullable
+  private OffsetDateTime dateCreated;
 
-    public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
-    @javax.annotation.Nullable
-    private OffsetDateTime dateModified;
+  public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
+  @javax.annotation.Nullable
+  private OffsetDateTime dateModified;
 
-    public static final String JSON_PROPERTY_SIZE = "Size";
-    @javax.annotation.Nullable
-    private Long size;
+  public static final String JSON_PROPERTY_SIZE = "Size";
+  @javax.annotation.Nullable
+  private Long size;
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public LogFile() {
-    }
+  public LogFile() {
+  }
 
-    public LogFile dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+  public LogFile dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    
+    this.dateCreated = dateCreated;
+    return this;
+  }
 
-        this.dateCreated = dateCreated;
-        return this;
-    }
+  /**
+   * Gets or sets the date created.
+   * @return dateCreated
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the date created.
-     * 
-     * @return dateCreated
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public OffsetDateTime getDateCreated() {
+    return dateCreated;
+  }
 
-    public OffsetDateTime getDateCreated() {
-        return dateCreated;
-    }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-        this.dateCreated = dateCreated;
-    }
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+    this.dateCreated = dateCreated;
+  }
 
-    public LogFile dateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+  public LogFile dateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+    
+    this.dateModified = dateModified;
+    return this;
+  }
 
-        this.dateModified = dateModified;
-        return this;
-    }
+  /**
+   * Gets or sets the date modified.
+   * @return dateModified
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the date modified.
-     * 
-     * @return dateModified
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public OffsetDateTime getDateModified() {
+    return dateModified;
+  }
 
-    public OffsetDateTime getDateModified() {
-        return dateModified;
-    }
 
-    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
-        this.dateModified = dateModified;
-    }
+  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+    this.dateModified = dateModified;
+  }
 
-    public LogFile size(@javax.annotation.Nullable Long size) {
+  public LogFile size(@javax.annotation.Nullable Long size) {
+    
+    this.size = size;
+    return this;
+  }
 
-        this.size = size;
-        return this;
-    }
+  /**
+   * Gets or sets the size.
+   * @return size
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the size.
-     * 
-     * @return size
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SIZE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Long getSize() {
+    return size;
+  }
 
-    public Long getSize() {
-        return size;
-    }
 
-    @JsonProperty(JSON_PROPERTY_SIZE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSize(@javax.annotation.Nullable Long size) {
-        this.size = size;
-    }
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSize(@javax.annotation.Nullable Long size) {
+    this.size = size;
+  }
 
-    public LogFile name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public LogFile name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
+
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LogFile logFile = (LogFile) o;
+    return Objects.equals(this.dateCreated, logFile.dateCreated) &&
+        Objects.equals(this.dateModified, logFile.dateModified) &&
+        Objects.equals(this.size, logFile.size) &&
+        equalsNullable(this.name, logFile.name);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(dateCreated, dateModified, size, hashCodeNullable(name));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class LogFile {\n");
+    sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
+    sb.append("    dateModified: ").append(toIndentedString(dateModified)).append("\n");
+    sb.append("    size: ").append(toIndentedString(size)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private LogFile instance;
+
+    public Builder() {
+      this(new LogFile());
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
+    protected Builder(LogFile instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
+    public LogFile.Builder dateCreated(OffsetDateTime dateCreated) {
+      this.instance.dateCreated = dateCreated;
+      return this;
+    }
+    public LogFile.Builder dateModified(OffsetDateTime dateModified) {
+      this.instance.dateModified = dateModified;
+      return this;
+    }
+    public LogFile.Builder size(Long size) {
+      this.instance.size = size;
+      return this;
+    }
+    public LogFile.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public LogFile.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        LogFile logFile = (LogFile) o;
-        return Objects.equals(this.dateCreated, logFile.dateCreated)
-                && Objects.equals(this.dateModified, logFile.dateModified) && Objects.equals(this.size, logFile.size)
-                && equalsNullable(this.name, logFile.name);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dateCreated, dateModified, size, hashCodeNullable(name));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built LogFile instance.
+    *
+    * The builder is not reusable.
+    */
+    public LogFile build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class LogFile {\n");
-        sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
-        sb.append("    dateModified: ").append(toIndentedString(dateModified)).append("\n");
-        sb.append("    size: ").append(toIndentedString(size)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static LogFile.Builder builder() {
+    return new LogFile.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public LogFile.Builder toBuilder() {
+    return new LogFile.Builder()
+      .dateCreated(getDateCreated())
+      .dateModified(getDateModified())
+      .size(getSize())
+      .name(getName());
+  }
 
-        private LogFile instance;
 
-        public Builder() {
-            this(new LogFile());
-        }
-
-        protected Builder(LogFile instance) {
-            this.instance = instance;
-        }
-
-        public LogFile.Builder dateCreated(OffsetDateTime dateCreated) {
-            this.instance.dateCreated = dateCreated;
-            return this;
-        }
-
-        public LogFile.Builder dateModified(OffsetDateTime dateModified) {
-            this.instance.dateModified = dateModified;
-            return this;
-        }
-
-        public LogFile.Builder size(Long size) {
-            this.instance.size = size;
-            return this;
-        }
-
-        public LogFile.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public LogFile.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        /**
-         * returns a built LogFile instance.
-         *
-         * The builder is not reusable.
-         */
-        public LogFile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static LogFile.Builder builder() {
-        return new LogFile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public LogFile.Builder toBuilder() {
-        return new LogFile.Builder().dateCreated(getDateCreated()).dateModified(getDateModified()).size(getSize())
-                .name(getName());
-    }
 }
+

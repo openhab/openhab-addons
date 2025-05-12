@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,44 +29,45 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ChannelItemSortField
  */
 public enum ChannelItemSortField {
+  
+  NAME("Name"),
+  
+  COMMUNITY_RATING("CommunityRating"),
+  
+  PREMIERE_DATE("PremiereDate"),
+  
+  DATE_CREATED("DateCreated"),
+  
+  RUNTIME("Runtime"),
+  
+  PLAY_COUNT("PlayCount"),
+  
+  COMMUNITY_PLAY_COUNT("CommunityPlayCount");
 
-    NAME("Name"),
+  private String value;
 
-    COMMUNITY_RATING("CommunityRating"),
+  ChannelItemSortField(String value) {
+    this.value = value;
+  }
 
-    PREMIERE_DATE("PremiereDate"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    DATE_CREATED("DateCreated"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    RUNTIME("Runtime"),
-
-    PLAY_COUNT("PlayCount"),
-
-    COMMUNITY_PLAY_COUNT("CommunityPlayCount");
-
-    private String value;
-
-    ChannelItemSortField(String value) {
-        this.value = value;
+  @JsonCreator
+  public static ChannelItemSortField fromValue(String value) {
+    for (ChannelItemSortField b : ChannelItemSortField.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ChannelItemSortField fromValue(String value) {
-        for (ChannelItemSortField b : ChannelItemSortField.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

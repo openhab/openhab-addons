@@ -45,13 +45,11 @@ public class HttpBasicAuth implements Authentication {
     }
 
     @Override
-    public void applyToParams(MultiValueMap<String, String> queryParams, HttpHeaders headerParams,
-            MultiValueMap<String, String> cookieParams) {
+    public void applyToParams(MultiValueMap<String, String> queryParams, HttpHeaders headerParams, MultiValueMap<String, String> cookieParams) {
         if (username == null && password == null) {
             return;
         }
         String str = (username == null ? "" : username) + ":" + (password == null ? "" : password);
-        headerParams.add(HttpHeaders.AUTHORIZATION,
-                "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
+        headerParams.add(HttpHeaders.AUTHORIZATION, "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
     }
 }

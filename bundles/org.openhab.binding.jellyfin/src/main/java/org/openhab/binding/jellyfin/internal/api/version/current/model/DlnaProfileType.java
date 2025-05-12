@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,40 +29,41 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets DlnaProfileType
  */
 public enum DlnaProfileType {
+  
+  AUDIO("Audio"),
+  
+  VIDEO("Video"),
+  
+  PHOTO("Photo"),
+  
+  SUBTITLE("Subtitle"),
+  
+  LYRIC("Lyric");
 
-    AUDIO("Audio"),
+  private String value;
 
-    VIDEO("Video"),
+  DlnaProfileType(String value) {
+    this.value = value;
+  }
 
-    PHOTO("Photo"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    SUBTITLE("Subtitle"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    LYRIC("Lyric");
-
-    private String value;
-
-    DlnaProfileType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static DlnaProfileType fromValue(String value) {
+    for (DlnaProfileType b : DlnaProfileType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static DlnaProfileType fromValue(String value) {
-        for (DlnaProfileType b : DlnaProfileType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

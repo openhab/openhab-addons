@@ -31,7 +31,6 @@ public class JavaTimeFormatter {
 
     /**
      * Get the date format used to parse/format {@code OffsetDateTime} parameters.
-     * 
      * @return DateTimeFormatter
      */
     public DateTimeFormatter getOffsetDateTimeFormatter() {
@@ -40,7 +39,6 @@ public class JavaTimeFormatter {
 
     /**
      * Set the date format used to parse/format {@code OffsetDateTime} parameters.
-     * 
      * @param offsetDateTimeFormatter {@code DateTimeFormatter}
      */
     public void setOffsetDateTimeFormatter(DateTimeFormatter offsetDateTimeFormatter) {
@@ -49,7 +47,6 @@ public class JavaTimeFormatter {
 
     /**
      * Parse the given string into {@code OffsetDateTime} object.
-     * 
      * @param str String
      * @return {@code OffsetDateTime}
      */
@@ -60,10 +57,8 @@ public class JavaTimeFormatter {
             throw new RuntimeException(e);
         }
     }
-
     /**
      * Format the given {@code OffsetDateTime} object into string.
-     * 
      * @param offsetDateTime {@code OffsetDateTime}
      * @return {@code OffsetDateTime} in string format
      */

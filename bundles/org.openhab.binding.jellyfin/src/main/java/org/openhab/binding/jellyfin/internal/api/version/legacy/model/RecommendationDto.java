@@ -17,305 +17,315 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.RecommendationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * RecommendationDto
  */
-@JsonPropertyOrder({ RecommendationDto.JSON_PROPERTY_ITEMS, RecommendationDto.JSON_PROPERTY_RECOMMENDATION_TYPE,
-        RecommendationDto.JSON_PROPERTY_BASELINE_ITEM_NAME, RecommendationDto.JSON_PROPERTY_CATEGORY_ID })
+@JsonPropertyOrder({
+  RecommendationDto.JSON_PROPERTY_ITEMS,
+  RecommendationDto.JSON_PROPERTY_RECOMMENDATION_TYPE,
+  RecommendationDto.JSON_PROPERTY_BASELINE_ITEM_NAME,
+  RecommendationDto.JSON_PROPERTY_CATEGORY_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RecommendationDto {
-    public static final String JSON_PROPERTY_ITEMS = "Items";
-    @javax.annotation.Nullable
-    private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>> undefined();
+  public static final String JSON_PROPERTY_ITEMS = "Items";
+  @javax.annotation.Nullable
+  private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>>undefined();
 
-    public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
-    @javax.annotation.Nullable
-    private RecommendationType recommendationType;
+  public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
+  @javax.annotation.Nullable
+  private RecommendationType recommendationType;
 
-    public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> baselineItemName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> baselineItemName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
-    @javax.annotation.Nullable
-    private UUID categoryId;
+  public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
+  @javax.annotation.Nullable
+  private UUID categoryId;
 
-    public RecommendationDto() {
+  public RecommendationDto() {
+  }
+
+  public RecommendationDto items(@javax.annotation.Nullable List<BaseItemDto> items) {
+    this.items = JsonNullable.<List<BaseItemDto>>of(items);
+    
+    return this;
+  }
+
+  public RecommendationDto addItemsItem(BaseItemDto itemsItem) {
+    if (this.items == null || !this.items.isPresent()) {
+      this.items = JsonNullable.<List<BaseItemDto>>of(new ArrayList<>());
     }
-
-    public RecommendationDto items(@javax.annotation.Nullable List<BaseItemDto> items) {
-        this.items = JsonNullable.<List<BaseItemDto>> of(items);
-
-        return this;
+    try {
+      this.items.get().add(itemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    public RecommendationDto addItemsItem(BaseItemDto itemsItem) {
-        if (this.items == null || !this.items.isPresent()) {
-            this.items = JsonNullable.<List<BaseItemDto>> of(new ArrayList<>());
-        }
-        try {
-            this.items.get().add(itemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
+  /**
+   * Get items
+   * @return items
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get items
-     * 
-     * @return items
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<BaseItemDto> getItems() {
+  public List<BaseItemDto> getItems() {
         return items.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<BaseItemDto>> getItems_JsonNullable() {
-        return items;
-    }
+  public JsonNullable<List<BaseItemDto>> getItems_JsonNullable() {
+    return items;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  public void setItems_JsonNullable(JsonNullable<List<BaseItemDto>> items) {
+    this.items = items;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    public void setItems_JsonNullable(JsonNullable<List<BaseItemDto>> items) {
-        this.items = items;
-    }
+  public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
+    this.items = JsonNullable.<List<BaseItemDto>>of(items);
+  }
 
-    public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
-        this.items = JsonNullable.<List<BaseItemDto>> of(items);
-    }
+  public RecommendationDto recommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
+    
+    this.recommendationType = recommendationType;
+    return this;
+  }
 
-    public RecommendationDto recommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
+  /**
+   * Get recommendationType
+   * @return recommendationType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.recommendationType = recommendationType;
-        return this;
-    }
+  public RecommendationType getRecommendationType() {
+    return recommendationType;
+  }
 
-    /**
-     * Get recommendationType
-     * 
-     * @return recommendationType
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public RecommendationType getRecommendationType() {
-        return recommendationType;
-    }
+  @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRecommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
+    this.recommendationType = recommendationType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRecommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
-        this.recommendationType = recommendationType;
-    }
+  public RecommendationDto baselineItemName(@javax.annotation.Nullable String baselineItemName) {
+    this.baselineItemName = JsonNullable.<String>of(baselineItemName);
+    
+    return this;
+  }
 
-    public RecommendationDto baselineItemName(@javax.annotation.Nullable String baselineItemName) {
-        this.baselineItemName = JsonNullable.<String> of(baselineItemName);
+  /**
+   * Get baselineItemName
+   * @return baselineItemName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get baselineItemName
-     * 
-     * @return baselineItemName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getBaselineItemName() {
+  public String getBaselineItemName() {
         return baselineItemName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getBaselineItemName_JsonNullable() {
+    return baselineItemName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+  public void setBaselineItemName_JsonNullable(JsonNullable<String> baselineItemName) {
+    this.baselineItemName = baselineItemName;
+  }
+
+  public void setBaselineItemName(@javax.annotation.Nullable String baselineItemName) {
+    this.baselineItemName = JsonNullable.<String>of(baselineItemName);
+  }
+
+  public RecommendationDto categoryId(@javax.annotation.Nullable UUID categoryId) {
+    
+    this.categoryId = categoryId;
+    return this;
+  }
+
+  /**
+   * Get categoryId
+   * @return categoryId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getCategoryId() {
+    return categoryId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCategoryId(@javax.annotation.Nullable UUID categoryId) {
+    this.categoryId = categoryId;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RecommendationDto recommendationDto = (RecommendationDto) o;
+    return equalsNullable(this.items, recommendationDto.items) &&
+        Objects.equals(this.recommendationType, recommendationDto.recommendationType) &&
+        equalsNullable(this.baselineItemName, recommendationDto.baselineItemName) &&
+        Objects.equals(this.categoryId, recommendationDto.categoryId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(items), recommendationType, hashCodeNullable(baselineItemName), categoryId);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class RecommendationDto {\n");
+    sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    recommendationType: ").append(toIndentedString(recommendationType)).append("\n");
+    sb.append("    baselineItemName: ").append(toIndentedString(baselineItemName)).append("\n");
+    sb.append("    categoryId: ").append(toIndentedString(categoryId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private RecommendationDto instance;
+
+    public Builder() {
+      this(new RecommendationDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getBaselineItemName_JsonNullable() {
-        return baselineItemName;
+    protected Builder(RecommendationDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
-    public void setBaselineItemName_JsonNullable(JsonNullable<String> baselineItemName) {
-        this.baselineItemName = baselineItemName;
+    public RecommendationDto.Builder items(List<BaseItemDto> items) {
+      this.instance.items = JsonNullable.<List<BaseItemDto>>of(items);
+      return this;
+    }
+    public RecommendationDto.Builder items(JsonNullable<List<BaseItemDto>> items) {
+      this.instance.items = items;
+      return this;
+    }
+    public RecommendationDto.Builder recommendationType(RecommendationType recommendationType) {
+      this.instance.recommendationType = recommendationType;
+      return this;
+    }
+    public RecommendationDto.Builder baselineItemName(String baselineItemName) {
+      this.instance.baselineItemName = JsonNullable.<String>of(baselineItemName);
+      return this;
+    }
+    public RecommendationDto.Builder baselineItemName(JsonNullable<String> baselineItemName) {
+      this.instance.baselineItemName = baselineItemName;
+      return this;
+    }
+    public RecommendationDto.Builder categoryId(UUID categoryId) {
+      this.instance.categoryId = categoryId;
+      return this;
     }
 
-    public void setBaselineItemName(@javax.annotation.Nullable String baselineItemName) {
-        this.baselineItemName = JsonNullable.<String> of(baselineItemName);
-    }
-
-    public RecommendationDto categoryId(@javax.annotation.Nullable UUID categoryId) {
-
-        this.categoryId = categoryId;
-        return this;
-    }
 
     /**
-     * Get categoryId
-     * 
-     * @return categoryId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCategoryId(@javax.annotation.Nullable UUID categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RecommendationDto recommendationDto = (RecommendationDto) o;
-        return equalsNullable(this.items, recommendationDto.items)
-                && Objects.equals(this.recommendationType, recommendationDto.recommendationType)
-                && equalsNullable(this.baselineItemName, recommendationDto.baselineItemName)
-                && Objects.equals(this.categoryId, recommendationDto.categoryId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(items), recommendationType, hashCodeNullable(baselineItemName),
-                categoryId);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built RecommendationDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public RecommendationDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class RecommendationDto {\n");
-        sb.append("    items: ").append(toIndentedString(items)).append("\n");
-        sb.append("    recommendationType: ").append(toIndentedString(recommendationType)).append("\n");
-        sb.append("    baselineItemName: ").append(toIndentedString(baselineItemName)).append("\n");
-        sb.append("    categoryId: ").append(toIndentedString(categoryId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static RecommendationDto.Builder builder() {
+    return new RecommendationDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public RecommendationDto.Builder toBuilder() {
+    return new RecommendationDto.Builder()
+      .items(getItems())
+      .recommendationType(getRecommendationType())
+      .baselineItemName(getBaselineItemName())
+      .categoryId(getCategoryId());
+  }
 
-        private RecommendationDto instance;
 
-        public Builder() {
-            this(new RecommendationDto());
-        }
-
-        protected Builder(RecommendationDto instance) {
-            this.instance = instance;
-        }
-
-        public RecommendationDto.Builder items(List<BaseItemDto> items) {
-            this.instance.items = JsonNullable.<List<BaseItemDto>> of(items);
-            return this;
-        }
-
-        public RecommendationDto.Builder items(JsonNullable<List<BaseItemDto>> items) {
-            this.instance.items = items;
-            return this;
-        }
-
-        public RecommendationDto.Builder recommendationType(RecommendationType recommendationType) {
-            this.instance.recommendationType = recommendationType;
-            return this;
-        }
-
-        public RecommendationDto.Builder baselineItemName(String baselineItemName) {
-            this.instance.baselineItemName = JsonNullable.<String> of(baselineItemName);
-            return this;
-        }
-
-        public RecommendationDto.Builder baselineItemName(JsonNullable<String> baselineItemName) {
-            this.instance.baselineItemName = baselineItemName;
-            return this;
-        }
-
-        public RecommendationDto.Builder categoryId(UUID categoryId) {
-            this.instance.categoryId = categoryId;
-            return this;
-        }
-
-        /**
-         * returns a built RecommendationDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public RecommendationDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RecommendationDto.Builder builder() {
-        return new RecommendationDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RecommendationDto.Builder toBuilder() {
-        return new RecommendationDto.Builder().items(getItems()).recommendationType(getRecommendationType())
-                .baselineItemName(getBaselineItemName()).categoryId(getCategoryId());
-    }
 }
+

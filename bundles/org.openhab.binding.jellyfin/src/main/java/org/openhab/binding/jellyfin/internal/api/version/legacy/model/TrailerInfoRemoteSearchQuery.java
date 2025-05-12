@@ -17,294 +17,299 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.TrailerInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * TrailerInfoRemoteSearchQuery
  */
-@JsonPropertyOrder({ TrailerInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
-        TrailerInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
-        TrailerInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
-        TrailerInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
+@JsonPropertyOrder({
+  TrailerInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
+  TrailerInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
+  TrailerInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
+  TrailerInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TrailerInfoRemoteSearchQuery {
-    public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
-    @javax.annotation.Nullable
-    private JsonNullable<TrailerInfo> searchInfo = JsonNullable.<TrailerInfo> undefined();
+  public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
+  @javax.annotation.Nullable
+  private JsonNullable<TrailerInfo> searchInfo = JsonNullable.<TrailerInfo>undefined();
 
-    public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @javax.annotation.Nullable
-    private UUID itemId;
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+  @javax.annotation.Nullable
+  private UUID itemId;
 
-    public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> searchProviderName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
-    @javax.annotation.Nullable
-    private Boolean includeDisabledProviders;
+  public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
+  @javax.annotation.Nullable
+  private Boolean includeDisabledProviders;
 
-    public TrailerInfoRemoteSearchQuery() {
-    }
+  public TrailerInfoRemoteSearchQuery() {
+  }
 
-    public TrailerInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable TrailerInfo searchInfo) {
-        this.searchInfo = JsonNullable.<TrailerInfo> of(searchInfo);
+  public TrailerInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable TrailerInfo searchInfo) {
+    this.searchInfo = JsonNullable.<TrailerInfo>of(searchInfo);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get searchInfo
+   * @return searchInfo
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get searchInfo
-     * 
-     * @return searchInfo
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public TrailerInfo getSearchInfo() {
+  public TrailerInfo getSearchInfo() {
         return searchInfo.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<TrailerInfo> getSearchInfo_JsonNullable() {
-        return searchInfo;
-    }
+  public JsonNullable<TrailerInfo> getSearchInfo_JsonNullable() {
+    return searchInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+  public void setSearchInfo_JsonNullable(JsonNullable<TrailerInfo> searchInfo) {
+    this.searchInfo = searchInfo;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-    public void setSearchInfo_JsonNullable(JsonNullable<TrailerInfo> searchInfo) {
-        this.searchInfo = searchInfo;
-    }
+  public void setSearchInfo(@javax.annotation.Nullable TrailerInfo searchInfo) {
+    this.searchInfo = JsonNullable.<TrailerInfo>of(searchInfo);
+  }
 
-    public void setSearchInfo(@javax.annotation.Nullable TrailerInfo searchInfo) {
-        this.searchInfo = JsonNullable.<TrailerInfo> of(searchInfo);
-    }
+  public TrailerInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
+    
+    this.itemId = itemId;
+    return this;
+  }
 
-    public TrailerInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
+  /**
+   * Get itemId
+   * @return itemId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.itemId = itemId;
-        return this;
-    }
+  public UUID getItemId() {
+    return itemId;
+  }
 
-    /**
-     * Get itemId
-     * 
-     * @return itemId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public UUID getItemId() {
-        return itemId;
-    }
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemId(@javax.annotation.Nullable UUID itemId) {
+    this.itemId = itemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setItemId(@javax.annotation.Nullable UUID itemId) {
-        this.itemId = itemId;
-    }
+  public TrailerInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
+    
+    return this;
+  }
 
-    public TrailerInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+  /**
+   * Gets or sets the provider name to search within if set.
+   * @return searchProviderName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the provider name to search within if set.
-     * 
-     * @return searchProviderName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSearchProviderName() {
+  public String getSearchProviderName() {
         return searchProviderName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSearchProviderName_JsonNullable() {
+    return searchProviderName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
+    this.searchProviderName = searchProviderName;
+  }
+
+  public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
+  }
+
+  public TrailerInfoRemoteSearchQuery includeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
+    
+    this.includeDisabledProviders = includeDisabledProviders;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether disabled providers should be included.
+   * @return includeDisabledProviders
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIncludeDisabledProviders() {
+    return includeDisabledProviders;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIncludeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
+    this.includeDisabledProviders = includeDisabledProviders;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery = (TrailerInfoRemoteSearchQuery) o;
+    return equalsNullable(this.searchInfo, trailerInfoRemoteSearchQuery.searchInfo) &&
+        Objects.equals(this.itemId, trailerInfoRemoteSearchQuery.itemId) &&
+        equalsNullable(this.searchProviderName, trailerInfoRemoteSearchQuery.searchProviderName) &&
+        Objects.equals(this.includeDisabledProviders, trailerInfoRemoteSearchQuery.includeDisabledProviders);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName), includeDisabledProviders);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TrailerInfoRemoteSearchQuery {\n");
+    sb.append("    searchInfo: ").append(toIndentedString(searchInfo)).append("\n");
+    sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
+    sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
+    sb.append("    includeDisabledProviders: ").append(toIndentedString(includeDisabledProviders)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private TrailerInfoRemoteSearchQuery instance;
+
+    public Builder() {
+      this(new TrailerInfoRemoteSearchQuery());
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getSearchProviderName_JsonNullable() {
-        return searchProviderName;
+    protected Builder(TrailerInfoRemoteSearchQuery instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
-        this.searchProviderName = searchProviderName;
+    public TrailerInfoRemoteSearchQuery.Builder searchInfo(TrailerInfo searchInfo) {
+      this.instance.searchInfo = JsonNullable.<TrailerInfo>of(searchInfo);
+      return this;
+    }
+    public TrailerInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<TrailerInfo> searchInfo) {
+      this.instance.searchInfo = searchInfo;
+      return this;
+    }
+    public TrailerInfoRemoteSearchQuery.Builder itemId(UUID itemId) {
+      this.instance.itemId = itemId;
+      return this;
+    }
+    public TrailerInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
+      this.instance.searchProviderName = JsonNullable.<String>of(searchProviderName);
+      return this;
+    }
+    public TrailerInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
+      this.instance.searchProviderName = searchProviderName;
+      return this;
+    }
+    public TrailerInfoRemoteSearchQuery.Builder includeDisabledProviders(Boolean includeDisabledProviders) {
+      this.instance.includeDisabledProviders = includeDisabledProviders;
+      return this;
     }
 
-    public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
-    }
-
-    public TrailerInfoRemoteSearchQuery includeDisabledProviders(
-            @javax.annotation.Nullable Boolean includeDisabledProviders) {
-
-        this.includeDisabledProviders = includeDisabledProviders;
-        return this;
-    }
 
     /**
-     * Gets or sets a value indicating whether disabled providers should be included.
-     * 
-     * @return includeDisabledProviders
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIncludeDisabledProviders() {
-        return includeDisabledProviders;
-    }
-
-    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIncludeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
-        this.includeDisabledProviders = includeDisabledProviders;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery = (TrailerInfoRemoteSearchQuery) o;
-        return equalsNullable(this.searchInfo, trailerInfoRemoteSearchQuery.searchInfo)
-                && Objects.equals(this.itemId, trailerInfoRemoteSearchQuery.itemId)
-                && equalsNullable(this.searchProviderName, trailerInfoRemoteSearchQuery.searchProviderName)
-                && Objects.equals(this.includeDisabledProviders, trailerInfoRemoteSearchQuery.includeDisabledProviders);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName),
-                includeDisabledProviders);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built TrailerInfoRemoteSearchQuery instance.
+    *
+    * The builder is not reusable.
+    */
+    public TrailerInfoRemoteSearchQuery build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TrailerInfoRemoteSearchQuery {\n");
-        sb.append("    searchInfo: ").append(toIndentedString(searchInfo)).append("\n");
-        sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
-        sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
-        sb.append("    includeDisabledProviders: ").append(toIndentedString(includeDisabledProviders)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static TrailerInfoRemoteSearchQuery.Builder builder() {
+    return new TrailerInfoRemoteSearchQuery.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public TrailerInfoRemoteSearchQuery.Builder toBuilder() {
+    return new TrailerInfoRemoteSearchQuery.Builder()
+      .searchInfo(getSearchInfo())
+      .itemId(getItemId())
+      .searchProviderName(getSearchProviderName())
+      .includeDisabledProviders(getIncludeDisabledProviders());
+  }
 
-        private TrailerInfoRemoteSearchQuery instance;
 
-        public Builder() {
-            this(new TrailerInfoRemoteSearchQuery());
-        }
-
-        protected Builder(TrailerInfoRemoteSearchQuery instance) {
-            this.instance = instance;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder searchInfo(TrailerInfo searchInfo) {
-            this.instance.searchInfo = JsonNullable.<TrailerInfo> of(searchInfo);
-            return this;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<TrailerInfo> searchInfo) {
-            this.instance.searchInfo = searchInfo;
-            return this;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = JsonNullable.<String> of(searchProviderName);
-            return this;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
-            this.instance.searchProviderName = searchProviderName;
-            return this;
-        }
-
-        public TrailerInfoRemoteSearchQuery.Builder includeDisabledProviders(Boolean includeDisabledProviders) {
-            this.instance.includeDisabledProviders = includeDisabledProviders;
-            return this;
-        }
-
-        /**
-         * returns a built TrailerInfoRemoteSearchQuery instance.
-         *
-         * The builder is not reusable.
-         */
-        public TrailerInfoRemoteSearchQuery build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TrailerInfoRemoteSearchQuery.Builder builder() {
-        return new TrailerInfoRemoteSearchQuery.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TrailerInfoRemoteSearchQuery.Builder toBuilder() {
-        return new TrailerInfoRemoteSearchQuery.Builder().searchInfo(getSearchInfo()).itemId(getItemId())
-                .searchProviderName(getSearchProviderName()).includeDisabledProviders(getIncludeDisabledProviders());
-    }
 }
+

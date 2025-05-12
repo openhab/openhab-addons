@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,38 +29,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum VideoType.
  */
 public enum VideoType {
+  
+  VIDEO_FILE("VideoFile"),
+  
+  ISO("Iso"),
+  
+  DVD("Dvd"),
+  
+  BLU_RAY("BluRay");
 
-    VIDEO_FILE("VideoFile"),
+  private String value;
 
-    ISO("Iso"),
+  VideoType(String value) {
+    this.value = value;
+  }
 
-    DVD("Dvd"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    BLU_RAY("BluRay");
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    private String value;
-
-    VideoType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static VideoType fromValue(String value) {
+    for (VideoType b : VideoType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static VideoType fromValue(String value) {
-        for (VideoType b : VideoType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

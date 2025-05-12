@@ -17,393 +17,396 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The configuration page info.
  */
-@JsonPropertyOrder({ ConfigurationPageInfo.JSON_PROPERTY_NAME, ConfigurationPageInfo.JSON_PROPERTY_ENABLE_IN_MAIN_MENU,
-        ConfigurationPageInfo.JSON_PROPERTY_MENU_SECTION, ConfigurationPageInfo.JSON_PROPERTY_MENU_ICON,
-        ConfigurationPageInfo.JSON_PROPERTY_DISPLAY_NAME, ConfigurationPageInfo.JSON_PROPERTY_PLUGIN_ID })
+@JsonPropertyOrder({
+  ConfigurationPageInfo.JSON_PROPERTY_NAME,
+  ConfigurationPageInfo.JSON_PROPERTY_ENABLE_IN_MAIN_MENU,
+  ConfigurationPageInfo.JSON_PROPERTY_MENU_SECTION,
+  ConfigurationPageInfo.JSON_PROPERTY_MENU_ICON,
+  ConfigurationPageInfo.JSON_PROPERTY_DISPLAY_NAME,
+  ConfigurationPageInfo.JSON_PROPERTY_PLUGIN_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ConfigurationPageInfo {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public static final String JSON_PROPERTY_ENABLE_IN_MAIN_MENU = "EnableInMainMenu";
-    @javax.annotation.Nullable
-    private Boolean enableInMainMenu;
+  public static final String JSON_PROPERTY_ENABLE_IN_MAIN_MENU = "EnableInMainMenu";
+  @javax.annotation.Nullable
+  private Boolean enableInMainMenu;
 
-    public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
-    @javax.annotation.Nullable
-    private JsonNullable<String> menuSection = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
+  @javax.annotation.Nullable
+  private JsonNullable<String> menuSection = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
-    @javax.annotation.Nullable
-    private JsonNullable<String> menuIcon = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
+  @javax.annotation.Nullable
+  private JsonNullable<String> menuIcon = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> displayName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> displayName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> pluginId = JsonNullable.<UUID> undefined();
+  public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> pluginId = JsonNullable.<UUID>undefined();
 
-    public ConfigurationPageInfo() {
-    }
+  public ConfigurationPageInfo() {
+  }
 
-    public ConfigurationPageInfo name(@javax.annotation.Nullable String name) {
+  public ConfigurationPageInfo name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
 
-        this.name = name;
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
 
-    public ConfigurationPageInfo enableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
+  public ConfigurationPageInfo enableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
+    
+    this.enableInMainMenu = enableInMainMenu;
+    return this;
+  }
 
-        this.enableInMainMenu = enableInMainMenu;
-        return this;
-    }
+  /**
+   * Gets or sets a value indicating whether the configurations page is enabled in the main menu.
+   * @return enableInMainMenu
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets a value indicating whether the configurations page is enabled in the main menu.
-     * 
-     * @return enableInMainMenu
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Boolean getEnableInMainMenu() {
+    return enableInMainMenu;
+  }
 
-    public Boolean getEnableInMainMenu() {
-        return enableInMainMenu;
-    }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
-        this.enableInMainMenu = enableInMainMenu;
-    }
+  @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
+    this.enableInMainMenu = enableInMainMenu;
+  }
 
-    public ConfigurationPageInfo menuSection(@javax.annotation.Nullable String menuSection) {
-        this.menuSection = JsonNullable.<String> of(menuSection);
+  public ConfigurationPageInfo menuSection(@javax.annotation.Nullable String menuSection) {
+    this.menuSection = JsonNullable.<String>of(menuSection);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the menu section.
+   * @return menuSection
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the menu section.
-     * 
-     * @return menuSection
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMenuSection() {
+  public String getMenuSection() {
         return menuSection.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MENU_SECTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMenuSection_JsonNullable() {
-        return menuSection;
-    }
+  public JsonNullable<String> getMenuSection_JsonNullable() {
+    return menuSection;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+  public void setMenuSection_JsonNullable(JsonNullable<String> menuSection) {
+    this.menuSection = menuSection;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MENU_SECTION)
-    public void setMenuSection_JsonNullable(JsonNullable<String> menuSection) {
-        this.menuSection = menuSection;
-    }
+  public void setMenuSection(@javax.annotation.Nullable String menuSection) {
+    this.menuSection = JsonNullable.<String>of(menuSection);
+  }
 
-    public void setMenuSection(@javax.annotation.Nullable String menuSection) {
-        this.menuSection = JsonNullable.<String> of(menuSection);
-    }
+  public ConfigurationPageInfo menuIcon(@javax.annotation.Nullable String menuIcon) {
+    this.menuIcon = JsonNullable.<String>of(menuIcon);
+    
+    return this;
+  }
 
-    public ConfigurationPageInfo menuIcon(@javax.annotation.Nullable String menuIcon) {
-        this.menuIcon = JsonNullable.<String> of(menuIcon);
+  /**
+   * Gets or sets the menu icon.
+   * @return menuIcon
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the menu icon.
-     * 
-     * @return menuIcon
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMenuIcon() {
+  public String getMenuIcon() {
         return menuIcon.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MENU_ICON)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MENU_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMenuIcon_JsonNullable() {
-        return menuIcon;
-    }
+  public JsonNullable<String> getMenuIcon_JsonNullable() {
+    return menuIcon;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MENU_ICON)
+  public void setMenuIcon_JsonNullable(JsonNullable<String> menuIcon) {
+    this.menuIcon = menuIcon;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MENU_ICON)
-    public void setMenuIcon_JsonNullable(JsonNullable<String> menuIcon) {
-        this.menuIcon = menuIcon;
-    }
+  public void setMenuIcon(@javax.annotation.Nullable String menuIcon) {
+    this.menuIcon = JsonNullable.<String>of(menuIcon);
+  }
 
-    public void setMenuIcon(@javax.annotation.Nullable String menuIcon) {
-        this.menuIcon = JsonNullable.<String> of(menuIcon);
-    }
+  public ConfigurationPageInfo displayName(@javax.annotation.Nullable String displayName) {
+    this.displayName = JsonNullable.<String>of(displayName);
+    
+    return this;
+  }
 
-    public ConfigurationPageInfo displayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
+  /**
+   * Gets or sets the display name.
+   * @return displayName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the display name.
-     * 
-     * @return displayName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDisplayName() {
+  public String getDisplayName() {
         return displayName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDisplayName_JsonNullable() {
+    return displayName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
+    this.displayName = displayName;
+  }
+
+  public void setDisplayName(@javax.annotation.Nullable String displayName) {
+    this.displayName = JsonNullable.<String>of(displayName);
+  }
+
+  public ConfigurationPageInfo pluginId(@javax.annotation.Nullable UUID pluginId) {
+    this.pluginId = JsonNullable.<UUID>of(pluginId);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the plugin id.
+   * @return pluginId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public UUID getPluginId() {
+        return pluginId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getPluginId_JsonNullable() {
+    return pluginId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+  public void setPluginId_JsonNullable(JsonNullable<UUID> pluginId) {
+    this.pluginId = pluginId;
+  }
+
+  public void setPluginId(@javax.annotation.Nullable UUID pluginId) {
+    this.pluginId = JsonNullable.<UUID>of(pluginId);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ConfigurationPageInfo configurationPageInfo = (ConfigurationPageInfo) o;
+    return Objects.equals(this.name, configurationPageInfo.name) &&
+        Objects.equals(this.enableInMainMenu, configurationPageInfo.enableInMainMenu) &&
+        equalsNullable(this.menuSection, configurationPageInfo.menuSection) &&
+        equalsNullable(this.menuIcon, configurationPageInfo.menuIcon) &&
+        equalsNullable(this.displayName, configurationPageInfo.displayName) &&
+        equalsNullable(this.pluginId, configurationPageInfo.pluginId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, enableInMainMenu, hashCodeNullable(menuSection), hashCodeNullable(menuIcon), hashCodeNullable(displayName), hashCodeNullable(pluginId));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ConfigurationPageInfo {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    enableInMainMenu: ").append(toIndentedString(enableInMainMenu)).append("\n");
+    sb.append("    menuSection: ").append(toIndentedString(menuSection)).append("\n");
+    sb.append("    menuIcon: ").append(toIndentedString(menuIcon)).append("\n");
+    sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+    sb.append("    pluginId: ").append(toIndentedString(pluginId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ConfigurationPageInfo instance;
+
+    public Builder() {
+      this(new ConfigurationPageInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getDisplayName_JsonNullable() {
-        return displayName;
+    protected Builder(ConfigurationPageInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-    public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
-        this.displayName = displayName;
+    public ConfigurationPageInfo.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+    public ConfigurationPageInfo.Builder enableInMainMenu(Boolean enableInMainMenu) {
+      this.instance.enableInMainMenu = enableInMainMenu;
+      return this;
+    }
+    public ConfigurationPageInfo.Builder menuSection(String menuSection) {
+      this.instance.menuSection = JsonNullable.<String>of(menuSection);
+      return this;
+    }
+    public ConfigurationPageInfo.Builder menuSection(JsonNullable<String> menuSection) {
+      this.instance.menuSection = menuSection;
+      return this;
+    }
+    public ConfigurationPageInfo.Builder menuIcon(String menuIcon) {
+      this.instance.menuIcon = JsonNullable.<String>of(menuIcon);
+      return this;
+    }
+    public ConfigurationPageInfo.Builder menuIcon(JsonNullable<String> menuIcon) {
+      this.instance.menuIcon = menuIcon;
+      return this;
+    }
+    public ConfigurationPageInfo.Builder displayName(String displayName) {
+      this.instance.displayName = JsonNullable.<String>of(displayName);
+      return this;
+    }
+    public ConfigurationPageInfo.Builder displayName(JsonNullable<String> displayName) {
+      this.instance.displayName = displayName;
+      return this;
+    }
+    public ConfigurationPageInfo.Builder pluginId(UUID pluginId) {
+      this.instance.pluginId = JsonNullable.<UUID>of(pluginId);
+      return this;
+    }
+    public ConfigurationPageInfo.Builder pluginId(JsonNullable<UUID> pluginId) {
+      this.instance.pluginId = pluginId;
+      return this;
     }
 
-    public void setDisplayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
-    }
-
-    public ConfigurationPageInfo pluginId(@javax.annotation.Nullable UUID pluginId) {
-        this.pluginId = JsonNullable.<UUID> of(pluginId);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the plugin id.
-     * 
-     * @return pluginId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getPluginId() {
-        return pluginId.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<UUID> getPluginId_JsonNullable() {
-        return pluginId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
-    public void setPluginId_JsonNullable(JsonNullable<UUID> pluginId) {
-        this.pluginId = pluginId;
-    }
-
-    public void setPluginId(@javax.annotation.Nullable UUID pluginId) {
-        this.pluginId = JsonNullable.<UUID> of(pluginId);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ConfigurationPageInfo configurationPageInfo = (ConfigurationPageInfo) o;
-        return Objects.equals(this.name, configurationPageInfo.name)
-                && Objects.equals(this.enableInMainMenu, configurationPageInfo.enableInMainMenu)
-                && equalsNullable(this.menuSection, configurationPageInfo.menuSection)
-                && equalsNullable(this.menuIcon, configurationPageInfo.menuIcon)
-                && equalsNullable(this.displayName, configurationPageInfo.displayName)
-                && equalsNullable(this.pluginId, configurationPageInfo.pluginId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, enableInMainMenu, hashCodeNullable(menuSection), hashCodeNullable(menuIcon),
-                hashCodeNullable(displayName), hashCodeNullable(pluginId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built ConfigurationPageInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public ConfigurationPageInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ConfigurationPageInfo {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    enableInMainMenu: ").append(toIndentedString(enableInMainMenu)).append("\n");
-        sb.append("    menuSection: ").append(toIndentedString(menuSection)).append("\n");
-        sb.append("    menuIcon: ").append(toIndentedString(menuIcon)).append("\n");
-        sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
-        sb.append("    pluginId: ").append(toIndentedString(pluginId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ConfigurationPageInfo.Builder builder() {
+    return new ConfigurationPageInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ConfigurationPageInfo.Builder toBuilder() {
+    return new ConfigurationPageInfo.Builder()
+      .name(getName())
+      .enableInMainMenu(getEnableInMainMenu())
+      .menuSection(getMenuSection())
+      .menuIcon(getMenuIcon())
+      .displayName(getDisplayName())
+      .pluginId(getPluginId());
+  }
 
-        private ConfigurationPageInfo instance;
 
-        public Builder() {
-            this(new ConfigurationPageInfo());
-        }
-
-        protected Builder(ConfigurationPageInfo instance) {
-            this.instance = instance;
-        }
-
-        public ConfigurationPageInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder enableInMainMenu(Boolean enableInMainMenu) {
-            this.instance.enableInMainMenu = enableInMainMenu;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuSection(String menuSection) {
-            this.instance.menuSection = JsonNullable.<String> of(menuSection);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuSection(JsonNullable<String> menuSection) {
-            this.instance.menuSection = menuSection;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuIcon(String menuIcon) {
-            this.instance.menuIcon = JsonNullable.<String> of(menuIcon);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuIcon(JsonNullable<String> menuIcon) {
-            this.instance.menuIcon = menuIcon;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder displayName(String displayName) {
-            this.instance.displayName = JsonNullable.<String> of(displayName);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder displayName(JsonNullable<String> displayName) {
-            this.instance.displayName = displayName;
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder pluginId(UUID pluginId) {
-            this.instance.pluginId = JsonNullable.<UUID> of(pluginId);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder pluginId(JsonNullable<UUID> pluginId) {
-            this.instance.pluginId = pluginId;
-            return this;
-        }
-
-        /**
-         * returns a built ConfigurationPageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public ConfigurationPageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ConfigurationPageInfo.Builder builder() {
-        return new ConfigurationPageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ConfigurationPageInfo.Builder toBuilder() {
-        return new ConfigurationPageInfo.Builder().name(getName()).enableInMainMenu(getEnableInMainMenu())
-                .menuSection(getMenuSection()).menuIcon(getMenuIcon()).displayName(getDisplayName())
-                .pluginId(getPluginId());
-    }
 }
+

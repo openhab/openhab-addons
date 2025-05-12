@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,48 +29,49 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ItemFilter.
  */
 public enum ItemFilter {
+  
+  IS_FOLDER("IsFolder"),
+  
+  IS_NOT_FOLDER("IsNotFolder"),
+  
+  IS_UNPLAYED("IsUnplayed"),
+  
+  IS_PLAYED("IsPlayed"),
+  
+  IS_FAVORITE("IsFavorite"),
+  
+  IS_RESUMABLE("IsResumable"),
+  
+  LIKES("Likes"),
+  
+  DISLIKES("Dislikes"),
+  
+  IS_FAVORITE_OR_LIKES("IsFavoriteOrLikes");
 
-    IS_FOLDER("IsFolder"),
+  private String value;
 
-    IS_NOT_FOLDER("IsNotFolder"),
+  ItemFilter(String value) {
+    this.value = value;
+  }
 
-    IS_UNPLAYED("IsUnplayed"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    IS_PLAYED("IsPlayed"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    IS_FAVORITE("IsFavorite"),
-
-    IS_RESUMABLE("IsResumable"),
-
-    LIKES("Likes"),
-
-    DISLIKES("Dislikes"),
-
-    IS_FAVORITE_OR_LIKES("IsFavoriteOrLikes");
-
-    private String value;
-
-    ItemFilter(String value) {
-        this.value = value;
+  @JsonCreator
+  public static ItemFilter fromValue(String value) {
+    for (ItemFilter b : ItemFilter.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ItemFilter fromValue(String value) {
-        for (ItemFilter b : ItemFilter.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

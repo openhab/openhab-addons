@@ -17,430 +17,446 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.VersionInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class PackageInfo.
  */
-@JsonPropertyOrder({ PackageInfo.JSON_PROPERTY_NAME, PackageInfo.JSON_PROPERTY_DESCRIPTION,
-        PackageInfo.JSON_PROPERTY_OVERVIEW, PackageInfo.JSON_PROPERTY_OWNER, PackageInfo.JSON_PROPERTY_CATEGORY,
-        PackageInfo.JSON_PROPERTY_GUID, PackageInfo.JSON_PROPERTY_VERSIONS, PackageInfo.JSON_PROPERTY_IMAGE_URL })
+@JsonPropertyOrder({
+  PackageInfo.JSON_PROPERTY_NAME,
+  PackageInfo.JSON_PROPERTY_DESCRIPTION,
+  PackageInfo.JSON_PROPERTY_OVERVIEW,
+  PackageInfo.JSON_PROPERTY_OWNER,
+  PackageInfo.JSON_PROPERTY_CATEGORY,
+  PackageInfo.JSON_PROPERTY_GUID,
+  PackageInfo.JSON_PROPERTY_VERSIONS,
+  PackageInfo.JSON_PROPERTY_IMAGE_URL
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PackageInfo {
-    public static final String JSON_PROPERTY_NAME = "name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public static final String JSON_PROPERTY_DESCRIPTION = "description";
-    @javax.annotation.Nullable
-    private String description;
+  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  @javax.annotation.Nullable
+  private String description;
 
-    public static final String JSON_PROPERTY_OVERVIEW = "overview";
-    @javax.annotation.Nullable
-    private String overview;
+  public static final String JSON_PROPERTY_OVERVIEW = "overview";
+  @javax.annotation.Nullable
+  private String overview;
 
-    public static final String JSON_PROPERTY_OWNER = "owner";
-    @javax.annotation.Nullable
-    private String owner;
+  public static final String JSON_PROPERTY_OWNER = "owner";
+  @javax.annotation.Nullable
+  private String owner;
 
-    public static final String JSON_PROPERTY_CATEGORY = "category";
-    @javax.annotation.Nullable
-    private String category;
+  public static final String JSON_PROPERTY_CATEGORY = "category";
+  @javax.annotation.Nullable
+  private String category;
 
-    public static final String JSON_PROPERTY_GUID = "guid";
-    @javax.annotation.Nullable
-    private UUID guid;
+  public static final String JSON_PROPERTY_GUID = "guid";
+  @javax.annotation.Nullable
+  private UUID guid;
 
-    public static final String JSON_PROPERTY_VERSIONS = "versions";
-    @javax.annotation.Nullable
-    private List<VersionInfo> versions = new ArrayList<>();
+  public static final String JSON_PROPERTY_VERSIONS = "versions";
+  @javax.annotation.Nullable
+  private List<VersionInfo> versions = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> imageUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> imageUrl = JsonNullable.<String>undefined();
 
-    public PackageInfo() {
+  public PackageInfo() {
+  }
+
+  public PackageInfo name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
+
+  public PackageInfo description(@javax.annotation.Nullable String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Gets or sets a long description of the plugin containing features or helpful explanations.
+   * @return description
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(@javax.annotation.Nullable String description) {
+    this.description = description;
+  }
+
+  public PackageInfo overview(@javax.annotation.Nullable String overview) {
+    
+    this.overview = overview;
+    return this;
+  }
+
+  /**
+   * Gets or sets a short overview of what the plugin does.
+   * @return overview
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getOverview() {
+    return overview;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOverview(@javax.annotation.Nullable String overview) {
+    this.overview = overview;
+  }
+
+  public PackageInfo owner(@javax.annotation.Nullable String owner) {
+    
+    this.owner = owner;
+    return this;
+  }
+
+  /**
+   * Gets or sets the owner.
+   * @return owner
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getOwner() {
+    return owner;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOwner(@javax.annotation.Nullable String owner) {
+    this.owner = owner;
+  }
+
+  public PackageInfo category(@javax.annotation.Nullable String category) {
+    
+    this.category = category;
+    return this;
+  }
+
+  /**
+   * Gets or sets the category.
+   * @return category
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCategory() {
+    return category;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCategory(@javax.annotation.Nullable String category) {
+    this.category = category;
+  }
+
+  public PackageInfo guid(@javax.annotation.Nullable UUID guid) {
+    
+    this.guid = guid;
+    return this;
+  }
+
+  /**
+   * Gets or sets the guid of the assembly associated with this plugin.  This is used to identify the proper item for automatic updates.
+   * @return guid
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getGuid() {
+    return guid;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGuid(@javax.annotation.Nullable UUID guid) {
+    this.guid = guid;
+  }
+
+  public PackageInfo versions(@javax.annotation.Nullable List<VersionInfo> versions) {
+    
+    this.versions = versions;
+    return this;
+  }
+
+  public PackageInfo addVersionsItem(VersionInfo versionsItem) {
+    if (this.versions == null) {
+      this.versions = new ArrayList<>();
     }
+    this.versions.add(versionsItem);
+    return this;
+  }
 
-    public PackageInfo name(@javax.annotation.Nullable String name) {
+  /**
+   * Gets or sets the versions.
+   * @return versions
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.name = name;
-        return this;
-    }
+  public List<VersionInfo> getVersions() {
+    return versions;
+  }
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public String getName() {
-        return name;
-    }
+  @JsonProperty(JSON_PROPERTY_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVersions(@javax.annotation.Nullable List<VersionInfo> versions) {
+    this.versions = versions;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
+  public PackageInfo imageUrl(@javax.annotation.Nullable String imageUrl) {
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
+    
+    return this;
+  }
 
-    public PackageInfo description(@javax.annotation.Nullable String description) {
+  /**
+   * Gets or sets the image url for the package.
+   * @return imageUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * Gets or sets a long description of the plugin containing features or helpful explanations.
-     * 
-     * @return description
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getDescription() {
-        return description;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDescription(@javax.annotation.Nullable String description) {
-        this.description = description;
-    }
-
-    public PackageInfo overview(@javax.annotation.Nullable String overview) {
-
-        this.overview = overview;
-        return this;
-    }
-
-    /**
-     * Gets or sets a short overview of what the plugin does.
-     * 
-     * @return overview
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getOverview() {
-        return overview;
-    }
-
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setOverview(@javax.annotation.Nullable String overview) {
-        this.overview = overview;
-    }
-
-    public PackageInfo owner(@javax.annotation.Nullable String owner) {
-
-        this.owner = owner;
-        return this;
-    }
-
-    /**
-     * Gets or sets the owner.
-     * 
-     * @return owner
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_OWNER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getOwner() {
-        return owner;
-    }
-
-    @JsonProperty(JSON_PROPERTY_OWNER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setOwner(@javax.annotation.Nullable String owner) {
-        this.owner = owner;
-    }
-
-    public PackageInfo category(@javax.annotation.Nullable String category) {
-
-        this.category = category;
-        return this;
-    }
-
-    /**
-     * Gets or sets the category.
-     * 
-     * @return category
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getCategory() {
-        return category;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCategory(@javax.annotation.Nullable String category) {
-        this.category = category;
-    }
-
-    public PackageInfo guid(@javax.annotation.Nullable UUID guid) {
-
-        this.guid = guid;
-        return this;
-    }
-
-    /**
-     * Gets or sets the guid of the assembly associated with this plugin. This is used to identify the proper item for
-     * automatic updates.
-     * 
-     * @return guid
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_GUID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getGuid() {
-        return guid;
-    }
-
-    @JsonProperty(JSON_PROPERTY_GUID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setGuid(@javax.annotation.Nullable UUID guid) {
-        this.guid = guid;
-    }
-
-    public PackageInfo versions(@javax.annotation.Nullable List<VersionInfo> versions) {
-
-        this.versions = versions;
-        return this;
-    }
-
-    public PackageInfo addVersionsItem(VersionInfo versionsItem) {
-        if (this.versions == null) {
-            this.versions = new ArrayList<>();
-        }
-        this.versions.add(versionsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the versions.
-     * 
-     * @return versions
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_VERSIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<VersionInfo> getVersions() {
-        return versions;
-    }
-
-    @JsonProperty(JSON_PROPERTY_VERSIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setVersions(@javax.annotation.Nullable List<VersionInfo> versions) {
-        this.versions = versions;
-    }
-
-    public PackageInfo imageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the image url for the package.
-     * 
-     * @return imageUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getImageUrl() {
+  public String getImageUrl() {
         return imageUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getImageUrl_JsonNullable() {
+    return imageUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
+    this.imageUrl = imageUrl;
+  }
+
+  public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PackageInfo packageInfo = (PackageInfo) o;
+    return Objects.equals(this.name, packageInfo.name) &&
+        Objects.equals(this.description, packageInfo.description) &&
+        Objects.equals(this.overview, packageInfo.overview) &&
+        Objects.equals(this.owner, packageInfo.owner) &&
+        Objects.equals(this.category, packageInfo.category) &&
+        Objects.equals(this.guid, packageInfo.guid) &&
+        Objects.equals(this.versions, packageInfo.versions) &&
+        equalsNullable(this.imageUrl, packageInfo.imageUrl);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, description, overview, owner, category, guid, versions, hashCodeNullable(imageUrl));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PackageInfo {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
+    sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
+    sb.append("    category: ").append(toIndentedString(category)).append("\n");
+    sb.append("    guid: ").append(toIndentedString(guid)).append("\n");
+    sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
+    sb.append("    imageUrl: ").append(toIndentedString(imageUrl)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PackageInfo instance;
+
+    public Builder() {
+      this(new PackageInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getImageUrl_JsonNullable() {
-        return imageUrl;
+    protected Builder(PackageInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
-    public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
-        this.imageUrl = imageUrl;
+    public PackageInfo.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+    public PackageInfo.Builder description(String description) {
+      this.instance.description = description;
+      return this;
+    }
+    public PackageInfo.Builder overview(String overview) {
+      this.instance.overview = overview;
+      return this;
+    }
+    public PackageInfo.Builder owner(String owner) {
+      this.instance.owner = owner;
+      return this;
+    }
+    public PackageInfo.Builder category(String category) {
+      this.instance.category = category;
+      return this;
+    }
+    public PackageInfo.Builder guid(UUID guid) {
+      this.instance.guid = guid;
+      return this;
+    }
+    public PackageInfo.Builder versions(List<VersionInfo> versions) {
+      this.instance.versions = versions;
+      return this;
+    }
+    public PackageInfo.Builder imageUrl(String imageUrl) {
+      this.instance.imageUrl = JsonNullable.<String>of(imageUrl);
+      return this;
+    }
+    public PackageInfo.Builder imageUrl(JsonNullable<String> imageUrl) {
+      this.instance.imageUrl = imageUrl;
+      return this;
     }
 
-    public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PackageInfo packageInfo = (PackageInfo) o;
-        return Objects.equals(this.name, packageInfo.name) && Objects.equals(this.description, packageInfo.description)
-                && Objects.equals(this.overview, packageInfo.overview) && Objects.equals(this.owner, packageInfo.owner)
-                && Objects.equals(this.category, packageInfo.category) && Objects.equals(this.guid, packageInfo.guid)
-                && Objects.equals(this.versions, packageInfo.versions)
-                && equalsNullable(this.imageUrl, packageInfo.imageUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, overview, owner, category, guid, versions, hashCodeNullable(imageUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built PackageInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public PackageInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PackageInfo {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    description: ").append(toIndentedString(description)).append("\n");
-        sb.append("    overview: ").append(toIndentedString(overview)).append("\n");
-        sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
-        sb.append("    category: ").append(toIndentedString(category)).append("\n");
-        sb.append("    guid: ").append(toIndentedString(guid)).append("\n");
-        sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
-        sb.append("    imageUrl: ").append(toIndentedString(imageUrl)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PackageInfo.Builder builder() {
+    return new PackageInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PackageInfo.Builder toBuilder() {
+    return new PackageInfo.Builder()
+      .name(getName())
+      .description(getDescription())
+      .overview(getOverview())
+      .owner(getOwner())
+      .category(getCategory())
+      .guid(getGuid())
+      .versions(getVersions())
+      .imageUrl(getImageUrl());
+  }
 
-        private PackageInfo instance;
 
-        public Builder() {
-            this(new PackageInfo());
-        }
-
-        protected Builder(PackageInfo instance) {
-            this.instance = instance;
-        }
-
-        public PackageInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public PackageInfo.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public PackageInfo.Builder overview(String overview) {
-            this.instance.overview = overview;
-            return this;
-        }
-
-        public PackageInfo.Builder owner(String owner) {
-            this.instance.owner = owner;
-            return this;
-        }
-
-        public PackageInfo.Builder category(String category) {
-            this.instance.category = category;
-            return this;
-        }
-
-        public PackageInfo.Builder guid(UUID guid) {
-            this.instance.guid = guid;
-            return this;
-        }
-
-        public PackageInfo.Builder versions(List<VersionInfo> versions) {
-            this.instance.versions = versions;
-            return this;
-        }
-
-        public PackageInfo.Builder imageUrl(String imageUrl) {
-            this.instance.imageUrl = JsonNullable.<String> of(imageUrl);
-            return this;
-        }
-
-        public PackageInfo.Builder imageUrl(JsonNullable<String> imageUrl) {
-            this.instance.imageUrl = imageUrl;
-            return this;
-        }
-
-        /**
-         * returns a built PackageInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PackageInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PackageInfo.Builder builder() {
-        return new PackageInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PackageInfo.Builder toBuilder() {
-        return new PackageInfo.Builder().name(getName()).description(getDescription()).overview(getOverview())
-                .owner(getOwner()).category(getCategory()).guid(getGuid()).versions(getVersions())
-                .imageUrl(getImageUrl());
-    }
 }
+

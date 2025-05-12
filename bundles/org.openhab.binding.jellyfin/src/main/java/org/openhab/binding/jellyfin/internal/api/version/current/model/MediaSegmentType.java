@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,42 +29,43 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Defines the types of content an individual Jellyfin.Data.Entities.MediaSegment represents.
  */
 public enum MediaSegmentType {
+  
+  UNKNOWN("Unknown"),
+  
+  COMMERCIAL("Commercial"),
+  
+  PREVIEW("Preview"),
+  
+  RECAP("Recap"),
+  
+  OUTRO("Outro"),
+  
+  INTRO("Intro");
 
-    UNKNOWN("Unknown"),
+  private String value;
 
-    COMMERCIAL("Commercial"),
+  MediaSegmentType(String value) {
+    this.value = value;
+  }
 
-    PREVIEW("Preview"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    RECAP("Recap"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    OUTRO("Outro"),
-
-    INTRO("Intro");
-
-    private String value;
-
-    MediaSegmentType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static MediaSegmentType fromValue(String value) {
+    for (MediaSegmentType b : MediaSegmentType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MediaSegmentType fromValue(String value) {
-        for (MediaSegmentType b : MediaSegmentType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

@@ -18,354 +18,368 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * An entity representing the metadata for a group of trickplay tiles.
  */
-@JsonPropertyOrder({ TrickplayInfo.JSON_PROPERTY_WIDTH, TrickplayInfo.JSON_PROPERTY_HEIGHT,
-        TrickplayInfo.JSON_PROPERTY_TILE_WIDTH, TrickplayInfo.JSON_PROPERTY_TILE_HEIGHT,
-        TrickplayInfo.JSON_PROPERTY_THUMBNAIL_COUNT, TrickplayInfo.JSON_PROPERTY_INTERVAL,
-        TrickplayInfo.JSON_PROPERTY_BANDWIDTH })
+@JsonPropertyOrder({
+  TrickplayInfo.JSON_PROPERTY_WIDTH,
+  TrickplayInfo.JSON_PROPERTY_HEIGHT,
+  TrickplayInfo.JSON_PROPERTY_TILE_WIDTH,
+  TrickplayInfo.JSON_PROPERTY_TILE_HEIGHT,
+  TrickplayInfo.JSON_PROPERTY_THUMBNAIL_COUNT,
+  TrickplayInfo.JSON_PROPERTY_INTERVAL,
+  TrickplayInfo.JSON_PROPERTY_BANDWIDTH
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TrickplayInfo {
-    public static final String JSON_PROPERTY_WIDTH = "Width";
-    @javax.annotation.Nullable
-    private Integer width;
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  @javax.annotation.Nullable
+  private Integer width;
 
-    public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @javax.annotation.Nullable
-    private Integer height;
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  @javax.annotation.Nullable
+  private Integer height;
 
-    public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
-    @javax.annotation.Nullable
-    private Integer tileWidth;
+  public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
+  @javax.annotation.Nullable
+  private Integer tileWidth;
 
-    public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
-    @javax.annotation.Nullable
-    private Integer tileHeight;
+  public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
+  @javax.annotation.Nullable
+  private Integer tileHeight;
 
-    public static final String JSON_PROPERTY_THUMBNAIL_COUNT = "ThumbnailCount";
-    @javax.annotation.Nullable
-    private Integer thumbnailCount;
+  public static final String JSON_PROPERTY_THUMBNAIL_COUNT = "ThumbnailCount";
+  @javax.annotation.Nullable
+  private Integer thumbnailCount;
 
-    public static final String JSON_PROPERTY_INTERVAL = "Interval";
-    @javax.annotation.Nullable
-    private Integer interval;
+  public static final String JSON_PROPERTY_INTERVAL = "Interval";
+  @javax.annotation.Nullable
+  private Integer interval;
 
-    public static final String JSON_PROPERTY_BANDWIDTH = "Bandwidth";
-    @javax.annotation.Nullable
-    private Integer bandwidth;
+  public static final String JSON_PROPERTY_BANDWIDTH = "Bandwidth";
+  @javax.annotation.Nullable
+  private Integer bandwidth;
 
-    public TrickplayInfo() {
+  public TrickplayInfo() {
+  }
+
+  public TrickplayInfo width(@javax.annotation.Nullable Integer width) {
+    
+    this.width = width;
+    return this;
+  }
+
+  /**
+   * Gets or sets width of an individual thumbnail.
+   * @return width
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getWidth() {
+    return width;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWidth(@javax.annotation.Nullable Integer width) {
+    this.width = width;
+  }
+
+  public TrickplayInfo height(@javax.annotation.Nullable Integer height) {
+    
+    this.height = height;
+    return this;
+  }
+
+  /**
+   * Gets or sets height of an individual thumbnail.
+   * @return height
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getHeight() {
+    return height;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHeight(@javax.annotation.Nullable Integer height) {
+    this.height = height;
+  }
+
+  public TrickplayInfo tileWidth(@javax.annotation.Nullable Integer tileWidth) {
+    
+    this.tileWidth = tileWidth;
+    return this;
+  }
+
+  /**
+   * Gets or sets amount of thumbnails per row.
+   * @return tileWidth
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTileWidth() {
+    return tileWidth;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
+    this.tileWidth = tileWidth;
+  }
+
+  public TrickplayInfo tileHeight(@javax.annotation.Nullable Integer tileHeight) {
+    
+    this.tileHeight = tileHeight;
+    return this;
+  }
+
+  /**
+   * Gets or sets amount of thumbnails per column.
+   * @return tileHeight
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTileHeight() {
+    return tileHeight;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
+    this.tileHeight = tileHeight;
+  }
+
+  public TrickplayInfo thumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
+    
+    this.thumbnailCount = thumbnailCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets total amount of non-black thumbnails.
+   * @return thumbnailCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getThumbnailCount() {
+    return thumbnailCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setThumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
+    this.thumbnailCount = thumbnailCount;
+  }
+
+  public TrickplayInfo interval(@javax.annotation.Nullable Integer interval) {
+    
+    this.interval = interval;
+    return this;
+  }
+
+  /**
+   * Gets or sets interval in milliseconds between each trickplay thumbnail.
+   * @return interval
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getInterval() {
+    return interval;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInterval(@javax.annotation.Nullable Integer interval) {
+    this.interval = interval;
+  }
+
+  public TrickplayInfo bandwidth(@javax.annotation.Nullable Integer bandwidth) {
+    
+    this.bandwidth = bandwidth;
+    return this;
+  }
+
+  /**
+   * Gets or sets peak bandwith usage in bits per second.
+   * @return bandwidth
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BANDWIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getBandwidth() {
+    return bandwidth;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BANDWIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBandwidth(@javax.annotation.Nullable Integer bandwidth) {
+    this.bandwidth = bandwidth;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TrickplayInfo trickplayInfo = (TrickplayInfo) o;
+    return Objects.equals(this.width, trickplayInfo.width) &&
+        Objects.equals(this.height, trickplayInfo.height) &&
+        Objects.equals(this.tileWidth, trickplayInfo.tileWidth) &&
+        Objects.equals(this.tileHeight, trickplayInfo.tileHeight) &&
+        Objects.equals(this.thumbnailCount, trickplayInfo.thumbnailCount) &&
+        Objects.equals(this.interval, trickplayInfo.interval) &&
+        Objects.equals(this.bandwidth, trickplayInfo.bandwidth);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(width, height, tileWidth, tileHeight, thumbnailCount, interval, bandwidth);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TrickplayInfo {\n");
+    sb.append("    width: ").append(toIndentedString(width)).append("\n");
+    sb.append("    height: ").append(toIndentedString(height)).append("\n");
+    sb.append("    tileWidth: ").append(toIndentedString(tileWidth)).append("\n");
+    sb.append("    tileHeight: ").append(toIndentedString(tileHeight)).append("\n");
+    sb.append("    thumbnailCount: ").append(toIndentedString(thumbnailCount)).append("\n");
+    sb.append("    interval: ").append(toIndentedString(interval)).append("\n");
+    sb.append("    bandwidth: ").append(toIndentedString(bandwidth)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private TrickplayInfo instance;
+
+    public Builder() {
+      this(new TrickplayInfo());
     }
 
-    public TrickplayInfo width(@javax.annotation.Nullable Integer width) {
-
-        this.width = width;
-        return this;
+    protected Builder(TrickplayInfo instance) {
+      this.instance = instance;
     }
+
+    public TrickplayInfo.Builder width(Integer width) {
+      this.instance.width = width;
+      return this;
+    }
+    public TrickplayInfo.Builder height(Integer height) {
+      this.instance.height = height;
+      return this;
+    }
+    public TrickplayInfo.Builder tileWidth(Integer tileWidth) {
+      this.instance.tileWidth = tileWidth;
+      return this;
+    }
+    public TrickplayInfo.Builder tileHeight(Integer tileHeight) {
+      this.instance.tileHeight = tileHeight;
+      return this;
+    }
+    public TrickplayInfo.Builder thumbnailCount(Integer thumbnailCount) {
+      this.instance.thumbnailCount = thumbnailCount;
+      return this;
+    }
+    public TrickplayInfo.Builder interval(Integer interval) {
+      this.instance.interval = interval;
+      return this;
+    }
+    public TrickplayInfo.Builder bandwidth(Integer bandwidth) {
+      this.instance.bandwidth = bandwidth;
+      return this;
+    }
+
 
     /**
-     * Gets or sets width of an individual thumbnail.
-     * 
-     * @return width
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getWidth() {
-        return width;
-    }
-
-    @JsonProperty(JSON_PROPERTY_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setWidth(@javax.annotation.Nullable Integer width) {
-        this.width = width;
-    }
-
-    public TrickplayInfo height(@javax.annotation.Nullable Integer height) {
-
-        this.height = height;
-        return this;
-    }
-
-    /**
-     * Gets or sets height of an individual thumbnail.
-     * 
-     * @return height
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setHeight(@javax.annotation.Nullable Integer height) {
-        this.height = height;
-    }
-
-    public TrickplayInfo tileWidth(@javax.annotation.Nullable Integer tileWidth) {
-
-        this.tileWidth = tileWidth;
-        return this;
-    }
-
-    /**
-     * Gets or sets amount of thumbnails per row.
-     * 
-     * @return tileWidth
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTileWidth() {
-        return tileWidth;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
-        this.tileWidth = tileWidth;
-    }
-
-    public TrickplayInfo tileHeight(@javax.annotation.Nullable Integer tileHeight) {
-
-        this.tileHeight = tileHeight;
-        return this;
-    }
-
-    /**
-     * Gets or sets amount of thumbnails per column.
-     * 
-     * @return tileHeight
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTileHeight() {
-        return tileHeight;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
-        this.tileHeight = tileHeight;
-    }
-
-    public TrickplayInfo thumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
-
-        this.thumbnailCount = thumbnailCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets total amount of non-black thumbnails.
-     * 
-     * @return thumbnailCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getThumbnailCount() {
-        return thumbnailCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setThumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
-        this.thumbnailCount = thumbnailCount;
-    }
-
-    public TrickplayInfo interval(@javax.annotation.Nullable Integer interval) {
-
-        this.interval = interval;
-        return this;
-    }
-
-    /**
-     * Gets or sets interval in milliseconds between each trickplay thumbnail.
-     * 
-     * @return interval
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_INTERVAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getInterval() {
-        return interval;
-    }
-
-    @JsonProperty(JSON_PROPERTY_INTERVAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setInterval(@javax.annotation.Nullable Integer interval) {
-        this.interval = interval;
-    }
-
-    public TrickplayInfo bandwidth(@javax.annotation.Nullable Integer bandwidth) {
-
-        this.bandwidth = bandwidth;
-        return this;
-    }
-
-    /**
-     * Gets or sets peak bandwith usage in bits per second.
-     * 
-     * @return bandwidth
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_BANDWIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getBandwidth() {
-        return bandwidth;
-    }
-
-    @JsonProperty(JSON_PROPERTY_BANDWIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setBandwidth(@javax.annotation.Nullable Integer bandwidth) {
-        this.bandwidth = bandwidth;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TrickplayInfo trickplayInfo = (TrickplayInfo) o;
-        return Objects.equals(this.width, trickplayInfo.width) && Objects.equals(this.height, trickplayInfo.height)
-                && Objects.equals(this.tileWidth, trickplayInfo.tileWidth)
-                && Objects.equals(this.tileHeight, trickplayInfo.tileHeight)
-                && Objects.equals(this.thumbnailCount, trickplayInfo.thumbnailCount)
-                && Objects.equals(this.interval, trickplayInfo.interval)
-                && Objects.equals(this.bandwidth, trickplayInfo.bandwidth);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(width, height, tileWidth, tileHeight, thumbnailCount, interval, bandwidth);
+    * returns a built TrickplayInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public TrickplayInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TrickplayInfo {\n");
-        sb.append("    width: ").append(toIndentedString(width)).append("\n");
-        sb.append("    height: ").append(toIndentedString(height)).append("\n");
-        sb.append("    tileWidth: ").append(toIndentedString(tileWidth)).append("\n");
-        sb.append("    tileHeight: ").append(toIndentedString(tileHeight)).append("\n");
-        sb.append("    thumbnailCount: ").append(toIndentedString(thumbnailCount)).append("\n");
-        sb.append("    interval: ").append(toIndentedString(interval)).append("\n");
-        sb.append("    bandwidth: ").append(toIndentedString(bandwidth)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static TrickplayInfo.Builder builder() {
+    return new TrickplayInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public TrickplayInfo.Builder toBuilder() {
+    return new TrickplayInfo.Builder()
+      .width(getWidth())
+      .height(getHeight())
+      .tileWidth(getTileWidth())
+      .tileHeight(getTileHeight())
+      .thumbnailCount(getThumbnailCount())
+      .interval(getInterval())
+      .bandwidth(getBandwidth());
+  }
 
-        private TrickplayInfo instance;
 
-        public Builder() {
-            this(new TrickplayInfo());
-        }
-
-        protected Builder(TrickplayInfo instance) {
-            this.instance = instance;
-        }
-
-        public TrickplayInfo.Builder width(Integer width) {
-            this.instance.width = width;
-            return this;
-        }
-
-        public TrickplayInfo.Builder height(Integer height) {
-            this.instance.height = height;
-            return this;
-        }
-
-        public TrickplayInfo.Builder tileWidth(Integer tileWidth) {
-            this.instance.tileWidth = tileWidth;
-            return this;
-        }
-
-        public TrickplayInfo.Builder tileHeight(Integer tileHeight) {
-            this.instance.tileHeight = tileHeight;
-            return this;
-        }
-
-        public TrickplayInfo.Builder thumbnailCount(Integer thumbnailCount) {
-            this.instance.thumbnailCount = thumbnailCount;
-            return this;
-        }
-
-        public TrickplayInfo.Builder interval(Integer interval) {
-            this.instance.interval = interval;
-            return this;
-        }
-
-        public TrickplayInfo.Builder bandwidth(Integer bandwidth) {
-            this.instance.bandwidth = bandwidth;
-            return this;
-        }
-
-        /**
-         * returns a built TrickplayInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TrickplayInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TrickplayInfo.Builder builder() {
-        return new TrickplayInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TrickplayInfo.Builder toBuilder() {
-        return new TrickplayInfo.Builder().width(getWidth()).height(getHeight()).tileWidth(getTileWidth())
-                .tileHeight(getTileHeight()).thumbnailCount(getThumbnailCount()).interval(getInterval())
-                .bandwidth(getBandwidth());
-    }
 }
+

@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,44 +29,45 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RecordingStatus
  */
 public enum RecordingStatus {
+  
+  NEW("New"),
+  
+  IN_PROGRESS("InProgress"),
+  
+  COMPLETED("Completed"),
+  
+  CANCELLED("Cancelled"),
+  
+  CONFLICTED_OK("ConflictedOk"),
+  
+  CONFLICTED_NOT_OK("ConflictedNotOk"),
+  
+  ERROR("Error");
 
-    NEW("New"),
+  private String value;
 
-    IN_PROGRESS("InProgress"),
+  RecordingStatus(String value) {
+    this.value = value;
+  }
 
-    COMPLETED("Completed"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    CANCELLED("Cancelled"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    CONFLICTED_OK("ConflictedOk"),
-
-    CONFLICTED_NOT_OK("ConflictedNotOk"),
-
-    ERROR("Error");
-
-    private String value;
-
-    RecordingStatus(String value) {
-        this.value = value;
+  @JsonCreator
+  public static RecordingStatus fromValue(String value) {
+    for (RecordingStatus b : RecordingStatus.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static RecordingStatus fromValue(String value) {
-        for (RecordingStatus b : RecordingStatus.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

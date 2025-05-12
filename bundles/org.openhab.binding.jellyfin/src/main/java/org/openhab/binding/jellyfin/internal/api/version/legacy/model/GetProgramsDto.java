@@ -17,1416 +17,1392 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ImageType;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ItemFields;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SortOrder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Get programs dto.
  */
-@JsonPropertyOrder({ GetProgramsDto.JSON_PROPERTY_CHANNEL_IDS, GetProgramsDto.JSON_PROPERTY_USER_ID,
-        GetProgramsDto.JSON_PROPERTY_MIN_START_DATE, GetProgramsDto.JSON_PROPERTY_HAS_AIRED,
-        GetProgramsDto.JSON_PROPERTY_IS_AIRING, GetProgramsDto.JSON_PROPERTY_MAX_START_DATE,
-        GetProgramsDto.JSON_PROPERTY_MIN_END_DATE, GetProgramsDto.JSON_PROPERTY_MAX_END_DATE,
-        GetProgramsDto.JSON_PROPERTY_IS_MOVIE, GetProgramsDto.JSON_PROPERTY_IS_SERIES,
-        GetProgramsDto.JSON_PROPERTY_IS_NEWS, GetProgramsDto.JSON_PROPERTY_IS_KIDS,
-        GetProgramsDto.JSON_PROPERTY_IS_SPORTS, GetProgramsDto.JSON_PROPERTY_START_INDEX,
-        GetProgramsDto.JSON_PROPERTY_LIMIT, GetProgramsDto.JSON_PROPERTY_SORT_BY,
-        GetProgramsDto.JSON_PROPERTY_SORT_ORDER, GetProgramsDto.JSON_PROPERTY_GENRES,
-        GetProgramsDto.JSON_PROPERTY_GENRE_IDS, GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGES,
-        GetProgramsDto.JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, GetProgramsDto.JSON_PROPERTY_IMAGE_TYPE_LIMIT,
-        GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGE_TYPES, GetProgramsDto.JSON_PROPERTY_ENABLE_USER_DATA,
-        GetProgramsDto.JSON_PROPERTY_SERIES_TIMER_ID, GetProgramsDto.JSON_PROPERTY_LIBRARY_SERIES_ID,
-        GetProgramsDto.JSON_PROPERTY_FIELDS })
+@JsonPropertyOrder({
+  GetProgramsDto.JSON_PROPERTY_CHANNEL_IDS,
+  GetProgramsDto.JSON_PROPERTY_USER_ID,
+  GetProgramsDto.JSON_PROPERTY_MIN_START_DATE,
+  GetProgramsDto.JSON_PROPERTY_HAS_AIRED,
+  GetProgramsDto.JSON_PROPERTY_IS_AIRING,
+  GetProgramsDto.JSON_PROPERTY_MAX_START_DATE,
+  GetProgramsDto.JSON_PROPERTY_MIN_END_DATE,
+  GetProgramsDto.JSON_PROPERTY_MAX_END_DATE,
+  GetProgramsDto.JSON_PROPERTY_IS_MOVIE,
+  GetProgramsDto.JSON_PROPERTY_IS_SERIES,
+  GetProgramsDto.JSON_PROPERTY_IS_NEWS,
+  GetProgramsDto.JSON_PROPERTY_IS_KIDS,
+  GetProgramsDto.JSON_PROPERTY_IS_SPORTS,
+  GetProgramsDto.JSON_PROPERTY_START_INDEX,
+  GetProgramsDto.JSON_PROPERTY_LIMIT,
+  GetProgramsDto.JSON_PROPERTY_SORT_BY,
+  GetProgramsDto.JSON_PROPERTY_SORT_ORDER,
+  GetProgramsDto.JSON_PROPERTY_GENRES,
+  GetProgramsDto.JSON_PROPERTY_GENRE_IDS,
+  GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGES,
+  GetProgramsDto.JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT,
+  GetProgramsDto.JSON_PROPERTY_IMAGE_TYPE_LIMIT,
+  GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGE_TYPES,
+  GetProgramsDto.JSON_PROPERTY_ENABLE_USER_DATA,
+  GetProgramsDto.JSON_PROPERTY_SERIES_TIMER_ID,
+  GetProgramsDto.JSON_PROPERTY_LIBRARY_SERIES_ID,
+  GetProgramsDto.JSON_PROPERTY_FIELDS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class GetProgramsDto {
-    public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
-    @javax.annotation.Nullable
-    private List<UUID> channelIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
+  @javax.annotation.Nullable
+  private List<UUID> channelIds = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private UUID userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private UUID userId;
 
-    public static final String JSON_PROPERTY_MIN_START_DATE = "MinStartDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> minStartDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_MIN_START_DATE = "MinStartDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> minStartDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_HAS_AIRED = "HasAired";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> hasAired = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_HAS_AIRED = "HasAired";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> hasAired = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_IS_AIRING = "IsAiring";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isAiring = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_AIRING = "IsAiring";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isAiring = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_MAX_START_DATE = "MaxStartDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> maxStartDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_MAX_START_DATE = "MaxStartDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> maxStartDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_MIN_END_DATE = "MinEndDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> minEndDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_MIN_END_DATE = "MinEndDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> minEndDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_MAX_END_DATE = "MaxEndDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> maxEndDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_MAX_END_DATE = "MaxEndDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> maxEndDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isMovie = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isMovie = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isSeries = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isSeries = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isNews = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isNews = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isKids = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isKids = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> isSports = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> isSports = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> startIndex = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> startIndex = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_LIMIT = "Limit";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> limit = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_LIMIT = "Limit";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> limit = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_SORT_BY = "SortBy";
-    @javax.annotation.Nullable
-    private List<String> sortBy = new ArrayList<>();
+  public static final String JSON_PROPERTY_SORT_BY = "SortBy";
+  @javax.annotation.Nullable
+  private List<String> sortBy = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
-    @javax.annotation.Nullable
-    private List<SortOrder> sortOrder = new ArrayList<>();
+  public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
+  @javax.annotation.Nullable
+  private List<SortOrder> sortOrder = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_GENRES = "Genres";
-    @javax.annotation.Nullable
-    private List<String> genres = new ArrayList<>();
+  public static final String JSON_PROPERTY_GENRES = "Genres";
+  @javax.annotation.Nullable
+  private List<String> genres = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_GENRE_IDS = "GenreIds";
-    @javax.annotation.Nullable
-    private List<UUID> genreIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_GENRE_IDS = "GenreIds";
+  @javax.annotation.Nullable
+  private List<UUID> genreIds = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_ENABLE_IMAGES = "EnableImages";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableImages = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_ENABLE_IMAGES = "EnableImages";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> enableImages = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT = "EnableTotalRecordCount";
-    @javax.annotation.Nullable
-    private Boolean enableTotalRecordCount;
+  public static final String JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT = "EnableTotalRecordCount";
+  @javax.annotation.Nullable
+  private Boolean enableTotalRecordCount;
 
-    public static final String JSON_PROPERTY_IMAGE_TYPE_LIMIT = "ImageTypeLimit";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> imageTypeLimit = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_IMAGE_TYPE_LIMIT = "ImageTypeLimit";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> imageTypeLimit = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_ENABLE_IMAGE_TYPES = "EnableImageTypes";
-    @javax.annotation.Nullable
-    private List<ImageType> enableImageTypes = new ArrayList<>();
+  public static final String JSON_PROPERTY_ENABLE_IMAGE_TYPES = "EnableImageTypes";
+  @javax.annotation.Nullable
+  private List<ImageType> enableImageTypes = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_ENABLE_USER_DATA = "EnableUserData";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableUserData = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_ENABLE_USER_DATA = "EnableUserData";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> enableUserData = JsonNullable.<Boolean>undefined();
 
-    public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> seriesTimerId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> seriesTimerId = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_LIBRARY_SERIES_ID = "LibrarySeriesId";
-    @javax.annotation.Nullable
-    private UUID librarySeriesId;
+  public static final String JSON_PROPERTY_LIBRARY_SERIES_ID = "LibrarySeriesId";
+  @javax.annotation.Nullable
+  private UUID librarySeriesId;
 
-    public static final String JSON_PROPERTY_FIELDS = "Fields";
-    @javax.annotation.Nullable
-    private List<ItemFields> fields = new ArrayList<>();
+  public static final String JSON_PROPERTY_FIELDS = "Fields";
+  @javax.annotation.Nullable
+  private List<ItemFields> fields = new ArrayList<>();
 
-    public GetProgramsDto() {
+  public GetProgramsDto() {
+  }
+
+  public GetProgramsDto channelIds(@javax.annotation.Nullable List<UUID> channelIds) {
+    
+    this.channelIds = channelIds;
+    return this;
+  }
+
+  public GetProgramsDto addChannelIdsItem(UUID channelIdsItem) {
+    if (this.channelIds == null) {
+      this.channelIds = new ArrayList<>();
     }
+    this.channelIds.add(channelIdsItem);
+    return this;
+  }
 
-    public GetProgramsDto channelIds(@javax.annotation.Nullable List<UUID> channelIds) {
+  /**
+   * Gets or sets the channels to return guide information for.
+   * @return channelIds
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.channelIds = channelIds;
-        return this;
-    }
+  public List<UUID> getChannelIds() {
+    return channelIds;
+  }
 
-    public GetProgramsDto addChannelIdsItem(UUID channelIdsItem) {
-        if (this.channelIds == null) {
-            this.channelIds = new ArrayList<>();
-        }
-        this.channelIds.add(channelIdsItem);
-        return this;
-    }
 
-    /**
-     * Gets or sets the channels to return guide information for.
-     * 
-     * @return channelIds
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChannelIds(@javax.annotation.Nullable List<UUID> channelIds) {
+    this.channelIds = channelIds;
+  }
 
-    public List<UUID> getChannelIds() {
-        return channelIds;
-    }
+  public GetProgramsDto userId(@javax.annotation.Nullable UUID userId) {
+    
+    this.userId = userId;
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setChannelIds(@javax.annotation.Nullable List<UUID> channelIds) {
-        this.channelIds = channelIds;
-    }
+  /**
+   * Gets or sets optional. Filter by user id.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public GetProgramsDto userId(@javax.annotation.Nullable UUID userId) {
+  public UUID getUserId() {
+    return userId;
+  }
 
-        this.userId = userId;
-        return this;
-    }
 
-    /**
-     * Gets or sets optional. Filter by user id.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserId(@javax.annotation.Nullable UUID userId) {
+    this.userId = userId;
+  }
 
-    public UUID getUserId() {
-        return userId;
-    }
+  public GetProgramsDto minStartDate(@javax.annotation.Nullable OffsetDateTime minStartDate) {
+    this.minStartDate = JsonNullable.<OffsetDateTime>of(minStartDate);
+    
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = userId;
-    }
+  /**
+   * Gets or sets the minimum premiere start date.  Optional.
+   * @return minStartDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public GetProgramsDto minStartDate(@javax.annotation.Nullable OffsetDateTime minStartDate) {
-        this.minStartDate = JsonNullable.<OffsetDateTime> of(minStartDate);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the minimum premiere start date. Optional.
-     * 
-     * @return minStartDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getMinStartDate() {
+  public OffsetDateTime getMinStartDate() {
         return minStartDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getMinStartDate_JsonNullable() {
-        return minStartDate;
-    }
+  public JsonNullable<OffsetDateTime> getMinStartDate_JsonNullable() {
+    return minStartDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
+  public void setMinStartDate_JsonNullable(JsonNullable<OffsetDateTime> minStartDate) {
+    this.minStartDate = minStartDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
-    public void setMinStartDate_JsonNullable(JsonNullable<OffsetDateTime> minStartDate) {
-        this.minStartDate = minStartDate;
-    }
+  public void setMinStartDate(@javax.annotation.Nullable OffsetDateTime minStartDate) {
+    this.minStartDate = JsonNullable.<OffsetDateTime>of(minStartDate);
+  }
 
-    public void setMinStartDate(@javax.annotation.Nullable OffsetDateTime minStartDate) {
-        this.minStartDate = JsonNullable.<OffsetDateTime> of(minStartDate);
-    }
+  public GetProgramsDto hasAired(@javax.annotation.Nullable Boolean hasAired) {
+    this.hasAired = JsonNullable.<Boolean>of(hasAired);
+    
+    return this;
+  }
 
-    public GetProgramsDto hasAired(@javax.annotation.Nullable Boolean hasAired) {
-        this.hasAired = JsonNullable.<Boolean> of(hasAired);
+  /**
+   * Gets or sets filter by programs that have completed airing, or not.  Optional.
+   * @return hasAired
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter by programs that have completed airing, or not. Optional.
-     * 
-     * @return hasAired
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getHasAired() {
+  public Boolean getHasAired() {
         return hasAired.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_HAS_AIRED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_HAS_AIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getHasAired_JsonNullable() {
-        return hasAired;
-    }
+  public JsonNullable<Boolean> getHasAired_JsonNullable() {
+    return hasAired;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HAS_AIRED)
+  public void setHasAired_JsonNullable(JsonNullable<Boolean> hasAired) {
+    this.hasAired = hasAired;
+  }
 
-    @JsonProperty(JSON_PROPERTY_HAS_AIRED)
-    public void setHasAired_JsonNullable(JsonNullable<Boolean> hasAired) {
-        this.hasAired = hasAired;
-    }
+  public void setHasAired(@javax.annotation.Nullable Boolean hasAired) {
+    this.hasAired = JsonNullable.<Boolean>of(hasAired);
+  }
 
-    public void setHasAired(@javax.annotation.Nullable Boolean hasAired) {
-        this.hasAired = JsonNullable.<Boolean> of(hasAired);
-    }
+  public GetProgramsDto isAiring(@javax.annotation.Nullable Boolean isAiring) {
+    this.isAiring = JsonNullable.<Boolean>of(isAiring);
+    
+    return this;
+  }
 
-    public GetProgramsDto isAiring(@javax.annotation.Nullable Boolean isAiring) {
-        this.isAiring = JsonNullable.<Boolean> of(isAiring);
+  /**
+   * Gets or sets filter by programs that are currently airing, or not.  Optional.
+   * @return isAiring
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter by programs that are currently airing, or not. Optional.
-     * 
-     * @return isAiring
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsAiring() {
+  public Boolean getIsAiring() {
         return isAiring.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_AIRING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_AIRING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsAiring_JsonNullable() {
-        return isAiring;
-    }
+  public JsonNullable<Boolean> getIsAiring_JsonNullable() {
+    return isAiring;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_AIRING)
+  public void setIsAiring_JsonNullable(JsonNullable<Boolean> isAiring) {
+    this.isAiring = isAiring;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_AIRING)
-    public void setIsAiring_JsonNullable(JsonNullable<Boolean> isAiring) {
-        this.isAiring = isAiring;
-    }
+  public void setIsAiring(@javax.annotation.Nullable Boolean isAiring) {
+    this.isAiring = JsonNullable.<Boolean>of(isAiring);
+  }
 
-    public void setIsAiring(@javax.annotation.Nullable Boolean isAiring) {
-        this.isAiring = JsonNullable.<Boolean> of(isAiring);
-    }
+  public GetProgramsDto maxStartDate(@javax.annotation.Nullable OffsetDateTime maxStartDate) {
+    this.maxStartDate = JsonNullable.<OffsetDateTime>of(maxStartDate);
+    
+    return this;
+  }
 
-    public GetProgramsDto maxStartDate(@javax.annotation.Nullable OffsetDateTime maxStartDate) {
-        this.maxStartDate = JsonNullable.<OffsetDateTime> of(maxStartDate);
+  /**
+   * Gets or sets the maximum premiere start date.  Optional.
+   * @return maxStartDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum premiere start date. Optional.
-     * 
-     * @return maxStartDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getMaxStartDate() {
+  public OffsetDateTime getMaxStartDate() {
         return maxStartDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getMaxStartDate_JsonNullable() {
-        return maxStartDate;
-    }
+  public JsonNullable<OffsetDateTime> getMaxStartDate_JsonNullable() {
+    return maxStartDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
+  public void setMaxStartDate_JsonNullable(JsonNullable<OffsetDateTime> maxStartDate) {
+    this.maxStartDate = maxStartDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
-    public void setMaxStartDate_JsonNullable(JsonNullable<OffsetDateTime> maxStartDate) {
-        this.maxStartDate = maxStartDate;
-    }
+  public void setMaxStartDate(@javax.annotation.Nullable OffsetDateTime maxStartDate) {
+    this.maxStartDate = JsonNullable.<OffsetDateTime>of(maxStartDate);
+  }
 
-    public void setMaxStartDate(@javax.annotation.Nullable OffsetDateTime maxStartDate) {
-        this.maxStartDate = JsonNullable.<OffsetDateTime> of(maxStartDate);
-    }
+  public GetProgramsDto minEndDate(@javax.annotation.Nullable OffsetDateTime minEndDate) {
+    this.minEndDate = JsonNullable.<OffsetDateTime>of(minEndDate);
+    
+    return this;
+  }
 
-    public GetProgramsDto minEndDate(@javax.annotation.Nullable OffsetDateTime minEndDate) {
-        this.minEndDate = JsonNullable.<OffsetDateTime> of(minEndDate);
+  /**
+   * Gets or sets the minimum premiere end date.  Optional.
+   * @return minEndDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the minimum premiere end date. Optional.
-     * 
-     * @return minEndDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getMinEndDate() {
+  public OffsetDateTime getMinEndDate() {
         return minEndDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getMinEndDate_JsonNullable() {
-        return minEndDate;
-    }
+  public JsonNullable<OffsetDateTime> getMinEndDate_JsonNullable() {
+    return minEndDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
+  public void setMinEndDate_JsonNullable(JsonNullable<OffsetDateTime> minEndDate) {
+    this.minEndDate = minEndDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
-    public void setMinEndDate_JsonNullable(JsonNullable<OffsetDateTime> minEndDate) {
-        this.minEndDate = minEndDate;
-    }
+  public void setMinEndDate(@javax.annotation.Nullable OffsetDateTime minEndDate) {
+    this.minEndDate = JsonNullable.<OffsetDateTime>of(minEndDate);
+  }
 
-    public void setMinEndDate(@javax.annotation.Nullable OffsetDateTime minEndDate) {
-        this.minEndDate = JsonNullable.<OffsetDateTime> of(minEndDate);
-    }
+  public GetProgramsDto maxEndDate(@javax.annotation.Nullable OffsetDateTime maxEndDate) {
+    this.maxEndDate = JsonNullable.<OffsetDateTime>of(maxEndDate);
+    
+    return this;
+  }
 
-    public GetProgramsDto maxEndDate(@javax.annotation.Nullable OffsetDateTime maxEndDate) {
-        this.maxEndDate = JsonNullable.<OffsetDateTime> of(maxEndDate);
+  /**
+   * Gets or sets the maximum premiere end date.  Optional.
+   * @return maxEndDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum premiere end date. Optional.
-     * 
-     * @return maxEndDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getMaxEndDate() {
+  public OffsetDateTime getMaxEndDate() {
         return maxEndDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getMaxEndDate_JsonNullable() {
-        return maxEndDate;
-    }
+  public JsonNullable<OffsetDateTime> getMaxEndDate_JsonNullable() {
+    return maxEndDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
+  public void setMaxEndDate_JsonNullable(JsonNullable<OffsetDateTime> maxEndDate) {
+    this.maxEndDate = maxEndDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
-    public void setMaxEndDate_JsonNullable(JsonNullable<OffsetDateTime> maxEndDate) {
-        this.maxEndDate = maxEndDate;
-    }
+  public void setMaxEndDate(@javax.annotation.Nullable OffsetDateTime maxEndDate) {
+    this.maxEndDate = JsonNullable.<OffsetDateTime>of(maxEndDate);
+  }
 
-    public void setMaxEndDate(@javax.annotation.Nullable OffsetDateTime maxEndDate) {
-        this.maxEndDate = JsonNullable.<OffsetDateTime> of(maxEndDate);
-    }
+  public GetProgramsDto isMovie(@javax.annotation.Nullable Boolean isMovie) {
+    this.isMovie = JsonNullable.<Boolean>of(isMovie);
+    
+    return this;
+  }
 
-    public GetProgramsDto isMovie(@javax.annotation.Nullable Boolean isMovie) {
-        this.isMovie = JsonNullable.<Boolean> of(isMovie);
+  /**
+   * Gets or sets filter for movies.  Optional.
+   * @return isMovie
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter for movies. Optional.
-     * 
-     * @return isMovie
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsMovie() {
+  public Boolean getIsMovie() {
         return isMovie.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsMovie_JsonNullable() {
-        return isMovie;
-    }
+  public JsonNullable<Boolean> getIsMovie_JsonNullable() {
+    return isMovie;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+  public void setIsMovie_JsonNullable(JsonNullable<Boolean> isMovie) {
+    this.isMovie = isMovie;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
-    public void setIsMovie_JsonNullable(JsonNullable<Boolean> isMovie) {
-        this.isMovie = isMovie;
-    }
+  public void setIsMovie(@javax.annotation.Nullable Boolean isMovie) {
+    this.isMovie = JsonNullable.<Boolean>of(isMovie);
+  }
 
-    public void setIsMovie(@javax.annotation.Nullable Boolean isMovie) {
-        this.isMovie = JsonNullable.<Boolean> of(isMovie);
-    }
+  public GetProgramsDto isSeries(@javax.annotation.Nullable Boolean isSeries) {
+    this.isSeries = JsonNullable.<Boolean>of(isSeries);
+    
+    return this;
+  }
 
-    public GetProgramsDto isSeries(@javax.annotation.Nullable Boolean isSeries) {
-        this.isSeries = JsonNullable.<Boolean> of(isSeries);
+  /**
+   * Gets or sets filter for series.  Optional.
+   * @return isSeries
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter for series. Optional.
-     * 
-     * @return isSeries
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsSeries() {
+  public Boolean getIsSeries() {
         return isSeries.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_SERIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsSeries_JsonNullable() {
-        return isSeries;
-    }
+  public JsonNullable<Boolean> getIsSeries_JsonNullable() {
+    return isSeries;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_SERIES)
+  public void setIsSeries_JsonNullable(JsonNullable<Boolean> isSeries) {
+    this.isSeries = isSeries;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
-    public void setIsSeries_JsonNullable(JsonNullable<Boolean> isSeries) {
-        this.isSeries = isSeries;
-    }
+  public void setIsSeries(@javax.annotation.Nullable Boolean isSeries) {
+    this.isSeries = JsonNullable.<Boolean>of(isSeries);
+  }
 
-    public void setIsSeries(@javax.annotation.Nullable Boolean isSeries) {
-        this.isSeries = JsonNullable.<Boolean> of(isSeries);
-    }
+  public GetProgramsDto isNews(@javax.annotation.Nullable Boolean isNews) {
+    this.isNews = JsonNullable.<Boolean>of(isNews);
+    
+    return this;
+  }
 
-    public GetProgramsDto isNews(@javax.annotation.Nullable Boolean isNews) {
-        this.isNews = JsonNullable.<Boolean> of(isNews);
+  /**
+   * Gets or sets filter for news.  Optional.
+   * @return isNews
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter for news. Optional.
-     * 
-     * @return isNews
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsNews() {
+  public Boolean getIsNews() {
         return isNews.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_NEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsNews_JsonNullable() {
-        return isNews;
-    }
+  public JsonNullable<Boolean> getIsNews_JsonNullable() {
+    return isNews;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_NEWS)
+  public void setIsNews_JsonNullable(JsonNullable<Boolean> isNews) {
+    this.isNews = isNews;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
-    public void setIsNews_JsonNullable(JsonNullable<Boolean> isNews) {
-        this.isNews = isNews;
-    }
+  public void setIsNews(@javax.annotation.Nullable Boolean isNews) {
+    this.isNews = JsonNullable.<Boolean>of(isNews);
+  }
 
-    public void setIsNews(@javax.annotation.Nullable Boolean isNews) {
-        this.isNews = JsonNullable.<Boolean> of(isNews);
-    }
+  public GetProgramsDto isKids(@javax.annotation.Nullable Boolean isKids) {
+    this.isKids = JsonNullable.<Boolean>of(isKids);
+    
+    return this;
+  }
 
-    public GetProgramsDto isKids(@javax.annotation.Nullable Boolean isKids) {
-        this.isKids = JsonNullable.<Boolean> of(isKids);
+  /**
+   * Gets or sets filter for kids.  Optional.
+   * @return isKids
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter for kids. Optional.
-     * 
-     * @return isKids
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsKids() {
+  public Boolean getIsKids() {
         return isKids.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_KIDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsKids_JsonNullable() {
-        return isKids;
-    }
+  public JsonNullable<Boolean> getIsKids_JsonNullable() {
+    return isKids;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_KIDS)
+  public void setIsKids_JsonNullable(JsonNullable<Boolean> isKids) {
+    this.isKids = isKids;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
-    public void setIsKids_JsonNullable(JsonNullable<Boolean> isKids) {
-        this.isKids = isKids;
-    }
+  public void setIsKids(@javax.annotation.Nullable Boolean isKids) {
+    this.isKids = JsonNullable.<Boolean>of(isKids);
+  }
 
-    public void setIsKids(@javax.annotation.Nullable Boolean isKids) {
-        this.isKids = JsonNullable.<Boolean> of(isKids);
-    }
+  public GetProgramsDto isSports(@javax.annotation.Nullable Boolean isSports) {
+    this.isSports = JsonNullable.<Boolean>of(isSports);
+    
+    return this;
+  }
 
-    public GetProgramsDto isSports(@javax.annotation.Nullable Boolean isSports) {
-        this.isSports = JsonNullable.<Boolean> of(isSports);
+  /**
+   * Gets or sets filter for sports.  Optional.
+   * @return isSports
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter for sports. Optional.
-     * 
-     * @return isSports
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsSports() {
+  public Boolean getIsSports() {
         return isSports.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsSports_JsonNullable() {
-        return isSports;
-    }
+  public JsonNullable<Boolean> getIsSports_JsonNullable() {
+    return isSports;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+  public void setIsSports_JsonNullable(JsonNullable<Boolean> isSports) {
+    this.isSports = isSports;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
-    public void setIsSports_JsonNullable(JsonNullable<Boolean> isSports) {
-        this.isSports = isSports;
-    }
+  public void setIsSports(@javax.annotation.Nullable Boolean isSports) {
+    this.isSports = JsonNullable.<Boolean>of(isSports);
+  }
 
-    public void setIsSports(@javax.annotation.Nullable Boolean isSports) {
-        this.isSports = JsonNullable.<Boolean> of(isSports);
-    }
+  public GetProgramsDto startIndex(@javax.annotation.Nullable Integer startIndex) {
+    this.startIndex = JsonNullable.<Integer>of(startIndex);
+    
+    return this;
+  }
 
-    public GetProgramsDto startIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = JsonNullable.<Integer> of(startIndex);
+  /**
+   * Gets or sets the record index to start at. All items with a lower index will be dropped from the results.  Optional.
+   * @return startIndex
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the record index to start at. All items with a lower index will be dropped from the results.
-     * Optional.
-     * 
-     * @return startIndex
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getStartIndex() {
+  public Integer getStartIndex() {
         return startIndex.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getStartIndex_JsonNullable() {
-        return startIndex;
-    }
+  public JsonNullable<Integer> getStartIndex_JsonNullable() {
+    return startIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  public void setStartIndex_JsonNullable(JsonNullable<Integer> startIndex) {
+    this.startIndex = startIndex;
+  }
 
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    public void setStartIndex_JsonNullable(JsonNullable<Integer> startIndex) {
-        this.startIndex = startIndex;
-    }
+  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+    this.startIndex = JsonNullable.<Integer>of(startIndex);
+  }
 
-    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = JsonNullable.<Integer> of(startIndex);
-    }
+  public GetProgramsDto limit(@javax.annotation.Nullable Integer limit) {
+    this.limit = JsonNullable.<Integer>of(limit);
+    
+    return this;
+  }
 
-    public GetProgramsDto limit(@javax.annotation.Nullable Integer limit) {
-        this.limit = JsonNullable.<Integer> of(limit);
+  /**
+   * Gets or sets the maximum number of records to return.  Optional.
+   * @return limit
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the maximum number of records to return. Optional.
-     * 
-     * @return limit
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getLimit() {
+  public Integer getLimit() {
         return limit.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getLimit_JsonNullable() {
+    return limit;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIMIT)
+  public void setLimit_JsonNullable(JsonNullable<Integer> limit) {
+    this.limit = limit;
+  }
+
+  public void setLimit(@javax.annotation.Nullable Integer limit) {
+    this.limit = JsonNullable.<Integer>of(limit);
+  }
+
+  public GetProgramsDto sortBy(@javax.annotation.Nullable List<String> sortBy) {
+    
+    this.sortBy = sortBy;
+    return this;
+  }
+
+  public GetProgramsDto addSortByItem(String sortByItem) {
+    if (this.sortBy == null) {
+      this.sortBy = new ArrayList<>();
     }
+    this.sortBy.add(sortByItem);
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LIMIT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets specify one or more sort orders, comma delimited. Options: Name, StartDate.  Optional.
+   * @return sortBy
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getLimit_JsonNullable() {
-        return limit;
+  public List<String> getSortBy() {
+    return sortBy;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SORT_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSortBy(@javax.annotation.Nullable List<String> sortBy) {
+    this.sortBy = sortBy;
+  }
+
+  public GetProgramsDto sortOrder(@javax.annotation.Nullable List<SortOrder> sortOrder) {
+    
+    this.sortOrder = sortOrder;
+    return this;
+  }
+
+  public GetProgramsDto addSortOrderItem(SortOrder sortOrderItem) {
+    if (this.sortOrder == null) {
+      this.sortOrder = new ArrayList<>();
     }
+    this.sortOrder.add(sortOrderItem);
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LIMIT)
-    public void setLimit_JsonNullable(JsonNullable<Integer> limit) {
-        this.limit = limit;
+  /**
+   * Gets or sets sort Order - Ascending,Descending.
+   * @return sortOrder
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<SortOrder> getSortOrder() {
+    return sortOrder;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSortOrder(@javax.annotation.Nullable List<SortOrder> sortOrder) {
+    this.sortOrder = sortOrder;
+  }
+
+  public GetProgramsDto genres(@javax.annotation.Nullable List<String> genres) {
+    
+    this.genres = genres;
+    return this;
+  }
+
+  public GetProgramsDto addGenresItem(String genresItem) {
+    if (this.genres == null) {
+      this.genres = new ArrayList<>();
     }
+    this.genres.add(genresItem);
+    return this;
+  }
 
-    public void setLimit(@javax.annotation.Nullable Integer limit) {
-        this.limit = JsonNullable.<Integer> of(limit);
+  /**
+   * Gets or sets the genres to return guide information for.
+   * @return genres
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<String> getGenres() {
+    return genres;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGenres(@javax.annotation.Nullable List<String> genres) {
+    this.genres = genres;
+  }
+
+  public GetProgramsDto genreIds(@javax.annotation.Nullable List<UUID> genreIds) {
+    
+    this.genreIds = genreIds;
+    return this;
+  }
+
+  public GetProgramsDto addGenreIdsItem(UUID genreIdsItem) {
+    if (this.genreIds == null) {
+      this.genreIds = new ArrayList<>();
     }
+    this.genreIds.add(genreIdsItem);
+    return this;
+  }
 
-    public GetProgramsDto sortBy(@javax.annotation.Nullable List<String> sortBy) {
+  /**
+   * Gets or sets the genre ids to return guide information for.
+   * @return genreIds
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GENRE_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.sortBy = sortBy;
-        return this;
-    }
+  public List<UUID> getGenreIds() {
+    return genreIds;
+  }
 
-    public GetProgramsDto addSortByItem(String sortByItem) {
-        if (this.sortBy == null) {
-            this.sortBy = new ArrayList<>();
-        }
-        this.sortBy.add(sortByItem);
-        return this;
-    }
 
-    /**
-     * Gets or sets specify one or more sort orders, comma delimited. Options: Name, StartDate. Optional.
-     * 
-     * @return sortBy
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_GENRE_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setGenreIds(@javax.annotation.Nullable List<UUID> genreIds) {
+    this.genreIds = genreIds;
+  }
 
-    public List<String> getSortBy() {
-        return sortBy;
-    }
+  public GetProgramsDto enableImages(@javax.annotation.Nullable Boolean enableImages) {
+    this.enableImages = JsonNullable.<Boolean>of(enableImages);
+    
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSortBy(@javax.annotation.Nullable List<String> sortBy) {
-        this.sortBy = sortBy;
-    }
+  /**
+   * Gets or sets include image information in output.  Optional.
+   * @return enableImages
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public GetProgramsDto sortOrder(@javax.annotation.Nullable List<SortOrder> sortOrder) {
-
-        this.sortOrder = sortOrder;
-        return this;
-    }
-
-    public GetProgramsDto addSortOrderItem(SortOrder sortOrderItem) {
-        if (this.sortOrder == null) {
-            this.sortOrder = new ArrayList<>();
-        }
-        this.sortOrder.add(sortOrderItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets sort Order - Ascending,Descending.
-     * 
-     * @return sortOrder
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<SortOrder> getSortOrder() {
-        return sortOrder;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSortOrder(@javax.annotation.Nullable List<SortOrder> sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public GetProgramsDto genres(@javax.annotation.Nullable List<String> genres) {
-
-        this.genres = genres;
-        return this;
-    }
-
-    public GetProgramsDto addGenresItem(String genresItem) {
-        if (this.genres == null) {
-            this.genres = new ArrayList<>();
-        }
-        this.genres.add(genresItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the genres to return guide information for.
-     * 
-     * @return genres
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_GENRES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<String> getGenres() {
-        return genres;
-    }
-
-    @JsonProperty(JSON_PROPERTY_GENRES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setGenres(@javax.annotation.Nullable List<String> genres) {
-        this.genres = genres;
-    }
-
-    public GetProgramsDto genreIds(@javax.annotation.Nullable List<UUID> genreIds) {
-
-        this.genreIds = genreIds;
-        return this;
-    }
-
-    public GetProgramsDto addGenreIdsItem(UUID genreIdsItem) {
-        if (this.genreIds == null) {
-            this.genreIds = new ArrayList<>();
-        }
-        this.genreIds.add(genreIdsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the genre ids to return guide information for.
-     * 
-     * @return genreIds
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_GENRE_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<UUID> getGenreIds() {
-        return genreIds;
-    }
-
-    @JsonProperty(JSON_PROPERTY_GENRE_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setGenreIds(@javax.annotation.Nullable List<UUID> genreIds) {
-        this.genreIds = genreIds;
-    }
-
-    public GetProgramsDto enableImages(@javax.annotation.Nullable Boolean enableImages) {
-        this.enableImages = JsonNullable.<Boolean> of(enableImages);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets include image information in output. Optional.
-     * 
-     * @return enableImages
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableImages() {
+  public Boolean getEnableImages() {
         return enableImages.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableImages_JsonNullable() {
-        return enableImages;
-    }
+  public JsonNullable<Boolean> getEnableImages_JsonNullable() {
+    return enableImages;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
+  public void setEnableImages_JsonNullable(JsonNullable<Boolean> enableImages) {
+    this.enableImages = enableImages;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
-    public void setEnableImages_JsonNullable(JsonNullable<Boolean> enableImages) {
-        this.enableImages = enableImages;
-    }
+  public void setEnableImages(@javax.annotation.Nullable Boolean enableImages) {
+    this.enableImages = JsonNullable.<Boolean>of(enableImages);
+  }
 
-    public void setEnableImages(@javax.annotation.Nullable Boolean enableImages) {
-        this.enableImages = JsonNullable.<Boolean> of(enableImages);
-    }
+  public GetProgramsDto enableTotalRecordCount(@javax.annotation.Nullable Boolean enableTotalRecordCount) {
+    
+    this.enableTotalRecordCount = enableTotalRecordCount;
+    return this;
+  }
 
-    public GetProgramsDto enableTotalRecordCount(@javax.annotation.Nullable Boolean enableTotalRecordCount) {
+  /**
+   * Gets or sets a value indicating whether retrieve total record count.
+   * @return enableTotalRecordCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.enableTotalRecordCount = enableTotalRecordCount;
-        return this;
-    }
+  public Boolean getEnableTotalRecordCount() {
+    return enableTotalRecordCount;
+  }
 
-    /**
-     * Gets or sets a value indicating whether retrieve total record count.
-     * 
-     * @return enableTotalRecordCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getEnableTotalRecordCount() {
-        return enableTotalRecordCount;
-    }
+  @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableTotalRecordCount(@javax.annotation.Nullable Boolean enableTotalRecordCount) {
+    this.enableTotalRecordCount = enableTotalRecordCount;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableTotalRecordCount(@javax.annotation.Nullable Boolean enableTotalRecordCount) {
-        this.enableTotalRecordCount = enableTotalRecordCount;
-    }
+  public GetProgramsDto imageTypeLimit(@javax.annotation.Nullable Integer imageTypeLimit) {
+    this.imageTypeLimit = JsonNullable.<Integer>of(imageTypeLimit);
+    
+    return this;
+  }
 
-    public GetProgramsDto imageTypeLimit(@javax.annotation.Nullable Integer imageTypeLimit) {
-        this.imageTypeLimit = JsonNullable.<Integer> of(imageTypeLimit);
+  /**
+   * Gets or sets the max number of images to return, per image type.  Optional.
+   * @return imageTypeLimit
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the max number of images to return, per image type. Optional.
-     * 
-     * @return imageTypeLimit
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getImageTypeLimit() {
+  public Integer getImageTypeLimit() {
         return imageTypeLimit.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getImageTypeLimit_JsonNullable() {
+    return imageTypeLimit;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
+  public void setImageTypeLimit_JsonNullable(JsonNullable<Integer> imageTypeLimit) {
+    this.imageTypeLimit = imageTypeLimit;
+  }
+
+  public void setImageTypeLimit(@javax.annotation.Nullable Integer imageTypeLimit) {
+    this.imageTypeLimit = JsonNullable.<Integer>of(imageTypeLimit);
+  }
+
+  public GetProgramsDto enableImageTypes(@javax.annotation.Nullable List<ImageType> enableImageTypes) {
+    
+    this.enableImageTypes = enableImageTypes;
+    return this;
+  }
+
+  public GetProgramsDto addEnableImageTypesItem(ImageType enableImageTypesItem) {
+    if (this.enableImageTypes == null) {
+      this.enableImageTypes = new ArrayList<>();
     }
+    this.enableImageTypes.add(enableImageTypesItem);
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets the image types to include in the output.  Optional.
+   * @return enableImageTypes
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getImageTypeLimit_JsonNullable() {
-        return imageTypeLimit;
-    }
+  public List<ImageType> getEnableImageTypes() {
+    return enableImageTypes;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
-    public void setImageTypeLimit_JsonNullable(JsonNullable<Integer> imageTypeLimit) {
-        this.imageTypeLimit = imageTypeLimit;
-    }
 
-    public void setImageTypeLimit(@javax.annotation.Nullable Integer imageTypeLimit) {
-        this.imageTypeLimit = JsonNullable.<Integer> of(imageTypeLimit);
-    }
+  @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableImageTypes(@javax.annotation.Nullable List<ImageType> enableImageTypes) {
+    this.enableImageTypes = enableImageTypes;
+  }
 
-    public GetProgramsDto enableImageTypes(@javax.annotation.Nullable List<ImageType> enableImageTypes) {
+  public GetProgramsDto enableUserData(@javax.annotation.Nullable Boolean enableUserData) {
+    this.enableUserData = JsonNullable.<Boolean>of(enableUserData);
+    
+    return this;
+  }
 
-        this.enableImageTypes = enableImageTypes;
-        return this;
-    }
+  /**
+   * Gets or sets include user data.  Optional.
+   * @return enableUserData
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public GetProgramsDto addEnableImageTypesItem(ImageType enableImageTypesItem) {
-        if (this.enableImageTypes == null) {
-            this.enableImageTypes = new ArrayList<>();
-        }
-        this.enableImageTypes.add(enableImageTypesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the image types to include in the output. Optional.
-     * 
-     * @return enableImageTypes
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ImageType> getEnableImageTypes() {
-        return enableImageTypes;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableImageTypes(@javax.annotation.Nullable List<ImageType> enableImageTypes) {
-        this.enableImageTypes = enableImageTypes;
-    }
-
-    public GetProgramsDto enableUserData(@javax.annotation.Nullable Boolean enableUserData) {
-        this.enableUserData = JsonNullable.<Boolean> of(enableUserData);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets include user data. Optional.
-     * 
-     * @return enableUserData
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableUserData() {
+  public Boolean getEnableUserData() {
         return enableUserData.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableUserData_JsonNullable() {
-        return enableUserData;
-    }
+  public JsonNullable<Boolean> getEnableUserData_JsonNullable() {
+    return enableUserData;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
+  public void setEnableUserData_JsonNullable(JsonNullable<Boolean> enableUserData) {
+    this.enableUserData = enableUserData;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
-    public void setEnableUserData_JsonNullable(JsonNullable<Boolean> enableUserData) {
-        this.enableUserData = enableUserData;
-    }
+  public void setEnableUserData(@javax.annotation.Nullable Boolean enableUserData) {
+    this.enableUserData = JsonNullable.<Boolean>of(enableUserData);
+  }
 
-    public void setEnableUserData(@javax.annotation.Nullable Boolean enableUserData) {
-        this.enableUserData = JsonNullable.<Boolean> of(enableUserData);
-    }
+  public GetProgramsDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
+    this.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+    
+    return this;
+  }
 
-    public GetProgramsDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
+  /**
+   * Gets or sets filter by series timer id.  Optional.
+   * @return seriesTimerId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets filter by series timer id. Optional.
-     * 
-     * @return seriesTimerId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesTimerId() {
+  public String getSeriesTimerId() {
         return seriesTimerId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSeriesTimerId_JsonNullable() {
+    return seriesTimerId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+  public void setSeriesTimerId_JsonNullable(JsonNullable<String> seriesTimerId) {
+    this.seriesTimerId = seriesTimerId;
+  }
+
+  public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
+    this.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+  }
+
+  public GetProgramsDto librarySeriesId(@javax.annotation.Nullable UUID librarySeriesId) {
+    
+    this.librarySeriesId = librarySeriesId;
+    return this;
+  }
+
+  /**
+   * Gets or sets filter by library series id.  Optional.
+   * @return librarySeriesId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getLibrarySeriesId() {
+    return librarySeriesId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLibrarySeriesId(@javax.annotation.Nullable UUID librarySeriesId) {
+    this.librarySeriesId = librarySeriesId;
+  }
+
+  public GetProgramsDto fields(@javax.annotation.Nullable List<ItemFields> fields) {
+    
+    this.fields = fields;
+    return this;
+  }
+
+  public GetProgramsDto addFieldsItem(ItemFields fieldsItem) {
+    if (this.fields == null) {
+      this.fields = new ArrayList<>();
+    }
+    this.fields.add(fieldsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.  Optional.
+   * @return fields
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_FIELDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ItemFields> getFields() {
+    return fields;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_FIELDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFields(@javax.annotation.Nullable List<ItemFields> fields) {
+    this.fields = fields;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    GetProgramsDto getProgramsDto = (GetProgramsDto) o;
+    return Objects.equals(this.channelIds, getProgramsDto.channelIds) &&
+        Objects.equals(this.userId, getProgramsDto.userId) &&
+        equalsNullable(this.minStartDate, getProgramsDto.minStartDate) &&
+        equalsNullable(this.hasAired, getProgramsDto.hasAired) &&
+        equalsNullable(this.isAiring, getProgramsDto.isAiring) &&
+        equalsNullable(this.maxStartDate, getProgramsDto.maxStartDate) &&
+        equalsNullable(this.minEndDate, getProgramsDto.minEndDate) &&
+        equalsNullable(this.maxEndDate, getProgramsDto.maxEndDate) &&
+        equalsNullable(this.isMovie, getProgramsDto.isMovie) &&
+        equalsNullable(this.isSeries, getProgramsDto.isSeries) &&
+        equalsNullable(this.isNews, getProgramsDto.isNews) &&
+        equalsNullable(this.isKids, getProgramsDto.isKids) &&
+        equalsNullable(this.isSports, getProgramsDto.isSports) &&
+        equalsNullable(this.startIndex, getProgramsDto.startIndex) &&
+        equalsNullable(this.limit, getProgramsDto.limit) &&
+        Objects.equals(this.sortBy, getProgramsDto.sortBy) &&
+        Objects.equals(this.sortOrder, getProgramsDto.sortOrder) &&
+        Objects.equals(this.genres, getProgramsDto.genres) &&
+        Objects.equals(this.genreIds, getProgramsDto.genreIds) &&
+        equalsNullable(this.enableImages, getProgramsDto.enableImages) &&
+        Objects.equals(this.enableTotalRecordCount, getProgramsDto.enableTotalRecordCount) &&
+        equalsNullable(this.imageTypeLimit, getProgramsDto.imageTypeLimit) &&
+        Objects.equals(this.enableImageTypes, getProgramsDto.enableImageTypes) &&
+        equalsNullable(this.enableUserData, getProgramsDto.enableUserData) &&
+        equalsNullable(this.seriesTimerId, getProgramsDto.seriesTimerId) &&
+        Objects.equals(this.librarySeriesId, getProgramsDto.librarySeriesId) &&
+        Objects.equals(this.fields, getProgramsDto.fields);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(channelIds, userId, hashCodeNullable(minStartDate), hashCodeNullable(hasAired), hashCodeNullable(isAiring), hashCodeNullable(maxStartDate), hashCodeNullable(minEndDate), hashCodeNullable(maxEndDate), hashCodeNullable(isMovie), hashCodeNullable(isSeries), hashCodeNullable(isNews), hashCodeNullable(isKids), hashCodeNullable(isSports), hashCodeNullable(startIndex), hashCodeNullable(limit), sortBy, sortOrder, genres, genreIds, hashCodeNullable(enableImages), enableTotalRecordCount, hashCodeNullable(imageTypeLimit), enableImageTypes, hashCodeNullable(enableUserData), hashCodeNullable(seriesTimerId), librarySeriesId, fields);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class GetProgramsDto {\n");
+    sb.append("    channelIds: ").append(toIndentedString(channelIds)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    minStartDate: ").append(toIndentedString(minStartDate)).append("\n");
+    sb.append("    hasAired: ").append(toIndentedString(hasAired)).append("\n");
+    sb.append("    isAiring: ").append(toIndentedString(isAiring)).append("\n");
+    sb.append("    maxStartDate: ").append(toIndentedString(maxStartDate)).append("\n");
+    sb.append("    minEndDate: ").append(toIndentedString(minEndDate)).append("\n");
+    sb.append("    maxEndDate: ").append(toIndentedString(maxEndDate)).append("\n");
+    sb.append("    isMovie: ").append(toIndentedString(isMovie)).append("\n");
+    sb.append("    isSeries: ").append(toIndentedString(isSeries)).append("\n");
+    sb.append("    isNews: ").append(toIndentedString(isNews)).append("\n");
+    sb.append("    isKids: ").append(toIndentedString(isKids)).append("\n");
+    sb.append("    isSports: ").append(toIndentedString(isSports)).append("\n");
+    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+    sb.append("    limit: ").append(toIndentedString(limit)).append("\n");
+    sb.append("    sortBy: ").append(toIndentedString(sortBy)).append("\n");
+    sb.append("    sortOrder: ").append(toIndentedString(sortOrder)).append("\n");
+    sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
+    sb.append("    genreIds: ").append(toIndentedString(genreIds)).append("\n");
+    sb.append("    enableImages: ").append(toIndentedString(enableImages)).append("\n");
+    sb.append("    enableTotalRecordCount: ").append(toIndentedString(enableTotalRecordCount)).append("\n");
+    sb.append("    imageTypeLimit: ").append(toIndentedString(imageTypeLimit)).append("\n");
+    sb.append("    enableImageTypes: ").append(toIndentedString(enableImageTypes)).append("\n");
+    sb.append("    enableUserData: ").append(toIndentedString(enableUserData)).append("\n");
+    sb.append("    seriesTimerId: ").append(toIndentedString(seriesTimerId)).append("\n");
+    sb.append("    librarySeriesId: ").append(toIndentedString(librarySeriesId)).append("\n");
+    sb.append("    fields: ").append(toIndentedString(fields)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private GetProgramsDto instance;
+
+    public Builder() {
+      this(new GetProgramsDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getSeriesTimerId_JsonNullable() {
-        return seriesTimerId;
+    protected Builder(GetProgramsDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
-    public void setSeriesTimerId_JsonNullable(JsonNullable<String> seriesTimerId) {
-        this.seriesTimerId = seriesTimerId;
+    public GetProgramsDto.Builder channelIds(List<UUID> channelIds) {
+      this.instance.channelIds = channelIds;
+      return this;
+    }
+    public GetProgramsDto.Builder userId(UUID userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public GetProgramsDto.Builder minStartDate(OffsetDateTime minStartDate) {
+      this.instance.minStartDate = JsonNullable.<OffsetDateTime>of(minStartDate);
+      return this;
+    }
+    public GetProgramsDto.Builder minStartDate(JsonNullable<OffsetDateTime> minStartDate) {
+      this.instance.minStartDate = minStartDate;
+      return this;
+    }
+    public GetProgramsDto.Builder hasAired(Boolean hasAired) {
+      this.instance.hasAired = JsonNullable.<Boolean>of(hasAired);
+      return this;
+    }
+    public GetProgramsDto.Builder hasAired(JsonNullable<Boolean> hasAired) {
+      this.instance.hasAired = hasAired;
+      return this;
+    }
+    public GetProgramsDto.Builder isAiring(Boolean isAiring) {
+      this.instance.isAiring = JsonNullable.<Boolean>of(isAiring);
+      return this;
+    }
+    public GetProgramsDto.Builder isAiring(JsonNullable<Boolean> isAiring) {
+      this.instance.isAiring = isAiring;
+      return this;
+    }
+    public GetProgramsDto.Builder maxStartDate(OffsetDateTime maxStartDate) {
+      this.instance.maxStartDate = JsonNullable.<OffsetDateTime>of(maxStartDate);
+      return this;
+    }
+    public GetProgramsDto.Builder maxStartDate(JsonNullable<OffsetDateTime> maxStartDate) {
+      this.instance.maxStartDate = maxStartDate;
+      return this;
+    }
+    public GetProgramsDto.Builder minEndDate(OffsetDateTime minEndDate) {
+      this.instance.minEndDate = JsonNullable.<OffsetDateTime>of(minEndDate);
+      return this;
+    }
+    public GetProgramsDto.Builder minEndDate(JsonNullable<OffsetDateTime> minEndDate) {
+      this.instance.minEndDate = minEndDate;
+      return this;
+    }
+    public GetProgramsDto.Builder maxEndDate(OffsetDateTime maxEndDate) {
+      this.instance.maxEndDate = JsonNullable.<OffsetDateTime>of(maxEndDate);
+      return this;
+    }
+    public GetProgramsDto.Builder maxEndDate(JsonNullable<OffsetDateTime> maxEndDate) {
+      this.instance.maxEndDate = maxEndDate;
+      return this;
+    }
+    public GetProgramsDto.Builder isMovie(Boolean isMovie) {
+      this.instance.isMovie = JsonNullable.<Boolean>of(isMovie);
+      return this;
+    }
+    public GetProgramsDto.Builder isMovie(JsonNullable<Boolean> isMovie) {
+      this.instance.isMovie = isMovie;
+      return this;
+    }
+    public GetProgramsDto.Builder isSeries(Boolean isSeries) {
+      this.instance.isSeries = JsonNullable.<Boolean>of(isSeries);
+      return this;
+    }
+    public GetProgramsDto.Builder isSeries(JsonNullable<Boolean> isSeries) {
+      this.instance.isSeries = isSeries;
+      return this;
+    }
+    public GetProgramsDto.Builder isNews(Boolean isNews) {
+      this.instance.isNews = JsonNullable.<Boolean>of(isNews);
+      return this;
+    }
+    public GetProgramsDto.Builder isNews(JsonNullable<Boolean> isNews) {
+      this.instance.isNews = isNews;
+      return this;
+    }
+    public GetProgramsDto.Builder isKids(Boolean isKids) {
+      this.instance.isKids = JsonNullable.<Boolean>of(isKids);
+      return this;
+    }
+    public GetProgramsDto.Builder isKids(JsonNullable<Boolean> isKids) {
+      this.instance.isKids = isKids;
+      return this;
+    }
+    public GetProgramsDto.Builder isSports(Boolean isSports) {
+      this.instance.isSports = JsonNullable.<Boolean>of(isSports);
+      return this;
+    }
+    public GetProgramsDto.Builder isSports(JsonNullable<Boolean> isSports) {
+      this.instance.isSports = isSports;
+      return this;
+    }
+    public GetProgramsDto.Builder startIndex(Integer startIndex) {
+      this.instance.startIndex = JsonNullable.<Integer>of(startIndex);
+      return this;
+    }
+    public GetProgramsDto.Builder startIndex(JsonNullable<Integer> startIndex) {
+      this.instance.startIndex = startIndex;
+      return this;
+    }
+    public GetProgramsDto.Builder limit(Integer limit) {
+      this.instance.limit = JsonNullable.<Integer>of(limit);
+      return this;
+    }
+    public GetProgramsDto.Builder limit(JsonNullable<Integer> limit) {
+      this.instance.limit = limit;
+      return this;
+    }
+    public GetProgramsDto.Builder sortBy(List<String> sortBy) {
+      this.instance.sortBy = sortBy;
+      return this;
+    }
+    public GetProgramsDto.Builder sortOrder(List<SortOrder> sortOrder) {
+      this.instance.sortOrder = sortOrder;
+      return this;
+    }
+    public GetProgramsDto.Builder genres(List<String> genres) {
+      this.instance.genres = genres;
+      return this;
+    }
+    public GetProgramsDto.Builder genreIds(List<UUID> genreIds) {
+      this.instance.genreIds = genreIds;
+      return this;
+    }
+    public GetProgramsDto.Builder enableImages(Boolean enableImages) {
+      this.instance.enableImages = JsonNullable.<Boolean>of(enableImages);
+      return this;
+    }
+    public GetProgramsDto.Builder enableImages(JsonNullable<Boolean> enableImages) {
+      this.instance.enableImages = enableImages;
+      return this;
+    }
+    public GetProgramsDto.Builder enableTotalRecordCount(Boolean enableTotalRecordCount) {
+      this.instance.enableTotalRecordCount = enableTotalRecordCount;
+      return this;
+    }
+    public GetProgramsDto.Builder imageTypeLimit(Integer imageTypeLimit) {
+      this.instance.imageTypeLimit = JsonNullable.<Integer>of(imageTypeLimit);
+      return this;
+    }
+    public GetProgramsDto.Builder imageTypeLimit(JsonNullable<Integer> imageTypeLimit) {
+      this.instance.imageTypeLimit = imageTypeLimit;
+      return this;
+    }
+    public GetProgramsDto.Builder enableImageTypes(List<ImageType> enableImageTypes) {
+      this.instance.enableImageTypes = enableImageTypes;
+      return this;
+    }
+    public GetProgramsDto.Builder enableUserData(Boolean enableUserData) {
+      this.instance.enableUserData = JsonNullable.<Boolean>of(enableUserData);
+      return this;
+    }
+    public GetProgramsDto.Builder enableUserData(JsonNullable<Boolean> enableUserData) {
+      this.instance.enableUserData = enableUserData;
+      return this;
+    }
+    public GetProgramsDto.Builder seriesTimerId(String seriesTimerId) {
+      this.instance.seriesTimerId = JsonNullable.<String>of(seriesTimerId);
+      return this;
+    }
+    public GetProgramsDto.Builder seriesTimerId(JsonNullable<String> seriesTimerId) {
+      this.instance.seriesTimerId = seriesTimerId;
+      return this;
+    }
+    public GetProgramsDto.Builder librarySeriesId(UUID librarySeriesId) {
+      this.instance.librarySeriesId = librarySeriesId;
+      return this;
+    }
+    public GetProgramsDto.Builder fields(List<ItemFields> fields) {
+      this.instance.fields = fields;
+      return this;
     }
 
-    public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-    }
-
-    public GetProgramsDto librarySeriesId(@javax.annotation.Nullable UUID librarySeriesId) {
-
-        this.librarySeriesId = librarySeriesId;
-        return this;
-    }
 
     /**
-     * Gets or sets filter by library series id. Optional.
-     * 
-     * @return librarySeriesId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getLibrarySeriesId() {
-        return librarySeriesId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setLibrarySeriesId(@javax.annotation.Nullable UUID librarySeriesId) {
-        this.librarySeriesId = librarySeriesId;
-    }
-
-    public GetProgramsDto fields(@javax.annotation.Nullable List<ItemFields> fields) {
-
-        this.fields = fields;
-        return this;
-    }
-
-    public GetProgramsDto addFieldsItem(ItemFields fieldsItem) {
-        if (this.fields == null) {
-            this.fields = new ArrayList<>();
-        }
-        this.fields.add(fieldsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets specify additional fields of information to return in the output. This allows multiple, comma
-     * delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview,
-     * ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines. Optional.
-     * 
-     * @return fields
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_FIELDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ItemFields> getFields() {
-        return fields;
-    }
-
-    @JsonProperty(JSON_PROPERTY_FIELDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setFields(@javax.annotation.Nullable List<ItemFields> fields) {
-        this.fields = fields;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        GetProgramsDto getProgramsDto = (GetProgramsDto) o;
-        return Objects.equals(this.channelIds, getProgramsDto.channelIds)
-                && Objects.equals(this.userId, getProgramsDto.userId)
-                && equalsNullable(this.minStartDate, getProgramsDto.minStartDate)
-                && equalsNullable(this.hasAired, getProgramsDto.hasAired)
-                && equalsNullable(this.isAiring, getProgramsDto.isAiring)
-                && equalsNullable(this.maxStartDate, getProgramsDto.maxStartDate)
-                && equalsNullable(this.minEndDate, getProgramsDto.minEndDate)
-                && equalsNullable(this.maxEndDate, getProgramsDto.maxEndDate)
-                && equalsNullable(this.isMovie, getProgramsDto.isMovie)
-                && equalsNullable(this.isSeries, getProgramsDto.isSeries)
-                && equalsNullable(this.isNews, getProgramsDto.isNews)
-                && equalsNullable(this.isKids, getProgramsDto.isKids)
-                && equalsNullable(this.isSports, getProgramsDto.isSports)
-                && equalsNullable(this.startIndex, getProgramsDto.startIndex)
-                && equalsNullable(this.limit, getProgramsDto.limit)
-                && Objects.equals(this.sortBy, getProgramsDto.sortBy)
-                && Objects.equals(this.sortOrder, getProgramsDto.sortOrder)
-                && Objects.equals(this.genres, getProgramsDto.genres)
-                && Objects.equals(this.genreIds, getProgramsDto.genreIds)
-                && equalsNullable(this.enableImages, getProgramsDto.enableImages)
-                && Objects.equals(this.enableTotalRecordCount, getProgramsDto.enableTotalRecordCount)
-                && equalsNullable(this.imageTypeLimit, getProgramsDto.imageTypeLimit)
-                && Objects.equals(this.enableImageTypes, getProgramsDto.enableImageTypes)
-                && equalsNullable(this.enableUserData, getProgramsDto.enableUserData)
-                && equalsNullable(this.seriesTimerId, getProgramsDto.seriesTimerId)
-                && Objects.equals(this.librarySeriesId, getProgramsDto.librarySeriesId)
-                && Objects.equals(this.fields, getProgramsDto.fields);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(channelIds, userId, hashCodeNullable(minStartDate), hashCodeNullable(hasAired),
-                hashCodeNullable(isAiring), hashCodeNullable(maxStartDate), hashCodeNullable(minEndDate),
-                hashCodeNullable(maxEndDate), hashCodeNullable(isMovie), hashCodeNullable(isSeries),
-                hashCodeNullable(isNews), hashCodeNullable(isKids), hashCodeNullable(isSports),
-                hashCodeNullable(startIndex), hashCodeNullable(limit), sortBy, sortOrder, genres, genreIds,
-                hashCodeNullable(enableImages), enableTotalRecordCount, hashCodeNullable(imageTypeLimit),
-                enableImageTypes, hashCodeNullable(enableUserData), hashCodeNullable(seriesTimerId), librarySeriesId,
-                fields);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built GetProgramsDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public GetProgramsDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class GetProgramsDto {\n");
-        sb.append("    channelIds: ").append(toIndentedString(channelIds)).append("\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    minStartDate: ").append(toIndentedString(minStartDate)).append("\n");
-        sb.append("    hasAired: ").append(toIndentedString(hasAired)).append("\n");
-        sb.append("    isAiring: ").append(toIndentedString(isAiring)).append("\n");
-        sb.append("    maxStartDate: ").append(toIndentedString(maxStartDate)).append("\n");
-        sb.append("    minEndDate: ").append(toIndentedString(minEndDate)).append("\n");
-        sb.append("    maxEndDate: ").append(toIndentedString(maxEndDate)).append("\n");
-        sb.append("    isMovie: ").append(toIndentedString(isMovie)).append("\n");
-        sb.append("    isSeries: ").append(toIndentedString(isSeries)).append("\n");
-        sb.append("    isNews: ").append(toIndentedString(isNews)).append("\n");
-        sb.append("    isKids: ").append(toIndentedString(isKids)).append("\n");
-        sb.append("    isSports: ").append(toIndentedString(isSports)).append("\n");
-        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-        sb.append("    limit: ").append(toIndentedString(limit)).append("\n");
-        sb.append("    sortBy: ").append(toIndentedString(sortBy)).append("\n");
-        sb.append("    sortOrder: ").append(toIndentedString(sortOrder)).append("\n");
-        sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
-        sb.append("    genreIds: ").append(toIndentedString(genreIds)).append("\n");
-        sb.append("    enableImages: ").append(toIndentedString(enableImages)).append("\n");
-        sb.append("    enableTotalRecordCount: ").append(toIndentedString(enableTotalRecordCount)).append("\n");
-        sb.append("    imageTypeLimit: ").append(toIndentedString(imageTypeLimit)).append("\n");
-        sb.append("    enableImageTypes: ").append(toIndentedString(enableImageTypes)).append("\n");
-        sb.append("    enableUserData: ").append(toIndentedString(enableUserData)).append("\n");
-        sb.append("    seriesTimerId: ").append(toIndentedString(seriesTimerId)).append("\n");
-        sb.append("    librarySeriesId: ").append(toIndentedString(librarySeriesId)).append("\n");
-        sb.append("    fields: ").append(toIndentedString(fields)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static GetProgramsDto.Builder builder() {
+    return new GetProgramsDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public GetProgramsDto.Builder toBuilder() {
+    return new GetProgramsDto.Builder()
+      .channelIds(getChannelIds())
+      .userId(getUserId())
+      .minStartDate(getMinStartDate())
+      .hasAired(getHasAired())
+      .isAiring(getIsAiring())
+      .maxStartDate(getMaxStartDate())
+      .minEndDate(getMinEndDate())
+      .maxEndDate(getMaxEndDate())
+      .isMovie(getIsMovie())
+      .isSeries(getIsSeries())
+      .isNews(getIsNews())
+      .isKids(getIsKids())
+      .isSports(getIsSports())
+      .startIndex(getStartIndex())
+      .limit(getLimit())
+      .sortBy(getSortBy())
+      .sortOrder(getSortOrder())
+      .genres(getGenres())
+      .genreIds(getGenreIds())
+      .enableImages(getEnableImages())
+      .enableTotalRecordCount(getEnableTotalRecordCount())
+      .imageTypeLimit(getImageTypeLimit())
+      .enableImageTypes(getEnableImageTypes())
+      .enableUserData(getEnableUserData())
+      .seriesTimerId(getSeriesTimerId())
+      .librarySeriesId(getLibrarySeriesId())
+      .fields(getFields());
+  }
 
-        private GetProgramsDto instance;
 
-        public Builder() {
-            this(new GetProgramsDto());
-        }
-
-        protected Builder(GetProgramsDto instance) {
-            this.instance = instance;
-        }
-
-        public GetProgramsDto.Builder channelIds(List<UUID> channelIds) {
-            this.instance.channelIds = channelIds;
-            return this;
-        }
-
-        public GetProgramsDto.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder minStartDate(OffsetDateTime minStartDate) {
-            this.instance.minStartDate = JsonNullable.<OffsetDateTime> of(minStartDate);
-            return this;
-        }
-
-        public GetProgramsDto.Builder minStartDate(JsonNullable<OffsetDateTime> minStartDate) {
-            this.instance.minStartDate = minStartDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder hasAired(Boolean hasAired) {
-            this.instance.hasAired = JsonNullable.<Boolean> of(hasAired);
-            return this;
-        }
-
-        public GetProgramsDto.Builder hasAired(JsonNullable<Boolean> hasAired) {
-            this.instance.hasAired = hasAired;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isAiring(Boolean isAiring) {
-            this.instance.isAiring = JsonNullable.<Boolean> of(isAiring);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isAiring(JsonNullable<Boolean> isAiring) {
-            this.instance.isAiring = isAiring;
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxStartDate(OffsetDateTime maxStartDate) {
-            this.instance.maxStartDate = JsonNullable.<OffsetDateTime> of(maxStartDate);
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxStartDate(JsonNullable<OffsetDateTime> maxStartDate) {
-            this.instance.maxStartDate = maxStartDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder minEndDate(OffsetDateTime minEndDate) {
-            this.instance.minEndDate = JsonNullable.<OffsetDateTime> of(minEndDate);
-            return this;
-        }
-
-        public GetProgramsDto.Builder minEndDate(JsonNullable<OffsetDateTime> minEndDate) {
-            this.instance.minEndDate = minEndDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxEndDate(OffsetDateTime maxEndDate) {
-            this.instance.maxEndDate = JsonNullable.<OffsetDateTime> of(maxEndDate);
-            return this;
-        }
-
-        public GetProgramsDto.Builder maxEndDate(JsonNullable<OffsetDateTime> maxEndDate) {
-            this.instance.maxEndDate = maxEndDate;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isMovie(Boolean isMovie) {
-            this.instance.isMovie = JsonNullable.<Boolean> of(isMovie);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isMovie(JsonNullable<Boolean> isMovie) {
-            this.instance.isMovie = isMovie;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSeries(Boolean isSeries) {
-            this.instance.isSeries = JsonNullable.<Boolean> of(isSeries);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSeries(JsonNullable<Boolean> isSeries) {
-            this.instance.isSeries = isSeries;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isNews(Boolean isNews) {
-            this.instance.isNews = JsonNullable.<Boolean> of(isNews);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isNews(JsonNullable<Boolean> isNews) {
-            this.instance.isNews = isNews;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isKids(Boolean isKids) {
-            this.instance.isKids = JsonNullable.<Boolean> of(isKids);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isKids(JsonNullable<Boolean> isKids) {
-            this.instance.isKids = isKids;
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSports(Boolean isSports) {
-            this.instance.isSports = JsonNullable.<Boolean> of(isSports);
-            return this;
-        }
-
-        public GetProgramsDto.Builder isSports(JsonNullable<Boolean> isSports) {
-            this.instance.isSports = isSports;
-            return this;
-        }
-
-        public GetProgramsDto.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = JsonNullable.<Integer> of(startIndex);
-            return this;
-        }
-
-        public GetProgramsDto.Builder startIndex(JsonNullable<Integer> startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        public GetProgramsDto.Builder limit(Integer limit) {
-            this.instance.limit = JsonNullable.<Integer> of(limit);
-            return this;
-        }
-
-        public GetProgramsDto.Builder limit(JsonNullable<Integer> limit) {
-            this.instance.limit = limit;
-            return this;
-        }
-
-        public GetProgramsDto.Builder sortBy(List<String> sortBy) {
-            this.instance.sortBy = sortBy;
-            return this;
-        }
-
-        public GetProgramsDto.Builder sortOrder(List<SortOrder> sortOrder) {
-            this.instance.sortOrder = sortOrder;
-            return this;
-        }
-
-        public GetProgramsDto.Builder genres(List<String> genres) {
-            this.instance.genres = genres;
-            return this;
-        }
-
-        public GetProgramsDto.Builder genreIds(List<UUID> genreIds) {
-            this.instance.genreIds = genreIds;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableImages(Boolean enableImages) {
-            this.instance.enableImages = JsonNullable.<Boolean> of(enableImages);
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableImages(JsonNullable<Boolean> enableImages) {
-            this.instance.enableImages = enableImages;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableTotalRecordCount(Boolean enableTotalRecordCount) {
-            this.instance.enableTotalRecordCount = enableTotalRecordCount;
-            return this;
-        }
-
-        public GetProgramsDto.Builder imageTypeLimit(Integer imageTypeLimit) {
-            this.instance.imageTypeLimit = JsonNullable.<Integer> of(imageTypeLimit);
-            return this;
-        }
-
-        public GetProgramsDto.Builder imageTypeLimit(JsonNullable<Integer> imageTypeLimit) {
-            this.instance.imageTypeLimit = imageTypeLimit;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableImageTypes(List<ImageType> enableImageTypes) {
-            this.instance.enableImageTypes = enableImageTypes;
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableUserData(Boolean enableUserData) {
-            this.instance.enableUserData = JsonNullable.<Boolean> of(enableUserData);
-            return this;
-        }
-
-        public GetProgramsDto.Builder enableUserData(JsonNullable<Boolean> enableUserData) {
-            this.instance.enableUserData = enableUserData;
-            return this;
-        }
-
-        public GetProgramsDto.Builder seriesTimerId(String seriesTimerId) {
-            this.instance.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-            return this;
-        }
-
-        public GetProgramsDto.Builder seriesTimerId(JsonNullable<String> seriesTimerId) {
-            this.instance.seriesTimerId = seriesTimerId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder librarySeriesId(UUID librarySeriesId) {
-            this.instance.librarySeriesId = librarySeriesId;
-            return this;
-        }
-
-        public GetProgramsDto.Builder fields(List<ItemFields> fields) {
-            this.instance.fields = fields;
-            return this;
-        }
-
-        /**
-         * returns a built GetProgramsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public GetProgramsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GetProgramsDto.Builder builder() {
-        return new GetProgramsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GetProgramsDto.Builder toBuilder() {
-        return new GetProgramsDto.Builder().channelIds(getChannelIds()).userId(getUserId())
-                .minStartDate(getMinStartDate()).hasAired(getHasAired()).isAiring(getIsAiring())
-                .maxStartDate(getMaxStartDate()).minEndDate(getMinEndDate()).maxEndDate(getMaxEndDate())
-                .isMovie(getIsMovie()).isSeries(getIsSeries()).isNews(getIsNews()).isKids(getIsKids())
-                .isSports(getIsSports()).startIndex(getStartIndex()).limit(getLimit()).sortBy(getSortBy())
-                .sortOrder(getSortOrder()).genres(getGenres()).genreIds(getGenreIds()).enableImages(getEnableImages())
-                .enableTotalRecordCount(getEnableTotalRecordCount()).imageTypeLimit(getImageTypeLimit())
-                .enableImageTypes(getEnableImageTypes()).enableUserData(getEnableUserData())
-                .seriesTimerId(getSeriesTimerId()).librarySeriesId(getLibrarySeriesId()).fields(getFields());
-    }
 }
+

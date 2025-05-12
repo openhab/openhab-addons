@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,38 +29,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing the options to disable embedded subs.
  */
 public enum EmbeddedSubtitleOptions {
+  
+  ALLOW_ALL("AllowAll"),
+  
+  ALLOW_TEXT("AllowText"),
+  
+  ALLOW_IMAGE("AllowImage"),
+  
+  ALLOW_NONE("AllowNone");
 
-    ALLOW_ALL("AllowAll"),
+  private String value;
 
-    ALLOW_TEXT("AllowText"),
+  EmbeddedSubtitleOptions(String value) {
+    this.value = value;
+  }
 
-    ALLOW_IMAGE("AllowImage"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    ALLOW_NONE("AllowNone");
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    private String value;
-
-    EmbeddedSubtitleOptions(String value) {
-        this.value = value;
+  @JsonCreator
+  public static EmbeddedSubtitleOptions fromValue(String value) {
+    for (EmbeddedSubtitleOptions b : EmbeddedSubtitleOptions.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static EmbeddedSubtitleOptions fromValue(String value) {
-        for (EmbeddedSubtitleOptions b : EmbeddedSubtitleOptions.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

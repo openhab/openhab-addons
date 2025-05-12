@@ -17,220 +17,233 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ActivityLogEntry;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Query result container.
  */
-@JsonPropertyOrder({ ActivityLogEntryQueryResult.JSON_PROPERTY_ITEMS,
-        ActivityLogEntryQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-        ActivityLogEntryQueryResult.JSON_PROPERTY_START_INDEX })
+@JsonPropertyOrder({
+  ActivityLogEntryQueryResult.JSON_PROPERTY_ITEMS,
+  ActivityLogEntryQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+  ActivityLogEntryQueryResult.JSON_PROPERTY_START_INDEX
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryQueryResult {
-    public static final String JSON_PROPERTY_ITEMS = "Items";
-    @javax.annotation.Nullable
-    private List<ActivityLogEntry> items = new ArrayList<>();
+  public static final String JSON_PROPERTY_ITEMS = "Items";
+  @javax.annotation.Nullable
+  private List<ActivityLogEntry> items = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @javax.annotation.Nullable
-    private Integer totalRecordCount;
+  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+  @javax.annotation.Nullable
+  private Integer totalRecordCount;
 
-    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @javax.annotation.Nullable
-    private Integer startIndex;
+  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+  @javax.annotation.Nullable
+  private Integer startIndex;
 
-    public ActivityLogEntryQueryResult() {
+  public ActivityLogEntryQueryResult() {
+  }
+
+  public ActivityLogEntryQueryResult items(@javax.annotation.Nullable List<ActivityLogEntry> items) {
+    
+    this.items = items;
+    return this;
+  }
+
+  public ActivityLogEntryQueryResult addItemsItem(ActivityLogEntry itemsItem) {
+    if (this.items == null) {
+      this.items = new ArrayList<>();
+    }
+    this.items.add(itemsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the items.
+   * @return items
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<ActivityLogEntry> getItems() {
+    return items;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItems(@javax.annotation.Nullable List<ActivityLogEntry> items) {
+    this.items = items;
+  }
+
+  public ActivityLogEntryQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    
+    this.totalRecordCount = totalRecordCount;
+    return this;
+  }
+
+  /**
+   * Gets or sets the total number of records available.
+   * @return totalRecordCount
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTotalRecordCount() {
+    return totalRecordCount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+    this.totalRecordCount = totalRecordCount;
+  }
+
+  public ActivityLogEntryQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+    
+    this.startIndex = startIndex;
+    return this;
+  }
+
+  /**
+   * Gets or sets the index of the first record in Items.
+   * @return startIndex
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getStartIndex() {
+    return startIndex;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+    this.startIndex = startIndex;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ActivityLogEntryQueryResult activityLogEntryQueryResult = (ActivityLogEntryQueryResult) o;
+    return Objects.equals(this.items, activityLogEntryQueryResult.items) &&
+        Objects.equals(this.totalRecordCount, activityLogEntryQueryResult.totalRecordCount) &&
+        Objects.equals(this.startIndex, activityLogEntryQueryResult.startIndex);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(items, totalRecordCount, startIndex);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ActivityLogEntryQueryResult {\n");
+    sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ActivityLogEntryQueryResult instance;
+
+    public Builder() {
+      this(new ActivityLogEntryQueryResult());
     }
 
-    public ActivityLogEntryQueryResult items(@javax.annotation.Nullable List<ActivityLogEntry> items) {
-
-        this.items = items;
-        return this;
+    protected Builder(ActivityLogEntryQueryResult instance) {
+      this.instance = instance;
     }
 
-    public ActivityLogEntryQueryResult addItemsItem(ActivityLogEntry itemsItem) {
-        if (this.items == null) {
-            this.items = new ArrayList<>();
-        }
-        this.items.add(itemsItem);
-        return this;
+    public ActivityLogEntryQueryResult.Builder items(List<ActivityLogEntry> items) {
+      this.instance.items = items;
+      return this;
     }
+    public ActivityLogEntryQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
+      this.instance.totalRecordCount = totalRecordCount;
+      return this;
+    }
+    public ActivityLogEntryQueryResult.Builder startIndex(Integer startIndex) {
+      this.instance.startIndex = startIndex;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the items.
-     * 
-     * @return items
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<ActivityLogEntry> getItems() {
-        return items;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setItems(@javax.annotation.Nullable List<ActivityLogEntry> items) {
-        this.items = items;
-    }
-
-    public ActivityLogEntryQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-
-        this.totalRecordCount = totalRecordCount;
-        return this;
-    }
-
-    /**
-     * Gets or sets the total number of records available.
-     * 
-     * @return totalRecordCount
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTotalRecordCount() {
-        return totalRecordCount;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-        this.totalRecordCount = totalRecordCount;
-    }
-
-    public ActivityLogEntryQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-
-        this.startIndex = startIndex;
-        return this;
-    }
-
-    /**
-     * Gets or sets the index of the first record in Items.
-     * 
-     * @return startIndex
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getStartIndex() {
-        return startIndex;
-    }
-
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = startIndex;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ActivityLogEntryQueryResult activityLogEntryQueryResult = (ActivityLogEntryQueryResult) o;
-        return Objects.equals(this.items, activityLogEntryQueryResult.items)
-                && Objects.equals(this.totalRecordCount, activityLogEntryQueryResult.totalRecordCount)
-                && Objects.equals(this.startIndex, activityLogEntryQueryResult.startIndex);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(items, totalRecordCount, startIndex);
+    * returns a built ActivityLogEntryQueryResult instance.
+    *
+    * The builder is not reusable.
+    */
+    public ActivityLogEntryQueryResult build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ActivityLogEntryQueryResult {\n");
-        sb.append("    items: ").append(toIndentedString(items)).append("\n");
-        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ActivityLogEntryQueryResult.Builder builder() {
+    return new ActivityLogEntryQueryResult.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ActivityLogEntryQueryResult.Builder toBuilder() {
+    return new ActivityLogEntryQueryResult.Builder()
+      .items(getItems())
+      .totalRecordCount(getTotalRecordCount())
+      .startIndex(getStartIndex());
+  }
 
-        private ActivityLogEntryQueryResult instance;
 
-        public Builder() {
-            this(new ActivityLogEntryQueryResult());
-        }
-
-        protected Builder(ActivityLogEntryQueryResult instance) {
-            this.instance = instance;
-        }
-
-        public ActivityLogEntryQueryResult.Builder items(List<ActivityLogEntry> items) {
-            this.instance.items = items;
-            return this;
-        }
-
-        public ActivityLogEntryQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-            this.instance.totalRecordCount = totalRecordCount;
-            return this;
-        }
-
-        public ActivityLogEntryQueryResult.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = startIndex;
-            return this;
-        }
-
-        /**
-         * returns a built ActivityLogEntryQueryResult instance.
-         *
-         * The builder is not reusable.
-         */
-        public ActivityLogEntryQueryResult build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ActivityLogEntryQueryResult.Builder builder() {
-        return new ActivityLogEntryQueryResult.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ActivityLogEntryQueryResult.Builder toBuilder() {
-        return new ActivityLogEntryQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
-                .startIndex(getStartIndex());
-    }
 }
+

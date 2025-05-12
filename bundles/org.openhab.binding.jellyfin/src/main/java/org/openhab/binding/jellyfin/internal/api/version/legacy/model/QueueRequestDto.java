@@ -17,181 +17,197 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.GroupQueueMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class QueueRequestDto.
  */
-@JsonPropertyOrder({ QueueRequestDto.JSON_PROPERTY_ITEM_IDS, QueueRequestDto.JSON_PROPERTY_MODE })
+@JsonPropertyOrder({
+  QueueRequestDto.JSON_PROPERTY_ITEM_IDS,
+  QueueRequestDto.JSON_PROPERTY_MODE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueueRequestDto {
-    public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
-    @javax.annotation.Nullable
-    private List<UUID> itemIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
+  @javax.annotation.Nullable
+  private List<UUID> itemIds = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_MODE = "Mode";
-    @javax.annotation.Nullable
-    private GroupQueueMode mode;
+  public static final String JSON_PROPERTY_MODE = "Mode";
+  @javax.annotation.Nullable
+  private GroupQueueMode mode;
 
-    public QueueRequestDto() {
+  public QueueRequestDto() {
+  }
+
+  public QueueRequestDto itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
+    
+    this.itemIds = itemIds;
+    return this;
+  }
+
+  public QueueRequestDto addItemIdsItem(UUID itemIdsItem) {
+    if (this.itemIds == null) {
+      this.itemIds = new ArrayList<>();
+    }
+    this.itemIds.add(itemIdsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the items to enqueue.
+   * @return itemIds
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<UUID> getItemIds() {
+    return itemIds;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
+    this.itemIds = itemIds;
+  }
+
+  public QueueRequestDto mode(@javax.annotation.Nullable GroupQueueMode mode) {
+    
+    this.mode = mode;
+    return this;
+  }
+
+  /**
+   * Enum GroupQueueMode.
+   * @return mode
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public GroupQueueMode getMode() {
+    return mode;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMode(@javax.annotation.Nullable GroupQueueMode mode) {
+    this.mode = mode;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    QueueRequestDto queueRequestDto = (QueueRequestDto) o;
+    return Objects.equals(this.itemIds, queueRequestDto.itemIds) &&
+        Objects.equals(this.mode, queueRequestDto.mode);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(itemIds, mode);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class QueueRequestDto {\n");
+    sb.append("    itemIds: ").append(toIndentedString(itemIds)).append("\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private QueueRequestDto instance;
+
+    public Builder() {
+      this(new QueueRequestDto());
     }
 
-    public QueueRequestDto itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-
-        this.itemIds = itemIds;
-        return this;
+    protected Builder(QueueRequestDto instance) {
+      this.instance = instance;
     }
 
-    public QueueRequestDto addItemIdsItem(UUID itemIdsItem) {
-        if (this.itemIds == null) {
-            this.itemIds = new ArrayList<>();
-        }
-        this.itemIds.add(itemIdsItem);
-        return this;
+    public QueueRequestDto.Builder itemIds(List<UUID> itemIds) {
+      this.instance.itemIds = itemIds;
+      return this;
     }
+    public QueueRequestDto.Builder mode(GroupQueueMode mode) {
+      this.instance.mode = mode;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the items to enqueue.
-     * 
-     * @return itemIds
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<UUID> getItemIds() {
-        return itemIds;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-        this.itemIds = itemIds;
-    }
-
-    public QueueRequestDto mode(@javax.annotation.Nullable GroupQueueMode mode) {
-
-        this.mode = mode;
-        return this;
-    }
-
-    /**
-     * Enum GroupQueueMode.
-     * 
-     * @return mode
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public GroupQueueMode getMode() {
-        return mode;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMode(@javax.annotation.Nullable GroupQueueMode mode) {
-        this.mode = mode;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        QueueRequestDto queueRequestDto = (QueueRequestDto) o;
-        return Objects.equals(this.itemIds, queueRequestDto.itemIds) && Objects.equals(this.mode, queueRequestDto.mode);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(itemIds, mode);
+    * returns a built QueueRequestDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public QueueRequestDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class QueueRequestDto {\n");
-        sb.append("    itemIds: ").append(toIndentedString(itemIds)).append("\n");
-        sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static QueueRequestDto.Builder builder() {
+    return new QueueRequestDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public QueueRequestDto.Builder toBuilder() {
+    return new QueueRequestDto.Builder()
+      .itemIds(getItemIds())
+      .mode(getMode());
+  }
 
-        private QueueRequestDto instance;
 
-        public Builder() {
-            this(new QueueRequestDto());
-        }
-
-        protected Builder(QueueRequestDto instance) {
-            this.instance = instance;
-        }
-
-        public QueueRequestDto.Builder itemIds(List<UUID> itemIds) {
-            this.instance.itemIds = itemIds;
-            return this;
-        }
-
-        public QueueRequestDto.Builder mode(GroupQueueMode mode) {
-            this.instance.mode = mode;
-            return this;
-        }
-
-        /**
-         * returns a built QueueRequestDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public QueueRequestDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static QueueRequestDto.Builder builder() {
-        return new QueueRequestDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public QueueRequestDto.Builder toBuilder() {
-        return new QueueRequestDto.Builder().itemIds(getItemIds()).mode(getMode());
-    }
 }
+

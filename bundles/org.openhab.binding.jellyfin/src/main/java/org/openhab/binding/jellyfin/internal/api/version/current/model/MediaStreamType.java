@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,42 +29,43 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum MediaStreamType.
  */
 public enum MediaStreamType {
+  
+  AUDIO("Audio"),
+  
+  VIDEO("Video"),
+  
+  SUBTITLE("Subtitle"),
+  
+  EMBEDDED_IMAGE("EmbeddedImage"),
+  
+  DATA("Data"),
+  
+  LYRIC("Lyric");
 
-    AUDIO("Audio"),
+  private String value;
 
-    VIDEO("Video"),
+  MediaStreamType(String value) {
+    this.value = value;
+  }
 
-    SUBTITLE("Subtitle"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    EMBEDDED_IMAGE("EmbeddedImage"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    DATA("Data"),
-
-    LYRIC("Lyric");
-
-    private String value;
-
-    MediaStreamType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static MediaStreamType fromValue(String value) {
+    for (MediaStreamType b : MediaStreamType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MediaStreamType fromValue(String value) {
-        for (MediaStreamType b : MediaStreamType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

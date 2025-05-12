@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,64 +29,65 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlaybackRequestType.
  */
 public enum PlaybackRequestType {
+  
+  PLAY("Play"),
+  
+  SET_PLAYLIST_ITEM("SetPlaylistItem"),
+  
+  REMOVE_FROM_PLAYLIST("RemoveFromPlaylist"),
+  
+  MOVE_PLAYLIST_ITEM("MovePlaylistItem"),
+  
+  QUEUE("Queue"),
+  
+  UNPAUSE("Unpause"),
+  
+  PAUSE("Pause"),
+  
+  STOP("Stop"),
+  
+  SEEK("Seek"),
+  
+  BUFFER("Buffer"),
+  
+  READY("Ready"),
+  
+  NEXT_ITEM("NextItem"),
+  
+  PREVIOUS_ITEM("PreviousItem"),
+  
+  SET_REPEAT_MODE("SetRepeatMode"),
+  
+  SET_SHUFFLE_MODE("SetShuffleMode"),
+  
+  PING("Ping"),
+  
+  IGNORE_WAIT("IgnoreWait");
 
-    PLAY("Play"),
+  private String value;
 
-    SET_PLAYLIST_ITEM("SetPlaylistItem"),
+  PlaybackRequestType(String value) {
+    this.value = value;
+  }
 
-    REMOVE_FROM_PLAYLIST("RemoveFromPlaylist"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    MOVE_PLAYLIST_ITEM("MovePlaylistItem"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    QUEUE("Queue"),
-
-    UNPAUSE("Unpause"),
-
-    PAUSE("Pause"),
-
-    STOP("Stop"),
-
-    SEEK("Seek"),
-
-    BUFFER("Buffer"),
-
-    READY("Ready"),
-
-    NEXT_ITEM("NextItem"),
-
-    PREVIOUS_ITEM("PreviousItem"),
-
-    SET_REPEAT_MODE("SetRepeatMode"),
-
-    SET_SHUFFLE_MODE("SetShuffleMode"),
-
-    PING("Ping"),
-
-    IGNORE_WAIT("IgnoreWait");
-
-    private String value;
-
-    PlaybackRequestType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static PlaybackRequestType fromValue(String value) {
+    for (PlaybackRequestType b : PlaybackRequestType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PlaybackRequestType fromValue(String value) {
-        for (PlaybackRequestType b : PlaybackRequestType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

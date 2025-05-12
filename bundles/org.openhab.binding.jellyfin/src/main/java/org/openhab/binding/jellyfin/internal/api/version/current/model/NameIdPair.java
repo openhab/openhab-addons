@@ -17,214 +17,223 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * NameIdPair
  */
-@JsonPropertyOrder({ NameIdPair.JSON_PROPERTY_NAME, NameIdPair.JSON_PROPERTY_ID })
+@JsonPropertyOrder({
+  NameIdPair.JSON_PROPERTY_NAME,
+  NameIdPair.JSON_PROPERTY_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NameIdPair {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-    public NameIdPair() {
-    }
+  public NameIdPair() {
+  }
 
-    public NameIdPair name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public NameIdPair name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
+
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
+
+  public NameIdPair id(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the identifier.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
+  }
+
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    NameIdPair nameIdPair = (NameIdPair) o;
+    return equalsNullable(this.name, nameIdPair.name) &&
+        equalsNullable(this.id, nameIdPair.id);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(id));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class NameIdPair {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private NameIdPair instance;
+
+    public Builder() {
+      this(new NameIdPair());
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
+    protected Builder(NameIdPair instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
+    public NameIdPair.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public NameIdPair.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public NameIdPair.Builder id(String id) {
+      this.instance.id = JsonNullable.<String>of(id);
+      return this;
+    }
+    public NameIdPair.Builder id(JsonNullable<String> id) {
+      this.instance.id = id;
+      return this;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
-    public NameIdPair id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the identifier.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getId_JsonNullable() {
-        return id;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
-
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        NameIdPair nameIdPair = (NameIdPair) o;
-        return equalsNullable(this.name, nameIdPair.name) && equalsNullable(this.id, nameIdPair.id);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(id));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built NameIdPair instance.
+    *
+    * The builder is not reusable.
+    */
+    public NameIdPair build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class NameIdPair {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static NameIdPair.Builder builder() {
+    return new NameIdPair.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public NameIdPair.Builder toBuilder() {
+    return new NameIdPair.Builder()
+      .name(getName())
+      .id(getId());
+  }
 
-        private NameIdPair instance;
 
-        public Builder() {
-            this(new NameIdPair());
-        }
-
-        protected Builder(NameIdPair instance) {
-            this.instance = instance;
-        }
-
-        public NameIdPair.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public NameIdPair.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public NameIdPair.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public NameIdPair.Builder id(JsonNullable<String> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        /**
-         * returns a built NameIdPair instance.
-         *
-         * The builder is not reusable.
-         */
-        public NameIdPair build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static NameIdPair.Builder builder() {
-        return new NameIdPair.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public NameIdPair.Builder toBuilder() {
-        return new NameIdPair.Builder().name(getName()).id(getId());
-    }
 }
+

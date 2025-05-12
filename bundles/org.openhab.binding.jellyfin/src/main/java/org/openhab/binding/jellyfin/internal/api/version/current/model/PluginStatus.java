@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,44 +29,45 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Plugin load status.
  */
 public enum PluginStatus {
+  
+  ACTIVE("Active"),
+  
+  RESTART("Restart"),
+  
+  DELETED("Deleted"),
+  
+  SUPERCEDED("Superceded"),
+  
+  MALFUNCTIONED("Malfunctioned"),
+  
+  NOT_SUPPORTED("NotSupported"),
+  
+  DISABLED("Disabled");
 
-    ACTIVE("Active"),
+  private String value;
 
-    RESTART("Restart"),
+  PluginStatus(String value) {
+    this.value = value;
+  }
 
-    DELETED("Deleted"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    SUPERCEDED("Superceded"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    MALFUNCTIONED("Malfunctioned"),
-
-    NOT_SUPPORTED("NotSupported"),
-
-    DISABLED("Disabled");
-
-    private String value;
-
-    PluginStatus(String value) {
-        this.value = value;
+  @JsonCreator
+  public static PluginStatus fromValue(String value) {
+    for (PluginStatus b : PluginStatus.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PluginStatus fromValue(String value) {
-        for (PluginStatus b : PluginStatus.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

@@ -17,369 +17,371 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.DayOfWeek;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class TaskTriggerInfo.
  */
-@JsonPropertyOrder({ TaskTriggerInfo.JSON_PROPERTY_TYPE, TaskTriggerInfo.JSON_PROPERTY_TIME_OF_DAY_TICKS,
-        TaskTriggerInfo.JSON_PROPERTY_INTERVAL_TICKS, TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
-        TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS })
+@JsonPropertyOrder({
+  TaskTriggerInfo.JSON_PROPERTY_TYPE,
+  TaskTriggerInfo.JSON_PROPERTY_TIME_OF_DAY_TICKS,
+  TaskTriggerInfo.JSON_PROPERTY_INTERVAL_TICKS,
+  TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
+  TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TaskTriggerInfo {
-    public static final String JSON_PROPERTY_TYPE = "Type";
-    @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  @javax.annotation.Nullable
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> timeOfDayTicks = JsonNullable.<Long> undefined();
+  public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> timeOfDayTicks = JsonNullable.<Long>undefined();
 
-    public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> intervalTicks = JsonNullable.<Long> undefined();
+  public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> intervalTicks = JsonNullable.<Long>undefined();
 
-    public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
-    @javax.annotation.Nullable
-    private JsonNullable<DayOfWeek> dayOfWeek = JsonNullable.<DayOfWeek> undefined();
+  public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
+  @javax.annotation.Nullable
+  private JsonNullable<DayOfWeek> dayOfWeek = JsonNullable.<DayOfWeek>undefined();
 
-    public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> maxRuntimeTicks = JsonNullable.<Long> undefined();
+  public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> maxRuntimeTicks = JsonNullable.<Long>undefined();
 
-    public TaskTriggerInfo() {
-    }
+  public TaskTriggerInfo() {
+  }
 
-    public TaskTriggerInfo type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
+  public TaskTriggerInfo type(@javax.annotation.Nullable String type) {
+    this.type = JsonNullable.<String>of(type);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the type.
+   * @return type
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the type.
-     * 
-     * @return type
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
+  public String getType() {
         return type.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
-        return type;
-    }
+  public JsonNullable<String> getType_JsonNullable() {
+    return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
-        this.type = type;
-    }
+  public void setType(@javax.annotation.Nullable String type) {
+    this.type = JsonNullable.<String>of(type);
+  }
 
-    public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
-    }
+  public TaskTriggerInfo timeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
+    this.timeOfDayTicks = JsonNullable.<Long>of(timeOfDayTicks);
+    
+    return this;
+  }
 
-    public TaskTriggerInfo timeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
-        this.timeOfDayTicks = JsonNullable.<Long> of(timeOfDayTicks);
+  /**
+   * Gets or sets the time of day.
+   * @return timeOfDayTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the time of day.
-     * 
-     * @return timeOfDayTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getTimeOfDayTicks() {
+  public Long getTimeOfDayTicks() {
         return timeOfDayTicks.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getTimeOfDayTicks_JsonNullable() {
-        return timeOfDayTicks;
-    }
+  public JsonNullable<Long> getTimeOfDayTicks_JsonNullable() {
+    return timeOfDayTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+  public void setTimeOfDayTicks_JsonNullable(JsonNullable<Long> timeOfDayTicks) {
+    this.timeOfDayTicks = timeOfDayTicks;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
-    public void setTimeOfDayTicks_JsonNullable(JsonNullable<Long> timeOfDayTicks) {
-        this.timeOfDayTicks = timeOfDayTicks;
-    }
+  public void setTimeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
+    this.timeOfDayTicks = JsonNullable.<Long>of(timeOfDayTicks);
+  }
 
-    public void setTimeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
-        this.timeOfDayTicks = JsonNullable.<Long> of(timeOfDayTicks);
-    }
+  public TaskTriggerInfo intervalTicks(@javax.annotation.Nullable Long intervalTicks) {
+    this.intervalTicks = JsonNullable.<Long>of(intervalTicks);
+    
+    return this;
+  }
 
-    public TaskTriggerInfo intervalTicks(@javax.annotation.Nullable Long intervalTicks) {
-        this.intervalTicks = JsonNullable.<Long> of(intervalTicks);
+  /**
+   * Gets or sets the interval.
+   * @return intervalTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the interval.
-     * 
-     * @return intervalTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getIntervalTicks() {
+  public Long getIntervalTicks() {
         return intervalTicks.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getIntervalTicks_JsonNullable() {
-        return intervalTicks;
-    }
+  public JsonNullable<Long> getIntervalTicks_JsonNullable() {
+    return intervalTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+  public void setIntervalTicks_JsonNullable(JsonNullable<Long> intervalTicks) {
+    this.intervalTicks = intervalTicks;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
-    public void setIntervalTicks_JsonNullable(JsonNullable<Long> intervalTicks) {
-        this.intervalTicks = intervalTicks;
-    }
+  public void setIntervalTicks(@javax.annotation.Nullable Long intervalTicks) {
+    this.intervalTicks = JsonNullable.<Long>of(intervalTicks);
+  }
 
-    public void setIntervalTicks(@javax.annotation.Nullable Long intervalTicks) {
-        this.intervalTicks = JsonNullable.<Long> of(intervalTicks);
-    }
+  public TaskTriggerInfo dayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
+    this.dayOfWeek = JsonNullable.<DayOfWeek>of(dayOfWeek);
+    
+    return this;
+  }
 
-    public TaskTriggerInfo dayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
-        this.dayOfWeek = JsonNullable.<DayOfWeek> of(dayOfWeek);
+  /**
+   * Gets or sets the day of week.
+   * @return dayOfWeek
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the day of week.
-     * 
-     * @return dayOfWeek
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DayOfWeek getDayOfWeek() {
+  public DayOfWeek getDayOfWeek() {
         return dayOfWeek.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<DayOfWeek> getDayOfWeek_JsonNullable() {
+    return dayOfWeek;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  public void setDayOfWeek_JsonNullable(JsonNullable<DayOfWeek> dayOfWeek) {
+    this.dayOfWeek = dayOfWeek;
+  }
+
+  public void setDayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
+    this.dayOfWeek = JsonNullable.<DayOfWeek>of(dayOfWeek);
+  }
+
+  public TaskTriggerInfo maxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
+    this.maxRuntimeTicks = JsonNullable.<Long>of(maxRuntimeTicks);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the maximum runtime ticks.
+   * @return maxRuntimeTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public Long getMaxRuntimeTicks() {
+        return maxRuntimeTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getMaxRuntimeTicks_JsonNullable() {
+    return maxRuntimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+  public void setMaxRuntimeTicks_JsonNullable(JsonNullable<Long> maxRuntimeTicks) {
+    this.maxRuntimeTicks = maxRuntimeTicks;
+  }
+
+  public void setMaxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
+    this.maxRuntimeTicks = JsonNullable.<Long>of(maxRuntimeTicks);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TaskTriggerInfo taskTriggerInfo = (TaskTriggerInfo) o;
+    return equalsNullable(this.type, taskTriggerInfo.type) &&
+        equalsNullable(this.timeOfDayTicks, taskTriggerInfo.timeOfDayTicks) &&
+        equalsNullable(this.intervalTicks, taskTriggerInfo.intervalTicks) &&
+        equalsNullable(this.dayOfWeek, taskTriggerInfo.dayOfWeek) &&
+        equalsNullable(this.maxRuntimeTicks, taskTriggerInfo.maxRuntimeTicks);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(type), hashCodeNullable(timeOfDayTicks), hashCodeNullable(intervalTicks), hashCodeNullable(dayOfWeek), hashCodeNullable(maxRuntimeTicks));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TaskTriggerInfo {\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    timeOfDayTicks: ").append(toIndentedString(timeOfDayTicks)).append("\n");
+    sb.append("    intervalTicks: ").append(toIndentedString(intervalTicks)).append("\n");
+    sb.append("    dayOfWeek: ").append(toIndentedString(dayOfWeek)).append("\n");
+    sb.append("    maxRuntimeTicks: ").append(toIndentedString(maxRuntimeTicks)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private TaskTriggerInfo instance;
+
+    public Builder() {
+      this(new TaskTriggerInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<DayOfWeek> getDayOfWeek_JsonNullable() {
-        return dayOfWeek;
+    protected Builder(TaskTriggerInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
-    public void setDayOfWeek_JsonNullable(JsonNullable<DayOfWeek> dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public TaskTriggerInfo.Builder type(String type) {
+      this.instance.type = JsonNullable.<String>of(type);
+      return this;
+    }
+    public TaskTriggerInfo.Builder type(JsonNullable<String> type) {
+      this.instance.type = type;
+      return this;
+    }
+    public TaskTriggerInfo.Builder timeOfDayTicks(Long timeOfDayTicks) {
+      this.instance.timeOfDayTicks = JsonNullable.<Long>of(timeOfDayTicks);
+      return this;
+    }
+    public TaskTriggerInfo.Builder timeOfDayTicks(JsonNullable<Long> timeOfDayTicks) {
+      this.instance.timeOfDayTicks = timeOfDayTicks;
+      return this;
+    }
+    public TaskTriggerInfo.Builder intervalTicks(Long intervalTicks) {
+      this.instance.intervalTicks = JsonNullable.<Long>of(intervalTicks);
+      return this;
+    }
+    public TaskTriggerInfo.Builder intervalTicks(JsonNullable<Long> intervalTicks) {
+      this.instance.intervalTicks = intervalTicks;
+      return this;
+    }
+    public TaskTriggerInfo.Builder dayOfWeek(DayOfWeek dayOfWeek) {
+      this.instance.dayOfWeek = JsonNullable.<DayOfWeek>of(dayOfWeek);
+      return this;
+    }
+    public TaskTriggerInfo.Builder dayOfWeek(JsonNullable<DayOfWeek> dayOfWeek) {
+      this.instance.dayOfWeek = dayOfWeek;
+      return this;
+    }
+    public TaskTriggerInfo.Builder maxRuntimeTicks(Long maxRuntimeTicks) {
+      this.instance.maxRuntimeTicks = JsonNullable.<Long>of(maxRuntimeTicks);
+      return this;
+    }
+    public TaskTriggerInfo.Builder maxRuntimeTicks(JsonNullable<Long> maxRuntimeTicks) {
+      this.instance.maxRuntimeTicks = maxRuntimeTicks;
+      return this;
     }
 
-    public void setDayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
-        this.dayOfWeek = JsonNullable.<DayOfWeek> of(dayOfWeek);
-    }
-
-    public TaskTriggerInfo maxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
-        this.maxRuntimeTicks = JsonNullable.<Long> of(maxRuntimeTicks);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the maximum runtime ticks.
-     * 
-     * @return maxRuntimeTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getMaxRuntimeTicks() {
-        return maxRuntimeTicks.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Long> getMaxRuntimeTicks_JsonNullable() {
-        return maxRuntimeTicks;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
-    public void setMaxRuntimeTicks_JsonNullable(JsonNullable<Long> maxRuntimeTicks) {
-        this.maxRuntimeTicks = maxRuntimeTicks;
-    }
-
-    public void setMaxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
-        this.maxRuntimeTicks = JsonNullable.<Long> of(maxRuntimeTicks);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TaskTriggerInfo taskTriggerInfo = (TaskTriggerInfo) o;
-        return equalsNullable(this.type, taskTriggerInfo.type)
-                && equalsNullable(this.timeOfDayTicks, taskTriggerInfo.timeOfDayTicks)
-                && equalsNullable(this.intervalTicks, taskTriggerInfo.intervalTicks)
-                && equalsNullable(this.dayOfWeek, taskTriggerInfo.dayOfWeek)
-                && equalsNullable(this.maxRuntimeTicks, taskTriggerInfo.maxRuntimeTicks);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(type), hashCodeNullable(timeOfDayTicks), hashCodeNullable(intervalTicks),
-                hashCodeNullable(dayOfWeek), hashCodeNullable(maxRuntimeTicks));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built TaskTriggerInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public TaskTriggerInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TaskTriggerInfo {\n");
-        sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    timeOfDayTicks: ").append(toIndentedString(timeOfDayTicks)).append("\n");
-        sb.append("    intervalTicks: ").append(toIndentedString(intervalTicks)).append("\n");
-        sb.append("    dayOfWeek: ").append(toIndentedString(dayOfWeek)).append("\n");
-        sb.append("    maxRuntimeTicks: ").append(toIndentedString(maxRuntimeTicks)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static TaskTriggerInfo.Builder builder() {
+    return new TaskTriggerInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public TaskTriggerInfo.Builder toBuilder() {
+    return new TaskTriggerInfo.Builder()
+      .type(getType())
+      .timeOfDayTicks(getTimeOfDayTicks())
+      .intervalTicks(getIntervalTicks())
+      .dayOfWeek(getDayOfWeek())
+      .maxRuntimeTicks(getMaxRuntimeTicks());
+  }
 
-        private TaskTriggerInfo instance;
 
-        public Builder() {
-            this(new TaskTriggerInfo());
-        }
-
-        protected Builder(TaskTriggerInfo instance) {
-            this.instance = instance;
-        }
-
-        public TaskTriggerInfo.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder type(JsonNullable<String> type) {
-            this.instance.type = type;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder timeOfDayTicks(Long timeOfDayTicks) {
-            this.instance.timeOfDayTicks = JsonNullable.<Long> of(timeOfDayTicks);
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder timeOfDayTicks(JsonNullable<Long> timeOfDayTicks) {
-            this.instance.timeOfDayTicks = timeOfDayTicks;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder intervalTicks(Long intervalTicks) {
-            this.instance.intervalTicks = JsonNullable.<Long> of(intervalTicks);
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder intervalTicks(JsonNullable<Long> intervalTicks) {
-            this.instance.intervalTicks = intervalTicks;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder dayOfWeek(DayOfWeek dayOfWeek) {
-            this.instance.dayOfWeek = JsonNullable.<DayOfWeek> of(dayOfWeek);
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder dayOfWeek(JsonNullable<DayOfWeek> dayOfWeek) {
-            this.instance.dayOfWeek = dayOfWeek;
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder maxRuntimeTicks(Long maxRuntimeTicks) {
-            this.instance.maxRuntimeTicks = JsonNullable.<Long> of(maxRuntimeTicks);
-            return this;
-        }
-
-        public TaskTriggerInfo.Builder maxRuntimeTicks(JsonNullable<Long> maxRuntimeTicks) {
-            this.instance.maxRuntimeTicks = maxRuntimeTicks;
-            return this;
-        }
-
-        /**
-         * returns a built TaskTriggerInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public TaskTriggerInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TaskTriggerInfo.Builder builder() {
-        return new TaskTriggerInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TaskTriggerInfo.Builder toBuilder() {
-        return new TaskTriggerInfo.Builder().type(getType()).timeOfDayTicks(getTimeOfDayTicks())
-                .intervalTicks(getIntervalTicks()).dayOfWeek(getDayOfWeek()).maxRuntimeTicks(getMaxRuntimeTicks());
-    }
 }
+

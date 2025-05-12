@@ -17,556 +17,567 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ProcessPriorityClass;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TrickplayScanBehavior;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class TrickplayOptions.
  */
-@JsonPropertyOrder({ TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ACCELERATION,
-        TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ENCODING,
-        TrickplayOptions.JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION, TrickplayOptions.JSON_PROPERTY_SCAN_BEHAVIOR,
-        TrickplayOptions.JSON_PROPERTY_PROCESS_PRIORITY, TrickplayOptions.JSON_PROPERTY_INTERVAL,
-        TrickplayOptions.JSON_PROPERTY_WIDTH_RESOLUTIONS, TrickplayOptions.JSON_PROPERTY_TILE_WIDTH,
-        TrickplayOptions.JSON_PROPERTY_TILE_HEIGHT, TrickplayOptions.JSON_PROPERTY_QSCALE,
-        TrickplayOptions.JSON_PROPERTY_JPEG_QUALITY, TrickplayOptions.JSON_PROPERTY_PROCESS_THREADS })
+@JsonPropertyOrder({
+  TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ACCELERATION,
+  TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ENCODING,
+  TrickplayOptions.JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION,
+  TrickplayOptions.JSON_PROPERTY_SCAN_BEHAVIOR,
+  TrickplayOptions.JSON_PROPERTY_PROCESS_PRIORITY,
+  TrickplayOptions.JSON_PROPERTY_INTERVAL,
+  TrickplayOptions.JSON_PROPERTY_WIDTH_RESOLUTIONS,
+  TrickplayOptions.JSON_PROPERTY_TILE_WIDTH,
+  TrickplayOptions.JSON_PROPERTY_TILE_HEIGHT,
+  TrickplayOptions.JSON_PROPERTY_QSCALE,
+  TrickplayOptions.JSON_PROPERTY_JPEG_QUALITY,
+  TrickplayOptions.JSON_PROPERTY_PROCESS_THREADS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TrickplayOptions {
-    public static final String JSON_PROPERTY_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
-    @javax.annotation.Nullable
-    private Boolean enableHwAcceleration;
+  public static final String JSON_PROPERTY_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
+  @javax.annotation.Nullable
+  private Boolean enableHwAcceleration;
 
-    public static final String JSON_PROPERTY_ENABLE_HW_ENCODING = "EnableHwEncoding";
-    @javax.annotation.Nullable
-    private Boolean enableHwEncoding;
+  public static final String JSON_PROPERTY_ENABLE_HW_ENCODING = "EnableHwEncoding";
+  @javax.annotation.Nullable
+  private Boolean enableHwEncoding;
 
-    public static final String JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION = "EnableKeyFrameOnlyExtraction";
-    @javax.annotation.Nullable
-    private Boolean enableKeyFrameOnlyExtraction;
+  public static final String JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION = "EnableKeyFrameOnlyExtraction";
+  @javax.annotation.Nullable
+  private Boolean enableKeyFrameOnlyExtraction;
 
-    public static final String JSON_PROPERTY_SCAN_BEHAVIOR = "ScanBehavior";
-    @javax.annotation.Nullable
-    private TrickplayScanBehavior scanBehavior;
+  public static final String JSON_PROPERTY_SCAN_BEHAVIOR = "ScanBehavior";
+  @javax.annotation.Nullable
+  private TrickplayScanBehavior scanBehavior;
 
-    public static final String JSON_PROPERTY_PROCESS_PRIORITY = "ProcessPriority";
-    @javax.annotation.Nullable
-    private ProcessPriorityClass processPriority;
+  public static final String JSON_PROPERTY_PROCESS_PRIORITY = "ProcessPriority";
+  @javax.annotation.Nullable
+  private ProcessPriorityClass processPriority;
 
-    public static final String JSON_PROPERTY_INTERVAL = "Interval";
-    @javax.annotation.Nullable
-    private Integer interval;
+  public static final String JSON_PROPERTY_INTERVAL = "Interval";
+  @javax.annotation.Nullable
+  private Integer interval;
 
-    public static final String JSON_PROPERTY_WIDTH_RESOLUTIONS = "WidthResolutions";
-    @javax.annotation.Nullable
-    private List<Integer> widthResolutions = new ArrayList<>();
+  public static final String JSON_PROPERTY_WIDTH_RESOLUTIONS = "WidthResolutions";
+  @javax.annotation.Nullable
+  private List<Integer> widthResolutions = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
-    @javax.annotation.Nullable
-    private Integer tileWidth;
+  public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
+  @javax.annotation.Nullable
+  private Integer tileWidth;
 
-    public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
-    @javax.annotation.Nullable
-    private Integer tileHeight;
+  public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
+  @javax.annotation.Nullable
+  private Integer tileHeight;
 
-    public static final String JSON_PROPERTY_QSCALE = "Qscale";
-    @javax.annotation.Nullable
-    private Integer qscale;
+  public static final String JSON_PROPERTY_QSCALE = "Qscale";
+  @javax.annotation.Nullable
+  private Integer qscale;
 
-    public static final String JSON_PROPERTY_JPEG_QUALITY = "JpegQuality";
-    @javax.annotation.Nullable
-    private Integer jpegQuality;
+  public static final String JSON_PROPERTY_JPEG_QUALITY = "JpegQuality";
+  @javax.annotation.Nullable
+  private Integer jpegQuality;
 
-    public static final String JSON_PROPERTY_PROCESS_THREADS = "ProcessThreads";
-    @javax.annotation.Nullable
-    private Integer processThreads;
+  public static final String JSON_PROPERTY_PROCESS_THREADS = "ProcessThreads";
+  @javax.annotation.Nullable
+  private Integer processThreads;
 
-    public TrickplayOptions() {
+  public TrickplayOptions() {
+  }
+
+  public TrickplayOptions enableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
+    
+    this.enableHwAcceleration = enableHwAcceleration;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether or not to use HW acceleration.
+   * @return enableHwAcceleration
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnableHwAcceleration() {
+    return enableHwAcceleration;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
+    this.enableHwAcceleration = enableHwAcceleration;
+  }
+
+  public TrickplayOptions enableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
+    
+    this.enableHwEncoding = enableHwEncoding;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether or not to use HW accelerated MJPEG encoding.
+   * @return enableHwEncoding
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnableHwEncoding() {
+    return enableHwEncoding;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
+    this.enableHwEncoding = enableHwEncoding;
+  }
+
+  public TrickplayOptions enableKeyFrameOnlyExtraction(@javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
+    
+    this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether to only extract key frames.  Significantly faster, but is not compatible with all decoders and/or video files.
+   * @return enableKeyFrameOnlyExtraction
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnableKeyFrameOnlyExtraction() {
+    return enableKeyFrameOnlyExtraction;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnableKeyFrameOnlyExtraction(@javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
+    this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
+  }
+
+  public TrickplayOptions scanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
+    
+    this.scanBehavior = scanBehavior;
+    return this;
+  }
+
+  /**
+   * Gets or sets the behavior used by trickplay provider on library scan/update.
+   * @return scanBehavior
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public TrickplayScanBehavior getScanBehavior() {
+    return scanBehavior;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
+    this.scanBehavior = scanBehavior;
+  }
+
+  public TrickplayOptions processPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
+    
+    this.processPriority = processPriority;
+    return this;
+  }
+
+  /**
+   * Gets or sets the process priority for the ffmpeg process.
+   * @return processPriority
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ProcessPriorityClass getProcessPriority() {
+    return processPriority;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProcessPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
+    this.processPriority = processPriority;
+  }
+
+  public TrickplayOptions interval(@javax.annotation.Nullable Integer interval) {
+    
+    this.interval = interval;
+    return this;
+  }
+
+  /**
+   * Gets or sets the interval, in ms, between each new trickplay image.
+   * @return interval
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getInterval() {
+    return interval;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInterval(@javax.annotation.Nullable Integer interval) {
+    this.interval = interval;
+  }
+
+  public TrickplayOptions widthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
+    
+    this.widthResolutions = widthResolutions;
+    return this;
+  }
+
+  public TrickplayOptions addWidthResolutionsItem(Integer widthResolutionsItem) {
+    if (this.widthResolutions == null) {
+      this.widthResolutions = new ArrayList<>();
+    }
+    this.widthResolutions.add(widthResolutionsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the target width resolutions, in px, to generates preview images for.
+   * @return widthResolutions
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<Integer> getWidthResolutions() {
+    return widthResolutions;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWidthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
+    this.widthResolutions = widthResolutions;
+  }
+
+  public TrickplayOptions tileWidth(@javax.annotation.Nullable Integer tileWidth) {
+    
+    this.tileWidth = tileWidth;
+    return this;
+  }
+
+  /**
+   * Gets or sets number of tile images to allow in X dimension.
+   * @return tileWidth
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTileWidth() {
+    return tileWidth;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
+    this.tileWidth = tileWidth;
+  }
+
+  public TrickplayOptions tileHeight(@javax.annotation.Nullable Integer tileHeight) {
+    
+    this.tileHeight = tileHeight;
+    return this;
+  }
+
+  /**
+   * Gets or sets number of tile images to allow in Y dimension.
+   * @return tileHeight
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTileHeight() {
+    return tileHeight;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
+    this.tileHeight = tileHeight;
+  }
+
+  public TrickplayOptions qscale(@javax.annotation.Nullable Integer qscale) {
+    
+    this.qscale = qscale;
+    return this;
+  }
+
+  /**
+   * Gets or sets the ffmpeg output quality level.
+   * @return qscale
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_QSCALE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getQscale() {
+    return qscale;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_QSCALE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setQscale(@javax.annotation.Nullable Integer qscale) {
+    this.qscale = qscale;
+  }
+
+  public TrickplayOptions jpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
+    
+    this.jpegQuality = jpegQuality;
+    return this;
+  }
+
+  /**
+   * Gets or sets the jpeg quality to use for image tiles.
+   * @return jpegQuality
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getJpegQuality() {
+    return jpegQuality;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setJpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
+    this.jpegQuality = jpegQuality;
+  }
+
+  public TrickplayOptions processThreads(@javax.annotation.Nullable Integer processThreads) {
+    
+    this.processThreads = processThreads;
+    return this;
+  }
+
+  /**
+   * Gets or sets the number of threads to be used by ffmpeg.
+   * @return processThreads
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getProcessThreads() {
+    return processThreads;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProcessThreads(@javax.annotation.Nullable Integer processThreads) {
+    this.processThreads = processThreads;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TrickplayOptions trickplayOptions = (TrickplayOptions) o;
+    return Objects.equals(this.enableHwAcceleration, trickplayOptions.enableHwAcceleration) &&
+        Objects.equals(this.enableHwEncoding, trickplayOptions.enableHwEncoding) &&
+        Objects.equals(this.enableKeyFrameOnlyExtraction, trickplayOptions.enableKeyFrameOnlyExtraction) &&
+        Objects.equals(this.scanBehavior, trickplayOptions.scanBehavior) &&
+        Objects.equals(this.processPriority, trickplayOptions.processPriority) &&
+        Objects.equals(this.interval, trickplayOptions.interval) &&
+        Objects.equals(this.widthResolutions, trickplayOptions.widthResolutions) &&
+        Objects.equals(this.tileWidth, trickplayOptions.tileWidth) &&
+        Objects.equals(this.tileHeight, trickplayOptions.tileHeight) &&
+        Objects.equals(this.qscale, trickplayOptions.qscale) &&
+        Objects.equals(this.jpegQuality, trickplayOptions.jpegQuality) &&
+        Objects.equals(this.processThreads, trickplayOptions.processThreads);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(enableHwAcceleration, enableHwEncoding, enableKeyFrameOnlyExtraction, scanBehavior, processPriority, interval, widthResolutions, tileWidth, tileHeight, qscale, jpegQuality, processThreads);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TrickplayOptions {\n");
+    sb.append("    enableHwAcceleration: ").append(toIndentedString(enableHwAcceleration)).append("\n");
+    sb.append("    enableHwEncoding: ").append(toIndentedString(enableHwEncoding)).append("\n");
+    sb.append("    enableKeyFrameOnlyExtraction: ").append(toIndentedString(enableKeyFrameOnlyExtraction)).append("\n");
+    sb.append("    scanBehavior: ").append(toIndentedString(scanBehavior)).append("\n");
+    sb.append("    processPriority: ").append(toIndentedString(processPriority)).append("\n");
+    sb.append("    interval: ").append(toIndentedString(interval)).append("\n");
+    sb.append("    widthResolutions: ").append(toIndentedString(widthResolutions)).append("\n");
+    sb.append("    tileWidth: ").append(toIndentedString(tileWidth)).append("\n");
+    sb.append("    tileHeight: ").append(toIndentedString(tileHeight)).append("\n");
+    sb.append("    qscale: ").append(toIndentedString(qscale)).append("\n");
+    sb.append("    jpegQuality: ").append(toIndentedString(jpegQuality)).append("\n");
+    sb.append("    processThreads: ").append(toIndentedString(processThreads)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private TrickplayOptions instance;
+
+    public Builder() {
+      this(new TrickplayOptions());
     }
 
-    public TrickplayOptions enableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
-
-        this.enableHwAcceleration = enableHwAcceleration;
-        return this;
+    protected Builder(TrickplayOptions instance) {
+      this.instance = instance;
     }
+
+    public TrickplayOptions.Builder enableHwAcceleration(Boolean enableHwAcceleration) {
+      this.instance.enableHwAcceleration = enableHwAcceleration;
+      return this;
+    }
+    public TrickplayOptions.Builder enableHwEncoding(Boolean enableHwEncoding) {
+      this.instance.enableHwEncoding = enableHwEncoding;
+      return this;
+    }
+    public TrickplayOptions.Builder enableKeyFrameOnlyExtraction(Boolean enableKeyFrameOnlyExtraction) {
+      this.instance.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
+      return this;
+    }
+    public TrickplayOptions.Builder scanBehavior(TrickplayScanBehavior scanBehavior) {
+      this.instance.scanBehavior = scanBehavior;
+      return this;
+    }
+    public TrickplayOptions.Builder processPriority(ProcessPriorityClass processPriority) {
+      this.instance.processPriority = processPriority;
+      return this;
+    }
+    public TrickplayOptions.Builder interval(Integer interval) {
+      this.instance.interval = interval;
+      return this;
+    }
+    public TrickplayOptions.Builder widthResolutions(List<Integer> widthResolutions) {
+      this.instance.widthResolutions = widthResolutions;
+      return this;
+    }
+    public TrickplayOptions.Builder tileWidth(Integer tileWidth) {
+      this.instance.tileWidth = tileWidth;
+      return this;
+    }
+    public TrickplayOptions.Builder tileHeight(Integer tileHeight) {
+      this.instance.tileHeight = tileHeight;
+      return this;
+    }
+    public TrickplayOptions.Builder qscale(Integer qscale) {
+      this.instance.qscale = qscale;
+      return this;
+    }
+    public TrickplayOptions.Builder jpegQuality(Integer jpegQuality) {
+      this.instance.jpegQuality = jpegQuality;
+      return this;
+    }
+    public TrickplayOptions.Builder processThreads(Integer processThreads) {
+      this.instance.processThreads = processThreads;
+      return this;
+    }
+
 
     /**
-     * Gets or sets a value indicating whether or not to use HW acceleration.
-     * 
-     * @return enableHwAcceleration
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnableHwAcceleration() {
-        return enableHwAcceleration;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
-        this.enableHwAcceleration = enableHwAcceleration;
-    }
-
-    public TrickplayOptions enableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
-
-        this.enableHwEncoding = enableHwEncoding;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether or not to use HW accelerated MJPEG encoding.
-     * 
-     * @return enableHwEncoding
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnableHwEncoding() {
-        return enableHwEncoding;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
-        this.enableHwEncoding = enableHwEncoding;
-    }
-
-    public TrickplayOptions enableKeyFrameOnlyExtraction(
-            @javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
-
-        this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether to only extract key frames. Significantly faster, but is not compatible
-     * with all decoders and/or video files.
-     * 
-     * @return enableKeyFrameOnlyExtraction
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnableKeyFrameOnlyExtraction() {
-        return enableKeyFrameOnlyExtraction;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableKeyFrameOnlyExtraction(@javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
-        this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
-    }
-
-    public TrickplayOptions scanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
-
-        this.scanBehavior = scanBehavior;
-        return this;
-    }
-
-    /**
-     * Gets or sets the behavior used by trickplay provider on library scan/update.
-     * 
-     * @return scanBehavior
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public TrickplayScanBehavior getScanBehavior() {
-        return scanBehavior;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setScanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
-        this.scanBehavior = scanBehavior;
-    }
-
-    public TrickplayOptions processPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
-
-        this.processPriority = processPriority;
-        return this;
-    }
-
-    /**
-     * Gets or sets the process priority for the ffmpeg process.
-     * 
-     * @return processPriority
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public ProcessPriorityClass getProcessPriority() {
-        return processPriority;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProcessPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
-        this.processPriority = processPriority;
-    }
-
-    public TrickplayOptions interval(@javax.annotation.Nullable Integer interval) {
-
-        this.interval = interval;
-        return this;
-    }
-
-    /**
-     * Gets or sets the interval, in ms, between each new trickplay image.
-     * 
-     * @return interval
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_INTERVAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getInterval() {
-        return interval;
-    }
-
-    @JsonProperty(JSON_PROPERTY_INTERVAL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setInterval(@javax.annotation.Nullable Integer interval) {
-        this.interval = interval;
-    }
-
-    public TrickplayOptions widthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
-
-        this.widthResolutions = widthResolutions;
-        return this;
-    }
-
-    public TrickplayOptions addWidthResolutionsItem(Integer widthResolutionsItem) {
-        if (this.widthResolutions == null) {
-            this.widthResolutions = new ArrayList<>();
-        }
-        this.widthResolutions.add(widthResolutionsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the target width resolutions, in px, to generates preview images for.
-     * 
-     * @return widthResolutions
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<Integer> getWidthResolutions() {
-        return widthResolutions;
-    }
-
-    @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setWidthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
-        this.widthResolutions = widthResolutions;
-    }
-
-    public TrickplayOptions tileWidth(@javax.annotation.Nullable Integer tileWidth) {
-
-        this.tileWidth = tileWidth;
-        return this;
-    }
-
-    /**
-     * Gets or sets number of tile images to allow in X dimension.
-     * 
-     * @return tileWidth
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTileWidth() {
-        return tileWidth;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
-        this.tileWidth = tileWidth;
-    }
-
-    public TrickplayOptions tileHeight(@javax.annotation.Nullable Integer tileHeight) {
-
-        this.tileHeight = tileHeight;
-        return this;
-    }
-
-    /**
-     * Gets or sets number of tile images to allow in Y dimension.
-     * 
-     * @return tileHeight
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getTileHeight() {
-        return tileHeight;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
-        this.tileHeight = tileHeight;
-    }
-
-    public TrickplayOptions qscale(@javax.annotation.Nullable Integer qscale) {
-
-        this.qscale = qscale;
-        return this;
-    }
-
-    /**
-     * Gets or sets the ffmpeg output quality level.
-     * 
-     * @return qscale
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_QSCALE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getQscale() {
-        return qscale;
-    }
-
-    @JsonProperty(JSON_PROPERTY_QSCALE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setQscale(@javax.annotation.Nullable Integer qscale) {
-        this.qscale = qscale;
-    }
-
-    public TrickplayOptions jpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
-
-        this.jpegQuality = jpegQuality;
-        return this;
-    }
-
-    /**
-     * Gets or sets the jpeg quality to use for image tiles.
-     * 
-     * @return jpegQuality
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getJpegQuality() {
-        return jpegQuality;
-    }
-
-    @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setJpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
-        this.jpegQuality = jpegQuality;
-    }
-
-    public TrickplayOptions processThreads(@javax.annotation.Nullable Integer processThreads) {
-
-        this.processThreads = processThreads;
-        return this;
-    }
-
-    /**
-     * Gets or sets the number of threads to be used by ffmpeg.
-     * 
-     * @return processThreads
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getProcessThreads() {
-        return processThreads;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProcessThreads(@javax.annotation.Nullable Integer processThreads) {
-        this.processThreads = processThreads;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TrickplayOptions trickplayOptions = (TrickplayOptions) o;
-        return Objects.equals(this.enableHwAcceleration, trickplayOptions.enableHwAcceleration)
-                && Objects.equals(this.enableHwEncoding, trickplayOptions.enableHwEncoding)
-                && Objects.equals(this.enableKeyFrameOnlyExtraction, trickplayOptions.enableKeyFrameOnlyExtraction)
-                && Objects.equals(this.scanBehavior, trickplayOptions.scanBehavior)
-                && Objects.equals(this.processPriority, trickplayOptions.processPriority)
-                && Objects.equals(this.interval, trickplayOptions.interval)
-                && Objects.equals(this.widthResolutions, trickplayOptions.widthResolutions)
-                && Objects.equals(this.tileWidth, trickplayOptions.tileWidth)
-                && Objects.equals(this.tileHeight, trickplayOptions.tileHeight)
-                && Objects.equals(this.qscale, trickplayOptions.qscale)
-                && Objects.equals(this.jpegQuality, trickplayOptions.jpegQuality)
-                && Objects.equals(this.processThreads, trickplayOptions.processThreads);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(enableHwAcceleration, enableHwEncoding, enableKeyFrameOnlyExtraction, scanBehavior,
-                processPriority, interval, widthResolutions, tileWidth, tileHeight, qscale, jpegQuality,
-                processThreads);
+    * returns a built TrickplayOptions instance.
+    *
+    * The builder is not reusable.
+    */
+    public TrickplayOptions build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TrickplayOptions {\n");
-        sb.append("    enableHwAcceleration: ").append(toIndentedString(enableHwAcceleration)).append("\n");
-        sb.append("    enableHwEncoding: ").append(toIndentedString(enableHwEncoding)).append("\n");
-        sb.append("    enableKeyFrameOnlyExtraction: ").append(toIndentedString(enableKeyFrameOnlyExtraction))
-                .append("\n");
-        sb.append("    scanBehavior: ").append(toIndentedString(scanBehavior)).append("\n");
-        sb.append("    processPriority: ").append(toIndentedString(processPriority)).append("\n");
-        sb.append("    interval: ").append(toIndentedString(interval)).append("\n");
-        sb.append("    widthResolutions: ").append(toIndentedString(widthResolutions)).append("\n");
-        sb.append("    tileWidth: ").append(toIndentedString(tileWidth)).append("\n");
-        sb.append("    tileHeight: ").append(toIndentedString(tileHeight)).append("\n");
-        sb.append("    qscale: ").append(toIndentedString(qscale)).append("\n");
-        sb.append("    jpegQuality: ").append(toIndentedString(jpegQuality)).append("\n");
-        sb.append("    processThreads: ").append(toIndentedString(processThreads)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static TrickplayOptions.Builder builder() {
+    return new TrickplayOptions.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public TrickplayOptions.Builder toBuilder() {
+    return new TrickplayOptions.Builder()
+      .enableHwAcceleration(getEnableHwAcceleration())
+      .enableHwEncoding(getEnableHwEncoding())
+      .enableKeyFrameOnlyExtraction(getEnableKeyFrameOnlyExtraction())
+      .scanBehavior(getScanBehavior())
+      .processPriority(getProcessPriority())
+      .interval(getInterval())
+      .widthResolutions(getWidthResolutions())
+      .tileWidth(getTileWidth())
+      .tileHeight(getTileHeight())
+      .qscale(getQscale())
+      .jpegQuality(getJpegQuality())
+      .processThreads(getProcessThreads());
+  }
 
-        private TrickplayOptions instance;
 
-        public Builder() {
-            this(new TrickplayOptions());
-        }
-
-        protected Builder(TrickplayOptions instance) {
-            this.instance = instance;
-        }
-
-        public TrickplayOptions.Builder enableHwAcceleration(Boolean enableHwAcceleration) {
-            this.instance.enableHwAcceleration = enableHwAcceleration;
-            return this;
-        }
-
-        public TrickplayOptions.Builder enableHwEncoding(Boolean enableHwEncoding) {
-            this.instance.enableHwEncoding = enableHwEncoding;
-            return this;
-        }
-
-        public TrickplayOptions.Builder enableKeyFrameOnlyExtraction(Boolean enableKeyFrameOnlyExtraction) {
-            this.instance.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
-            return this;
-        }
-
-        public TrickplayOptions.Builder scanBehavior(TrickplayScanBehavior scanBehavior) {
-            this.instance.scanBehavior = scanBehavior;
-            return this;
-        }
-
-        public TrickplayOptions.Builder processPriority(ProcessPriorityClass processPriority) {
-            this.instance.processPriority = processPriority;
-            return this;
-        }
-
-        public TrickplayOptions.Builder interval(Integer interval) {
-            this.instance.interval = interval;
-            return this;
-        }
-
-        public TrickplayOptions.Builder widthResolutions(List<Integer> widthResolutions) {
-            this.instance.widthResolutions = widthResolutions;
-            return this;
-        }
-
-        public TrickplayOptions.Builder tileWidth(Integer tileWidth) {
-            this.instance.tileWidth = tileWidth;
-            return this;
-        }
-
-        public TrickplayOptions.Builder tileHeight(Integer tileHeight) {
-            this.instance.tileHeight = tileHeight;
-            return this;
-        }
-
-        public TrickplayOptions.Builder qscale(Integer qscale) {
-            this.instance.qscale = qscale;
-            return this;
-        }
-
-        public TrickplayOptions.Builder jpegQuality(Integer jpegQuality) {
-            this.instance.jpegQuality = jpegQuality;
-            return this;
-        }
-
-        public TrickplayOptions.Builder processThreads(Integer processThreads) {
-            this.instance.processThreads = processThreads;
-            return this;
-        }
-
-        /**
-         * returns a built TrickplayOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public TrickplayOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static TrickplayOptions.Builder builder() {
-        return new TrickplayOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public TrickplayOptions.Builder toBuilder() {
-        return new TrickplayOptions.Builder().enableHwAcceleration(getEnableHwAcceleration())
-                .enableHwEncoding(getEnableHwEncoding()).enableKeyFrameOnlyExtraction(getEnableKeyFrameOnlyExtraction())
-                .scanBehavior(getScanBehavior()).processPriority(getProcessPriority()).interval(getInterval())
-                .widthResolutions(getWidthResolutions()).tileWidth(getTileWidth()).tileHeight(getTileHeight())
-                .qscale(getQscale()).jpegQuality(getJpegQuality()).processThreads(getProcessThreads());
-    }
 }
+

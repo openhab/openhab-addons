@@ -17,182 +17,197 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.UserItemDataDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class UserDataChangeInfo.
  */
-@JsonPropertyOrder({ UserDataChangeInfo.JSON_PROPERTY_USER_ID, UserDataChangeInfo.JSON_PROPERTY_USER_DATA_LIST })
+@JsonPropertyOrder({
+  UserDataChangeInfo.JSON_PROPERTY_USER_ID,
+  UserDataChangeInfo.JSON_PROPERTY_USER_DATA_LIST
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UserDataChangeInfo {
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private UUID userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private UUID userId;
 
-    public static final String JSON_PROPERTY_USER_DATA_LIST = "UserDataList";
-    @javax.annotation.Nullable
-    private List<UserItemDataDto> userDataList = new ArrayList<>();
+  public static final String JSON_PROPERTY_USER_DATA_LIST = "UserDataList";
+  @javax.annotation.Nullable
+  private List<UserItemDataDto> userDataList = new ArrayList<>();
 
-    public UserDataChangeInfo() {
+  public UserDataChangeInfo() {
+  }
+
+  public UserDataChangeInfo userId(@javax.annotation.Nullable UUID userId) {
+    
+    this.userId = userId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the user id.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getUserId() {
+    return userId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserId(@javax.annotation.Nullable UUID userId) {
+    this.userId = userId;
+  }
+
+  public UserDataChangeInfo userDataList(@javax.annotation.Nullable List<UserItemDataDto> userDataList) {
+    
+    this.userDataList = userDataList;
+    return this;
+  }
+
+  public UserDataChangeInfo addUserDataListItem(UserItemDataDto userDataListItem) {
+    if (this.userDataList == null) {
+      this.userDataList = new ArrayList<>();
+    }
+    this.userDataList.add(userDataListItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the user data list.
+   * @return userDataList
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<UserItemDataDto> getUserDataList() {
+    return userDataList;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserDataList(@javax.annotation.Nullable List<UserItemDataDto> userDataList) {
+    this.userDataList = userDataList;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UserDataChangeInfo userDataChangeInfo = (UserDataChangeInfo) o;
+    return Objects.equals(this.userId, userDataChangeInfo.userId) &&
+        Objects.equals(this.userDataList, userDataChangeInfo.userDataList);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(userId, userDataList);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class UserDataChangeInfo {\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    userDataList: ").append(toIndentedString(userDataList)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private UserDataChangeInfo instance;
+
+    public Builder() {
+      this(new UserDataChangeInfo());
     }
 
-    public UserDataChangeInfo userId(@javax.annotation.Nullable UUID userId) {
-
-        this.userId = userId;
-        return this;
+    protected Builder(UserDataChangeInfo instance) {
+      this.instance = instance;
     }
+
+    public UserDataChangeInfo.Builder userId(UUID userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public UserDataChangeInfo.Builder userDataList(List<UserItemDataDto> userDataList) {
+      this.instance.userDataList = userDataList;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the user id.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = userId;
-    }
-
-    public UserDataChangeInfo userDataList(@javax.annotation.Nullable List<UserItemDataDto> userDataList) {
-
-        this.userDataList = userDataList;
-        return this;
-    }
-
-    public UserDataChangeInfo addUserDataListItem(UserItemDataDto userDataListItem) {
-        if (this.userDataList == null) {
-            this.userDataList = new ArrayList<>();
-        }
-        this.userDataList.add(userDataListItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the user data list.
-     * 
-     * @return userDataList
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<UserItemDataDto> getUserDataList() {
-        return userDataList;
-    }
-
-    @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserDataList(@javax.annotation.Nullable List<UserItemDataDto> userDataList) {
-        this.userDataList = userDataList;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UserDataChangeInfo userDataChangeInfo = (UserDataChangeInfo) o;
-        return Objects.equals(this.userId, userDataChangeInfo.userId)
-                && Objects.equals(this.userDataList, userDataChangeInfo.userDataList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, userDataList);
+    * returns a built UserDataChangeInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public UserDataChangeInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class UserDataChangeInfo {\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    userDataList: ").append(toIndentedString(userDataList)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static UserDataChangeInfo.Builder builder() {
+    return new UserDataChangeInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public UserDataChangeInfo.Builder toBuilder() {
+    return new UserDataChangeInfo.Builder()
+      .userId(getUserId())
+      .userDataList(getUserDataList());
+  }
 
-        private UserDataChangeInfo instance;
 
-        public Builder() {
-            this(new UserDataChangeInfo());
-        }
-
-        protected Builder(UserDataChangeInfo instance) {
-            this.instance = instance;
-        }
-
-        public UserDataChangeInfo.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public UserDataChangeInfo.Builder userDataList(List<UserItemDataDto> userDataList) {
-            this.instance.userDataList = userDataList;
-            return this;
-        }
-
-        /**
-         * returns a built UserDataChangeInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public UserDataChangeInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UserDataChangeInfo.Builder builder() {
-        return new UserDataChangeInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UserDataChangeInfo.Builder toBuilder() {
-        return new UserDataChangeInfo.Builder().userId(getUserId()).userDataList(getUserDataList());
-    }
 }
+

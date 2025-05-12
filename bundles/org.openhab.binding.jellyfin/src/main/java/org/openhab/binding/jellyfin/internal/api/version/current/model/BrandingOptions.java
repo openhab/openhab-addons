@@ -17,253 +17,260 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The branding options.
  */
-@JsonPropertyOrder({ BrandingOptions.JSON_PROPERTY_LOGIN_DISCLAIMER, BrandingOptions.JSON_PROPERTY_CUSTOM_CSS,
-        BrandingOptions.JSON_PROPERTY_SPLASHSCREEN_ENABLED })
+@JsonPropertyOrder({
+  BrandingOptions.JSON_PROPERTY_LOGIN_DISCLAIMER,
+  BrandingOptions.JSON_PROPERTY_CUSTOM_CSS,
+  BrandingOptions.JSON_PROPERTY_SPLASHSCREEN_ENABLED
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BrandingOptions {
-    public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
-    @javax.annotation.Nullable
-    private JsonNullable<String> loginDisclaimer = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
+  @javax.annotation.Nullable
+  private JsonNullable<String> loginDisclaimer = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
-    @javax.annotation.Nullable
-    private JsonNullable<String> customCss = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
+  @javax.annotation.Nullable
+  private JsonNullable<String> customCss = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
-    @javax.annotation.Nullable
-    private Boolean splashscreenEnabled;
+  public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
+  @javax.annotation.Nullable
+  private Boolean splashscreenEnabled;
 
-    public BrandingOptions() {
-    }
+  public BrandingOptions() {
+  }
 
-    public BrandingOptions loginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
-        this.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
+  public BrandingOptions loginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
+    this.loginDisclaimer = JsonNullable.<String>of(loginDisclaimer);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the login disclaimer.
+   * @return loginDisclaimer
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the login disclaimer.
-     * 
-     * @return loginDisclaimer
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLoginDisclaimer() {
+  public String getLoginDisclaimer() {
         return loginDisclaimer.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLoginDisclaimer_JsonNullable() {
-        return loginDisclaimer;
-    }
+  public JsonNullable<String> getLoginDisclaimer_JsonNullable() {
+    return loginDisclaimer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
+  public void setLoginDisclaimer_JsonNullable(JsonNullable<String> loginDisclaimer) {
+    this.loginDisclaimer = loginDisclaimer;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
-    public void setLoginDisclaimer_JsonNullable(JsonNullable<String> loginDisclaimer) {
-        this.loginDisclaimer = loginDisclaimer;
-    }
+  public void setLoginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
+    this.loginDisclaimer = JsonNullable.<String>of(loginDisclaimer);
+  }
 
-    public void setLoginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
-        this.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
-    }
+  public BrandingOptions customCss(@javax.annotation.Nullable String customCss) {
+    this.customCss = JsonNullable.<String>of(customCss);
+    
+    return this;
+  }
 
-    public BrandingOptions customCss(@javax.annotation.Nullable String customCss) {
-        this.customCss = JsonNullable.<String> of(customCss);
+  /**
+   * Gets or sets the custom CSS.
+   * @return customCss
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the custom CSS.
-     * 
-     * @return customCss
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomCss() {
+  public String getCustomCss() {
         return customCss.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCustomCss_JsonNullable() {
+    return customCss;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
+  public void setCustomCss_JsonNullable(JsonNullable<String> customCss) {
+    this.customCss = customCss;
+  }
+
+  public void setCustomCss(@javax.annotation.Nullable String customCss) {
+    this.customCss = JsonNullable.<String>of(customCss);
+  }
+
+  public BrandingOptions splashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
+    
+    this.splashscreenEnabled = splashscreenEnabled;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether to enable the splashscreen.
+   * @return splashscreenEnabled
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSplashscreenEnabled() {
+    return splashscreenEnabled;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSplashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
+    this.splashscreenEnabled = splashscreenEnabled;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    BrandingOptions brandingOptions = (BrandingOptions) o;
+    return equalsNullable(this.loginDisclaimer, brandingOptions.loginDisclaimer) &&
+        equalsNullable(this.customCss, brandingOptions.customCss) &&
+        Objects.equals(this.splashscreenEnabled, brandingOptions.splashscreenEnabled);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(loginDisclaimer), hashCodeNullable(customCss), splashscreenEnabled);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class BrandingOptions {\n");
+    sb.append("    loginDisclaimer: ").append(toIndentedString(loginDisclaimer)).append("\n");
+    sb.append("    customCss: ").append(toIndentedString(customCss)).append("\n");
+    sb.append("    splashscreenEnabled: ").append(toIndentedString(splashscreenEnabled)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private BrandingOptions instance;
+
+    public Builder() {
+      this(new BrandingOptions());
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getCustomCss_JsonNullable() {
-        return customCss;
+    protected Builder(BrandingOptions instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
-    public void setCustomCss_JsonNullable(JsonNullable<String> customCss) {
-        this.customCss = customCss;
+    public BrandingOptions.Builder loginDisclaimer(String loginDisclaimer) {
+      this.instance.loginDisclaimer = JsonNullable.<String>of(loginDisclaimer);
+      return this;
+    }
+    public BrandingOptions.Builder loginDisclaimer(JsonNullable<String> loginDisclaimer) {
+      this.instance.loginDisclaimer = loginDisclaimer;
+      return this;
+    }
+    public BrandingOptions.Builder customCss(String customCss) {
+      this.instance.customCss = JsonNullable.<String>of(customCss);
+      return this;
+    }
+    public BrandingOptions.Builder customCss(JsonNullable<String> customCss) {
+      this.instance.customCss = customCss;
+      return this;
+    }
+    public BrandingOptions.Builder splashscreenEnabled(Boolean splashscreenEnabled) {
+      this.instance.splashscreenEnabled = splashscreenEnabled;
+      return this;
     }
 
-    public void setCustomCss(@javax.annotation.Nullable String customCss) {
-        this.customCss = JsonNullable.<String> of(customCss);
-    }
-
-    public BrandingOptions splashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
-
-        this.splashscreenEnabled = splashscreenEnabled;
-        return this;
-    }
 
     /**
-     * Gets or sets a value indicating whether to enable the splashscreen.
-     * 
-     * @return splashscreenEnabled
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSplashscreenEnabled() {
-        return splashscreenEnabled;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSplashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
-        this.splashscreenEnabled = splashscreenEnabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BrandingOptions brandingOptions = (BrandingOptions) o;
-        return equalsNullable(this.loginDisclaimer, brandingOptions.loginDisclaimer)
-                && equalsNullable(this.customCss, brandingOptions.customCss)
-                && Objects.equals(this.splashscreenEnabled, brandingOptions.splashscreenEnabled);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(loginDisclaimer), hashCodeNullable(customCss), splashscreenEnabled);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built BrandingOptions instance.
+    *
+    * The builder is not reusable.
+    */
+    public BrandingOptions build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class BrandingOptions {\n");
-        sb.append("    loginDisclaimer: ").append(toIndentedString(loginDisclaimer)).append("\n");
-        sb.append("    customCss: ").append(toIndentedString(customCss)).append("\n");
-        sb.append("    splashscreenEnabled: ").append(toIndentedString(splashscreenEnabled)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static BrandingOptions.Builder builder() {
+    return new BrandingOptions.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public BrandingOptions.Builder toBuilder() {
+    return new BrandingOptions.Builder()
+      .loginDisclaimer(getLoginDisclaimer())
+      .customCss(getCustomCss())
+      .splashscreenEnabled(getSplashscreenEnabled());
+  }
 
-        private BrandingOptions instance;
 
-        public Builder() {
-            this(new BrandingOptions());
-        }
-
-        protected Builder(BrandingOptions instance) {
-            this.instance = instance;
-        }
-
-        public BrandingOptions.Builder loginDisclaimer(String loginDisclaimer) {
-            this.instance.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
-            return this;
-        }
-
-        public BrandingOptions.Builder loginDisclaimer(JsonNullable<String> loginDisclaimer) {
-            this.instance.loginDisclaimer = loginDisclaimer;
-            return this;
-        }
-
-        public BrandingOptions.Builder customCss(String customCss) {
-            this.instance.customCss = JsonNullable.<String> of(customCss);
-            return this;
-        }
-
-        public BrandingOptions.Builder customCss(JsonNullable<String> customCss) {
-            this.instance.customCss = customCss;
-            return this;
-        }
-
-        public BrandingOptions.Builder splashscreenEnabled(Boolean splashscreenEnabled) {
-            this.instance.splashscreenEnabled = splashscreenEnabled;
-            return this;
-        }
-
-        /**
-         * returns a built BrandingOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public BrandingOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static BrandingOptions.Builder builder() {
-        return new BrandingOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public BrandingOptions.Builder toBuilder() {
-        return new BrandingOptions.Builder().loginDisclaimer(getLoginDisclaimer()).customCss(getCustomCss())
-                .splashscreenEnabled(getSplashscreenEnabled());
-    }
 }
+

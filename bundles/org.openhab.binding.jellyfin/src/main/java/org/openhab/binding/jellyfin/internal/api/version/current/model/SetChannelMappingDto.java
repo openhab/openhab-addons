@@ -18,208 +18,220 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Set channel mapping dto.
  */
-@JsonPropertyOrder({ SetChannelMappingDto.JSON_PROPERTY_PROVIDER_ID,
-        SetChannelMappingDto.JSON_PROPERTY_TUNER_CHANNEL_ID, SetChannelMappingDto.JSON_PROPERTY_PROVIDER_CHANNEL_ID })
+@JsonPropertyOrder({
+  SetChannelMappingDto.JSON_PROPERTY_PROVIDER_ID,
+  SetChannelMappingDto.JSON_PROPERTY_TUNER_CHANNEL_ID,
+  SetChannelMappingDto.JSON_PROPERTY_PROVIDER_CHANNEL_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SetChannelMappingDto {
-    public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
-    @javax.annotation.Nonnull
-    private String providerId;
+  public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
+  @javax.annotation.Nonnull
+  private String providerId;
 
-    public static final String JSON_PROPERTY_TUNER_CHANNEL_ID = "TunerChannelId";
-    @javax.annotation.Nonnull
-    private String tunerChannelId;
+  public static final String JSON_PROPERTY_TUNER_CHANNEL_ID = "TunerChannelId";
+  @javax.annotation.Nonnull
+  private String tunerChannelId;
 
-    public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
-    @javax.annotation.Nonnull
-    private String providerChannelId;
+  public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
+  @javax.annotation.Nonnull
+  private String providerChannelId;
 
-    public SetChannelMappingDto() {
+  public SetChannelMappingDto() {
+  }
+
+  public SetChannelMappingDto providerId(@javax.annotation.Nonnull String providerId) {
+    
+    this.providerId = providerId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the provider id.
+   * @return providerId
+   */
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getProviderId() {
+    return providerId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setProviderId(@javax.annotation.Nonnull String providerId) {
+    this.providerId = providerId;
+  }
+
+  public SetChannelMappingDto tunerChannelId(@javax.annotation.Nonnull String tunerChannelId) {
+    
+    this.tunerChannelId = tunerChannelId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the tuner channel id.
+   * @return tunerChannelId
+   */
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getTunerChannelId() {
+    return tunerChannelId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setTunerChannelId(@javax.annotation.Nonnull String tunerChannelId) {
+    this.tunerChannelId = tunerChannelId;
+  }
+
+  public SetChannelMappingDto providerChannelId(@javax.annotation.Nonnull String providerChannelId) {
+    
+    this.providerChannelId = providerChannelId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the provider channel id.
+   * @return providerChannelId
+   */
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getProviderChannelId() {
+    return providerChannelId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setProviderChannelId(@javax.annotation.Nonnull String providerChannelId) {
+    this.providerChannelId = providerChannelId;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SetChannelMappingDto setChannelMappingDto = (SetChannelMappingDto) o;
+    return Objects.equals(this.providerId, setChannelMappingDto.providerId) &&
+        Objects.equals(this.tunerChannelId, setChannelMappingDto.tunerChannelId) &&
+        Objects.equals(this.providerChannelId, setChannelMappingDto.providerChannelId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(providerId, tunerChannelId, providerChannelId);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SetChannelMappingDto {\n");
+    sb.append("    providerId: ").append(toIndentedString(providerId)).append("\n");
+    sb.append("    tunerChannelId: ").append(toIndentedString(tunerChannelId)).append("\n");
+    sb.append("    providerChannelId: ").append(toIndentedString(providerChannelId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SetChannelMappingDto instance;
+
+    public Builder() {
+      this(new SetChannelMappingDto());
     }
 
-    public SetChannelMappingDto providerId(@javax.annotation.Nonnull String providerId) {
-
-        this.providerId = providerId;
-        return this;
+    protected Builder(SetChannelMappingDto instance) {
+      this.instance = instance;
     }
+
+    public SetChannelMappingDto.Builder providerId(String providerId) {
+      this.instance.providerId = providerId;
+      return this;
+    }
+    public SetChannelMappingDto.Builder tunerChannelId(String tunerChannelId) {
+      this.instance.tunerChannelId = tunerChannelId;
+      return this;
+    }
+    public SetChannelMappingDto.Builder providerChannelId(String providerChannelId) {
+      this.instance.providerChannelId = providerChannelId;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the provider id.
-     * 
-     * @return providerId
-     */
-    @javax.annotation.Nonnull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public void setProviderId(@javax.annotation.Nonnull String providerId) {
-        this.providerId = providerId;
-    }
-
-    public SetChannelMappingDto tunerChannelId(@javax.annotation.Nonnull String tunerChannelId) {
-
-        this.tunerChannelId = tunerChannelId;
-        return this;
-    }
-
-    /**
-     * Gets or sets the tuner channel id.
-     * 
-     * @return tunerChannelId
-     */
-    @javax.annotation.Nonnull
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-    public String getTunerChannelId() {
-        return tunerChannelId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public void setTunerChannelId(@javax.annotation.Nonnull String tunerChannelId) {
-        this.tunerChannelId = tunerChannelId;
-    }
-
-    public SetChannelMappingDto providerChannelId(@javax.annotation.Nonnull String providerChannelId) {
-
-        this.providerChannelId = providerChannelId;
-        return this;
-    }
-
-    /**
-     * Gets or sets the provider channel id.
-     * 
-     * @return providerChannelId
-     */
-    @javax.annotation.Nonnull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-    public String getProviderChannelId() {
-        return providerChannelId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public void setProviderChannelId(@javax.annotation.Nonnull String providerChannelId) {
-        this.providerChannelId = providerChannelId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SetChannelMappingDto setChannelMappingDto = (SetChannelMappingDto) o;
-        return Objects.equals(this.providerId, setChannelMappingDto.providerId)
-                && Objects.equals(this.tunerChannelId, setChannelMappingDto.tunerChannelId)
-                && Objects.equals(this.providerChannelId, setChannelMappingDto.providerChannelId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(providerId, tunerChannelId, providerChannelId);
+    * returns a built SetChannelMappingDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public SetChannelMappingDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SetChannelMappingDto {\n");
-        sb.append("    providerId: ").append(toIndentedString(providerId)).append("\n");
-        sb.append("    tunerChannelId: ").append(toIndentedString(tunerChannelId)).append("\n");
-        sb.append("    providerChannelId: ").append(toIndentedString(providerChannelId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SetChannelMappingDto.Builder builder() {
+    return new SetChannelMappingDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SetChannelMappingDto.Builder toBuilder() {
+    return new SetChannelMappingDto.Builder()
+      .providerId(getProviderId())
+      .tunerChannelId(getTunerChannelId())
+      .providerChannelId(getProviderChannelId());
+  }
 
-        private SetChannelMappingDto instance;
 
-        public Builder() {
-            this(new SetChannelMappingDto());
-        }
-
-        protected Builder(SetChannelMappingDto instance) {
-            this.instance = instance;
-        }
-
-        public SetChannelMappingDto.Builder providerId(String providerId) {
-            this.instance.providerId = providerId;
-            return this;
-        }
-
-        public SetChannelMappingDto.Builder tunerChannelId(String tunerChannelId) {
-            this.instance.tunerChannelId = tunerChannelId;
-            return this;
-        }
-
-        public SetChannelMappingDto.Builder providerChannelId(String providerChannelId) {
-            this.instance.providerChannelId = providerChannelId;
-            return this;
-        }
-
-        /**
-         * returns a built SetChannelMappingDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public SetChannelMappingDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SetChannelMappingDto.Builder builder() {
-        return new SetChannelMappingDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SetChannelMappingDto.Builder toBuilder() {
-        return new SetChannelMappingDto.Builder().providerId(getProviderId()).tunerChannelId(getTunerChannelId())
-                .providerChannelId(getProviderChannelId());
-    }
 }
+

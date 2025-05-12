@@ -17,421 +17,435 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PluginStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * This is a serializable stub class that is used by the api to provide information about installed plugins.
  */
-@JsonPropertyOrder({ PluginInfo.JSON_PROPERTY_NAME, PluginInfo.JSON_PROPERTY_VERSION,
-        PluginInfo.JSON_PROPERTY_CONFIGURATION_FILE_NAME, PluginInfo.JSON_PROPERTY_DESCRIPTION,
-        PluginInfo.JSON_PROPERTY_ID, PluginInfo.JSON_PROPERTY_CAN_UNINSTALL, PluginInfo.JSON_PROPERTY_HAS_IMAGE,
-        PluginInfo.JSON_PROPERTY_STATUS })
+@JsonPropertyOrder({
+  PluginInfo.JSON_PROPERTY_NAME,
+  PluginInfo.JSON_PROPERTY_VERSION,
+  PluginInfo.JSON_PROPERTY_CONFIGURATION_FILE_NAME,
+  PluginInfo.JSON_PROPERTY_DESCRIPTION,
+  PluginInfo.JSON_PROPERTY_ID,
+  PluginInfo.JSON_PROPERTY_CAN_UNINSTALL,
+  PluginInfo.JSON_PROPERTY_HAS_IMAGE,
+  PluginInfo.JSON_PROPERTY_STATUS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PluginInfo {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public static final String JSON_PROPERTY_VERSION = "Version";
-    @javax.annotation.Nullable
-    private String version;
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  @javax.annotation.Nullable
+  private String version;
 
-    public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> configurationFileName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> configurationFileName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-    @javax.annotation.Nullable
-    private String description;
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+  @javax.annotation.Nullable
+  private String description;
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private UUID id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private UUID id;
 
-    public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
-    @javax.annotation.Nullable
-    private Boolean canUninstall;
+  public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
+  @javax.annotation.Nullable
+  private Boolean canUninstall;
 
-    public static final String JSON_PROPERTY_HAS_IMAGE = "HasImage";
-    @javax.annotation.Nullable
-    private Boolean hasImage;
+  public static final String JSON_PROPERTY_HAS_IMAGE = "HasImage";
+  @javax.annotation.Nullable
+  private Boolean hasImage;
 
-    public static final String JSON_PROPERTY_STATUS = "Status";
-    @javax.annotation.Nullable
-    private PluginStatus status;
+  public static final String JSON_PROPERTY_STATUS = "Status";
+  @javax.annotation.Nullable
+  private PluginStatus status;
 
-    public PluginInfo() {
-    }
+  public PluginInfo() {
+  }
 
-    public PluginInfo name(@javax.annotation.Nullable String name) {
+  public PluginInfo name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
 
-        this.name = name;
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
 
-    public PluginInfo version(@javax.annotation.Nullable String version) {
+  public PluginInfo version(@javax.annotation.Nullable String version) {
+    
+    this.version = version;
+    return this;
+  }
 
-        this.version = version;
-        return this;
-    }
+  /**
+   * Gets or sets the version.
+   * @return version
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the version.
-     * 
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getVersion() {
+    return version;
+  }
 
-    public String getVersion() {
-        return version;
-    }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = version;
-    }
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVersion(@javax.annotation.Nullable String version) {
+    this.version = version;
+  }
 
-    public PluginInfo configurationFileName(@javax.annotation.Nullable String configurationFileName) {
-        this.configurationFileName = JsonNullable.<String> of(configurationFileName);
+  public PluginInfo configurationFileName(@javax.annotation.Nullable String configurationFileName) {
+    this.configurationFileName = JsonNullable.<String>of(configurationFileName);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name of the configuration file.
+   * @return configurationFileName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name of the configuration file.
-     * 
-     * @return configurationFileName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getConfigurationFileName() {
+  public String getConfigurationFileName() {
         return configurationFileName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getConfigurationFileName_JsonNullable() {
+    return configurationFileName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+  public void setConfigurationFileName_JsonNullable(JsonNullable<String> configurationFileName) {
+    this.configurationFileName = configurationFileName;
+  }
+
+  public void setConfigurationFileName(@javax.annotation.Nullable String configurationFileName) {
+    this.configurationFileName = JsonNullable.<String>of(configurationFileName);
+  }
+
+  public PluginInfo description(@javax.annotation.Nullable String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Gets or sets the description.
+   * @return description
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(@javax.annotation.Nullable String description) {
+    this.description = description;
+  }
+
+  public PluginInfo id(@javax.annotation.Nullable UUID id) {
+    
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Gets or sets the unique id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getId() {
+    return id;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = id;
+  }
+
+  public PluginInfo canUninstall(@javax.annotation.Nullable Boolean canUninstall) {
+    
+    this.canUninstall = canUninstall;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the plugin can be uninstalled.
+   * @return canUninstall
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getCanUninstall() {
+    return canUninstall;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCanUninstall(@javax.annotation.Nullable Boolean canUninstall) {
+    this.canUninstall = canUninstall;
+  }
+
+  public PluginInfo hasImage(@javax.annotation.Nullable Boolean hasImage) {
+    
+    this.hasImage = hasImage;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether this plugin has a valid image.
+   * @return hasImage
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getHasImage() {
+    return hasImage;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHasImage(@javax.annotation.Nullable Boolean hasImage) {
+    this.hasImage = hasImage;
+  }
+
+  public PluginInfo status(@javax.annotation.Nullable PluginStatus status) {
+    
+    this.status = status;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating the status of the plugin.
+   * @return status
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public PluginStatus getStatus() {
+    return status;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStatus(@javax.annotation.Nullable PluginStatus status) {
+    this.status = status;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PluginInfo pluginInfo = (PluginInfo) o;
+    return Objects.equals(this.name, pluginInfo.name) &&
+        Objects.equals(this.version, pluginInfo.version) &&
+        equalsNullable(this.configurationFileName, pluginInfo.configurationFileName) &&
+        Objects.equals(this.description, pluginInfo.description) &&
+        Objects.equals(this.id, pluginInfo.id) &&
+        Objects.equals(this.canUninstall, pluginInfo.canUninstall) &&
+        Objects.equals(this.hasImage, pluginInfo.hasImage) &&
+        Objects.equals(this.status, pluginInfo.status);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, version, hashCodeNullable(configurationFileName), description, id, canUninstall, hasImage, status);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PluginInfo {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    configurationFileName: ").append(toIndentedString(configurationFileName)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    canUninstall: ").append(toIndentedString(canUninstall)).append("\n");
+    sb.append("    hasImage: ").append(toIndentedString(hasImage)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PluginInfo instance;
+
+    public Builder() {
+      this(new PluginInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getConfigurationFileName_JsonNullable() {
-        return configurationFileName;
+    protected Builder(PluginInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
-    public void setConfigurationFileName_JsonNullable(JsonNullable<String> configurationFileName) {
-        this.configurationFileName = configurationFileName;
+    public PluginInfo.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+    public PluginInfo.Builder version(String version) {
+      this.instance.version = version;
+      return this;
+    }
+    public PluginInfo.Builder configurationFileName(String configurationFileName) {
+      this.instance.configurationFileName = JsonNullable.<String>of(configurationFileName);
+      return this;
+    }
+    public PluginInfo.Builder configurationFileName(JsonNullable<String> configurationFileName) {
+      this.instance.configurationFileName = configurationFileName;
+      return this;
+    }
+    public PluginInfo.Builder description(String description) {
+      this.instance.description = description;
+      return this;
+    }
+    public PluginInfo.Builder id(UUID id) {
+      this.instance.id = id;
+      return this;
+    }
+    public PluginInfo.Builder canUninstall(Boolean canUninstall) {
+      this.instance.canUninstall = canUninstall;
+      return this;
+    }
+    public PluginInfo.Builder hasImage(Boolean hasImage) {
+      this.instance.hasImage = hasImage;
+      return this;
+    }
+    public PluginInfo.Builder status(PluginStatus status) {
+      this.instance.status = status;
+      return this;
     }
 
-    public void setConfigurationFileName(@javax.annotation.Nullable String configurationFileName) {
-        this.configurationFileName = JsonNullable.<String> of(configurationFileName);
-    }
-
-    public PluginInfo description(@javax.annotation.Nullable String description) {
-
-        this.description = description;
-        return this;
-    }
 
     /**
-     * Gets or sets the description.
-     * 
-     * @return description
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getDescription() {
-        return description;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDescription(@javax.annotation.Nullable String description) {
-        this.description = description;
-    }
-
-    public PluginInfo id(@javax.annotation.Nullable UUID id) {
-
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * Gets or sets the unique id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getId() {
-        return id;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = id;
-    }
-
-    public PluginInfo canUninstall(@javax.annotation.Nullable Boolean canUninstall) {
-
-        this.canUninstall = canUninstall;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether the plugin can be uninstalled.
-     * 
-     * @return canUninstall
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getCanUninstall() {
-        return canUninstall;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCanUninstall(@javax.annotation.Nullable Boolean canUninstall) {
-        this.canUninstall = canUninstall;
-    }
-
-    public PluginInfo hasImage(@javax.annotation.Nullable Boolean hasImage) {
-
-        this.hasImage = hasImage;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this plugin has a valid image.
-     * 
-     * @return hasImage
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getHasImage() {
-        return hasImage;
-    }
-
-    @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setHasImage(@javax.annotation.Nullable Boolean hasImage) {
-        this.hasImage = hasImage;
-    }
-
-    public PluginInfo status(@javax.annotation.Nullable PluginStatus status) {
-
-        this.status = status;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating the status of the plugin.
-     * 
-     * @return status
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_STATUS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public PluginStatus getStatus() {
-        return status;
-    }
-
-    @JsonProperty(JSON_PROPERTY_STATUS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStatus(@javax.annotation.Nullable PluginStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PluginInfo pluginInfo = (PluginInfo) o;
-        return Objects.equals(this.name, pluginInfo.name) && Objects.equals(this.version, pluginInfo.version)
-                && equalsNullable(this.configurationFileName, pluginInfo.configurationFileName)
-                && Objects.equals(this.description, pluginInfo.description) && Objects.equals(this.id, pluginInfo.id)
-                && Objects.equals(this.canUninstall, pluginInfo.canUninstall)
-                && Objects.equals(this.hasImage, pluginInfo.hasImage) && Objects.equals(this.status, pluginInfo.status);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, version, hashCodeNullable(configurationFileName), description, id, canUninstall,
-                hasImage, status);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built PluginInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public PluginInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PluginInfo {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    version: ").append(toIndentedString(version)).append("\n");
-        sb.append("    configurationFileName: ").append(toIndentedString(configurationFileName)).append("\n");
-        sb.append("    description: ").append(toIndentedString(description)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    canUninstall: ").append(toIndentedString(canUninstall)).append("\n");
-        sb.append("    hasImage: ").append(toIndentedString(hasImage)).append("\n");
-        sb.append("    status: ").append(toIndentedString(status)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PluginInfo.Builder builder() {
+    return new PluginInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PluginInfo.Builder toBuilder() {
+    return new PluginInfo.Builder()
+      .name(getName())
+      .version(getVersion())
+      .configurationFileName(getConfigurationFileName())
+      .description(getDescription())
+      .id(getId())
+      .canUninstall(getCanUninstall())
+      .hasImage(getHasImage())
+      .status(getStatus());
+  }
 
-        private PluginInfo instance;
 
-        public Builder() {
-            this(new PluginInfo());
-        }
-
-        protected Builder(PluginInfo instance) {
-            this.instance = instance;
-        }
-
-        public PluginInfo.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public PluginInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public PluginInfo.Builder configurationFileName(String configurationFileName) {
-            this.instance.configurationFileName = JsonNullable.<String> of(configurationFileName);
-            return this;
-        }
-
-        public PluginInfo.Builder configurationFileName(JsonNullable<String> configurationFileName) {
-            this.instance.configurationFileName = configurationFileName;
-            return this;
-        }
-
-        public PluginInfo.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public PluginInfo.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public PluginInfo.Builder canUninstall(Boolean canUninstall) {
-            this.instance.canUninstall = canUninstall;
-            return this;
-        }
-
-        public PluginInfo.Builder hasImage(Boolean hasImage) {
-            this.instance.hasImage = hasImage;
-            return this;
-        }
-
-        public PluginInfo.Builder status(PluginStatus status) {
-            this.instance.status = status;
-            return this;
-        }
-
-        /**
-         * returns a built PluginInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PluginInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PluginInfo.Builder builder() {
-        return new PluginInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PluginInfo.Builder toBuilder() {
-        return new PluginInfo.Builder().name(getName()).version(getVersion())
-                .configurationFileName(getConfigurationFileName()).description(getDescription()).id(getId())
-                .canUninstall(getCanUninstall()).hasImage(getHasImage()).status(getStatus());
-    }
 }
+

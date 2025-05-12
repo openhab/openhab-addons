@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,48 +29,49 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum MetadataFields.
  */
 public enum MetadataField {
+  
+  CAST("Cast"),
+  
+  GENRES("Genres"),
+  
+  PRODUCTION_LOCATIONS("ProductionLocations"),
+  
+  STUDIOS("Studios"),
+  
+  TAGS("Tags"),
+  
+  NAME("Name"),
+  
+  OVERVIEW("Overview"),
+  
+  RUNTIME("Runtime"),
+  
+  OFFICIAL_RATING("OfficialRating");
 
-    CAST("Cast"),
+  private String value;
 
-    GENRES("Genres"),
+  MetadataField(String value) {
+    this.value = value;
+  }
 
-    PRODUCTION_LOCATIONS("ProductionLocations"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    STUDIOS("Studios"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    TAGS("Tags"),
-
-    NAME("Name"),
-
-    OVERVIEW("Overview"),
-
-    RUNTIME("Runtime"),
-
-    OFFICIAL_RATING("OfficialRating");
-
-    private String value;
-
-    MetadataField(String value) {
-        this.value = value;
+  @JsonCreator
+  public static MetadataField fromValue(String value) {
+    for (MetadataField b : MetadataField.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MetadataField fromValue(String value) {
-        for (MetadataField b : MetadataField.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

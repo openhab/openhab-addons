@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,36 +29,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets SendToUserType
  */
 public enum SendToUserType {
+  
+  ALL("All"),
+  
+  ADMINS("Admins"),
+  
+  CUSTOM("Custom");
 
-    ALL("All"),
+  private String value;
 
-    ADMINS("Admins"),
+  SendToUserType(String value) {
+    this.value = value;
+  }
 
-    CUSTOM("Custom");
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    private String value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    SendToUserType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static SendToUserType fromValue(String value) {
+    for (SendToUserType b : SendToUserType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static SendToUserType fromValue(String value) {
-        for (SendToUserType b : SendToUserType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

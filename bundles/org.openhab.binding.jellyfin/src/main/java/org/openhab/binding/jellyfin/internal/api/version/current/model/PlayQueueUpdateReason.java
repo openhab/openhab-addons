@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,50 +29,51 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlayQueueUpdateReason.
  */
 public enum PlayQueueUpdateReason {
+  
+  NEW_PLAYLIST("NewPlaylist"),
+  
+  SET_CURRENT_ITEM("SetCurrentItem"),
+  
+  REMOVE_ITEMS("RemoveItems"),
+  
+  MOVE_ITEM("MoveItem"),
+  
+  QUEUE("Queue"),
+  
+  QUEUE_NEXT("QueueNext"),
+  
+  NEXT_ITEM("NextItem"),
+  
+  PREVIOUS_ITEM("PreviousItem"),
+  
+  REPEAT_MODE("RepeatMode"),
+  
+  SHUFFLE_MODE("ShuffleMode");
 
-    NEW_PLAYLIST("NewPlaylist"),
+  private String value;
 
-    SET_CURRENT_ITEM("SetCurrentItem"),
+  PlayQueueUpdateReason(String value) {
+    this.value = value;
+  }
 
-    REMOVE_ITEMS("RemoveItems"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    MOVE_ITEM("MoveItem"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    QUEUE("Queue"),
-
-    QUEUE_NEXT("QueueNext"),
-
-    NEXT_ITEM("NextItem"),
-
-    PREVIOUS_ITEM("PreviousItem"),
-
-    REPEAT_MODE("RepeatMode"),
-
-    SHUFFLE_MODE("ShuffleMode");
-
-    private String value;
-
-    PlayQueueUpdateReason(String value) {
-        this.value = value;
+  @JsonCreator
+  public static PlayQueueUpdateReason fromValue(String value) {
+    for (PlayQueueUpdateReason b : PlayQueueUpdateReason.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static PlayQueueUpdateReason fromValue(String value) {
-        for (PlayQueueUpdateReason b : PlayQueueUpdateReason.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

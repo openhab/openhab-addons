@@ -17,235 +17,247 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * An entity representing custom options for a device.
  */
-@JsonPropertyOrder({ DeviceOptions.JSON_PROPERTY_ID, DeviceOptions.JSON_PROPERTY_DEVICE_ID,
-        DeviceOptions.JSON_PROPERTY_CUSTOM_NAME })
+@JsonPropertyOrder({
+  DeviceOptions.JSON_PROPERTY_ID,
+  DeviceOptions.JSON_PROPERTY_DEVICE_ID,
+  DeviceOptions.JSON_PROPERTY_CUSTOM_NAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceOptions {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private Integer id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private Integer id;
 
-    public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @javax.annotation.Nullable
-    private String deviceId;
+  public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+  @javax.annotation.Nullable
+  private String deviceId;
 
-    public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> customName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> customName = JsonNullable.<String>undefined();
 
-    public DeviceOptions() {
-    }
+  public DeviceOptions() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public DeviceOptions(
+    @JsonProperty(JSON_PROPERTY_ID) Integer id
+  ) {
+    this();
+    this.id = id;
+  }
 
-    /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public DeviceOptions(@JsonProperty(JSON_PROPERTY_ID) Integer id) {
-        this();
-        this.id = id;
-    }
+  /**
+   * Gets the id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets the id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Integer getId() {
+    return id;
+  }
 
-    public Integer getId() {
-        return id;
-    }
 
-    public DeviceOptions deviceId(@javax.annotation.Nullable String deviceId) {
 
-        this.deviceId = deviceId;
-        return this;
-    }
+  public DeviceOptions deviceId(@javax.annotation.Nullable String deviceId) {
+    
+    this.deviceId = deviceId;
+    return this;
+  }
 
-    /**
-     * Gets the device id.
-     * 
-     * @return deviceId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets the device id.
+   * @return deviceId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public String getDeviceId() {
-        return deviceId;
-    }
+  public String getDeviceId() {
+    return deviceId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = deviceId;
-    }
 
-    public DeviceOptions customName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDeviceId(@javax.annotation.Nullable String deviceId) {
+    this.deviceId = deviceId;
+  }
 
-        return this;
-    }
+  public DeviceOptions customName(@javax.annotation.Nullable String customName) {
+    this.customName = JsonNullable.<String>of(customName);
+    
+    return this;
+  }
 
-    /**
-     * Gets or sets the custom name.
-     * 
-     * @return customName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
+  /**
+   * Gets or sets the custom name.
+   * @return customName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public String getCustomName() {
+  public String getCustomName() {
         return customName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCustomName_JsonNullable() {
+    return customName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  public void setCustomName_JsonNullable(JsonNullable<String> customName) {
+    this.customName = customName;
+  }
+
+  public void setCustomName(@javax.annotation.Nullable String customName) {
+    this.customName = JsonNullable.<String>of(customName);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DeviceOptions deviceOptions = (DeviceOptions) o;
+    return Objects.equals(this.id, deviceOptions.id) &&
+        Objects.equals(this.deviceId, deviceOptions.deviceId) &&
+        equalsNullable(this.customName, deviceOptions.customName);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, deviceId, hashCodeNullable(customName));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DeviceOptions {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
+    sb.append("    customName: ").append(toIndentedString(customName)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DeviceOptions instance;
+
+    public Builder() {
+      this(new DeviceOptions());
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getCustomName_JsonNullable() {
-        return customName;
+    protected Builder(DeviceOptions instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
-    public void setCustomName_JsonNullable(JsonNullable<String> customName) {
-        this.customName = customName;
+    public DeviceOptions.Builder id(Integer id) {
+      this.instance.id = id;
+      return this;
+    }
+    public DeviceOptions.Builder deviceId(String deviceId) {
+      this.instance.deviceId = deviceId;
+      return this;
+    }
+    public DeviceOptions.Builder customName(String customName) {
+      this.instance.customName = JsonNullable.<String>of(customName);
+      return this;
+    }
+    public DeviceOptions.Builder customName(JsonNullable<String> customName) {
+      this.instance.customName = customName;
+      return this;
     }
 
-    public void setCustomName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DeviceOptions deviceOptions = (DeviceOptions) o;
-        return Objects.equals(this.id, deviceOptions.id) && Objects.equals(this.deviceId, deviceOptions.deviceId)
-                && equalsNullable(this.customName, deviceOptions.customName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, deviceId, hashCodeNullable(customName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built DeviceOptions instance.
+    *
+    * The builder is not reusable.
+    */
+    public DeviceOptions build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DeviceOptions {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
-        sb.append("    customName: ").append(toIndentedString(customName)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DeviceOptions.Builder builder() {
+    return new DeviceOptions.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DeviceOptions.Builder toBuilder() {
+    return new DeviceOptions.Builder()
+      .id(getId())
+      .deviceId(getDeviceId())
+      .customName(getCustomName());
+  }
 
-        private DeviceOptions instance;
 
-        public Builder() {
-            this(new DeviceOptions());
-        }
-
-        protected Builder(DeviceOptions instance) {
-            this.instance = instance;
-        }
-
-        public DeviceOptions.Builder id(Integer id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DeviceOptions.Builder deviceId(String deviceId) {
-            this.instance.deviceId = deviceId;
-            return this;
-        }
-
-        public DeviceOptions.Builder customName(String customName) {
-            this.instance.customName = JsonNullable.<String> of(customName);
-            return this;
-        }
-
-        public DeviceOptions.Builder customName(JsonNullable<String> customName) {
-            this.instance.customName = customName;
-            return this;
-        }
-
-        /**
-         * returns a built DeviceOptions instance.
-         *
-         * The builder is not reusable.
-         */
-        public DeviceOptions build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DeviceOptions.Builder builder() {
-        return new DeviceOptions.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DeviceOptions.Builder toBuilder() {
-        return new DeviceOptions.Builder().id(getId()).deviceId(getDeviceId()).customName(getCustomName());
-    }
 }
+

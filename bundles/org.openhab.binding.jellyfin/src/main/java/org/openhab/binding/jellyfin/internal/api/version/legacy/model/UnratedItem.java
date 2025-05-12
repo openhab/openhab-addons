@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,48 +29,49 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing an unrated item.
  */
 public enum UnratedItem {
+  
+  MOVIE("Movie"),
+  
+  TRAILER("Trailer"),
+  
+  SERIES("Series"),
+  
+  MUSIC("Music"),
+  
+  BOOK("Book"),
+  
+  LIVE_TV_CHANNEL("LiveTvChannel"),
+  
+  LIVE_TV_PROGRAM("LiveTvProgram"),
+  
+  CHANNEL_CONTENT("ChannelContent"),
+  
+  OTHER("Other");
 
-    MOVIE("Movie"),
+  private String value;
 
-    TRAILER("Trailer"),
+  UnratedItem(String value) {
+    this.value = value;
+  }
 
-    SERIES("Series"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    MUSIC("Music"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    BOOK("Book"),
-
-    LIVE_TV_CHANNEL("LiveTvChannel"),
-
-    LIVE_TV_PROGRAM("LiveTvProgram"),
-
-    CHANNEL_CONTENT("ChannelContent"),
-
-    OTHER("Other");
-
-    private String value;
-
-    UnratedItem(String value) {
-        this.value = value;
+  @JsonCreator
+  public static UnratedItem fromValue(String value) {
+    for (UnratedItem b : UnratedItem.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static UnratedItem fromValue(String value) {
-        for (UnratedItem b : UnratedItem.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

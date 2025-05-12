@@ -17,175 +17,185 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.time.OffsetDateTime;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class UtcTimeResponse.
  */
-@JsonPropertyOrder({ UtcTimeResponse.JSON_PROPERTY_REQUEST_RECEPTION_TIME,
-        UtcTimeResponse.JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME })
+@JsonPropertyOrder({
+  UtcTimeResponse.JSON_PROPERTY_REQUEST_RECEPTION_TIME,
+  UtcTimeResponse.JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UtcTimeResponse {
-    public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
-    @javax.annotation.Nullable
-    private OffsetDateTime requestReceptionTime;
+  public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
+  @javax.annotation.Nullable
+  private OffsetDateTime requestReceptionTime;
 
-    public static final String JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
-    @javax.annotation.Nullable
-    private OffsetDateTime responseTransmissionTime;
+  public static final String JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
+  @javax.annotation.Nullable
+  private OffsetDateTime responseTransmissionTime;
 
-    public UtcTimeResponse() {
+  public UtcTimeResponse() {
+  }
+
+  public UtcTimeResponse requestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
+    
+    this.requestReceptionTime = requestReceptionTime;
+    return this;
+  }
+
+  /**
+   * Gets the UTC time when request has been received.
+   * @return requestReceptionTime
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getRequestReceptionTime() {
+    return requestReceptionTime;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRequestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
+    this.requestReceptionTime = requestReceptionTime;
+  }
+
+  public UtcTimeResponse responseTransmissionTime(@javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
+    
+    this.responseTransmissionTime = responseTransmissionTime;
+    return this;
+  }
+
+  /**
+   * Gets the UTC time when response has been sent.
+   * @return responseTransmissionTime
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getResponseTransmissionTime() {
+    return responseTransmissionTime;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResponseTransmissionTime(@javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
+    this.responseTransmissionTime = responseTransmissionTime;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UtcTimeResponse utcTimeResponse = (UtcTimeResponse) o;
+    return Objects.equals(this.requestReceptionTime, utcTimeResponse.requestReceptionTime) &&
+        Objects.equals(this.responseTransmissionTime, utcTimeResponse.responseTransmissionTime);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(requestReceptionTime, responseTransmissionTime);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class UtcTimeResponse {\n");
+    sb.append("    requestReceptionTime: ").append(toIndentedString(requestReceptionTime)).append("\n");
+    sb.append("    responseTransmissionTime: ").append(toIndentedString(responseTransmissionTime)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private UtcTimeResponse instance;
+
+    public Builder() {
+      this(new UtcTimeResponse());
     }
 
-    public UtcTimeResponse requestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
-
-        this.requestReceptionTime = requestReceptionTime;
-        return this;
+    protected Builder(UtcTimeResponse instance) {
+      this.instance = instance;
     }
+
+    public UtcTimeResponse.Builder requestReceptionTime(OffsetDateTime requestReceptionTime) {
+      this.instance.requestReceptionTime = requestReceptionTime;
+      return this;
+    }
+    public UtcTimeResponse.Builder responseTransmissionTime(OffsetDateTime responseTransmissionTime) {
+      this.instance.responseTransmissionTime = responseTransmissionTime;
+      return this;
+    }
+
 
     /**
-     * Gets the UTC time when request has been received.
-     * 
-     * @return requestReceptionTime
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public OffsetDateTime getRequestReceptionTime() {
-        return requestReceptionTime;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRequestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
-        this.requestReceptionTime = requestReceptionTime;
-    }
-
-    public UtcTimeResponse responseTransmissionTime(
-            @javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
-
-        this.responseTransmissionTime = responseTransmissionTime;
-        return this;
-    }
-
-    /**
-     * Gets the UTC time when response has been sent.
-     * 
-     * @return responseTransmissionTime
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public OffsetDateTime getResponseTransmissionTime() {
-        return responseTransmissionTime;
-    }
-
-    @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setResponseTransmissionTime(@javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
-        this.responseTransmissionTime = responseTransmissionTime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UtcTimeResponse utcTimeResponse = (UtcTimeResponse) o;
-        return Objects.equals(this.requestReceptionTime, utcTimeResponse.requestReceptionTime)
-                && Objects.equals(this.responseTransmissionTime, utcTimeResponse.responseTransmissionTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(requestReceptionTime, responseTransmissionTime);
+    * returns a built UtcTimeResponse instance.
+    *
+    * The builder is not reusable.
+    */
+    public UtcTimeResponse build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class UtcTimeResponse {\n");
-        sb.append("    requestReceptionTime: ").append(toIndentedString(requestReceptionTime)).append("\n");
-        sb.append("    responseTransmissionTime: ").append(toIndentedString(responseTransmissionTime)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static UtcTimeResponse.Builder builder() {
+    return new UtcTimeResponse.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public UtcTimeResponse.Builder toBuilder() {
+    return new UtcTimeResponse.Builder()
+      .requestReceptionTime(getRequestReceptionTime())
+      .responseTransmissionTime(getResponseTransmissionTime());
+  }
 
-        private UtcTimeResponse instance;
 
-        public Builder() {
-            this(new UtcTimeResponse());
-        }
-
-        protected Builder(UtcTimeResponse instance) {
-            this.instance = instance;
-        }
-
-        public UtcTimeResponse.Builder requestReceptionTime(OffsetDateTime requestReceptionTime) {
-            this.instance.requestReceptionTime = requestReceptionTime;
-            return this;
-        }
-
-        public UtcTimeResponse.Builder responseTransmissionTime(OffsetDateTime responseTransmissionTime) {
-            this.instance.responseTransmissionTime = responseTransmissionTime;
-            return this;
-        }
-
-        /**
-         * returns a built UtcTimeResponse instance.
-         *
-         * The builder is not reusable.
-         */
-        public UtcTimeResponse build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UtcTimeResponse.Builder builder() {
-        return new UtcTimeResponse.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UtcTimeResponse.Builder toBuilder() {
-        return new UtcTimeResponse.Builder().requestReceptionTime(getRequestReceptionTime())
-                .responseTransmissionTime(getResponseTransmissionTime());
-    }
 }
+

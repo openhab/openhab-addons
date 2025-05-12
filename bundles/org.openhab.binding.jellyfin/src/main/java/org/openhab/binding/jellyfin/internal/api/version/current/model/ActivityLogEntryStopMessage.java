@@ -18,132 +18,146 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Activity log entry stop message.
  */
-@JsonPropertyOrder({ ActivityLogEntryStopMessage.JSON_PROPERTY_MESSAGE_TYPE })
+@JsonPropertyOrder({
+  ActivityLogEntryStopMessage.JSON_PROPERTY_MESSAGE_TYPE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryStopMessage {
-    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @javax.annotation.Nullable
-    private SessionMessageType messageType = SessionMessageType.ACTIVITY_LOG_ENTRY_STOP;
+  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+  @javax.annotation.Nullable
+  private SessionMessageType messageType = SessionMessageType.ACTIVITY_LOG_ENTRY_STOP;
 
-    public ActivityLogEntryStopMessage() {
+  public ActivityLogEntryStopMessage() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public ActivityLogEntryStopMessage(
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
+  ) {
+    this();
+    this.messageType = messageType;
+  }
+
+  /**
+   * The different kinds of messages that are used in the WebSocket api.
+   * @return messageType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SessionMessageType getMessageType() {
+    return messageType;
+  }
+
+
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ActivityLogEntryStopMessage activityLogEntryStopMessage = (ActivityLogEntryStopMessage) o;
+    return Objects.equals(this.messageType, activityLogEntryStopMessage.messageType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageType);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ActivityLogEntryStopMessage {\n");
+    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ActivityLogEntryStopMessage instance;
+
+    public Builder() {
+      this(new ActivityLogEntryStopMessage());
+    }
+
+    protected Builder(ActivityLogEntryStopMessage instance) {
+      this.instance = instance;
+    }
+
+    public ActivityLogEntryStopMessage.Builder messageType(SessionMessageType messageType) {
+      this.instance.messageType = messageType;
+      return this;
+    }
+
 
     /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public ActivityLogEntryStopMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
-        this();
-        this.messageType = messageType;
-    }
-
-    /**
-     * The different kinds of messages that are used in the WebSocket api.
-     * 
-     * @return messageType
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public SessionMessageType getMessageType() {
-        return messageType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ActivityLogEntryStopMessage activityLogEntryStopMessage = (ActivityLogEntryStopMessage) o;
-        return Objects.equals(this.messageType, activityLogEntryStopMessage.messageType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(messageType);
+    * returns a built ActivityLogEntryStopMessage instance.
+    *
+    * The builder is not reusable.
+    */
+    public ActivityLogEntryStopMessage build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ActivityLogEntryStopMessage {\n");
-        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ActivityLogEntryStopMessage.Builder builder() {
+    return new ActivityLogEntryStopMessage.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ActivityLogEntryStopMessage.Builder toBuilder() {
+    return new ActivityLogEntryStopMessage.Builder()
+      .messageType(getMessageType());
+  }
 
-        private ActivityLogEntryStopMessage instance;
 
-        public Builder() {
-            this(new ActivityLogEntryStopMessage());
-        }
-
-        protected Builder(ActivityLogEntryStopMessage instance) {
-            this.instance = instance;
-        }
-
-        public ActivityLogEntryStopMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built ActivityLogEntryStopMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public ActivityLogEntryStopMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ActivityLogEntryStopMessage.Builder builder() {
-        return new ActivityLogEntryStopMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ActivityLogEntryStopMessage.Builder toBuilder() {
-        return new ActivityLogEntryStopMessage.Builder().messageType(getMessageType());
-    }
 }
+

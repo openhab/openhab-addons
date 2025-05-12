@@ -17,251 +17,260 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class RepositoryInfo.
  */
-@JsonPropertyOrder({ RepositoryInfo.JSON_PROPERTY_NAME, RepositoryInfo.JSON_PROPERTY_URL,
-        RepositoryInfo.JSON_PROPERTY_ENABLED })
+@JsonPropertyOrder({
+  RepositoryInfo.JSON_PROPERTY_NAME,
+  RepositoryInfo.JSON_PROPERTY_URL,
+  RepositoryInfo.JSON_PROPERTY_ENABLED
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RepositoryInfo {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_URL = "Url";
-    @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_URL = "Url";
+  @javax.annotation.Nullable
+  private JsonNullable<String> url = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ENABLED = "Enabled";
-    @javax.annotation.Nullable
-    private Boolean enabled;
+  public static final String JSON_PROPERTY_ENABLED = "Enabled";
+  @javax.annotation.Nullable
+  private Boolean enabled;
 
-    public RepositoryInfo() {
-    }
+  public RepositoryInfo() {
+  }
 
-    public RepositoryInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+  public RepositoryInfo name(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the name.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the name.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
+  public String getName() {
         return name.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
-        return name;
-    }
+  public JsonNullable<String> getName_JsonNullable() {
+    return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = JsonNullable.<String>of(name);
+  }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
+  public RepositoryInfo url(@javax.annotation.Nullable String url) {
+    this.url = JsonNullable.<String>of(url);
+    
+    return this;
+  }
 
-    public RepositoryInfo url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
+  /**
+   * Gets or sets the URL.
+   * @return url
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the URL.
-     * 
-     * @return url
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
+  public String getUrl() {
         return url.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrl_JsonNullable() {
+    return url;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL)
+  public void setUrl_JsonNullable(JsonNullable<String> url) {
+    this.url = url;
+  }
+
+  public void setUrl(@javax.annotation.Nullable String url) {
+    this.url = JsonNullable.<String>of(url);
+  }
+
+  public RepositoryInfo enabled(@javax.annotation.Nullable Boolean enabled) {
+    
+    this.enabled = enabled;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the repository is enabled.
+   * @return enabled
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RepositoryInfo repositoryInfo = (RepositoryInfo) o;
+    return equalsNullable(this.name, repositoryInfo.name) &&
+        equalsNullable(this.url, repositoryInfo.url) &&
+        Objects.equals(this.enabled, repositoryInfo.enabled);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(url), enabled);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class RepositoryInfo {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
+    sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private RepositoryInfo instance;
+
+    public Builder() {
+      this(new RepositoryInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getUrl_JsonNullable() {
-        return url;
+    protected Builder(RepositoryInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
-        this.url = url;
+    public RepositoryInfo.Builder name(String name) {
+      this.instance.name = JsonNullable.<String>of(name);
+      return this;
+    }
+    public RepositoryInfo.Builder name(JsonNullable<String> name) {
+      this.instance.name = name;
+      return this;
+    }
+    public RepositoryInfo.Builder url(String url) {
+      this.instance.url = JsonNullable.<String>of(url);
+      return this;
+    }
+    public RepositoryInfo.Builder url(JsonNullable<String> url) {
+      this.instance.url = url;
+      return this;
+    }
+    public RepositoryInfo.Builder enabled(Boolean enabled) {
+      this.instance.enabled = enabled;
+      return this;
     }
 
-    public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
-    }
-
-    public RepositoryInfo enabled(@javax.annotation.Nullable Boolean enabled) {
-
-        this.enabled = enabled;
-        return this;
-    }
 
     /**
-     * Gets or sets a value indicating whether the repository is enabled.
-     * 
-     * @return enabled
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENABLED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RepositoryInfo repositoryInfo = (RepositoryInfo) o;
-        return equalsNullable(this.name, repositoryInfo.name) && equalsNullable(this.url, repositoryInfo.url)
-                && Objects.equals(this.enabled, repositoryInfo.enabled);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(url), enabled);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built RepositoryInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public RepositoryInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class RepositoryInfo {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    url: ").append(toIndentedString(url)).append("\n");
-        sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static RepositoryInfo.Builder builder() {
+    return new RepositoryInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public RepositoryInfo.Builder toBuilder() {
+    return new RepositoryInfo.Builder()
+      .name(getName())
+      .url(getUrl())
+      .enabled(getEnabled());
+  }
 
-        private RepositoryInfo instance;
 
-        public Builder() {
-            this(new RepositoryInfo());
-        }
-
-        protected Builder(RepositoryInfo instance) {
-            this.instance = instance;
-        }
-
-        public RepositoryInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public RepositoryInfo.Builder name(JsonNullable<String> name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public RepositoryInfo.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public RepositoryInfo.Builder url(JsonNullable<String> url) {
-            this.instance.url = url;
-            return this;
-        }
-
-        public RepositoryInfo.Builder enabled(Boolean enabled) {
-            this.instance.enabled = enabled;
-            return this;
-        }
-
-        /**
-         * returns a built RepositoryInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public RepositoryInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static RepositoryInfo.Builder builder() {
-        return new RepositoryInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public RepositoryInfo.Builder toBuilder() {
-        return new RepositoryInfo.Builder().name(getName()).url(getUrl()).enabled(getEnabled());
-    }
 }
+

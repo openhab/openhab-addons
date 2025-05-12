@@ -17,474 +17,470 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * PublicSystemInfo
  */
-@JsonPropertyOrder({ PublicSystemInfo.JSON_PROPERTY_LOCAL_ADDRESS, PublicSystemInfo.JSON_PROPERTY_SERVER_NAME,
-        PublicSystemInfo.JSON_PROPERTY_VERSION, PublicSystemInfo.JSON_PROPERTY_PRODUCT_NAME,
-        PublicSystemInfo.JSON_PROPERTY_OPERATING_SYSTEM, PublicSystemInfo.JSON_PROPERTY_ID,
-        PublicSystemInfo.JSON_PROPERTY_STARTUP_WIZARD_COMPLETED })
+@JsonPropertyOrder({
+  PublicSystemInfo.JSON_PROPERTY_LOCAL_ADDRESS,
+  PublicSystemInfo.JSON_PROPERTY_SERVER_NAME,
+  PublicSystemInfo.JSON_PROPERTY_VERSION,
+  PublicSystemInfo.JSON_PROPERTY_PRODUCT_NAME,
+  PublicSystemInfo.JSON_PROPERTY_OPERATING_SYSTEM,
+  PublicSystemInfo.JSON_PROPERTY_ID,
+  PublicSystemInfo.JSON_PROPERTY_STARTUP_WIZARD_COMPLETED
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PublicSystemInfo {
-    public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
-    @javax.annotation.Nullable
-    private JsonNullable<String> localAddress = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
+  @javax.annotation.Nullable
+  private JsonNullable<String> localAddress = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> serverName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> serverName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_VERSION = "Version";
-    @javax.annotation.Nullable
-    private JsonNullable<String> version = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  @javax.annotation.Nullable
+  private JsonNullable<String> version = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> productName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> productName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
-    @javax.annotation.Nullable
-    private JsonNullable<String> operatingSystem = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
+  @javax.annotation.Nullable
+  private JsonNullable<String> operatingSystem = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
-    @javax.annotation.Nullable
-    private JsonNullable<Boolean> startupWizardCompleted = JsonNullable.<Boolean> undefined();
+  public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
+  @javax.annotation.Nullable
+  private JsonNullable<Boolean> startupWizardCompleted = JsonNullable.<Boolean>undefined();
 
-    public PublicSystemInfo() {
-    }
+  public PublicSystemInfo() {
+  }
 
-    public PublicSystemInfo localAddress(@javax.annotation.Nullable String localAddress) {
-        this.localAddress = JsonNullable.<String> of(localAddress);
+  public PublicSystemInfo localAddress(@javax.annotation.Nullable String localAddress) {
+    this.localAddress = JsonNullable.<String>of(localAddress);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the local address.
+   * @return localAddress
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the local address.
-     * 
-     * @return localAddress
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLocalAddress() {
+  public String getLocalAddress() {
         return localAddress.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLocalAddress_JsonNullable() {
-        return localAddress;
-    }
+  public JsonNullable<String> getLocalAddress_JsonNullable() {
+    return localAddress;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+  public void setLocalAddress_JsonNullable(JsonNullable<String> localAddress) {
+    this.localAddress = localAddress;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
-    public void setLocalAddress_JsonNullable(JsonNullable<String> localAddress) {
-        this.localAddress = localAddress;
-    }
+  public void setLocalAddress(@javax.annotation.Nullable String localAddress) {
+    this.localAddress = JsonNullable.<String>of(localAddress);
+  }
 
-    public void setLocalAddress(@javax.annotation.Nullable String localAddress) {
-        this.localAddress = JsonNullable.<String> of(localAddress);
-    }
+  public PublicSystemInfo serverName(@javax.annotation.Nullable String serverName) {
+    this.serverName = JsonNullable.<String>of(serverName);
+    
+    return this;
+  }
 
-    public PublicSystemInfo serverName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
+  /**
+   * Gets or sets the name of the server.
+   * @return serverName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the name of the server.
-     * 
-     * @return serverName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerName() {
+  public String getServerName() {
         return serverName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerName_JsonNullable() {
-        return serverName;
-    }
+  public JsonNullable<String> getServerName_JsonNullable() {
+    return serverName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  public void setServerName_JsonNullable(JsonNullable<String> serverName) {
+    this.serverName = serverName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
-    public void setServerName_JsonNullable(JsonNullable<String> serverName) {
-        this.serverName = serverName;
-    }
+  public void setServerName(@javax.annotation.Nullable String serverName) {
+    this.serverName = JsonNullable.<String>of(serverName);
+  }
 
-    public void setServerName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
-    }
+  public PublicSystemInfo version(@javax.annotation.Nullable String version) {
+    this.version = JsonNullable.<String>of(version);
+    
+    return this;
+  }
 
-    public PublicSystemInfo version(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
+  /**
+   * Gets or sets the server version.
+   * @return version
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the server version.
-     * 
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVersion() {
+  public String getVersion() {
         return version.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVersion_JsonNullable() {
-        return version;
-    }
+  public JsonNullable<String> getVersion_JsonNullable() {
+    return version;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  public void setVersion_JsonNullable(JsonNullable<String> version) {
+    this.version = version;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    public void setVersion_JsonNullable(JsonNullable<String> version) {
-        this.version = version;
-    }
+  public void setVersion(@javax.annotation.Nullable String version) {
+    this.version = JsonNullable.<String>of(version);
+  }
 
-    public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
-    }
+  public PublicSystemInfo productName(@javax.annotation.Nullable String productName) {
+    this.productName = JsonNullable.<String>of(productName);
+    
+    return this;
+  }
 
-    public PublicSystemInfo productName(@javax.annotation.Nullable String productName) {
-        this.productName = JsonNullable.<String> of(productName);
+  /**
+   * Gets or sets the product name. This is the AssemblyProduct name.
+   * @return productName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the product name. This is the AssemblyProduct name.
-     * 
-     * @return productName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProductName() {
+  public String getProductName() {
         return productName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProductName_JsonNullable() {
-        return productName;
-    }
+  public JsonNullable<String> getProductName_JsonNullable() {
+    return productName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+  public void setProductName_JsonNullable(JsonNullable<String> productName) {
+    this.productName = productName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
-    public void setProductName_JsonNullable(JsonNullable<String> productName) {
-        this.productName = productName;
-    }
+  public void setProductName(@javax.annotation.Nullable String productName) {
+    this.productName = JsonNullable.<String>of(productName);
+  }
 
-    public void setProductName(@javax.annotation.Nullable String productName) {
-        this.productName = JsonNullable.<String> of(productName);
-    }
+  public PublicSystemInfo operatingSystem(@javax.annotation.Nullable String operatingSystem) {
+    this.operatingSystem = JsonNullable.<String>of(operatingSystem);
+    
+    return this;
+  }
 
-    public PublicSystemInfo operatingSystem(@javax.annotation.Nullable String operatingSystem) {
-        this.operatingSystem = JsonNullable.<String> of(operatingSystem);
+  /**
+   * Gets or sets the operating system.
+   * @return operatingSystem
+   * @deprecated
+   */
+  @Deprecated
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the operating system.
-     * 
-     * @return operatingSystem
-     * @deprecated
-     */
-    @Deprecated
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOperatingSystem() {
+  public String getOperatingSystem() {
         return operatingSystem.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOperatingSystem_JsonNullable() {
-        return operatingSystem;
-    }
+  public JsonNullable<String> getOperatingSystem_JsonNullable() {
+    return operatingSystem;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+  public void setOperatingSystem_JsonNullable(JsonNullable<String> operatingSystem) {
+    this.operatingSystem = operatingSystem;
+  }
 
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
-    public void setOperatingSystem_JsonNullable(JsonNullable<String> operatingSystem) {
-        this.operatingSystem = operatingSystem;
-    }
+  public void setOperatingSystem(@javax.annotation.Nullable String operatingSystem) {
+    this.operatingSystem = JsonNullable.<String>of(operatingSystem);
+  }
 
-    public void setOperatingSystem(@javax.annotation.Nullable String operatingSystem) {
-        this.operatingSystem = JsonNullable.<String> of(operatingSystem);
-    }
+  public PublicSystemInfo id(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+    
+    return this;
+  }
 
-    public PublicSystemInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
+  /**
+   * Gets or sets the id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
+  public String getId() {
         return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
+  }
+
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
+
+  public PublicSystemInfo startupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
+    this.startupWizardCompleted = JsonNullable.<Boolean>of(startupWizardCompleted);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the startup wizard is completed.
+   * @return startupWizardCompleted
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public Boolean getStartupWizardCompleted() {
+        return startupWizardCompleted.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getStartupWizardCompleted_JsonNullable() {
+    return startupWizardCompleted;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+  public void setStartupWizardCompleted_JsonNullable(JsonNullable<Boolean> startupWizardCompleted) {
+    this.startupWizardCompleted = startupWizardCompleted;
+  }
+
+  public void setStartupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
+    this.startupWizardCompleted = JsonNullable.<Boolean>of(startupWizardCompleted);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PublicSystemInfo publicSystemInfo = (PublicSystemInfo) o;
+    return equalsNullable(this.localAddress, publicSystemInfo.localAddress) &&
+        equalsNullable(this.serverName, publicSystemInfo.serverName) &&
+        equalsNullable(this.version, publicSystemInfo.version) &&
+        equalsNullable(this.productName, publicSystemInfo.productName) &&
+        equalsNullable(this.operatingSystem, publicSystemInfo.operatingSystem) &&
+        equalsNullable(this.id, publicSystemInfo.id) &&
+        equalsNullable(this.startupWizardCompleted, publicSystemInfo.startupWizardCompleted);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(localAddress), hashCodeNullable(serverName), hashCodeNullable(version), hashCodeNullable(productName), hashCodeNullable(operatingSystem), hashCodeNullable(id), hashCodeNullable(startupWizardCompleted));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PublicSystemInfo {\n");
+    sb.append("    localAddress: ").append(toIndentedString(localAddress)).append("\n");
+    sb.append("    serverName: ").append(toIndentedString(serverName)).append("\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    productName: ").append(toIndentedString(productName)).append("\n");
+    sb.append("    operatingSystem: ").append(toIndentedString(operatingSystem)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    startupWizardCompleted: ").append(toIndentedString(startupWizardCompleted)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PublicSystemInfo instance;
+
+    public Builder() {
+      this(new PublicSystemInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getId_JsonNullable() {
-        return id;
+    protected Builder(PublicSystemInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
+    public PublicSystemInfo.Builder localAddress(String localAddress) {
+      this.instance.localAddress = JsonNullable.<String>of(localAddress);
+      return this;
+    }
+    public PublicSystemInfo.Builder localAddress(JsonNullable<String> localAddress) {
+      this.instance.localAddress = localAddress;
+      return this;
+    }
+    public PublicSystemInfo.Builder serverName(String serverName) {
+      this.instance.serverName = JsonNullable.<String>of(serverName);
+      return this;
+    }
+    public PublicSystemInfo.Builder serverName(JsonNullable<String> serverName) {
+      this.instance.serverName = serverName;
+      return this;
+    }
+    public PublicSystemInfo.Builder version(String version) {
+      this.instance.version = JsonNullable.<String>of(version);
+      return this;
+    }
+    public PublicSystemInfo.Builder version(JsonNullable<String> version) {
+      this.instance.version = version;
+      return this;
+    }
+    public PublicSystemInfo.Builder productName(String productName) {
+      this.instance.productName = JsonNullable.<String>of(productName);
+      return this;
+    }
+    public PublicSystemInfo.Builder productName(JsonNullable<String> productName) {
+      this.instance.productName = productName;
+      return this;
+    }
+    public PublicSystemInfo.Builder operatingSystem(String operatingSystem) {
+      this.instance.operatingSystem = JsonNullable.<String>of(operatingSystem);
+      return this;
+    }
+    public PublicSystemInfo.Builder operatingSystem(JsonNullable<String> operatingSystem) {
+      this.instance.operatingSystem = operatingSystem;
+      return this;
+    }
+    public PublicSystemInfo.Builder id(String id) {
+      this.instance.id = JsonNullable.<String>of(id);
+      return this;
+    }
+    public PublicSystemInfo.Builder id(JsonNullable<String> id) {
+      this.instance.id = id;
+      return this;
+    }
+    public PublicSystemInfo.Builder startupWizardCompleted(Boolean startupWizardCompleted) {
+      this.instance.startupWizardCompleted = JsonNullable.<Boolean>of(startupWizardCompleted);
+      return this;
+    }
+    public PublicSystemInfo.Builder startupWizardCompleted(JsonNullable<Boolean> startupWizardCompleted) {
+      this.instance.startupWizardCompleted = startupWizardCompleted;
+      return this;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
-    public PublicSystemInfo startupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
-        this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
-
-        return this;
-    }
 
     /**
-     * Gets or sets a value indicating whether the startup wizard is completed.
-     * 
-     * @return startupWizardCompleted
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getStartupWizardCompleted() {
-        return startupWizardCompleted.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Boolean> getStartupWizardCompleted_JsonNullable() {
-        return startupWizardCompleted;
-    }
-
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
-    public void setStartupWizardCompleted_JsonNullable(JsonNullable<Boolean> startupWizardCompleted) {
-        this.startupWizardCompleted = startupWizardCompleted;
-    }
-
-    public void setStartupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
-        this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PublicSystemInfo publicSystemInfo = (PublicSystemInfo) o;
-        return equalsNullable(this.localAddress, publicSystemInfo.localAddress)
-                && equalsNullable(this.serverName, publicSystemInfo.serverName)
-                && equalsNullable(this.version, publicSystemInfo.version)
-                && equalsNullable(this.productName, publicSystemInfo.productName)
-                && equalsNullable(this.operatingSystem, publicSystemInfo.operatingSystem)
-                && equalsNullable(this.id, publicSystemInfo.id)
-                && equalsNullable(this.startupWizardCompleted, publicSystemInfo.startupWizardCompleted);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(localAddress), hashCodeNullable(serverName), hashCodeNullable(version),
-                hashCodeNullable(productName), hashCodeNullable(operatingSystem), hashCodeNullable(id),
-                hashCodeNullable(startupWizardCompleted));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built PublicSystemInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public PublicSystemInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PublicSystemInfo {\n");
-        sb.append("    localAddress: ").append(toIndentedString(localAddress)).append("\n");
-        sb.append("    serverName: ").append(toIndentedString(serverName)).append("\n");
-        sb.append("    version: ").append(toIndentedString(version)).append("\n");
-        sb.append("    productName: ").append(toIndentedString(productName)).append("\n");
-        sb.append("    operatingSystem: ").append(toIndentedString(operatingSystem)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    startupWizardCompleted: ").append(toIndentedString(startupWizardCompleted)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PublicSystemInfo.Builder builder() {
+    return new PublicSystemInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PublicSystemInfo.Builder toBuilder() {
+    return new PublicSystemInfo.Builder()
+      .localAddress(getLocalAddress())
+      .serverName(getServerName())
+      .version(getVersion())
+      .productName(getProductName())
+      .operatingSystem(getOperatingSystem())
+      .id(getId())
+      .startupWizardCompleted(getStartupWizardCompleted());
+  }
 
-        private PublicSystemInfo instance;
 
-        public Builder() {
-            this(new PublicSystemInfo());
-        }
-
-        protected Builder(PublicSystemInfo instance) {
-            this.instance = instance;
-        }
-
-        public PublicSystemInfo.Builder localAddress(String localAddress) {
-            this.instance.localAddress = JsonNullable.<String> of(localAddress);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder localAddress(JsonNullable<String> localAddress) {
-            this.instance.localAddress = localAddress;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder serverName(String serverName) {
-            this.instance.serverName = JsonNullable.<String> of(serverName);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder serverName(JsonNullable<String> serverName) {
-            this.instance.serverName = serverName;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder version(String version) {
-            this.instance.version = JsonNullable.<String> of(version);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder version(JsonNullable<String> version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder productName(String productName) {
-            this.instance.productName = JsonNullable.<String> of(productName);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder productName(JsonNullable<String> productName) {
-            this.instance.productName = productName;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder operatingSystem(String operatingSystem) {
-            this.instance.operatingSystem = JsonNullable.<String> of(operatingSystem);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder operatingSystem(JsonNullable<String> operatingSystem) {
-            this.instance.operatingSystem = operatingSystem;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder id(JsonNullable<String> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public PublicSystemInfo.Builder startupWizardCompleted(Boolean startupWizardCompleted) {
-            this.instance.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
-            return this;
-        }
-
-        public PublicSystemInfo.Builder startupWizardCompleted(JsonNullable<Boolean> startupWizardCompleted) {
-            this.instance.startupWizardCompleted = startupWizardCompleted;
-            return this;
-        }
-
-        /**
-         * returns a built PublicSystemInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PublicSystemInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PublicSystemInfo.Builder builder() {
-        return new PublicSystemInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PublicSystemInfo.Builder toBuilder() {
-        return new PublicSystemInfo.Builder().localAddress(getLocalAddress()).serverName(getServerName())
-                .version(getVersion()).productName(getProductName()).operatingSystem(getOperatingSystem()).id(getId())
-                .startupWizardCompleted(getStartupWizardCompleted());
-    }
 }
+

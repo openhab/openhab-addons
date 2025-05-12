@@ -17,390 +17,408 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.time.OffsetDateTime;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.NotificationLevel;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The notification DTO.
  */
-@JsonPropertyOrder({ NotificationDto.JSON_PROPERTY_ID, NotificationDto.JSON_PROPERTY_USER_ID,
-        NotificationDto.JSON_PROPERTY_DATE, NotificationDto.JSON_PROPERTY_IS_READ, NotificationDto.JSON_PROPERTY_NAME,
-        NotificationDto.JSON_PROPERTY_DESCRIPTION, NotificationDto.JSON_PROPERTY_URL,
-        NotificationDto.JSON_PROPERTY_LEVEL })
+@JsonPropertyOrder({
+  NotificationDto.JSON_PROPERTY_ID,
+  NotificationDto.JSON_PROPERTY_USER_ID,
+  NotificationDto.JSON_PROPERTY_DATE,
+  NotificationDto.JSON_PROPERTY_IS_READ,
+  NotificationDto.JSON_PROPERTY_NAME,
+  NotificationDto.JSON_PROPERTY_DESCRIPTION,
+  NotificationDto.JSON_PROPERTY_URL,
+  NotificationDto.JSON_PROPERTY_LEVEL
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationDto {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private String id;
 
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private String userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private String userId;
 
-    public static final String JSON_PROPERTY_DATE = "Date";
-    @javax.annotation.Nullable
-    private OffsetDateTime date;
+  public static final String JSON_PROPERTY_DATE = "Date";
+  @javax.annotation.Nullable
+  private OffsetDateTime date;
 
-    public static final String JSON_PROPERTY_IS_READ = "IsRead";
-    @javax.annotation.Nullable
-    private Boolean isRead;
+  public static final String JSON_PROPERTY_IS_READ = "IsRead";
+  @javax.annotation.Nullable
+  private Boolean isRead;
 
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-    @javax.annotation.Nullable
-    private String description;
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+  @javax.annotation.Nullable
+  private String description;
 
-    public static final String JSON_PROPERTY_URL = "Url";
-    @javax.annotation.Nullable
-    private String url;
+  public static final String JSON_PROPERTY_URL = "Url";
+  @javax.annotation.Nullable
+  private String url;
 
-    public static final String JSON_PROPERTY_LEVEL = "Level";
-    @javax.annotation.Nullable
-    private NotificationLevel level;
+  public static final String JSON_PROPERTY_LEVEL = "Level";
+  @javax.annotation.Nullable
+  private NotificationLevel level;
 
-    public NotificationDto() {
+  public NotificationDto() {
+  }
+
+  public NotificationDto id(@javax.annotation.Nullable String id) {
+    
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification ID. Defaults to an empty string.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = id;
+  }
+
+  public NotificationDto userId(@javax.annotation.Nullable String userId) {
+    
+    this.userId = userId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification&#39;s user ID. Defaults to an empty string.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUserId() {
+    return userId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserId(@javax.annotation.Nullable String userId) {
+    this.userId = userId;
+  }
+
+  public NotificationDto date(@javax.annotation.Nullable OffsetDateTime date) {
+    
+    this.date = date;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification date.
+   * @return date
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getDate() {
+    return date;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDate(@javax.annotation.Nullable OffsetDateTime date) {
+    this.date = date;
+  }
+
+  public NotificationDto isRead(@javax.annotation.Nullable Boolean isRead) {
+    
+    this.isRead = isRead;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the notification has been read. Defaults to false.
+   * @return isRead
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_READ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsRead() {
+    return isRead;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_READ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsRead(@javax.annotation.Nullable Boolean isRead) {
+    this.isRead = isRead;
+  }
+
+  public NotificationDto name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification&#39;s name. Defaults to an empty string.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
+
+  public NotificationDto description(@javax.annotation.Nullable String description) {
+    
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification&#39;s description. Defaults to an empty string.
+   * @return description
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(@javax.annotation.Nullable String description) {
+    this.description = description;
+  }
+
+  public NotificationDto url(@javax.annotation.Nullable String url) {
+    
+    this.url = url;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification&#39;s URL. Defaults to an empty string.
+   * @return url
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getUrl() {
+    return url;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUrl(@javax.annotation.Nullable String url) {
+    this.url = url;
+  }
+
+  public NotificationDto level(@javax.annotation.Nullable NotificationLevel level) {
+    
+    this.level = level;
+    return this;
+  }
+
+  /**
+   * Gets or sets the notification level.
+   * @return level
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public NotificationLevel getLevel() {
+    return level;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLevel(@javax.annotation.Nullable NotificationLevel level) {
+    this.level = level;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    NotificationDto notificationDto = (NotificationDto) o;
+    return Objects.equals(this.id, notificationDto.id) &&
+        Objects.equals(this.userId, notificationDto.userId) &&
+        Objects.equals(this.date, notificationDto.date) &&
+        Objects.equals(this.isRead, notificationDto.isRead) &&
+        Objects.equals(this.name, notificationDto.name) &&
+        Objects.equals(this.description, notificationDto.description) &&
+        Objects.equals(this.url, notificationDto.url) &&
+        Objects.equals(this.level, notificationDto.level);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, userId, date, isRead, name, description, url, level);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class NotificationDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    date: ").append(toIndentedString(date)).append("\n");
+    sb.append("    isRead: ").append(toIndentedString(isRead)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
+    sb.append("    level: ").append(toIndentedString(level)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private NotificationDto instance;
+
+    public Builder() {
+      this(new NotificationDto());
     }
 
-    public NotificationDto id(@javax.annotation.Nullable String id) {
-
-        this.id = id;
-        return this;
+    protected Builder(NotificationDto instance) {
+      this.instance = instance;
     }
+
+    public NotificationDto.Builder id(String id) {
+      this.instance.id = id;
+      return this;
+    }
+    public NotificationDto.Builder userId(String userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public NotificationDto.Builder date(OffsetDateTime date) {
+      this.instance.date = date;
+      return this;
+    }
+    public NotificationDto.Builder isRead(Boolean isRead) {
+      this.instance.isRead = isRead;
+      return this;
+    }
+    public NotificationDto.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+    public NotificationDto.Builder description(String description) {
+      this.instance.description = description;
+      return this;
+    }
+    public NotificationDto.Builder url(String url) {
+      this.instance.url = url;
+      return this;
+    }
+    public NotificationDto.Builder level(NotificationLevel level) {
+      this.instance.level = level;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the notification ID. Defaults to an empty string.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getId() {
-        return id;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = id;
-    }
-
-    public NotificationDto userId(@javax.annotation.Nullable String userId) {
-
-        this.userId = userId;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification&#39;s user ID. Defaults to an empty string.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getUserId() {
-        return userId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserId(@javax.annotation.Nullable String userId) {
-        this.userId = userId;
-    }
-
-    public NotificationDto date(@javax.annotation.Nullable OffsetDateTime date) {
-
-        this.date = date;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification date.
-     * 
-     * @return date
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public OffsetDateTime getDate() {
-        return date;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDate(@javax.annotation.Nullable OffsetDateTime date) {
-        this.date = date;
-    }
-
-    public NotificationDto isRead(@javax.annotation.Nullable Boolean isRead) {
-
-        this.isRead = isRead;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether the notification has been read. Defaults to false.
-     * 
-     * @return isRead
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_READ)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsRead() {
-        return isRead;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_READ)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsRead(@javax.annotation.Nullable Boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    public NotificationDto name(@javax.annotation.Nullable String name) {
-
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification&#39;s name. Defaults to an empty string.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
-
-    public NotificationDto description(@javax.annotation.Nullable String description) {
-
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification&#39;s description. Defaults to an empty string.
-     * 
-     * @return description
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getDescription() {
-        return description;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDescription(@javax.annotation.Nullable String description) {
-        this.description = description;
-    }
-
-    public NotificationDto url(@javax.annotation.Nullable String url) {
-
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification&#39;s URL. Defaults to an empty string.
-     * 
-     * @return url
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getUrl() {
-        return url;
-    }
-
-    @JsonProperty(JSON_PROPERTY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = url;
-    }
-
-    public NotificationDto level(@javax.annotation.Nullable NotificationLevel level) {
-
-        this.level = level;
-        return this;
-    }
-
-    /**
-     * Gets or sets the notification level.
-     * 
-     * @return level
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LEVEL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public NotificationLevel getLevel() {
-        return level;
-    }
-
-    @JsonProperty(JSON_PROPERTY_LEVEL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setLevel(@javax.annotation.Nullable NotificationLevel level) {
-        this.level = level;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        NotificationDto notificationDto = (NotificationDto) o;
-        return Objects.equals(this.id, notificationDto.id) && Objects.equals(this.userId, notificationDto.userId)
-                && Objects.equals(this.date, notificationDto.date)
-                && Objects.equals(this.isRead, notificationDto.isRead)
-                && Objects.equals(this.name, notificationDto.name)
-                && Objects.equals(this.description, notificationDto.description)
-                && Objects.equals(this.url, notificationDto.url) && Objects.equals(this.level, notificationDto.level);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userId, date, isRead, name, description, url, level);
+    * returns a built NotificationDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public NotificationDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class NotificationDto {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    date: ").append(toIndentedString(date)).append("\n");
-        sb.append("    isRead: ").append(toIndentedString(isRead)).append("\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    description: ").append(toIndentedString(description)).append("\n");
-        sb.append("    url: ").append(toIndentedString(url)).append("\n");
-        sb.append("    level: ").append(toIndentedString(level)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static NotificationDto.Builder builder() {
+    return new NotificationDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public NotificationDto.Builder toBuilder() {
+    return new NotificationDto.Builder()
+      .id(getId())
+      .userId(getUserId())
+      .date(getDate())
+      .isRead(getIsRead())
+      .name(getName())
+      .description(getDescription())
+      .url(getUrl())
+      .level(getLevel());
+  }
 
-        private NotificationDto instance;
 
-        public Builder() {
-            this(new NotificationDto());
-        }
-
-        protected Builder(NotificationDto instance) {
-            this.instance = instance;
-        }
-
-        public NotificationDto.Builder id(String id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public NotificationDto.Builder userId(String userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public NotificationDto.Builder date(OffsetDateTime date) {
-            this.instance.date = date;
-            return this;
-        }
-
-        public NotificationDto.Builder isRead(Boolean isRead) {
-            this.instance.isRead = isRead;
-            return this;
-        }
-
-        public NotificationDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public NotificationDto.Builder description(String description) {
-            this.instance.description = description;
-            return this;
-        }
-
-        public NotificationDto.Builder url(String url) {
-            this.instance.url = url;
-            return this;
-        }
-
-        public NotificationDto.Builder level(NotificationLevel level) {
-            this.instance.level = level;
-            return this;
-        }
-
-        /**
-         * returns a built NotificationDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public NotificationDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static NotificationDto.Builder builder() {
-        return new NotificationDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public NotificationDto.Builder toBuilder() {
-        return new NotificationDto.Builder().id(getId()).userId(getUserId()).date(getDate()).isRead(getIsRead())
-                .name(getName()).description(getDescription()).url(getUrl()).level(getLevel());
-    }
 }
+

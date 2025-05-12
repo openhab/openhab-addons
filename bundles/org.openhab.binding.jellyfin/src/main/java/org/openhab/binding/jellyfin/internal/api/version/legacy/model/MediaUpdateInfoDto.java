@@ -17,145 +17,159 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaUpdateInfoPathDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Media Update Info Dto.
  */
-@JsonPropertyOrder({ MediaUpdateInfoDto.JSON_PROPERTY_UPDATES })
+@JsonPropertyOrder({
+  MediaUpdateInfoDto.JSON_PROPERTY_UPDATES
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaUpdateInfoDto {
-    public static final String JSON_PROPERTY_UPDATES = "Updates";
-    @javax.annotation.Nullable
-    private List<MediaUpdateInfoPathDto> updates = new ArrayList<>();
+  public static final String JSON_PROPERTY_UPDATES = "Updates";
+  @javax.annotation.Nullable
+  private List<MediaUpdateInfoPathDto> updates = new ArrayList<>();
 
-    public MediaUpdateInfoDto() {
+  public MediaUpdateInfoDto() {
+  }
+
+  public MediaUpdateInfoDto updates(@javax.annotation.Nullable List<MediaUpdateInfoPathDto> updates) {
+    
+    this.updates = updates;
+    return this;
+  }
+
+  public MediaUpdateInfoDto addUpdatesItem(MediaUpdateInfoPathDto updatesItem) {
+    if (this.updates == null) {
+      this.updates = new ArrayList<>();
+    }
+    this.updates.add(updatesItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the list of updates.
+   * @return updates
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_UPDATES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<MediaUpdateInfoPathDto> getUpdates() {
+    return updates;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_UPDATES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUpdates(@javax.annotation.Nullable List<MediaUpdateInfoPathDto> updates) {
+    this.updates = updates;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MediaUpdateInfoDto mediaUpdateInfoDto = (MediaUpdateInfoDto) o;
+    return Objects.equals(this.updates, mediaUpdateInfoDto.updates);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(updates);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class MediaUpdateInfoDto {\n");
+    sb.append("    updates: ").append(toIndentedString(updates)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private MediaUpdateInfoDto instance;
+
+    public Builder() {
+      this(new MediaUpdateInfoDto());
     }
 
-    public MediaUpdateInfoDto updates(@javax.annotation.Nullable List<MediaUpdateInfoPathDto> updates) {
-
-        this.updates = updates;
-        return this;
+    protected Builder(MediaUpdateInfoDto instance) {
+      this.instance = instance;
     }
 
-    public MediaUpdateInfoDto addUpdatesItem(MediaUpdateInfoPathDto updatesItem) {
-        if (this.updates == null) {
-            this.updates = new ArrayList<>();
-        }
-        this.updates.add(updatesItem);
-        return this;
+    public MediaUpdateInfoDto.Builder updates(List<MediaUpdateInfoPathDto> updates) {
+      this.instance.updates = updates;
+      return this;
     }
+
 
     /**
-     * Gets or sets the list of updates.
-     * 
-     * @return updates
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_UPDATES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<MediaUpdateInfoPathDto> getUpdates() {
-        return updates;
-    }
-
-    @JsonProperty(JSON_PROPERTY_UPDATES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUpdates(@javax.annotation.Nullable List<MediaUpdateInfoPathDto> updates) {
-        this.updates = updates;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MediaUpdateInfoDto mediaUpdateInfoDto = (MediaUpdateInfoDto) o;
-        return Objects.equals(this.updates, mediaUpdateInfoDto.updates);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(updates);
+    * returns a built MediaUpdateInfoDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public MediaUpdateInfoDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class MediaUpdateInfoDto {\n");
-        sb.append("    updates: ").append(toIndentedString(updates)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static MediaUpdateInfoDto.Builder builder() {
+    return new MediaUpdateInfoDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public MediaUpdateInfoDto.Builder toBuilder() {
+    return new MediaUpdateInfoDto.Builder()
+      .updates(getUpdates());
+  }
 
-        private MediaUpdateInfoDto instance;
 
-        public Builder() {
-            this(new MediaUpdateInfoDto());
-        }
-
-        protected Builder(MediaUpdateInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public MediaUpdateInfoDto.Builder updates(List<MediaUpdateInfoPathDto> updates) {
-            this.instance.updates = updates;
-            return this;
-        }
-
-        /**
-         * returns a built MediaUpdateInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaUpdateInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaUpdateInfoDto.Builder builder() {
-        return new MediaUpdateInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaUpdateInfoDto.Builder toBuilder() {
-        return new MediaUpdateInfoDto.Builder().updates(getUpdates());
-    }
 }
+

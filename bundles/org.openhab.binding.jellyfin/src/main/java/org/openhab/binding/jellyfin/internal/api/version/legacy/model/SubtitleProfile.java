@@ -17,355 +17,359 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SubtitleDeliveryMethod;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * SubtitleProfile
  */
-@JsonPropertyOrder({ SubtitleProfile.JSON_PROPERTY_FORMAT, SubtitleProfile.JSON_PROPERTY_METHOD,
-        SubtitleProfile.JSON_PROPERTY_DIDL_MODE, SubtitleProfile.JSON_PROPERTY_LANGUAGE,
-        SubtitleProfile.JSON_PROPERTY_CONTAINER })
+@JsonPropertyOrder({
+  SubtitleProfile.JSON_PROPERTY_FORMAT,
+  SubtitleProfile.JSON_PROPERTY_METHOD,
+  SubtitleProfile.JSON_PROPERTY_DIDL_MODE,
+  SubtitleProfile.JSON_PROPERTY_LANGUAGE,
+  SubtitleProfile.JSON_PROPERTY_CONTAINER
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SubtitleProfile {
-    public static final String JSON_PROPERTY_FORMAT = "Format";
-    @javax.annotation.Nullable
-    private JsonNullable<String> format = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_FORMAT = "Format";
+  @javax.annotation.Nullable
+  private JsonNullable<String> format = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_METHOD = "Method";
-    @javax.annotation.Nullable
-    private SubtitleDeliveryMethod method;
+  public static final String JSON_PROPERTY_METHOD = "Method";
+  @javax.annotation.Nullable
+  private SubtitleDeliveryMethod method;
 
-    public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
-    @javax.annotation.Nullable
-    private JsonNullable<String> didlMode = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
+  @javax.annotation.Nullable
+  private JsonNullable<String> didlMode = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @javax.annotation.Nullable
-    private JsonNullable<String> language = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_LANGUAGE = "Language";
+  @javax.annotation.Nullable
+  private JsonNullable<String> language = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  @javax.annotation.Nullable
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-    public SubtitleProfile() {
-    }
+  public SubtitleProfile() {
+  }
 
-    public SubtitleProfile format(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
+  public SubtitleProfile format(@javax.annotation.Nullable String format) {
+    this.format = JsonNullable.<String>of(format);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get format
+   * @return format
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get format
-     * 
-     * @return format
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFormat() {
+  public String getFormat() {
         return format.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFormat_JsonNullable() {
-        return format;
-    }
+  public JsonNullable<String> getFormat_JsonNullable() {
+    return format;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  public void setFormat_JsonNullable(JsonNullable<String> format) {
+    this.format = format;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
-    public void setFormat_JsonNullable(JsonNullable<String> format) {
-        this.format = format;
-    }
+  public void setFormat(@javax.annotation.Nullable String format) {
+    this.format = JsonNullable.<String>of(format);
+  }
 
-    public void setFormat(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
-    }
+  public SubtitleProfile method(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
+    
+    this.method = method;
+    return this;
+  }
 
-    public SubtitleProfile method(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
+  /**
+   * Delivery method to use during playback of a specific subtitle format.
+   * @return method
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.method = method;
-        return this;
-    }
+  public SubtitleDeliveryMethod getMethod() {
+    return method;
+  }
 
-    /**
-     * Delivery method to use during playback of a specific subtitle format.
-     * 
-     * @return method
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_METHOD)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public SubtitleDeliveryMethod getMethod() {
-        return method;
-    }
+  @JsonProperty(JSON_PROPERTY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMethod(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
+    this.method = method;
+  }
 
-    @JsonProperty(JSON_PROPERTY_METHOD)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMethod(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
-        this.method = method;
-    }
+  public SubtitleProfile didlMode(@javax.annotation.Nullable String didlMode) {
+    this.didlMode = JsonNullable.<String>of(didlMode);
+    
+    return this;
+  }
 
-    public SubtitleProfile didlMode(@javax.annotation.Nullable String didlMode) {
-        this.didlMode = JsonNullable.<String> of(didlMode);
+  /**
+   * Get didlMode
+   * @return didlMode
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get didlMode
-     * 
-     * @return didlMode
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDidlMode() {
+  public String getDidlMode() {
         return didlMode.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DIDL_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDidlMode_JsonNullable() {
-        return didlMode;
-    }
+  public JsonNullable<String> getDidlMode_JsonNullable() {
+    return didlMode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+  public void setDidlMode_JsonNullable(JsonNullable<String> didlMode) {
+    this.didlMode = didlMode;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DIDL_MODE)
-    public void setDidlMode_JsonNullable(JsonNullable<String> didlMode) {
-        this.didlMode = didlMode;
-    }
+  public void setDidlMode(@javax.annotation.Nullable String didlMode) {
+    this.didlMode = JsonNullable.<String>of(didlMode);
+  }
 
-    public void setDidlMode(@javax.annotation.Nullable String didlMode) {
-        this.didlMode = JsonNullable.<String> of(didlMode);
-    }
+  public SubtitleProfile language(@javax.annotation.Nullable String language) {
+    this.language = JsonNullable.<String>of(language);
+    
+    return this;
+  }
 
-    public SubtitleProfile language(@javax.annotation.Nullable String language) {
-        this.language = JsonNullable.<String> of(language);
+  /**
+   * Get language
+   * @return language
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Get language
-     * 
-     * @return language
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLanguage() {
+  public String getLanguage() {
         return language.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLanguage_JsonNullable() {
+    return language;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  public void setLanguage_JsonNullable(JsonNullable<String> language) {
+    this.language = language;
+  }
+
+  public void setLanguage(@javax.annotation.Nullable String language) {
+    this.language = JsonNullable.<String>of(language);
+  }
+
+  public SubtitleProfile container(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+    
+    return this;
+  }
+
+  /**
+   * Get container
+   * @return container
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getContainer() {
+        return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
+    return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
+  }
+
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SubtitleProfile subtitleProfile = (SubtitleProfile) o;
+    return equalsNullable(this.format, subtitleProfile.format) &&
+        Objects.equals(this.method, subtitleProfile.method) &&
+        equalsNullable(this.didlMode, subtitleProfile.didlMode) &&
+        equalsNullable(this.language, subtitleProfile.language) &&
+        equalsNullable(this.container, subtitleProfile.container);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(format), method, hashCodeNullable(didlMode), hashCodeNullable(language), hashCodeNullable(container));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SubtitleProfile {\n");
+    sb.append("    format: ").append(toIndentedString(format)).append("\n");
+    sb.append("    method: ").append(toIndentedString(method)).append("\n");
+    sb.append("    didlMode: ").append(toIndentedString(didlMode)).append("\n");
+    sb.append("    language: ").append(toIndentedString(language)).append("\n");
+    sb.append("    container: ").append(toIndentedString(container)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SubtitleProfile instance;
+
+    public Builder() {
+      this(new SubtitleProfile());
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getLanguage_JsonNullable() {
-        return language;
+    protected Builder(SubtitleProfile instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
-    public void setLanguage_JsonNullable(JsonNullable<String> language) {
-        this.language = language;
+    public SubtitleProfile.Builder format(String format) {
+      this.instance.format = JsonNullable.<String>of(format);
+      return this;
+    }
+    public SubtitleProfile.Builder format(JsonNullable<String> format) {
+      this.instance.format = format;
+      return this;
+    }
+    public SubtitleProfile.Builder method(SubtitleDeliveryMethod method) {
+      this.instance.method = method;
+      return this;
+    }
+    public SubtitleProfile.Builder didlMode(String didlMode) {
+      this.instance.didlMode = JsonNullable.<String>of(didlMode);
+      return this;
+    }
+    public SubtitleProfile.Builder didlMode(JsonNullable<String> didlMode) {
+      this.instance.didlMode = didlMode;
+      return this;
+    }
+    public SubtitleProfile.Builder language(String language) {
+      this.instance.language = JsonNullable.<String>of(language);
+      return this;
+    }
+    public SubtitleProfile.Builder language(JsonNullable<String> language) {
+      this.instance.language = language;
+      return this;
+    }
+    public SubtitleProfile.Builder container(String container) {
+      this.instance.container = JsonNullable.<String>of(container);
+      return this;
+    }
+    public SubtitleProfile.Builder container(JsonNullable<String> container) {
+      this.instance.container = container;
+      return this;
     }
 
-    public void setLanguage(@javax.annotation.Nullable String language) {
-        this.language = JsonNullable.<String> of(language);
-    }
-
-    public SubtitleProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-
-        return this;
-    }
 
     /**
-     * Get container
-     * 
-     * @return container
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getContainer_JsonNullable() {
-        return container;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
-        this.container = container;
-    }
-
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SubtitleProfile subtitleProfile = (SubtitleProfile) o;
-        return equalsNullable(this.format, subtitleProfile.format)
-                && Objects.equals(this.method, subtitleProfile.method)
-                && equalsNullable(this.didlMode, subtitleProfile.didlMode)
-                && equalsNullable(this.language, subtitleProfile.language)
-                && equalsNullable(this.container, subtitleProfile.container);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(format), method, hashCodeNullable(didlMode), hashCodeNullable(language),
-                hashCodeNullable(container));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built SubtitleProfile instance.
+    *
+    * The builder is not reusable.
+    */
+    public SubtitleProfile build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SubtitleProfile {\n");
-        sb.append("    format: ").append(toIndentedString(format)).append("\n");
-        sb.append("    method: ").append(toIndentedString(method)).append("\n");
-        sb.append("    didlMode: ").append(toIndentedString(didlMode)).append("\n");
-        sb.append("    language: ").append(toIndentedString(language)).append("\n");
-        sb.append("    container: ").append(toIndentedString(container)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SubtitleProfile.Builder builder() {
+    return new SubtitleProfile.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SubtitleProfile.Builder toBuilder() {
+    return new SubtitleProfile.Builder()
+      .format(getFormat())
+      .method(getMethod())
+      .didlMode(getDidlMode())
+      .language(getLanguage())
+      .container(getContainer());
+  }
 
-        private SubtitleProfile instance;
 
-        public Builder() {
-            this(new SubtitleProfile());
-        }
-
-        protected Builder(SubtitleProfile instance) {
-            this.instance = instance;
-        }
-
-        public SubtitleProfile.Builder format(String format) {
-            this.instance.format = JsonNullable.<String> of(format);
-            return this;
-        }
-
-        public SubtitleProfile.Builder format(JsonNullable<String> format) {
-            this.instance.format = format;
-            return this;
-        }
-
-        public SubtitleProfile.Builder method(SubtitleDeliveryMethod method) {
-            this.instance.method = method;
-            return this;
-        }
-
-        public SubtitleProfile.Builder didlMode(String didlMode) {
-            this.instance.didlMode = JsonNullable.<String> of(didlMode);
-            return this;
-        }
-
-        public SubtitleProfile.Builder didlMode(JsonNullable<String> didlMode) {
-            this.instance.didlMode = didlMode;
-            return this;
-        }
-
-        public SubtitleProfile.Builder language(String language) {
-            this.instance.language = JsonNullable.<String> of(language);
-            return this;
-        }
-
-        public SubtitleProfile.Builder language(JsonNullable<String> language) {
-            this.instance.language = language;
-            return this;
-        }
-
-        public SubtitleProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public SubtitleProfile.Builder container(JsonNullable<String> container) {
-            this.instance.container = container;
-            return this;
-        }
-
-        /**
-         * returns a built SubtitleProfile instance.
-         *
-         * The builder is not reusable.
-         */
-        public SubtitleProfile build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SubtitleProfile.Builder builder() {
-        return new SubtitleProfile.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SubtitleProfile.Builder toBuilder() {
-        return new SubtitleProfile.Builder().format(getFormat()).method(getMethod()).didlMode(getDidlMode())
-                .language(getLanguage()).container(getContainer());
-    }
 }
+

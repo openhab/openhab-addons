@@ -17,380 +17,393 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.PlaylistUserPermissions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Create new playlist dto.
  */
-@JsonPropertyOrder({ CreatePlaylistDto.JSON_PROPERTY_NAME, CreatePlaylistDto.JSON_PROPERTY_IDS,
-        CreatePlaylistDto.JSON_PROPERTY_USER_ID, CreatePlaylistDto.JSON_PROPERTY_MEDIA_TYPE,
-        CreatePlaylistDto.JSON_PROPERTY_USERS, CreatePlaylistDto.JSON_PROPERTY_IS_PUBLIC })
+@JsonPropertyOrder({
+  CreatePlaylistDto.JSON_PROPERTY_NAME,
+  CreatePlaylistDto.JSON_PROPERTY_IDS,
+  CreatePlaylistDto.JSON_PROPERTY_USER_ID,
+  CreatePlaylistDto.JSON_PROPERTY_MEDIA_TYPE,
+  CreatePlaylistDto.JSON_PROPERTY_USERS,
+  CreatePlaylistDto.JSON_PROPERTY_IS_PUBLIC
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CreatePlaylistDto {
-    public static final String JSON_PROPERTY_NAME = "Name";
-    @javax.annotation.Nullable
-    private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  @javax.annotation.Nullable
+  private String name;
 
-    public static final String JSON_PROPERTY_IDS = "Ids";
-    @javax.annotation.Nullable
-    private List<UUID> ids = new ArrayList<>();
+  public static final String JSON_PROPERTY_IDS = "Ids";
+  @javax.annotation.Nullable
+  private List<UUID> ids = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private JsonNullable<UUID> userId = JsonNullable.<UUID> undefined();
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private JsonNullable<UUID> userId = JsonNullable.<UUID>undefined();
 
-    public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
-    @javax.annotation.Nullable
-    private JsonNullable<MediaType> mediaType = JsonNullable.<MediaType> undefined();
+  public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
+  @javax.annotation.Nullable
+  private JsonNullable<MediaType> mediaType = JsonNullable.<MediaType>undefined();
 
-    public static final String JSON_PROPERTY_USERS = "Users";
-    @javax.annotation.Nullable
-    private List<PlaylistUserPermissions> users = new ArrayList<>();
+  public static final String JSON_PROPERTY_USERS = "Users";
+  @javax.annotation.Nullable
+  private List<PlaylistUserPermissions> users = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
-    @javax.annotation.Nullable
-    private Boolean isPublic;
+  public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
+  @javax.annotation.Nullable
+  private Boolean isPublic;
 
-    public CreatePlaylistDto() {
+  public CreatePlaylistDto() {
+  }
+
+  public CreatePlaylistDto name(@javax.annotation.Nullable String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Gets or sets the name of the new playlist.
+   * @return name
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getName() {
+    return name;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
+    this.name = name;
+  }
+
+  public CreatePlaylistDto ids(@javax.annotation.Nullable List<UUID> ids) {
+    
+    this.ids = ids;
+    return this;
+  }
+
+  public CreatePlaylistDto addIdsItem(UUID idsItem) {
+    if (this.ids == null) {
+      this.ids = new ArrayList<>();
     }
+    this.ids.add(idsItem);
+    return this;
+  }
 
-    public CreatePlaylistDto name(@javax.annotation.Nullable String name) {
+  /**
+   * Gets or sets item ids to add to the playlist.
+   * @return ids
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.name = name;
-        return this;
-    }
+  public List<UUID> getIds() {
+    return ids;
+  }
 
-    /**
-     * Gets or sets the name of the new playlist.
-     * 
-     * @return name
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public String getName() {
-        return name;
-    }
+  @JsonProperty(JSON_PROPERTY_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIds(@javax.annotation.Nullable List<UUID> ids) {
+    this.ids = ids;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = name;
-    }
+  public CreatePlaylistDto userId(@javax.annotation.Nullable UUID userId) {
+    this.userId = JsonNullable.<UUID>of(userId);
+    
+    return this;
+  }
 
-    public CreatePlaylistDto ids(@javax.annotation.Nullable List<UUID> ids) {
+  /**
+   * Gets or sets the user id.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        this.ids = ids;
-        return this;
-    }
-
-    public CreatePlaylistDto addIdsItem(UUID idsItem) {
-        if (this.ids == null) {
-            this.ids = new ArrayList<>();
-        }
-        this.ids.add(idsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets item ids to add to the playlist.
-     * 
-     * @return ids
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<UUID> getIds() {
-        return ids;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIds(@javax.annotation.Nullable List<UUID> ids) {
-        this.ids = ids;
-    }
-
-    public CreatePlaylistDto userId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the user id.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getUserId() {
+  public UUID getUserId() {
         return userId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getUserId_JsonNullable() {
-        return userId;
-    }
+  public JsonNullable<UUID> getUserId_JsonNullable() {
+    return userId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  public void setUserId_JsonNullable(JsonNullable<UUID> userId) {
+    this.userId = userId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    public void setUserId_JsonNullable(JsonNullable<UUID> userId) {
-        this.userId = userId;
-    }
+  public void setUserId(@javax.annotation.Nullable UUID userId) {
+    this.userId = JsonNullable.<UUID>of(userId);
+  }
 
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
-    }
+  public CreatePlaylistDto mediaType(@javax.annotation.Nullable MediaType mediaType) {
+    this.mediaType = JsonNullable.<MediaType>of(mediaType);
+    
+    return this;
+  }
 
-    public CreatePlaylistDto mediaType(@javax.annotation.Nullable MediaType mediaType) {
-        this.mediaType = JsonNullable.<MediaType> of(mediaType);
+  /**
+   * Gets or sets the media type.
+   * @return mediaType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the media type.
-     * 
-     * @return mediaType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public MediaType getMediaType() {
+  public MediaType getMediaType() {
         return mediaType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<MediaType> getMediaType_JsonNullable() {
+    return mediaType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  public void setMediaType_JsonNullable(JsonNullable<MediaType> mediaType) {
+    this.mediaType = mediaType;
+  }
+
+  public void setMediaType(@javax.annotation.Nullable MediaType mediaType) {
+    this.mediaType = JsonNullable.<MediaType>of(mediaType);
+  }
+
+  public CreatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
+    
+    this.users = users;
+    return this;
+  }
+
+  public CreatePlaylistDto addUsersItem(PlaylistUserPermissions usersItem) {
+    if (this.users == null) {
+      this.users = new ArrayList<>();
+    }
+    this.users.add(usersItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the playlist users.
+   * @return users
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<PlaylistUserPermissions> getUsers() {
+    return users;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUsers(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
+    this.users = users;
+  }
+
+  public CreatePlaylistDto isPublic(@javax.annotation.Nullable Boolean isPublic) {
+    
+    this.isPublic = isPublic;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the playlist is public.
+   * @return isPublic
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsPublic() {
+    return isPublic;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsPublic(@javax.annotation.Nullable Boolean isPublic) {
+    this.isPublic = isPublic;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CreatePlaylistDto createPlaylistDto = (CreatePlaylistDto) o;
+    return Objects.equals(this.name, createPlaylistDto.name) &&
+        Objects.equals(this.ids, createPlaylistDto.ids) &&
+        equalsNullable(this.userId, createPlaylistDto.userId) &&
+        equalsNullable(this.mediaType, createPlaylistDto.mediaType) &&
+        Objects.equals(this.users, createPlaylistDto.users) &&
+        Objects.equals(this.isPublic, createPlaylistDto.isPublic);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, ids, hashCodeNullable(userId), hashCodeNullable(mediaType), users, isPublic);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class CreatePlaylistDto {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    ids: ").append(toIndentedString(ids)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    mediaType: ").append(toIndentedString(mediaType)).append("\n");
+    sb.append("    users: ").append(toIndentedString(users)).append("\n");
+    sb.append("    isPublic: ").append(toIndentedString(isPublic)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private CreatePlaylistDto instance;
+
+    public Builder() {
+      this(new CreatePlaylistDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<MediaType> getMediaType_JsonNullable() {
-        return mediaType;
+    protected Builder(CreatePlaylistDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
-    public void setMediaType_JsonNullable(JsonNullable<MediaType> mediaType) {
-        this.mediaType = mediaType;
+    public CreatePlaylistDto.Builder name(String name) {
+      this.instance.name = name;
+      return this;
+    }
+    public CreatePlaylistDto.Builder ids(List<UUID> ids) {
+      this.instance.ids = ids;
+      return this;
+    }
+    public CreatePlaylistDto.Builder userId(UUID userId) {
+      this.instance.userId = JsonNullable.<UUID>of(userId);
+      return this;
+    }
+    public CreatePlaylistDto.Builder userId(JsonNullable<UUID> userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public CreatePlaylistDto.Builder mediaType(MediaType mediaType) {
+      this.instance.mediaType = JsonNullable.<MediaType>of(mediaType);
+      return this;
+    }
+    public CreatePlaylistDto.Builder mediaType(JsonNullable<MediaType> mediaType) {
+      this.instance.mediaType = mediaType;
+      return this;
+    }
+    public CreatePlaylistDto.Builder users(List<PlaylistUserPermissions> users) {
+      this.instance.users = users;
+      return this;
+    }
+    public CreatePlaylistDto.Builder isPublic(Boolean isPublic) {
+      this.instance.isPublic = isPublic;
+      return this;
     }
 
-    public void setMediaType(@javax.annotation.Nullable MediaType mediaType) {
-        this.mediaType = JsonNullable.<MediaType> of(mediaType);
-    }
-
-    public CreatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-
-        this.users = users;
-        return this;
-    }
-
-    public CreatePlaylistDto addUsersItem(PlaylistUserPermissions usersItem) {
-        if (this.users == null) {
-            this.users = new ArrayList<>();
-        }
-        this.users.add(usersItem);
-        return this;
-    }
 
     /**
-     * Gets or sets the playlist users.
-     * 
-     * @return users
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<PlaylistUserPermissions> getUsers() {
-        return users;
-    }
-
-    @JsonProperty(JSON_PROPERTY_USERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUsers(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-        this.users = users;
-    }
-
-    public CreatePlaylistDto isPublic(@javax.annotation.Nullable Boolean isPublic) {
-
-        this.isPublic = isPublic;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether the playlist is public.
-     * 
-     * @return isPublic
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsPublic() {
-        return isPublic;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsPublic(@javax.annotation.Nullable Boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CreatePlaylistDto createPlaylistDto = (CreatePlaylistDto) o;
-        return Objects.equals(this.name, createPlaylistDto.name) && Objects.equals(this.ids, createPlaylistDto.ids)
-                && equalsNullable(this.userId, createPlaylistDto.userId)
-                && equalsNullable(this.mediaType, createPlaylistDto.mediaType)
-                && Objects.equals(this.users, createPlaylistDto.users)
-                && Objects.equals(this.isPublic, createPlaylistDto.isPublic);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, ids, hashCodeNullable(userId), hashCodeNullable(mediaType), users, isPublic);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built CreatePlaylistDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public CreatePlaylistDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class CreatePlaylistDto {\n");
-        sb.append("    name: ").append(toIndentedString(name)).append("\n");
-        sb.append("    ids: ").append(toIndentedString(ids)).append("\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    mediaType: ").append(toIndentedString(mediaType)).append("\n");
-        sb.append("    users: ").append(toIndentedString(users)).append("\n");
-        sb.append("    isPublic: ").append(toIndentedString(isPublic)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static CreatePlaylistDto.Builder builder() {
+    return new CreatePlaylistDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public CreatePlaylistDto.Builder toBuilder() {
+    return new CreatePlaylistDto.Builder()
+      .name(getName())
+      .ids(getIds())
+      .userId(getUserId())
+      .mediaType(getMediaType())
+      .users(getUsers())
+      .isPublic(getIsPublic());
+  }
 
-        private CreatePlaylistDto instance;
 
-        public Builder() {
-            this(new CreatePlaylistDto());
-        }
-
-        protected Builder(CreatePlaylistDto instance) {
-            this.instance = instance;
-        }
-
-        public CreatePlaylistDto.Builder name(String name) {
-            this.instance.name = name;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder ids(List<UUID> ids) {
-            this.instance.ids = ids;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder userId(UUID userId) {
-            this.instance.userId = JsonNullable.<UUID> of(userId);
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder userId(JsonNullable<UUID> userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder mediaType(MediaType mediaType) {
-            this.instance.mediaType = JsonNullable.<MediaType> of(mediaType);
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder mediaType(JsonNullable<MediaType> mediaType) {
-            this.instance.mediaType = mediaType;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder users(List<PlaylistUserPermissions> users) {
-            this.instance.users = users;
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder isPublic(Boolean isPublic) {
-            this.instance.isPublic = isPublic;
-            return this;
-        }
-
-        /**
-         * returns a built CreatePlaylistDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public CreatePlaylistDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static CreatePlaylistDto.Builder builder() {
-        return new CreatePlaylistDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public CreatePlaylistDto.Builder toBuilder() {
-        return new CreatePlaylistDto.Builder().name(getName()).ids(getIds()).userId(getUserId())
-                .mediaType(getMediaType()).users(getUsers()).isPublic(getIsPublic());
-    }
 }
+

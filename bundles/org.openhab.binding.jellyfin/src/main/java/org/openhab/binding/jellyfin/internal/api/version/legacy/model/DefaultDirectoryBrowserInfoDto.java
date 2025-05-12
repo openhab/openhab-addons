@@ -17,165 +17,174 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Default directory browser info.
  */
-@JsonPropertyOrder({ DefaultDirectoryBrowserInfoDto.JSON_PROPERTY_PATH })
+@JsonPropertyOrder({
+  DefaultDirectoryBrowserInfoDto.JSON_PROPERTY_PATH
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DefaultDirectoryBrowserInfoDto {
-    public static final String JSON_PROPERTY_PATH = "Path";
-    @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PATH = "Path";
+  @javax.annotation.Nullable
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-    public DefaultDirectoryBrowserInfoDto() {
+  public DefaultDirectoryBrowserInfoDto() {
+  }
+
+  public DefaultDirectoryBrowserInfoDto path(@javax.annotation.Nullable String path) {
+    this.path = JsonNullable.<String>of(path);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the path.
+   * @return path
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
+    return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
+  }
+
+  public void setPath(@javax.annotation.Nullable String path) {
+    this.path = JsonNullable.<String>of(path);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DefaultDirectoryBrowserInfoDto defaultDirectoryBrowserInfoDto = (DefaultDirectoryBrowserInfoDto) o;
+    return equalsNullable(this.path, defaultDirectoryBrowserInfoDto.path);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(path));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DefaultDirectoryBrowserInfoDto {\n");
+    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DefaultDirectoryBrowserInfoDto instance;
+
+    public Builder() {
+      this(new DefaultDirectoryBrowserInfoDto());
     }
 
-    public DefaultDirectoryBrowserInfoDto path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-
-        return this;
+    protected Builder(DefaultDirectoryBrowserInfoDto instance) {
+      this.instance = instance;
     }
+
+    public DefaultDirectoryBrowserInfoDto.Builder path(String path) {
+      this.instance.path = JsonNullable.<String>of(path);
+      return this;
+    }
+    public DefaultDirectoryBrowserInfoDto.Builder path(JsonNullable<String> path) {
+      this.instance.path = path;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the path.
-     * 
-     * @return path
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_PATH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getPath_JsonNullable() {
-        return path;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
-        this.path = path;
-    }
-
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultDirectoryBrowserInfoDto defaultDirectoryBrowserInfoDto = (DefaultDirectoryBrowserInfoDto) o;
-        return equalsNullable(this.path, defaultDirectoryBrowserInfoDto.path);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(path));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built DefaultDirectoryBrowserInfoDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public DefaultDirectoryBrowserInfoDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DefaultDirectoryBrowserInfoDto {\n");
-        sb.append("    path: ").append(toIndentedString(path)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DefaultDirectoryBrowserInfoDto.Builder builder() {
+    return new DefaultDirectoryBrowserInfoDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DefaultDirectoryBrowserInfoDto.Builder toBuilder() {
+    return new DefaultDirectoryBrowserInfoDto.Builder()
+      .path(getPath());
+  }
 
-        private DefaultDirectoryBrowserInfoDto instance;
 
-        public Builder() {
-            this(new DefaultDirectoryBrowserInfoDto());
-        }
-
-        protected Builder(DefaultDirectoryBrowserInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public DefaultDirectoryBrowserInfoDto.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public DefaultDirectoryBrowserInfoDto.Builder path(JsonNullable<String> path) {
-            this.instance.path = path;
-            return this;
-        }
-
-        /**
-         * returns a built DefaultDirectoryBrowserInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public DefaultDirectoryBrowserInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DefaultDirectoryBrowserInfoDto.Builder builder() {
-        return new DefaultDirectoryBrowserInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DefaultDirectoryBrowserInfoDto.Builder toBuilder() {
-        return new DefaultDirectoryBrowserInfoDto.Builder().path(getPath());
-    }
 }
+

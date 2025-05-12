@@ -18,169 +18,183 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class QueueItem.
  */
-@JsonPropertyOrder({ SyncPlayQueueItem.JSON_PROPERTY_ITEM_ID, SyncPlayQueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID })
+@JsonPropertyOrder({
+  SyncPlayQueueItem.JSON_PROPERTY_ITEM_ID,
+  SyncPlayQueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SyncPlayQueueItem {
-    public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @javax.annotation.Nullable
-    private UUID itemId;
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+  @javax.annotation.Nullable
+  private UUID itemId;
 
-    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @javax.annotation.Nullable
-    private UUID playlistItemId;
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+  @javax.annotation.Nullable
+  private UUID playlistItemId;
 
-    public SyncPlayQueueItem() {
+  public SyncPlayQueueItem() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public SyncPlayQueueItem(
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID) UUID playlistItemId
+  ) {
+    this();
+    this.playlistItemId = playlistItemId;
+  }
+
+  public SyncPlayQueueItem itemId(@javax.annotation.Nullable UUID itemId) {
+    
+    this.itemId = itemId;
+    return this;
+  }
+
+  /**
+   * Gets the item identifier.
+   * @return itemId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getItemId() {
+    return itemId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setItemId(@javax.annotation.Nullable UUID itemId) {
+    this.itemId = itemId;
+  }
+
+  /**
+   * Gets the playlist identifier of the item.
+   * @return playlistItemId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getPlaylistItemId() {
+    return playlistItemId;
+  }
+
+
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SyncPlayQueueItem syncPlayQueueItem = (SyncPlayQueueItem) o;
+    return Objects.equals(this.itemId, syncPlayQueueItem.itemId) &&
+        Objects.equals(this.playlistItemId, syncPlayQueueItem.playlistItemId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(itemId, playlistItemId);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SyncPlayQueueItem {\n");
+    sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
+    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SyncPlayQueueItem instance;
+
+    public Builder() {
+      this(new SyncPlayQueueItem());
+    }
+
+    protected Builder(SyncPlayQueueItem instance) {
+      this.instance = instance;
+    }
+
+    public SyncPlayQueueItem.Builder itemId(UUID itemId) {
+      this.instance.itemId = itemId;
+      return this;
+    }
+    public SyncPlayQueueItem.Builder playlistItemId(UUID playlistItemId) {
+      this.instance.playlistItemId = playlistItemId;
+      return this;
+    }
+
 
     /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public SyncPlayQueueItem(@JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID) UUID playlistItemId) {
-        this();
-        this.playlistItemId = playlistItemId;
-    }
-
-    public SyncPlayQueueItem itemId(@javax.annotation.Nullable UUID itemId) {
-
-        this.itemId = itemId;
-        return this;
-    }
-
-    /**
-     * Gets the item identifier.
-     * 
-     * @return itemId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getItemId() {
-        return itemId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setItemId(@javax.annotation.Nullable UUID itemId) {
-        this.itemId = itemId;
-    }
-
-    /**
-     * Gets the playlist identifier of the item.
-     * 
-     * @return playlistItemId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getPlaylistItemId() {
-        return playlistItemId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SyncPlayQueueItem syncPlayQueueItem = (SyncPlayQueueItem) o;
-        return Objects.equals(this.itemId, syncPlayQueueItem.itemId)
-                && Objects.equals(this.playlistItemId, syncPlayQueueItem.playlistItemId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(itemId, playlistItemId);
+    * returns a built SyncPlayQueueItem instance.
+    *
+    * The builder is not reusable.
+    */
+    public SyncPlayQueueItem build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SyncPlayQueueItem {\n");
-        sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
-        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SyncPlayQueueItem.Builder builder() {
+    return new SyncPlayQueueItem.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SyncPlayQueueItem.Builder toBuilder() {
+    return new SyncPlayQueueItem.Builder()
+      .itemId(getItemId())
+      .playlistItemId(getPlaylistItemId());
+  }
 
-        private SyncPlayQueueItem instance;
 
-        public Builder() {
-            this(new SyncPlayQueueItem());
-        }
-
-        protected Builder(SyncPlayQueueItem instance) {
-            this.instance = instance;
-        }
-
-        public SyncPlayQueueItem.Builder itemId(UUID itemId) {
-            this.instance.itemId = itemId;
-            return this;
-        }
-
-        public SyncPlayQueueItem.Builder playlistItemId(UUID playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        /**
-         * returns a built SyncPlayQueueItem instance.
-         *
-         * The builder is not reusable.
-         */
-        public SyncPlayQueueItem build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SyncPlayQueueItem.Builder builder() {
-        return new SyncPlayQueueItem.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SyncPlayQueueItem.Builder toBuilder() {
-        return new SyncPlayQueueItem.Builder().itemId(getItemId()).playlistItemId(getPlaylistItemId());
-    }
 }
+

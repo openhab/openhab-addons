@@ -17,712 +17,715 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.HashMap;
+import java.util.Map;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ScrollDirection;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SortOrder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Defines the display preferences for any item that supports them (usually Folders).
  */
-@JsonPropertyOrder({ DisplayPreferencesDto.JSON_PROPERTY_ID, DisplayPreferencesDto.JSON_PROPERTY_VIEW_TYPE,
-        DisplayPreferencesDto.JSON_PROPERTY_SORT_BY, DisplayPreferencesDto.JSON_PROPERTY_INDEX_BY,
-        DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_INDEXING, DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT,
-        DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, DisplayPreferencesDto.JSON_PROPERTY_CUSTOM_PREFS,
-        DisplayPreferencesDto.JSON_PROPERTY_SCROLL_DIRECTION, DisplayPreferencesDto.JSON_PROPERTY_SHOW_BACKDROP,
-        DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_SORTING, DisplayPreferencesDto.JSON_PROPERTY_SORT_ORDER,
-        DisplayPreferencesDto.JSON_PROPERTY_SHOW_SIDEBAR, DisplayPreferencesDto.JSON_PROPERTY_CLIENT })
+@JsonPropertyOrder({
+  DisplayPreferencesDto.JSON_PROPERTY_ID,
+  DisplayPreferencesDto.JSON_PROPERTY_VIEW_TYPE,
+  DisplayPreferencesDto.JSON_PROPERTY_SORT_BY,
+  DisplayPreferencesDto.JSON_PROPERTY_INDEX_BY,
+  DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_INDEXING,
+  DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT,
+  DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_WIDTH,
+  DisplayPreferencesDto.JSON_PROPERTY_CUSTOM_PREFS,
+  DisplayPreferencesDto.JSON_PROPERTY_SCROLL_DIRECTION,
+  DisplayPreferencesDto.JSON_PROPERTY_SHOW_BACKDROP,
+  DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_SORTING,
+  DisplayPreferencesDto.JSON_PROPERTY_SORT_ORDER,
+  DisplayPreferencesDto.JSON_PROPERTY_SHOW_SIDEBAR,
+  DisplayPreferencesDto.JSON_PROPERTY_CLIENT
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DisplayPreferencesDto {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_VIEW_TYPE = "ViewType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> viewType = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_VIEW_TYPE = "ViewType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> viewType = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SORT_BY = "SortBy";
-    @javax.annotation.Nullable
-    private JsonNullable<String> sortBy = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SORT_BY = "SortBy";
+  @javax.annotation.Nullable
+  private JsonNullable<String> sortBy = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_INDEX_BY = "IndexBy";
-    @javax.annotation.Nullable
-    private JsonNullable<String> indexBy = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_INDEX_BY = "IndexBy";
+  @javax.annotation.Nullable
+  private JsonNullable<String> indexBy = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_REMEMBER_INDEXING = "RememberIndexing";
-    @javax.annotation.Nullable
-    private Boolean rememberIndexing;
+  public static final String JSON_PROPERTY_REMEMBER_INDEXING = "RememberIndexing";
+  @javax.annotation.Nullable
+  private Boolean rememberIndexing;
 
-    public static final String JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT = "PrimaryImageHeight";
-    @javax.annotation.Nullable
-    private Integer primaryImageHeight;
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT = "PrimaryImageHeight";
+  @javax.annotation.Nullable
+  private Integer primaryImageHeight;
 
-    public static final String JSON_PROPERTY_PRIMARY_IMAGE_WIDTH = "PrimaryImageWidth";
-    @javax.annotation.Nullable
-    private Integer primaryImageWidth;
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_WIDTH = "PrimaryImageWidth";
+  @javax.annotation.Nullable
+  private Integer primaryImageWidth;
 
-    public static final String JSON_PROPERTY_CUSTOM_PREFS = "CustomPrefs";
-    @javax.annotation.Nullable
-    private Map<String, String> customPrefs = new HashMap<>();
+  public static final String JSON_PROPERTY_CUSTOM_PREFS = "CustomPrefs";
+  @javax.annotation.Nullable
+  private Map<String, String> customPrefs = new HashMap<>();
 
-    public static final String JSON_PROPERTY_SCROLL_DIRECTION = "ScrollDirection";
-    @javax.annotation.Nullable
-    private ScrollDirection scrollDirection;
+  public static final String JSON_PROPERTY_SCROLL_DIRECTION = "ScrollDirection";
+  @javax.annotation.Nullable
+  private ScrollDirection scrollDirection;
 
-    public static final String JSON_PROPERTY_SHOW_BACKDROP = "ShowBackdrop";
-    @javax.annotation.Nullable
-    private Boolean showBackdrop;
+  public static final String JSON_PROPERTY_SHOW_BACKDROP = "ShowBackdrop";
+  @javax.annotation.Nullable
+  private Boolean showBackdrop;
 
-    public static final String JSON_PROPERTY_REMEMBER_SORTING = "RememberSorting";
-    @javax.annotation.Nullable
-    private Boolean rememberSorting;
+  public static final String JSON_PROPERTY_REMEMBER_SORTING = "RememberSorting";
+  @javax.annotation.Nullable
+  private Boolean rememberSorting;
 
-    public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
-    @javax.annotation.Nullable
-    private SortOrder sortOrder;
+  public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
+  @javax.annotation.Nullable
+  private SortOrder sortOrder;
 
-    public static final String JSON_PROPERTY_SHOW_SIDEBAR = "ShowSidebar";
-    @javax.annotation.Nullable
-    private Boolean showSidebar;
+  public static final String JSON_PROPERTY_SHOW_SIDEBAR = "ShowSidebar";
+  @javax.annotation.Nullable
+  private Boolean showSidebar;
 
-    public static final String JSON_PROPERTY_CLIENT = "Client";
-    @javax.annotation.Nullable
-    private JsonNullable<String> client = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CLIENT = "Client";
+  @javax.annotation.Nullable
+  private JsonNullable<String> client = JsonNullable.<String>undefined();
 
-    public DisplayPreferencesDto() {
-    }
+  public DisplayPreferencesDto() {
+  }
 
-    public DisplayPreferencesDto id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
+  public DisplayPreferencesDto id(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the user id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the user id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
+  public String getId() {
         return id.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
-        return id;
-    }
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
+  public DisplayPreferencesDto viewType(@javax.annotation.Nullable String viewType) {
+    this.viewType = JsonNullable.<String>of(viewType);
+    
+    return this;
+  }
 
-    public DisplayPreferencesDto viewType(@javax.annotation.Nullable String viewType) {
-        this.viewType = JsonNullable.<String> of(viewType);
+  /**
+   * Gets or sets the type of the view.
+   * @return viewType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the view.
-     * 
-     * @return viewType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getViewType() {
+  public String getViewType() {
         return viewType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getViewType_JsonNullable() {
-        return viewType;
-    }
+  public JsonNullable<String> getViewType_JsonNullable() {
+    return viewType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
+  public void setViewType_JsonNullable(JsonNullable<String> viewType) {
+    this.viewType = viewType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
-    public void setViewType_JsonNullable(JsonNullable<String> viewType) {
-        this.viewType = viewType;
-    }
+  public void setViewType(@javax.annotation.Nullable String viewType) {
+    this.viewType = JsonNullable.<String>of(viewType);
+  }
 
-    public void setViewType(@javax.annotation.Nullable String viewType) {
-        this.viewType = JsonNullable.<String> of(viewType);
-    }
+  public DisplayPreferencesDto sortBy(@javax.annotation.Nullable String sortBy) {
+    this.sortBy = JsonNullable.<String>of(sortBy);
+    
+    return this;
+  }
 
-    public DisplayPreferencesDto sortBy(@javax.annotation.Nullable String sortBy) {
-        this.sortBy = JsonNullable.<String> of(sortBy);
+  /**
+   * Gets or sets the sort by.
+   * @return sortBy
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the sort by.
-     * 
-     * @return sortBy
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSortBy() {
+  public String getSortBy() {
         return sortBy.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SORT_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSortBy_JsonNullable() {
-        return sortBy;
-    }
+  public JsonNullable<String> getSortBy_JsonNullable() {
+    return sortBy;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SORT_BY)
+  public void setSortBy_JsonNullable(JsonNullable<String> sortBy) {
+    this.sortBy = sortBy;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
-    public void setSortBy_JsonNullable(JsonNullable<String> sortBy) {
-        this.sortBy = sortBy;
-    }
+  public void setSortBy(@javax.annotation.Nullable String sortBy) {
+    this.sortBy = JsonNullable.<String>of(sortBy);
+  }
 
-    public void setSortBy(@javax.annotation.Nullable String sortBy) {
-        this.sortBy = JsonNullable.<String> of(sortBy);
-    }
+  public DisplayPreferencesDto indexBy(@javax.annotation.Nullable String indexBy) {
+    this.indexBy = JsonNullable.<String>of(indexBy);
+    
+    return this;
+  }
 
-    public DisplayPreferencesDto indexBy(@javax.annotation.Nullable String indexBy) {
-        this.indexBy = JsonNullable.<String> of(indexBy);
+  /**
+   * Gets or sets the index by.
+   * @return indexBy
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the index by.
-     * 
-     * @return indexBy
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIndexBy() {
+  public String getIndexBy() {
         return indexBy.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_INDEX_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getIndexBy_JsonNullable() {
+    return indexBy;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_BY)
+  public void setIndexBy_JsonNullable(JsonNullable<String> indexBy) {
+    this.indexBy = indexBy;
+  }
+
+  public void setIndexBy(@javax.annotation.Nullable String indexBy) {
+    this.indexBy = JsonNullable.<String>of(indexBy);
+  }
+
+  public DisplayPreferencesDto rememberIndexing(@javax.annotation.Nullable Boolean rememberIndexing) {
+    
+    this.rememberIndexing = rememberIndexing;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether [remember indexing].
+   * @return rememberIndexing
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getRememberIndexing() {
+    return rememberIndexing;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRememberIndexing(@javax.annotation.Nullable Boolean rememberIndexing) {
+    this.rememberIndexing = rememberIndexing;
+  }
+
+  public DisplayPreferencesDto primaryImageHeight(@javax.annotation.Nullable Integer primaryImageHeight) {
+    
+    this.primaryImageHeight = primaryImageHeight;
+    return this;
+  }
+
+  /**
+   * Gets or sets the height of the primary image.
+   * @return primaryImageHeight
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPrimaryImageHeight() {
+    return primaryImageHeight;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPrimaryImageHeight(@javax.annotation.Nullable Integer primaryImageHeight) {
+    this.primaryImageHeight = primaryImageHeight;
+  }
+
+  public DisplayPreferencesDto primaryImageWidth(@javax.annotation.Nullable Integer primaryImageWidth) {
+    
+    this.primaryImageWidth = primaryImageWidth;
+    return this;
+  }
+
+  /**
+   * Gets or sets the width of the primary image.
+   * @return primaryImageWidth
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getPrimaryImageWidth() {
+    return primaryImageWidth;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPrimaryImageWidth(@javax.annotation.Nullable Integer primaryImageWidth) {
+    this.primaryImageWidth = primaryImageWidth;
+  }
+
+  public DisplayPreferencesDto customPrefs(@javax.annotation.Nullable Map<String, String> customPrefs) {
+    
+    this.customPrefs = customPrefs;
+    return this;
+  }
+
+  public DisplayPreferencesDto putCustomPrefsItem(String key, String customPrefsItem) {
+    if (this.customPrefs == null) {
+      this.customPrefs = new HashMap<>();
     }
+    this.customPrefs.put(key, customPrefsItem);
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_BY)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets the custom prefs.
+   * @return customPrefs
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getIndexBy_JsonNullable() {
-        return indexBy;
-    }
+  public Map<String, String> getCustomPrefs() {
+    return customPrefs;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_BY)
-    public void setIndexBy_JsonNullable(JsonNullable<String> indexBy) {
-        this.indexBy = indexBy;
-    }
 
-    public void setIndexBy(@javax.annotation.Nullable String indexBy) {
-        this.indexBy = JsonNullable.<String> of(indexBy);
-    }
+  @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCustomPrefs(@javax.annotation.Nullable Map<String, String> customPrefs) {
+    this.customPrefs = customPrefs;
+  }
 
-    public DisplayPreferencesDto rememberIndexing(@javax.annotation.Nullable Boolean rememberIndexing) {
+  public DisplayPreferencesDto scrollDirection(@javax.annotation.Nullable ScrollDirection scrollDirection) {
+    
+    this.scrollDirection = scrollDirection;
+    return this;
+  }
 
-        this.rememberIndexing = rememberIndexing;
-        return this;
-    }
+  /**
+   * Gets or sets the scroll direction.
+   * @return scrollDirection
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets a value indicating whether [remember indexing].
-     * 
-     * @return rememberIndexing
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public ScrollDirection getScrollDirection() {
+    return scrollDirection;
+  }
 
-    public Boolean getRememberIndexing() {
-        return rememberIndexing;
-    }
 
-    @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRememberIndexing(@javax.annotation.Nullable Boolean rememberIndexing) {
-        this.rememberIndexing = rememberIndexing;
-    }
+  @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScrollDirection(@javax.annotation.Nullable ScrollDirection scrollDirection) {
+    this.scrollDirection = scrollDirection;
+  }
 
-    public DisplayPreferencesDto primaryImageHeight(@javax.annotation.Nullable Integer primaryImageHeight) {
+  public DisplayPreferencesDto showBackdrop(@javax.annotation.Nullable Boolean showBackdrop) {
+    
+    this.showBackdrop = showBackdrop;
+    return this;
+  }
 
-        this.primaryImageHeight = primaryImageHeight;
-        return this;
-    }
+  /**
+   * Gets or sets a value indicating whether to show backdrops on this item.
+   * @return showBackdrop
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the height of the primary image.
-     * 
-     * @return primaryImageHeight
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Boolean getShowBackdrop() {
+    return showBackdrop;
+  }
 
-    public Integer getPrimaryImageHeight() {
-        return primaryImageHeight;
-    }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPrimaryImageHeight(@javax.annotation.Nullable Integer primaryImageHeight) {
-        this.primaryImageHeight = primaryImageHeight;
-    }
+  @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setShowBackdrop(@javax.annotation.Nullable Boolean showBackdrop) {
+    this.showBackdrop = showBackdrop;
+  }
 
-    public DisplayPreferencesDto primaryImageWidth(@javax.annotation.Nullable Integer primaryImageWidth) {
+  public DisplayPreferencesDto rememberSorting(@javax.annotation.Nullable Boolean rememberSorting) {
+    
+    this.rememberSorting = rememberSorting;
+    return this;
+  }
 
-        this.primaryImageWidth = primaryImageWidth;
-        return this;
-    }
+  /**
+   * Gets or sets a value indicating whether [remember sorting].
+   * @return rememberSorting
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the width of the primary image.
-     * 
-     * @return primaryImageWidth
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Boolean getRememberSorting() {
+    return rememberSorting;
+  }
 
-    public Integer getPrimaryImageWidth() {
-        return primaryImageWidth;
-    }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPrimaryImageWidth(@javax.annotation.Nullable Integer primaryImageWidth) {
-        this.primaryImageWidth = primaryImageWidth;
-    }
+  @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRememberSorting(@javax.annotation.Nullable Boolean rememberSorting) {
+    this.rememberSorting = rememberSorting;
+  }
 
-    public DisplayPreferencesDto customPrefs(@javax.annotation.Nullable Map<String, String> customPrefs) {
+  public DisplayPreferencesDto sortOrder(@javax.annotation.Nullable SortOrder sortOrder) {
+    
+    this.sortOrder = sortOrder;
+    return this;
+  }
 
-        this.customPrefs = customPrefs;
-        return this;
-    }
+  /**
+   * Gets or sets the sort order.
+   * @return sortOrder
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public DisplayPreferencesDto putCustomPrefsItem(String key, String customPrefsItem) {
-        if (this.customPrefs == null) {
-            this.customPrefs = new HashMap<>();
-        }
-        this.customPrefs.put(key, customPrefsItem);
-        return this;
-    }
+  public SortOrder getSortOrder() {
+    return sortOrder;
+  }
 
-    /**
-     * Gets or sets the custom prefs.
-     * 
-     * @return customPrefs
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Map<String, String> getCustomPrefs() {
-        return customPrefs;
-    }
+  @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSortOrder(@javax.annotation.Nullable SortOrder sortOrder) {
+    this.sortOrder = sortOrder;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCustomPrefs(@javax.annotation.Nullable Map<String, String> customPrefs) {
-        this.customPrefs = customPrefs;
-    }
+  public DisplayPreferencesDto showSidebar(@javax.annotation.Nullable Boolean showSidebar) {
+    
+    this.showSidebar = showSidebar;
+    return this;
+  }
 
-    public DisplayPreferencesDto scrollDirection(@javax.annotation.Nullable ScrollDirection scrollDirection) {
+  /**
+   * Gets or sets a value indicating whether [show sidebar].
+   * @return showSidebar
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.scrollDirection = scrollDirection;
-        return this;
-    }
+  public Boolean getShowSidebar() {
+    return showSidebar;
+  }
 
-    /**
-     * Gets or sets the scroll direction.
-     * 
-     * @return scrollDirection
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public ScrollDirection getScrollDirection() {
-        return scrollDirection;
-    }
+  @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setShowSidebar(@javax.annotation.Nullable Boolean showSidebar) {
+    this.showSidebar = showSidebar;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setScrollDirection(@javax.annotation.Nullable ScrollDirection scrollDirection) {
-        this.scrollDirection = scrollDirection;
-    }
+  public DisplayPreferencesDto client(@javax.annotation.Nullable String client) {
+    this.client = JsonNullable.<String>of(client);
+    
+    return this;
+  }
 
-    public DisplayPreferencesDto showBackdrop(@javax.annotation.Nullable Boolean showBackdrop) {
+  /**
+   * Gets or sets the client.
+   * @return client
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        this.showBackdrop = showBackdrop;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether to show backdrops on this item.
-     * 
-     * @return showBackdrop
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getShowBackdrop() {
-        return showBackdrop;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setShowBackdrop(@javax.annotation.Nullable Boolean showBackdrop) {
-        this.showBackdrop = showBackdrop;
-    }
-
-    public DisplayPreferencesDto rememberSorting(@javax.annotation.Nullable Boolean rememberSorting) {
-
-        this.rememberSorting = rememberSorting;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether [remember sorting].
-     * 
-     * @return rememberSorting
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getRememberSorting() {
-        return rememberSorting;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRememberSorting(@javax.annotation.Nullable Boolean rememberSorting) {
-        this.rememberSorting = rememberSorting;
-    }
-
-    public DisplayPreferencesDto sortOrder(@javax.annotation.Nullable SortOrder sortOrder) {
-
-        this.sortOrder = sortOrder;
-        return this;
-    }
-
-    /**
-     * Gets or sets the sort order.
-     * 
-     * @return sortOrder
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public SortOrder getSortOrder() {
-        return sortOrder;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSortOrder(@javax.annotation.Nullable SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public DisplayPreferencesDto showSidebar(@javax.annotation.Nullable Boolean showSidebar) {
-
-        this.showSidebar = showSidebar;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether [show sidebar].
-     * 
-     * @return showSidebar
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getShowSidebar() {
-        return showSidebar;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setShowSidebar(@javax.annotation.Nullable Boolean showSidebar) {
-        this.showSidebar = showSidebar;
-    }
-
-    public DisplayPreferencesDto client(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the client.
-     * 
-     * @return client
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getClient() {
+  public String getClient() {
         return client.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CLIENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getClient_JsonNullable() {
+    return client;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CLIENT)
+  public void setClient_JsonNullable(JsonNullable<String> client) {
+    this.client = client;
+  }
+
+  public void setClient(@javax.annotation.Nullable String client) {
+    this.client = JsonNullable.<String>of(client);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DisplayPreferencesDto displayPreferencesDto = (DisplayPreferencesDto) o;
+    return equalsNullable(this.id, displayPreferencesDto.id) &&
+        equalsNullable(this.viewType, displayPreferencesDto.viewType) &&
+        equalsNullable(this.sortBy, displayPreferencesDto.sortBy) &&
+        equalsNullable(this.indexBy, displayPreferencesDto.indexBy) &&
+        Objects.equals(this.rememberIndexing, displayPreferencesDto.rememberIndexing) &&
+        Objects.equals(this.primaryImageHeight, displayPreferencesDto.primaryImageHeight) &&
+        Objects.equals(this.primaryImageWidth, displayPreferencesDto.primaryImageWidth) &&
+        Objects.equals(this.customPrefs, displayPreferencesDto.customPrefs) &&
+        Objects.equals(this.scrollDirection, displayPreferencesDto.scrollDirection) &&
+        Objects.equals(this.showBackdrop, displayPreferencesDto.showBackdrop) &&
+        Objects.equals(this.rememberSorting, displayPreferencesDto.rememberSorting) &&
+        Objects.equals(this.sortOrder, displayPreferencesDto.sortOrder) &&
+        Objects.equals(this.showSidebar, displayPreferencesDto.showSidebar) &&
+        equalsNullable(this.client, displayPreferencesDto.client);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(id), hashCodeNullable(viewType), hashCodeNullable(sortBy), hashCodeNullable(indexBy), rememberIndexing, primaryImageHeight, primaryImageWidth, customPrefs, scrollDirection, showBackdrop, rememberSorting, sortOrder, showSidebar, hashCodeNullable(client));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class DisplayPreferencesDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    viewType: ").append(toIndentedString(viewType)).append("\n");
+    sb.append("    sortBy: ").append(toIndentedString(sortBy)).append("\n");
+    sb.append("    indexBy: ").append(toIndentedString(indexBy)).append("\n");
+    sb.append("    rememberIndexing: ").append(toIndentedString(rememberIndexing)).append("\n");
+    sb.append("    primaryImageHeight: ").append(toIndentedString(primaryImageHeight)).append("\n");
+    sb.append("    primaryImageWidth: ").append(toIndentedString(primaryImageWidth)).append("\n");
+    sb.append("    customPrefs: ").append(toIndentedString(customPrefs)).append("\n");
+    sb.append("    scrollDirection: ").append(toIndentedString(scrollDirection)).append("\n");
+    sb.append("    showBackdrop: ").append(toIndentedString(showBackdrop)).append("\n");
+    sb.append("    rememberSorting: ").append(toIndentedString(rememberSorting)).append("\n");
+    sb.append("    sortOrder: ").append(toIndentedString(sortOrder)).append("\n");
+    sb.append("    showSidebar: ").append(toIndentedString(showSidebar)).append("\n");
+    sb.append("    client: ").append(toIndentedString(client)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private DisplayPreferencesDto instance;
+
+    public Builder() {
+      this(new DisplayPreferencesDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getClient_JsonNullable() {
-        return client;
+    protected Builder(DisplayPreferencesDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
-    public void setClient_JsonNullable(JsonNullable<String> client) {
-        this.client = client;
+    public DisplayPreferencesDto.Builder id(String id) {
+      this.instance.id = JsonNullable.<String>of(id);
+      return this;
+    }
+    public DisplayPreferencesDto.Builder id(JsonNullable<String> id) {
+      this.instance.id = id;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder viewType(String viewType) {
+      this.instance.viewType = JsonNullable.<String>of(viewType);
+      return this;
+    }
+    public DisplayPreferencesDto.Builder viewType(JsonNullable<String> viewType) {
+      this.instance.viewType = viewType;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder sortBy(String sortBy) {
+      this.instance.sortBy = JsonNullable.<String>of(sortBy);
+      return this;
+    }
+    public DisplayPreferencesDto.Builder sortBy(JsonNullable<String> sortBy) {
+      this.instance.sortBy = sortBy;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder indexBy(String indexBy) {
+      this.instance.indexBy = JsonNullable.<String>of(indexBy);
+      return this;
+    }
+    public DisplayPreferencesDto.Builder indexBy(JsonNullable<String> indexBy) {
+      this.instance.indexBy = indexBy;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder rememberIndexing(Boolean rememberIndexing) {
+      this.instance.rememberIndexing = rememberIndexing;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder primaryImageHeight(Integer primaryImageHeight) {
+      this.instance.primaryImageHeight = primaryImageHeight;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder primaryImageWidth(Integer primaryImageWidth) {
+      this.instance.primaryImageWidth = primaryImageWidth;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder customPrefs(Map<String, String> customPrefs) {
+      this.instance.customPrefs = customPrefs;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder scrollDirection(ScrollDirection scrollDirection) {
+      this.instance.scrollDirection = scrollDirection;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder showBackdrop(Boolean showBackdrop) {
+      this.instance.showBackdrop = showBackdrop;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder rememberSorting(Boolean rememberSorting) {
+      this.instance.rememberSorting = rememberSorting;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder sortOrder(SortOrder sortOrder) {
+      this.instance.sortOrder = sortOrder;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder showSidebar(Boolean showSidebar) {
+      this.instance.showSidebar = showSidebar;
+      return this;
+    }
+    public DisplayPreferencesDto.Builder client(String client) {
+      this.instance.client = JsonNullable.<String>of(client);
+      return this;
+    }
+    public DisplayPreferencesDto.Builder client(JsonNullable<String> client) {
+      this.instance.client = client;
+      return this;
     }
 
-    public void setClient(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DisplayPreferencesDto displayPreferencesDto = (DisplayPreferencesDto) o;
-        return equalsNullable(this.id, displayPreferencesDto.id)
-                && equalsNullable(this.viewType, displayPreferencesDto.viewType)
-                && equalsNullable(this.sortBy, displayPreferencesDto.sortBy)
-                && equalsNullable(this.indexBy, displayPreferencesDto.indexBy)
-                && Objects.equals(this.rememberIndexing, displayPreferencesDto.rememberIndexing)
-                && Objects.equals(this.primaryImageHeight, displayPreferencesDto.primaryImageHeight)
-                && Objects.equals(this.primaryImageWidth, displayPreferencesDto.primaryImageWidth)
-                && Objects.equals(this.customPrefs, displayPreferencesDto.customPrefs)
-                && Objects.equals(this.scrollDirection, displayPreferencesDto.scrollDirection)
-                && Objects.equals(this.showBackdrop, displayPreferencesDto.showBackdrop)
-                && Objects.equals(this.rememberSorting, displayPreferencesDto.rememberSorting)
-                && Objects.equals(this.sortOrder, displayPreferencesDto.sortOrder)
-                && Objects.equals(this.showSidebar, displayPreferencesDto.showSidebar)
-                && equalsNullable(this.client, displayPreferencesDto.client);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(id), hashCodeNullable(viewType), hashCodeNullable(sortBy),
-                hashCodeNullable(indexBy), rememberIndexing, primaryImageHeight, primaryImageWidth, customPrefs,
-                scrollDirection, showBackdrop, rememberSorting, sortOrder, showSidebar, hashCodeNullable(client));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built DisplayPreferencesDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public DisplayPreferencesDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class DisplayPreferencesDto {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    viewType: ").append(toIndentedString(viewType)).append("\n");
-        sb.append("    sortBy: ").append(toIndentedString(sortBy)).append("\n");
-        sb.append("    indexBy: ").append(toIndentedString(indexBy)).append("\n");
-        sb.append("    rememberIndexing: ").append(toIndentedString(rememberIndexing)).append("\n");
-        sb.append("    primaryImageHeight: ").append(toIndentedString(primaryImageHeight)).append("\n");
-        sb.append("    primaryImageWidth: ").append(toIndentedString(primaryImageWidth)).append("\n");
-        sb.append("    customPrefs: ").append(toIndentedString(customPrefs)).append("\n");
-        sb.append("    scrollDirection: ").append(toIndentedString(scrollDirection)).append("\n");
-        sb.append("    showBackdrop: ").append(toIndentedString(showBackdrop)).append("\n");
-        sb.append("    rememberSorting: ").append(toIndentedString(rememberSorting)).append("\n");
-        sb.append("    sortOrder: ").append(toIndentedString(sortOrder)).append("\n");
-        sb.append("    showSidebar: ").append(toIndentedString(showSidebar)).append("\n");
-        sb.append("    client: ").append(toIndentedString(client)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static DisplayPreferencesDto.Builder builder() {
+    return new DisplayPreferencesDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public DisplayPreferencesDto.Builder toBuilder() {
+    return new DisplayPreferencesDto.Builder()
+      .id(getId())
+      .viewType(getViewType())
+      .sortBy(getSortBy())
+      .indexBy(getIndexBy())
+      .rememberIndexing(getRememberIndexing())
+      .primaryImageHeight(getPrimaryImageHeight())
+      .primaryImageWidth(getPrimaryImageWidth())
+      .customPrefs(getCustomPrefs())
+      .scrollDirection(getScrollDirection())
+      .showBackdrop(getShowBackdrop())
+      .rememberSorting(getRememberSorting())
+      .sortOrder(getSortOrder())
+      .showSidebar(getShowSidebar())
+      .client(getClient());
+  }
 
-        private DisplayPreferencesDto instance;
 
-        public Builder() {
-            this(new DisplayPreferencesDto());
-        }
-
-        protected Builder(DisplayPreferencesDto instance) {
-            this.instance = instance;
-        }
-
-        public DisplayPreferencesDto.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder id(JsonNullable<String> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder viewType(String viewType) {
-            this.instance.viewType = JsonNullable.<String> of(viewType);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder viewType(JsonNullable<String> viewType) {
-            this.instance.viewType = viewType;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortBy(String sortBy) {
-            this.instance.sortBy = JsonNullable.<String> of(sortBy);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortBy(JsonNullable<String> sortBy) {
-            this.instance.sortBy = sortBy;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder indexBy(String indexBy) {
-            this.instance.indexBy = JsonNullable.<String> of(indexBy);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder indexBy(JsonNullable<String> indexBy) {
-            this.instance.indexBy = indexBy;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder rememberIndexing(Boolean rememberIndexing) {
-            this.instance.rememberIndexing = rememberIndexing;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder primaryImageHeight(Integer primaryImageHeight) {
-            this.instance.primaryImageHeight = primaryImageHeight;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder primaryImageWidth(Integer primaryImageWidth) {
-            this.instance.primaryImageWidth = primaryImageWidth;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder customPrefs(Map<String, String> customPrefs) {
-            this.instance.customPrefs = customPrefs;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder scrollDirection(ScrollDirection scrollDirection) {
-            this.instance.scrollDirection = scrollDirection;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder showBackdrop(Boolean showBackdrop) {
-            this.instance.showBackdrop = showBackdrop;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder rememberSorting(Boolean rememberSorting) {
-            this.instance.rememberSorting = rememberSorting;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortOrder(SortOrder sortOrder) {
-            this.instance.sortOrder = sortOrder;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder showSidebar(Boolean showSidebar) {
-            this.instance.showSidebar = showSidebar;
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder client(String client) {
-            this.instance.client = JsonNullable.<String> of(client);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder client(JsonNullable<String> client) {
-            this.instance.client = client;
-            return this;
-        }
-
-        /**
-         * returns a built DisplayPreferencesDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public DisplayPreferencesDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static DisplayPreferencesDto.Builder builder() {
-        return new DisplayPreferencesDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public DisplayPreferencesDto.Builder toBuilder() {
-        return new DisplayPreferencesDto.Builder().id(getId()).viewType(getViewType()).sortBy(getSortBy())
-                .indexBy(getIndexBy()).rememberIndexing(getRememberIndexing())
-                .primaryImageHeight(getPrimaryImageHeight()).primaryImageWidth(getPrimaryImageWidth())
-                .customPrefs(getCustomPrefs()).scrollDirection(getScrollDirection()).showBackdrop(getShowBackdrop())
-                .rememberSorting(getRememberSorting()).sortOrder(getSortOrder()).showSidebar(getShowSidebar())
-                .client(getClient());
-    }
 }
+

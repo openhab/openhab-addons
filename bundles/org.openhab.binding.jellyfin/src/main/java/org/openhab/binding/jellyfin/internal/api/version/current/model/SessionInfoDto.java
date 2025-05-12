@@ -17,1530 +17,1503 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ClientCapabilitiesDto;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.GeneralCommandType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.QueueItem;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionUserInfo;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TranscodingInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Session info DTO.
  */
-@JsonPropertyOrder({ SessionInfoDto.JSON_PROPERTY_PLAY_STATE, SessionInfoDto.JSON_PROPERTY_ADDITIONAL_USERS,
-        SessionInfoDto.JSON_PROPERTY_CAPABILITIES, SessionInfoDto.JSON_PROPERTY_REMOTE_END_POINT,
-        SessionInfoDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, SessionInfoDto.JSON_PROPERTY_ID,
-        SessionInfoDto.JSON_PROPERTY_USER_ID, SessionInfoDto.JSON_PROPERTY_USER_NAME,
-        SessionInfoDto.JSON_PROPERTY_CLIENT, SessionInfoDto.JSON_PROPERTY_LAST_ACTIVITY_DATE,
-        SessionInfoDto.JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, SessionInfoDto.JSON_PROPERTY_LAST_PAUSED_DATE,
-        SessionInfoDto.JSON_PROPERTY_DEVICE_NAME, SessionInfoDto.JSON_PROPERTY_DEVICE_TYPE,
-        SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_ITEM, SessionInfoDto.JSON_PROPERTY_NOW_VIEWING_ITEM,
-        SessionInfoDto.JSON_PROPERTY_DEVICE_ID, SessionInfoDto.JSON_PROPERTY_APPLICATION_VERSION,
-        SessionInfoDto.JSON_PROPERTY_TRANSCODING_INFO, SessionInfoDto.JSON_PROPERTY_IS_ACTIVE,
-        SessionInfoDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, SessionInfoDto.JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL,
-        SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE, SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS,
-        SessionInfoDto.JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, SessionInfoDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-        SessionInfoDto.JSON_PROPERTY_SERVER_ID, SessionInfoDto.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG,
-        SessionInfoDto.JSON_PROPERTY_SUPPORTED_COMMANDS })
+@JsonPropertyOrder({
+  SessionInfoDto.JSON_PROPERTY_PLAY_STATE,
+  SessionInfoDto.JSON_PROPERTY_ADDITIONAL_USERS,
+  SessionInfoDto.JSON_PROPERTY_CAPABILITIES,
+  SessionInfoDto.JSON_PROPERTY_REMOTE_END_POINT,
+  SessionInfoDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES,
+  SessionInfoDto.JSON_PROPERTY_ID,
+  SessionInfoDto.JSON_PROPERTY_USER_ID,
+  SessionInfoDto.JSON_PROPERTY_USER_NAME,
+  SessionInfoDto.JSON_PROPERTY_CLIENT,
+  SessionInfoDto.JSON_PROPERTY_LAST_ACTIVITY_DATE,
+  SessionInfoDto.JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN,
+  SessionInfoDto.JSON_PROPERTY_LAST_PAUSED_DATE,
+  SessionInfoDto.JSON_PROPERTY_DEVICE_NAME,
+  SessionInfoDto.JSON_PROPERTY_DEVICE_TYPE,
+  SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_ITEM,
+  SessionInfoDto.JSON_PROPERTY_NOW_VIEWING_ITEM,
+  SessionInfoDto.JSON_PROPERTY_DEVICE_ID,
+  SessionInfoDto.JSON_PROPERTY_APPLICATION_VERSION,
+  SessionInfoDto.JSON_PROPERTY_TRANSCODING_INFO,
+  SessionInfoDto.JSON_PROPERTY_IS_ACTIVE,
+  SessionInfoDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL,
+  SessionInfoDto.JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL,
+  SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE,
+  SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS,
+  SessionInfoDto.JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME,
+  SessionInfoDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
+  SessionInfoDto.JSON_PROPERTY_SERVER_ID,
+  SessionInfoDto.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG,
+  SessionInfoDto.JSON_PROPERTY_SUPPORTED_COMMANDS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SessionInfoDto {
-    public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
-    @javax.annotation.Nullable
-    private JsonNullable<PlayerStateInfo> playState = JsonNullable.<PlayerStateInfo> undefined();
+  public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
+  @javax.annotation.Nullable
+  private JsonNullable<PlayerStateInfo> playState = JsonNullable.<PlayerStateInfo>undefined();
 
-    public static final String JSON_PROPERTY_ADDITIONAL_USERS = "AdditionalUsers";
-    @javax.annotation.Nullable
-    private JsonNullable<List<SessionUserInfo>> additionalUsers = JsonNullable.<List<SessionUserInfo>> undefined();
+  public static final String JSON_PROPERTY_ADDITIONAL_USERS = "AdditionalUsers";
+  @javax.annotation.Nullable
+  private JsonNullable<List<SessionUserInfo>> additionalUsers = JsonNullable.<List<SessionUserInfo>>undefined();
 
-    public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
-    @javax.annotation.Nullable
-    private JsonNullable<ClientCapabilitiesDto> capabilities = JsonNullable.<ClientCapabilitiesDto> undefined();
+  public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
+  @javax.annotation.Nullable
+  private JsonNullable<ClientCapabilitiesDto> capabilities = JsonNullable.<ClientCapabilitiesDto>undefined();
 
-    public static final String JSON_PROPERTY_REMOTE_END_POINT = "RemoteEndPoint";
-    @javax.annotation.Nullable
-    private JsonNullable<String> remoteEndPoint = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_REMOTE_END_POINT = "RemoteEndPoint";
+  @javax.annotation.Nullable
+  private JsonNullable<String> remoteEndPoint = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
-    @javax.annotation.Nullable
-    private List<MediaType> playableMediaTypes = new ArrayList<>();
+  public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
+  @javax.annotation.Nullable
+  private List<MediaType> playableMediaTypes = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private UUID userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private UUID userId;
 
-    public static final String JSON_PROPERTY_USER_NAME = "UserName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> userName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_USER_NAME = "UserName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> userName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CLIENT = "Client";
-    @javax.annotation.Nullable
-    private JsonNullable<String> client = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CLIENT = "Client";
+  @javax.annotation.Nullable
+  private JsonNullable<String> client = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
-    @javax.annotation.Nullable
-    private OffsetDateTime lastActivityDate;
+  public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
+  @javax.annotation.Nullable
+  private OffsetDateTime lastActivityDate;
 
-    public static final String JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN = "LastPlaybackCheckIn";
-    @javax.annotation.Nullable
-    private OffsetDateTime lastPlaybackCheckIn;
+  public static final String JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN = "LastPlaybackCheckIn";
+  @javax.annotation.Nullable
+  private OffsetDateTime lastPlaybackCheckIn;
 
-    public static final String JSON_PROPERTY_LAST_PAUSED_DATE = "LastPausedDate";
-    @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> lastPausedDate = JsonNullable.<OffsetDateTime> undefined();
+  public static final String JSON_PROPERTY_LAST_PAUSED_DATE = "LastPausedDate";
+  @javax.annotation.Nullable
+  private JsonNullable<OffsetDateTime> lastPausedDate = JsonNullable.<OffsetDateTime>undefined();
 
-    public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> deviceName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> deviceName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_DEVICE_TYPE = "DeviceType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> deviceType = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DEVICE_TYPE = "DeviceType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> deviceType = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_NOW_PLAYING_ITEM = "NowPlayingItem";
-    @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> nowPlayingItem = JsonNullable.<BaseItemDto> undefined();
+  public static final String JSON_PROPERTY_NOW_PLAYING_ITEM = "NowPlayingItem";
+  @javax.annotation.Nullable
+  private JsonNullable<BaseItemDto> nowPlayingItem = JsonNullable.<BaseItemDto>undefined();
 
-    public static final String JSON_PROPERTY_NOW_VIEWING_ITEM = "NowViewingItem";
-    @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> nowViewingItem = JsonNullable.<BaseItemDto> undefined();
+  public static final String JSON_PROPERTY_NOW_VIEWING_ITEM = "NowViewingItem";
+  @javax.annotation.Nullable
+  private JsonNullable<BaseItemDto> nowViewingItem = JsonNullable.<BaseItemDto>undefined();
 
-    public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> deviceId = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_APPLICATION_VERSION = "ApplicationVersion";
-    @javax.annotation.Nullable
-    private JsonNullable<String> applicationVersion = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_APPLICATION_VERSION = "ApplicationVersion";
+  @javax.annotation.Nullable
+  private JsonNullable<String> applicationVersion = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_TRANSCODING_INFO = "TranscodingInfo";
-    @javax.annotation.Nullable
-    private JsonNullable<TranscodingInfo> transcodingInfo = JsonNullable.<TranscodingInfo> undefined();
+  public static final String JSON_PROPERTY_TRANSCODING_INFO = "TranscodingInfo";
+  @javax.annotation.Nullable
+  private JsonNullable<TranscodingInfo> transcodingInfo = JsonNullable.<TranscodingInfo>undefined();
 
-    public static final String JSON_PROPERTY_IS_ACTIVE = "IsActive";
-    @javax.annotation.Nullable
-    private Boolean isActive;
+  public static final String JSON_PROPERTY_IS_ACTIVE = "IsActive";
+  @javax.annotation.Nullable
+  private Boolean isActive;
 
-    public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
-    @javax.annotation.Nullable
-    private Boolean supportsMediaControl;
+  public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
+  @javax.annotation.Nullable
+  private Boolean supportsMediaControl;
 
-    public static final String JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL = "SupportsRemoteControl";
-    @javax.annotation.Nullable
-    private Boolean supportsRemoteControl;
+  public static final String JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL = "SupportsRemoteControl";
+  @javax.annotation.Nullable
+  private Boolean supportsRemoteControl;
 
-    public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
-    @javax.annotation.Nullable
-    private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>> undefined();
+  public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
+  @javax.annotation.Nullable
+  private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>>undefined();
 
-    public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS = "NowPlayingQueueFullItems";
-    @javax.annotation.Nullable
-    private JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> undefined();
+  public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS = "NowPlayingQueueFullItems";
+  @javax.annotation.Nullable
+  private JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>>undefined();
 
-    public static final String JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME = "HasCustomDeviceName";
-    @javax.annotation.Nullable
-    private Boolean hasCustomDeviceName;
+  public static final String JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME = "HasCustomDeviceName";
+  @javax.annotation.Nullable
+  private Boolean hasCustomDeviceName;
 
-    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> playlistItemId = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> serverId = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
-    @javax.annotation.Nullable
-    private List<GeneralCommandType> supportedCommands = new ArrayList<>();
+  public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
+  @javax.annotation.Nullable
+  private List<GeneralCommandType> supportedCommands = new ArrayList<>();
 
-    public SessionInfoDto() {
-    }
+  public SessionInfoDto() {
+  }
 
-    public SessionInfoDto playState(@javax.annotation.Nullable PlayerStateInfo playState) {
-        this.playState = JsonNullable.<PlayerStateInfo> of(playState);
+  public SessionInfoDto playState(@javax.annotation.Nullable PlayerStateInfo playState) {
+    this.playState = JsonNullable.<PlayerStateInfo>of(playState);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the play state.
+   * @return playState
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the play state.
-     * 
-     * @return playState
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlayerStateInfo getPlayState() {
+  public PlayerStateInfo getPlayState() {
         return playState.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PlayerStateInfo> getPlayState_JsonNullable() {
+    return playState;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_STATE)
+  public void setPlayState_JsonNullable(JsonNullable<PlayerStateInfo> playState) {
+    this.playState = playState;
+  }
+
+  public void setPlayState(@javax.annotation.Nullable PlayerStateInfo playState) {
+    this.playState = JsonNullable.<PlayerStateInfo>of(playState);
+  }
+
+  public SessionInfoDto additionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
+    this.additionalUsers = JsonNullable.<List<SessionUserInfo>>of(additionalUsers);
+    
+    return this;
+  }
+
+  public SessionInfoDto addAdditionalUsersItem(SessionUserInfo additionalUsersItem) {
+    if (this.additionalUsers == null || !this.additionalUsers.isPresent()) {
+      this.additionalUsers = JsonNullable.<List<SessionUserInfo>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_PLAY_STATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<PlayerStateInfo> getPlayState_JsonNullable() {
-        return playState;
+    try {
+      this.additionalUsers.get().add(additionalUsersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_STATE)
-    public void setPlayState_JsonNullable(JsonNullable<PlayerStateInfo> playState) {
-        this.playState = playState;
-    }
+  /**
+   * Gets or sets the additional users.
+   * @return additionalUsers
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setPlayState(@javax.annotation.Nullable PlayerStateInfo playState) {
-        this.playState = JsonNullable.<PlayerStateInfo> of(playState);
-    }
-
-    public SessionInfoDto additionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
-        this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
-
-        return this;
-    }
-
-    public SessionInfoDto addAdditionalUsersItem(SessionUserInfo additionalUsersItem) {
-        if (this.additionalUsers == null || !this.additionalUsers.isPresent()) {
-            this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(new ArrayList<>());
-        }
-        try {
-            this.additionalUsers.get().add(additionalUsersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the additional users.
-     * 
-     * @return additionalUsers
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<SessionUserInfo> getAdditionalUsers() {
+  public List<SessionUserInfo> getAdditionalUsers() {
         return additionalUsers.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<SessionUserInfo>> getAdditionalUsers_JsonNullable() {
-        return additionalUsers;
-    }
+  public JsonNullable<List<SessionUserInfo>> getAdditionalUsers_JsonNullable() {
+    return additionalUsers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
+  public void setAdditionalUsers_JsonNullable(JsonNullable<List<SessionUserInfo>> additionalUsers) {
+    this.additionalUsers = additionalUsers;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
-    public void setAdditionalUsers_JsonNullable(JsonNullable<List<SessionUserInfo>> additionalUsers) {
-        this.additionalUsers = additionalUsers;
-    }
+  public void setAdditionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
+    this.additionalUsers = JsonNullable.<List<SessionUserInfo>>of(additionalUsers);
+  }
 
-    public void setAdditionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
-        this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
-    }
+  public SessionInfoDto capabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
+    this.capabilities = JsonNullable.<ClientCapabilitiesDto>of(capabilities);
+    
+    return this;
+  }
 
-    public SessionInfoDto capabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
-        this.capabilities = JsonNullable.<ClientCapabilitiesDto> of(capabilities);
+  /**
+   * Gets or sets the client capabilities.
+   * @return capabilities
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the client capabilities.
-     * 
-     * @return capabilities
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ClientCapabilitiesDto getCapabilities() {
+  public ClientCapabilitiesDto getCapabilities() {
         return capabilities.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ClientCapabilitiesDto> getCapabilities_JsonNullable() {
-        return capabilities;
-    }
+  public JsonNullable<ClientCapabilitiesDto> getCapabilities_JsonNullable() {
+    return capabilities;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+  public void setCapabilities_JsonNullable(JsonNullable<ClientCapabilitiesDto> capabilities) {
+    this.capabilities = capabilities;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
-    public void setCapabilities_JsonNullable(JsonNullable<ClientCapabilitiesDto> capabilities) {
-        this.capabilities = capabilities;
-    }
+  public void setCapabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
+    this.capabilities = JsonNullable.<ClientCapabilitiesDto>of(capabilities);
+  }
 
-    public void setCapabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
-        this.capabilities = JsonNullable.<ClientCapabilitiesDto> of(capabilities);
-    }
+  public SessionInfoDto remoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
+    this.remoteEndPoint = JsonNullable.<String>of(remoteEndPoint);
+    
+    return this;
+  }
 
-    public SessionInfoDto remoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
-        this.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
+  /**
+   * Gets or sets the remote end point.
+   * @return remoteEndPoint
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the remote end point.
-     * 
-     * @return remoteEndPoint
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRemoteEndPoint() {
+  public String getRemoteEndPoint() {
         return remoteEndPoint.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getRemoteEndPoint_JsonNullable() {
+    return remoteEndPoint;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
+  public void setRemoteEndPoint_JsonNullable(JsonNullable<String> remoteEndPoint) {
+    this.remoteEndPoint = remoteEndPoint;
+  }
+
+  public void setRemoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
+    this.remoteEndPoint = JsonNullable.<String>of(remoteEndPoint);
+  }
+
+  public SessionInfoDto playableMediaTypes(@javax.annotation.Nullable List<MediaType> playableMediaTypes) {
+    
+    this.playableMediaTypes = playableMediaTypes;
+    return this;
+  }
+
+  public SessionInfoDto addPlayableMediaTypesItem(MediaType playableMediaTypesItem) {
+    if (this.playableMediaTypes == null) {
+      this.playableMediaTypes = new ArrayList<>();
     }
+    this.playableMediaTypes.add(playableMediaTypesItem);
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets the playable media types.
+   * @return playableMediaTypes
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getRemoteEndPoint_JsonNullable() {
-        return remoteEndPoint;
-    }
+  public List<MediaType> getPlayableMediaTypes() {
+    return playableMediaTypes;
+  }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
-    public void setRemoteEndPoint_JsonNullable(JsonNullable<String> remoteEndPoint) {
-        this.remoteEndPoint = remoteEndPoint;
-    }
 
-    public void setRemoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
-        this.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
-    }
+  @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPlayableMediaTypes(@javax.annotation.Nullable List<MediaType> playableMediaTypes) {
+    this.playableMediaTypes = playableMediaTypes;
+  }
 
-    public SessionInfoDto playableMediaTypes(@javax.annotation.Nullable List<MediaType> playableMediaTypes) {
+  public SessionInfoDto id(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+    
+    return this;
+  }
 
-        this.playableMediaTypes = playableMediaTypes;
-        return this;
-    }
+  /**
+   * Gets or sets the id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public SessionInfoDto addPlayableMediaTypesItem(MediaType playableMediaTypesItem) {
-        if (this.playableMediaTypes == null) {
-            this.playableMediaTypes = new ArrayList<>();
-        }
-        this.playableMediaTypes.add(playableMediaTypesItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets the playable media types.
-     * 
-     * @return playableMediaTypes
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<MediaType> getPlayableMediaTypes() {
-        return playableMediaTypes;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setPlayableMediaTypes(@javax.annotation.Nullable List<MediaType> playableMediaTypes) {
-        this.playableMediaTypes = playableMediaTypes;
-    }
-
-    public SessionInfoDto id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets the id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
+  public String getId() {
         return id.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
-        return id;
-    }
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
+  }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
+  public SessionInfoDto userId(@javax.annotation.Nullable UUID userId) {
+    
+    this.userId = userId;
+    return this;
+  }
 
-    public SessionInfoDto userId(@javax.annotation.Nullable UUID userId) {
+  /**
+   * Gets or sets the user id.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.userId = userId;
-        return this;
-    }
+  public UUID getUserId() {
+    return userId;
+  }
 
-    /**
-     * Gets or sets the user id.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public UUID getUserId() {
-        return userId;
-    }
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserId(@javax.annotation.Nullable UUID userId) {
+    this.userId = userId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = userId;
-    }
+  public SessionInfoDto userName(@javax.annotation.Nullable String userName) {
+    this.userName = JsonNullable.<String>of(userName);
+    
+    return this;
+  }
 
-    public SessionInfoDto userName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
+  /**
+   * Gets or sets the username.
+   * @return userName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the username.
-     * 
-     * @return userName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserName() {
+  public String getUserName() {
         return userName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_USER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserName_JsonNullable() {
-        return userName;
-    }
+  public JsonNullable<String> getUserName_JsonNullable() {
+    return userName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_NAME)
+  public void setUserName_JsonNullable(JsonNullable<String> userName) {
+    this.userName = userName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
-    public void setUserName_JsonNullable(JsonNullable<String> userName) {
-        this.userName = userName;
-    }
+  public void setUserName(@javax.annotation.Nullable String userName) {
+    this.userName = JsonNullable.<String>of(userName);
+  }
 
-    public void setUserName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
-    }
+  public SessionInfoDto client(@javax.annotation.Nullable String client) {
+    this.client = JsonNullable.<String>of(client);
+    
+    return this;
+  }
 
-    public SessionInfoDto client(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
+  /**
+   * Gets or sets the type of the client.
+   * @return client
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the client.
-     * 
-     * @return client
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getClient() {
+  public String getClient() {
         return client.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CLIENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getClient_JsonNullable() {
-        return client;
-    }
+  public JsonNullable<String> getClient_JsonNullable() {
+    return client;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CLIENT)
+  public void setClient_JsonNullable(JsonNullable<String> client) {
+    this.client = client;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
-    public void setClient_JsonNullable(JsonNullable<String> client) {
-        this.client = client;
-    }
+  public void setClient(@javax.annotation.Nullable String client) {
+    this.client = JsonNullable.<String>of(client);
+  }
 
-    public void setClient(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
-    }
+  public SessionInfoDto lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
+    
+    this.lastActivityDate = lastActivityDate;
+    return this;
+  }
 
-    public SessionInfoDto lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
+  /**
+   * Gets or sets the last activity date.
+   * @return lastActivityDate
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.lastActivityDate = lastActivityDate;
-        return this;
-    }
+  public OffsetDateTime getLastActivityDate() {
+    return lastActivityDate;
+  }
 
-    /**
-     * Gets or sets the last activity date.
-     * 
-     * @return lastActivityDate
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public OffsetDateTime getLastActivityDate() {
-        return lastActivityDate;
-    }
+  @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
+    this.lastActivityDate = lastActivityDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setLastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
-        this.lastActivityDate = lastActivityDate;
-    }
+  public SessionInfoDto lastPlaybackCheckIn(@javax.annotation.Nullable OffsetDateTime lastPlaybackCheckIn) {
+    
+    this.lastPlaybackCheckIn = lastPlaybackCheckIn;
+    return this;
+  }
 
-    public SessionInfoDto lastPlaybackCheckIn(@javax.annotation.Nullable OffsetDateTime lastPlaybackCheckIn) {
+  /**
+   * Gets or sets the last playback check in.
+   * @return lastPlaybackCheckIn
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.lastPlaybackCheckIn = lastPlaybackCheckIn;
-        return this;
-    }
+  public OffsetDateTime getLastPlaybackCheckIn() {
+    return lastPlaybackCheckIn;
+  }
 
-    /**
-     * Gets or sets the last playback check in.
-     * 
-     * @return lastPlaybackCheckIn
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public OffsetDateTime getLastPlaybackCheckIn() {
-        return lastPlaybackCheckIn;
-    }
+  @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLastPlaybackCheckIn(@javax.annotation.Nullable OffsetDateTime lastPlaybackCheckIn) {
+    this.lastPlaybackCheckIn = lastPlaybackCheckIn;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setLastPlaybackCheckIn(@javax.annotation.Nullable OffsetDateTime lastPlaybackCheckIn) {
-        this.lastPlaybackCheckIn = lastPlaybackCheckIn;
-    }
+  public SessionInfoDto lastPausedDate(@javax.annotation.Nullable OffsetDateTime lastPausedDate) {
+    this.lastPausedDate = JsonNullable.<OffsetDateTime>of(lastPausedDate);
+    
+    return this;
+  }
 
-    public SessionInfoDto lastPausedDate(@javax.annotation.Nullable OffsetDateTime lastPausedDate) {
-        this.lastPausedDate = JsonNullable.<OffsetDateTime> of(lastPausedDate);
+  /**
+   * Gets or sets the last paused date.
+   * @return lastPausedDate
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the last paused date.
-     * 
-     * @return lastPausedDate
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getLastPausedDate() {
+  public OffsetDateTime getLastPausedDate() {
         return lastPausedDate.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getLastPausedDate_JsonNullable() {
-        return lastPausedDate;
-    }
+  public JsonNullable<OffsetDateTime> getLastPausedDate_JsonNullable() {
+    return lastPausedDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
+  public void setLastPausedDate_JsonNullable(JsonNullable<OffsetDateTime> lastPausedDate) {
+    this.lastPausedDate = lastPausedDate;
+  }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
-    public void setLastPausedDate_JsonNullable(JsonNullable<OffsetDateTime> lastPausedDate) {
-        this.lastPausedDate = lastPausedDate;
-    }
+  public void setLastPausedDate(@javax.annotation.Nullable OffsetDateTime lastPausedDate) {
+    this.lastPausedDate = JsonNullable.<OffsetDateTime>of(lastPausedDate);
+  }
 
-    public void setLastPausedDate(@javax.annotation.Nullable OffsetDateTime lastPausedDate) {
-        this.lastPausedDate = JsonNullable.<OffsetDateTime> of(lastPausedDate);
-    }
+  public SessionInfoDto deviceName(@javax.annotation.Nullable String deviceName) {
+    this.deviceName = JsonNullable.<String>of(deviceName);
+    
+    return this;
+  }
 
-    public SessionInfoDto deviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
+  /**
+   * Gets or sets the name of the device.
+   * @return deviceName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the name of the device.
-     * 
-     * @return deviceName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceName() {
+  public String getDeviceName() {
         return deviceName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceName_JsonNullable() {
-        return deviceName;
-    }
+  public JsonNullable<String> getDeviceName_JsonNullable() {
+    return deviceName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+  public void setDeviceName_JsonNullable(JsonNullable<String> deviceName) {
+    this.deviceName = deviceName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
-    public void setDeviceName_JsonNullable(JsonNullable<String> deviceName) {
-        this.deviceName = deviceName;
-    }
+  public void setDeviceName(@javax.annotation.Nullable String deviceName) {
+    this.deviceName = JsonNullable.<String>of(deviceName);
+  }
 
-    public void setDeviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
-    }
+  public SessionInfoDto deviceType(@javax.annotation.Nullable String deviceType) {
+    this.deviceType = JsonNullable.<String>of(deviceType);
+    
+    return this;
+  }
 
-    public SessionInfoDto deviceType(@javax.annotation.Nullable String deviceType) {
-        this.deviceType = JsonNullable.<String> of(deviceType);
+  /**
+   * Gets or sets the type of the device.
+   * @return deviceType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the type of the device.
-     * 
-     * @return deviceType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceType() {
+  public String getDeviceType() {
         return deviceType.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceType_JsonNullable() {
-        return deviceType;
-    }
+  public JsonNullable<String> getDeviceType_JsonNullable() {
+    return deviceType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
+  public void setDeviceType_JsonNullable(JsonNullable<String> deviceType) {
+    this.deviceType = deviceType;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
-    public void setDeviceType_JsonNullable(JsonNullable<String> deviceType) {
-        this.deviceType = deviceType;
-    }
+  public void setDeviceType(@javax.annotation.Nullable String deviceType) {
+    this.deviceType = JsonNullable.<String>of(deviceType);
+  }
 
-    public void setDeviceType(@javax.annotation.Nullable String deviceType) {
-        this.deviceType = JsonNullable.<String> of(deviceType);
-    }
+  public SessionInfoDto nowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
+    this.nowPlayingItem = JsonNullable.<BaseItemDto>of(nowPlayingItem);
+    
+    return this;
+  }
 
-    public SessionInfoDto nowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
-        this.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
+  /**
+   * Gets or sets the now playing item.
+   * @return nowPlayingItem
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the now playing item.
-     * 
-     * @return nowPlayingItem
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getNowPlayingItem() {
+  public BaseItemDto getNowPlayingItem() {
         return nowPlayingItem.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDto> getNowPlayingItem_JsonNullable() {
-        return nowPlayingItem;
-    }
+  public JsonNullable<BaseItemDto> getNowPlayingItem_JsonNullable() {
+    return nowPlayingItem;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
+  public void setNowPlayingItem_JsonNullable(JsonNullable<BaseItemDto> nowPlayingItem) {
+    this.nowPlayingItem = nowPlayingItem;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
-    public void setNowPlayingItem_JsonNullable(JsonNullable<BaseItemDto> nowPlayingItem) {
-        this.nowPlayingItem = nowPlayingItem;
-    }
+  public void setNowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
+    this.nowPlayingItem = JsonNullable.<BaseItemDto>of(nowPlayingItem);
+  }
 
-    public void setNowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
-        this.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
-    }
+  public SessionInfoDto nowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
+    this.nowViewingItem = JsonNullable.<BaseItemDto>of(nowViewingItem);
+    
+    return this;
+  }
 
-    public SessionInfoDto nowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
-        this.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
+  /**
+   * Gets or sets the now viewing item.
+   * @return nowViewingItem
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the now viewing item.
-     * 
-     * @return nowViewingItem
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getNowViewingItem() {
+  public BaseItemDto getNowViewingItem() {
         return nowViewingItem.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDto> getNowViewingItem_JsonNullable() {
-        return nowViewingItem;
-    }
+  public JsonNullable<BaseItemDto> getNowViewingItem_JsonNullable() {
+    return nowViewingItem;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
+  public void setNowViewingItem_JsonNullable(JsonNullable<BaseItemDto> nowViewingItem) {
+    this.nowViewingItem = nowViewingItem;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
-    public void setNowViewingItem_JsonNullable(JsonNullable<BaseItemDto> nowViewingItem) {
-        this.nowViewingItem = nowViewingItem;
-    }
+  public void setNowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
+    this.nowViewingItem = JsonNullable.<BaseItemDto>of(nowViewingItem);
+  }
 
-    public void setNowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
-        this.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
-    }
+  public SessionInfoDto deviceId(@javax.annotation.Nullable String deviceId) {
+    this.deviceId = JsonNullable.<String>of(deviceId);
+    
+    return this;
+  }
 
-    public SessionInfoDto deviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
+  /**
+   * Gets or sets the device id.
+   * @return deviceId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the device id.
-     * 
-     * @return deviceId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceId() {
+  public String getDeviceId() {
         return deviceId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceId_JsonNullable() {
-        return deviceId;
-    }
+  public JsonNullable<String> getDeviceId_JsonNullable() {
+    return deviceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    this.deviceId = deviceId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
-        this.deviceId = deviceId;
-    }
+  public void setDeviceId(@javax.annotation.Nullable String deviceId) {
+    this.deviceId = JsonNullable.<String>of(deviceId);
+  }
 
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
-    }
+  public SessionInfoDto applicationVersion(@javax.annotation.Nullable String applicationVersion) {
+    this.applicationVersion = JsonNullable.<String>of(applicationVersion);
+    
+    return this;
+  }
 
-    public SessionInfoDto applicationVersion(@javax.annotation.Nullable String applicationVersion) {
-        this.applicationVersion = JsonNullable.<String> of(applicationVersion);
+  /**
+   * Gets or sets the application version.
+   * @return applicationVersion
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the application version.
-     * 
-     * @return applicationVersion
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getApplicationVersion() {
+  public String getApplicationVersion() {
         return applicationVersion.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getApplicationVersion_JsonNullable() {
-        return applicationVersion;
-    }
+  public JsonNullable<String> getApplicationVersion_JsonNullable() {
+    return applicationVersion;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
+  public void setApplicationVersion_JsonNullable(JsonNullable<String> applicationVersion) {
+    this.applicationVersion = applicationVersion;
+  }
 
-    @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
-    public void setApplicationVersion_JsonNullable(JsonNullable<String> applicationVersion) {
-        this.applicationVersion = applicationVersion;
-    }
+  public void setApplicationVersion(@javax.annotation.Nullable String applicationVersion) {
+    this.applicationVersion = JsonNullable.<String>of(applicationVersion);
+  }
 
-    public void setApplicationVersion(@javax.annotation.Nullable String applicationVersion) {
-        this.applicationVersion = JsonNullable.<String> of(applicationVersion);
-    }
+  public SessionInfoDto transcodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
+    this.transcodingInfo = JsonNullable.<TranscodingInfo>of(transcodingInfo);
+    
+    return this;
+  }
 
-    public SessionInfoDto transcodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
-        this.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
+  /**
+   * Gets or sets the transcoding info.
+   * @return transcodingInfo
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the transcoding info.
-     * 
-     * @return transcodingInfo
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public TranscodingInfo getTranscodingInfo() {
+  public TranscodingInfo getTranscodingInfo() {
         return transcodingInfo.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<TranscodingInfo> getTranscodingInfo_JsonNullable() {
+    return transcodingInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
+  public void setTranscodingInfo_JsonNullable(JsonNullable<TranscodingInfo> transcodingInfo) {
+    this.transcodingInfo = transcodingInfo;
+  }
+
+  public void setTranscodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
+    this.transcodingInfo = JsonNullable.<TranscodingInfo>of(transcodingInfo);
+  }
+
+  public SessionInfoDto isActive(@javax.annotation.Nullable Boolean isActive) {
+    
+    this.isActive = isActive;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether this session is active.
+   * @return isActive
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsActive() {
+    return isActive;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsActive(@javax.annotation.Nullable Boolean isActive) {
+    this.isActive = isActive;
+  }
+
+  public SessionInfoDto supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+    
+    this.supportsMediaControl = supportsMediaControl;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the session supports media control.
+   * @return supportsMediaControl
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSupportsMediaControl() {
+    return supportsMediaControl;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
+    this.supportsMediaControl = supportsMediaControl;
+  }
+
+  public SessionInfoDto supportsRemoteControl(@javax.annotation.Nullable Boolean supportsRemoteControl) {
+    
+    this.supportsRemoteControl = supportsRemoteControl;
+    return this;
+  }
+
+  /**
+   * Gets or sets a value indicating whether the session supports remote control.
+   * @return supportsRemoteControl
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getSupportsRemoteControl() {
+    return supportsRemoteControl;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportsRemoteControl(@javax.annotation.Nullable Boolean supportsRemoteControl) {
+    this.supportsRemoteControl = supportsRemoteControl;
+  }
+
+  public SessionInfoDto nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
+    this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(nowPlayingQueue);
+    
+    return this;
+  }
+
+  public SessionInfoDto addNowPlayingQueueItem(QueueItem nowPlayingQueueItem) {
+    if (this.nowPlayingQueue == null || !this.nowPlayingQueue.isPresent()) {
+      this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<TranscodingInfo> getTranscodingInfo_JsonNullable() {
-        return transcodingInfo;
+    try {
+      this.nowPlayingQueue.get().add(nowPlayingQueueItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
-    public void setTranscodingInfo_JsonNullable(JsonNullable<TranscodingInfo> transcodingInfo) {
-        this.transcodingInfo = transcodingInfo;
-    }
+  /**
+   * Gets or sets the now playing queue.
+   * @return nowPlayingQueue
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setTranscodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
-        this.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
-    }
-
-    public SessionInfoDto isActive(@javax.annotation.Nullable Boolean isActive) {
-
-        this.isActive = isActive;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether this session is active.
-     * 
-     * @return isActive
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsActive(@javax.annotation.Nullable Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public SessionInfoDto supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
-
-        this.supportsMediaControl = supportsMediaControl;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether the session supports media control.
-     * 
-     * @return supportsMediaControl
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSupportsMediaControl() {
-        return supportsMediaControl;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
-        this.supportsMediaControl = supportsMediaControl;
-    }
-
-    public SessionInfoDto supportsRemoteControl(@javax.annotation.Nullable Boolean supportsRemoteControl) {
-
-        this.supportsRemoteControl = supportsRemoteControl;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether the session supports remote control.
-     * 
-     * @return supportsRemoteControl
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Boolean getSupportsRemoteControl() {
-        return supportsRemoteControl;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportsRemoteControl(@javax.annotation.Nullable Boolean supportsRemoteControl) {
-        this.supportsRemoteControl = supportsRemoteControl;
-    }
-
-    public SessionInfoDto nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-        this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
-
-        return this;
-    }
-
-    public SessionInfoDto addNowPlayingQueueItem(QueueItem nowPlayingQueueItem) {
-        if (this.nowPlayingQueue == null || !this.nowPlayingQueue.isPresent()) {
-            this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(new ArrayList<>());
-        }
-        try {
-            this.nowPlayingQueue.get().add(nowPlayingQueueItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the now playing queue.
-     * 
-     * @return nowPlayingQueue
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<QueueItem> getNowPlayingQueue() {
+  public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<QueueItem>> getNowPlayingQueue_JsonNullable() {
+    return nowPlayingQueue;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+  public void setNowPlayingQueue_JsonNullable(JsonNullable<List<QueueItem>> nowPlayingQueue) {
+    this.nowPlayingQueue = nowPlayingQueue;
+  }
+
+  public void setNowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
+    this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(nowPlayingQueue);
+  }
+
+  public SessionInfoDto nowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
+    this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>>of(nowPlayingQueueFullItems);
+    
+    return this;
+  }
+
+  public SessionInfoDto addNowPlayingQueueFullItemsItem(BaseItemDto nowPlayingQueueFullItemsItem) {
+    if (this.nowPlayingQueueFullItems == null || !this.nowPlayingQueueFullItems.isPresent()) {
+      this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>>of(new ArrayList<>());
     }
-
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<List<QueueItem>> getNowPlayingQueue_JsonNullable() {
-        return nowPlayingQueue;
+    try {
+      this.nowPlayingQueueFullItems.get().add(nowPlayingQueueFullItemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
     }
+    return this;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
-    public void setNowPlayingQueue_JsonNullable(JsonNullable<List<QueueItem>> nowPlayingQueue) {
-        this.nowPlayingQueue = nowPlayingQueue;
-    }
+  /**
+   * Gets or sets the now playing queue full items.
+   * @return nowPlayingQueueFullItems
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public void setNowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-        this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
-    }
-
-    public SessionInfoDto nowPlayingQueueFullItems(
-            @javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
-
-        return this;
-    }
-
-    public SessionInfoDto addNowPlayingQueueFullItemsItem(BaseItemDto nowPlayingQueueFullItemsItem) {
-        if (this.nowPlayingQueueFullItems == null || !this.nowPlayingQueueFullItems.isPresent()) {
-            this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(new ArrayList<>());
-        }
-        try {
-            this.nowPlayingQueueFullItems.get().add(nowPlayingQueueFullItemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
-        return this;
-    }
-
-    /**
-     * Gets or sets the now playing queue full items.
-     * 
-     * @return nowPlayingQueueFullItems
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<BaseItemDto> getNowPlayingQueueFullItems() {
+  public List<BaseItemDto> getNowPlayingQueueFullItems() {
         return nowPlayingQueueFullItems.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<BaseItemDto>> getNowPlayingQueueFullItems_JsonNullable() {
-        return nowPlayingQueueFullItems;
-    }
+  public JsonNullable<List<BaseItemDto>> getNowPlayingQueueFullItems_JsonNullable() {
+    return nowPlayingQueueFullItems;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
+  public void setNowPlayingQueueFullItems_JsonNullable(JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
+    this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
+  }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
-    public void setNowPlayingQueueFullItems_JsonNullable(JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
-    }
+  public void setNowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
+    this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>>of(nowPlayingQueueFullItems);
+  }
 
-    public void setNowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
-    }
+  public SessionInfoDto hasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
+    
+    this.hasCustomDeviceName = hasCustomDeviceName;
+    return this;
+  }
 
-    public SessionInfoDto hasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
+  /**
+   * Gets or sets a value indicating whether the session has a custom device name.
+   * @return hasCustomDeviceName
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.hasCustomDeviceName = hasCustomDeviceName;
-        return this;
-    }
+  public Boolean getHasCustomDeviceName() {
+    return hasCustomDeviceName;
+  }
 
-    /**
-     * Gets or sets a value indicating whether the session has a custom device name.
-     * 
-     * @return hasCustomDeviceName
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getHasCustomDeviceName() {
-        return hasCustomDeviceName;
-    }
+  @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setHasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
+    this.hasCustomDeviceName = hasCustomDeviceName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setHasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
-        this.hasCustomDeviceName = hasCustomDeviceName;
-    }
+  public SessionInfoDto playlistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+    
+    return this;
+  }
 
-    public SessionInfoDto playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+  /**
+   * Gets or sets the playlist item id.
+   * @return playlistItemId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the playlist item id.
-     * 
-     * @return playlistItemId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaylistItemId() {
+  public String getPlaylistItemId() {
         return playlistItemId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPlaylistItemId_JsonNullable() {
-        return playlistItemId;
-    }
+  public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    return playlistItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
+    this.playlistItemId = playlistItemId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
-        this.playlistItemId = playlistItemId;
-    }
+  public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+  }
 
-    public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
-    }
+  public SessionInfoDto serverId(@javax.annotation.Nullable String serverId) {
+    this.serverId = JsonNullable.<String>of(serverId);
+    
+    return this;
+  }
 
-    public SessionInfoDto serverId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
+  /**
+   * Gets or sets the server id.
+   * @return serverId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the server id.
-     * 
-     * @return serverId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerId() {
+  public String getServerId() {
         return serverId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerId_JsonNullable() {
-        return serverId;
-    }
+  public JsonNullable<String> getServerId_JsonNullable() {
+    return serverId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    this.serverId = serverId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
-        this.serverId = serverId;
-    }
+  public void setServerId(@javax.annotation.Nullable String serverId) {
+    this.serverId = JsonNullable.<String>of(serverId);
+  }
 
-    public void setServerId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
-    }
+  public SessionInfoDto userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
+    this.userPrimaryImageTag = JsonNullable.<String>of(userPrimaryImageTag);
+    
+    return this;
+  }
 
-    public SessionInfoDto userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
+  /**
+   * Gets or sets the user primary image tag.
+   * @return userPrimaryImageTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the user primary image tag.
-     * 
-     * @return userPrimaryImageTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserPrimaryImageTag() {
+  public String getUserPrimaryImageTag() {
         return userPrimaryImageTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserPrimaryImageTag_JsonNullable() {
+    return userPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+  public void setUserPrimaryImageTag_JsonNullable(JsonNullable<String> userPrimaryImageTag) {
+    this.userPrimaryImageTag = userPrimaryImageTag;
+  }
+
+  public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
+    this.userPrimaryImageTag = JsonNullable.<String>of(userPrimaryImageTag);
+  }
+
+  public SessionInfoDto supportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
+    
+    this.supportedCommands = supportedCommands;
+    return this;
+  }
+
+  public SessionInfoDto addSupportedCommandsItem(GeneralCommandType supportedCommandsItem) {
+    if (this.supportedCommands == null) {
+      this.supportedCommands = new ArrayList<>();
+    }
+    this.supportedCommands.add(supportedCommandsItem);
+    return this;
+  }
+
+  /**
+   * Gets or sets the supported commands.
+   * @return supportedCommands
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<GeneralCommandType> getSupportedCommands() {
+    return supportedCommands;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSupportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
+    this.supportedCommands = supportedCommands;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SessionInfoDto sessionInfoDto = (SessionInfoDto) o;
+    return equalsNullable(this.playState, sessionInfoDto.playState) &&
+        equalsNullable(this.additionalUsers, sessionInfoDto.additionalUsers) &&
+        equalsNullable(this.capabilities, sessionInfoDto.capabilities) &&
+        equalsNullable(this.remoteEndPoint, sessionInfoDto.remoteEndPoint) &&
+        Objects.equals(this.playableMediaTypes, sessionInfoDto.playableMediaTypes) &&
+        equalsNullable(this.id, sessionInfoDto.id) &&
+        Objects.equals(this.userId, sessionInfoDto.userId) &&
+        equalsNullable(this.userName, sessionInfoDto.userName) &&
+        equalsNullable(this.client, sessionInfoDto.client) &&
+        Objects.equals(this.lastActivityDate, sessionInfoDto.lastActivityDate) &&
+        Objects.equals(this.lastPlaybackCheckIn, sessionInfoDto.lastPlaybackCheckIn) &&
+        equalsNullable(this.lastPausedDate, sessionInfoDto.lastPausedDate) &&
+        equalsNullable(this.deviceName, sessionInfoDto.deviceName) &&
+        equalsNullable(this.deviceType, sessionInfoDto.deviceType) &&
+        equalsNullable(this.nowPlayingItem, sessionInfoDto.nowPlayingItem) &&
+        equalsNullable(this.nowViewingItem, sessionInfoDto.nowViewingItem) &&
+        equalsNullable(this.deviceId, sessionInfoDto.deviceId) &&
+        equalsNullable(this.applicationVersion, sessionInfoDto.applicationVersion) &&
+        equalsNullable(this.transcodingInfo, sessionInfoDto.transcodingInfo) &&
+        Objects.equals(this.isActive, sessionInfoDto.isActive) &&
+        Objects.equals(this.supportsMediaControl, sessionInfoDto.supportsMediaControl) &&
+        Objects.equals(this.supportsRemoteControl, sessionInfoDto.supportsRemoteControl) &&
+        equalsNullable(this.nowPlayingQueue, sessionInfoDto.nowPlayingQueue) &&
+        equalsNullable(this.nowPlayingQueueFullItems, sessionInfoDto.nowPlayingQueueFullItems) &&
+        Objects.equals(this.hasCustomDeviceName, sessionInfoDto.hasCustomDeviceName) &&
+        equalsNullable(this.playlistItemId, sessionInfoDto.playlistItemId) &&
+        equalsNullable(this.serverId, sessionInfoDto.serverId) &&
+        equalsNullable(this.userPrimaryImageTag, sessionInfoDto.userPrimaryImageTag) &&
+        Objects.equals(this.supportedCommands, sessionInfoDto.supportedCommands);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(playState), hashCodeNullable(additionalUsers), hashCodeNullable(capabilities), hashCodeNullable(remoteEndPoint), playableMediaTypes, hashCodeNullable(id), userId, hashCodeNullable(userName), hashCodeNullable(client), lastActivityDate, lastPlaybackCheckIn, hashCodeNullable(lastPausedDate), hashCodeNullable(deviceName), hashCodeNullable(deviceType), hashCodeNullable(nowPlayingItem), hashCodeNullable(nowViewingItem), hashCodeNullable(deviceId), hashCodeNullable(applicationVersion), hashCodeNullable(transcodingInfo), isActive, supportsMediaControl, supportsRemoteControl, hashCodeNullable(nowPlayingQueue), hashCodeNullable(nowPlayingQueueFullItems), hasCustomDeviceName, hashCodeNullable(playlistItemId), hashCodeNullable(serverId), hashCodeNullable(userPrimaryImageTag), supportedCommands);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class SessionInfoDto {\n");
+    sb.append("    playState: ").append(toIndentedString(playState)).append("\n");
+    sb.append("    additionalUsers: ").append(toIndentedString(additionalUsers)).append("\n");
+    sb.append("    capabilities: ").append(toIndentedString(capabilities)).append("\n");
+    sb.append("    remoteEndPoint: ").append(toIndentedString(remoteEndPoint)).append("\n");
+    sb.append("    playableMediaTypes: ").append(toIndentedString(playableMediaTypes)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    userName: ").append(toIndentedString(userName)).append("\n");
+    sb.append("    client: ").append(toIndentedString(client)).append("\n");
+    sb.append("    lastActivityDate: ").append(toIndentedString(lastActivityDate)).append("\n");
+    sb.append("    lastPlaybackCheckIn: ").append(toIndentedString(lastPlaybackCheckIn)).append("\n");
+    sb.append("    lastPausedDate: ").append(toIndentedString(lastPausedDate)).append("\n");
+    sb.append("    deviceName: ").append(toIndentedString(deviceName)).append("\n");
+    sb.append("    deviceType: ").append(toIndentedString(deviceType)).append("\n");
+    sb.append("    nowPlayingItem: ").append(toIndentedString(nowPlayingItem)).append("\n");
+    sb.append("    nowViewingItem: ").append(toIndentedString(nowViewingItem)).append("\n");
+    sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
+    sb.append("    applicationVersion: ").append(toIndentedString(applicationVersion)).append("\n");
+    sb.append("    transcodingInfo: ").append(toIndentedString(transcodingInfo)).append("\n");
+    sb.append("    isActive: ").append(toIndentedString(isActive)).append("\n");
+    sb.append("    supportsMediaControl: ").append(toIndentedString(supportsMediaControl)).append("\n");
+    sb.append("    supportsRemoteControl: ").append(toIndentedString(supportsRemoteControl)).append("\n");
+    sb.append("    nowPlayingQueue: ").append(toIndentedString(nowPlayingQueue)).append("\n");
+    sb.append("    nowPlayingQueueFullItems: ").append(toIndentedString(nowPlayingQueueFullItems)).append("\n");
+    sb.append("    hasCustomDeviceName: ").append(toIndentedString(hasCustomDeviceName)).append("\n");
+    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+    sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
+    sb.append("    userPrimaryImageTag: ").append(toIndentedString(userPrimaryImageTag)).append("\n");
+    sb.append("    supportedCommands: ").append(toIndentedString(supportedCommands)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private SessionInfoDto instance;
+
+    public Builder() {
+      this(new SessionInfoDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getUserPrimaryImageTag_JsonNullable() {
-        return userPrimaryImageTag;
+    protected Builder(SessionInfoDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    public void setUserPrimaryImageTag_JsonNullable(JsonNullable<String> userPrimaryImageTag) {
-        this.userPrimaryImageTag = userPrimaryImageTag;
+    public SessionInfoDto.Builder playState(PlayerStateInfo playState) {
+      this.instance.playState = JsonNullable.<PlayerStateInfo>of(playState);
+      return this;
+    }
+    public SessionInfoDto.Builder playState(JsonNullable<PlayerStateInfo> playState) {
+      this.instance.playState = playState;
+      return this;
+    }
+    public SessionInfoDto.Builder additionalUsers(List<SessionUserInfo> additionalUsers) {
+      this.instance.additionalUsers = JsonNullable.<List<SessionUserInfo>>of(additionalUsers);
+      return this;
+    }
+    public SessionInfoDto.Builder additionalUsers(JsonNullable<List<SessionUserInfo>> additionalUsers) {
+      this.instance.additionalUsers = additionalUsers;
+      return this;
+    }
+    public SessionInfoDto.Builder capabilities(ClientCapabilitiesDto capabilities) {
+      this.instance.capabilities = JsonNullable.<ClientCapabilitiesDto>of(capabilities);
+      return this;
+    }
+    public SessionInfoDto.Builder capabilities(JsonNullable<ClientCapabilitiesDto> capabilities) {
+      this.instance.capabilities = capabilities;
+      return this;
+    }
+    public SessionInfoDto.Builder remoteEndPoint(String remoteEndPoint) {
+      this.instance.remoteEndPoint = JsonNullable.<String>of(remoteEndPoint);
+      return this;
+    }
+    public SessionInfoDto.Builder remoteEndPoint(JsonNullable<String> remoteEndPoint) {
+      this.instance.remoteEndPoint = remoteEndPoint;
+      return this;
+    }
+    public SessionInfoDto.Builder playableMediaTypes(List<MediaType> playableMediaTypes) {
+      this.instance.playableMediaTypes = playableMediaTypes;
+      return this;
+    }
+    public SessionInfoDto.Builder id(String id) {
+      this.instance.id = JsonNullable.<String>of(id);
+      return this;
+    }
+    public SessionInfoDto.Builder id(JsonNullable<String> id) {
+      this.instance.id = id;
+      return this;
+    }
+    public SessionInfoDto.Builder userId(UUID userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public SessionInfoDto.Builder userName(String userName) {
+      this.instance.userName = JsonNullable.<String>of(userName);
+      return this;
+    }
+    public SessionInfoDto.Builder userName(JsonNullable<String> userName) {
+      this.instance.userName = userName;
+      return this;
+    }
+    public SessionInfoDto.Builder client(String client) {
+      this.instance.client = JsonNullable.<String>of(client);
+      return this;
+    }
+    public SessionInfoDto.Builder client(JsonNullable<String> client) {
+      this.instance.client = client;
+      return this;
+    }
+    public SessionInfoDto.Builder lastActivityDate(OffsetDateTime lastActivityDate) {
+      this.instance.lastActivityDate = lastActivityDate;
+      return this;
+    }
+    public SessionInfoDto.Builder lastPlaybackCheckIn(OffsetDateTime lastPlaybackCheckIn) {
+      this.instance.lastPlaybackCheckIn = lastPlaybackCheckIn;
+      return this;
+    }
+    public SessionInfoDto.Builder lastPausedDate(OffsetDateTime lastPausedDate) {
+      this.instance.lastPausedDate = JsonNullable.<OffsetDateTime>of(lastPausedDate);
+      return this;
+    }
+    public SessionInfoDto.Builder lastPausedDate(JsonNullable<OffsetDateTime> lastPausedDate) {
+      this.instance.lastPausedDate = lastPausedDate;
+      return this;
+    }
+    public SessionInfoDto.Builder deviceName(String deviceName) {
+      this.instance.deviceName = JsonNullable.<String>of(deviceName);
+      return this;
+    }
+    public SessionInfoDto.Builder deviceName(JsonNullable<String> deviceName) {
+      this.instance.deviceName = deviceName;
+      return this;
+    }
+    public SessionInfoDto.Builder deviceType(String deviceType) {
+      this.instance.deviceType = JsonNullable.<String>of(deviceType);
+      return this;
+    }
+    public SessionInfoDto.Builder deviceType(JsonNullable<String> deviceType) {
+      this.instance.deviceType = deviceType;
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingItem(BaseItemDto nowPlayingItem) {
+      this.instance.nowPlayingItem = JsonNullable.<BaseItemDto>of(nowPlayingItem);
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingItem(JsonNullable<BaseItemDto> nowPlayingItem) {
+      this.instance.nowPlayingItem = nowPlayingItem;
+      return this;
+    }
+    public SessionInfoDto.Builder nowViewingItem(BaseItemDto nowViewingItem) {
+      this.instance.nowViewingItem = JsonNullable.<BaseItemDto>of(nowViewingItem);
+      return this;
+    }
+    public SessionInfoDto.Builder nowViewingItem(JsonNullable<BaseItemDto> nowViewingItem) {
+      this.instance.nowViewingItem = nowViewingItem;
+      return this;
+    }
+    public SessionInfoDto.Builder deviceId(String deviceId) {
+      this.instance.deviceId = JsonNullable.<String>of(deviceId);
+      return this;
+    }
+    public SessionInfoDto.Builder deviceId(JsonNullable<String> deviceId) {
+      this.instance.deviceId = deviceId;
+      return this;
+    }
+    public SessionInfoDto.Builder applicationVersion(String applicationVersion) {
+      this.instance.applicationVersion = JsonNullable.<String>of(applicationVersion);
+      return this;
+    }
+    public SessionInfoDto.Builder applicationVersion(JsonNullable<String> applicationVersion) {
+      this.instance.applicationVersion = applicationVersion;
+      return this;
+    }
+    public SessionInfoDto.Builder transcodingInfo(TranscodingInfo transcodingInfo) {
+      this.instance.transcodingInfo = JsonNullable.<TranscodingInfo>of(transcodingInfo);
+      return this;
+    }
+    public SessionInfoDto.Builder transcodingInfo(JsonNullable<TranscodingInfo> transcodingInfo) {
+      this.instance.transcodingInfo = transcodingInfo;
+      return this;
+    }
+    public SessionInfoDto.Builder isActive(Boolean isActive) {
+      this.instance.isActive = isActive;
+      return this;
+    }
+    public SessionInfoDto.Builder supportsMediaControl(Boolean supportsMediaControl) {
+      this.instance.supportsMediaControl = supportsMediaControl;
+      return this;
+    }
+    public SessionInfoDto.Builder supportsRemoteControl(Boolean supportsRemoteControl) {
+      this.instance.supportsRemoteControl = supportsRemoteControl;
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingQueue(List<QueueItem> nowPlayingQueue) {
+      this.instance.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(nowPlayingQueue);
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingQueue(JsonNullable<List<QueueItem>> nowPlayingQueue) {
+      this.instance.nowPlayingQueue = nowPlayingQueue;
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingQueueFullItems(List<BaseItemDto> nowPlayingQueueFullItems) {
+      this.instance.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>>of(nowPlayingQueueFullItems);
+      return this;
+    }
+    public SessionInfoDto.Builder nowPlayingQueueFullItems(JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
+      this.instance.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
+      return this;
+    }
+    public SessionInfoDto.Builder hasCustomDeviceName(Boolean hasCustomDeviceName) {
+      this.instance.hasCustomDeviceName = hasCustomDeviceName;
+      return this;
+    }
+    public SessionInfoDto.Builder playlistItemId(String playlistItemId) {
+      this.instance.playlistItemId = JsonNullable.<String>of(playlistItemId);
+      return this;
+    }
+    public SessionInfoDto.Builder playlistItemId(JsonNullable<String> playlistItemId) {
+      this.instance.playlistItemId = playlistItemId;
+      return this;
+    }
+    public SessionInfoDto.Builder serverId(String serverId) {
+      this.instance.serverId = JsonNullable.<String>of(serverId);
+      return this;
+    }
+    public SessionInfoDto.Builder serverId(JsonNullable<String> serverId) {
+      this.instance.serverId = serverId;
+      return this;
+    }
+    public SessionInfoDto.Builder userPrimaryImageTag(String userPrimaryImageTag) {
+      this.instance.userPrimaryImageTag = JsonNullable.<String>of(userPrimaryImageTag);
+      return this;
+    }
+    public SessionInfoDto.Builder userPrimaryImageTag(JsonNullable<String> userPrimaryImageTag) {
+      this.instance.userPrimaryImageTag = userPrimaryImageTag;
+      return this;
+    }
+    public SessionInfoDto.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
+      this.instance.supportedCommands = supportedCommands;
+      return this;
     }
 
-    public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
-    }
-
-    public SessionInfoDto supportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
-
-        this.supportedCommands = supportedCommands;
-        return this;
-    }
-
-    public SessionInfoDto addSupportedCommandsItem(GeneralCommandType supportedCommandsItem) {
-        if (this.supportedCommands == null) {
-            this.supportedCommands = new ArrayList<>();
-        }
-        this.supportedCommands.add(supportedCommandsItem);
-        return this;
-    }
 
     /**
-     * Gets or sets the supported commands.
-     * 
-     * @return supportedCommands
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<GeneralCommandType> getSupportedCommands() {
-        return supportedCommands;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setSupportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
-        this.supportedCommands = supportedCommands;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        SessionInfoDto sessionInfoDto = (SessionInfoDto) o;
-        return equalsNullable(this.playState, sessionInfoDto.playState)
-                && equalsNullable(this.additionalUsers, sessionInfoDto.additionalUsers)
-                && equalsNullable(this.capabilities, sessionInfoDto.capabilities)
-                && equalsNullable(this.remoteEndPoint, sessionInfoDto.remoteEndPoint)
-                && Objects.equals(this.playableMediaTypes, sessionInfoDto.playableMediaTypes)
-                && equalsNullable(this.id, sessionInfoDto.id) && Objects.equals(this.userId, sessionInfoDto.userId)
-                && equalsNullable(this.userName, sessionInfoDto.userName)
-                && equalsNullable(this.client, sessionInfoDto.client)
-                && Objects.equals(this.lastActivityDate, sessionInfoDto.lastActivityDate)
-                && Objects.equals(this.lastPlaybackCheckIn, sessionInfoDto.lastPlaybackCheckIn)
-                && equalsNullable(this.lastPausedDate, sessionInfoDto.lastPausedDate)
-                && equalsNullable(this.deviceName, sessionInfoDto.deviceName)
-                && equalsNullable(this.deviceType, sessionInfoDto.deviceType)
-                && equalsNullable(this.nowPlayingItem, sessionInfoDto.nowPlayingItem)
-                && equalsNullable(this.nowViewingItem, sessionInfoDto.nowViewingItem)
-                && equalsNullable(this.deviceId, sessionInfoDto.deviceId)
-                && equalsNullable(this.applicationVersion, sessionInfoDto.applicationVersion)
-                && equalsNullable(this.transcodingInfo, sessionInfoDto.transcodingInfo)
-                && Objects.equals(this.isActive, sessionInfoDto.isActive)
-                && Objects.equals(this.supportsMediaControl, sessionInfoDto.supportsMediaControl)
-                && Objects.equals(this.supportsRemoteControl, sessionInfoDto.supportsRemoteControl)
-                && equalsNullable(this.nowPlayingQueue, sessionInfoDto.nowPlayingQueue)
-                && equalsNullable(this.nowPlayingQueueFullItems, sessionInfoDto.nowPlayingQueueFullItems)
-                && Objects.equals(this.hasCustomDeviceName, sessionInfoDto.hasCustomDeviceName)
-                && equalsNullable(this.playlistItemId, sessionInfoDto.playlistItemId)
-                && equalsNullable(this.serverId, sessionInfoDto.serverId)
-                && equalsNullable(this.userPrimaryImageTag, sessionInfoDto.userPrimaryImageTag)
-                && Objects.equals(this.supportedCommands, sessionInfoDto.supportedCommands);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(playState), hashCodeNullable(additionalUsers),
-                hashCodeNullable(capabilities), hashCodeNullable(remoteEndPoint), playableMediaTypes,
-                hashCodeNullable(id), userId, hashCodeNullable(userName), hashCodeNullable(client), lastActivityDate,
-                lastPlaybackCheckIn, hashCodeNullable(lastPausedDate), hashCodeNullable(deviceName),
-                hashCodeNullable(deviceType), hashCodeNullable(nowPlayingItem), hashCodeNullable(nowViewingItem),
-                hashCodeNullable(deviceId), hashCodeNullable(applicationVersion), hashCodeNullable(transcodingInfo),
-                isActive, supportsMediaControl, supportsRemoteControl, hashCodeNullable(nowPlayingQueue),
-                hashCodeNullable(nowPlayingQueueFullItems), hasCustomDeviceName, hashCodeNullable(playlistItemId),
-                hashCodeNullable(serverId), hashCodeNullable(userPrimaryImageTag), supportedCommands);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built SessionInfoDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public SessionInfoDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class SessionInfoDto {\n");
-        sb.append("    playState: ").append(toIndentedString(playState)).append("\n");
-        sb.append("    additionalUsers: ").append(toIndentedString(additionalUsers)).append("\n");
-        sb.append("    capabilities: ").append(toIndentedString(capabilities)).append("\n");
-        sb.append("    remoteEndPoint: ").append(toIndentedString(remoteEndPoint)).append("\n");
-        sb.append("    playableMediaTypes: ").append(toIndentedString(playableMediaTypes)).append("\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    userName: ").append(toIndentedString(userName)).append("\n");
-        sb.append("    client: ").append(toIndentedString(client)).append("\n");
-        sb.append("    lastActivityDate: ").append(toIndentedString(lastActivityDate)).append("\n");
-        sb.append("    lastPlaybackCheckIn: ").append(toIndentedString(lastPlaybackCheckIn)).append("\n");
-        sb.append("    lastPausedDate: ").append(toIndentedString(lastPausedDate)).append("\n");
-        sb.append("    deviceName: ").append(toIndentedString(deviceName)).append("\n");
-        sb.append("    deviceType: ").append(toIndentedString(deviceType)).append("\n");
-        sb.append("    nowPlayingItem: ").append(toIndentedString(nowPlayingItem)).append("\n");
-        sb.append("    nowViewingItem: ").append(toIndentedString(nowViewingItem)).append("\n");
-        sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
-        sb.append("    applicationVersion: ").append(toIndentedString(applicationVersion)).append("\n");
-        sb.append("    transcodingInfo: ").append(toIndentedString(transcodingInfo)).append("\n");
-        sb.append("    isActive: ").append(toIndentedString(isActive)).append("\n");
-        sb.append("    supportsMediaControl: ").append(toIndentedString(supportsMediaControl)).append("\n");
-        sb.append("    supportsRemoteControl: ").append(toIndentedString(supportsRemoteControl)).append("\n");
-        sb.append("    nowPlayingQueue: ").append(toIndentedString(nowPlayingQueue)).append("\n");
-        sb.append("    nowPlayingQueueFullItems: ").append(toIndentedString(nowPlayingQueueFullItems)).append("\n");
-        sb.append("    hasCustomDeviceName: ").append(toIndentedString(hasCustomDeviceName)).append("\n");
-        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-        sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
-        sb.append("    userPrimaryImageTag: ").append(toIndentedString(userPrimaryImageTag)).append("\n");
-        sb.append("    supportedCommands: ").append(toIndentedString(supportedCommands)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static SessionInfoDto.Builder builder() {
+    return new SessionInfoDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public SessionInfoDto.Builder toBuilder() {
+    return new SessionInfoDto.Builder()
+      .playState(getPlayState())
+      .additionalUsers(getAdditionalUsers())
+      .capabilities(getCapabilities())
+      .remoteEndPoint(getRemoteEndPoint())
+      .playableMediaTypes(getPlayableMediaTypes())
+      .id(getId())
+      .userId(getUserId())
+      .userName(getUserName())
+      .client(getClient())
+      .lastActivityDate(getLastActivityDate())
+      .lastPlaybackCheckIn(getLastPlaybackCheckIn())
+      .lastPausedDate(getLastPausedDate())
+      .deviceName(getDeviceName())
+      .deviceType(getDeviceType())
+      .nowPlayingItem(getNowPlayingItem())
+      .nowViewingItem(getNowViewingItem())
+      .deviceId(getDeviceId())
+      .applicationVersion(getApplicationVersion())
+      .transcodingInfo(getTranscodingInfo())
+      .isActive(getIsActive())
+      .supportsMediaControl(getSupportsMediaControl())
+      .supportsRemoteControl(getSupportsRemoteControl())
+      .nowPlayingQueue(getNowPlayingQueue())
+      .nowPlayingQueueFullItems(getNowPlayingQueueFullItems())
+      .hasCustomDeviceName(getHasCustomDeviceName())
+      .playlistItemId(getPlaylistItemId())
+      .serverId(getServerId())
+      .userPrimaryImageTag(getUserPrimaryImageTag())
+      .supportedCommands(getSupportedCommands());
+  }
 
-        private SessionInfoDto instance;
 
-        public Builder() {
-            this(new SessionInfoDto());
-        }
-
-        protected Builder(SessionInfoDto instance) {
-            this.instance = instance;
-        }
-
-        public SessionInfoDto.Builder playState(PlayerStateInfo playState) {
-            this.instance.playState = JsonNullable.<PlayerStateInfo> of(playState);
-            return this;
-        }
-
-        public SessionInfoDto.Builder playState(JsonNullable<PlayerStateInfo> playState) {
-            this.instance.playState = playState;
-            return this;
-        }
-
-        public SessionInfoDto.Builder additionalUsers(List<SessionUserInfo> additionalUsers) {
-            this.instance.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
-            return this;
-        }
-
-        public SessionInfoDto.Builder additionalUsers(JsonNullable<List<SessionUserInfo>> additionalUsers) {
-            this.instance.additionalUsers = additionalUsers;
-            return this;
-        }
-
-        public SessionInfoDto.Builder capabilities(ClientCapabilitiesDto capabilities) {
-            this.instance.capabilities = JsonNullable.<ClientCapabilitiesDto> of(capabilities);
-            return this;
-        }
-
-        public SessionInfoDto.Builder capabilities(JsonNullable<ClientCapabilitiesDto> capabilities) {
-            this.instance.capabilities = capabilities;
-            return this;
-        }
-
-        public SessionInfoDto.Builder remoteEndPoint(String remoteEndPoint) {
-            this.instance.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
-            return this;
-        }
-
-        public SessionInfoDto.Builder remoteEndPoint(JsonNullable<String> remoteEndPoint) {
-            this.instance.remoteEndPoint = remoteEndPoint;
-            return this;
-        }
-
-        public SessionInfoDto.Builder playableMediaTypes(List<MediaType> playableMediaTypes) {
-            this.instance.playableMediaTypes = playableMediaTypes;
-            return this;
-        }
-
-        public SessionInfoDto.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public SessionInfoDto.Builder id(JsonNullable<String> id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public SessionInfoDto.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public SessionInfoDto.Builder userName(String userName) {
-            this.instance.userName = JsonNullable.<String> of(userName);
-            return this;
-        }
-
-        public SessionInfoDto.Builder userName(JsonNullable<String> userName) {
-            this.instance.userName = userName;
-            return this;
-        }
-
-        public SessionInfoDto.Builder client(String client) {
-            this.instance.client = JsonNullable.<String> of(client);
-            return this;
-        }
-
-        public SessionInfoDto.Builder client(JsonNullable<String> client) {
-            this.instance.client = client;
-            return this;
-        }
-
-        public SessionInfoDto.Builder lastActivityDate(OffsetDateTime lastActivityDate) {
-            this.instance.lastActivityDate = lastActivityDate;
-            return this;
-        }
-
-        public SessionInfoDto.Builder lastPlaybackCheckIn(OffsetDateTime lastPlaybackCheckIn) {
-            this.instance.lastPlaybackCheckIn = lastPlaybackCheckIn;
-            return this;
-        }
-
-        public SessionInfoDto.Builder lastPausedDate(OffsetDateTime lastPausedDate) {
-            this.instance.lastPausedDate = JsonNullable.<OffsetDateTime> of(lastPausedDate);
-            return this;
-        }
-
-        public SessionInfoDto.Builder lastPausedDate(JsonNullable<OffsetDateTime> lastPausedDate) {
-            this.instance.lastPausedDate = lastPausedDate;
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceName(String deviceName) {
-            this.instance.deviceName = JsonNullable.<String> of(deviceName);
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceName(JsonNullable<String> deviceName) {
-            this.instance.deviceName = deviceName;
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceType(String deviceType) {
-            this.instance.deviceType = JsonNullable.<String> of(deviceType);
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceType(JsonNullable<String> deviceType) {
-            this.instance.deviceType = deviceType;
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingItem(BaseItemDto nowPlayingItem) {
-            this.instance.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingItem(JsonNullable<BaseItemDto> nowPlayingItem) {
-            this.instance.nowPlayingItem = nowPlayingItem;
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowViewingItem(BaseItemDto nowViewingItem) {
-            this.instance.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowViewingItem(JsonNullable<BaseItemDto> nowViewingItem) {
-            this.instance.nowViewingItem = nowViewingItem;
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceId(String deviceId) {
-            this.instance.deviceId = JsonNullable.<String> of(deviceId);
-            return this;
-        }
-
-        public SessionInfoDto.Builder deviceId(JsonNullable<String> deviceId) {
-            this.instance.deviceId = deviceId;
-            return this;
-        }
-
-        public SessionInfoDto.Builder applicationVersion(String applicationVersion) {
-            this.instance.applicationVersion = JsonNullable.<String> of(applicationVersion);
-            return this;
-        }
-
-        public SessionInfoDto.Builder applicationVersion(JsonNullable<String> applicationVersion) {
-            this.instance.applicationVersion = applicationVersion;
-            return this;
-        }
-
-        public SessionInfoDto.Builder transcodingInfo(TranscodingInfo transcodingInfo) {
-            this.instance.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
-            return this;
-        }
-
-        public SessionInfoDto.Builder transcodingInfo(JsonNullable<TranscodingInfo> transcodingInfo) {
-            this.instance.transcodingInfo = transcodingInfo;
-            return this;
-        }
-
-        public SessionInfoDto.Builder isActive(Boolean isActive) {
-            this.instance.isActive = isActive;
-            return this;
-        }
-
-        public SessionInfoDto.Builder supportsMediaControl(Boolean supportsMediaControl) {
-            this.instance.supportsMediaControl = supportsMediaControl;
-            return this;
-        }
-
-        public SessionInfoDto.Builder supportsRemoteControl(Boolean supportsRemoteControl) {
-            this.instance.supportsRemoteControl = supportsRemoteControl;
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingQueue(List<QueueItem> nowPlayingQueue) {
-            this.instance.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingQueue(JsonNullable<List<QueueItem>> nowPlayingQueue) {
-            this.instance.nowPlayingQueue = nowPlayingQueue;
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingQueueFullItems(List<BaseItemDto> nowPlayingQueueFullItems) {
-            this.instance.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
-            return this;
-        }
-
-        public SessionInfoDto.Builder nowPlayingQueueFullItems(
-                JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
-            this.instance.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
-            return this;
-        }
-
-        public SessionInfoDto.Builder hasCustomDeviceName(Boolean hasCustomDeviceName) {
-            this.instance.hasCustomDeviceName = hasCustomDeviceName;
-            return this;
-        }
-
-        public SessionInfoDto.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = JsonNullable.<String> of(playlistItemId);
-            return this;
-        }
-
-        public SessionInfoDto.Builder playlistItemId(JsonNullable<String> playlistItemId) {
-            this.instance.playlistItemId = playlistItemId;
-            return this;
-        }
-
-        public SessionInfoDto.Builder serverId(String serverId) {
-            this.instance.serverId = JsonNullable.<String> of(serverId);
-            return this;
-        }
-
-        public SessionInfoDto.Builder serverId(JsonNullable<String> serverId) {
-            this.instance.serverId = serverId;
-            return this;
-        }
-
-        public SessionInfoDto.Builder userPrimaryImageTag(String userPrimaryImageTag) {
-            this.instance.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
-            return this;
-        }
-
-        public SessionInfoDto.Builder userPrimaryImageTag(JsonNullable<String> userPrimaryImageTag) {
-            this.instance.userPrimaryImageTag = userPrimaryImageTag;
-            return this;
-        }
-
-        public SessionInfoDto.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
-            this.instance.supportedCommands = supportedCommands;
-            return this;
-        }
-
-        /**
-         * returns a built SessionInfoDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public SessionInfoDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static SessionInfoDto.Builder builder() {
-        return new SessionInfoDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public SessionInfoDto.Builder toBuilder() {
-        return new SessionInfoDto.Builder().playState(getPlayState()).additionalUsers(getAdditionalUsers())
-                .capabilities(getCapabilities()).remoteEndPoint(getRemoteEndPoint())
-                .playableMediaTypes(getPlayableMediaTypes()).id(getId()).userId(getUserId()).userName(getUserName())
-                .client(getClient()).lastActivityDate(getLastActivityDate())
-                .lastPlaybackCheckIn(getLastPlaybackCheckIn()).lastPausedDate(getLastPausedDate())
-                .deviceName(getDeviceName()).deviceType(getDeviceType()).nowPlayingItem(getNowPlayingItem())
-                .nowViewingItem(getNowViewingItem()).deviceId(getDeviceId()).applicationVersion(getApplicationVersion())
-                .transcodingInfo(getTranscodingInfo()).isActive(getIsActive())
-                .supportsMediaControl(getSupportsMediaControl()).supportsRemoteControl(getSupportsRemoteControl())
-                .nowPlayingQueue(getNowPlayingQueue()).nowPlayingQueueFullItems(getNowPlayingQueueFullItems())
-                .hasCustomDeviceName(getHasCustomDeviceName()).playlistItemId(getPlaylistItemId())
-                .serverId(getServerId()).userPrimaryImageTag(getUserPrimaryImageTag())
-                .supportedCommands(getSupportedCommands());
-    }
 }
+

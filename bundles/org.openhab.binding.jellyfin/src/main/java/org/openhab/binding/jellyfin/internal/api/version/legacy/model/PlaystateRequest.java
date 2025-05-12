@@ -17,253 +17,261 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlaystateCommand;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * PlaystateRequest
  */
-@JsonPropertyOrder({ PlaystateRequest.JSON_PROPERTY_COMMAND, PlaystateRequest.JSON_PROPERTY_SEEK_POSITION_TICKS,
-        PlaystateRequest.JSON_PROPERTY_CONTROLLING_USER_ID })
+@JsonPropertyOrder({
+  PlaystateRequest.JSON_PROPERTY_COMMAND,
+  PlaystateRequest.JSON_PROPERTY_SEEK_POSITION_TICKS,
+  PlaystateRequest.JSON_PROPERTY_CONTROLLING_USER_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlaystateRequest {
-    public static final String JSON_PROPERTY_COMMAND = "Command";
-    @javax.annotation.Nullable
-    private PlaystateCommand command;
+  public static final String JSON_PROPERTY_COMMAND = "Command";
+  @javax.annotation.Nullable
+  private PlaystateCommand command;
 
-    public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> seekPositionTicks = JsonNullable.<Long> undefined();
+  public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> seekPositionTicks = JsonNullable.<Long>undefined();
 
-    public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> controllingUserId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> controllingUserId = JsonNullable.<String>undefined();
 
-    public PlaystateRequest() {
-    }
+  public PlaystateRequest() {
+  }
 
-    public PlaystateRequest command(@javax.annotation.Nullable PlaystateCommand command) {
+  public PlaystateRequest command(@javax.annotation.Nullable PlaystateCommand command) {
+    
+    this.command = command;
+    return this;
+  }
 
-        this.command = command;
-        return this;
-    }
+  /**
+   * Enum PlaystateCommand.
+   * @return command
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Enum PlaystateCommand.
-     * 
-     * @return command
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_COMMAND)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public PlaystateCommand getCommand() {
+    return command;
+  }
 
-    public PlaystateCommand getCommand() {
-        return command;
-    }
 
-    @JsonProperty(JSON_PROPERTY_COMMAND)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCommand(@javax.annotation.Nullable PlaystateCommand command) {
-        this.command = command;
-    }
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCommand(@javax.annotation.Nullable PlaystateCommand command) {
+    this.command = command;
+  }
 
-    public PlaystateRequest seekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-        this.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
+  public PlaystateRequest seekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
+    this.seekPositionTicks = JsonNullable.<Long>of(seekPositionTicks);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Get seekPositionTicks
+   * @return seekPositionTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Get seekPositionTicks
-     * 
-     * @return seekPositionTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getSeekPositionTicks() {
+  public Long getSeekPositionTicks() {
         return seekPositionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getSeekPositionTicks_JsonNullable() {
+    return seekPositionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+  public void setSeekPositionTicks_JsonNullable(JsonNullable<Long> seekPositionTicks) {
+    this.seekPositionTicks = seekPositionTicks;
+  }
+
+  public void setSeekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
+    this.seekPositionTicks = JsonNullable.<Long>of(seekPositionTicks);
+  }
+
+  public PlaystateRequest controllingUserId(@javax.annotation.Nullable String controllingUserId) {
+    this.controllingUserId = JsonNullable.<String>of(controllingUserId);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the controlling user identifier.
+   * @return controllingUserId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getControllingUserId() {
+        return controllingUserId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getControllingUserId_JsonNullable() {
+    return controllingUserId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  public void setControllingUserId_JsonNullable(JsonNullable<String> controllingUserId) {
+    this.controllingUserId = controllingUserId;
+  }
+
+  public void setControllingUserId(@javax.annotation.Nullable String controllingUserId) {
+    this.controllingUserId = JsonNullable.<String>of(controllingUserId);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PlaystateRequest playstateRequest = (PlaystateRequest) o;
+    return Objects.equals(this.command, playstateRequest.command) &&
+        equalsNullable(this.seekPositionTicks, playstateRequest.seekPositionTicks) &&
+        equalsNullable(this.controllingUserId, playstateRequest.controllingUserId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(command, hashCodeNullable(seekPositionTicks), hashCodeNullable(controllingUserId));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PlaystateRequest {\n");
+    sb.append("    command: ").append(toIndentedString(command)).append("\n");
+    sb.append("    seekPositionTicks: ").append(toIndentedString(seekPositionTicks)).append("\n");
+    sb.append("    controllingUserId: ").append(toIndentedString(controllingUserId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PlaystateRequest instance;
+
+    public Builder() {
+      this(new PlaystateRequest());
     }
 
-    @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<Long> getSeekPositionTicks_JsonNullable() {
-        return seekPositionTicks;
+    protected Builder(PlaystateRequest instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
-    public void setSeekPositionTicks_JsonNullable(JsonNullable<Long> seekPositionTicks) {
-        this.seekPositionTicks = seekPositionTicks;
+    public PlaystateRequest.Builder command(PlaystateCommand command) {
+      this.instance.command = command;
+      return this;
+    }
+    public PlaystateRequest.Builder seekPositionTicks(Long seekPositionTicks) {
+      this.instance.seekPositionTicks = JsonNullable.<Long>of(seekPositionTicks);
+      return this;
+    }
+    public PlaystateRequest.Builder seekPositionTicks(JsonNullable<Long> seekPositionTicks) {
+      this.instance.seekPositionTicks = seekPositionTicks;
+      return this;
+    }
+    public PlaystateRequest.Builder controllingUserId(String controllingUserId) {
+      this.instance.controllingUserId = JsonNullable.<String>of(controllingUserId);
+      return this;
+    }
+    public PlaystateRequest.Builder controllingUserId(JsonNullable<String> controllingUserId) {
+      this.instance.controllingUserId = controllingUserId;
+      return this;
     }
 
-    public void setSeekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-        this.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
-    }
-
-    public PlaystateRequest controllingUserId(@javax.annotation.Nullable String controllingUserId) {
-        this.controllingUserId = JsonNullable.<String> of(controllingUserId);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the controlling user identifier.
-     * 
-     * @return controllingUserId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getControllingUserId() {
-        return controllingUserId.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getControllingUserId_JsonNullable() {
-        return controllingUserId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
-    public void setControllingUserId_JsonNullable(JsonNullable<String> controllingUserId) {
-        this.controllingUserId = controllingUserId;
-    }
-
-    public void setControllingUserId(@javax.annotation.Nullable String controllingUserId) {
-        this.controllingUserId = JsonNullable.<String> of(controllingUserId);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PlaystateRequest playstateRequest = (PlaystateRequest) o;
-        return Objects.equals(this.command, playstateRequest.command)
-                && equalsNullable(this.seekPositionTicks, playstateRequest.seekPositionTicks)
-                && equalsNullable(this.controllingUserId, playstateRequest.controllingUserId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(command, hashCodeNullable(seekPositionTicks), hashCodeNullable(controllingUserId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built PlaystateRequest instance.
+    *
+    * The builder is not reusable.
+    */
+    public PlaystateRequest build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PlaystateRequest {\n");
-        sb.append("    command: ").append(toIndentedString(command)).append("\n");
-        sb.append("    seekPositionTicks: ").append(toIndentedString(seekPositionTicks)).append("\n");
-        sb.append("    controllingUserId: ").append(toIndentedString(controllingUserId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PlaystateRequest.Builder builder() {
+    return new PlaystateRequest.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PlaystateRequest.Builder toBuilder() {
+    return new PlaystateRequest.Builder()
+      .command(getCommand())
+      .seekPositionTicks(getSeekPositionTicks())
+      .controllingUserId(getControllingUserId());
+  }
 
-        private PlaystateRequest instance;
 
-        public Builder() {
-            this(new PlaystateRequest());
-        }
-
-        protected Builder(PlaystateRequest instance) {
-            this.instance = instance;
-        }
-
-        public PlaystateRequest.Builder command(PlaystateCommand command) {
-            this.instance.command = command;
-            return this;
-        }
-
-        public PlaystateRequest.Builder seekPositionTicks(Long seekPositionTicks) {
-            this.instance.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
-            return this;
-        }
-
-        public PlaystateRequest.Builder seekPositionTicks(JsonNullable<Long> seekPositionTicks) {
-            this.instance.seekPositionTicks = seekPositionTicks;
-            return this;
-        }
-
-        public PlaystateRequest.Builder controllingUserId(String controllingUserId) {
-            this.instance.controllingUserId = JsonNullable.<String> of(controllingUserId);
-            return this;
-        }
-
-        public PlaystateRequest.Builder controllingUserId(JsonNullable<String> controllingUserId) {
-            this.instance.controllingUserId = controllingUserId;
-            return this;
-        }
-
-        /**
-         * returns a built PlaystateRequest instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlaystateRequest build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlaystateRequest.Builder builder() {
-        return new PlaystateRequest.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlaystateRequest.Builder toBuilder() {
-        return new PlaystateRequest.Builder().command(getCommand()).seekPositionTicks(getSeekPositionTicks())
-                .controllingUserId(getControllingUserId());
-    }
 }
+

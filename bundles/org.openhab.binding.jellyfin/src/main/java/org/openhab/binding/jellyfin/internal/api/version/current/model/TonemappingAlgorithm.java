@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,46 +29,47 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing tonemapping algorithms.
  */
 public enum TonemappingAlgorithm {
+  
+  NONE("none"),
+  
+  CLIP("clip"),
+  
+  LINEAR("linear"),
+  
+  GAMMA("gamma"),
+  
+  REINHARD("reinhard"),
+  
+  HABLE("hable"),
+  
+  MOBIUS("mobius"),
+  
+  BT2390("bt2390");
 
-    NONE("none"),
+  private String value;
 
-    CLIP("clip"),
+  TonemappingAlgorithm(String value) {
+    this.value = value;
+  }
 
-    LINEAR("linear"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    GAMMA("gamma"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    REINHARD("reinhard"),
-
-    HABLE("hable"),
-
-    MOBIUS("mobius"),
-
-    BT2390("bt2390");
-
-    private String value;
-
-    TonemappingAlgorithm(String value) {
-        this.value = value;
+  @JsonCreator
+  public static TonemappingAlgorithm fromValue(String value) {
+    for (TonemappingAlgorithm b : TonemappingAlgorithm.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TonemappingAlgorithm fromValue(String value) {
-        for (TonemappingAlgorithm b : TonemappingAlgorithm.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

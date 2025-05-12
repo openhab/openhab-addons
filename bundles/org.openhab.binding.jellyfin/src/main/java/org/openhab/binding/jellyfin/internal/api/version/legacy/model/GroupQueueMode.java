@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,34 +29,35 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupQueueMode.
  */
 public enum GroupQueueMode {
+  
+  QUEUE("Queue"),
+  
+  QUEUE_NEXT("QueueNext");
 
-    QUEUE("Queue"),
+  private String value;
 
-    QUEUE_NEXT("QueueNext");
+  GroupQueueMode(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    GroupQueueMode(String value) {
-        this.value = value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static GroupQueueMode fromValue(String value) {
+    for (GroupQueueMode b : GroupQueueMode.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static GroupQueueMode fromValue(String value) {
-        for (GroupQueueMode b : GroupQueueMode.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

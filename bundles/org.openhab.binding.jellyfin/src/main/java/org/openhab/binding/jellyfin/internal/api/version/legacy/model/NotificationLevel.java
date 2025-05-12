@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,36 +29,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets NotificationLevel
  */
 public enum NotificationLevel {
+  
+  NORMAL("Normal"),
+  
+  WARNING("Warning"),
+  
+  ERROR("Error");
 
-    NORMAL("Normal"),
+  private String value;
 
-    WARNING("Warning"),
+  NotificationLevel(String value) {
+    this.value = value;
+  }
 
-    ERROR("Error");
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    private String value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    NotificationLevel(String value) {
-        this.value = value;
+  @JsonCreator
+  public static NotificationLevel fromValue(String value) {
+    for (NotificationLevel b : NotificationLevel.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static NotificationLevel fromValue(String value) {
-        for (NotificationLevel b : NotificationLevel.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

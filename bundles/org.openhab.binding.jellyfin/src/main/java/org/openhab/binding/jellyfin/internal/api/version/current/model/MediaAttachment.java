@@ -17,456 +17,456 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class MediaAttachment.
  */
-@JsonPropertyOrder({ MediaAttachment.JSON_PROPERTY_CODEC, MediaAttachment.JSON_PROPERTY_CODEC_TAG,
-        MediaAttachment.JSON_PROPERTY_COMMENT, MediaAttachment.JSON_PROPERTY_INDEX,
-        MediaAttachment.JSON_PROPERTY_FILE_NAME, MediaAttachment.JSON_PROPERTY_MIME_TYPE,
-        MediaAttachment.JSON_PROPERTY_DELIVERY_URL })
+@JsonPropertyOrder({
+  MediaAttachment.JSON_PROPERTY_CODEC,
+  MediaAttachment.JSON_PROPERTY_CODEC_TAG,
+  MediaAttachment.JSON_PROPERTY_COMMENT,
+  MediaAttachment.JSON_PROPERTY_INDEX,
+  MediaAttachment.JSON_PROPERTY_FILE_NAME,
+  MediaAttachment.JSON_PROPERTY_MIME_TYPE,
+  MediaAttachment.JSON_PROPERTY_DELIVERY_URL
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaAttachment {
-    public static final String JSON_PROPERTY_CODEC = "Codec";
-    @javax.annotation.Nullable
-    private JsonNullable<String> codec = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CODEC = "Codec";
+  @javax.annotation.Nullable
+  private JsonNullable<String> codec = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
-    @javax.annotation.Nullable
-    private JsonNullable<String> codecTag = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
+  @javax.annotation.Nullable
+  private JsonNullable<String> codecTag = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_COMMENT = "Comment";
-    @javax.annotation.Nullable
-    private JsonNullable<String> comment = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_COMMENT = "Comment";
+  @javax.annotation.Nullable
+  private JsonNullable<String> comment = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_INDEX = "Index";
-    @javax.annotation.Nullable
-    private Integer index;
+  public static final String JSON_PROPERTY_INDEX = "Index";
+  @javax.annotation.Nullable
+  private Integer index;
 
-    public static final String JSON_PROPERTY_FILE_NAME = "FileName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> fileName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_FILE_NAME = "FileName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> fileName = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
-    @javax.annotation.Nullable
-    private JsonNullable<String> mimeType = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
+  @javax.annotation.Nullable
+  private JsonNullable<String> mimeType = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> deliveryUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> deliveryUrl = JsonNullable.<String>undefined();
 
-    public MediaAttachment() {
-    }
+  public MediaAttachment() {
+  }
 
-    public MediaAttachment codec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
+  public MediaAttachment codec(@javax.annotation.Nullable String codec) {
+    this.codec = JsonNullable.<String>of(codec);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the codec.
+   * @return codec
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the codec.
-     * 
-     * @return codec
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCodec() {
+  public String getCodec() {
         return codec.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCodec_JsonNullable() {
-        return codec;
-    }
+  public JsonNullable<String> getCodec_JsonNullable() {
+    return codec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    this.codec = codec;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
-    public void setCodec_JsonNullable(JsonNullable<String> codec) {
-        this.codec = codec;
-    }
+  public void setCodec(@javax.annotation.Nullable String codec) {
+    this.codec = JsonNullable.<String>of(codec);
+  }
 
-    public void setCodec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
-    }
+  public MediaAttachment codecTag(@javax.annotation.Nullable String codecTag) {
+    this.codecTag = JsonNullable.<String>of(codecTag);
+    
+    return this;
+  }
 
-    public MediaAttachment codecTag(@javax.annotation.Nullable String codecTag) {
-        this.codecTag = JsonNullable.<String> of(codecTag);
+  /**
+   * Gets or sets the codec tag.
+   * @return codecTag
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the codec tag.
-     * 
-     * @return codecTag
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCodecTag() {
+  public String getCodecTag() {
         return codecTag.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCodecTag_JsonNullable() {
-        return codecTag;
-    }
+  public JsonNullable<String> getCodecTag_JsonNullable() {
+    return codecTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
+    this.codecTag = codecTag;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
-    public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
-        this.codecTag = codecTag;
-    }
+  public void setCodecTag(@javax.annotation.Nullable String codecTag) {
+    this.codecTag = JsonNullable.<String>of(codecTag);
+  }
 
-    public void setCodecTag(@javax.annotation.Nullable String codecTag) {
-        this.codecTag = JsonNullable.<String> of(codecTag);
-    }
+  public MediaAttachment comment(@javax.annotation.Nullable String comment) {
+    this.comment = JsonNullable.<String>of(comment);
+    
+    return this;
+  }
 
-    public MediaAttachment comment(@javax.annotation.Nullable String comment) {
-        this.comment = JsonNullable.<String> of(comment);
+  /**
+   * Gets or sets the comment.
+   * @return comment
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the comment.
-     * 
-     * @return comment
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getComment() {
+  public String getComment() {
         return comment.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getComment_JsonNullable() {
-        return comment;
-    }
+  public JsonNullable<String> getComment_JsonNullable() {
+    return comment;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  public void setComment_JsonNullable(JsonNullable<String> comment) {
+    this.comment = comment;
+  }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
-    public void setComment_JsonNullable(JsonNullable<String> comment) {
-        this.comment = comment;
-    }
+  public void setComment(@javax.annotation.Nullable String comment) {
+    this.comment = JsonNullable.<String>of(comment);
+  }
 
-    public void setComment(@javax.annotation.Nullable String comment) {
-        this.comment = JsonNullable.<String> of(comment);
-    }
+  public MediaAttachment index(@javax.annotation.Nullable Integer index) {
+    
+    this.index = index;
+    return this;
+  }
 
-    public MediaAttachment index(@javax.annotation.Nullable Integer index) {
+  /**
+   * Gets or sets the index.
+   * @return index
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.index = index;
-        return this;
-    }
+  public Integer getIndex() {
+    return index;
+  }
 
-    /**
-     * Gets or sets the index.
-     * 
-     * @return index
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Integer getIndex() {
-        return index;
-    }
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIndex(@javax.annotation.Nullable Integer index) {
+    this.index = index;
+  }
 
-    @JsonProperty(JSON_PROPERTY_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIndex(@javax.annotation.Nullable Integer index) {
-        this.index = index;
-    }
+  public MediaAttachment fileName(@javax.annotation.Nullable String fileName) {
+    this.fileName = JsonNullable.<String>of(fileName);
+    
+    return this;
+  }
 
-    public MediaAttachment fileName(@javax.annotation.Nullable String fileName) {
-        this.fileName = JsonNullable.<String> of(fileName);
+  /**
+   * Gets or sets the filename.
+   * @return fileName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the filename.
-     * 
-     * @return fileName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFileName() {
+  public String getFileName() {
         return fileName.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_FILE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFileName_JsonNullable() {
-        return fileName;
-    }
+  public JsonNullable<String> getFileName_JsonNullable() {
+    return fileName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FILE_NAME)
+  public void setFileName_JsonNullable(JsonNullable<String> fileName) {
+    this.fileName = fileName;
+  }
 
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
-    public void setFileName_JsonNullable(JsonNullable<String> fileName) {
-        this.fileName = fileName;
-    }
+  public void setFileName(@javax.annotation.Nullable String fileName) {
+    this.fileName = JsonNullable.<String>of(fileName);
+  }
 
-    public void setFileName(@javax.annotation.Nullable String fileName) {
-        this.fileName = JsonNullable.<String> of(fileName);
-    }
+  public MediaAttachment mimeType(@javax.annotation.Nullable String mimeType) {
+    this.mimeType = JsonNullable.<String>of(mimeType);
+    
+    return this;
+  }
 
-    public MediaAttachment mimeType(@javax.annotation.Nullable String mimeType) {
-        this.mimeType = JsonNullable.<String> of(mimeType);
+  /**
+   * Gets or sets the MIME type.
+   * @return mimeType
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the MIME type.
-     * 
-     * @return mimeType
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMimeType() {
+  public String getMimeType() {
         return mimeType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMimeType_JsonNullable() {
+    return mimeType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+  public void setMimeType_JsonNullable(JsonNullable<String> mimeType) {
+    this.mimeType = mimeType;
+  }
+
+  public void setMimeType(@javax.annotation.Nullable String mimeType) {
+    this.mimeType = JsonNullable.<String>of(mimeType);
+  }
+
+  public MediaAttachment deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
+    
+    return this;
+  }
+
+  /**
+   * Gets or sets the delivery URL.
+   * @return deliveryUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
+
+  public String getDeliveryUrl() {
+        return deliveryUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDeliveryUrl_JsonNullable() {
+    return deliveryUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
+    this.deliveryUrl = deliveryUrl;
+  }
+
+  public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MediaAttachment mediaAttachment = (MediaAttachment) o;
+    return equalsNullable(this.codec, mediaAttachment.codec) &&
+        equalsNullable(this.codecTag, mediaAttachment.codecTag) &&
+        equalsNullable(this.comment, mediaAttachment.comment) &&
+        Objects.equals(this.index, mediaAttachment.index) &&
+        equalsNullable(this.fileName, mediaAttachment.fileName) &&
+        equalsNullable(this.mimeType, mediaAttachment.mimeType) &&
+        equalsNullable(this.deliveryUrl, mediaAttachment.deliveryUrl);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(comment), index, hashCodeNullable(fileName), hashCodeNullable(mimeType), hashCodeNullable(deliveryUrl));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class MediaAttachment {\n");
+    sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
+    sb.append("    codecTag: ").append(toIndentedString(codecTag)).append("\n");
+    sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
+    sb.append("    fileName: ").append(toIndentedString(fileName)).append("\n");
+    sb.append("    mimeType: ").append(toIndentedString(mimeType)).append("\n");
+    sb.append("    deliveryUrl: ").append(toIndentedString(deliveryUrl)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private MediaAttachment instance;
+
+    public Builder() {
+      this(new MediaAttachment());
     }
 
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getMimeType_JsonNullable() {
-        return mimeType;
+    protected Builder(MediaAttachment instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE)
-    public void setMimeType_JsonNullable(JsonNullable<String> mimeType) {
-        this.mimeType = mimeType;
+    public MediaAttachment.Builder codec(String codec) {
+      this.instance.codec = JsonNullable.<String>of(codec);
+      return this;
+    }
+    public MediaAttachment.Builder codec(JsonNullable<String> codec) {
+      this.instance.codec = codec;
+      return this;
+    }
+    public MediaAttachment.Builder codecTag(String codecTag) {
+      this.instance.codecTag = JsonNullable.<String>of(codecTag);
+      return this;
+    }
+    public MediaAttachment.Builder codecTag(JsonNullable<String> codecTag) {
+      this.instance.codecTag = codecTag;
+      return this;
+    }
+    public MediaAttachment.Builder comment(String comment) {
+      this.instance.comment = JsonNullable.<String>of(comment);
+      return this;
+    }
+    public MediaAttachment.Builder comment(JsonNullable<String> comment) {
+      this.instance.comment = comment;
+      return this;
+    }
+    public MediaAttachment.Builder index(Integer index) {
+      this.instance.index = index;
+      return this;
+    }
+    public MediaAttachment.Builder fileName(String fileName) {
+      this.instance.fileName = JsonNullable.<String>of(fileName);
+      return this;
+    }
+    public MediaAttachment.Builder fileName(JsonNullable<String> fileName) {
+      this.instance.fileName = fileName;
+      return this;
+    }
+    public MediaAttachment.Builder mimeType(String mimeType) {
+      this.instance.mimeType = JsonNullable.<String>of(mimeType);
+      return this;
+    }
+    public MediaAttachment.Builder mimeType(JsonNullable<String> mimeType) {
+      this.instance.mimeType = mimeType;
+      return this;
+    }
+    public MediaAttachment.Builder deliveryUrl(String deliveryUrl) {
+      this.instance.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
+      return this;
+    }
+    public MediaAttachment.Builder deliveryUrl(JsonNullable<String> deliveryUrl) {
+      this.instance.deliveryUrl = deliveryUrl;
+      return this;
     }
 
-    public void setMimeType(@javax.annotation.Nullable String mimeType) {
-        this.mimeType = JsonNullable.<String> of(mimeType);
-    }
-
-    public MediaAttachment deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-        this.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
-
-        return this;
-    }
 
     /**
-     * Gets or sets the delivery URL.
-     * 
-     * @return deliveryUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeliveryUrl() {
-        return deliveryUrl.orElse(null);
-    }
-
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getDeliveryUrl_JsonNullable() {
-        return deliveryUrl;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
-    public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
-        this.deliveryUrl = deliveryUrl;
-    }
-
-    public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-        this.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MediaAttachment mediaAttachment = (MediaAttachment) o;
-        return equalsNullable(this.codec, mediaAttachment.codec)
-                && equalsNullable(this.codecTag, mediaAttachment.codecTag)
-                && equalsNullable(this.comment, mediaAttachment.comment)
-                && Objects.equals(this.index, mediaAttachment.index)
-                && equalsNullable(this.fileName, mediaAttachment.fileName)
-                && equalsNullable(this.mimeType, mediaAttachment.mimeType)
-                && equalsNullable(this.deliveryUrl, mediaAttachment.deliveryUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(comment), index,
-                hashCodeNullable(fileName), hashCodeNullable(mimeType), hashCodeNullable(deliveryUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built MediaAttachment instance.
+    *
+    * The builder is not reusable.
+    */
+    public MediaAttachment build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class MediaAttachment {\n");
-        sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
-        sb.append("    codecTag: ").append(toIndentedString(codecTag)).append("\n");
-        sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
-        sb.append("    index: ").append(toIndentedString(index)).append("\n");
-        sb.append("    fileName: ").append(toIndentedString(fileName)).append("\n");
-        sb.append("    mimeType: ").append(toIndentedString(mimeType)).append("\n");
-        sb.append("    deliveryUrl: ").append(toIndentedString(deliveryUrl)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static MediaAttachment.Builder builder() {
+    return new MediaAttachment.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public MediaAttachment.Builder toBuilder() {
+    return new MediaAttachment.Builder()
+      .codec(getCodec())
+      .codecTag(getCodecTag())
+      .comment(getComment())
+      .index(getIndex())
+      .fileName(getFileName())
+      .mimeType(getMimeType())
+      .deliveryUrl(getDeliveryUrl());
+  }
 
-        private MediaAttachment instance;
 
-        public Builder() {
-            this(new MediaAttachment());
-        }
-
-        protected Builder(MediaAttachment instance) {
-            this.instance = instance;
-        }
-
-        public MediaAttachment.Builder codec(String codec) {
-            this.instance.codec = JsonNullable.<String> of(codec);
-            return this;
-        }
-
-        public MediaAttachment.Builder codec(JsonNullable<String> codec) {
-            this.instance.codec = codec;
-            return this;
-        }
-
-        public MediaAttachment.Builder codecTag(String codecTag) {
-            this.instance.codecTag = JsonNullable.<String> of(codecTag);
-            return this;
-        }
-
-        public MediaAttachment.Builder codecTag(JsonNullable<String> codecTag) {
-            this.instance.codecTag = codecTag;
-            return this;
-        }
-
-        public MediaAttachment.Builder comment(String comment) {
-            this.instance.comment = JsonNullable.<String> of(comment);
-            return this;
-        }
-
-        public MediaAttachment.Builder comment(JsonNullable<String> comment) {
-            this.instance.comment = comment;
-            return this;
-        }
-
-        public MediaAttachment.Builder index(Integer index) {
-            this.instance.index = index;
-            return this;
-        }
-
-        public MediaAttachment.Builder fileName(String fileName) {
-            this.instance.fileName = JsonNullable.<String> of(fileName);
-            return this;
-        }
-
-        public MediaAttachment.Builder fileName(JsonNullable<String> fileName) {
-            this.instance.fileName = fileName;
-            return this;
-        }
-
-        public MediaAttachment.Builder mimeType(String mimeType) {
-            this.instance.mimeType = JsonNullable.<String> of(mimeType);
-            return this;
-        }
-
-        public MediaAttachment.Builder mimeType(JsonNullable<String> mimeType) {
-            this.instance.mimeType = mimeType;
-            return this;
-        }
-
-        public MediaAttachment.Builder deliveryUrl(String deliveryUrl) {
-            this.instance.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
-            return this;
-        }
-
-        public MediaAttachment.Builder deliveryUrl(JsonNullable<String> deliveryUrl) {
-            this.instance.deliveryUrl = deliveryUrl;
-            return this;
-        }
-
-        /**
-         * returns a built MediaAttachment instance.
-         *
-         * The builder is not reusable.
-         */
-        public MediaAttachment build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static MediaAttachment.Builder builder() {
-        return new MediaAttachment.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public MediaAttachment.Builder toBuilder() {
-        return new MediaAttachment.Builder().codec(getCodec()).codecTag(getCodecTag()).comment(getComment())
-                .index(getIndex()).fileName(getFileName()).mimeType(getMimeType()).deliveryUrl(getDeliveryUrl());
-    }
 }
+

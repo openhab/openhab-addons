@@ -17,514 +17,517 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Defines the MediaBrowser.Model.Updates.VersionInfo class.
  */
-@JsonPropertyOrder({ VersionInfo.JSON_PROPERTY_VERSION, VersionInfo.JSON_PROPERTY_VERSION_NUMBER,
-        VersionInfo.JSON_PROPERTY_CHANGELOG, VersionInfo.JSON_PROPERTY_TARGET_ABI, VersionInfo.JSON_PROPERTY_SOURCE_URL,
-        VersionInfo.JSON_PROPERTY_CHECKSUM, VersionInfo.JSON_PROPERTY_TIMESTAMP,
-        VersionInfo.JSON_PROPERTY_REPOSITORY_NAME, VersionInfo.JSON_PROPERTY_REPOSITORY_URL })
+@JsonPropertyOrder({
+  VersionInfo.JSON_PROPERTY_VERSION,
+  VersionInfo.JSON_PROPERTY_VERSION_NUMBER,
+  VersionInfo.JSON_PROPERTY_CHANGELOG,
+  VersionInfo.JSON_PROPERTY_TARGET_ABI,
+  VersionInfo.JSON_PROPERTY_SOURCE_URL,
+  VersionInfo.JSON_PROPERTY_CHECKSUM,
+  VersionInfo.JSON_PROPERTY_TIMESTAMP,
+  VersionInfo.JSON_PROPERTY_REPOSITORY_NAME,
+  VersionInfo.JSON_PROPERTY_REPOSITORY_URL
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class VersionInfo {
-    public static final String JSON_PROPERTY_VERSION = "version";
-    @javax.annotation.Nullable
-    private String version;
+  public static final String JSON_PROPERTY_VERSION = "version";
+  @javax.annotation.Nullable
+  private String version;
 
-    public static final String JSON_PROPERTY_VERSION_NUMBER = "VersionNumber";
-    @javax.annotation.Nullable
-    private String versionNumber;
+  public static final String JSON_PROPERTY_VERSION_NUMBER = "VersionNumber";
+  @javax.annotation.Nullable
+  private String versionNumber;
 
-    public static final String JSON_PROPERTY_CHANGELOG = "changelog";
-    @javax.annotation.Nullable
-    private JsonNullable<String> changelog = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CHANGELOG = "changelog";
+  @javax.annotation.Nullable
+  private JsonNullable<String> changelog = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
-    @javax.annotation.Nullable
-    private JsonNullable<String> targetAbi = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
+  @javax.annotation.Nullable
+  private JsonNullable<String> targetAbi = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
-    @javax.annotation.Nullable
-    private JsonNullable<String> sourceUrl = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
+  @javax.annotation.Nullable
+  private JsonNullable<String> sourceUrl = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_CHECKSUM = "checksum";
-    @javax.annotation.Nullable
-    private JsonNullable<String> checksum = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_CHECKSUM = "checksum";
+  @javax.annotation.Nullable
+  private JsonNullable<String> checksum = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
-    @javax.annotation.Nullable
-    private JsonNullable<String> timestamp = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
+  @javax.annotation.Nullable
+  private JsonNullable<String> timestamp = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
-    @javax.annotation.Nullable
-    private String repositoryName;
+  public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
+  @javax.annotation.Nullable
+  private String repositoryName;
 
-    public static final String JSON_PROPERTY_REPOSITORY_URL = "repositoryUrl";
-    @javax.annotation.Nullable
-    private String repositoryUrl;
+  public static final String JSON_PROPERTY_REPOSITORY_URL = "repositoryUrl";
+  @javax.annotation.Nullable
+  private String repositoryUrl;
 
-    public VersionInfo() {
-    }
+  public VersionInfo() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public VersionInfo(
+    @JsonProperty(JSON_PROPERTY_VERSION_NUMBER) String versionNumber
+  ) {
+    this();
+    this.versionNumber = versionNumber;
+  }
 
-    /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public VersionInfo(@JsonProperty(JSON_PROPERTY_VERSION_NUMBER) String versionNumber) {
-        this();
-        this.versionNumber = versionNumber;
-    }
+  public VersionInfo version(@javax.annotation.Nullable String version) {
+    
+    this.version = version;
+    return this;
+  }
 
-    public VersionInfo version(@javax.annotation.Nullable String version) {
+  /**
+   * Gets or sets the version.
+   * @return version
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.version = version;
-        return this;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    /**
-     * Gets or sets the version.
-     * 
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public String getVersion() {
-        return version;
-    }
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setVersion(@javax.annotation.Nullable String version) {
+    this.version = version;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = version;
-    }
+  /**
+   * Gets the version as a System.Version.
+   * @return versionNumber
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets the version as a System.Version.
-     * 
-     * @return versionNumber
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getVersionNumber() {
+    return versionNumber;
+  }
 
-    public String getVersionNumber() {
-        return versionNumber;
-    }
 
-    public VersionInfo changelog(@javax.annotation.Nullable String changelog) {
-        this.changelog = JsonNullable.<String> of(changelog);
 
-        return this;
-    }
+  public VersionInfo changelog(@javax.annotation.Nullable String changelog) {
+    this.changelog = JsonNullable.<String>of(changelog);
+    
+    return this;
+  }
 
-    /**
-     * Gets or sets the changelog for this version.
-     * 
-     * @return changelog
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
+  /**
+   * Gets or sets the changelog for this version.
+   * @return changelog
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    public String getChangelog() {
+  public String getChangelog() {
         return changelog.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChangelog_JsonNullable() {
-        return changelog;
-    }
+  public JsonNullable<String> getChangelog_JsonNullable() {
+    return changelog;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
+    this.changelog = changelog;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
-    public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
-        this.changelog = changelog;
-    }
+  public void setChangelog(@javax.annotation.Nullable String changelog) {
+    this.changelog = JsonNullable.<String>of(changelog);
+  }
 
-    public void setChangelog(@javax.annotation.Nullable String changelog) {
-        this.changelog = JsonNullable.<String> of(changelog);
-    }
+  public VersionInfo targetAbi(@javax.annotation.Nullable String targetAbi) {
+    this.targetAbi = JsonNullable.<String>of(targetAbi);
+    
+    return this;
+  }
 
-    public VersionInfo targetAbi(@javax.annotation.Nullable String targetAbi) {
-        this.targetAbi = JsonNullable.<String> of(targetAbi);
+  /**
+   * Gets or sets the ABI that this version was built against.
+   * @return targetAbi
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the ABI that this version was built against.
-     * 
-     * @return targetAbi
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTargetAbi() {
+  public String getTargetAbi() {
         return targetAbi.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_TARGET_ABI)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTargetAbi_JsonNullable() {
-        return targetAbi;
-    }
+  public JsonNullable<String> getTargetAbi_JsonNullable() {
+    return targetAbi;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+  public void setTargetAbi_JsonNullable(JsonNullable<String> targetAbi) {
+    this.targetAbi = targetAbi;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TARGET_ABI)
-    public void setTargetAbi_JsonNullable(JsonNullable<String> targetAbi) {
-        this.targetAbi = targetAbi;
-    }
+  public void setTargetAbi(@javax.annotation.Nullable String targetAbi) {
+    this.targetAbi = JsonNullable.<String>of(targetAbi);
+  }
 
-    public void setTargetAbi(@javax.annotation.Nullable String targetAbi) {
-        this.targetAbi = JsonNullable.<String> of(targetAbi);
-    }
+  public VersionInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
+    
+    return this;
+  }
 
-    public VersionInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
-        this.sourceUrl = JsonNullable.<String> of(sourceUrl);
+  /**
+   * Gets or sets the source URL.
+   * @return sourceUrl
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the source URL.
-     * 
-     * @return sourceUrl
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSourceUrl() {
+  public String getSourceUrl() {
         return sourceUrl.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSourceUrl_JsonNullable() {
-        return sourceUrl;
-    }
+  public JsonNullable<String> getSourceUrl_JsonNullable() {
+    return sourceUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
+    this.sourceUrl = sourceUrl;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
-    public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
-        this.sourceUrl = sourceUrl;
-    }
+  public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
+  }
 
-    public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
-        this.sourceUrl = JsonNullable.<String> of(sourceUrl);
-    }
+  public VersionInfo checksum(@javax.annotation.Nullable String checksum) {
+    this.checksum = JsonNullable.<String>of(checksum);
+    
+    return this;
+  }
 
-    public VersionInfo checksum(@javax.annotation.Nullable String checksum) {
-        this.checksum = JsonNullable.<String> of(checksum);
+  /**
+   * Gets or sets a checksum for the binary.
+   * @return checksum
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a checksum for the binary.
-     * 
-     * @return checksum
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChecksum() {
+  public String getChecksum() {
         return checksum.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChecksum_JsonNullable() {
-        return checksum;
-    }
+  public JsonNullable<String> getChecksum_JsonNullable() {
+    return checksum;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
+    this.checksum = checksum;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
-    public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
-        this.checksum = checksum;
-    }
+  public void setChecksum(@javax.annotation.Nullable String checksum) {
+    this.checksum = JsonNullable.<String>of(checksum);
+  }
 
-    public void setChecksum(@javax.annotation.Nullable String checksum) {
-        this.checksum = JsonNullable.<String> of(checksum);
-    }
+  public VersionInfo timestamp(@javax.annotation.Nullable String timestamp) {
+    this.timestamp = JsonNullable.<String>of(timestamp);
+    
+    return this;
+  }
 
-    public VersionInfo timestamp(@javax.annotation.Nullable String timestamp) {
-        this.timestamp = JsonNullable.<String> of(timestamp);
+  /**
+   * Gets or sets a timestamp of when the binary was built.
+   * @return timestamp
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets a timestamp of when the binary was built.
-     * 
-     * @return timestamp
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTimestamp() {
+  public String getTimestamp() {
         return timestamp.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTimestamp_JsonNullable() {
+    return timestamp;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  public void setTimestamp_JsonNullable(JsonNullable<String> timestamp) {
+    this.timestamp = timestamp;
+  }
+
+  public void setTimestamp(@javax.annotation.Nullable String timestamp) {
+    this.timestamp = JsonNullable.<String>of(timestamp);
+  }
+
+  public VersionInfo repositoryName(@javax.annotation.Nullable String repositoryName) {
+    
+    this.repositoryName = repositoryName;
+    return this;
+  }
+
+  /**
+   * Gets or sets the repository name.
+   * @return repositoryName
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getRepositoryName() {
+    return repositoryName;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRepositoryName(@javax.annotation.Nullable String repositoryName) {
+    this.repositoryName = repositoryName;
+  }
+
+  public VersionInfo repositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
+    
+    this.repositoryUrl = repositoryUrl;
+    return this;
+  }
+
+  /**
+   * Gets or sets the repository url.
+   * @return repositoryUrl
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getRepositoryUrl() {
+    return repositoryUrl;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRepositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
+    this.repositoryUrl = repositoryUrl;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    VersionInfo versionInfo = (VersionInfo) o;
+    return Objects.equals(this.version, versionInfo.version) &&
+        Objects.equals(this.versionNumber, versionInfo.versionNumber) &&
+        equalsNullable(this.changelog, versionInfo.changelog) &&
+        equalsNullable(this.targetAbi, versionInfo.targetAbi) &&
+        equalsNullable(this.sourceUrl, versionInfo.sourceUrl) &&
+        equalsNullable(this.checksum, versionInfo.checksum) &&
+        equalsNullable(this.timestamp, versionInfo.timestamp) &&
+        Objects.equals(this.repositoryName, versionInfo.repositoryName) &&
+        Objects.equals(this.repositoryUrl, versionInfo.repositoryUrl);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(version, versionNumber, hashCodeNullable(changelog), hashCodeNullable(targetAbi), hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(timestamp), repositoryName, repositoryUrl);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class VersionInfo {\n");
+    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    versionNumber: ").append(toIndentedString(versionNumber)).append("\n");
+    sb.append("    changelog: ").append(toIndentedString(changelog)).append("\n");
+    sb.append("    targetAbi: ").append(toIndentedString(targetAbi)).append("\n");
+    sb.append("    sourceUrl: ").append(toIndentedString(sourceUrl)).append("\n");
+    sb.append("    checksum: ").append(toIndentedString(checksum)).append("\n");
+    sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
+    sb.append("    repositoryName: ").append(toIndentedString(repositoryName)).append("\n");
+    sb.append("    repositoryUrl: ").append(toIndentedString(repositoryUrl)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private VersionInfo instance;
+
+    public Builder() {
+      this(new VersionInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getTimestamp_JsonNullable() {
-        return timestamp;
+    protected Builder(VersionInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
-    public void setTimestamp_JsonNullable(JsonNullable<String> timestamp) {
-        this.timestamp = timestamp;
+    public VersionInfo.Builder version(String version) {
+      this.instance.version = version;
+      return this;
+    }
+    public VersionInfo.Builder versionNumber(String versionNumber) {
+      this.instance.versionNumber = versionNumber;
+      return this;
+    }
+    public VersionInfo.Builder changelog(String changelog) {
+      this.instance.changelog = JsonNullable.<String>of(changelog);
+      return this;
+    }
+    public VersionInfo.Builder changelog(JsonNullable<String> changelog) {
+      this.instance.changelog = changelog;
+      return this;
+    }
+    public VersionInfo.Builder targetAbi(String targetAbi) {
+      this.instance.targetAbi = JsonNullable.<String>of(targetAbi);
+      return this;
+    }
+    public VersionInfo.Builder targetAbi(JsonNullable<String> targetAbi) {
+      this.instance.targetAbi = targetAbi;
+      return this;
+    }
+    public VersionInfo.Builder sourceUrl(String sourceUrl) {
+      this.instance.sourceUrl = JsonNullable.<String>of(sourceUrl);
+      return this;
+    }
+    public VersionInfo.Builder sourceUrl(JsonNullable<String> sourceUrl) {
+      this.instance.sourceUrl = sourceUrl;
+      return this;
+    }
+    public VersionInfo.Builder checksum(String checksum) {
+      this.instance.checksum = JsonNullable.<String>of(checksum);
+      return this;
+    }
+    public VersionInfo.Builder checksum(JsonNullable<String> checksum) {
+      this.instance.checksum = checksum;
+      return this;
+    }
+    public VersionInfo.Builder timestamp(String timestamp) {
+      this.instance.timestamp = JsonNullable.<String>of(timestamp);
+      return this;
+    }
+    public VersionInfo.Builder timestamp(JsonNullable<String> timestamp) {
+      this.instance.timestamp = timestamp;
+      return this;
+    }
+    public VersionInfo.Builder repositoryName(String repositoryName) {
+      this.instance.repositoryName = repositoryName;
+      return this;
+    }
+    public VersionInfo.Builder repositoryUrl(String repositoryUrl) {
+      this.instance.repositoryUrl = repositoryUrl;
+      return this;
     }
 
-    public void setTimestamp(@javax.annotation.Nullable String timestamp) {
-        this.timestamp = JsonNullable.<String> of(timestamp);
-    }
-
-    public VersionInfo repositoryName(@javax.annotation.Nullable String repositoryName) {
-
-        this.repositoryName = repositoryName;
-        return this;
-    }
 
     /**
-     * Gets or sets the repository name.
-     * 
-     * @return repositoryName
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRepositoryName(@javax.annotation.Nullable String repositoryName) {
-        this.repositoryName = repositoryName;
-    }
-
-    public VersionInfo repositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
-
-        this.repositoryUrl = repositoryUrl;
-        return this;
-    }
-
-    /**
-     * Gets or sets the repository url.
-     * 
-     * @return repositoryUrl
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public String getRepositoryUrl() {
-        return repositoryUrl;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRepositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
-        this.repositoryUrl = repositoryUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        VersionInfo versionInfo = (VersionInfo) o;
-        return Objects.equals(this.version, versionInfo.version)
-                && Objects.equals(this.versionNumber, versionInfo.versionNumber)
-                && equalsNullable(this.changelog, versionInfo.changelog)
-                && equalsNullable(this.targetAbi, versionInfo.targetAbi)
-                && equalsNullable(this.sourceUrl, versionInfo.sourceUrl)
-                && equalsNullable(this.checksum, versionInfo.checksum)
-                && equalsNullable(this.timestamp, versionInfo.timestamp)
-                && Objects.equals(this.repositoryName, versionInfo.repositoryName)
-                && Objects.equals(this.repositoryUrl, versionInfo.repositoryUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(version, versionNumber, hashCodeNullable(changelog), hashCodeNullable(targetAbi),
-                hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(timestamp), repositoryName,
-                repositoryUrl);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built VersionInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public VersionInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class VersionInfo {\n");
-        sb.append("    version: ").append(toIndentedString(version)).append("\n");
-        sb.append("    versionNumber: ").append(toIndentedString(versionNumber)).append("\n");
-        sb.append("    changelog: ").append(toIndentedString(changelog)).append("\n");
-        sb.append("    targetAbi: ").append(toIndentedString(targetAbi)).append("\n");
-        sb.append("    sourceUrl: ").append(toIndentedString(sourceUrl)).append("\n");
-        sb.append("    checksum: ").append(toIndentedString(checksum)).append("\n");
-        sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
-        sb.append("    repositoryName: ").append(toIndentedString(repositoryName)).append("\n");
-        sb.append("    repositoryUrl: ").append(toIndentedString(repositoryUrl)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static VersionInfo.Builder builder() {
+    return new VersionInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public VersionInfo.Builder toBuilder() {
+    return new VersionInfo.Builder()
+      .version(getVersion())
+      .versionNumber(getVersionNumber())
+      .changelog(getChangelog())
+      .targetAbi(getTargetAbi())
+      .sourceUrl(getSourceUrl())
+      .checksum(getChecksum())
+      .timestamp(getTimestamp())
+      .repositoryName(getRepositoryName())
+      .repositoryUrl(getRepositoryUrl());
+  }
 
-        private VersionInfo instance;
 
-        public Builder() {
-            this(new VersionInfo());
-        }
-
-        protected Builder(VersionInfo instance) {
-            this.instance = instance;
-        }
-
-        public VersionInfo.Builder version(String version) {
-            this.instance.version = version;
-            return this;
-        }
-
-        public VersionInfo.Builder versionNumber(String versionNumber) {
-            this.instance.versionNumber = versionNumber;
-            return this;
-        }
-
-        public VersionInfo.Builder changelog(String changelog) {
-            this.instance.changelog = JsonNullable.<String> of(changelog);
-            return this;
-        }
-
-        public VersionInfo.Builder changelog(JsonNullable<String> changelog) {
-            this.instance.changelog = changelog;
-            return this;
-        }
-
-        public VersionInfo.Builder targetAbi(String targetAbi) {
-            this.instance.targetAbi = JsonNullable.<String> of(targetAbi);
-            return this;
-        }
-
-        public VersionInfo.Builder targetAbi(JsonNullable<String> targetAbi) {
-            this.instance.targetAbi = targetAbi;
-            return this;
-        }
-
-        public VersionInfo.Builder sourceUrl(String sourceUrl) {
-            this.instance.sourceUrl = JsonNullable.<String> of(sourceUrl);
-            return this;
-        }
-
-        public VersionInfo.Builder sourceUrl(JsonNullable<String> sourceUrl) {
-            this.instance.sourceUrl = sourceUrl;
-            return this;
-        }
-
-        public VersionInfo.Builder checksum(String checksum) {
-            this.instance.checksum = JsonNullable.<String> of(checksum);
-            return this;
-        }
-
-        public VersionInfo.Builder checksum(JsonNullable<String> checksum) {
-            this.instance.checksum = checksum;
-            return this;
-        }
-
-        public VersionInfo.Builder timestamp(String timestamp) {
-            this.instance.timestamp = JsonNullable.<String> of(timestamp);
-            return this;
-        }
-
-        public VersionInfo.Builder timestamp(JsonNullable<String> timestamp) {
-            this.instance.timestamp = timestamp;
-            return this;
-        }
-
-        public VersionInfo.Builder repositoryName(String repositoryName) {
-            this.instance.repositoryName = repositoryName;
-            return this;
-        }
-
-        public VersionInfo.Builder repositoryUrl(String repositoryUrl) {
-            this.instance.repositoryUrl = repositoryUrl;
-            return this;
-        }
-
-        /**
-         * returns a built VersionInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public VersionInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static VersionInfo.Builder builder() {
-        return new VersionInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public VersionInfo.Builder toBuilder() {
-        return new VersionInfo.Builder().version(getVersion()).versionNumber(getVersionNumber())
-                .changelog(getChangelog()).targetAbi(getTargetAbi()).sourceUrl(getSourceUrl()).checksum(getChecksum())
-                .timestamp(getTimestamp()).repositoryName(getRepositoryName()).repositoryUrl(getRepositoryUrl());
-    }
 }
+

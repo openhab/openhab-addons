@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,50 +29,51 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum that represents a day of the week, weekdays, weekends, or all days.
  */
 public enum DynamicDayOfWeek {
+  
+  SUNDAY("Sunday"),
+  
+  MONDAY("Monday"),
+  
+  TUESDAY("Tuesday"),
+  
+  WEDNESDAY("Wednesday"),
+  
+  THURSDAY("Thursday"),
+  
+  FRIDAY("Friday"),
+  
+  SATURDAY("Saturday"),
+  
+  EVERYDAY("Everyday"),
+  
+  WEEKDAY("Weekday"),
+  
+  WEEKEND("Weekend");
 
-    SUNDAY("Sunday"),
+  private String value;
 
-    MONDAY("Monday"),
+  DynamicDayOfWeek(String value) {
+    this.value = value;
+  }
 
-    TUESDAY("Tuesday"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    WEDNESDAY("Wednesday"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    THURSDAY("Thursday"),
-
-    FRIDAY("Friday"),
-
-    SATURDAY("Saturday"),
-
-    EVERYDAY("Everyday"),
-
-    WEEKDAY("Weekday"),
-
-    WEEKEND("Weekend");
-
-    private String value;
-
-    DynamicDayOfWeek(String value) {
-        this.value = value;
+  @JsonCreator
+  public static DynamicDayOfWeek fromValue(String value) {
+    for (DynamicDayOfWeek b : DynamicDayOfWeek.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static DynamicDayOfWeek fromValue(String value) {
-        for (DynamicDayOfWeek b : DynamicDayOfWeek.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

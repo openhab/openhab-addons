@@ -4,8 +4,12 @@
 .gitignore
 .travis.yml
 
+api
+
 build.gradle
 build.sbt
+
+pom.xml
 
 gradle/**/*
 gradle.properties

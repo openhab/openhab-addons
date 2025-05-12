@@ -17,202 +17,213 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.LibraryOptions;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Update library options dto.
  */
-@JsonPropertyOrder({ UpdateLibraryOptionsDto.JSON_PROPERTY_ID, UpdateLibraryOptionsDto.JSON_PROPERTY_LIBRARY_OPTIONS })
+@JsonPropertyOrder({
+  UpdateLibraryOptionsDto.JSON_PROPERTY_ID,
+  UpdateLibraryOptionsDto.JSON_PROPERTY_LIBRARY_OPTIONS
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateLibraryOptionsDto {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private UUID id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private UUID id;
 
-    public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
-    @javax.annotation.Nullable
-    private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
+  public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+  @javax.annotation.Nullable
+  private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions>undefined();
 
-    public UpdateLibraryOptionsDto() {
-    }
+  public UpdateLibraryOptionsDto() {
+  }
 
-    public UpdateLibraryOptionsDto id(@javax.annotation.Nullable UUID id) {
+  public UpdateLibraryOptionsDto id(@javax.annotation.Nullable UUID id) {
+    
+    this.id = id;
+    return this;
+  }
 
-        this.id = id;
-        return this;
-    }
+  /**
+   * Gets or sets the library item id.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    /**
-     * Gets or sets the library item id.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public UUID getId() {
+    return id;
+  }
 
-    public UUID getId() {
-        return id;
-    }
 
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = id;
-    }
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setId(@javax.annotation.Nullable UUID id) {
+    this.id = id;
+  }
 
-    public UpdateLibraryOptionsDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+  public UpdateLibraryOptionsDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
+    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets library options.
+   * @return libraryOptions
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets library options.
-     * 
-     * @return libraryOptions
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public LibraryOptions getLibraryOptions() {
+  public LibraryOptions getLibraryOptions() {
         return libraryOptions.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
+    return libraryOptions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+  public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
+    this.libraryOptions = libraryOptions;
+  }
+
+  public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
+    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UpdateLibraryOptionsDto updateLibraryOptionsDto = (UpdateLibraryOptionsDto) o;
+    return Objects.equals(this.id, updateLibraryOptionsDto.id) &&
+        equalsNullable(this.libraryOptions, updateLibraryOptionsDto.libraryOptions);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, hashCodeNullable(libraryOptions));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class UpdateLibraryOptionsDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    libraryOptions: ").append(toIndentedString(libraryOptions)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private UpdateLibraryOptionsDto instance;
+
+    public Builder() {
+      this(new UpdateLibraryOptionsDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
-        return libraryOptions;
+    protected Builder(UpdateLibraryOptionsDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-    public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
-        this.libraryOptions = libraryOptions;
+    public UpdateLibraryOptionsDto.Builder id(UUID id) {
+      this.instance.id = id;
+      return this;
+    }
+    public UpdateLibraryOptionsDto.Builder libraryOptions(LibraryOptions libraryOptions) {
+      this.instance.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
+      return this;
+    }
+    public UpdateLibraryOptionsDto.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
+      this.instance.libraryOptions = libraryOptions;
+      return this;
     }
 
-    public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UpdateLibraryOptionsDto updateLibraryOptionsDto = (UpdateLibraryOptionsDto) o;
-        return Objects.equals(this.id, updateLibraryOptionsDto.id)
-                && equalsNullable(this.libraryOptions, updateLibraryOptionsDto.libraryOptions);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(libraryOptions));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built UpdateLibraryOptionsDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public UpdateLibraryOptionsDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class UpdateLibraryOptionsDto {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    libraryOptions: ").append(toIndentedString(libraryOptions)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static UpdateLibraryOptionsDto.Builder builder() {
+    return new UpdateLibraryOptionsDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public UpdateLibraryOptionsDto.Builder toBuilder() {
+    return new UpdateLibraryOptionsDto.Builder()
+      .id(getId())
+      .libraryOptions(getLibraryOptions());
+  }
 
-        private UpdateLibraryOptionsDto instance;
 
-        public Builder() {
-            this(new UpdateLibraryOptionsDto());
-        }
-
-        protected Builder(UpdateLibraryOptionsDto instance) {
-            this.instance = instance;
-        }
-
-        public UpdateLibraryOptionsDto.Builder id(UUID id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public UpdateLibraryOptionsDto.Builder libraryOptions(LibraryOptions libraryOptions) {
-            this.instance.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
-            return this;
-        }
-
-        public UpdateLibraryOptionsDto.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
-            this.instance.libraryOptions = libraryOptions;
-            return this;
-        }
-
-        /**
-         * returns a built UpdateLibraryOptionsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public UpdateLibraryOptionsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static UpdateLibraryOptionsDto.Builder builder() {
-        return new UpdateLibraryOptionsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public UpdateLibraryOptionsDto.Builder toBuilder() {
-        return new UpdateLibraryOptionsDto.Builder().id(getId()).libraryOptions(getLibraryOptions());
-    }
 }
+

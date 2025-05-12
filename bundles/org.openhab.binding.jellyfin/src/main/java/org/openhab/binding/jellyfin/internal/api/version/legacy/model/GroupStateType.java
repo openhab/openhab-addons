@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,38 +29,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupState.
  */
 public enum GroupStateType {
+  
+  IDLE("Idle"),
+  
+  WAITING("Waiting"),
+  
+  PAUSED("Paused"),
+  
+  PLAYING("Playing");
 
-    IDLE("Idle"),
+  private String value;
 
-    WAITING("Waiting"),
+  GroupStateType(String value) {
+    this.value = value;
+  }
 
-    PAUSED("Paused"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    PLAYING("Playing");
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    private String value;
-
-    GroupStateType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static GroupStateType fromValue(String value) {
+    for (GroupStateType b : GroupStateType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static GroupStateType fromValue(String value) {
-        for (GroupStateType b : GroupStateType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

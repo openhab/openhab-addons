@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,36 +29,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets HeaderMatchType
  */
 public enum HeaderMatchType {
+  
+  EQUALS("Equals"),
+  
+  REGEX("Regex"),
+  
+  SUBSTRING("Substring");
 
-    EQUALS("Equals"),
+  private String value;
 
-    REGEX("Regex"),
+  HeaderMatchType(String value) {
+    this.value = value;
+  }
 
-    SUBSTRING("Substring");
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    private String value;
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    HeaderMatchType(String value) {
-        this.value = value;
+  @JsonCreator
+  public static HeaderMatchType fromValue(String value) {
+    for (HeaderMatchType b : HeaderMatchType.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static HeaderMatchType fromValue(String value) {
-        for (HeaderMatchType b : HeaderMatchType.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

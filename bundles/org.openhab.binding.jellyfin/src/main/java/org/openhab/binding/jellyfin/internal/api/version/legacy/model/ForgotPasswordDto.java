@@ -18,134 +18,146 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Forgot Password request body DTO.
  */
-@JsonPropertyOrder({ ForgotPasswordDto.JSON_PROPERTY_ENTERED_USERNAME })
+@JsonPropertyOrder({
+  ForgotPasswordDto.JSON_PROPERTY_ENTERED_USERNAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ForgotPasswordDto {
-    public static final String JSON_PROPERTY_ENTERED_USERNAME = "EnteredUsername";
-    @javax.annotation.Nonnull
-    private String enteredUsername;
+  public static final String JSON_PROPERTY_ENTERED_USERNAME = "EnteredUsername";
+  @javax.annotation.Nonnull
+  private String enteredUsername;
 
-    public ForgotPasswordDto() {
+  public ForgotPasswordDto() {
+  }
+
+  public ForgotPasswordDto enteredUsername(@javax.annotation.Nonnull String enteredUsername) {
+    
+    this.enteredUsername = enteredUsername;
+    return this;
+  }
+
+  /**
+   * Gets or sets the entered username to have its password reset.
+   * @return enteredUsername
+   */
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getEnteredUsername() {
+    return enteredUsername;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setEnteredUsername(@javax.annotation.Nonnull String enteredUsername) {
+    this.enteredUsername = enteredUsername;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ForgotPasswordDto forgotPasswordDto = (ForgotPasswordDto) o;
+    return Objects.equals(this.enteredUsername, forgotPasswordDto.enteredUsername);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(enteredUsername);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ForgotPasswordDto {\n");
+    sb.append("    enteredUsername: ").append(toIndentedString(enteredUsername)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ForgotPasswordDto instance;
+
+    public Builder() {
+      this(new ForgotPasswordDto());
     }
 
-    public ForgotPasswordDto enteredUsername(@javax.annotation.Nonnull String enteredUsername) {
-
-        this.enteredUsername = enteredUsername;
-        return this;
+    protected Builder(ForgotPasswordDto instance) {
+      this.instance = instance;
     }
+
+    public ForgotPasswordDto.Builder enteredUsername(String enteredUsername) {
+      this.instance.enteredUsername = enteredUsername;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the entered username to have its password reset.
-     * 
-     * @return enteredUsername
-     */
-    @javax.annotation.Nonnull
-    @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-    public String getEnteredUsername() {
-        return enteredUsername;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
-    @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public void setEnteredUsername(@javax.annotation.Nonnull String enteredUsername) {
-        this.enteredUsername = enteredUsername;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ForgotPasswordDto forgotPasswordDto = (ForgotPasswordDto) o;
-        return Objects.equals(this.enteredUsername, forgotPasswordDto.enteredUsername);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(enteredUsername);
+    * returns a built ForgotPasswordDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public ForgotPasswordDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ForgotPasswordDto {\n");
-        sb.append("    enteredUsername: ").append(toIndentedString(enteredUsername)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ForgotPasswordDto.Builder builder() {
+    return new ForgotPasswordDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ForgotPasswordDto.Builder toBuilder() {
+    return new ForgotPasswordDto.Builder()
+      .enteredUsername(getEnteredUsername());
+  }
 
-        private ForgotPasswordDto instance;
 
-        public Builder() {
-            this(new ForgotPasswordDto());
-        }
-
-        protected Builder(ForgotPasswordDto instance) {
-            this.instance = instance;
-        }
-
-        public ForgotPasswordDto.Builder enteredUsername(String enteredUsername) {
-            this.instance.enteredUsername = enteredUsername;
-            return this;
-        }
-
-        /**
-         * returns a built ForgotPasswordDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ForgotPasswordDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ForgotPasswordDto.Builder builder() {
-        return new ForgotPasswordDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ForgotPasswordDto.Builder toBuilder() {
-        return new ForgotPasswordDto.Builder().enteredUsername(getEnteredUsername());
-    }
 }
+

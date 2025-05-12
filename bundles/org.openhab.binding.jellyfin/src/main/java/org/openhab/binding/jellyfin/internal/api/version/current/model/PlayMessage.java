@@ -17,236 +17,250 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.PlayRequest;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Play command websocket message.
  */
-@JsonPropertyOrder({ PlayMessage.JSON_PROPERTY_DATA, PlayMessage.JSON_PROPERTY_MESSAGE_ID,
-        PlayMessage.JSON_PROPERTY_MESSAGE_TYPE })
+@JsonPropertyOrder({
+  PlayMessage.JSON_PROPERTY_DATA,
+  PlayMessage.JSON_PROPERTY_MESSAGE_ID,
+  PlayMessage.JSON_PROPERTY_MESSAGE_TYPE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlayMessage {
-    public static final String JSON_PROPERTY_DATA = "Data";
-    @javax.annotation.Nullable
-    private JsonNullable<PlayRequest> data = JsonNullable.<PlayRequest> undefined();
+  public static final String JSON_PROPERTY_DATA = "Data";
+  @javax.annotation.Nullable
+  private JsonNullable<PlayRequest> data = JsonNullable.<PlayRequest>undefined();
 
-    public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-    @javax.annotation.Nullable
-    private UUID messageId;
+  public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
+  @javax.annotation.Nullable
+  private UUID messageId;
 
-    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @javax.annotation.Nullable
-    private SessionMessageType messageType = SessionMessageType.PLAY;
+  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+  @javax.annotation.Nullable
+  private SessionMessageType messageType = SessionMessageType.PLAY;
 
-    public PlayMessage() {
-    }
+  public PlayMessage() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public PlayMessage(
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
+  ) {
+    this();
+    this.messageType = messageType;
+  }
 
-    /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public PlayMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
-        this();
-        this.messageType = messageType;
-    }
+  public PlayMessage data(@javax.annotation.Nullable PlayRequest data) {
+    this.data = JsonNullable.<PlayRequest>of(data);
+    
+    return this;
+  }
 
-    public PlayMessage data(@javax.annotation.Nullable PlayRequest data) {
-        this.data = JsonNullable.<PlayRequest> of(data);
+  /**
+   * Gets or sets the data.
+   * @return data
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the data.
-     * 
-     * @return data
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlayRequest getData() {
+  public PlayRequest getData() {
         return data.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PlayRequest> getData_JsonNullable() {
+    return data;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA)
+  public void setData_JsonNullable(JsonNullable<PlayRequest> data) {
+    this.data = data;
+  }
+
+  public void setData(@javax.annotation.Nullable PlayRequest data) {
+    this.data = JsonNullable.<PlayRequest>of(data);
+  }
+
+  public PlayMessage messageId(@javax.annotation.Nullable UUID messageId) {
+    
+    this.messageId = messageId;
+    return this;
+  }
+
+  /**
+   * Gets or sets the message id.
+   * @return messageId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getMessageId() {
+    return messageId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMessageId(@javax.annotation.Nullable UUID messageId) {
+    this.messageId = messageId;
+  }
+
+  /**
+   * The different kinds of messages that are used in the WebSocket api.
+   * @return messageType
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SessionMessageType getMessageType() {
+    return messageType;
+  }
+
+
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PlayMessage playMessage = (PlayMessage) o;
+    return equalsNullable(this.data, playMessage.data) &&
+        Objects.equals(this.messageId, playMessage.messageId) &&
+        Objects.equals(this.messageType, playMessage.messageType);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(data), messageId, messageType);
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PlayMessage {\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
+    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PlayMessage instance;
+
+    public Builder() {
+      this(new PlayMessage());
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<PlayRequest> getData_JsonNullable() {
-        return data;
+    protected Builder(PlayMessage instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<PlayRequest> data) {
-        this.data = data;
+    public PlayMessage.Builder data(PlayRequest data) {
+      this.instance.data = JsonNullable.<PlayRequest>of(data);
+      return this;
+    }
+    public PlayMessage.Builder data(JsonNullable<PlayRequest> data) {
+      this.instance.data = data;
+      return this;
+    }
+    public PlayMessage.Builder messageId(UUID messageId) {
+      this.instance.messageId = messageId;
+      return this;
+    }
+    public PlayMessage.Builder messageType(SessionMessageType messageType) {
+      this.instance.messageType = messageType;
+      return this;
     }
 
-    public void setData(@javax.annotation.Nullable PlayRequest data) {
-        this.data = JsonNullable.<PlayRequest> of(data);
-    }
-
-    public PlayMessage messageId(@javax.annotation.Nullable UUID messageId) {
-
-        this.messageId = messageId;
-        return this;
-    }
 
     /**
-     * Gets or sets the message id.
-     * 
-     * @return messageId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMessageId(@javax.annotation.Nullable UUID messageId) {
-        this.messageId = messageId;
-    }
-
-    /**
-     * The different kinds of messages that are used in the WebSocket api.
-     * 
-     * @return messageType
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public SessionMessageType getMessageType() {
-        return messageType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PlayMessage playMessage = (PlayMessage) o;
-        return equalsNullable(this.data, playMessage.data) && Objects.equals(this.messageId, playMessage.messageId)
-                && Objects.equals(this.messageType, playMessage.messageType);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    * returns a built PlayMessage instance.
+    *
+    * The builder is not reusable.
+    */
+    public PlayMessage build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PlayMessage {\n");
-        sb.append("    data: ").append(toIndentedString(data)).append("\n");
-        sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
-        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PlayMessage.Builder builder() {
+    return new PlayMessage.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PlayMessage.Builder toBuilder() {
+    return new PlayMessage.Builder()
+      .data(getData())
+      .messageId(getMessageId())
+      .messageType(getMessageType());
+  }
 
-        private PlayMessage instance;
 
-        public Builder() {
-            this(new PlayMessage());
-        }
-
-        protected Builder(PlayMessage instance) {
-            this.instance = instance;
-        }
-
-        public PlayMessage.Builder data(PlayRequest data) {
-            this.instance.data = JsonNullable.<PlayRequest> of(data);
-            return this;
-        }
-
-        public PlayMessage.Builder data(JsonNullable<PlayRequest> data) {
-            this.instance.data = data;
-            return this;
-        }
-
-        public PlayMessage.Builder messageId(UUID messageId) {
-            this.instance.messageId = messageId;
-            return this;
-        }
-
-        public PlayMessage.Builder messageType(SessionMessageType messageType) {
-            this.instance.messageType = messageType;
-            return this;
-        }
-
-        /**
-         * returns a built PlayMessage instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlayMessage build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlayMessage.Builder builder() {
-        return new PlayMessage.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlayMessage.Builder toBuilder() {
-        return new PlayMessage.Builder().data(getData()).messageId(getMessageId()).messageType(getMessageType());
-    }
 }
+

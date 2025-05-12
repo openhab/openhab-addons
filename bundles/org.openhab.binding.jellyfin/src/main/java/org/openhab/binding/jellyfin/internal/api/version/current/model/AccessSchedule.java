@@ -18,279 +18,295 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.DynamicDayOfWeek;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * An entity representing a user&#39;s access schedule.
  */
-@JsonPropertyOrder({ AccessSchedule.JSON_PROPERTY_ID, AccessSchedule.JSON_PROPERTY_USER_ID,
-        AccessSchedule.JSON_PROPERTY_DAY_OF_WEEK, AccessSchedule.JSON_PROPERTY_START_HOUR,
-        AccessSchedule.JSON_PROPERTY_END_HOUR })
+@JsonPropertyOrder({
+  AccessSchedule.JSON_PROPERTY_ID,
+  AccessSchedule.JSON_PROPERTY_USER_ID,
+  AccessSchedule.JSON_PROPERTY_DAY_OF_WEEK,
+  AccessSchedule.JSON_PROPERTY_START_HOUR,
+  AccessSchedule.JSON_PROPERTY_END_HOUR
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AccessSchedule {
-    public static final String JSON_PROPERTY_ID = "Id";
-    @javax.annotation.Nullable
-    private Integer id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  @javax.annotation.Nullable
+  private Integer id;
 
-    public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @javax.annotation.Nullable
-    private UUID userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  @javax.annotation.Nullable
+  private UUID userId;
 
-    public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
-    @javax.annotation.Nullable
-    private DynamicDayOfWeek dayOfWeek;
+  public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
+  @javax.annotation.Nullable
+  private DynamicDayOfWeek dayOfWeek;
 
-    public static final String JSON_PROPERTY_START_HOUR = "StartHour";
-    @javax.annotation.Nullable
-    private Double startHour;
+  public static final String JSON_PROPERTY_START_HOUR = "StartHour";
+  @javax.annotation.Nullable
+  private Double startHour;
 
-    public static final String JSON_PROPERTY_END_HOUR = "EndHour";
-    @javax.annotation.Nullable
-    private Double endHour;
+  public static final String JSON_PROPERTY_END_HOUR = "EndHour";
+  @javax.annotation.Nullable
+  private Double endHour;
 
-    public AccessSchedule() {
+  public AccessSchedule() {
+  }
+  /**
+   * Constructor with only readonly parameters
+   */
+  @JsonCreator
+  public AccessSchedule(
+    @JsonProperty(JSON_PROPERTY_ID) Integer id
+  ) {
+    this();
+    this.id = id;
+  }
+
+  /**
+   * Gets the id of this instance.
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getId() {
+    return id;
+  }
+
+
+
+  public AccessSchedule userId(@javax.annotation.Nullable UUID userId) {
+    
+    this.userId = userId;
+    return this;
+  }
+
+  /**
+   * Gets the id of the associated user.
+   * @return userId
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UUID getUserId() {
+    return userId;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserId(@javax.annotation.Nullable UUID userId) {
+    this.userId = userId;
+  }
+
+  public AccessSchedule dayOfWeek(@javax.annotation.Nullable DynamicDayOfWeek dayOfWeek) {
+    
+    this.dayOfWeek = dayOfWeek;
+    return this;
+  }
+
+  /**
+   * Gets or sets the day of week.
+   * @return dayOfWeek
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public DynamicDayOfWeek getDayOfWeek() {
+    return dayOfWeek;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDayOfWeek(@javax.annotation.Nullable DynamicDayOfWeek dayOfWeek) {
+    this.dayOfWeek = dayOfWeek;
+  }
+
+  public AccessSchedule startHour(@javax.annotation.Nullable Double startHour) {
+    
+    this.startHour = startHour;
+    return this;
+  }
+
+  /**
+   * Gets or sets the start hour.
+   * @return startHour
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_HOUR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Double getStartHour() {
+    return startHour;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_START_HOUR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStartHour(@javax.annotation.Nullable Double startHour) {
+    this.startHour = startHour;
+  }
+
+  public AccessSchedule endHour(@javax.annotation.Nullable Double endHour) {
+    
+    this.endHour = endHour;
+    return this;
+  }
+
+  /**
+   * Gets or sets the end hour.
+   * @return endHour
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_END_HOUR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Double getEndHour() {
+    return endHour;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_END_HOUR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEndHour(@javax.annotation.Nullable Double endHour) {
+    this.endHour = endHour;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    AccessSchedule accessSchedule = (AccessSchedule) o;
+    return Objects.equals(this.id, accessSchedule.id) &&
+        Objects.equals(this.userId, accessSchedule.userId) &&
+        Objects.equals(this.dayOfWeek, accessSchedule.dayOfWeek) &&
+        Objects.equals(this.startHour, accessSchedule.startHour) &&
+        Objects.equals(this.endHour, accessSchedule.endHour);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, userId, dayOfWeek, startHour, endHour);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class AccessSchedule {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+    sb.append("    dayOfWeek: ").append(toIndentedString(dayOfWeek)).append("\n");
+    sb.append("    startHour: ").append(toIndentedString(startHour)).append("\n");
+    sb.append("    endHour: ").append(toIndentedString(endHour)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private AccessSchedule instance;
+
+    public Builder() {
+      this(new AccessSchedule());
+    }
+
+    protected Builder(AccessSchedule instance) {
+      this.instance = instance;
+    }
+
+    public AccessSchedule.Builder id(Integer id) {
+      this.instance.id = id;
+      return this;
+    }
+    public AccessSchedule.Builder userId(UUID userId) {
+      this.instance.userId = userId;
+      return this;
+    }
+    public AccessSchedule.Builder dayOfWeek(DynamicDayOfWeek dayOfWeek) {
+      this.instance.dayOfWeek = dayOfWeek;
+      return this;
+    }
+    public AccessSchedule.Builder startHour(Double startHour) {
+      this.instance.startHour = startHour;
+      return this;
+    }
+    public AccessSchedule.Builder endHour(Double endHour) {
+      this.instance.endHour = endHour;
+      return this;
+    }
+
 
     /**
-     * Constructor with only readonly parameters
-     */
-    @JsonCreator
-    public AccessSchedule(@JsonProperty(JSON_PROPERTY_ID) Integer id) {
-        this();
-        this.id = id;
-    }
-
-    /**
-     * Gets the id of this instance.
-     * 
-     * @return id
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Integer getId() {
-        return id;
-    }
-
-    public AccessSchedule userId(@javax.annotation.Nullable UUID userId) {
-
-        this.userId = userId;
-        return this;
-    }
-
-    /**
-     * Gets the id of the associated user.
-     * 
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    @JsonProperty(JSON_PROPERTY_USER_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = userId;
-    }
-
-    public AccessSchedule dayOfWeek(@javax.annotation.Nullable DynamicDayOfWeek dayOfWeek) {
-
-        this.dayOfWeek = dayOfWeek;
-        return this;
-    }
-
-    /**
-     * Gets or sets the day of week.
-     * 
-     * @return dayOfWeek
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public DynamicDayOfWeek getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setDayOfWeek(@javax.annotation.Nullable DynamicDayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public AccessSchedule startHour(@javax.annotation.Nullable Double startHour) {
-
-        this.startHour = startHour;
-        return this;
-    }
-
-    /**
-     * Gets or sets the start hour.
-     * 
-     * @return startHour
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_START_HOUR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Double getStartHour() {
-        return startHour;
-    }
-
-    @JsonProperty(JSON_PROPERTY_START_HOUR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStartHour(@javax.annotation.Nullable Double startHour) {
-        this.startHour = startHour;
-    }
-
-    public AccessSchedule endHour(@javax.annotation.Nullable Double endHour) {
-
-        this.endHour = endHour;
-        return this;
-    }
-
-    /**
-     * Gets or sets the end hour.
-     * 
-     * @return endHour
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_END_HOUR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public Double getEndHour() {
-        return endHour;
-    }
-
-    @JsonProperty(JSON_PROPERTY_END_HOUR)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEndHour(@javax.annotation.Nullable Double endHour) {
-        this.endHour = endHour;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AccessSchedule accessSchedule = (AccessSchedule) o;
-        return Objects.equals(this.id, accessSchedule.id) && Objects.equals(this.userId, accessSchedule.userId)
-                && Objects.equals(this.dayOfWeek, accessSchedule.dayOfWeek)
-                && Objects.equals(this.startHour, accessSchedule.startHour)
-                && Objects.equals(this.endHour, accessSchedule.endHour);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userId, dayOfWeek, startHour, endHour);
+    * returns a built AccessSchedule instance.
+    *
+    * The builder is not reusable.
+    */
+    public AccessSchedule build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class AccessSchedule {\n");
-        sb.append("    id: ").append(toIndentedString(id)).append("\n");
-        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-        sb.append("    dayOfWeek: ").append(toIndentedString(dayOfWeek)).append("\n");
-        sb.append("    startHour: ").append(toIndentedString(startHour)).append("\n");
-        sb.append("    endHour: ").append(toIndentedString(endHour)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static AccessSchedule.Builder builder() {
+    return new AccessSchedule.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public AccessSchedule.Builder toBuilder() {
+    return new AccessSchedule.Builder()
+      .id(getId())
+      .userId(getUserId())
+      .dayOfWeek(getDayOfWeek())
+      .startHour(getStartHour())
+      .endHour(getEndHour());
+  }
 
-        private AccessSchedule instance;
 
-        public Builder() {
-            this(new AccessSchedule());
-        }
-
-        protected Builder(AccessSchedule instance) {
-            this.instance = instance;
-        }
-
-        public AccessSchedule.Builder id(Integer id) {
-            this.instance.id = id;
-            return this;
-        }
-
-        public AccessSchedule.Builder userId(UUID userId) {
-            this.instance.userId = userId;
-            return this;
-        }
-
-        public AccessSchedule.Builder dayOfWeek(DynamicDayOfWeek dayOfWeek) {
-            this.instance.dayOfWeek = dayOfWeek;
-            return this;
-        }
-
-        public AccessSchedule.Builder startHour(Double startHour) {
-            this.instance.startHour = startHour;
-            return this;
-        }
-
-        public AccessSchedule.Builder endHour(Double endHour) {
-            this.instance.endHour = endHour;
-            return this;
-        }
-
-        /**
-         * returns a built AccessSchedule instance.
-         *
-         * The builder is not reusable.
-         */
-        public AccessSchedule build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static AccessSchedule.Builder builder() {
-        return new AccessSchedule.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public AccessSchedule.Builder toBuilder() {
-        return new AccessSchedule.Builder().id(getId()).userId(getUserId()).dayOfWeek(getDayOfWeek())
-                .startHour(getStartHour()).endHour(getEndHour());
-    }
 }
+

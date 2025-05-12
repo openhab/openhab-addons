@@ -17,621 +17,618 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.openapitools.jackson.nullable.JsonNullable;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlayMethod;
+import org.openhab.binding.jellyfin.internal.api.version.legacy.model.RepeatMode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * PlayerStateInfo
  */
-@JsonPropertyOrder({ PlayerStateInfo.JSON_PROPERTY_POSITION_TICKS, PlayerStateInfo.JSON_PROPERTY_CAN_SEEK,
-        PlayerStateInfo.JSON_PROPERTY_IS_PAUSED, PlayerStateInfo.JSON_PROPERTY_IS_MUTED,
-        PlayerStateInfo.JSON_PROPERTY_VOLUME_LEVEL, PlayerStateInfo.JSON_PROPERTY_AUDIO_STREAM_INDEX,
-        PlayerStateInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX, PlayerStateInfo.JSON_PROPERTY_MEDIA_SOURCE_ID,
-        PlayerStateInfo.JSON_PROPERTY_PLAY_METHOD, PlayerStateInfo.JSON_PROPERTY_REPEAT_MODE,
-        PlayerStateInfo.JSON_PROPERTY_LIVE_STREAM_ID })
+@JsonPropertyOrder({
+  PlayerStateInfo.JSON_PROPERTY_POSITION_TICKS,
+  PlayerStateInfo.JSON_PROPERTY_CAN_SEEK,
+  PlayerStateInfo.JSON_PROPERTY_IS_PAUSED,
+  PlayerStateInfo.JSON_PROPERTY_IS_MUTED,
+  PlayerStateInfo.JSON_PROPERTY_VOLUME_LEVEL,
+  PlayerStateInfo.JSON_PROPERTY_AUDIO_STREAM_INDEX,
+  PlayerStateInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX,
+  PlayerStateInfo.JSON_PROPERTY_MEDIA_SOURCE_ID,
+  PlayerStateInfo.JSON_PROPERTY_PLAY_METHOD,
+  PlayerStateInfo.JSON_PROPERTY_REPEAT_MODE,
+  PlayerStateInfo.JSON_PROPERTY_LIVE_STREAM_ID
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlayerStateInfo {
-    public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-    @javax.annotation.Nullable
-    private JsonNullable<Long> positionTicks = JsonNullable.<Long> undefined();
+  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+  @javax.annotation.Nullable
+  private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();
 
-    public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
-    @javax.annotation.Nullable
-    private Boolean canSeek;
+  public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
+  @javax.annotation.Nullable
+  private Boolean canSeek;
 
-    public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
-    @javax.annotation.Nullable
-    private Boolean isPaused;
+  public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
+  @javax.annotation.Nullable
+  private Boolean isPaused;
 
-    public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
-    @javax.annotation.Nullable
-    private Boolean isMuted;
+  public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
+  @javax.annotation.Nullable
+  private Boolean isMuted;
 
-    public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> volumeLevel = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> volumeLevel = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-    @javax.annotation.Nullable
-    private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer> undefined();
+  public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
+  @javax.annotation.Nullable
+  private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer>undefined();
 
-    public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> mediaSourceId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> mediaSourceId = JsonNullable.<String>undefined();
 
-    public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
-    @javax.annotation.Nullable
-    private JsonNullable<PlayMethod> playMethod = JsonNullable.<PlayMethod> undefined();
+  public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
+  @javax.annotation.Nullable
+  private JsonNullable<PlayMethod> playMethod = JsonNullable.<PlayMethod>undefined();
 
-    public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
-    @javax.annotation.Nullable
-    private RepeatMode repeatMode;
+  public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
+  @javax.annotation.Nullable
+  private RepeatMode repeatMode;
 
-    public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
-    @javax.annotation.Nullable
-    private JsonNullable<String> liveStreamId = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
+  @javax.annotation.Nullable
+  private JsonNullable<String> liveStreamId = JsonNullable.<String>undefined();
 
-    public PlayerStateInfo() {
-    }
+  public PlayerStateInfo() {
+  }
 
-    public PlayerStateInfo positionTicks(@javax.annotation.Nullable Long positionTicks) {
-        this.positionTicks = JsonNullable.<Long> of(positionTicks);
+  public PlayerStateInfo positionTicks(@javax.annotation.Nullable Long positionTicks) {
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
+    
+    return this;
+  }
 
-        return this;
-    }
+  /**
+   * Gets or sets the now playing position ticks.
+   * @return positionTicks
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets the now playing position ticks.
-     * 
-     * @return positionTicks
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getPositionTicks() {
+  public Long getPositionTicks() {
         return positionTicks.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getPositionTicks_JsonNullable() {
-        return positionTicks;
-    }
+  public JsonNullable<Long> getPositionTicks_JsonNullable() {
+    return positionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
+    this.positionTicks = positionTicks;
+  }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-    public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
-        this.positionTicks = positionTicks;
-    }
+  public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
+  }
 
-    public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-        this.positionTicks = JsonNullable.<Long> of(positionTicks);
-    }
+  public PlayerStateInfo canSeek(@javax.annotation.Nullable Boolean canSeek) {
+    
+    this.canSeek = canSeek;
+    return this;
+  }
 
-    public PlayerStateInfo canSeek(@javax.annotation.Nullable Boolean canSeek) {
+  /**
+   * Gets or sets a value indicating whether this instance can seek.
+   * @return canSeek
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.canSeek = canSeek;
-        return this;
-    }
+  public Boolean getCanSeek() {
+    return canSeek;
+  }
 
-    /**
-     * Gets or sets a value indicating whether this instance can seek.
-     * 
-     * @return canSeek
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_CAN_SEEK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getCanSeek() {
-        return canSeek;
-    }
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCanSeek(@javax.annotation.Nullable Boolean canSeek) {
+    this.canSeek = canSeek;
+  }
 
-    @JsonProperty(JSON_PROPERTY_CAN_SEEK)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setCanSeek(@javax.annotation.Nullable Boolean canSeek) {
-        this.canSeek = canSeek;
-    }
+  public PlayerStateInfo isPaused(@javax.annotation.Nullable Boolean isPaused) {
+    
+    this.isPaused = isPaused;
+    return this;
+  }
 
-    public PlayerStateInfo isPaused(@javax.annotation.Nullable Boolean isPaused) {
+  /**
+   * Gets or sets a value indicating whether this instance is paused.
+   * @return isPaused
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.isPaused = isPaused;
-        return this;
-    }
+  public Boolean getIsPaused() {
+    return isPaused;
+  }
 
-    /**
-     * Gets or sets a value indicating whether this instance is paused.
-     * 
-     * @return isPaused
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_PAUSED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getIsPaused() {
-        return isPaused;
-    }
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsPaused(@javax.annotation.Nullable Boolean isPaused) {
+    this.isPaused = isPaused;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_PAUSED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsPaused(@javax.annotation.Nullable Boolean isPaused) {
-        this.isPaused = isPaused;
-    }
+  public PlayerStateInfo isMuted(@javax.annotation.Nullable Boolean isMuted) {
+    
+    this.isMuted = isMuted;
+    return this;
+  }
 
-    public PlayerStateInfo isMuted(@javax.annotation.Nullable Boolean isMuted) {
+  /**
+   * Gets or sets a value indicating whether this instance is muted.
+   * @return isMuted
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.isMuted = isMuted;
-        return this;
-    }
+  public Boolean getIsMuted() {
+    return isMuted;
+  }
 
-    /**
-     * Gets or sets a value indicating whether this instance is muted.
-     * 
-     * @return isMuted
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_MUTED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public Boolean getIsMuted() {
-        return isMuted;
-    }
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsMuted(@javax.annotation.Nullable Boolean isMuted) {
+    this.isMuted = isMuted;
+  }
 
-    @JsonProperty(JSON_PROPERTY_IS_MUTED)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setIsMuted(@javax.annotation.Nullable Boolean isMuted) {
-        this.isMuted = isMuted;
-    }
+  public PlayerStateInfo volumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
+    
+    return this;
+  }
 
-    public PlayerStateInfo volumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-        this.volumeLevel = JsonNullable.<Integer> of(volumeLevel);
+  /**
+   * Gets or sets the volume level.
+   * @return volumeLevel
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the volume level.
-     * 
-     * @return volumeLevel
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getVolumeLevel() {
+  public Integer getVolumeLevel() {
         return volumeLevel.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getVolumeLevel_JsonNullable() {
-        return volumeLevel;
-    }
+  public JsonNullable<Integer> getVolumeLevel_JsonNullable() {
+    return volumeLevel;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  public void setVolumeLevel_JsonNullable(JsonNullable<Integer> volumeLevel) {
+    this.volumeLevel = volumeLevel;
+  }
 
-    @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
-    public void setVolumeLevel_JsonNullable(JsonNullable<Integer> volumeLevel) {
-        this.volumeLevel = volumeLevel;
-    }
+  public void setVolumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
+  }
 
-    public void setVolumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-        this.volumeLevel = JsonNullable.<Integer> of(volumeLevel);
-    }
+  public PlayerStateInfo audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
+    
+    return this;
+  }
 
-    public PlayerStateInfo audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
+  /**
+   * Gets or sets the index of the now playing audio stream.
+   * @return audioStreamIndex
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the index of the now playing audio stream.
-     * 
-     * @return audioStreamIndex
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAudioStreamIndex() {
+  public Integer getAudioStreamIndex() {
         return audioStreamIndex.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
-        return audioStreamIndex;
-    }
+  public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
+    return audioStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    this.audioStreamIndex = audioStreamIndex;
+  }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
-        this.audioStreamIndex = audioStreamIndex;
-    }
+  public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
+  }
 
-    public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-    }
+  public PlayerStateInfo subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
+    
+    return this;
+  }
 
-    public PlayerStateInfo subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
+  /**
+   * Gets or sets the index of the now playing subtitle stream.
+   * @return subtitleStreamIndex
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the index of the now playing subtitle stream.
-     * 
-     * @return subtitleStreamIndex
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSubtitleStreamIndex() {
+  public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
-        return subtitleStreamIndex;
-    }
+  public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
+    return subtitleStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    this.subtitleStreamIndex = subtitleStreamIndex;
+  }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
-        this.subtitleStreamIndex = subtitleStreamIndex;
-    }
+  public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
+  }
 
-    public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-    }
+  public PlayerStateInfo mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
+    
+    return this;
+  }
 
-    public PlayerStateInfo mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
+  /**
+   * Gets or sets the now playing media version identifier.
+   * @return mediaSourceId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the now playing media version identifier.
-     * 
-     * @return mediaSourceId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMediaSourceId() {
+  public String getMediaSourceId() {
         return mediaSourceId.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMediaSourceId_JsonNullable() {
-        return mediaSourceId;
-    }
+  public JsonNullable<String> getMediaSourceId_JsonNullable() {
+    return mediaSourceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    this.mediaSourceId = mediaSourceId;
+  }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
-    public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
-        this.mediaSourceId = mediaSourceId;
-    }
+  public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
+  }
 
-    public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-    }
+  public PlayerStateInfo playMethod(@javax.annotation.Nullable PlayMethod playMethod) {
+    this.playMethod = JsonNullable.<PlayMethod>of(playMethod);
+    
+    return this;
+  }
 
-    public PlayerStateInfo playMethod(@javax.annotation.Nullable PlayMethod playMethod) {
-        this.playMethod = JsonNullable.<PlayMethod> of(playMethod);
+  /**
+   * Gets or sets the play method.
+   * @return playMethod
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the play method.
-     * 
-     * @return playMethod
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlayMethod getPlayMethod() {
+  public PlayMethod getPlayMethod() {
         return playMethod.orElse(null);
-    }
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PlayMethod> getPlayMethod_JsonNullable() {
-        return playMethod;
-    }
+  public JsonNullable<PlayMethod> getPlayMethod_JsonNullable() {
+    return playMethod;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  public void setPlayMethod_JsonNullable(JsonNullable<PlayMethod> playMethod) {
+    this.playMethod = playMethod;
+  }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
-    public void setPlayMethod_JsonNullable(JsonNullable<PlayMethod> playMethod) {
-        this.playMethod = playMethod;
-    }
+  public void setPlayMethod(@javax.annotation.Nullable PlayMethod playMethod) {
+    this.playMethod = JsonNullable.<PlayMethod>of(playMethod);
+  }
 
-    public void setPlayMethod(@javax.annotation.Nullable PlayMethod playMethod) {
-        this.playMethod = JsonNullable.<PlayMethod> of(playMethod);
-    }
+  public PlayerStateInfo repeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
+    
+    this.repeatMode = repeatMode;
+    return this;
+  }
 
-    public PlayerStateInfo repeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
+  /**
+   * Gets or sets the repeat mode.
+   * @return repeatMode
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.repeatMode = repeatMode;
-        return this;
-    }
+  public RepeatMode getRepeatMode() {
+    return repeatMode;
+  }
 
-    /**
-     * Gets or sets the repeat mode.
-     * 
-     * @return repeatMode
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public RepeatMode getRepeatMode() {
-        return repeatMode;
-    }
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setRepeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
+    this.repeatMode = repeatMode;
+  }
 
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRepeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
-        this.repeatMode = repeatMode;
-    }
+  public PlayerStateInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
+    
+    return this;
+  }
 
-    public PlayerStateInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
+  /**
+   * Gets or sets the now playing live stream identifier.
+   * @return liveStreamId
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-        return this;
-    }
-
-    /**
-     * Gets or sets the now playing live stream identifier.
-     * 
-     * @return liveStreamId
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLiveStreamId() {
+  public String getLiveStreamId() {
         return liveStreamId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLiveStreamId_JsonNullable() {
+    return liveStreamId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
+    this.liveStreamId = liveStreamId;
+  }
+
+  public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PlayerStateInfo playerStateInfo = (PlayerStateInfo) o;
+    return equalsNullable(this.positionTicks, playerStateInfo.positionTicks) &&
+        Objects.equals(this.canSeek, playerStateInfo.canSeek) &&
+        Objects.equals(this.isPaused, playerStateInfo.isPaused) &&
+        Objects.equals(this.isMuted, playerStateInfo.isMuted) &&
+        equalsNullable(this.volumeLevel, playerStateInfo.volumeLevel) &&
+        equalsNullable(this.audioStreamIndex, playerStateInfo.audioStreamIndex) &&
+        equalsNullable(this.subtitleStreamIndex, playerStateInfo.subtitleStreamIndex) &&
+        equalsNullable(this.mediaSourceId, playerStateInfo.mediaSourceId) &&
+        equalsNullable(this.playMethod, playerStateInfo.playMethod) &&
+        Objects.equals(this.repeatMode, playerStateInfo.repeatMode) &&
+        equalsNullable(this.liveStreamId, playerStateInfo.liveStreamId);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hashCodeNullable(positionTicks), canSeek, isPaused, isMuted, hashCodeNullable(volumeLevel), hashCodeNullable(audioStreamIndex), hashCodeNullable(subtitleStreamIndex), hashCodeNullable(mediaSourceId), hashCodeNullable(playMethod), repeatMode, hashCodeNullable(liveStreamId));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PlayerStateInfo {\n");
+    sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
+    sb.append("    canSeek: ").append(toIndentedString(canSeek)).append("\n");
+    sb.append("    isPaused: ").append(toIndentedString(isPaused)).append("\n");
+    sb.append("    isMuted: ").append(toIndentedString(isMuted)).append("\n");
+    sb.append("    volumeLevel: ").append(toIndentedString(volumeLevel)).append("\n");
+    sb.append("    audioStreamIndex: ").append(toIndentedString(audioStreamIndex)).append("\n");
+    sb.append("    subtitleStreamIndex: ").append(toIndentedString(subtitleStreamIndex)).append("\n");
+    sb.append("    mediaSourceId: ").append(toIndentedString(mediaSourceId)).append("\n");
+    sb.append("    playMethod: ").append(toIndentedString(playMethod)).append("\n");
+    sb.append("    repeatMode: ").append(toIndentedString(repeatMode)).append("\n");
+    sb.append("    liveStreamId: ").append(toIndentedString(liveStreamId)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private PlayerStateInfo instance;
+
+    public Builder() {
+      this(new PlayerStateInfo());
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getLiveStreamId_JsonNullable() {
-        return liveStreamId;
+    protected Builder(PlayerStateInfo instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
-    public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
-        this.liveStreamId = liveStreamId;
+    public PlayerStateInfo.Builder positionTicks(Long positionTicks) {
+      this.instance.positionTicks = JsonNullable.<Long>of(positionTicks);
+      return this;
+    }
+    public PlayerStateInfo.Builder positionTicks(JsonNullable<Long> positionTicks) {
+      this.instance.positionTicks = positionTicks;
+      return this;
+    }
+    public PlayerStateInfo.Builder canSeek(Boolean canSeek) {
+      this.instance.canSeek = canSeek;
+      return this;
+    }
+    public PlayerStateInfo.Builder isPaused(Boolean isPaused) {
+      this.instance.isPaused = isPaused;
+      return this;
+    }
+    public PlayerStateInfo.Builder isMuted(Boolean isMuted) {
+      this.instance.isMuted = isMuted;
+      return this;
+    }
+    public PlayerStateInfo.Builder volumeLevel(Integer volumeLevel) {
+      this.instance.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
+      return this;
+    }
+    public PlayerStateInfo.Builder volumeLevel(JsonNullable<Integer> volumeLevel) {
+      this.instance.volumeLevel = volumeLevel;
+      return this;
+    }
+    public PlayerStateInfo.Builder audioStreamIndex(Integer audioStreamIndex) {
+      this.instance.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
+      return this;
+    }
+    public PlayerStateInfo.Builder audioStreamIndex(JsonNullable<Integer> audioStreamIndex) {
+      this.instance.audioStreamIndex = audioStreamIndex;
+      return this;
+    }
+    public PlayerStateInfo.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
+      this.instance.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
+      return this;
+    }
+    public PlayerStateInfo.Builder subtitleStreamIndex(JsonNullable<Integer> subtitleStreamIndex) {
+      this.instance.subtitleStreamIndex = subtitleStreamIndex;
+      return this;
+    }
+    public PlayerStateInfo.Builder mediaSourceId(String mediaSourceId) {
+      this.instance.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
+      return this;
+    }
+    public PlayerStateInfo.Builder mediaSourceId(JsonNullable<String> mediaSourceId) {
+      this.instance.mediaSourceId = mediaSourceId;
+      return this;
+    }
+    public PlayerStateInfo.Builder playMethod(PlayMethod playMethod) {
+      this.instance.playMethod = JsonNullable.<PlayMethod>of(playMethod);
+      return this;
+    }
+    public PlayerStateInfo.Builder playMethod(JsonNullable<PlayMethod> playMethod) {
+      this.instance.playMethod = playMethod;
+      return this;
+    }
+    public PlayerStateInfo.Builder repeatMode(RepeatMode repeatMode) {
+      this.instance.repeatMode = repeatMode;
+      return this;
+    }
+    public PlayerStateInfo.Builder liveStreamId(String liveStreamId) {
+      this.instance.liveStreamId = JsonNullable.<String>of(liveStreamId);
+      return this;
+    }
+    public PlayerStateInfo.Builder liveStreamId(JsonNullable<String> liveStreamId) {
+      this.instance.liveStreamId = liveStreamId;
+      return this;
     }
 
-    public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PlayerStateInfo playerStateInfo = (PlayerStateInfo) o;
-        return equalsNullable(this.positionTicks, playerStateInfo.positionTicks)
-                && Objects.equals(this.canSeek, playerStateInfo.canSeek)
-                && Objects.equals(this.isPaused, playerStateInfo.isPaused)
-                && Objects.equals(this.isMuted, playerStateInfo.isMuted)
-                && equalsNullable(this.volumeLevel, playerStateInfo.volumeLevel)
-                && equalsNullable(this.audioStreamIndex, playerStateInfo.audioStreamIndex)
-                && equalsNullable(this.subtitleStreamIndex, playerStateInfo.subtitleStreamIndex)
-                && equalsNullable(this.mediaSourceId, playerStateInfo.mediaSourceId)
-                && equalsNullable(this.playMethod, playerStateInfo.playMethod)
-                && Objects.equals(this.repeatMode, playerStateInfo.repeatMode)
-                && equalsNullable(this.liveStreamId, playerStateInfo.liveStreamId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(hashCodeNullable(positionTicks), canSeek, isPaused, isMuted, hashCodeNullable(volumeLevel),
-                hashCodeNullable(audioStreamIndex), hashCodeNullable(subtitleStreamIndex),
-                hashCodeNullable(mediaSourceId), hashCodeNullable(playMethod), repeatMode,
-                hashCodeNullable(liveStreamId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built PlayerStateInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public PlayerStateInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class PlayerStateInfo {\n");
-        sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
-        sb.append("    canSeek: ").append(toIndentedString(canSeek)).append("\n");
-        sb.append("    isPaused: ").append(toIndentedString(isPaused)).append("\n");
-        sb.append("    isMuted: ").append(toIndentedString(isMuted)).append("\n");
-        sb.append("    volumeLevel: ").append(toIndentedString(volumeLevel)).append("\n");
-        sb.append("    audioStreamIndex: ").append(toIndentedString(audioStreamIndex)).append("\n");
-        sb.append("    subtitleStreamIndex: ").append(toIndentedString(subtitleStreamIndex)).append("\n");
-        sb.append("    mediaSourceId: ").append(toIndentedString(mediaSourceId)).append("\n");
-        sb.append("    playMethod: ").append(toIndentedString(playMethod)).append("\n");
-        sb.append("    repeatMode: ").append(toIndentedString(repeatMode)).append("\n");
-        sb.append("    liveStreamId: ").append(toIndentedString(liveStreamId)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static PlayerStateInfo.Builder builder() {
+    return new PlayerStateInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public PlayerStateInfo.Builder toBuilder() {
+    return new PlayerStateInfo.Builder()
+      .positionTicks(getPositionTicks())
+      .canSeek(getCanSeek())
+      .isPaused(getIsPaused())
+      .isMuted(getIsMuted())
+      .volumeLevel(getVolumeLevel())
+      .audioStreamIndex(getAudioStreamIndex())
+      .subtitleStreamIndex(getSubtitleStreamIndex())
+      .mediaSourceId(getMediaSourceId())
+      .playMethod(getPlayMethod())
+      .repeatMode(getRepeatMode())
+      .liveStreamId(getLiveStreamId());
+  }
 
-        private PlayerStateInfo instance;
 
-        public Builder() {
-            this(new PlayerStateInfo());
-        }
-
-        protected Builder(PlayerStateInfo instance) {
-            this.instance = instance;
-        }
-
-        public PlayerStateInfo.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = JsonNullable.<Long> of(positionTicks);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder positionTicks(JsonNullable<Long> positionTicks) {
-            this.instance.positionTicks = positionTicks;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder canSeek(Boolean canSeek) {
-            this.instance.canSeek = canSeek;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder isPaused(Boolean isPaused) {
-            this.instance.isPaused = isPaused;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder isMuted(Boolean isMuted) {
-            this.instance.isMuted = isMuted;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder volumeLevel(Integer volumeLevel) {
-            this.instance.volumeLevel = JsonNullable.<Integer> of(volumeLevel);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder volumeLevel(JsonNullable<Integer> volumeLevel) {
-            this.instance.volumeLevel = volumeLevel;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder audioStreamIndex(JsonNullable<Integer> audioStreamIndex) {
-            this.instance.audioStreamIndex = audioStreamIndex;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder subtitleStreamIndex(JsonNullable<Integer> subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = subtitleStreamIndex;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder mediaSourceId(JsonNullable<String> mediaSourceId) {
-            this.instance.mediaSourceId = mediaSourceId;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder playMethod(PlayMethod playMethod) {
-            this.instance.playMethod = JsonNullable.<PlayMethod> of(playMethod);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder playMethod(JsonNullable<PlayMethod> playMethod) {
-            this.instance.playMethod = playMethod;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder repeatMode(RepeatMode repeatMode) {
-            this.instance.repeatMode = repeatMode;
-            return this;
-        }
-
-        public PlayerStateInfo.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = JsonNullable.<String> of(liveStreamId);
-            return this;
-        }
-
-        public PlayerStateInfo.Builder liveStreamId(JsonNullable<String> liveStreamId) {
-            this.instance.liveStreamId = liveStreamId;
-            return this;
-        }
-
-        /**
-         * returns a built PlayerStateInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public PlayerStateInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static PlayerStateInfo.Builder builder() {
-        return new PlayerStateInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public PlayerStateInfo.Builder toBuilder() {
-        return new PlayerStateInfo.Builder().positionTicks(getPositionTicks()).canSeek(getCanSeek())
-                .isPaused(getIsPaused()).isMuted(getIsMuted()).volumeLevel(getVolumeLevel())
-                .audioStreamIndex(getAudioStreamIndex()).subtitleStreamIndex(getSubtitleStreamIndex())
-                .mediaSourceId(getMediaSourceId()).playMethod(getPlayMethod()).repeatMode(getRepeatMode())
-                .liveStreamId(getLiveStreamId());
-    }
 }
+

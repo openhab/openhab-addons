@@ -17,171 +17,185 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.time.OffsetDateTime;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * GuideInfo
  */
-@JsonPropertyOrder({ GuideInfo.JSON_PROPERTY_START_DATE, GuideInfo.JSON_PROPERTY_END_DATE })
+@JsonPropertyOrder({
+  GuideInfo.JSON_PROPERTY_START_DATE,
+  GuideInfo.JSON_PROPERTY_END_DATE
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class GuideInfo {
-    public static final String JSON_PROPERTY_START_DATE = "StartDate";
-    @javax.annotation.Nullable
-    private OffsetDateTime startDate;
+  public static final String JSON_PROPERTY_START_DATE = "StartDate";
+  @javax.annotation.Nullable
+  private OffsetDateTime startDate;
 
-    public static final String JSON_PROPERTY_END_DATE = "EndDate";
-    @javax.annotation.Nullable
-    private OffsetDateTime endDate;
+  public static final String JSON_PROPERTY_END_DATE = "EndDate";
+  @javax.annotation.Nullable
+  private OffsetDateTime endDate;
 
-    public GuideInfo() {
+  public GuideInfo() {
+  }
+
+  public GuideInfo startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
+    
+    this.startDate = startDate;
+    return this;
+  }
+
+  /**
+   * Gets or sets the start date.
+   * @return startDate
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getStartDate() {
+    return startDate;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_START_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
+    this.startDate = startDate;
+  }
+
+  public GuideInfo endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
+    
+    this.endDate = endDate;
+    return this;
+  }
+
+  /**
+   * Gets or sets the end date.
+   * @return endDate
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_END_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getEndDate() {
+    return endDate;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_END_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
+    this.endDate = endDate;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    GuideInfo guideInfo = (GuideInfo) o;
+    return Objects.equals(this.startDate, guideInfo.startDate) &&
+        Objects.equals(this.endDate, guideInfo.endDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(startDate, endDate);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class GuideInfo {\n");
+    sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
+    sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private GuideInfo instance;
+
+    public Builder() {
+      this(new GuideInfo());
     }
 
-    public GuideInfo startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-
-        this.startDate = startDate;
-        return this;
+    protected Builder(GuideInfo instance) {
+      this.instance = instance;
     }
+
+    public GuideInfo.Builder startDate(OffsetDateTime startDate) {
+      this.instance.startDate = startDate;
+      return this;
+    }
+    public GuideInfo.Builder endDate(OffsetDateTime endDate) {
+      this.instance.endDate = endDate;
+      return this;
+    }
+
 
     /**
-     * Gets or sets the start date.
-     * 
-     * @return startDate
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_START_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public OffsetDateTime getStartDate() {
-        return startDate;
-    }
-
-    @JsonProperty(JSON_PROPERTY_START_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public GuideInfo endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-
-        this.endDate = endDate;
-        return this;
-    }
-
-    /**
-     * Gets or sets the end date.
-     * 
-     * @return endDate
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_END_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public OffsetDateTime getEndDate() {
-        return endDate;
-    }
-
-    @JsonProperty(JSON_PROPERTY_END_DATE)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        GuideInfo guideInfo = (GuideInfo) o;
-        return Objects.equals(this.startDate, guideInfo.startDate) && Objects.equals(this.endDate, guideInfo.endDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(startDate, endDate);
+    * returns a built GuideInfo instance.
+    *
+    * The builder is not reusable.
+    */
+    public GuideInfo build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class GuideInfo {\n");
-        sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
-        sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static GuideInfo.Builder builder() {
+    return new GuideInfo.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public GuideInfo.Builder toBuilder() {
+    return new GuideInfo.Builder()
+      .startDate(getStartDate())
+      .endDate(getEndDate());
+  }
 
-        private GuideInfo instance;
 
-        public Builder() {
-            this(new GuideInfo());
-        }
-
-        protected Builder(GuideInfo instance) {
-            this.instance = instance;
-        }
-
-        public GuideInfo.Builder startDate(OffsetDateTime startDate) {
-            this.instance.startDate = startDate;
-            return this;
-        }
-
-        public GuideInfo.Builder endDate(OffsetDateTime endDate) {
-            this.instance.endDate = endDate;
-            return this;
-        }
-
-        /**
-         * returns a built GuideInfo instance.
-         *
-         * The builder is not reusable.
-         */
-        public GuideInfo build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static GuideInfo.Builder builder() {
-        return new GuideInfo.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public GuideInfo.Builder toBuilder() {
-        return new GuideInfo.Builder().startDate(getStartDate()).endDate(getEndDate());
-    }
 }
+

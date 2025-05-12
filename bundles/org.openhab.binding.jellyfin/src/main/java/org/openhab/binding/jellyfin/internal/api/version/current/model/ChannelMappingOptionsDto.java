@@ -17,302 +17,315 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
 import org.openapitools.jackson.nullable.JsonNullable;
-
+import org.openhab.binding.jellyfin.internal.api.version.current.model.NameIdPair;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.NameValuePair;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.TunerChannelMapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Channel mapping options dto.
  */
-@JsonPropertyOrder({ ChannelMappingOptionsDto.JSON_PROPERTY_TUNER_CHANNELS,
-        ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_CHANNELS, ChannelMappingOptionsDto.JSON_PROPERTY_MAPPINGS,
-        ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_NAME })
+@JsonPropertyOrder({
+  ChannelMappingOptionsDto.JSON_PROPERTY_TUNER_CHANNELS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_CHANNELS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_MAPPINGS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_NAME
+})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ChannelMappingOptionsDto {
-    public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
-    @javax.annotation.Nullable
-    private List<TunerChannelMapping> tunerChannels = new ArrayList<>();
+  public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
+  @javax.annotation.Nullable
+  private List<TunerChannelMapping> tunerChannels = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_PROVIDER_CHANNELS = "ProviderChannels";
-    @javax.annotation.Nullable
-    private List<NameIdPair> providerChannels = new ArrayList<>();
+  public static final String JSON_PROPERTY_PROVIDER_CHANNELS = "ProviderChannels";
+  @javax.annotation.Nullable
+  private List<NameIdPair> providerChannels = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_MAPPINGS = "Mappings";
-    @javax.annotation.Nullable
-    private List<NameValuePair> mappings = new ArrayList<>();
+  public static final String JSON_PROPERTY_MAPPINGS = "Mappings";
+  @javax.annotation.Nullable
+  private List<NameValuePair> mappings = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @javax.annotation.Nullable
-    private JsonNullable<String> providerName = JsonNullable.<String> undefined();
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+  @javax.annotation.Nullable
+  private JsonNullable<String> providerName = JsonNullable.<String>undefined();
 
-    public ChannelMappingOptionsDto() {
+  public ChannelMappingOptionsDto() {
+  }
+
+  public ChannelMappingOptionsDto tunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
+    
+    this.tunerChannels = tunerChannels;
+    return this;
+  }
+
+  public ChannelMappingOptionsDto addTunerChannelsItem(TunerChannelMapping tunerChannelsItem) {
+    if (this.tunerChannels == null) {
+      this.tunerChannels = new ArrayList<>();
     }
+    this.tunerChannels.add(tunerChannelsItem);
+    return this;
+  }
 
-    public ChannelMappingOptionsDto tunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
+  /**
+   * Gets or sets list of tuner channels.
+   * @return tunerChannels
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-        this.tunerChannels = tunerChannels;
-        return this;
+  public List<TunerChannelMapping> getTunerChannels() {
+    return tunerChannels;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
+    this.tunerChannels = tunerChannels;
+  }
+
+  public ChannelMappingOptionsDto providerChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
+    
+    this.providerChannels = providerChannels;
+    return this;
+  }
+
+  public ChannelMappingOptionsDto addProviderChannelsItem(NameIdPair providerChannelsItem) {
+    if (this.providerChannels == null) {
+      this.providerChannels = new ArrayList<>();
     }
+    this.providerChannels.add(providerChannelsItem);
+    return this;
+  }
 
-    public ChannelMappingOptionsDto addTunerChannelsItem(TunerChannelMapping tunerChannelsItem) {
-        if (this.tunerChannels == null) {
-            this.tunerChannels = new ArrayList<>();
-        }
-        this.tunerChannels.add(tunerChannelsItem);
-        return this;
+  /**
+   * Gets or sets list of provider channels.
+   * @return providerChannels
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<NameIdPair> getProviderChannels() {
+    return providerChannels;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProviderChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
+    this.providerChannels = providerChannels;
+  }
+
+  public ChannelMappingOptionsDto mappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
+    
+    this.mappings = mappings;
+    return this;
+  }
+
+  public ChannelMappingOptionsDto addMappingsItem(NameValuePair mappingsItem) {
+    if (this.mappings == null) {
+      this.mappings = new ArrayList<>();
     }
+    this.mappings.add(mappingsItem);
+    return this;
+  }
 
-    /**
-     * Gets or sets list of tuner channels.
-     * 
-     * @return tunerChannels
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  /**
+   * Gets or sets list of mappings.
+   * @return mappings
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public List<TunerChannelMapping> getTunerChannels() {
-        return tunerChannels;
-    }
+  public List<NameValuePair> getMappings() {
+    return mappings;
+  }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setTunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
-        this.tunerChannels = tunerChannels;
-    }
 
-    public ChannelMappingOptionsDto providerChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
+  @JsonProperty(JSON_PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
+    this.mappings = mappings;
+  }
 
-        this.providerChannels = providerChannels;
-        return this;
-    }
+  public ChannelMappingOptionsDto providerName(@javax.annotation.Nullable String providerName) {
+    this.providerName = JsonNullable.<String>of(providerName);
+    
+    return this;
+  }
 
-    public ChannelMappingOptionsDto addProviderChannelsItem(NameIdPair providerChannelsItem) {
-        if (this.providerChannels == null) {
-            this.providerChannels = new ArrayList<>();
-        }
-        this.providerChannels.add(providerChannelsItem);
-        return this;
-    }
+  /**
+   * Gets or sets provider name.
+   * @return providerName
+   */
+  @javax.annotation.Nullable
+  @JsonIgnore
 
-    /**
-     * Gets or sets list of provider channels.
-     * 
-     * @return providerChannels
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<NameIdPair> getProviderChannels() {
-        return providerChannels;
-    }
-
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setProviderChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
-        this.providerChannels = providerChannels;
-    }
-
-    public ChannelMappingOptionsDto mappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
-
-        this.mappings = mappings;
-        return this;
-    }
-
-    public ChannelMappingOptionsDto addMappingsItem(NameValuePair mappingsItem) {
-        if (this.mappings == null) {
-            this.mappings = new ArrayList<>();
-        }
-        this.mappings.add(mappingsItem);
-        return this;
-    }
-
-    /**
-     * Gets or sets list of mappings.
-     * 
-     * @return mappings
-     */
-    @javax.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_MAPPINGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public List<NameValuePair> getMappings() {
-        return mappings;
-    }
-
-    @JsonProperty(JSON_PROPERTY_MAPPINGS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
-        this.mappings = mappings;
-    }
-
-    public ChannelMappingOptionsDto providerName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
-
-        return this;
-    }
-
-    /**
-     * Gets or sets provider name.
-     * 
-     * @return providerName
-     */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderName() {
+  public String getProviderName() {
         return providerName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderName_JsonNullable() {
+    return providerName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
+    this.providerName = providerName;
+  }
+
+  public void setProviderName(@javax.annotation.Nullable String providerName) {
+    this.providerName = JsonNullable.<String>of(providerName);
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ChannelMappingOptionsDto channelMappingOptionsDto = (ChannelMappingOptionsDto) o;
+    return Objects.equals(this.tunerChannels, channelMappingOptionsDto.tunerChannels) &&
+        Objects.equals(this.providerChannels, channelMappingOptionsDto.providerChannels) &&
+        Objects.equals(this.mappings, channelMappingOptionsDto.mappings) &&
+        equalsNullable(this.providerName, channelMappingOptionsDto.providerName);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(tunerChannels, providerChannels, mappings, hashCodeNullable(providerName));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ChannelMappingOptionsDto {\n");
+    sb.append("    tunerChannels: ").append(toIndentedString(tunerChannels)).append("\n");
+    sb.append("    providerChannels: ").append(toIndentedString(providerChannels)).append("\n");
+    sb.append("    mappings: ").append(toIndentedString(mappings)).append("\n");
+    sb.append("    providerName: ").append(toIndentedString(providerName)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Builder {
+
+    private ChannelMappingOptionsDto instance;
+
+    public Builder() {
+      this(new ChannelMappingOptionsDto());
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-    public JsonNullable<String> getProviderName_JsonNullable() {
-        return providerName;
+    protected Builder(ChannelMappingOptionsDto instance) {
+      this.instance = instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
-        this.providerName = providerName;
+    public ChannelMappingOptionsDto.Builder tunerChannels(List<TunerChannelMapping> tunerChannels) {
+      this.instance.tunerChannels = tunerChannels;
+      return this;
+    }
+    public ChannelMappingOptionsDto.Builder providerChannels(List<NameIdPair> providerChannels) {
+      this.instance.providerChannels = providerChannels;
+      return this;
+    }
+    public ChannelMappingOptionsDto.Builder mappings(List<NameValuePair> mappings) {
+      this.instance.mappings = mappings;
+      return this;
+    }
+    public ChannelMappingOptionsDto.Builder providerName(String providerName) {
+      this.instance.providerName = JsonNullable.<String>of(providerName);
+      return this;
+    }
+    public ChannelMappingOptionsDto.Builder providerName(JsonNullable<String> providerName) {
+      this.instance.providerName = providerName;
+      return this;
     }
 
-    public void setProviderName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChannelMappingOptionsDto channelMappingOptionsDto = (ChannelMappingOptionsDto) o;
-        return Objects.equals(this.tunerChannels, channelMappingOptionsDto.tunerChannels)
-                && Objects.equals(this.providerChannels, channelMappingOptionsDto.providerChannels)
-                && Objects.equals(this.mappings, channelMappingOptionsDto.mappings)
-                && equalsNullable(this.providerName, channelMappingOptionsDto.providerName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(tunerChannels, providerChannels, mappings, hashCodeNullable(providerName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+    /**
+    * returns a built ChannelMappingOptionsDto instance.
+    *
+    * The builder is not reusable.
+    */
+    public ChannelMappingOptionsDto build() {
+      try {
+        return this.instance;
+      } finally {
+        // ensure that this.instance is not reused
+        this.instance = null;
+      }
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ChannelMappingOptionsDto {\n");
-        sb.append("    tunerChannels: ").append(toIndentedString(tunerChannels)).append("\n");
-        sb.append("    providerChannels: ").append(toIndentedString(providerChannels)).append("\n");
-        sb.append("    mappings: ").append(toIndentedString(mappings)).append("\n");
-        sb.append("    providerName: ").append(toIndentedString(providerName)).append("\n");
-        sb.append("}");
-        return sb.toString();
+      return getClass() + "=(" + instance + ")";
     }
+  }
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+  /**
+  * Create a builder with no initialized field.
+  */
+  public static ChannelMappingOptionsDto.Builder builder() {
+    return new ChannelMappingOptionsDto.Builder();
+  }
 
-    public static class Builder {
+  /**
+  * Create a builder with a shallow copy of this instance.
+  */
+  public ChannelMappingOptionsDto.Builder toBuilder() {
+    return new ChannelMappingOptionsDto.Builder()
+      .tunerChannels(getTunerChannels())
+      .providerChannels(getProviderChannels())
+      .mappings(getMappings())
+      .providerName(getProviderName());
+  }
 
-        private ChannelMappingOptionsDto instance;
 
-        public Builder() {
-            this(new ChannelMappingOptionsDto());
-        }
-
-        protected Builder(ChannelMappingOptionsDto instance) {
-            this.instance = instance;
-        }
-
-        public ChannelMappingOptionsDto.Builder tunerChannels(List<TunerChannelMapping> tunerChannels) {
-            this.instance.tunerChannels = tunerChannels;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerChannels(List<NameIdPair> providerChannels) {
-            this.instance.providerChannels = providerChannels;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder mappings(List<NameValuePair> mappings) {
-            this.instance.mappings = mappings;
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerName(String providerName) {
-            this.instance.providerName = JsonNullable.<String> of(providerName);
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerName(JsonNullable<String> providerName) {
-            this.instance.providerName = providerName;
-            return this;
-        }
-
-        /**
-         * returns a built ChannelMappingOptionsDto instance.
-         *
-         * The builder is not reusable.
-         */
-        public ChannelMappingOptionsDto build() {
-            try {
-                return this.instance;
-            } finally {
-                // ensure that this.instance is not reused
-                this.instance = null;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return getClass() + "=(" + instance + ")";
-        }
-    }
-
-    /**
-     * Create a builder with no initialized field.
-     */
-    public static ChannelMappingOptionsDto.Builder builder() {
-        return new ChannelMappingOptionsDto.Builder();
-    }
-
-    /**
-     * Create a builder with a shallow copy of this instance.
-     */
-    public ChannelMappingOptionsDto.Builder toBuilder() {
-        return new ChannelMappingOptionsDto.Builder().tunerChannels(getTunerChannels())
-                .providerChannels(getProviderChannels()).mappings(getMappings()).providerName(getProviderName());
-    }
 }
+

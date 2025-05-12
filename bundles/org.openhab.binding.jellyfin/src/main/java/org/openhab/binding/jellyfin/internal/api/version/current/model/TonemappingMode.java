@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,40 +29,41 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing tonemapping modes.
  */
 public enum TonemappingMode {
+  
+  AUTO("auto"),
+  
+  MAX("max"),
+  
+  RGB("rgb"),
+  
+  LUM("lum"),
+  
+  ITP("itp");
 
-    AUTO("auto"),
+  private String value;
 
-    MAX("max"),
+  TonemappingMode(String value) {
+    this.value = value;
+  }
 
-    RGB("rgb"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    LUM("lum"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    ITP("itp");
-
-    private String value;
-
-    TonemappingMode(String value) {
-        this.value = value;
+  @JsonCreator
+  public static TonemappingMode fromValue(String value) {
+    for (TonemappingMode b : TonemappingMode.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TonemappingMode fromValue(String value) {
-        for (TonemappingMode b : TonemappingMode.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,78 +29,79 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProfileConditionValue
  */
 public enum ProfileConditionValue {
+  
+  AUDIO_CHANNELS("AudioChannels"),
+  
+  AUDIO_BITRATE("AudioBitrate"),
+  
+  AUDIO_PROFILE("AudioProfile"),
+  
+  WIDTH("Width"),
+  
+  HEIGHT("Height"),
+  
+  HAS64_BIT_OFFSETS("Has64BitOffsets"),
+  
+  PACKET_LENGTH("PacketLength"),
+  
+  VIDEO_BIT_DEPTH("VideoBitDepth"),
+  
+  VIDEO_BITRATE("VideoBitrate"),
+  
+  VIDEO_FRAMERATE("VideoFramerate"),
+  
+  VIDEO_LEVEL("VideoLevel"),
+  
+  VIDEO_PROFILE("VideoProfile"),
+  
+  VIDEO_TIMESTAMP("VideoTimestamp"),
+  
+  IS_ANAMORPHIC("IsAnamorphic"),
+  
+  REF_FRAMES("RefFrames"),
+  
+  NUM_AUDIO_STREAMS("NumAudioStreams"),
+  
+  NUM_VIDEO_STREAMS("NumVideoStreams"),
+  
+  IS_SECONDARY_AUDIO("IsSecondaryAudio"),
+  
+  VIDEO_CODEC_TAG("VideoCodecTag"),
+  
+  IS_AVC("IsAvc"),
+  
+  IS_INTERLACED("IsInterlaced"),
+  
+  AUDIO_SAMPLE_RATE("AudioSampleRate"),
+  
+  AUDIO_BIT_DEPTH("AudioBitDepth"),
+  
+  VIDEO_RANGE_TYPE("VideoRangeType");
 
-    AUDIO_CHANNELS("AudioChannels"),
+  private String value;
 
-    AUDIO_BITRATE("AudioBitrate"),
+  ProfileConditionValue(String value) {
+    this.value = value;
+  }
 
-    AUDIO_PROFILE("AudioProfile"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    WIDTH("Width"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    HEIGHT("Height"),
-
-    HAS64_BIT_OFFSETS("Has64BitOffsets"),
-
-    PACKET_LENGTH("PacketLength"),
-
-    VIDEO_BIT_DEPTH("VideoBitDepth"),
-
-    VIDEO_BITRATE("VideoBitrate"),
-
-    VIDEO_FRAMERATE("VideoFramerate"),
-
-    VIDEO_LEVEL("VideoLevel"),
-
-    VIDEO_PROFILE("VideoProfile"),
-
-    VIDEO_TIMESTAMP("VideoTimestamp"),
-
-    IS_ANAMORPHIC("IsAnamorphic"),
-
-    REF_FRAMES("RefFrames"),
-
-    NUM_AUDIO_STREAMS("NumAudioStreams"),
-
-    NUM_VIDEO_STREAMS("NumVideoStreams"),
-
-    IS_SECONDARY_AUDIO("IsSecondaryAudio"),
-
-    VIDEO_CODEC_TAG("VideoCodecTag"),
-
-    IS_AVC("IsAvc"),
-
-    IS_INTERLACED("IsInterlaced"),
-
-    AUDIO_SAMPLE_RATE("AudioSampleRate"),
-
-    AUDIO_BIT_DEPTH("AudioBitDepth"),
-
-    VIDEO_RANGE_TYPE("VideoRangeType");
-
-    private String value;
-
-    ProfileConditionValue(String value) {
-        this.value = value;
+  @JsonCreator
+  public static ProfileConditionValue fromValue(String value) {
+    for (ProfileConditionValue b : ProfileConditionValue.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ProfileConditionValue fromValue(String value) {
-        for (ProfileConditionValue b : ProfileConditionValue.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+

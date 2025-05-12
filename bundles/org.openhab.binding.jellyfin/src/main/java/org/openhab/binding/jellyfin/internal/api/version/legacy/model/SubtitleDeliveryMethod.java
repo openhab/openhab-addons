@@ -17,6 +17,11 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,40 +29,41 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Delivery method to use during playback of a specific subtitle format.
  */
 public enum SubtitleDeliveryMethod {
+  
+  ENCODE("Encode"),
+  
+  EMBED("Embed"),
+  
+  EXTERNAL("External"),
+  
+  HLS("Hls"),
+  
+  DROP("Drop");
 
-    ENCODE("Encode"),
+  private String value;
 
-    EMBED("Embed"),
+  SubtitleDeliveryMethod(String value) {
+    this.value = value;
+  }
 
-    EXTERNAL("External"),
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
 
-    HLS("Hls"),
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
 
-    DROP("Drop");
-
-    private String value;
-
-    SubtitleDeliveryMethod(String value) {
-        this.value = value;
+  @JsonCreator
+  public static SubtitleDeliveryMethod fromValue(String value) {
+    for (SubtitleDeliveryMethod b : SubtitleDeliveryMethod.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static SubtitleDeliveryMethod fromValue(String value) {
-        for (SubtitleDeliveryMethod b : SubtitleDeliveryMethod.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
+  }
 }
+
