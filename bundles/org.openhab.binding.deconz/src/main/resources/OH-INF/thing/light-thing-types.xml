@@ -209,7 +209,7 @@
 		<category>Rollershutter</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
@@ -225,7 +225,7 @@
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
@@ -244,6 +244,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="none">No Alarm</option>
@@ -256,6 +260,10 @@
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
