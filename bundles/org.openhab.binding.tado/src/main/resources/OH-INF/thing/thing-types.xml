@@ -146,7 +146,7 @@
 		<description>ON if at home, OFF if away</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Presence</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -154,6 +154,10 @@
 		<item-type>Switch</item-type>
 		<label>Geofencing Enabled</label>
 		<description>Selects if automatic geofencing is enabled or disabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="currentTemperature">
@@ -215,7 +219,7 @@
 		<category>Fan</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state>
 			<options>
@@ -234,7 +238,7 @@
 		<category>Flow</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Tilt</tag>
+			<tag>Airflow</tag>
 		</tags>
 	</channel-type>
 
@@ -256,7 +260,7 @@
 		<category>Fan</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state>
 			<options>
@@ -278,7 +282,7 @@
 		<category>Flow</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state>
 			<options>
@@ -301,7 +305,7 @@
 		<category>Flow</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state>
 			<options>
@@ -365,7 +369,7 @@
 		<description>ON if at home, OFF if away</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Presence</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
