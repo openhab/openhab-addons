@@ -136,7 +136,6 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
                         sqlTypes.get("tablePrimaryValueParsed") });
 
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-
         Object[] params = { timestamp, timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
