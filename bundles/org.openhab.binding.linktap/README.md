@@ -70,15 +70,15 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 
 ### Gateway Configuration
 
-| Name                  | Type    | Description                                                                                                                                                             | Recommended Values | Required | Advanced |
-|-----------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
-| host                  | text    | The hostname / IP address of the gateway device                                                                                                                         |                    | Yes      | No       |
-| username              | text    | The username if set for the gateway device                                                                                                                              |                    | No       | No       |
-| password              | text    | The password if set for the gateway device                                                                                                                              |                    | No       | No       |
-| enableMDNS            | boolean | On connection whether the mDNS responder should be enabled on the gateway device                                                                                        | true               | No       | Yes      |
-| enforceProtocolLimits | boolean | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                             | true               | No       | Yes      |
-| enableJSONComms       | boolean | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications | true               | No       | Yes      |
-| gatewayRequestTimeout | integer | For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds allowed for responses from the gateway)                          | 3                  | No       | Yes      |
+| Name                   | Type    | Description                                                                                                                                                             | Recommended Values | Required | Advanced |
+|------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
+| host                   | text    | The hostname / IP address of the gateway device                                                                                                                         |                    | Yes      | No       |
+| username               | text    | The username if set for the gateway device                                                                                                                              |                    | No       | No       |
+| password               | text    | The password if set for the gateway device                                                                                                                              |                    | No       | No       |
+| enableMDNS             | boolean | On connection whether the mDNS responder should be enabled on the gateway device                                                                                        | true               | No       | Yes      |
+| enforceProtocolLimits  | boolean | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                             | true               | No       | Yes      |
+| enableJSONComms        | boolean | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications | true               | No       | Yes      |
+| gatewayResponseTimeout | integer | For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds allowed for responses from the gateway)                          | 3                  | No       | Yes      |
 
 **NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on.
 

@@ -90,6 +90,7 @@ public final class WebServerApi {
     private static final WebServerApi INSTANCE = new WebServerApi();
     private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
     private final Logger logger = LoggerFactory.getLogger(WebServerApi.class);
+    public final JettyTraceListener jettyTraceListener = new JettyTraceListener(logger);
 
     private @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable TranslationProvider translationProvider;
@@ -135,7 +136,7 @@ public final class WebServerApi {
             throws LinkTapException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname).method(HttpMethod.GET);
-            final ContentResponse cr = request.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -384,7 +385,7 @@ public final class WebServerApi {
             }
             final String targetHost = URI_HOST_PREFIX + hostname;
             final Request request = httpClient.newRequest(targetHost).method(HttpMethod.GET);
-            final ContentResponse cr = request.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -410,7 +411,8 @@ public final class WebServerApi {
                     logger.debug("Updating mdns server settings on gateway");
                     final Request mdnsRequest = httpClient
                             .newRequest(targetHost + "/index.shtml?flag=4&" + mdnsEnableReqStr).method(HttpMethod.GET);
-                    final ContentResponse mdnsCr = mdnsRequest.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+                    final ContentResponse mdnsCr = addTraceListener(mdnsRequest)
+                            .timeout(timeoutSeconds, TimeUnit.SECONDS).send();
                     if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                         throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                     }
@@ -433,7 +435,8 @@ public final class WebServerApi {
                     final Request lhttpApiRequest = httpClient
                             .newRequest(targetHost + "/index.shtml?flag=5&" + localHttpApiReqStr)
                             .method(HttpMethod.GET);
-                    final ContentResponse mdnsCr = lhttpApiRequest.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+                    final ContentResponse mdnsCr = addTraceListener(lhttpApiRequest)
+                            .timeout(timeoutSeconds, TimeUnit.SECONDS).send();
                     if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                         throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                     }
@@ -445,7 +448,8 @@ public final class WebServerApi {
                 logger.debug("Rebooting gateway to apply new settings");
                 final Request restartReq = httpClient.newRequest(targetHost + "/index.shtml?flag=0")
                         .method(HttpMethod.GET);
-                final ContentResponse mdnsCr = restartReq.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+                final ContentResponse mdnsCr = addTraceListener(restartReq).timeout(timeoutSeconds, TimeUnit.SECONDS)
+                        .send();
                 if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                     throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                 }
@@ -479,7 +483,8 @@ public final class WebServerApi {
             fields.put(FIELD_ADMIN_USER_PWD, password);
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname + "/login.shtml")
                     .method(HttpMethod.POST).content(new FormContentProvider(fields));
-            final ContentResponse cr = request.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -522,10 +527,10 @@ public final class WebServerApi {
         try {
             final InetAddress address = InetAddress.getByName(hostname);
             logger.trace("API Endpoint: {}", URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
-            final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
-            request.content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
+            final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml")
+                    .content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
 
-            final ContentResponse cr = request.timeout(timeoutSeconds, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -571,5 +576,13 @@ public final class WebServerApi {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             }
         }
+    }
+
+    private org.eclipse.jetty.client.api.Request addTraceListener(final Request request) {
+        if (logger.isTraceEnabled()) {
+            return request.onRequestQueued(jettyTraceListener).onRequestBegin(jettyTraceListener)
+                    .onRequestSuccess(jettyTraceListener).onRequestFailure(jettyTraceListener);
+        }
+        return request;
     }
 }
