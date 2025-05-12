@@ -138,7 +138,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         scheduler.execute(this::goOnline);
     }
 
-    public void goOnline() {
+    public synchronized void goOnline() {
         try {
             api.initialize(config.clientId, config.clientSecret, config.username, config.password,
                     this.getThing().getUID());
@@ -218,15 +218,13 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
      */
     @Nullable
     public FlumeDeviceHandler getFlumeDeviceHandler(String id) {
-        //@formatter:off
-        return getThing().getThings().stream()
-            .filter(t -> t.getThingTypeUID().equals(THING_TYPE_METER))
-            .map(t -> (FlumeDeviceHandler)t.getHandler())
-            .filter(Objects::nonNull)
-            .filter(h -> h.getId().equals(id))
-            .findFirst()
-            .orElse(null);
-        //@formatter:on
+        return getThing().getThings().stream() //
+                .filter(t -> t.getThingTypeUID().equals(THING_TYPE_METER)) //
+                .map(t -> (FlumeDeviceHandler) t.getHandler()) //
+                .filter(Objects::nonNull) //
+                .filter(h -> h.getId().equals(id)) //
+                .findFirst() //
+                .orElse(null);
     }
 
     public void handleApiException(Exception e) {
@@ -277,10 +275,11 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
             refreshDevices(true);
         }
 
-        //@formatter:off
-        getThing().getThings().stream()
-            .forEach(t -> { if(t.getHandler() instanceof FlumeDeviceHandler handler) { handler.queryUsage(); } });
-        //@formatter:on
+        getThing().getThings().stream() //
+                .map(t -> t.getHandler()) //
+                .filter(FlumeDeviceHandler.class::isInstance) //
+                .map(FlumeDeviceHandler.class::cast) //
+                .forEach(FlumeDeviceHandler::queryUsage);
     }
 
     public @Nullable String getLocaleString(String key) {
