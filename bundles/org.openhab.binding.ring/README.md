@@ -1,11 +1,10 @@
 # Ring Binding
 
-This is an experimental binding to the Ring.com API. It currently supports a Ring account
-and is able to discover Ring Video Doorbells, Stick Up Cameras, Chimes, and other devices. 
+This is an experimental binding to the Ring.com API. 
+It currently supports a Ring account and is able to discover Ring Video Doorbells, Stick Up Cameras, Chimes, and other devices. 
 They need to be registered in the Ring account before they will be detected.
 
-It currently does *not* support live video streaming, but you can view recorded videos,
-if this service is enabled in the Ring account.
+It currently does *not* support live video streaming, but you can view recorded videos, if this service is enabled in the Ring account.
 
 ## Supported Things
 
@@ -14,15 +13,23 @@ The binding currently supports Ring Video Doorbell, Stick Up Cameras, Chimes, an
 
 ## Discovery
 
-Auto-discovery is supported by this binding. After (manually) adding a Ring Account bridge, 
-registered doorbells and chimes will be auto discovered.
+Auto-discovery is supported by this binding. 
+After (manually) adding a Ring Account bridge, registered doorbells and chimes will be auto discovered.
 
 ## Binding Configuration
 
-Binding configuration is necessary. The easiest way to do this is from the UI. Just
-add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
-Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for
-events. If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
+Binding configuration is necessary. The easiest way to do this is from the UI. Just add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
+Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for events. 
+If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
+| Parameter           | Description                                                         | Default     |
+|---------------------|---------------------------------------------------------------------|-------------|
+| username            | The user name you use to subscribe to the Ring services.            | N/A         |
+| password            | The password you use to subscribe to the Ring services.             | N/A         |
+| twofactorCode       | 2 factor authentication code (Where enabled)                        | N/A         |
+| hardwareId          | A unique hardware id                                                | N/A         |
+| refreshInterval     | Refresh interval                                                    | 5           |
+| videoStoragePath    | Video Download Path                                                 | N/A         |
+| videoRetentionCount | Number of videos to keep                                            | 10          |
 
 ## Channels
 
@@ -52,7 +59,7 @@ Todo: Move these to the device thing
 
 ## Full Example
 
-NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. The easiest way to currently get that is to define the account thing and pull the device ID from the last event channel.
+NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. The easiest way to currently get that is to define the account bridge and pull the device ID from the last event channel.
 
 NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled. If you are using 2 factor authentication, Things MUST be set up through PaperUI
 
