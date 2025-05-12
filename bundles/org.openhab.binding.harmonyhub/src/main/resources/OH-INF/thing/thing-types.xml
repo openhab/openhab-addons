@@ -49,7 +49,7 @@
 		</supported-bridge-type-refs>
 		<label>Harmony Device</label>
 		<description>Logitech Harmony Hub Device</description>
-		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
+
 		<channels>
 			<channel id="buttonPress" typeId="buttonPress"/>
 		</channels>
@@ -85,9 +85,6 @@
 		<item-type>String</item-type>
 		<label>Button Press</label>
 		<description>The label/name of the button to press on a Harmony Hub device (write only)</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="player">
