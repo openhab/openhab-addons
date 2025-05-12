@@ -354,6 +354,7 @@
 		<description>The name of the current sun phase</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
