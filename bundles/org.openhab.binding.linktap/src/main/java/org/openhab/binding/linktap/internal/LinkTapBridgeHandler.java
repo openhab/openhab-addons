@@ -383,7 +383,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             }
             final String reqData = LinkTapBindingConstants.GSON.toJson(req);
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
-            final String respData = api.sendRequest(host, config.gatewayRequestTimeout, reqData);
+            final String respData = api.sendRequest(host, getRequestTimeout(), reqData);
             logger.debug("{} = APP BRIDGE -> GW -> Response {}", uid, respData);
             final GatewayDeviceResponse gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
                     GatewayDeviceResponse.class);
@@ -536,8 +536,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReconnect() {
-        scheduleReconnect(config.gatewayRequestTimeout * 5); // 5 is due to the number of req/resp required for
-                                                             // connection
+        scheduleReconnect(getRequestTimeout() * 5); // 5 is due to the number of req/resp required for
+                                                    // connection
     }
 
     public void attemptReconnectIfNeeded() {
