@@ -99,42 +99,42 @@
 	<channel-type id="fems-version">
 		<item-type>String</item-type>
 		<label>FEMS Version</label>
-		<description>FENECON energy management system (FEMS) version</description>
+		<description>FENECON energy management system (FEMS) version.</description>
 		<category>Text</category>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>Last successful update via REST-API from the FENECON system</description>
+		<description>Last successful update via REST-API from the FENECON system.</description>
 		<category>Time</category>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ess-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery State</label>
-		<description>Battery state of charge in percent</description>
+		<description>Battery state of charge.</description>
 		<category>BatteryLevel</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-soh">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Health State</label>
-		<description>Battery state of health in percent</description>
+		<description>Battery state of health.</description>
 		<category>BatteryLevel</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-power">
 		<item-type>Number:Power</item-type>
 		<label>Charger Power</label>
-		<description>Current charger power of energy storage system in watt.</description>
+		<description>Current charger power of energy storage system.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="discharger-power">
 		<item-type>Number:Power</item-type>
 		<label>Discharger Power</label>
-		<description>Current discharger power of energy storage system in watt.</description>
+		<description>Current discharger power of energy storage system.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -148,119 +148,119 @@
 	<channel-type id="production-active-power">
 		<item-type>Number:Power</item-type>
 		<label>Producer Power</label>
-		<description>Current active power producer load in watt.</description>
+		<description>Current active power producer load.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="export-to-grid-power">
 		<item-type>Number:Power</item-type>
 		<label>Export Grid Power</label>
-		<description>Current export power to grid in watt.</description>
+		<description>Current export power to grid.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="exported-to-grid-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Exported Grid Energy</label>
-		<description>Total energy exported to the grid in watt per hour.</description>
+		<description>Total energy exported to the grid.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power">
 		<item-type>Number:Power</item-type>
 		<label>Consumer Power</label>
-		<description>Current active power consumer load in watt.</description>
+		<description>Current active power consumer load.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power-phase">
 		<item-type>Number:Power</item-type>
 		<label>Consumer Power Phase</label>
-		<description>Current active power consumer load in watt on the corresponding phase.</description>
+		<description>Current active power consumer load on the corresponding phase.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-max-active-power">
 		<item-type>Number:Power</item-type>
 		<label>Consumer Max Power</label>
-		<description>Maximum active consumption power in watt that was measured.</description>
+		<description>Maximum active consumption power that was measured.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-max-active-power">
 		<item-type>Number:Power</item-type>
 		<label>Producer Max Power</label>
-		<description>Maximum active production power in watt that was measured.</description>
+		<description>Maximum active production power that was measured.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="import-from-grid-power">
 		<item-type>Number:Power</item-type>
 		<label>Import Grid Power</label>
-		<description>Current import power from grid in watt.</description>
+		<description>Current import power from grid.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="imported-from-grid-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Imported Grid Energy</label>
-		<description>Total energy imported from the grid in watt per hour.</description>
+		<description>Total energy imported from the grid.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-air-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Air Temperature</label>
-		<description>Air temperature at the inverter in °C</description>
+		<description>Air temperature at the inverter.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-radiator-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Radiator Temperature</label>
-		<description>Radiator temperature at the inverter in °C</description>
+		<description>Radiator temperature at the inverter.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="bms-pack-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>BMS Pack Temperature</label>
-		<description>Temperature in the battery management system (BMS) box in °C</description>
+		<description>Temperature in the battery management system (BMS) box.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>FEMS Battery Voltage</label>
-		<description>Battery voltage of the FENECON energy management system (FEMS) in volt.</description>
+		<description>Battery voltage of the FENECON energy management system (FEMS).</description>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>FEMS Battery Current</label>
-		<description>Battery current of the FENECON energy management system (FEMS) in ampere.</description>
+		<description>Battery current of the FENECON energy management system (FEMS).</description>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-actual-power">
 		<item-type>Number:Power</item-type>
 		<label>Charger Actual Power</label>
-		<description>Charger actual power in watt on the corresponding charger.</description>
+		<description>Charger actual power on the corresponding charger.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Charger Voltage</label>
-		<description>Charger voltage in volt on the corresponding charger.</description>
+		<description>Charger voltage on the corresponding charger.</description>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charger Current</label>
-		<description>Charger current in ampere on the corresponding charger.</description>
+		<description>Charger current on the corresponding charger.</description>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
