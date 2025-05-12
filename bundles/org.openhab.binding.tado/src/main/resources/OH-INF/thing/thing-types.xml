@@ -144,10 +144,6 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="geofencingEnabled">
@@ -165,10 +161,6 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -205,10 +197,6 @@
 		<label>Target Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -247,10 +235,6 @@
 		<label>Light</label>
 		<description>State of control panel light (only if supported by AC)</description>
 		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="fanLevel">
@@ -344,10 +328,6 @@
 		<label>Timer Duration</label>
 		<description>Total duration of a timer</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state min="0" step="1" pattern="%d min"/>
 	</channel-type>
 
@@ -356,10 +336,6 @@
 		<label>Overlay End Time</label>
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -367,10 +343,6 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="acPower">
