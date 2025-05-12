@@ -1432,9 +1432,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
                 equipmentTag = Equipment.ZONE;
             }
-            if (thisResource.getProductData() instanceof ProductData productData
-                    && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
-                equipmentTag = Equipment.LIGHT_STRIP;
+            if ((thing.getChannel(CHANNEL_2_COLOR) != null) || (thing.getChannel(CHANNEL_2_BRIGHTNESS) != null)
+                    || (thing.getChannel(CHANNEL_2_SWITCH) != null)) {
+                equipmentTag = (thisResource.getProductData() instanceof ProductData productData)
+                        && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype()) ? Equipment.LIGHT_STRIP
+                                : Equipment.LIGHTBULB;
             }
             if (thing.getChannel(CHANNEL_2_BUTTON_LAST_EVENT) != null) {
                 equipmentTag = Equipment.BUTTON;
