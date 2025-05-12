@@ -61,6 +61,7 @@
 		<description>Level of radiation after penetration of the atmospheric layer</description>
 		<tags>
 			<tag>Calculation</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -71,6 +72,7 @@
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
 		<tags>
 			<tag>Calculation</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
