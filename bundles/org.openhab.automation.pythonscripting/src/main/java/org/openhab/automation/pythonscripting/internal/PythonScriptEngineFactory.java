@@ -19,10 +19,10 @@ import java.io.InputStreamReader;
 import java.lang.module.ModuleDescriptor.Version;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
+
+    private static final String RESOURCE_SEPARATOR = "/";
 
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
     public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
@@ -132,11 +134,12 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     private void initHelperLib() {
         try {
+            String pathSeparator = FileSystems.getDefault().getSeparator();
             String resourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
-                    .substring(PYTHON_DEFAULT_PATH.toString().length()) + "/";
-
-            Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
-                    .findEntries(resourceLibPath, "*.py", true);
+                    .substring(PYTHON_DEFAULT_PATH.toString().length()) + pathSeparator;
+            if (!RESOURCE_SEPARATOR.equals(pathSeparator)) {
+                resourceLibPath = resourceLibPath.replace(pathSeparator, RESOURCE_SEPARATOR);
+            }
 
             if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
                 try (Stream<Path> files = Files.list(PYTHON_OPENHAB_LIB_PATH)) {
@@ -186,8 +189,12 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 }
             }
 
-            Files.createDirectories(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH,
-                    PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
+            initDirectory(PythonScriptEngineFactory.PYTHON_DEFAULT_PATH);
+            initDirectory(PythonScriptEngineFactory.PYTHON_LIB_PATH);
+            initDirectory(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH);
+
+            Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
+                    .findEntries(resourceLibPath, "*.py", true);
 
             while (resourceFiles.hasMoreElements()) {
                 URL resourceFile = resourceFiles.nextElement();
@@ -196,14 +203,26 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
                         .getResourceAsStream(resourcePath)) {
                     Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
-                            .resolve(resourcePath.substring(resourcePath.lastIndexOf('/') + 1));
+                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(RESOURCE_SEPARATOR) + 1));
 
                     Files.copy(is, target);
-                    Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
+                    File file = target.toFile();
+                    file.setReadable(true, false);
+                    file.setWritable(true, true);
                 }
             }
         } catch (Exception e) {
             logger.error("Exception during helper lib initialisation", e);
+        }
+    }
+
+    private void initDirectory(Path path) {
+        File directory = path.toFile();
+        if (!directory.exists()) {
+            directory.mkdir();
+            directory.setExecutable(true, false);
+            directory.setReadable(true, false);
+            directory.setWritable(true, true);
         }
     }
 }

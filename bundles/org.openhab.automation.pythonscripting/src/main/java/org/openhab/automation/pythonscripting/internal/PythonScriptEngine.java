@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -74,6 +75,8 @@ public class PythonScriptEngine
         implements Lock {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
 
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
+
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
@@ -111,13 +114,14 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Instant.class,
                     v -> v.hasMember("ctime") && v.hasMember("isoformat") && v.hasMember("tzinfo")
                             && v.getMember("tzinfo").isNull(),
-                    v -> Instant.parse(v.invokeMember("isoformat").asString()), HostAccess.TargetMappingPrecedence.LOW)
+                    v -> Instant.parse(v.invokeMember("isoformat").asString() + "Z"),
+                    HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python timedelta to java.time.Duration
             .targetTypeMapping(Value.class, Duration.class,
                     // picking two members to check as Duration has many common function names
                     v -> v.hasMember("total_seconds") && v.hasMember("total_seconds"),
-                    v -> Duration.ofNanos(v.invokeMember("total_seconds").asLong() * 10000000),
+                    v -> Duration.ofNanos(Math.round(v.invokeMember("total_seconds").asDouble() * 1000000000)),
                     HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python item to org.openhab.core.items.Item
@@ -163,6 +167,10 @@ public class PythonScriptEngine
 
         lifecycleTracker = new LifecycleTracker();
         scriptExtensionModuleProvider = new ScriptExtensionModuleProvider();
+
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        Properties props = System.getProperties();
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
 
         Context.Builder contextConfig = Context.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID) //
                 .out(scriptOutputStream) //
