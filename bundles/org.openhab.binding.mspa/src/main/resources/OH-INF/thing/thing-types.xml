@@ -73,7 +73,7 @@
 				<label>Water Temperature</label>
 				<description>Current water temperature</description>
 			</channel>
-			<channel id="target-temperature" typeId="set-temperature">
+			<channel id="target-temperature" typeId="temperature">
 				<label>Target Water Temperature</label>
 				<description>Temperature to reach with heating</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>

@@ -14,22 +14,29 @@ package org.openhab.binding.mspa.internal.handler;
 
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.json.JSONObject;
+import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
 import org.openhab.binding.mspa.internal.config.MSpaPoolConfiguration;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -39,6 +46,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +59,19 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MSpaPool extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(MSpaPool.class);
 
-    private Optional<MSpaBaseAccount> account = Optional.empty();
     private MSpaPoolConfiguration config = new MSpaPoolConfiguration();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<MSpaBaseAccount> account = Optional.empty();
     private String dataCache = (new JSONObject()).toString();
+    private final MSpaCommandOptionProvider commandProvider;
+    private final UnitProvider unitProvider;
 
-    public MSpaPool(Thing thing, HttpClient httpClient) {
+    public MSpaPool(Thing thing, UnitProvider unitProvider, MSpaCommandOptionProvider commandProvider) {
         super(thing);
+        this.commandProvider = commandProvider;
+        this.unitProvider = unitProvider;
     }
 
     @Override
@@ -172,6 +183,7 @@ public class MSpaPool extends BaseThingHandler {
                     refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateData, 2,
                             config.refreshInterval * 60, TimeUnit.SECONDS));
                     updateStatus(ThingStatus.ONLINE);
+                    setCommandOptions();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Token invalid");
                 }
@@ -252,5 +264,21 @@ public class MSpaPool extends BaseThingHandler {
                 updateState(LOCK, OnOffType.from(rawData.getInt("safety_lock") == 1));
             }
         }
+    }
+
+    private void setCommandOptions() {
+        List<CommandOption> commandOptions = new ArrayList<>();
+        Unit<Temperature> temperatureUnit = unitProvider.getUnit(Temperature.class);
+        if (ImperialUnits.FAHRENHEIT.equals(temperatureUnit)) {
+            for (int i = 86; i < 105; i++) {
+                commandOptions.add(new CommandOption(i + " °F", i + " °F"));
+            }
+        } else {
+            for (int i = 30; i < 41; i++) {
+                commandOptions.add(new CommandOption(i + " °C", i + " °C"));
+            }
+        }
+        ChannelUID cuid = new ChannelUID(thing.getUID(), WATER_TARGET_TEMPERATURE);
+        commandProvider.setCommandOptions(cuid, commandOptions);
     }
 }

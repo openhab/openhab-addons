@@ -22,7 +22,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.binding.mspa.internal.handler.MSpaVisitorAccount;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -59,22 +58,6 @@ class TestToken {
             account.requestToken();
         } catch (Exception e) {
             fail();
-        }
-    }
-
-    void testJson() {
-        String input = "{\"grants\":\"{\\\"abc\\\":\\\"2025-05-13T10:37:31.451941195Z\\\"}\",\"expires\":86400,\"created\":\"2025-05-12T20:13:10.101935500Z\",\"accesstoken\":\"{\\\"expires\\\":86400,\\\"created\\\":\\\"2025-05-13T10:37:31.424045271Z\\\",\\\"token\\\":\\\"b5b2f814d9c74abe13b5bd6fa19b0d7e\\\"}\",\"token\":\"98b3a63d091471cb9ac4009bea7fced2\"}";
-        JSONObject test = new JSONObject(input);
-        try {
-            System.out.println(test.getJSONObject("grants"));
-        } catch (Exception e) {
-            if (test.has("token")) {
-                JSONObject tokenJson = new JSONObject(test.remove("token"));
-                test.put("token", tokenJson);
-                JSONObject test2 = test.getJSONObject("token");
-                System.out.println("Clazz " + test2.get("expires").getClass());
-            }
-            System.out.println(test);
         }
     }
 }

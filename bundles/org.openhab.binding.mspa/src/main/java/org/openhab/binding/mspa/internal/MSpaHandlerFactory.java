@@ -20,6 +20,7 @@ import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.binding.mspa.internal.handler.MSpaOwnerAccount;
 import org.openhab.binding.mspa.internal.handler.MSpaPool;
 import org.openhab.binding.mspa.internal.handler.MSpaVisitorAccount;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -43,15 +44,20 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mspa", service = ThingHandlerFactory.class)
 public class MSpaHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClientFactory httpFactory;
+    private final MSpaCommandOptionProvider commandOptions;
     private final MSpaDiscoveryService discovery;
+    private final HttpClientFactory httpFactory;
+    private final UnitProvider unitProvider;
     private final Storage<String> store;
 
     @Activate
     public MSpaHandlerFactory(@Reference HttpClientFactory httpFactory, @Reference StorageService storageService,
-            @Reference MSpaDiscoveryService discovery) {
+            @Reference MSpaDiscoveryService discovery, final @Reference UnitProvider unitProvider,
+            final @Reference MSpaCommandOptionProvider commandOptions) {
         this.httpFactory = httpFactory;
         this.discovery = discovery;
+        this.unitProvider = unitProvider;
+        this.commandOptions = commandOptions;
         store = storageService.getStorage(BINDING_ID);
     }
 
@@ -68,7 +74,7 @@ public class MSpaHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_VISITOR_ACCOUNT.equals(thingTypeUID)) {
             return new MSpaVisitorAccount((Bridge) thing, httpFactory.getCommonHttpClient(), discovery, store);
         } else if (THING_TYPE_POOL.equals(thingTypeUID)) {
-            return new MSpaPool(thing, httpFactory.getCommonHttpClient());
+            return new MSpaPool(thing, unitProvider, commandOptions);
         }
         return null;
     }

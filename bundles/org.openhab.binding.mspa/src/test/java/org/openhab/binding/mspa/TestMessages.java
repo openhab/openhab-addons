@@ -28,12 +28,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.binding.mspa.internal.handler.MSpaOwnerAccount;
 import org.openhab.binding.mspa.internal.handler.MSpaPool;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -113,7 +115,7 @@ class TestMessages {
     @Test
     void testDataUpdate() {
         Thing thing = new ThingImpl(THING_TYPE_POOL, new ThingUID("mspa", "pool"));
-        MSpaPool pool = new MSpaPool(thing, mock(HttpClient.class));
+        MSpaPool pool = new MSpaPool(thing, mock(UnitProvider.class), mock(MSpaCommandOptionProvider.class));
         CallbackMock callback = new CallbackMock();
         pool.setCallback(callback);
         String fileName = "src/test/resources/DataResponse.json";
