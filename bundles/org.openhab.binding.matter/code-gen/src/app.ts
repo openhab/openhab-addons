@@ -262,7 +262,7 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
         mappedType = dt.name;
     } else {
         //this gets raw types
-        mappedType = dt.type && mappings.get(dt.type) || matterNativeTypeToJavaNativeType(dt) || dt.type || "String"  //  no types are strings? (TODO BridgedBasic cluster uses operationalShadow)
+        mappedType = dt.type && mappings.get(dt.type) || matterNativeTypeToJavaNativeType(dt) || dt.type || "String"
     }
     if (mappedType == 'list') {
         const ct = dt.children?.[0].type
