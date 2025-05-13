@@ -268,9 +268,9 @@
 		<label>Charger Type</label>
 		<state readOnly="true">
 			<options>
-				<option value="ac">@text/ecoflow.battery-charger-type.ac</option>
-				<option value="dc">@text/ecoflow.battery-charger-type.dc</option>
-				<option value="solar">@text/ecoflow.battery-charger-type.solar</option>
+				<option value="ac">AC input</option>
+				<option value="dc">DC input</option>
+				<option value="solar">Solar input</option>
 			</options>
 		</state>
 	</channel-type>
@@ -475,9 +475,9 @@
 		<label>Charge State</label>
 		<state readOnly="true">
 			<options>
-				<option value="disabled">@text/ecoflow.solar-charge-state.disabled</option>
-				<option value="charging">@text/ecoflow.solar-charge-state.charging</option>
-				<option value="standby">@text/ecoflow.solar-charge-state.standby</option>
+				<option value="disabled">Disabled</option>
+				<option value="charging">Charging</option>
+				<option value="standby">Standby</option>
 			</options>
 		</state>
 	</channel-type>
@@ -505,10 +505,10 @@
 		<label>Inverter Status</label>
 		<state readOnly="true">
 			<options>
-				<option value="idle">@text/ecoflow.ps-inverter-state.idle</option>
-				<option value="starting">@text/ecoflow.ps-inverter-state.starting</option>
-				<option value="synchronized">@text/ecoflow.ps-inverter-state.synchronized</option>
-				<option value="disconnected">@text/ecoflow.ps-inverter-state.disconnected</option>
+				<option value="idle">Idle</option>
+				<option value="starting">Starting</option>
+				<option value="synchronized">Synchronized to grid</option>
+				<option value="disconnected">Grid disconnected</option>
 			</options>
 		</state>
 	</channel-type>

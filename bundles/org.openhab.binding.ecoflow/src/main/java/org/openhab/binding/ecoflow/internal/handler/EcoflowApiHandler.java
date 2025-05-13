@@ -148,8 +148,8 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                 activeChildHandlers.remove(deviceHandler.getSerialNumber());
                 if (activeChildHandlers.isEmpty() && connection != null) {
                     connection.disconnect();
+                    mqttConnection = null;
                 }
-                mqttConnection = null;
             }
         }
     }
@@ -211,7 +211,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                 try {
                     oldConnection.disconnect().get();
                 } catch (InterruptedException | ExecutionException e) {
-                    // ignored
+                    logger.debug("Could not discard MQTT connection", e);
                 }
             }
 

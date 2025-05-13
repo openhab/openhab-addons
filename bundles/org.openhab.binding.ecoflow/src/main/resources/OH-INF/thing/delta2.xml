@@ -6,7 +6,7 @@
 
 	<thing-type id="delta2">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ecoflowapi"/>
+			<bridge-type-ref id="ecoflow-api"/>
 		</supported-bridge-type-refs>
 
 		<label>EcoFlow Delta 2</label>
@@ -24,9 +24,9 @@
 		<config-description-ref uri="thing-type:ecoflow:device"/>
 	</thing-type>
 
-	<thing-type id="delta2max">
+	<thing-type id="delta2-max">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ecoflowapi"/>
+			<bridge-type-ref id="ecoflow-api"/>
 		</supported-bridge-type-refs>
 
 		<label>EcoFlow Delta 2 Max</label>

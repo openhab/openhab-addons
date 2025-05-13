@@ -114,7 +114,7 @@ public class PowerStreamHandler extends AbstractEcoflowHandler {
                     mode = 1;
                     break;
                 default:
-                    logger.info("{}: Got unexpected power supply priority value {}", serialNumber, value);
+                    logger.warn("{}: Got unexpected power supply priority value {}", serialNumber, value);
                     return Optional.empty();
             }
             return Optional.of(createControlRequest("WN511_SET_SUPPLY_PRIORITY_PACK", "supplyPriority", mode));

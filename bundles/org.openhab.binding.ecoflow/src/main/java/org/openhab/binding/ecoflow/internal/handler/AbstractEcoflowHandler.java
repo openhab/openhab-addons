@@ -95,17 +95,17 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (EcoflowApiException e) {
-                logger.info("{}: Could not send command {} for channel {}", serialNumber, command, channelUID, e);
+                logger.warn("{}: Could not send command {} for channel {}", serialNumber, command, channelUID, e);
             }
         }, () -> {
-            logger.info("{}: Channel {} got unhandled command {}", serialNumber, channelUID, command);
+            logger.warn("{}: Channel {} got unhandled command {}", serialNumber, channelUID, command);
         });
     }
 
     @Override
     public void initialize() {
         serialNumber = getConfigAs(EcoflowDeltaConfiguration.class).serialNumber;
-        if (serialNumber.isEmpty()) {
+        if (serialNumber.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.config-error-no-serial");
         } else {
@@ -176,7 +176,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (EcoflowApiException e) {
-                logger.info("{}: Could not update thing state after status message {}", serialNumber, payload, e);
+                logger.warn("{}: Could not update thing state after status message {}", serialNumber, payload, e);
             }
         }
     }

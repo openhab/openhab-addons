@@ -5,9 +5,9 @@ It discovers devices and communicates to them by using the cloud services provid
 
 ## Supported Things
 
-- EcoFlow cloud API (`ecoflowapi`)
+- EcoFlow cloud API (`ecoflow-api`)
 - Delta 2 power station (`delta2`)
-- Delta 2 Max power station (`delta2max`)
+- Delta 2 Max power station (`delta2-max`)
 - PowerStream micro inverter (`powerstream`)
 
 ## Discovery
@@ -17,7 +17,7 @@ Once that is done, you can initiate a device scan and supported devices will be 
 
 ## Thing Configuration
 
-For the cloud API thing, you need to register for a developer account at EcoFlow's [developer page](https://developer.ecoflow.com).
+For the cloud API thing (`ecoflow-api`), you need to register for a developer account at EcoFlow's [developer page](https://developer.ecoflow.com).
 Once that registration is approved, you can create access credentials under the `IoT Background` tab on that page, which you need for the thing configuration:
 
 | Config    | Description                                |
@@ -65,7 +65,7 @@ The list below lists all channels supported for both the Delta 2 and Delta 2 Max
 | ac-output#frequency             | Number:Frequency         | Inverter output frequency                         | Yes       |         |
 | ac-output#temperature           | Number:Temperature       | Inverter temperature                              | Yes       |         |
 | ac-output#total-energy          | Number:Energy            | Amount of energy provided by inverter             | Yes       | [4]     |
-| dc-output#enabled               | Switch                   | Whether USB output is enabled                     | No        |         |
+| dc-output#usb-enabled           | Switch                   | Whether USB output is enabled                     | No        |         |
 | dc-output#12v-enabled           | Switch                   | Whether 12V car jack output is enabled            | No        |         |
 | dc-output#usb1-power            | Number:Power             | Power drawn from left USB-A output                | Yes       |         |
 | dc-output#usb2-power            | Number:Power             | Power drawn from right USB-A output               | Yes       |         |
@@ -138,21 +138,30 @@ Remarks:
 - [2] The range of valid values is 0..600/800 W. The upper limit depends on inverter type.
 - [3] Possible states: 'prioIsSupply' (prefer AC output over battery storage), 'prioIsStorage' (prefer battery storage over AC output)
 
-## File Based Configuration
+## Thing Configuration
 
 If you want to create the API bridge in a .things file, the entry has to look as follows:
 
 ```java
-Bridge ecoflow:ecoflowapi:ecoflowapi [ accessKey="YOUR_ACCESS_KEY", secretKey="YOUR_SECRET_KEY" ]
+Bridge ecoflow:ecoflow-api:ecoflowapi [ accessKey="YOUR_ACCESS_KEY", secretKey="YOUR_SECRET_KEY" ]
 ```
 
 The devices are detected automatically.
 If you also want to enter those manually, the syntax is as follows:
 
 ```java
-Bridge ecoflow:ecoflowapi:ecoflowapi [ accessKey="YOUR_ACCESS_KEY", secretKey="YOUR_SECRET_KEY" ]
+Bridge ecoflow:ecoflow-api:ecoflowapi [ accessKey="YOUR_ACCESS_KEY", secretKey="YOUR_SECRET_KEY" ]
 {
-    Thing delta2max myPowerStation "EcoFlow power station" [ serialNumber="serial number as printed on device" ]
+    Thing delta2-max myPowerStation "EcoFlow power station" [ serialNumber="serial number as printed on device" ]
 }
 ```
 
+## Item Configuration
+
+You can link the channels listed above to items via the UI. If you want to do it via an `.items` file in your `$OPENHAB_CONF/items` folder, the syntax looks like this:
+
+```java
+Number Delta2BatteryLevel "Delta 2 Battery Level" { channel="ecoflow:delta2-max:ecoflowapi:myPowerStation:status#battery-level" }
+Switch Delta2UsbEnabled   "Delta 2 USB Enabled"    { channel="ecoflow:delta2-max:ecoflowapi:myPowerStation:dc-output#usb-enabled" }
+[...]
+```

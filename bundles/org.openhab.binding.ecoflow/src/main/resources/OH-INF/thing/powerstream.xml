@@ -6,7 +6,7 @@
 
 	<thing-type id="powerstream">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ecoflowapi"/>
+			<bridge-type-ref id="ecoflow-api"/>
 		</supported-bridge-type-refs>
 
 		<label>EcoFlow PowerStream</label>

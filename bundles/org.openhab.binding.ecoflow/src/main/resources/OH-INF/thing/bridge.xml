@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- EcoFlow API account -->
-	<bridge-type id="ecoflowapi">
+	<bridge-type id="ecoflow-api">
 		<label>EcoFlow API Account</label>
 		<description>The API account</description>
-		<config-description-ref uri="thing-type:ecoflow:ecoflowapi"/>
+		<config-description-ref uri="thing-type:ecoflow:ecoflow-api"/>
 	</bridge-type>
 </thing:thing-descriptions>

@@ -26,9 +26,9 @@ public class EcoflowBindingConstants {
     private static final String BINDING_ID = "ecoflow";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "ecoflowapi");
+    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "ecoflow-api");
     public static final ThingTypeUID THING_TYPE_DELTA2 = new ThingTypeUID(BINDING_ID, "delta2");
-    public static final ThingTypeUID THING_TYPE_DELTA2MAX = new ThingTypeUID(BINDING_ID, "delta2max");
+    public static final ThingTypeUID THING_TYPE_DELTA2MAX = new ThingTypeUID(BINDING_ID, "delta2-max");
     public static final ThingTypeUID THING_TYPE_POWERSTREAM = new ThingTypeUID(BINDING_ID, "powerstream");
 
     public class DeltaChannels {
