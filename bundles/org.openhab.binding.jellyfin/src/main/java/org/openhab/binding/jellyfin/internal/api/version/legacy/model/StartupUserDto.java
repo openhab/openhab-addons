@@ -17,223 +17,214 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The startup user DTO.
  */
-@JsonPropertyOrder({
-  StartupUserDto.JSON_PROPERTY_NAME,
-  StartupUserDto.JSON_PROPERTY_PASSWORD
-})
+@JsonPropertyOrder({ StartupUserDto.JSON_PROPERTY_NAME, StartupUserDto.JSON_PROPERTY_PASSWORD })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class StartupUserDto {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_PASSWORD = "Password";
-  @javax.annotation.Nullable
-  private JsonNullable<String> password = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PASSWORD = "Password";
+    @javax.annotation.Nullable
+    private JsonNullable<String> password = JsonNullable.<String> undefined();
 
-  public StartupUserDto() {
-  }
-
-  public StartupUserDto name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the username.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public StartupUserDto password(@javax.annotation.Nullable String password) {
-    this.password = JsonNullable.<String>of(password);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the user&#39;s password.
-   * @return password
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPassword() {
-        return password.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PASSWORD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPassword_JsonNullable() {
-    return password;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PASSWORD)
-  public void setPassword_JsonNullable(JsonNullable<String> password) {
-    this.password = password;
-  }
-
-  public void setPassword(@javax.annotation.Nullable String password) {
-    this.password = JsonNullable.<String>of(password);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    StartupUserDto startupUserDto = (StartupUserDto) o;
-    return equalsNullable(this.name, startupUserDto.name) &&
-        equalsNullable(this.password, startupUserDto.password);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), hashCodeNullable(password));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class StartupUserDto {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    password: ").append(toIndentedString(password)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private StartupUserDto instance;
-
-    public Builder() {
-      this(new StartupUserDto());
+    public StartupUserDto() {
     }
 
-    protected Builder(StartupUserDto instance) {
-      this.instance = instance;
-    }
+    public StartupUserDto name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public StartupUserDto.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public StartupUserDto.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public StartupUserDto.Builder password(String password) {
-      this.instance.password = JsonNullable.<String>of(password);
-      return this;
-    }
-    public StartupUserDto.Builder password(JsonNullable<String> password) {
-      this.instance.password = password;
-      return this;
-    }
-
 
     /**
-    * returns a built StartupUserDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public StartupUserDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the username.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public StartupUserDto password(@javax.annotation.Nullable String password) {
+        this.password = JsonNullable.<String> of(password);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the user&#39;s password.
+     * 
+     * @return password
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPassword() {
+        return password.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPassword_JsonNullable() {
+        return password;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    public void setPassword_JsonNullable(JsonNullable<String> password) {
+        this.password = password;
+    }
+
+    public void setPassword(@javax.annotation.Nullable String password) {
+        this.password = JsonNullable.<String> of(password);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        StartupUserDto startupUserDto = (StartupUserDto) o;
+        return equalsNullable(this.name, startupUserDto.name) && equalsNullable(this.password, startupUserDto.password);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), hashCodeNullable(password));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class StartupUserDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    password: ").append(toIndentedString(password)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static StartupUserDto.Builder builder() {
-    return new StartupUserDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public StartupUserDto.Builder toBuilder() {
-    return new StartupUserDto.Builder()
-      .name(getName())
-      .password(getPassword());
-  }
+    public static class Builder {
 
+        private StartupUserDto instance;
 
+        public Builder() {
+            this(new StartupUserDto());
+        }
+
+        protected Builder(StartupUserDto instance) {
+            this.instance = instance;
+        }
+
+        public StartupUserDto.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public StartupUserDto.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public StartupUserDto.Builder password(String password) {
+            this.instance.password = JsonNullable.<String> of(password);
+            return this;
+        }
+
+        public StartupUserDto.Builder password(JsonNullable<String> password) {
+            this.instance.password = password;
+            return this;
+        }
+
+        /**
+         * returns a built StartupUserDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public StartupUserDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static StartupUserDto.Builder builder() {
+        return new StartupUserDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public StartupUserDto.Builder toBuilder() {
+        return new StartupUserDto.Builder().name(getName()).password(getPassword());
+    }
 }
-

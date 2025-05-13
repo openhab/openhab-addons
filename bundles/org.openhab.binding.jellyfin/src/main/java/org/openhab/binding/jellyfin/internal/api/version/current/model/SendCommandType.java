@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum SendCommandType.
  */
 public enum SendCommandType {
-  
-  UNPAUSE("Unpause"),
-  
-  PAUSE("Pause"),
-  
-  STOP("Stop"),
-  
-  SEEK("Seek");
 
-  private String value;
+    UNPAUSE("Unpause"),
 
-  SendCommandType(String value) {
-    this.value = value;
-  }
+    PAUSE("Pause"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    STOP("Stop"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    SEEK("Seek");
 
-  @JsonCreator
-  public static SendCommandType fromValue(String value) {
-    for (SendCommandType b : SendCommandType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    private String value;
+
+    SendCommandType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SendCommandType fromValue(String value) {
+        for (SendCommandType b : SendCommandType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

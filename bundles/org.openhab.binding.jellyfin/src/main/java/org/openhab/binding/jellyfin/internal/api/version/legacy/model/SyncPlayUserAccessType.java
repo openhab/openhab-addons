@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum SyncPlayUserAccessType.
  */
 public enum SyncPlayUserAccessType {
-  
-  CREATE_AND_JOIN_GROUPS("CreateAndJoinGroups"),
-  
-  JOIN_GROUPS("JoinGroups"),
-  
-  NONE("None");
 
-  private String value;
+    CREATE_AND_JOIN_GROUPS("CreateAndJoinGroups"),
 
-  SyncPlayUserAccessType(String value) {
-    this.value = value;
-  }
+    JOIN_GROUPS("JoinGroups"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    NONE("None");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static SyncPlayUserAccessType fromValue(String value) {
-    for (SyncPlayUserAccessType b : SyncPlayUserAccessType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    SyncPlayUserAccessType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SyncPlayUserAccessType fromValue(String value) {
+        for (SyncPlayUserAccessType b : SyncPlayUserAccessType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

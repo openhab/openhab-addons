@@ -1,7 +1,13 @@
 package org.openhab.binding.jellyfin.internal.api.version.current;
 
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
+import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemDtoQueryResult;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemKind;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.ImageType;
@@ -10,35 +16,24 @@ import org.openhab.binding.jellyfin.internal.api.version.current.model.ItemFilte
 import org.openhab.binding.jellyfin.internal.api.version.current.model.ItemSortBy;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.LocationType;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaType;
-import java.time.OffsetDateTime;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ProblemDetails;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.SeriesStatus;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.SortOrder;
-import java.util.UUID;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.UpdateUserItemDataDto;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.UserItemDataDto;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.VideoType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Flux;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ItemsApi {
@@ -61,14 +56,18 @@ public class ItemsApi {
         this.apiClient = apiClient;
     }
 
-    
     /**
      * Get Item User Data.
      * 
-     * <p><b>200</b> - return item user data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return item user data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return UserItemDataDto
@@ -78,7 +77,8 @@ public class ItemsApi {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getItemUserData", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getItemUserData",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -91,61 +91,81 @@ public class ItemsApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
-        return apiClient.invokeAPI("/UserItems/{itemId}/UserData", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("/UserItems/{itemId}/UserData", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Get Item User Data.
      * 
-     * <p><b>200</b> - return item user data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return item user data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return UserItemDataDto
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<UserItemDataDto> getItemUserData(UUID itemId, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
         return getItemUserDataRequestCreation(itemId, userId).bodyToMono(localVarReturnType);
     }
 
     /**
      * Get Item User Data.
      * 
-     * <p><b>200</b> - return item user data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return item user data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return ResponseEntity&lt;UserItemDataDto&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<UserItemDataDto>> getItemUserDataWithHttpInfo(UUID itemId, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
+    public Mono<ResponseEntity<UserItemDataDto>> getItemUserDataWithHttpInfo(UUID itemId, UUID userId)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
         return getItemUserDataRequestCreation(itemId, userId).toEntity(localVarReturnType);
     }
 
     /**
      * Get Item User Data.
      * 
-     * <p><b>200</b> - return item user data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return item user data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return ResponseSpec
@@ -158,9 +178,13 @@ public class ItemsApi {
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Success
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Success
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id supplied as query parameter; this is required when not using an API key.
      * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc).
      * @param hasThemeSong Optional filter by items with theme songs.
@@ -174,8 +198,10 @@ public class ItemsApi {
      * @param hasParentalRating Optional filter by items that have or do not have a parental rating.
      * @param isHd Optional filter by items that are HD or not.
      * @param is4K Optional filter by items that are 4K or not.
-     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows multiple, comma delimited.
-     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This allows multiple, comma delimited.
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited.
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited.
      * @param isMissing Optional filter by items that are missing episodes or not.
      * @param isUnaired Optional filter by items that are unaired episodes or not.
      * @param minCommunityRating Optional filter by minimum community rating.
@@ -193,41 +219,68 @@ public class ItemsApi {
      * @param isNews Optional filter for live tv news.
      * @param isKids Optional filter for live tv kids.
      * @param isSports Optional filter for live tv sports.
-     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows multiple, comma delimited.
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results.
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited.
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results.
      * @param limit Optional. The maximum number of records to return.
-     * @param recursive When searching within folders, this determines whether or not the search will be recursive. true/false.
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false.
      * @param searchTerm Optional. Filter based on a search term.
      * @param sortOrder Sort Order - Ascending, Descending.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
-     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options: IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
      * @param isFavorite Optional filter by items that are marked as favorite, or not.
      * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited.
-     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This allows multiple, comma delimited.
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime.
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited.
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime.
      * @param isPlayed Optional filter by items that are played, or not.
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited.
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited.
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited.
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited.
      * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited.
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited.
      * @param enableUserData Optional, include user data.
      * @param imageTypeLimit Optional, the max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person.
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person id.
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited.
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited.
-     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe delimited.
-     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows multiple, pipe delimited.
-     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified artist id.
-     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the specified album artist id.
-     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing the specified contributing artist id.
-     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe delimited.
-     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe delimited.
-     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows multiple, comma delimited.
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person.
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id.
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited.
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited.
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited.
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited.
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id.
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id.
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id.
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited.
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited.
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited.
      * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
      * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc).
      * @param isLocked Optional filter by items that are locked.
@@ -240,17 +293,42 @@ public class ItemsApi {
      * @param maxHeight Optional. Filter by the maximum height of the item.
      * @param is3D Optional filter by items that are 3D, or not.
      * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited.
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string.
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string.
      * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string.
      * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited.
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited.
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited.
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional, include image information in output.
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getItemsRequestCreation(UUID userId, String maxOfficialRating, Boolean hasThemeSong, Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo, Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K, List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing, Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate, OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate, Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds, Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed, List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists, List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds, List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids, List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder, Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight, Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds, List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages) throws WebClientResponseException {
+    private ResponseSpec getItemsRequestCreation(UUID userId, String maxOfficialRating, Boolean hasThemeSong,
+            Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo,
+            Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K,
+            List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing,
+            Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate,
+            OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate,
+            Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie,
+            Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds,
+            Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder,
+            UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes,
+            List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite,
+            List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed,
+            List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person,
+            List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists,
+            List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds,
+            List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids,
+            List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder,
+            Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight,
+            Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus,
+            String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds,
+            List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages)
+            throws WebClientResponseException {
         Object postBody = null;
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -273,15 +351,19 @@ public class ItemsApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "hasParentalRating", hasParentalRating));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isHd", isHd));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "is4K", is4K));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "locationTypes", locationTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "excludeLocationTypes", excludeLocationTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "locationTypes", locationTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "excludeLocationTypes", excludeLocationTypes));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isMissing", isMissing));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isUnaired", isUnaired));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minCommunityRating", minCommunityRating));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minCriticRating", minCriticRating));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minPremiereDate", minPremiereDate));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minDateLastSaved", minDateLastSaved));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minDateLastSavedForUser", minDateLastSavedForUser));
+        queryParams
+                .putAll(apiClient.parameterToMultiValueMap(null, "minDateLastSavedForUser", minDateLastSavedForUser));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "maxPremiereDate", maxPremiereDate));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "hasOverview", hasOverview));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "hasImdbId", hasImdbId));
@@ -292,42 +374,76 @@ public class ItemsApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isNews", isNews));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isKids", isKids));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isSports", isSports));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "excludeItemIds", excludeItemIds));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "excludeItemIds", excludeItemIds));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "startIndex", startIndex));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "recursive", recursive));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "searchTerm", searchTerm));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "sortOrder", sortOrder));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "sortOrder", sortOrder));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "parentId", parentId));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "excludeItemTypes", excludeItemTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "includeItemTypes", includeItemTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "filters", filters));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "excludeItemTypes", excludeItemTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "includeItemTypes", includeItemTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "filters", filters));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isFavorite", isFavorite));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "mediaTypes", mediaTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "imageTypes", imageTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "sortBy", sortBy));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "mediaTypes", mediaTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "imageTypes", imageTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "sortBy", sortBy));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isPlayed", isPlayed));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "genres", genres));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "officialRatings", officialRatings));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "tags", tags));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "years", years));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "genres", genres));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "officialRatings", officialRatings));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "tags", tags));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "years", years));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "person", person));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "personIds", personIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "personTypes", personTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "studios", studios));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "artists", artists));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "excludeArtistIds", excludeArtistIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "artistIds", artistIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "albumArtistIds", albumArtistIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "contributingArtistIds", contributingArtistIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "albums", albums));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "albumIds", albumIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "ids", ids));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "videoTypes", videoTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "personIds", personIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "personTypes", personTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "studios", studios));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "artists", artists));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "excludeArtistIds", excludeArtistIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "artistIds", artistIds));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "albumArtistIds", albumArtistIds));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "contributingArtistIds", contributingArtistIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "albums", albums));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "albumIds", albumIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "ids", ids));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "videoTypes", videoTypes));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "minOfficialRating", minOfficialRating));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isLocked", isLocked));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "isPlaceHolder", isPlaceHolder));
@@ -338,34 +454,43 @@ public class ItemsApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "maxWidth", maxWidth));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "maxHeight", maxHeight));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "is3D", is3D));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "seriesStatus", seriesStatus));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "nameStartsWithOrGreater", nameStartsWithOrGreater));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "seriesStatus", seriesStatus));
+        queryParams
+                .putAll(apiClient.parameterToMultiValueMap(null, "nameStartsWithOrGreater", nameStartsWithOrGreater));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "nameStartsWith", nameStartsWith));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "nameLessThan", nameLessThan));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "studioIds", studioIds));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "genreIds", genreIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "studioIds", studioIds));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "genreIds", genreIds));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableTotalRecordCount", enableTotalRecordCount));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Items", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Items", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Success
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Success
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id supplied as query parameter; this is required when not using an API key.
      * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc).
      * @param hasThemeSong Optional filter by items with theme songs.
@@ -379,8 +504,10 @@ public class ItemsApi {
      * @param hasParentalRating Optional filter by items that have or do not have a parental rating.
      * @param isHd Optional filter by items that are HD or not.
      * @param is4K Optional filter by items that are 4K or not.
-     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows multiple, comma delimited.
-     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This allows multiple, comma delimited.
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited.
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited.
      * @param isMissing Optional filter by items that are missing episodes or not.
      * @param isUnaired Optional filter by items that are unaired episodes or not.
      * @param minCommunityRating Optional filter by minimum community rating.
@@ -398,41 +525,68 @@ public class ItemsApi {
      * @param isNews Optional filter for live tv news.
      * @param isKids Optional filter for live tv kids.
      * @param isSports Optional filter for live tv sports.
-     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows multiple, comma delimited.
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results.
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited.
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results.
      * @param limit Optional. The maximum number of records to return.
-     * @param recursive When searching within folders, this determines whether or not the search will be recursive. true/false.
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false.
      * @param searchTerm Optional. Filter based on a search term.
      * @param sortOrder Sort Order - Ascending, Descending.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
-     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options: IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
      * @param isFavorite Optional filter by items that are marked as favorite, or not.
      * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited.
-     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This allows multiple, comma delimited.
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime.
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited.
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime.
      * @param isPlayed Optional filter by items that are played, or not.
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited.
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited.
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited.
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited.
      * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited.
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited.
      * @param enableUserData Optional, include user data.
      * @param imageTypeLimit Optional, the max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person.
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person id.
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited.
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited.
-     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe delimited.
-     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows multiple, pipe delimited.
-     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified artist id.
-     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the specified album artist id.
-     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing the specified contributing artist id.
-     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe delimited.
-     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe delimited.
-     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows multiple, comma delimited.
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person.
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id.
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited.
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited.
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited.
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited.
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id.
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id.
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id.
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited.
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited.
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited.
      * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
      * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc).
      * @param isLocked Optional filter by items that are locked.
@@ -445,27 +599,68 @@ public class ItemsApi {
      * @param maxHeight Optional. Filter by the maximum height of the item.
      * @param is3D Optional filter by items that are 3D, or not.
      * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited.
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string.
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string.
      * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string.
      * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited.
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited.
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited.
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional, include image information in output.
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getItems(UUID userId, String maxOfficialRating, Boolean hasThemeSong, Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo, Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K, List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing, Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate, OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate, Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds, Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed, List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists, List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds, List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids, List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder, Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight, Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds, List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating, minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId, hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit, recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount, enableImages).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getItems(UUID userId, String maxOfficialRating, Boolean hasThemeSong,
+            Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo,
+            Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K,
+            List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing,
+            Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate,
+            OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate,
+            Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie,
+            Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds,
+            Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder,
+            UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes,
+            List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite,
+            List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed,
+            List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person,
+            List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists,
+            List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds,
+            List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids,
+            List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder,
+            Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight,
+            Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus,
+            String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds,
+            List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles,
+                hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd,
+                is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating,
+                minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId,
+                hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit,
+                recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters,
+                isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years,
+                enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists,
+                excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes,
+                minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight,
+                maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan,
+                studioIds, genreIds, enableTotalRecordCount, enableImages).bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Success
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Success
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id supplied as query parameter; this is required when not using an API key.
      * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc).
      * @param hasThemeSong Optional filter by items with theme songs.
@@ -479,8 +674,10 @@ public class ItemsApi {
      * @param hasParentalRating Optional filter by items that have or do not have a parental rating.
      * @param isHd Optional filter by items that are HD or not.
      * @param is4K Optional filter by items that are 4K or not.
-     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows multiple, comma delimited.
-     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This allows multiple, comma delimited.
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited.
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited.
      * @param isMissing Optional filter by items that are missing episodes or not.
      * @param isUnaired Optional filter by items that are unaired episodes or not.
      * @param minCommunityRating Optional filter by minimum community rating.
@@ -498,41 +695,68 @@ public class ItemsApi {
      * @param isNews Optional filter for live tv news.
      * @param isKids Optional filter for live tv kids.
      * @param isSports Optional filter for live tv sports.
-     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows multiple, comma delimited.
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results.
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited.
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results.
      * @param limit Optional. The maximum number of records to return.
-     * @param recursive When searching within folders, this determines whether or not the search will be recursive. true/false.
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false.
      * @param searchTerm Optional. Filter based on a search term.
      * @param sortOrder Sort Order - Ascending, Descending.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
-     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options: IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
      * @param isFavorite Optional filter by items that are marked as favorite, or not.
      * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited.
-     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This allows multiple, comma delimited.
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime.
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited.
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime.
      * @param isPlayed Optional filter by items that are played, or not.
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited.
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited.
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited.
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited.
      * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited.
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited.
      * @param enableUserData Optional, include user data.
      * @param imageTypeLimit Optional, the max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person.
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person id.
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited.
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited.
-     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe delimited.
-     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows multiple, pipe delimited.
-     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified artist id.
-     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the specified album artist id.
-     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing the specified contributing artist id.
-     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe delimited.
-     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe delimited.
-     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows multiple, comma delimited.
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person.
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id.
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited.
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited.
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited.
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited.
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id.
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id.
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id.
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited.
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited.
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited.
      * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
      * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc).
      * @param isLocked Optional filter by items that are locked.
@@ -545,27 +769,68 @@ public class ItemsApi {
      * @param maxHeight Optional. Filter by the maximum height of the item.
      * @param is3D Optional filter by items that are 3D, or not.
      * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited.
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string.
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string.
      * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string.
      * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited.
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited.
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited.
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional, include image information in output.
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getItemsWithHttpInfo(UUID userId, String maxOfficialRating, Boolean hasThemeSong, Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo, Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K, List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing, Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate, OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate, Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds, Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed, List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists, List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds, List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids, List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder, Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight, Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds, List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating, minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId, hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit, recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount, enableImages).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getItemsWithHttpInfo(UUID userId, String maxOfficialRating,
+            Boolean hasThemeSong, Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature,
+            Boolean hasTrailer, UUID adjacentTo, Integer indexNumber, Integer parentIndexNumber,
+            Boolean hasParentalRating, Boolean isHd, Boolean is4K, List<LocationType> locationTypes,
+            List<LocationType> excludeLocationTypes, Boolean isMissing, Boolean isUnaired, Double minCommunityRating,
+            Double minCriticRating, OffsetDateTime minPremiereDate, OffsetDateTime minDateLastSaved,
+            OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate, Boolean hasOverview,
+            Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie, Boolean isSeries, Boolean isNews,
+            Boolean isKids, Boolean isSports, List<UUID> excludeItemIds, Integer startIndex, Integer limit,
+            Boolean recursive, String searchTerm, List<SortOrder> sortOrder, UUID parentId, List<ItemFields> fields,
+            List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters,
+            Boolean isFavorite, List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy,
+            Boolean isPlayed, List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person,
+            List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists,
+            List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds,
+            List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids,
+            List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder,
+            Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight,
+            Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus,
+            String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds,
+            List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles,
+                hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd,
+                is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating,
+                minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId,
+                hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit,
+                recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters,
+                isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years,
+                enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists,
+                excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes,
+                minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight,
+                maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan,
+                studioIds, genreIds, enableTotalRecordCount, enableImages).toEntity(localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Success
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Success
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id supplied as query parameter; this is required when not using an API key.
      * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc).
      * @param hasThemeSong Optional filter by items with theme songs.
@@ -579,8 +844,10 @@ public class ItemsApi {
      * @param hasParentalRating Optional filter by items that have or do not have a parental rating.
      * @param isHd Optional filter by items that are HD or not.
      * @param is4K Optional filter by items that are 4K or not.
-     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows multiple, comma delimited.
-     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This allows multiple, comma delimited.
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited.
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited.
      * @param isMissing Optional filter by items that are missing episodes or not.
      * @param isUnaired Optional filter by items that are unaired episodes or not.
      * @param minCommunityRating Optional filter by minimum community rating.
@@ -598,41 +865,68 @@ public class ItemsApi {
      * @param isNews Optional filter for live tv news.
      * @param isKids Optional filter for live tv kids.
      * @param isSports Optional filter for live tv sports.
-     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows multiple, comma delimited.
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results.
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited.
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results.
      * @param limit Optional. The maximum number of records to return.
-     * @param recursive When searching within folders, this determines whether or not the search will be recursive. true/false.
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false.
      * @param searchTerm Optional. Filter based on a search term.
      * @param sortOrder Sort Order - Ascending, Descending.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
-     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options: IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes.
      * @param isFavorite Optional filter by items that are marked as favorite, or not.
      * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited.
-     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This allows multiple, comma delimited.
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime.
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited.
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime.
      * @param isPlayed Optional filter by items that are played, or not.
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited.
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited.
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited.
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited.
      * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited.
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited.
      * @param enableUserData Optional, include user data.
      * @param imageTypeLimit Optional, the max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person.
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person id.
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited.
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited.
-     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe delimited.
-     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows multiple, pipe delimited.
-     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified artist id.
-     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the specified album artist id.
-     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing the specified contributing artist id.
-     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe delimited.
-     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe delimited.
-     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows multiple, comma delimited.
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person.
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id.
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited.
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited.
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited.
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited.
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id.
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id.
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id.
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited.
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited.
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited.
      * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
      * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc).
      * @param isLocked Optional filter by items that are locked.
@@ -645,45 +939,94 @@ public class ItemsApi {
      * @param maxHeight Optional. Filter by the maximum height of the item.
      * @param is3D Optional filter by items that are 3D, or not.
      * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited.
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string.
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string.
      * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string.
      * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited.
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited.
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited.
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional, include image information in output.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getItemsWithResponseSpec(UUID userId, String maxOfficialRating, Boolean hasThemeSong, Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo, Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K, List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing, Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate, OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate, Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds, Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed, List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists, List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds, List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids, List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder, Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight, Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds, List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages) throws WebClientResponseException {
-        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating, minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId, hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit, recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount, enableImages);
+    public ResponseSpec getItemsWithResponseSpec(UUID userId, String maxOfficialRating, Boolean hasThemeSong,
+            Boolean hasThemeVideo, Boolean hasSubtitles, Boolean hasSpecialFeature, Boolean hasTrailer, UUID adjacentTo,
+            Integer indexNumber, Integer parentIndexNumber, Boolean hasParentalRating, Boolean isHd, Boolean is4K,
+            List<LocationType> locationTypes, List<LocationType> excludeLocationTypes, Boolean isMissing,
+            Boolean isUnaired, Double minCommunityRating, Double minCriticRating, OffsetDateTime minPremiereDate,
+            OffsetDateTime minDateLastSaved, OffsetDateTime minDateLastSavedForUser, OffsetDateTime maxPremiereDate,
+            Boolean hasOverview, Boolean hasImdbId, Boolean hasTmdbId, Boolean hasTvdbId, Boolean isMovie,
+            Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, List<UUID> excludeItemIds,
+            Integer startIndex, Integer limit, Boolean recursive, String searchTerm, List<SortOrder> sortOrder,
+            UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes,
+            List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite,
+            List<MediaType> mediaTypes, List<ImageType> imageTypes, List<ItemSortBy> sortBy, Boolean isPlayed,
+            List<String> genres, List<String> officialRatings, List<String> tags, List<Integer> years,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person,
+            List<UUID> personIds, List<String> personTypes, List<String> studios, List<String> artists,
+            List<UUID> excludeArtistIds, List<UUID> artistIds, List<UUID> albumArtistIds,
+            List<UUID> contributingArtistIds, List<String> albums, List<UUID> albumIds, List<UUID> ids,
+            List<VideoType> videoTypes, String minOfficialRating, Boolean isLocked, Boolean isPlaceHolder,
+            Boolean hasOfficialRating, Boolean collapseBoxSetItems, Integer minWidth, Integer minHeight,
+            Integer maxWidth, Integer maxHeight, Boolean is3D, List<SeriesStatus> seriesStatus,
+            String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<UUID> studioIds,
+            List<UUID> genreIds, Boolean enableTotalRecordCount, Boolean enableImages)
+            throws WebClientResponseException {
+        return getItemsRequestCreation(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles,
+                hasSpecialFeature, hasTrailer, adjacentTo, indexNumber, parentIndexNumber, hasParentalRating, isHd,
+                is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating,
+                minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId,
+                hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit,
+                recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, includeItemTypes, filters,
+                isFavorite, mediaTypes, imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years,
+                enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, artists,
+                excludeArtistIds, artistIds, albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes,
+                minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight,
+                maxWidth, maxHeight, is3D, seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan,
+                studioIds, genreIds, enableTotalRecordCount, enableImages);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Items returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Items returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id.
      * @param startIndex The start index.
      * @param limit The item limit.
      * @param searchTerm The search term.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
      * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited.
      * @param enableUserData Optional. Include user data.
      * @param imageTypeLimit Optional. The max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional. Include image information in output.
      * @param excludeActiveSessions Optional. Whether to exclude the currently active sessions.
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getResumeItemsRequestCreation(UUID userId, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount, Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
+    private ResponseSpec getResumeItemsRequestCreation(UUID userId, Integer startIndex, Integer limit,
+            String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes,
+            List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount,
+            Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
         Object postBody = null;
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -698,138 +1041,204 @@ public class ItemsApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "searchTerm", searchTerm));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "parentId", parentId));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "mediaTypes", mediaTypes));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "mediaTypes", mediaTypes));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "excludeItemTypes", excludeItemTypes));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "includeItemTypes", includeItemTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "excludeItemTypes", excludeItemTypes));
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "includeItemTypes", includeItemTypes));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableTotalRecordCount", enableTotalRecordCount));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "excludeActiveSessions", excludeActiveSessions));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/UserItems/Resume", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/UserItems/Resume", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Items returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Items returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id.
      * @param startIndex The start index.
      * @param limit The item limit.
      * @param searchTerm The search term.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
      * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited.
      * @param enableUserData Optional. Include user data.
      * @param imageTypeLimit Optional. The max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional. Include image information in output.
      * @param excludeActiveSessions Optional. Whether to exclude the currently active sessions.
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getResumeItems(UUID userId, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount, Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes, enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes, enableTotalRecordCount, enableImages, excludeActiveSessions).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getResumeItems(UUID userId, Integer startIndex, Integer limit,
+            String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes,
+            List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount,
+            Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes,
+                enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes,
+                enableTotalRecordCount, enableImages, excludeActiveSessions).bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Items returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Items returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id.
      * @param startIndex The start index.
      * @param limit The item limit.
      * @param searchTerm The search term.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
      * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited.
      * @param enableUserData Optional. Include user data.
      * @param imageTypeLimit Optional. The max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional. Include image information in output.
      * @param excludeActiveSessions Optional. Whether to exclude the currently active sessions.
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getResumeItemsWithHttpInfo(UUID userId, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount, Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes, enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes, enableTotalRecordCount, enableImages, excludeActiveSessions).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getResumeItemsWithHttpInfo(UUID userId, Integer startIndex,
+            Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes,
+            List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount,
+            Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes,
+                enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes,
+                enableTotalRecordCount, enableImages, excludeActiveSessions).toEntity(localVarReturnType);
     }
 
     /**
      * Gets items based on a query.
      * 
-     * <p><b>200</b> - Items returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Items returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param userId The user id.
      * @param startIndex The start index.
      * @param limit The item limit.
      * @param searchTerm The search term.
      * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines.
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines.
      * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited.
      * @param enableUserData Optional. Include user data.
      * @param imageTypeLimit Optional. The max number of images to return, per image type.
      * @param enableImageTypes Optional. The image types to include in the output.
-     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited.
-     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows multiple, comma delimited.
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited.
+     * @param includeItemTypes Optional. If specified, results will be filtered based on the item type. This allows
+     *            multiple, comma delimited.
      * @param enableTotalRecordCount Optional. Enable the total record count.
      * @param enableImages Optional. Include image information in output.
      * @param excludeActiveSessions Optional. Whether to exclude the currently active sessions.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getResumeItemsWithResponseSpec(UUID userId, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount, Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
-        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes, enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes, enableTotalRecordCount, enableImages, excludeActiveSessions);
+    public ResponseSpec getResumeItemsWithResponseSpec(UUID userId, Integer startIndex, Integer limit,
+            String searchTerm, UUID parentId, List<ItemFields> fields, List<MediaType> mediaTypes,
+            Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes,
+            List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean enableTotalRecordCount,
+            Boolean enableImages, Boolean excludeActiveSessions) throws WebClientResponseException {
+        return getResumeItemsRequestCreation(userId, startIndex, limit, searchTerm, parentId, fields, mediaTypes,
+                enableUserData, imageTypeLimit, enableImageTypes, excludeItemTypes, includeItemTypes,
+                enableTotalRecordCount, enableImages, excludeActiveSessions);
     }
 
     /**
      * Update Item User Data.
      * 
-     * <p><b>200</b> - return updated user item data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return updated user item data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param updateUserItemDataDto New user data object.
      * @param userId The user id.
      * @return UserItemDataDto
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec updateItemUserDataRequestCreation(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto, UUID userId) throws WebClientResponseException {
+    private ResponseSpec updateItemUserDataRequestCreation(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto,
+            UUID userId) throws WebClientResponseException {
         Object postBody = updateUserItemDataDto;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling updateItemUserData", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling updateItemUserData",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // verify the required parameter 'updateUserItemDataDto' is set
         if (updateUserItemDataDto == null) {
-            throw new WebClientResponseException("Missing the required parameter 'updateUserItemDataDto' when calling updateItemUserData", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'updateUserItemDataDto' when calling updateItemUserData",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -842,72 +1251,92 @@ public class ItemsApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { 
-            "application/json", "text/json", "application/*+json"
-        };
+        final String[] localVarContentTypes = { "application/json", "text/json", "application/*+json" };
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
-        return apiClient.invokeAPI("/UserItems/{itemId}/UserData", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
+        return apiClient.invokeAPI("/UserItems/{itemId}/UserData", HttpMethod.POST, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Update Item User Data.
      * 
-     * <p><b>200</b> - return updated user item data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return updated user item data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param updateUserItemDataDto New user data object.
      * @param userId The user id.
      * @return UserItemDataDto
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<UserItemDataDto> updateItemUserData(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
+    public Mono<UserItemDataDto> updateItemUserData(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto,
+            UUID userId) throws WebClientResponseException {
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
         return updateItemUserDataRequestCreation(itemId, updateUserItemDataDto, userId).bodyToMono(localVarReturnType);
     }
 
     /**
      * Update Item User Data.
      * 
-     * <p><b>200</b> - return updated user item data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return updated user item data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param updateUserItemDataDto New user data object.
      * @param userId The user id.
      * @return ResponseEntity&lt;UserItemDataDto&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<UserItemDataDto>> updateItemUserDataWithHttpInfo(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {};
+    public Mono<ResponseEntity<UserItemDataDto>> updateItemUserDataWithHttpInfo(UUID itemId,
+            UpdateUserItemDataDto updateUserItemDataDto, UUID userId) throws WebClientResponseException {
+        ParameterizedTypeReference<UserItemDataDto> localVarReturnType = new ParameterizedTypeReference<UserItemDataDto>() {
+        };
         return updateItemUserDataRequestCreation(itemId, updateUserItemDataDto, userId).toEntity(localVarReturnType);
     }
 
     /**
      * Update Item User Data.
      * 
-     * <p><b>200</b> - return updated user item data.
-     * <p><b>404</b> - Item is not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - return updated user item data.
+     * <p>
+     * <b>404</b> - Item is not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param updateUserItemDataDto New user data object.
      * @param userId The user id.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec updateItemUserDataWithResponseSpec(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto, UUID userId) throws WebClientResponseException {
+    public ResponseSpec updateItemUserDataWithResponseSpec(UUID itemId, UpdateUserItemDataDto updateUserItemDataDto,
+            UUID userId) throws WebClientResponseException {
         return updateItemUserDataRequestCreation(itemId, updateUserItemDataDto, userId);
     }
 }

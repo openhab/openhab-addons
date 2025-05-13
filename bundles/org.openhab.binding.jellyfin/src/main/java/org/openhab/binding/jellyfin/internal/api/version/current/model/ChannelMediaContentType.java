@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,47 +24,46 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ChannelMediaContentType
  */
 public enum ChannelMediaContentType {
-  
-  CLIP("Clip"),
-  
-  PODCAST("Podcast"),
-  
-  TRAILER("Trailer"),
-  
-  MOVIE("Movie"),
-  
-  EPISODE("Episode"),
-  
-  SONG("Song"),
-  
-  MOVIE_EXTRA("MovieExtra"),
-  
-  TV_EXTRA("TvExtra");
 
-  private String value;
+    CLIP("Clip"),
 
-  ChannelMediaContentType(String value) {
-    this.value = value;
-  }
+    PODCAST("Podcast"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    TRAILER("Trailer"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    MOVIE("Movie"),
 
-  @JsonCreator
-  public static ChannelMediaContentType fromValue(String value) {
-    for (ChannelMediaContentType b : ChannelMediaContentType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    EPISODE("Episode"),
+
+    SONG("Song"),
+
+    MOVIE_EXTRA("MovieExtra"),
+
+    TV_EXTRA("TvExtra");
+
+    private String value;
+
+    ChannelMediaContentType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ChannelMediaContentType fromValue(String value) {
+        for (ChannelMediaContentType b : ChannelMediaContentType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

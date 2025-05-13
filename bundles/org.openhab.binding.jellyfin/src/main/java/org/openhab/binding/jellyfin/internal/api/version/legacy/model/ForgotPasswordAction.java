@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ForgotPasswordAction
  */
 public enum ForgotPasswordAction {
-  
-  CONTACT_ADMIN("ContactAdmin"),
-  
-  PIN_CODE("PinCode"),
-  
-  IN_NETWORK_REQUIRED("InNetworkRequired");
 
-  private String value;
+    CONTACT_ADMIN("ContactAdmin"),
 
-  ForgotPasswordAction(String value) {
-    this.value = value;
-  }
+    PIN_CODE("PinCode"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    IN_NETWORK_REQUIRED("InNetworkRequired");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static ForgotPasswordAction fromValue(String value) {
-    for (ForgotPasswordAction b : ForgotPasswordAction.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    ForgotPasswordAction(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ForgotPasswordAction fromValue(String value) {
+        for (ForgotPasswordAction b : ForgotPasswordAction.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

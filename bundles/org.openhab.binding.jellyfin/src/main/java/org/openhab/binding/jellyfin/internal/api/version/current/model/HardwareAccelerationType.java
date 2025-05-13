@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,47 +24,46 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing hardware acceleration types.
  */
 public enum HardwareAccelerationType {
-  
-  NONE("none"),
-  
-  AMF("amf"),
-  
-  QSV("qsv"),
-  
-  NVENC("nvenc"),
-  
-  V4L2M2M("v4l2m2m"),
-  
-  VAAPI("vaapi"),
-  
-  VIDEOTOOLBOX("videotoolbox"),
-  
-  RKMPP("rkmpp");
 
-  private String value;
+    NONE("none"),
 
-  HardwareAccelerationType(String value) {
-    this.value = value;
-  }
+    AMF("amf"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    QSV("qsv"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    NVENC("nvenc"),
 
-  @JsonCreator
-  public static HardwareAccelerationType fromValue(String value) {
-    for (HardwareAccelerationType b : HardwareAccelerationType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    V4L2M2M("v4l2m2m"),
+
+    VAAPI("vaapi"),
+
+    VIDEOTOOLBOX("videotoolbox"),
+
+    RKMPP("rkmpp");
+
+    private String value;
+
+    HardwareAccelerationType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static HardwareAccelerationType fromValue(String value) {
+        for (HardwareAccelerationType b : HardwareAccelerationType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

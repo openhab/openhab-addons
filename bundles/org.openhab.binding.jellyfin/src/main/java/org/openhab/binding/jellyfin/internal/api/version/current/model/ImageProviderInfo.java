@@ -17,196 +17,181 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ImageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class ImageProviderInfo.
  */
-@JsonPropertyOrder({
-  ImageProviderInfo.JSON_PROPERTY_NAME,
-  ImageProviderInfo.JSON_PROPERTY_SUPPORTED_IMAGES
-})
+@JsonPropertyOrder({ ImageProviderInfo.JSON_PROPERTY_NAME, ImageProviderInfo.JSON_PROPERTY_SUPPORTED_IMAGES })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ImageProviderInfo {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private String name;
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private String name;
 
-  public static final String JSON_PROPERTY_SUPPORTED_IMAGES = "SupportedImages";
-  @javax.annotation.Nullable
-  private List<ImageType> supportedImages = new ArrayList<>();
+    public static final String JSON_PROPERTY_SUPPORTED_IMAGES = "SupportedImages";
+    @javax.annotation.Nullable
+    private List<ImageType> supportedImages = new ArrayList<>();
 
-  public ImageProviderInfo() {
-  }
-
-  public ImageProviderInfo name(@javax.annotation.Nullable String name) {
-    
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Gets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getName() {
-    return name;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
-  }
-
-  public ImageProviderInfo supportedImages(@javax.annotation.Nullable List<ImageType> supportedImages) {
-    
-    this.supportedImages = supportedImages;
-    return this;
-  }
-
-  public ImageProviderInfo addSupportedImagesItem(ImageType supportedImagesItem) {
-    if (this.supportedImages == null) {
-      this.supportedImages = new ArrayList<>();
-    }
-    this.supportedImages.add(supportedImagesItem);
-    return this;
-  }
-
-  /**
-   * Gets the supported image types.
-   * @return supportedImages
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ImageType> getSupportedImages() {
-    return supportedImages;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSupportedImages(@javax.annotation.Nullable List<ImageType> supportedImages) {
-    this.supportedImages = supportedImages;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ImageProviderInfo imageProviderInfo = (ImageProviderInfo) o;
-    return Objects.equals(this.name, imageProviderInfo.name) &&
-        Objects.equals(this.supportedImages, imageProviderInfo.supportedImages);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, supportedImages);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ImageProviderInfo {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    supportedImages: ").append(toIndentedString(supportedImages)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ImageProviderInfo instance;
-
-    public Builder() {
-      this(new ImageProviderInfo());
+    public ImageProviderInfo() {
     }
 
-    protected Builder(ImageProviderInfo instance) {
-      this.instance = instance;
-    }
+    public ImageProviderInfo name(@javax.annotation.Nullable String name) {
 
-    public ImageProviderInfo.Builder name(String name) {
-      this.instance.name = name;
-      return this;
+        this.name = name;
+        return this;
     }
-    public ImageProviderInfo.Builder supportedImages(List<ImageType> supportedImages) {
-      this.instance.supportedImages = supportedImages;
-      return this;
-    }
-
 
     /**
-    * returns a built ImageProviderInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public ImageProviderInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getName() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = name;
+    }
+
+    public ImageProviderInfo supportedImages(@javax.annotation.Nullable List<ImageType> supportedImages) {
+
+        this.supportedImages = supportedImages;
+        return this;
+    }
+
+    public ImageProviderInfo addSupportedImagesItem(ImageType supportedImagesItem) {
+        if (this.supportedImages == null) {
+            this.supportedImages = new ArrayList<>();
+        }
+        this.supportedImages.add(supportedImagesItem);
+        return this;
+    }
+
+    /**
+     * Gets the supported image types.
+     * 
+     * @return supportedImages
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ImageType> getSupportedImages() {
+        return supportedImages;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSupportedImages(@javax.annotation.Nullable List<ImageType> supportedImages) {
+        this.supportedImages = supportedImages;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ImageProviderInfo imageProviderInfo = (ImageProviderInfo) o;
+        return Objects.equals(this.name, imageProviderInfo.name)
+                && Objects.equals(this.supportedImages, imageProviderInfo.supportedImages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, supportedImages);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ImageProviderInfo {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    supportedImages: ").append(toIndentedString(supportedImages)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ImageProviderInfo.Builder builder() {
-    return new ImageProviderInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ImageProviderInfo.Builder toBuilder() {
-    return new ImageProviderInfo.Builder()
-      .name(getName())
-      .supportedImages(getSupportedImages());
-  }
+    public static class Builder {
 
+        private ImageProviderInfo instance;
 
+        public Builder() {
+            this(new ImageProviderInfo());
+        }
+
+        protected Builder(ImageProviderInfo instance) {
+            this.instance = instance;
+        }
+
+        public ImageProviderInfo.Builder name(String name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public ImageProviderInfo.Builder supportedImages(List<ImageType> supportedImages) {
+            this.instance.supportedImages = supportedImages;
+            return this;
+        }
+
+        /**
+         * returns a built ImageProviderInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public ImageProviderInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ImageProviderInfo.Builder builder() {
+        return new ImageProviderInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ImageProviderInfo.Builder toBuilder() {
+        return new ImageProviderInfo.Builder().name(getName()).supportedImages(getSupportedImages());
+    }
 }
-

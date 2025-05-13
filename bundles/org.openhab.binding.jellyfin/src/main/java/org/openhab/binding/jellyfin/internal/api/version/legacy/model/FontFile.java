@@ -17,286 +17,275 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.time.OffsetDateTime;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class FontFile.
  */
-@JsonPropertyOrder({
-  FontFile.JSON_PROPERTY_NAME,
-  FontFile.JSON_PROPERTY_SIZE,
-  FontFile.JSON_PROPERTY_DATE_CREATED,
-  FontFile.JSON_PROPERTY_DATE_MODIFIED
-})
+@JsonPropertyOrder({ FontFile.JSON_PROPERTY_NAME, FontFile.JSON_PROPERTY_SIZE, FontFile.JSON_PROPERTY_DATE_CREATED,
+        FontFile.JSON_PROPERTY_DATE_MODIFIED })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class FontFile {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_SIZE = "Size";
-  @javax.annotation.Nullable
-  private Long size;
+    public static final String JSON_PROPERTY_SIZE = "Size";
+    @javax.annotation.Nullable
+    private Long size;
 
-  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-  @javax.annotation.Nullable
-  private OffsetDateTime dateCreated;
+    public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
+    @javax.annotation.Nullable
+    private OffsetDateTime dateCreated;
 
-  public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
-  @javax.annotation.Nullable
-  private OffsetDateTime dateModified;
+    public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
+    @javax.annotation.Nullable
+    private OffsetDateTime dateModified;
 
-  public FontFile() {
-  }
-
-  public FontFile name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public FontFile size(@javax.annotation.Nullable Long size) {
-    
-    this.size = size;
-    return this;
-  }
-
-  /**
-   * Gets or sets the size.
-   * @return size
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getSize() {
-    return size;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSize(@javax.annotation.Nullable Long size) {
-    this.size = size;
-  }
-
-  public FontFile dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-    
-    this.dateCreated = dateCreated;
-    return this;
-  }
-
-  /**
-   * Gets or sets the date created.
-   * @return dateCreated
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getDateCreated() {
-    return dateCreated;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-    this.dateCreated = dateCreated;
-  }
-
-  public FontFile dateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
-    
-    this.dateModified = dateModified;
-    return this;
-  }
-
-  /**
-   * Gets or sets the date modified.
-   * @return dateModified
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getDateModified() {
-    return dateModified;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
-    this.dateModified = dateModified;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    FontFile fontFile = (FontFile) o;
-    return equalsNullable(this.name, fontFile.name) &&
-        Objects.equals(this.size, fontFile.size) &&
-        Objects.equals(this.dateCreated, fontFile.dateCreated) &&
-        Objects.equals(this.dateModified, fontFile.dateModified);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), size, dateCreated, dateModified);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class FontFile {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
-    sb.append("    dateModified: ").append(toIndentedString(dateModified)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private FontFile instance;
-
-    public Builder() {
-      this(new FontFile());
+    public FontFile() {
     }
 
-    protected Builder(FontFile instance) {
-      this.instance = instance;
-    }
+    public FontFile name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public FontFile.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public FontFile.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public FontFile.Builder size(Long size) {
-      this.instance.size = size;
-      return this;
-    }
-    public FontFile.Builder dateCreated(OffsetDateTime dateCreated) {
-      this.instance.dateCreated = dateCreated;
-      return this;
-    }
-    public FontFile.Builder dateModified(OffsetDateTime dateModified) {
-      this.instance.dateModified = dateModified;
-      return this;
-    }
-
 
     /**
-    * returns a built FontFile instance.
-    *
-    * The builder is not reusable.
-    */
-    public FontFile build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public FontFile size(@javax.annotation.Nullable Long size) {
+
+        this.size = size;
+        return this;
+    }
+
+    /**
+     * Gets or sets the size.
+     * 
+     * @return size
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getSize() {
+        return size;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSize(@javax.annotation.Nullable Long size) {
+        this.size = size;
+    }
+
+    public FontFile dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+
+        this.dateCreated = dateCreated;
+        return this;
+    }
+
+    /**
+     * Gets or sets the date created.
+     * 
+     * @return dateCreated
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public FontFile dateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+
+        this.dateModified = dateModified;
+        return this;
+    }
+
+    /**
+     * Gets or sets the date modified.
+     * 
+     * @return dateModified
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getDateModified() {
+        return dateModified;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
+        this.dateModified = dateModified;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FontFile fontFile = (FontFile) o;
+        return equalsNullable(this.name, fontFile.name) && Objects.equals(this.size, fontFile.size)
+                && Objects.equals(this.dateCreated, fontFile.dateCreated)
+                && Objects.equals(this.dateModified, fontFile.dateModified);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), size, dateCreated, dateModified);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class FontFile {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    size: ").append(toIndentedString(size)).append("\n");
+        sb.append("    dateCreated: ").append(toIndentedString(dateCreated)).append("\n");
+        sb.append("    dateModified: ").append(toIndentedString(dateModified)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static FontFile.Builder builder() {
-    return new FontFile.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public FontFile.Builder toBuilder() {
-    return new FontFile.Builder()
-      .name(getName())
-      .size(getSize())
-      .dateCreated(getDateCreated())
-      .dateModified(getDateModified());
-  }
+    public static class Builder {
 
+        private FontFile instance;
 
+        public Builder() {
+            this(new FontFile());
+        }
+
+        protected Builder(FontFile instance) {
+            this.instance = instance;
+        }
+
+        public FontFile.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public FontFile.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public FontFile.Builder size(Long size) {
+            this.instance.size = size;
+            return this;
+        }
+
+        public FontFile.Builder dateCreated(OffsetDateTime dateCreated) {
+            this.instance.dateCreated = dateCreated;
+            return this;
+        }
+
+        public FontFile.Builder dateModified(OffsetDateTime dateModified) {
+            this.instance.dateModified = dateModified;
+            return this;
+        }
+
+        /**
+         * returns a built FontFile instance.
+         *
+         * The builder is not reusable.
+         */
+        public FontFile build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static FontFile.Builder builder() {
+        return new FontFile.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public FontFile.Builder toBuilder() {
+        return new FontFile.Builder().name(getName()).size(getSize()).dateCreated(getDateCreated())
+                .dateModified(getDateModified());
+    }
 }
-

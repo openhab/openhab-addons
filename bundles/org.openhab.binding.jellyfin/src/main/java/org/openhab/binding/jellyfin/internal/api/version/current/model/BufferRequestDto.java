@@ -17,260 +17,247 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class BufferRequestDto.
  */
-@JsonPropertyOrder({
-  BufferRequestDto.JSON_PROPERTY_WHEN,
-  BufferRequestDto.JSON_PROPERTY_POSITION_TICKS,
-  BufferRequestDto.JSON_PROPERTY_IS_PLAYING,
-  BufferRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID
-})
+@JsonPropertyOrder({ BufferRequestDto.JSON_PROPERTY_WHEN, BufferRequestDto.JSON_PROPERTY_POSITION_TICKS,
+        BufferRequestDto.JSON_PROPERTY_IS_PLAYING, BufferRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BufferRequestDto {
-  public static final String JSON_PROPERTY_WHEN = "When";
-  @javax.annotation.Nullable
-  private OffsetDateTime when;
+    public static final String JSON_PROPERTY_WHEN = "When";
+    @javax.annotation.Nullable
+    private OffsetDateTime when;
 
-  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-  @javax.annotation.Nullable
-  private Long positionTicks;
+    public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+    @javax.annotation.Nullable
+    private Long positionTicks;
 
-  public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
-  @javax.annotation.Nullable
-  private Boolean isPlaying;
+    public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
+    @javax.annotation.Nullable
+    private Boolean isPlaying;
 
-  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @javax.annotation.Nullable
-  private UUID playlistItemId;
+    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
+    private UUID playlistItemId;
 
-  public BufferRequestDto() {
-  }
-
-  public BufferRequestDto when(@javax.annotation.Nullable OffsetDateTime when) {
-    
-    this.when = when;
-    return this;
-  }
-
-  /**
-   * Gets or sets when the request has been made by the client.
-   * @return when
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_WHEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getWhen() {
-    return when;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_WHEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
-    this.when = when;
-  }
-
-  public BufferRequestDto positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    
-    this.positionTicks = positionTicks;
-    return this;
-  }
-
-  /**
-   * Gets or sets the position ticks.
-   * @return positionTicks
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getPositionTicks() {
-    return positionTicks;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
-  }
-
-  public BufferRequestDto isPlaying(@javax.annotation.Nullable Boolean isPlaying) {
-    
-    this.isPlaying = isPlaying;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether the client playback is unpaused.
-   * @return isPlaying
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsPlaying() {
-    return isPlaying;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsPlaying(@javax.annotation.Nullable Boolean isPlaying) {
-    this.isPlaying = isPlaying;
-  }
-
-  public BufferRequestDto playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    
-    this.playlistItemId = playlistItemId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the playlist item identifier of the playing item.
-   * @return playlistItemId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getPlaylistItemId() {
-    return playlistItemId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    this.playlistItemId = playlistItemId;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BufferRequestDto bufferRequestDto = (BufferRequestDto) o;
-    return Objects.equals(this.when, bufferRequestDto.when) &&
-        Objects.equals(this.positionTicks, bufferRequestDto.positionTicks) &&
-        Objects.equals(this.isPlaying, bufferRequestDto.isPlaying) &&
-        Objects.equals(this.playlistItemId, bufferRequestDto.playlistItemId);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(when, positionTicks, isPlaying, playlistItemId);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class BufferRequestDto {\n");
-    sb.append("    when: ").append(toIndentedString(when)).append("\n");
-    sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
-    sb.append("    isPlaying: ").append(toIndentedString(isPlaying)).append("\n");
-    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private BufferRequestDto instance;
-
-    public Builder() {
-      this(new BufferRequestDto());
+    public BufferRequestDto() {
     }
 
-    protected Builder(BufferRequestDto instance) {
-      this.instance = instance;
-    }
+    public BufferRequestDto when(@javax.annotation.Nullable OffsetDateTime when) {
 
-    public BufferRequestDto.Builder when(OffsetDateTime when) {
-      this.instance.when = when;
-      return this;
+        this.when = when;
+        return this;
     }
-    public BufferRequestDto.Builder positionTicks(Long positionTicks) {
-      this.instance.positionTicks = positionTicks;
-      return this;
-    }
-    public BufferRequestDto.Builder isPlaying(Boolean isPlaying) {
-      this.instance.isPlaying = isPlaying;
-      return this;
-    }
-    public BufferRequestDto.Builder playlistItemId(UUID playlistItemId) {
-      this.instance.playlistItemId = playlistItemId;
-      return this;
-    }
-
 
     /**
-    * returns a built BufferRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public BufferRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets when the request has been made by the client.
+     * 
+     * @return when
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getWhen() {
+        return when;
+    }
+
+    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
+        this.when = when;
+    }
+
+    public BufferRequestDto positionTicks(@javax.annotation.Nullable Long positionTicks) {
+
+        this.positionTicks = positionTicks;
+        return this;
+    }
+
+    /**
+     * Gets or sets the position ticks.
+     * 
+     * @return positionTicks
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getPositionTicks() {
+        return positionTicks;
+    }
+
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
+        this.positionTicks = positionTicks;
+    }
+
+    public BufferRequestDto isPlaying(@javax.annotation.Nullable Boolean isPlaying) {
+
+        this.isPlaying = isPlaying;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether the client playback is unpaused.
+     * 
+     * @return isPlaying
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsPlaying() {
+        return isPlaying;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsPlaying(@javax.annotation.Nullable Boolean isPlaying) {
+        this.isPlaying = isPlaying;
+    }
+
+    public BufferRequestDto playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+
+        this.playlistItemId = playlistItemId;
+        return this;
+    }
+
+    /**
+     * Gets or sets the playlist item identifier of the playing item.
+     * 
+     * @return playlistItemId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getPlaylistItemId() {
+        return playlistItemId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+        this.playlistItemId = playlistItemId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BufferRequestDto bufferRequestDto = (BufferRequestDto) o;
+        return Objects.equals(this.when, bufferRequestDto.when)
+                && Objects.equals(this.positionTicks, bufferRequestDto.positionTicks)
+                && Objects.equals(this.isPlaying, bufferRequestDto.isPlaying)
+                && Objects.equals(this.playlistItemId, bufferRequestDto.playlistItemId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(when, positionTicks, isPlaying, playlistItemId);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class BufferRequestDto {\n");
+        sb.append("    when: ").append(toIndentedString(when)).append("\n");
+        sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
+        sb.append("    isPlaying: ").append(toIndentedString(isPlaying)).append("\n");
+        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static BufferRequestDto.Builder builder() {
-    return new BufferRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public BufferRequestDto.Builder toBuilder() {
-    return new BufferRequestDto.Builder()
-      .when(getWhen())
-      .positionTicks(getPositionTicks())
-      .isPlaying(getIsPlaying())
-      .playlistItemId(getPlaylistItemId());
-  }
+    public static class Builder {
 
+        private BufferRequestDto instance;
 
+        public Builder() {
+            this(new BufferRequestDto());
+        }
+
+        protected Builder(BufferRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public BufferRequestDto.Builder when(OffsetDateTime when) {
+            this.instance.when = when;
+            return this;
+        }
+
+        public BufferRequestDto.Builder positionTicks(Long positionTicks) {
+            this.instance.positionTicks = positionTicks;
+            return this;
+        }
+
+        public BufferRequestDto.Builder isPlaying(Boolean isPlaying) {
+            this.instance.isPlaying = isPlaying;
+            return this;
+        }
+
+        public BufferRequestDto.Builder playlistItemId(UUID playlistItemId) {
+            this.instance.playlistItemId = playlistItemId;
+            return this;
+        }
+
+        /**
+         * returns a built BufferRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public BufferRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static BufferRequestDto.Builder builder() {
+        return new BufferRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public BufferRequestDto.Builder toBuilder() {
+        return new BufferRequestDto.Builder().when(getWhen()).positionTicks(getPositionTicks())
+                .isPlaying(getIsPlaying()).playlistItemId(getPlaylistItemId());
+    }
 }
-

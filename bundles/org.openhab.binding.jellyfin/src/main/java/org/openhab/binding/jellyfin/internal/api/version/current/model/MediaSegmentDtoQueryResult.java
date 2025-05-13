@@ -17,233 +17,220 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaSegmentDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Query result container.
  */
-@JsonPropertyOrder({
-  MediaSegmentDtoQueryResult.JSON_PROPERTY_ITEMS,
-  MediaSegmentDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-  MediaSegmentDtoQueryResult.JSON_PROPERTY_START_INDEX
-})
+@JsonPropertyOrder({ MediaSegmentDtoQueryResult.JSON_PROPERTY_ITEMS,
+        MediaSegmentDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+        MediaSegmentDtoQueryResult.JSON_PROPERTY_START_INDEX })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaSegmentDtoQueryResult {
-  public static final String JSON_PROPERTY_ITEMS = "Items";
-  @javax.annotation.Nullable
-  private List<MediaSegmentDto> items = new ArrayList<>();
+    public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
+    private List<MediaSegmentDto> items = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-  @javax.annotation.Nullable
-  private Integer totalRecordCount;
+    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+    @javax.annotation.Nullable
+    private Integer totalRecordCount;
 
-  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-  @javax.annotation.Nullable
-  private Integer startIndex;
+    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+    @javax.annotation.Nullable
+    private Integer startIndex;
 
-  public MediaSegmentDtoQueryResult() {
-  }
-
-  public MediaSegmentDtoQueryResult items(@javax.annotation.Nullable List<MediaSegmentDto> items) {
-    
-    this.items = items;
-    return this;
-  }
-
-  public MediaSegmentDtoQueryResult addItemsItem(MediaSegmentDto itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the items.
-   * @return items
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<MediaSegmentDto> getItems() {
-    return items;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setItems(@javax.annotation.Nullable List<MediaSegmentDto> items) {
-    this.items = items;
-  }
-
-  public MediaSegmentDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    
-    this.totalRecordCount = totalRecordCount;
-    return this;
-  }
-
-  /**
-   * Gets or sets the total number of records available.
-   * @return totalRecordCount
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getTotalRecordCount() {
-    return totalRecordCount;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    this.totalRecordCount = totalRecordCount;
-  }
-
-  public MediaSegmentDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-    
-    this.startIndex = startIndex;
-    return this;
-  }
-
-  /**
-   * Gets or sets the index of the first record in Items.
-   * @return startIndex
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getStartIndex() {
-    return startIndex;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-    this.startIndex = startIndex;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MediaSegmentDtoQueryResult mediaSegmentDtoQueryResult = (MediaSegmentDtoQueryResult) o;
-    return Objects.equals(this.items, mediaSegmentDtoQueryResult.items) &&
-        Objects.equals(this.totalRecordCount, mediaSegmentDtoQueryResult.totalRecordCount) &&
-        Objects.equals(this.startIndex, mediaSegmentDtoQueryResult.startIndex);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(items, totalRecordCount, startIndex);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MediaSegmentDtoQueryResult {\n");
-    sb.append("    items: ").append(toIndentedString(items)).append("\n");
-    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MediaSegmentDtoQueryResult instance;
-
-    public Builder() {
-      this(new MediaSegmentDtoQueryResult());
+    public MediaSegmentDtoQueryResult() {
     }
 
-    protected Builder(MediaSegmentDtoQueryResult instance) {
-      this.instance = instance;
+    public MediaSegmentDtoQueryResult items(@javax.annotation.Nullable List<MediaSegmentDto> items) {
+
+        this.items = items;
+        return this;
     }
 
-    public MediaSegmentDtoQueryResult.Builder items(List<MediaSegmentDto> items) {
-      this.instance.items = items;
-      return this;
+    public MediaSegmentDtoQueryResult addItemsItem(MediaSegmentDto itemsItem) {
+        if (this.items == null) {
+            this.items = new ArrayList<>();
+        }
+        this.items.add(itemsItem);
+        return this;
     }
-    public MediaSegmentDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-      this.instance.totalRecordCount = totalRecordCount;
-      return this;
-    }
-    public MediaSegmentDtoQueryResult.Builder startIndex(Integer startIndex) {
-      this.instance.startIndex = startIndex;
-      return this;
-    }
-
 
     /**
-    * returns a built MediaSegmentDtoQueryResult instance.
-    *
-    * The builder is not reusable.
-    */
-    public MediaSegmentDtoQueryResult build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the items.
+     * 
+     * @return items
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<MediaSegmentDto> getItems() {
+        return items;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItems(@javax.annotation.Nullable List<MediaSegmentDto> items) {
+        this.items = items;
+    }
+
+    public MediaSegmentDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
+        this.totalRecordCount = totalRecordCount;
+        return this;
+    }
+
+    /**
+     * Gets or sets the total number of records available.
+     * 
+     * @return totalRecordCount
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getTotalRecordCount() {
+        return totalRecordCount;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+        this.totalRecordCount = totalRecordCount;
+    }
+
+    public MediaSegmentDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
+        this.startIndex = startIndex;
+        return this;
+    }
+
+    /**
+     * Gets or sets the index of the first record in Items.
+     * 
+     * @return startIndex
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getStartIndex() {
+        return startIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MediaSegmentDtoQueryResult mediaSegmentDtoQueryResult = (MediaSegmentDtoQueryResult) o;
+        return Objects.equals(this.items, mediaSegmentDtoQueryResult.items)
+                && Objects.equals(this.totalRecordCount, mediaSegmentDtoQueryResult.totalRecordCount)
+                && Objects.equals(this.startIndex, mediaSegmentDtoQueryResult.startIndex);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, totalRecordCount, startIndex);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MediaSegmentDtoQueryResult {\n");
+        sb.append("    items: ").append(toIndentedString(items)).append("\n");
+        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MediaSegmentDtoQueryResult.Builder builder() {
-    return new MediaSegmentDtoQueryResult.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MediaSegmentDtoQueryResult.Builder toBuilder() {
-    return new MediaSegmentDtoQueryResult.Builder()
-      .items(getItems())
-      .totalRecordCount(getTotalRecordCount())
-      .startIndex(getStartIndex());
-  }
+    public static class Builder {
 
+        private MediaSegmentDtoQueryResult instance;
 
+        public Builder() {
+            this(new MediaSegmentDtoQueryResult());
+        }
+
+        protected Builder(MediaSegmentDtoQueryResult instance) {
+            this.instance = instance;
+        }
+
+        public MediaSegmentDtoQueryResult.Builder items(List<MediaSegmentDto> items) {
+            this.instance.items = items;
+            return this;
+        }
+
+        public MediaSegmentDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
+            this.instance.totalRecordCount = totalRecordCount;
+            return this;
+        }
+
+        public MediaSegmentDtoQueryResult.Builder startIndex(Integer startIndex) {
+            this.instance.startIndex = startIndex;
+            return this;
+        }
+
+        /**
+         * returns a built MediaSegmentDtoQueryResult instance.
+         *
+         * The builder is not reusable.
+         */
+        public MediaSegmentDtoQueryResult build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MediaSegmentDtoQueryResult.Builder builder() {
+        return new MediaSegmentDtoQueryResult.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MediaSegmentDtoQueryResult.Builder toBuilder() {
+        return new MediaSegmentDtoQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
+                .startIndex(getStartIndex());
+    }
 }
-

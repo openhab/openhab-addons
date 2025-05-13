@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,57 +24,56 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ImageType.
  */
 public enum ImageType {
-  
-  PRIMARY("Primary"),
-  
-  ART("Art"),
-  
-  BACKDROP("Backdrop"),
-  
-  BANNER("Banner"),
-  
-  LOGO("Logo"),
-  
-  THUMB("Thumb"),
-  
-  DISC("Disc"),
-  
-  BOX("Box"),
-  
-  SCREENSHOT("Screenshot"),
-  
-  MENU("Menu"),
-  
-  CHAPTER("Chapter"),
-  
-  BOX_REAR("BoxRear"),
-  
-  PROFILE("Profile");
 
-  private String value;
+    PRIMARY("Primary"),
 
-  ImageType(String value) {
-    this.value = value;
-  }
+    ART("Art"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    BACKDROP("Backdrop"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    BANNER("Banner"),
 
-  @JsonCreator
-  public static ImageType fromValue(String value) {
-    for (ImageType b : ImageType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    LOGO("Logo"),
+
+    THUMB("Thumb"),
+
+    DISC("Disc"),
+
+    BOX("Box"),
+
+    SCREENSHOT("Screenshot"),
+
+    MENU("Menu"),
+
+    CHAPTER("Chapter"),
+
+    BOX_REAR("BoxRear"),
+
+    PROFILE("Profile");
+
+    private String value;
+
+    ImageType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ImageType fromValue(String value) {
+        for (ImageType b : ImageType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

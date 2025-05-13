@@ -17,360 +17,349 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ImageOption;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ImageType;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.LibraryOptionInfoDto;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Library type options dto.
  */
-@JsonPropertyOrder({
-  LibraryTypeOptionsDto.JSON_PROPERTY_TYPE,
-  LibraryTypeOptionsDto.JSON_PROPERTY_METADATA_FETCHERS,
-  LibraryTypeOptionsDto.JSON_PROPERTY_IMAGE_FETCHERS,
-  LibraryTypeOptionsDto.JSON_PROPERTY_SUPPORTED_IMAGE_TYPES,
-  LibraryTypeOptionsDto.JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS
-})
+@JsonPropertyOrder({ LibraryTypeOptionsDto.JSON_PROPERTY_TYPE, LibraryTypeOptionsDto.JSON_PROPERTY_METADATA_FETCHERS,
+        LibraryTypeOptionsDto.JSON_PROPERTY_IMAGE_FETCHERS, LibraryTypeOptionsDto.JSON_PROPERTY_SUPPORTED_IMAGE_TYPES,
+        LibraryTypeOptionsDto.JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryTypeOptionsDto {
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private JsonNullable<String> type = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private JsonNullable<String> type = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> metadataFetchers = new ArrayList<>();
+    public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> metadataFetchers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> imageFetchers = new ArrayList<>();
+    public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> imageFetchers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SUPPORTED_IMAGE_TYPES = "SupportedImageTypes";
-  @javax.annotation.Nullable
-  private List<ImageType> supportedImageTypes = new ArrayList<>();
+    public static final String JSON_PROPERTY_SUPPORTED_IMAGE_TYPES = "SupportedImageTypes";
+    @javax.annotation.Nullable
+    private List<ImageType> supportedImageTypes = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS = "DefaultImageOptions";
-  @javax.annotation.Nullable
-  private List<ImageOption> defaultImageOptions = new ArrayList<>();
+    public static final String JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS = "DefaultImageOptions";
+    @javax.annotation.Nullable
+    private List<ImageOption> defaultImageOptions = new ArrayList<>();
 
-  public LibraryTypeOptionsDto() {
-  }
-
-  public LibraryTypeOptionsDto type(@javax.annotation.Nullable String type) {
-    this.type = JsonNullable.<String>of(type);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the type.
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getType() {
-        return type.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getType_JsonNullable() {
-    return type;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  public void setType_JsonNullable(JsonNullable<String> type) {
-    this.type = type;
-  }
-
-  public void setType(@javax.annotation.Nullable String type) {
-    this.type = JsonNullable.<String>of(type);
-  }
-
-  public LibraryTypeOptionsDto metadataFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
-    
-    this.metadataFetchers = metadataFetchers;
-    return this;
-  }
-
-  public LibraryTypeOptionsDto addMetadataFetchersItem(LibraryOptionInfoDto metadataFetchersItem) {
-    if (this.metadataFetchers == null) {
-      this.metadataFetchers = new ArrayList<>();
-    }
-    this.metadataFetchers.add(metadataFetchersItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the metadata fetchers.
-   * @return metadataFetchers
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getMetadataFetchers() {
-    return metadataFetchers;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMetadataFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
-    this.metadataFetchers = metadataFetchers;
-  }
-
-  public LibraryTypeOptionsDto imageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
-    
-    this.imageFetchers = imageFetchers;
-    return this;
-  }
-
-  public LibraryTypeOptionsDto addImageFetchersItem(LibraryOptionInfoDto imageFetchersItem) {
-    if (this.imageFetchers == null) {
-      this.imageFetchers = new ArrayList<>();
-    }
-    this.imageFetchers.add(imageFetchersItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the image fetchers.
-   * @return imageFetchers
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getImageFetchers() {
-    return imageFetchers;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
-    this.imageFetchers = imageFetchers;
-  }
-
-  public LibraryTypeOptionsDto supportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
-    
-    this.supportedImageTypes = supportedImageTypes;
-    return this;
-  }
-
-  public LibraryTypeOptionsDto addSupportedImageTypesItem(ImageType supportedImageTypesItem) {
-    if (this.supportedImageTypes == null) {
-      this.supportedImageTypes = new ArrayList<>();
-    }
-    this.supportedImageTypes.add(supportedImageTypesItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the supported image types.
-   * @return supportedImageTypes
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ImageType> getSupportedImageTypes() {
-    return supportedImageTypes;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSupportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
-    this.supportedImageTypes = supportedImageTypes;
-  }
-
-  public LibraryTypeOptionsDto defaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
-    
-    this.defaultImageOptions = defaultImageOptions;
-    return this;
-  }
-
-  public LibraryTypeOptionsDto addDefaultImageOptionsItem(ImageOption defaultImageOptionsItem) {
-    if (this.defaultImageOptions == null) {
-      this.defaultImageOptions = new ArrayList<>();
-    }
-    this.defaultImageOptions.add(defaultImageOptionsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the default image options.
-   * @return defaultImageOptions
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ImageOption> getDefaultImageOptions() {
-    return defaultImageOptions;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
-    this.defaultImageOptions = defaultImageOptions;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LibraryTypeOptionsDto libraryTypeOptionsDto = (LibraryTypeOptionsDto) o;
-    return equalsNullable(this.type, libraryTypeOptionsDto.type) &&
-        Objects.equals(this.metadataFetchers, libraryTypeOptionsDto.metadataFetchers) &&
-        Objects.equals(this.imageFetchers, libraryTypeOptionsDto.imageFetchers) &&
-        Objects.equals(this.supportedImageTypes, libraryTypeOptionsDto.supportedImageTypes) &&
-        Objects.equals(this.defaultImageOptions, libraryTypeOptionsDto.defaultImageOptions);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(type), metadataFetchers, imageFetchers, supportedImageTypes, defaultImageOptions);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LibraryTypeOptionsDto {\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    metadataFetchers: ").append(toIndentedString(metadataFetchers)).append("\n");
-    sb.append("    imageFetchers: ").append(toIndentedString(imageFetchers)).append("\n");
-    sb.append("    supportedImageTypes: ").append(toIndentedString(supportedImageTypes)).append("\n");
-    sb.append("    defaultImageOptions: ").append(toIndentedString(defaultImageOptions)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LibraryTypeOptionsDto instance;
-
-    public Builder() {
-      this(new LibraryTypeOptionsDto());
+    public LibraryTypeOptionsDto() {
     }
 
-    protected Builder(LibraryTypeOptionsDto instance) {
-      this.instance = instance;
-    }
+    public LibraryTypeOptionsDto type(@javax.annotation.Nullable String type) {
+        this.type = JsonNullable.<String> of(type);
 
-    public LibraryTypeOptionsDto.Builder type(String type) {
-      this.instance.type = JsonNullable.<String>of(type);
-      return this;
+        return this;
     }
-    public LibraryTypeOptionsDto.Builder type(JsonNullable<String> type) {
-      this.instance.type = type;
-      return this;
-    }
-    public LibraryTypeOptionsDto.Builder metadataFetchers(List<LibraryOptionInfoDto> metadataFetchers) {
-      this.instance.metadataFetchers = metadataFetchers;
-      return this;
-    }
-    public LibraryTypeOptionsDto.Builder imageFetchers(List<LibraryOptionInfoDto> imageFetchers) {
-      this.instance.imageFetchers = imageFetchers;
-      return this;
-    }
-    public LibraryTypeOptionsDto.Builder supportedImageTypes(List<ImageType> supportedImageTypes) {
-      this.instance.supportedImageTypes = supportedImageTypes;
-      return this;
-    }
-    public LibraryTypeOptionsDto.Builder defaultImageOptions(List<ImageOption> defaultImageOptions) {
-      this.instance.defaultImageOptions = defaultImageOptions;
-      return this;
-    }
-
 
     /**
-    * returns a built LibraryTypeOptionsDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public LibraryTypeOptionsDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the type.
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getType() {
+        return type.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getType_JsonNullable() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    public void setType_JsonNullable(JsonNullable<String> type) {
+        this.type = type;
+    }
+
+    public void setType(@javax.annotation.Nullable String type) {
+        this.type = JsonNullable.<String> of(type);
+    }
+
+    public LibraryTypeOptionsDto metadataFetchers(
+            @javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
+
+        this.metadataFetchers = metadataFetchers;
+        return this;
+    }
+
+    public LibraryTypeOptionsDto addMetadataFetchersItem(LibraryOptionInfoDto metadataFetchersItem) {
+        if (this.metadataFetchers == null) {
+            this.metadataFetchers = new ArrayList<>();
+        }
+        this.metadataFetchers.add(metadataFetchersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the metadata fetchers.
+     * 
+     * @return metadataFetchers
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getMetadataFetchers() {
+        return metadataFetchers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
+        this.metadataFetchers = metadataFetchers;
+    }
+
+    public LibraryTypeOptionsDto imageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
+
+        this.imageFetchers = imageFetchers;
+        return this;
+    }
+
+    public LibraryTypeOptionsDto addImageFetchersItem(LibraryOptionInfoDto imageFetchersItem) {
+        if (this.imageFetchers == null) {
+            this.imageFetchers = new ArrayList<>();
+        }
+        this.imageFetchers.add(imageFetchersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the image fetchers.
+     * 
+     * @return imageFetchers
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getImageFetchers() {
+        return imageFetchers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setImageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
+        this.imageFetchers = imageFetchers;
+    }
+
+    public LibraryTypeOptionsDto supportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
+
+        this.supportedImageTypes = supportedImageTypes;
+        return this;
+    }
+
+    public LibraryTypeOptionsDto addSupportedImageTypesItem(ImageType supportedImageTypesItem) {
+        if (this.supportedImageTypes == null) {
+            this.supportedImageTypes = new ArrayList<>();
+        }
+        this.supportedImageTypes.add(supportedImageTypesItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the supported image types.
+     * 
+     * @return supportedImageTypes
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ImageType> getSupportedImageTypes() {
+        return supportedImageTypes;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSupportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
+        this.supportedImageTypes = supportedImageTypes;
+    }
+
+    public LibraryTypeOptionsDto defaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
+
+        this.defaultImageOptions = defaultImageOptions;
+        return this;
+    }
+
+    public LibraryTypeOptionsDto addDefaultImageOptionsItem(ImageOption defaultImageOptionsItem) {
+        if (this.defaultImageOptions == null) {
+            this.defaultImageOptions = new ArrayList<>();
+        }
+        this.defaultImageOptions.add(defaultImageOptionsItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the default image options.
+     * 
+     * @return defaultImageOptions
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ImageOption> getDefaultImageOptions() {
+        return defaultImageOptions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDefaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
+        this.defaultImageOptions = defaultImageOptions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LibraryTypeOptionsDto libraryTypeOptionsDto = (LibraryTypeOptionsDto) o;
+        return equalsNullable(this.type, libraryTypeOptionsDto.type)
+                && Objects.equals(this.metadataFetchers, libraryTypeOptionsDto.metadataFetchers)
+                && Objects.equals(this.imageFetchers, libraryTypeOptionsDto.imageFetchers)
+                && Objects.equals(this.supportedImageTypes, libraryTypeOptionsDto.supportedImageTypes)
+                && Objects.equals(this.defaultImageOptions, libraryTypeOptionsDto.defaultImageOptions);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(type), metadataFetchers, imageFetchers, supportedImageTypes,
+                defaultImageOptions);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LibraryTypeOptionsDto {\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    metadataFetchers: ").append(toIndentedString(metadataFetchers)).append("\n");
+        sb.append("    imageFetchers: ").append(toIndentedString(imageFetchers)).append("\n");
+        sb.append("    supportedImageTypes: ").append(toIndentedString(supportedImageTypes)).append("\n");
+        sb.append("    defaultImageOptions: ").append(toIndentedString(defaultImageOptions)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LibraryTypeOptionsDto.Builder builder() {
-    return new LibraryTypeOptionsDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LibraryTypeOptionsDto.Builder toBuilder() {
-    return new LibraryTypeOptionsDto.Builder()
-      .type(getType())
-      .metadataFetchers(getMetadataFetchers())
-      .imageFetchers(getImageFetchers())
-      .supportedImageTypes(getSupportedImageTypes())
-      .defaultImageOptions(getDefaultImageOptions());
-  }
+    public static class Builder {
 
+        private LibraryTypeOptionsDto instance;
 
+        public Builder() {
+            this(new LibraryTypeOptionsDto());
+        }
+
+        protected Builder(LibraryTypeOptionsDto instance) {
+            this.instance = instance;
+        }
+
+        public LibraryTypeOptionsDto.Builder type(String type) {
+            this.instance.type = JsonNullable.<String> of(type);
+            return this;
+        }
+
+        public LibraryTypeOptionsDto.Builder type(JsonNullable<String> type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public LibraryTypeOptionsDto.Builder metadataFetchers(List<LibraryOptionInfoDto> metadataFetchers) {
+            this.instance.metadataFetchers = metadataFetchers;
+            return this;
+        }
+
+        public LibraryTypeOptionsDto.Builder imageFetchers(List<LibraryOptionInfoDto> imageFetchers) {
+            this.instance.imageFetchers = imageFetchers;
+            return this;
+        }
+
+        public LibraryTypeOptionsDto.Builder supportedImageTypes(List<ImageType> supportedImageTypes) {
+            this.instance.supportedImageTypes = supportedImageTypes;
+            return this;
+        }
+
+        public LibraryTypeOptionsDto.Builder defaultImageOptions(List<ImageOption> defaultImageOptions) {
+            this.instance.defaultImageOptions = defaultImageOptions;
+            return this;
+        }
+
+        /**
+         * returns a built LibraryTypeOptionsDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public LibraryTypeOptionsDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LibraryTypeOptionsDto.Builder builder() {
+        return new LibraryTypeOptionsDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LibraryTypeOptionsDto.Builder toBuilder() {
+        return new LibraryTypeOptionsDto.Builder().type(getType()).metadataFetchers(getMetadataFetchers())
+                .imageFetchers(getImageFetchers()).supportedImageTypes(getSupportedImageTypes())
+                .defaultImageOptions(getDefaultImageOptions());
+    }
 }
-

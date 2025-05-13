@@ -17,223 +17,214 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Special view option dto.
  */
-@JsonPropertyOrder({
-  SpecialViewOptionDto.JSON_PROPERTY_NAME,
-  SpecialViewOptionDto.JSON_PROPERTY_ID
-})
+@JsonPropertyOrder({ SpecialViewOptionDto.JSON_PROPERTY_NAME, SpecialViewOptionDto.JSON_PROPERTY_ID })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SpecialViewOptionDto {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_ID = "Id";
-  @javax.annotation.Nullable
-  private JsonNullable<String> id = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
+    private JsonNullable<String> id = JsonNullable.<String> undefined();
 
-  public SpecialViewOptionDto() {
-  }
-
-  public SpecialViewOptionDto name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets view option name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public SpecialViewOptionDto id(@javax.annotation.Nullable String id) {
-    this.id = JsonNullable.<String>of(id);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets view option id.
-   * @return id
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getId() {
-        return id.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getId_JsonNullable() {
-    return id;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ID)
-  public void setId_JsonNullable(JsonNullable<String> id) {
-    this.id = id;
-  }
-
-  public void setId(@javax.annotation.Nullable String id) {
-    this.id = JsonNullable.<String>of(id);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SpecialViewOptionDto specialViewOptionDto = (SpecialViewOptionDto) o;
-    return equalsNullable(this.name, specialViewOptionDto.name) &&
-        equalsNullable(this.id, specialViewOptionDto.id);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), hashCodeNullable(id));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SpecialViewOptionDto {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SpecialViewOptionDto instance;
-
-    public Builder() {
-      this(new SpecialViewOptionDto());
+    public SpecialViewOptionDto() {
     }
 
-    protected Builder(SpecialViewOptionDto instance) {
-      this.instance = instance;
-    }
+    public SpecialViewOptionDto name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public SpecialViewOptionDto.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public SpecialViewOptionDto.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public SpecialViewOptionDto.Builder id(String id) {
-      this.instance.id = JsonNullable.<String>of(id);
-      return this;
-    }
-    public SpecialViewOptionDto.Builder id(JsonNullable<String> id) {
-      this.instance.id = id;
-      return this;
-    }
-
 
     /**
-    * returns a built SpecialViewOptionDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public SpecialViewOptionDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets view option name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public SpecialViewOptionDto id(@javax.annotation.Nullable String id) {
+        this.id = JsonNullable.<String> of(id);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets view option id.
+     * 
+     * @return id
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getId() {
+        return id.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getId_JsonNullable() {
+        return id;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    public void setId_JsonNullable(JsonNullable<String> id) {
+        this.id = id;
+    }
+
+    public void setId(@javax.annotation.Nullable String id) {
+        this.id = JsonNullable.<String> of(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SpecialViewOptionDto specialViewOptionDto = (SpecialViewOptionDto) o;
+        return equalsNullable(this.name, specialViewOptionDto.name) && equalsNullable(this.id, specialViewOptionDto.id);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), hashCodeNullable(id));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SpecialViewOptionDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SpecialViewOptionDto.Builder builder() {
-    return new SpecialViewOptionDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SpecialViewOptionDto.Builder toBuilder() {
-    return new SpecialViewOptionDto.Builder()
-      .name(getName())
-      .id(getId());
-  }
+    public static class Builder {
 
+        private SpecialViewOptionDto instance;
 
+        public Builder() {
+            this(new SpecialViewOptionDto());
+        }
+
+        protected Builder(SpecialViewOptionDto instance) {
+            this.instance = instance;
+        }
+
+        public SpecialViewOptionDto.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public SpecialViewOptionDto.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public SpecialViewOptionDto.Builder id(String id) {
+            this.instance.id = JsonNullable.<String> of(id);
+            return this;
+        }
+
+        public SpecialViewOptionDto.Builder id(JsonNullable<String> id) {
+            this.instance.id = id;
+            return this;
+        }
+
+        /**
+         * returns a built SpecialViewOptionDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public SpecialViewOptionDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SpecialViewOptionDto.Builder builder() {
+        return new SpecialViewOptionDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SpecialViewOptionDto.Builder toBuilder() {
+        return new SpecialViewOptionDto.Builder().name(getName()).id(getId());
+    }
 }
-

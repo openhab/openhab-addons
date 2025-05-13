@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,35 +24,34 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ImageSavingConvention
  */
 public enum ImageSavingConvention {
-  
-  LEGACY("Legacy"),
-  
-  COMPATIBLE("Compatible");
 
-  private String value;
+    LEGACY("Legacy"),
 
-  ImageSavingConvention(String value) {
-    this.value = value;
-  }
+    COMPATIBLE("Compatible");
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    private String value;
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
-
-  @JsonCreator
-  public static ImageSavingConvention fromValue(String value) {
-    for (ImageSavingConvention b : ImageSavingConvention.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    ImageSavingConvention(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ImageSavingConvention fromValue(String value) {
+        for (ImageSavingConvention b : ImageSavingConvention.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

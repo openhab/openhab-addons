@@ -17,494 +17,488 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ImageType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class ImageInfo.
  */
-@JsonPropertyOrder({
-  ImageInfo.JSON_PROPERTY_IMAGE_TYPE,
-  ImageInfo.JSON_PROPERTY_IMAGE_INDEX,
-  ImageInfo.JSON_PROPERTY_IMAGE_TAG,
-  ImageInfo.JSON_PROPERTY_PATH,
-  ImageInfo.JSON_PROPERTY_BLUR_HASH,
-  ImageInfo.JSON_PROPERTY_HEIGHT,
-  ImageInfo.JSON_PROPERTY_WIDTH,
-  ImageInfo.JSON_PROPERTY_SIZE
-})
+@JsonPropertyOrder({ ImageInfo.JSON_PROPERTY_IMAGE_TYPE, ImageInfo.JSON_PROPERTY_IMAGE_INDEX,
+        ImageInfo.JSON_PROPERTY_IMAGE_TAG, ImageInfo.JSON_PROPERTY_PATH, ImageInfo.JSON_PROPERTY_BLUR_HASH,
+        ImageInfo.JSON_PROPERTY_HEIGHT, ImageInfo.JSON_PROPERTY_WIDTH, ImageInfo.JSON_PROPERTY_SIZE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ImageInfo {
-  public static final String JSON_PROPERTY_IMAGE_TYPE = "ImageType";
-  @javax.annotation.Nullable
-  private ImageType imageType;
-
-  public static final String JSON_PROPERTY_IMAGE_INDEX = "ImageIndex";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> imageIndex = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
-  @javax.annotation.Nullable
-  private JsonNullable<String> imageTag = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_PATH = "Path";
-  @javax.annotation.Nullable
-  private JsonNullable<String> path = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_BLUR_HASH = "BlurHash";
-  @javax.annotation.Nullable
-  private JsonNullable<String> blurHash = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_HEIGHT = "Height";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_WIDTH = "Width";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_SIZE = "Size";
-  @javax.annotation.Nullable
-  private Long size;
-
-  public ImageInfo() {
-  }
-
-  public ImageInfo imageType(@javax.annotation.Nullable ImageType imageType) {
-    
-    this.imageType = imageType;
-    return this;
-  }
-
-  /**
-   * Gets or sets the type of the image.
-   * @return imageType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public ImageType getImageType() {
-    return imageType;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImageType(@javax.annotation.Nullable ImageType imageType) {
-    this.imageType = imageType;
-  }
-
-  public ImageInfo imageIndex(@javax.annotation.Nullable Integer imageIndex) {
-    this.imageIndex = JsonNullable.<Integer>of(imageIndex);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the index of the image.
-   * @return imageIndex
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getImageIndex() {
-        return imageIndex.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getImageIndex_JsonNullable() {
-    return imageIndex;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
-  public void setImageIndex_JsonNullable(JsonNullable<Integer> imageIndex) {
-    this.imageIndex = imageIndex;
-  }
-
-  public void setImageIndex(@javax.annotation.Nullable Integer imageIndex) {
-    this.imageIndex = JsonNullable.<Integer>of(imageIndex);
-  }
-
-  public ImageInfo imageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = JsonNullable.<String>of(imageTag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the image tag.
-   * @return imageTag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getImageTag() {
-        return imageTag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getImageTag_JsonNullable() {
-    return imageTag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
-  public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
-    this.imageTag = imageTag;
-  }
-
-  public void setImageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = JsonNullable.<String>of(imageTag);
-  }
-
-  public ImageInfo path(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the path.
-   * @return path
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPath() {
-        return path.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPath_JsonNullable() {
-    return path;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PATH)
-  public void setPath_JsonNullable(JsonNullable<String> path) {
-    this.path = path;
-  }
-
-  public void setPath(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-  }
-
-  public ImageInfo blurHash(@javax.annotation.Nullable String blurHash) {
-    this.blurHash = JsonNullable.<String>of(blurHash);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the blurhash.
-   * @return blurHash
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getBlurHash() {
-        return blurHash.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_BLUR_HASH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getBlurHash_JsonNullable() {
-    return blurHash;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BLUR_HASH)
-  public void setBlurHash_JsonNullable(JsonNullable<String> blurHash) {
-    this.blurHash = blurHash;
-  }
-
-  public void setBlurHash(@javax.annotation.Nullable String blurHash) {
-    this.blurHash = JsonNullable.<String>of(blurHash);
-  }
-
-  public ImageInfo height(@javax.annotation.Nullable Integer height) {
-    this.height = JsonNullable.<Integer>of(height);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the height.
-   * @return height
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getHeight() {
-        return height.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_HEIGHT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getHeight_JsonNullable() {
-    return height;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_HEIGHT)
-  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
-    this.height = height;
-  }
-
-  public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = JsonNullable.<Integer>of(height);
-  }
-
-  public ImageInfo width(@javax.annotation.Nullable Integer width) {
-    this.width = JsonNullable.<Integer>of(width);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the width.
-   * @return width
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getWidth() {
-        return width.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_WIDTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getWidth_JsonNullable() {
-    return width;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_WIDTH)
-  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
-    this.width = width;
-  }
-
-  public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = JsonNullable.<Integer>of(width);
-  }
-
-  public ImageInfo size(@javax.annotation.Nullable Long size) {
-    
-    this.size = size;
-    return this;
-  }
-
-  /**
-   * Gets or sets the size.
-   * @return size
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getSize() {
-    return size;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSize(@javax.annotation.Nullable Long size) {
-    this.size = size;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ImageInfo imageInfo = (ImageInfo) o;
-    return Objects.equals(this.imageType, imageInfo.imageType) &&
-        equalsNullable(this.imageIndex, imageInfo.imageIndex) &&
-        equalsNullable(this.imageTag, imageInfo.imageTag) &&
-        equalsNullable(this.path, imageInfo.path) &&
-        equalsNullable(this.blurHash, imageInfo.blurHash) &&
-        equalsNullable(this.height, imageInfo.height) &&
-        equalsNullable(this.width, imageInfo.width) &&
-        Objects.equals(this.size, imageInfo.size);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(imageType, hashCodeNullable(imageIndex), hashCodeNullable(imageTag), hashCodeNullable(path), hashCodeNullable(blurHash), hashCodeNullable(height), hashCodeNullable(width), size);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ImageInfo {\n");
-    sb.append("    imageType: ").append(toIndentedString(imageType)).append("\n");
-    sb.append("    imageIndex: ").append(toIndentedString(imageIndex)).append("\n");
-    sb.append("    imageTag: ").append(toIndentedString(imageTag)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    blurHash: ").append(toIndentedString(blurHash)).append("\n");
-    sb.append("    height: ").append(toIndentedString(height)).append("\n");
-    sb.append("    width: ").append(toIndentedString(width)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ImageInfo instance;
-
-    public Builder() {
-      this(new ImageInfo());
+    public static final String JSON_PROPERTY_IMAGE_TYPE = "ImageType";
+    @javax.annotation.Nullable
+    private ImageType imageType;
+
+    public static final String JSON_PROPERTY_IMAGE_INDEX = "ImageIndex";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> imageIndex = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
+    @javax.annotation.Nullable
+    private JsonNullable<String> imageTag = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
+    private JsonNullable<String> path = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_BLUR_HASH = "BlurHash";
+    @javax.annotation.Nullable
+    private JsonNullable<String> blurHash = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_HEIGHT = "Height";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_WIDTH = "Width";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_SIZE = "Size";
+    @javax.annotation.Nullable
+    private Long size;
+
+    public ImageInfo() {
     }
 
-    protected Builder(ImageInfo instance) {
-      this.instance = instance;
-    }
+    public ImageInfo imageType(@javax.annotation.Nullable ImageType imageType) {
 
-    public ImageInfo.Builder imageType(ImageType imageType) {
-      this.instance.imageType = imageType;
-      return this;
+        this.imageType = imageType;
+        return this;
     }
-    public ImageInfo.Builder imageIndex(Integer imageIndex) {
-      this.instance.imageIndex = JsonNullable.<Integer>of(imageIndex);
-      return this;
-    }
-    public ImageInfo.Builder imageIndex(JsonNullable<Integer> imageIndex) {
-      this.instance.imageIndex = imageIndex;
-      return this;
-    }
-    public ImageInfo.Builder imageTag(String imageTag) {
-      this.instance.imageTag = JsonNullable.<String>of(imageTag);
-      return this;
-    }
-    public ImageInfo.Builder imageTag(JsonNullable<String> imageTag) {
-      this.instance.imageTag = imageTag;
-      return this;
-    }
-    public ImageInfo.Builder path(String path) {
-      this.instance.path = JsonNullable.<String>of(path);
-      return this;
-    }
-    public ImageInfo.Builder path(JsonNullable<String> path) {
-      this.instance.path = path;
-      return this;
-    }
-    public ImageInfo.Builder blurHash(String blurHash) {
-      this.instance.blurHash = JsonNullable.<String>of(blurHash);
-      return this;
-    }
-    public ImageInfo.Builder blurHash(JsonNullable<String> blurHash) {
-      this.instance.blurHash = blurHash;
-      return this;
-    }
-    public ImageInfo.Builder height(Integer height) {
-      this.instance.height = JsonNullable.<Integer>of(height);
-      return this;
-    }
-    public ImageInfo.Builder height(JsonNullable<Integer> height) {
-      this.instance.height = height;
-      return this;
-    }
-    public ImageInfo.Builder width(Integer width) {
-      this.instance.width = JsonNullable.<Integer>of(width);
-      return this;
-    }
-    public ImageInfo.Builder width(JsonNullable<Integer> width) {
-      this.instance.width = width;
-      return this;
-    }
-    public ImageInfo.Builder size(Long size) {
-      this.instance.size = size;
-      return this;
-    }
-
 
     /**
-    * returns a built ImageInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public ImageInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the type of the image.
+     * 
+     * @return imageType
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public ImageType getImageType() {
+        return imageType;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setImageType(@javax.annotation.Nullable ImageType imageType) {
+        this.imageType = imageType;
+    }
+
+    public ImageInfo imageIndex(@javax.annotation.Nullable Integer imageIndex) {
+        this.imageIndex = JsonNullable.<Integer> of(imageIndex);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the index of the image.
+     * 
+     * @return imageIndex
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getImageIndex() {
+        return imageIndex.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getImageIndex_JsonNullable() {
+        return imageIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+    public void setImageIndex_JsonNullable(JsonNullable<Integer> imageIndex) {
+        this.imageIndex = imageIndex;
+    }
+
+    public void setImageIndex(@javax.annotation.Nullable Integer imageIndex) {
+        this.imageIndex = JsonNullable.<Integer> of(imageIndex);
+    }
+
+    public ImageInfo imageTag(@javax.annotation.Nullable String imageTag) {
+        this.imageTag = JsonNullable.<String> of(imageTag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the image tag.
+     * 
+     * @return imageTag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getImageTag() {
+        return imageTag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getImageTag_JsonNullable() {
+        return imageTag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
+        this.imageTag = imageTag;
+    }
+
+    public void setImageTag(@javax.annotation.Nullable String imageTag) {
+        this.imageTag = JsonNullable.<String> of(imageTag);
+    }
+
+    public ImageInfo path(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the path.
+     * 
+     * @return path
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPath() {
+        return path.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPath_JsonNullable() {
+        return path;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    public void setPath_JsonNullable(JsonNullable<String> path) {
+        this.path = path;
+    }
+
+    public void setPath(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+    }
+
+    public ImageInfo blurHash(@javax.annotation.Nullable String blurHash) {
+        this.blurHash = JsonNullable.<String> of(blurHash);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the blurhash.
+     * 
+     * @return blurHash
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getBlurHash() {
+        return blurHash.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getBlurHash_JsonNullable() {
+        return blurHash;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+    public void setBlurHash_JsonNullable(JsonNullable<String> blurHash) {
+        this.blurHash = blurHash;
+    }
+
+    public void setBlurHash(@javax.annotation.Nullable String blurHash) {
+        this.blurHash = JsonNullable.<String> of(blurHash);
+    }
+
+    public ImageInfo height(@javax.annotation.Nullable Integer height) {
+        this.height = JsonNullable.<Integer> of(height);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the height.
+     * 
+     * @return height
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getHeight() {
+        return height.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getHeight_JsonNullable() {
+        return height;
+    }
+
+    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+        this.height = height;
+    }
+
+    public void setHeight(@javax.annotation.Nullable Integer height) {
+        this.height = JsonNullable.<Integer> of(height);
+    }
+
+    public ImageInfo width(@javax.annotation.Nullable Integer width) {
+        this.width = JsonNullable.<Integer> of(width);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the width.
+     * 
+     * @return width
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getWidth() {
+        return width.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getWidth_JsonNullable() {
+        return width;
+    }
+
+    @JsonProperty(JSON_PROPERTY_WIDTH)
+    public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+        this.width = width;
+    }
+
+    public void setWidth(@javax.annotation.Nullable Integer width) {
+        this.width = JsonNullable.<Integer> of(width);
+    }
+
+    public ImageInfo size(@javax.annotation.Nullable Long size) {
+
+        this.size = size;
+        return this;
+    }
+
+    /**
+     * Gets or sets the size.
+     * 
+     * @return size
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getSize() {
+        return size;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSize(@javax.annotation.Nullable Long size) {
+        this.size = size;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ImageInfo imageInfo = (ImageInfo) o;
+        return Objects.equals(this.imageType, imageInfo.imageType)
+                && equalsNullable(this.imageIndex, imageInfo.imageIndex)
+                && equalsNullable(this.imageTag, imageInfo.imageTag) && equalsNullable(this.path, imageInfo.path)
+                && equalsNullable(this.blurHash, imageInfo.blurHash) && equalsNullable(this.height, imageInfo.height)
+                && equalsNullable(this.width, imageInfo.width) && Objects.equals(this.size, imageInfo.size);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(imageType, hashCodeNullable(imageIndex), hashCodeNullable(imageTag), hashCodeNullable(path),
+                hashCodeNullable(blurHash), hashCodeNullable(height), hashCodeNullable(width), size);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ImageInfo {\n");
+        sb.append("    imageType: ").append(toIndentedString(imageType)).append("\n");
+        sb.append("    imageIndex: ").append(toIndentedString(imageIndex)).append("\n");
+        sb.append("    imageTag: ").append(toIndentedString(imageTag)).append("\n");
+        sb.append("    path: ").append(toIndentedString(path)).append("\n");
+        sb.append("    blurHash: ").append(toIndentedString(blurHash)).append("\n");
+        sb.append("    height: ").append(toIndentedString(height)).append("\n");
+        sb.append("    width: ").append(toIndentedString(width)).append("\n");
+        sb.append("    size: ").append(toIndentedString(size)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ImageInfo.Builder builder() {
-    return new ImageInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ImageInfo.Builder toBuilder() {
-    return new ImageInfo.Builder()
-      .imageType(getImageType())
-      .imageIndex(getImageIndex())
-      .imageTag(getImageTag())
-      .path(getPath())
-      .blurHash(getBlurHash())
-      .height(getHeight())
-      .width(getWidth())
-      .size(getSize());
-  }
+    public static class Builder {
 
+        private ImageInfo instance;
 
+        public Builder() {
+            this(new ImageInfo());
+        }
+
+        protected Builder(ImageInfo instance) {
+            this.instance = instance;
+        }
+
+        public ImageInfo.Builder imageType(ImageType imageType) {
+            this.instance.imageType = imageType;
+            return this;
+        }
+
+        public ImageInfo.Builder imageIndex(Integer imageIndex) {
+            this.instance.imageIndex = JsonNullable.<Integer> of(imageIndex);
+            return this;
+        }
+
+        public ImageInfo.Builder imageIndex(JsonNullable<Integer> imageIndex) {
+            this.instance.imageIndex = imageIndex;
+            return this;
+        }
+
+        public ImageInfo.Builder imageTag(String imageTag) {
+            this.instance.imageTag = JsonNullable.<String> of(imageTag);
+            return this;
+        }
+
+        public ImageInfo.Builder imageTag(JsonNullable<String> imageTag) {
+            this.instance.imageTag = imageTag;
+            return this;
+        }
+
+        public ImageInfo.Builder path(String path) {
+            this.instance.path = JsonNullable.<String> of(path);
+            return this;
+        }
+
+        public ImageInfo.Builder path(JsonNullable<String> path) {
+            this.instance.path = path;
+            return this;
+        }
+
+        public ImageInfo.Builder blurHash(String blurHash) {
+            this.instance.blurHash = JsonNullable.<String> of(blurHash);
+            return this;
+        }
+
+        public ImageInfo.Builder blurHash(JsonNullable<String> blurHash) {
+            this.instance.blurHash = blurHash;
+            return this;
+        }
+
+        public ImageInfo.Builder height(Integer height) {
+            this.instance.height = JsonNullable.<Integer> of(height);
+            return this;
+        }
+
+        public ImageInfo.Builder height(JsonNullable<Integer> height) {
+            this.instance.height = height;
+            return this;
+        }
+
+        public ImageInfo.Builder width(Integer width) {
+            this.instance.width = JsonNullable.<Integer> of(width);
+            return this;
+        }
+
+        public ImageInfo.Builder width(JsonNullable<Integer> width) {
+            this.instance.width = width;
+            return this;
+        }
+
+        public ImageInfo.Builder size(Long size) {
+            this.instance.size = size;
+            return this;
+        }
+
+        /**
+         * returns a built ImageInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public ImageInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ImageInfo.Builder builder() {
+        return new ImageInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ImageInfo.Builder toBuilder() {
+        return new ImageInfo.Builder().imageType(getImageType()).imageIndex(getImageIndex()).imageTag(getImageTag())
+                .path(getPath()).blurHash(getBlurHash()).height(getHeight()).width(getWidth()).size(getSize());
+    }
 }
-

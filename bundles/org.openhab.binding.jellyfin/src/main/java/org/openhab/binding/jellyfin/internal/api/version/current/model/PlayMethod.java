@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlayMethod
  */
 public enum PlayMethod {
-  
-  TRANSCODE("Transcode"),
-  
-  DIRECT_STREAM("DirectStream"),
-  
-  DIRECT_PLAY("DirectPlay");
 
-  private String value;
+    TRANSCODE("Transcode"),
 
-  PlayMethod(String value) {
-    this.value = value;
-  }
+    DIRECT_STREAM("DirectStream"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    DIRECT_PLAY("DirectPlay");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static PlayMethod fromValue(String value) {
-    for (PlayMethod b : PlayMethod.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PlayMethod(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PlayMethod fromValue(String value) {
+        for (PlayMethod b : PlayMethod.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

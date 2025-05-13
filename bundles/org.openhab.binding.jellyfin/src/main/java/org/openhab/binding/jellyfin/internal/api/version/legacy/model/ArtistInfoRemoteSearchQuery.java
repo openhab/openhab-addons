@@ -17,299 +17,294 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ArtistInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * ArtistInfoRemoteSearchQuery
  */
-@JsonPropertyOrder({
-  ArtistInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
-  ArtistInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
-  ArtistInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
-  ArtistInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS
-})
+@JsonPropertyOrder({ ArtistInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
+        ArtistInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
+        ArtistInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
+        ArtistInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ArtistInfoRemoteSearchQuery {
-  public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
-  @javax.annotation.Nullable
-  private JsonNullable<ArtistInfo> searchInfo = JsonNullable.<ArtistInfo>undefined();
+    public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
+    @javax.annotation.Nullable
+    private JsonNullable<ArtistInfo> searchInfo = JsonNullable.<ArtistInfo> undefined();
 
-  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-  @javax.annotation.Nullable
-  private UUID itemId;
+    public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+    @javax.annotation.Nullable
+    private UUID itemId;
 
-  public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
-  @javax.annotation.Nullable
-  private JsonNullable<String> searchProviderName = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+    @javax.annotation.Nullable
+    private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
-  @javax.annotation.Nullable
-  private Boolean includeDisabledProviders;
+    public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
+    @javax.annotation.Nullable
+    private Boolean includeDisabledProviders;
 
-  public ArtistInfoRemoteSearchQuery() {
-  }
-
-  public ArtistInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
-    this.searchInfo = JsonNullable.<ArtistInfo>of(searchInfo);
-    
-    return this;
-  }
-
-  /**
-   * Get searchInfo
-   * @return searchInfo
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public ArtistInfo getSearchInfo() {
-        return searchInfo.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<ArtistInfo> getSearchInfo_JsonNullable() {
-    return searchInfo;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-  public void setSearchInfo_JsonNullable(JsonNullable<ArtistInfo> searchInfo) {
-    this.searchInfo = searchInfo;
-  }
-
-  public void setSearchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
-    this.searchInfo = JsonNullable.<ArtistInfo>of(searchInfo);
-  }
-
-  public ArtistInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
-    
-    this.itemId = itemId;
-    return this;
-  }
-
-  /**
-   * Get itemId
-   * @return itemId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getItemId() {
-    return itemId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setItemId(@javax.annotation.Nullable UUID itemId) {
-    this.itemId = itemId;
-  }
-
-  public ArtistInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the provider name to search within if set.
-   * @return searchProviderName
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getSearchProviderName() {
-        return searchProviderName.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getSearchProviderName_JsonNullable() {
-    return searchProviderName;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-  public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
-    this.searchProviderName = searchProviderName;
-  }
-
-  public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
-  }
-
-  public ArtistInfoRemoteSearchQuery includeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
-    
-    this.includeDisabledProviders = includeDisabledProviders;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether disabled providers should be included.
-   * @return includeDisabledProviders
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIncludeDisabledProviders() {
-    return includeDisabledProviders;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIncludeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
-    this.includeDisabledProviders = includeDisabledProviders;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery = (ArtistInfoRemoteSearchQuery) o;
-    return equalsNullable(this.searchInfo, artistInfoRemoteSearchQuery.searchInfo) &&
-        Objects.equals(this.itemId, artistInfoRemoteSearchQuery.itemId) &&
-        equalsNullable(this.searchProviderName, artistInfoRemoteSearchQuery.searchProviderName) &&
-        Objects.equals(this.includeDisabledProviders, artistInfoRemoteSearchQuery.includeDisabledProviders);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName), includeDisabledProviders);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ArtistInfoRemoteSearchQuery {\n");
-    sb.append("    searchInfo: ").append(toIndentedString(searchInfo)).append("\n");
-    sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
-    sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
-    sb.append("    includeDisabledProviders: ").append(toIndentedString(includeDisabledProviders)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ArtistInfoRemoteSearchQuery instance;
-
-    public Builder() {
-      this(new ArtistInfoRemoteSearchQuery());
+    public ArtistInfoRemoteSearchQuery() {
     }
 
-    protected Builder(ArtistInfoRemoteSearchQuery instance) {
-      this.instance = instance;
-    }
+    public ArtistInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
+        this.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
 
-    public ArtistInfoRemoteSearchQuery.Builder searchInfo(ArtistInfo searchInfo) {
-      this.instance.searchInfo = JsonNullable.<ArtistInfo>of(searchInfo);
-      return this;
+        return this;
     }
-    public ArtistInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<ArtistInfo> searchInfo) {
-      this.instance.searchInfo = searchInfo;
-      return this;
-    }
-    public ArtistInfoRemoteSearchQuery.Builder itemId(UUID itemId) {
-      this.instance.itemId = itemId;
-      return this;
-    }
-    public ArtistInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
-      this.instance.searchProviderName = JsonNullable.<String>of(searchProviderName);
-      return this;
-    }
-    public ArtistInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
-      this.instance.searchProviderName = searchProviderName;
-      return this;
-    }
-    public ArtistInfoRemoteSearchQuery.Builder includeDisabledProviders(Boolean includeDisabledProviders) {
-      this.instance.includeDisabledProviders = includeDisabledProviders;
-      return this;
-    }
-
 
     /**
-    * returns a built ArtistInfoRemoteSearchQuery instance.
-    *
-    * The builder is not reusable.
-    */
-    public ArtistInfoRemoteSearchQuery build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get searchInfo
+     * 
+     * @return searchInfo
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public ArtistInfo getSearchInfo() {
+        return searchInfo.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<ArtistInfo> getSearchInfo_JsonNullable() {
+        return searchInfo;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+    public void setSearchInfo_JsonNullable(JsonNullable<ArtistInfo> searchInfo) {
+        this.searchInfo = searchInfo;
+    }
+
+    public void setSearchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
+        this.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
+    }
+
+    public ArtistInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
+
+        this.itemId = itemId;
+        return this;
+    }
+
+    /**
+     * Get itemId
+     * 
+     * @return itemId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getItemId() {
+        return itemId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItemId(@javax.annotation.Nullable UUID itemId) {
+        this.itemId = itemId;
+    }
+
+    public ArtistInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
+        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the provider name to search within if set.
+     * 
+     * @return searchProviderName
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getSearchProviderName() {
+        return searchProviderName.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getSearchProviderName_JsonNullable() {
+        return searchProviderName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
+        this.searchProviderName = searchProviderName;
+    }
+
+    public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
+        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+    }
+
+    public ArtistInfoRemoteSearchQuery includeDisabledProviders(
+            @javax.annotation.Nullable Boolean includeDisabledProviders) {
+
+        this.includeDisabledProviders = includeDisabledProviders;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether disabled providers should be included.
+     * 
+     * @return includeDisabledProviders
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIncludeDisabledProviders() {
+        return includeDisabledProviders;
+    }
+
+    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIncludeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
+        this.includeDisabledProviders = includeDisabledProviders;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery = (ArtistInfoRemoteSearchQuery) o;
+        return equalsNullable(this.searchInfo, artistInfoRemoteSearchQuery.searchInfo)
+                && Objects.equals(this.itemId, artistInfoRemoteSearchQuery.itemId)
+                && equalsNullable(this.searchProviderName, artistInfoRemoteSearchQuery.searchProviderName)
+                && Objects.equals(this.includeDisabledProviders, artistInfoRemoteSearchQuery.includeDisabledProviders);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName),
+                includeDisabledProviders);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ArtistInfoRemoteSearchQuery {\n");
+        sb.append("    searchInfo: ").append(toIndentedString(searchInfo)).append("\n");
+        sb.append("    itemId: ").append(toIndentedString(itemId)).append("\n");
+        sb.append("    searchProviderName: ").append(toIndentedString(searchProviderName)).append("\n");
+        sb.append("    includeDisabledProviders: ").append(toIndentedString(includeDisabledProviders)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ArtistInfoRemoteSearchQuery.Builder builder() {
-    return new ArtistInfoRemoteSearchQuery.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ArtistInfoRemoteSearchQuery.Builder toBuilder() {
-    return new ArtistInfoRemoteSearchQuery.Builder()
-      .searchInfo(getSearchInfo())
-      .itemId(getItemId())
-      .searchProviderName(getSearchProviderName())
-      .includeDisabledProviders(getIncludeDisabledProviders());
-  }
+    public static class Builder {
 
+        private ArtistInfoRemoteSearchQuery instance;
 
+        public Builder() {
+            this(new ArtistInfoRemoteSearchQuery());
+        }
+
+        protected Builder(ArtistInfoRemoteSearchQuery instance) {
+            this.instance = instance;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder searchInfo(ArtistInfo searchInfo) {
+            this.instance.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
+            return this;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<ArtistInfo> searchInfo) {
+            this.instance.searchInfo = searchInfo;
+            return this;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder itemId(UUID itemId) {
+            this.instance.itemId = itemId;
+            return this;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
+            this.instance.searchProviderName = JsonNullable.<String> of(searchProviderName);
+            return this;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
+            this.instance.searchProviderName = searchProviderName;
+            return this;
+        }
+
+        public ArtistInfoRemoteSearchQuery.Builder includeDisabledProviders(Boolean includeDisabledProviders) {
+            this.instance.includeDisabledProviders = includeDisabledProviders;
+            return this;
+        }
+
+        /**
+         * returns a built ArtistInfoRemoteSearchQuery instance.
+         *
+         * The builder is not reusable.
+         */
+        public ArtistInfoRemoteSearchQuery build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ArtistInfoRemoteSearchQuery.Builder builder() {
+        return new ArtistInfoRemoteSearchQuery.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ArtistInfoRemoteSearchQuery.Builder toBuilder() {
+        return new ArtistInfoRemoteSearchQuery.Builder().searchInfo(getSearchInfo()).itemId(getItemId())
+                .searchProviderName(getSearchProviderName()).includeDisabledProviders(getIncludeDisabledProviders());
+    }
 }
-

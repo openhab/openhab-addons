@@ -17,175 +17,165 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LibraryOptions;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Add virtual folder dto.
  */
-@JsonPropertyOrder({
-  AddVirtualFolderDto.JSON_PROPERTY_LIBRARY_OPTIONS
-})
+@JsonPropertyOrder({ AddVirtualFolderDto.JSON_PROPERTY_LIBRARY_OPTIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AddVirtualFolderDto {
-  public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
-  @javax.annotation.Nullable
-  private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions>undefined();
+    public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+    @javax.annotation.Nullable
+    private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
 
-  public AddVirtualFolderDto() {
-  }
-
-  public AddVirtualFolderDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets library options.
-   * @return libraryOptions
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public LibraryOptions getLibraryOptions() {
-        return libraryOptions.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
-    return libraryOptions;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-  public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
-    this.libraryOptions = libraryOptions;
-  }
-
-  public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    AddVirtualFolderDto addVirtualFolderDto = (AddVirtualFolderDto) o;
-    return equalsNullable(this.libraryOptions, addVirtualFolderDto.libraryOptions);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(libraryOptions));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class AddVirtualFolderDto {\n");
-    sb.append("    libraryOptions: ").append(toIndentedString(libraryOptions)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private AddVirtualFolderDto instance;
-
-    public Builder() {
-      this(new AddVirtualFolderDto());
+    public AddVirtualFolderDto() {
     }
 
-    protected Builder(AddVirtualFolderDto instance) {
-      this.instance = instance;
-    }
+    public AddVirtualFolderDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
+        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
 
-    public AddVirtualFolderDto.Builder libraryOptions(LibraryOptions libraryOptions) {
-      this.instance.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
-      return this;
+        return this;
     }
-    public AddVirtualFolderDto.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
-      this.instance.libraryOptions = libraryOptions;
-      return this;
-    }
-
 
     /**
-    * returns a built AddVirtualFolderDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public AddVirtualFolderDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets library options.
+     * 
+     * @return libraryOptions
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public LibraryOptions getLibraryOptions() {
+        return libraryOptions.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
+        return libraryOptions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
+        this.libraryOptions = libraryOptions;
+    }
+
+    public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
+        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AddVirtualFolderDto addVirtualFolderDto = (AddVirtualFolderDto) o;
+        return equalsNullable(this.libraryOptions, addVirtualFolderDto.libraryOptions);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(libraryOptions));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class AddVirtualFolderDto {\n");
+        sb.append("    libraryOptions: ").append(toIndentedString(libraryOptions)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static AddVirtualFolderDto.Builder builder() {
-    return new AddVirtualFolderDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public AddVirtualFolderDto.Builder toBuilder() {
-    return new AddVirtualFolderDto.Builder()
-      .libraryOptions(getLibraryOptions());
-  }
+    public static class Builder {
 
+        private AddVirtualFolderDto instance;
 
+        public Builder() {
+            this(new AddVirtualFolderDto());
+        }
+
+        protected Builder(AddVirtualFolderDto instance) {
+            this.instance = instance;
+        }
+
+        public AddVirtualFolderDto.Builder libraryOptions(LibraryOptions libraryOptions) {
+            this.instance.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+            return this;
+        }
+
+        public AddVirtualFolderDto.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
+            this.instance.libraryOptions = libraryOptions;
+            return this;
+        }
+
+        /**
+         * returns a built AddVirtualFolderDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public AddVirtualFolderDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static AddVirtualFolderDto.Builder builder() {
+        return new AddVirtualFolderDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public AddVirtualFolderDto.Builder toBuilder() {
+        return new AddVirtualFolderDto.Builder().libraryOptions(getLibraryOptions());
+    }
 }
-

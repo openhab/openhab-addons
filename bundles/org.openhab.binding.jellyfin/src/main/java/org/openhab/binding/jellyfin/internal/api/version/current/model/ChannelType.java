@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,35 +24,34 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ChannelType.
  */
 public enum ChannelType {
-  
-  TV("TV"),
-  
-  RADIO("Radio");
 
-  private String value;
+    TV("TV"),
 
-  ChannelType(String value) {
-    this.value = value;
-  }
+    RADIO("Radio");
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    private String value;
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
-
-  @JsonCreator
-  public static ChannelType fromValue(String value) {
-    for (ChannelType b : ChannelType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    ChannelType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ChannelType fromValue(String value) {
+        for (ChannelType b : ChannelType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

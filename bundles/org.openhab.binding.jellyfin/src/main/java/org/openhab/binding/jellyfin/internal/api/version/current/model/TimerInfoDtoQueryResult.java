@@ -17,233 +17,219 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.TimerInfoDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Query result container.
  */
-@JsonPropertyOrder({
-  TimerInfoDtoQueryResult.JSON_PROPERTY_ITEMS,
-  TimerInfoDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-  TimerInfoDtoQueryResult.JSON_PROPERTY_START_INDEX
-})
+@JsonPropertyOrder({ TimerInfoDtoQueryResult.JSON_PROPERTY_ITEMS,
+        TimerInfoDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT, TimerInfoDtoQueryResult.JSON_PROPERTY_START_INDEX })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TimerInfoDtoQueryResult {
-  public static final String JSON_PROPERTY_ITEMS = "Items";
-  @javax.annotation.Nullable
-  private List<TimerInfoDto> items = new ArrayList<>();
+    public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
+    private List<TimerInfoDto> items = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-  @javax.annotation.Nullable
-  private Integer totalRecordCount;
+    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+    @javax.annotation.Nullable
+    private Integer totalRecordCount;
 
-  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-  @javax.annotation.Nullable
-  private Integer startIndex;
+    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+    @javax.annotation.Nullable
+    private Integer startIndex;
 
-  public TimerInfoDtoQueryResult() {
-  }
-
-  public TimerInfoDtoQueryResult items(@javax.annotation.Nullable List<TimerInfoDto> items) {
-    
-    this.items = items;
-    return this;
-  }
-
-  public TimerInfoDtoQueryResult addItemsItem(TimerInfoDto itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the items.
-   * @return items
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<TimerInfoDto> getItems() {
-    return items;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setItems(@javax.annotation.Nullable List<TimerInfoDto> items) {
-    this.items = items;
-  }
-
-  public TimerInfoDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    
-    this.totalRecordCount = totalRecordCount;
-    return this;
-  }
-
-  /**
-   * Gets or sets the total number of records available.
-   * @return totalRecordCount
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getTotalRecordCount() {
-    return totalRecordCount;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    this.totalRecordCount = totalRecordCount;
-  }
-
-  public TimerInfoDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-    
-    this.startIndex = startIndex;
-    return this;
-  }
-
-  /**
-   * Gets or sets the index of the first record in Items.
-   * @return startIndex
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getStartIndex() {
-    return startIndex;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-    this.startIndex = startIndex;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    TimerInfoDtoQueryResult timerInfoDtoQueryResult = (TimerInfoDtoQueryResult) o;
-    return Objects.equals(this.items, timerInfoDtoQueryResult.items) &&
-        Objects.equals(this.totalRecordCount, timerInfoDtoQueryResult.totalRecordCount) &&
-        Objects.equals(this.startIndex, timerInfoDtoQueryResult.startIndex);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(items, totalRecordCount, startIndex);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class TimerInfoDtoQueryResult {\n");
-    sb.append("    items: ").append(toIndentedString(items)).append("\n");
-    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private TimerInfoDtoQueryResult instance;
-
-    public Builder() {
-      this(new TimerInfoDtoQueryResult());
+    public TimerInfoDtoQueryResult() {
     }
 
-    protected Builder(TimerInfoDtoQueryResult instance) {
-      this.instance = instance;
+    public TimerInfoDtoQueryResult items(@javax.annotation.Nullable List<TimerInfoDto> items) {
+
+        this.items = items;
+        return this;
     }
 
-    public TimerInfoDtoQueryResult.Builder items(List<TimerInfoDto> items) {
-      this.instance.items = items;
-      return this;
+    public TimerInfoDtoQueryResult addItemsItem(TimerInfoDto itemsItem) {
+        if (this.items == null) {
+            this.items = new ArrayList<>();
+        }
+        this.items.add(itemsItem);
+        return this;
     }
-    public TimerInfoDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-      this.instance.totalRecordCount = totalRecordCount;
-      return this;
-    }
-    public TimerInfoDtoQueryResult.Builder startIndex(Integer startIndex) {
-      this.instance.startIndex = startIndex;
-      return this;
-    }
-
 
     /**
-    * returns a built TimerInfoDtoQueryResult instance.
-    *
-    * The builder is not reusable.
-    */
-    public TimerInfoDtoQueryResult build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the items.
+     * 
+     * @return items
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<TimerInfoDto> getItems() {
+        return items;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItems(@javax.annotation.Nullable List<TimerInfoDto> items) {
+        this.items = items;
+    }
+
+    public TimerInfoDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
+        this.totalRecordCount = totalRecordCount;
+        return this;
+    }
+
+    /**
+     * Gets or sets the total number of records available.
+     * 
+     * @return totalRecordCount
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getTotalRecordCount() {
+        return totalRecordCount;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+        this.totalRecordCount = totalRecordCount;
+    }
+
+    public TimerInfoDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
+        this.startIndex = startIndex;
+        return this;
+    }
+
+    /**
+     * Gets or sets the index of the first record in Items.
+     * 
+     * @return startIndex
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getStartIndex() {
+        return startIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TimerInfoDtoQueryResult timerInfoDtoQueryResult = (TimerInfoDtoQueryResult) o;
+        return Objects.equals(this.items, timerInfoDtoQueryResult.items)
+                && Objects.equals(this.totalRecordCount, timerInfoDtoQueryResult.totalRecordCount)
+                && Objects.equals(this.startIndex, timerInfoDtoQueryResult.startIndex);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, totalRecordCount, startIndex);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class TimerInfoDtoQueryResult {\n");
+        sb.append("    items: ").append(toIndentedString(items)).append("\n");
+        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static TimerInfoDtoQueryResult.Builder builder() {
-    return new TimerInfoDtoQueryResult.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public TimerInfoDtoQueryResult.Builder toBuilder() {
-    return new TimerInfoDtoQueryResult.Builder()
-      .items(getItems())
-      .totalRecordCount(getTotalRecordCount())
-      .startIndex(getStartIndex());
-  }
+    public static class Builder {
 
+        private TimerInfoDtoQueryResult instance;
 
+        public Builder() {
+            this(new TimerInfoDtoQueryResult());
+        }
+
+        protected Builder(TimerInfoDtoQueryResult instance) {
+            this.instance = instance;
+        }
+
+        public TimerInfoDtoQueryResult.Builder items(List<TimerInfoDto> items) {
+            this.instance.items = items;
+            return this;
+        }
+
+        public TimerInfoDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
+            this.instance.totalRecordCount = totalRecordCount;
+            return this;
+        }
+
+        public TimerInfoDtoQueryResult.Builder startIndex(Integer startIndex) {
+            this.instance.startIndex = startIndex;
+            return this;
+        }
+
+        /**
+         * returns a built TimerInfoDtoQueryResult instance.
+         *
+         * The builder is not reusable.
+         */
+        public TimerInfoDtoQueryResult build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static TimerInfoDtoQueryResult.Builder builder() {
+        return new TimerInfoDtoQueryResult.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public TimerInfoDtoQueryResult.Builder toBuilder() {
+        return new TimerInfoDtoQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
+                .startIndex(getStartIndex());
+    }
 }
-

@@ -17,174 +17,165 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Update existing playlist user dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
  */
-@JsonPropertyOrder({
-  UpdatePlaylistUserDto.JSON_PROPERTY_CAN_EDIT
-})
+@JsonPropertyOrder({ UpdatePlaylistUserDto.JSON_PROPERTY_CAN_EDIT })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdatePlaylistUserDto {
-  public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> canEdit = JsonNullable.<Boolean>undefined();
+    public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> canEdit = JsonNullable.<Boolean> undefined();
 
-  public UpdatePlaylistUserDto() {
-  }
-
-  public UpdatePlaylistUserDto canEdit(@javax.annotation.Nullable Boolean canEdit) {
-    this.canEdit = JsonNullable.<Boolean>of(canEdit);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether the user can edit the playlist.
-   * @return canEdit
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getCanEdit() {
-        return canEdit.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CAN_EDIT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getCanEdit_JsonNullable() {
-    return canEdit;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CAN_EDIT)
-  public void setCanEdit_JsonNullable(JsonNullable<Boolean> canEdit) {
-    this.canEdit = canEdit;
-  }
-
-  public void setCanEdit(@javax.annotation.Nullable Boolean canEdit) {
-    this.canEdit = JsonNullable.<Boolean>of(canEdit);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UpdatePlaylistUserDto updatePlaylistUserDto = (UpdatePlaylistUserDto) o;
-    return equalsNullable(this.canEdit, updatePlaylistUserDto.canEdit);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(canEdit));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UpdatePlaylistUserDto {\n");
-    sb.append("    canEdit: ").append(toIndentedString(canEdit)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private UpdatePlaylistUserDto instance;
-
-    public Builder() {
-      this(new UpdatePlaylistUserDto());
+    public UpdatePlaylistUserDto() {
     }
 
-    protected Builder(UpdatePlaylistUserDto instance) {
-      this.instance = instance;
-    }
+    public UpdatePlaylistUserDto canEdit(@javax.annotation.Nullable Boolean canEdit) {
+        this.canEdit = JsonNullable.<Boolean> of(canEdit);
 
-    public UpdatePlaylistUserDto.Builder canEdit(Boolean canEdit) {
-      this.instance.canEdit = JsonNullable.<Boolean>of(canEdit);
-      return this;
+        return this;
     }
-    public UpdatePlaylistUserDto.Builder canEdit(JsonNullable<Boolean> canEdit) {
-      this.instance.canEdit = canEdit;
-      return this;
-    }
-
 
     /**
-    * returns a built UpdatePlaylistUserDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public UpdatePlaylistUserDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets a value indicating whether the user can edit the playlist.
+     * 
+     * @return canEdit
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getCanEdit() {
+        return canEdit.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getCanEdit_JsonNullable() {
+        return canEdit;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    public void setCanEdit_JsonNullable(JsonNullable<Boolean> canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    public void setCanEdit(@javax.annotation.Nullable Boolean canEdit) {
+        this.canEdit = JsonNullable.<Boolean> of(canEdit);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdatePlaylistUserDto updatePlaylistUserDto = (UpdatePlaylistUserDto) o;
+        return equalsNullable(this.canEdit, updatePlaylistUserDto.canEdit);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(canEdit));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UpdatePlaylistUserDto {\n");
+        sb.append("    canEdit: ").append(toIndentedString(canEdit)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static UpdatePlaylistUserDto.Builder builder() {
-    return new UpdatePlaylistUserDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public UpdatePlaylistUserDto.Builder toBuilder() {
-    return new UpdatePlaylistUserDto.Builder()
-      .canEdit(getCanEdit());
-  }
+    public static class Builder {
 
+        private UpdatePlaylistUserDto instance;
 
+        public Builder() {
+            this(new UpdatePlaylistUserDto());
+        }
+
+        protected Builder(UpdatePlaylistUserDto instance) {
+            this.instance = instance;
+        }
+
+        public UpdatePlaylistUserDto.Builder canEdit(Boolean canEdit) {
+            this.instance.canEdit = JsonNullable.<Boolean> of(canEdit);
+            return this;
+        }
+
+        public UpdatePlaylistUserDto.Builder canEdit(JsonNullable<Boolean> canEdit) {
+            this.instance.canEdit = canEdit;
+            return this;
+        }
+
+        /**
+         * returns a built UpdatePlaylistUserDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public UpdatePlaylistUserDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static UpdatePlaylistUserDto.Builder builder() {
+        return new UpdatePlaylistUserDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public UpdatePlaylistUserDto.Builder toBuilder() {
+        return new UpdatePlaylistUserDto.Builder().canEdit(getCanEdit());
+    }
 }
-

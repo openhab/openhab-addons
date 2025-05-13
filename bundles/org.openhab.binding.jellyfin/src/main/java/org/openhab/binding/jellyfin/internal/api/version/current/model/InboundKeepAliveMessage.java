@@ -18,146 +18,132 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Keep alive websocket messages.
  */
-@JsonPropertyOrder({
-  InboundKeepAliveMessage.JSON_PROPERTY_MESSAGE_TYPE
-})
+@JsonPropertyOrder({ InboundKeepAliveMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class InboundKeepAliveMessage {
-  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-  @javax.annotation.Nullable
-  private SessionMessageType messageType = SessionMessageType.KEEP_ALIVE;
+    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+    @javax.annotation.Nullable
+    private SessionMessageType messageType = SessionMessageType.KEEP_ALIVE;
 
-  public InboundKeepAliveMessage() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public InboundKeepAliveMessage(
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
-  ) {
-    this();
-    this.messageType = messageType;
-  }
-
-  /**
-   * The different kinds of messages that are used in the WebSocket api.
-   * @return messageType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public SessionMessageType getMessageType() {
-    return messageType;
-  }
-
-
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public InboundKeepAliveMessage() {
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    InboundKeepAliveMessage inboundKeepAliveMessage = (InboundKeepAliveMessage) o;
-    return Objects.equals(this.messageType, inboundKeepAliveMessage.messageType);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(messageType);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class InboundKeepAliveMessage {\n");
-    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private InboundKeepAliveMessage instance;
-
-    public Builder() {
-      this(new InboundKeepAliveMessage());
-    }
-
-    protected Builder(InboundKeepAliveMessage instance) {
-      this.instance = instance;
-    }
-
-    public InboundKeepAliveMessage.Builder messageType(SessionMessageType messageType) {
-      this.instance.messageType = messageType;
-      return this;
-    }
-
 
     /**
-    * returns a built InboundKeepAliveMessage instance.
-    *
-    * The builder is not reusable.
-    */
-    public InboundKeepAliveMessage build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public InboundKeepAliveMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+        this();
+        this.messageType = messageType;
+    }
+
+    /**
+     * The different kinds of messages that are used in the WebSocket api.
+     * 
+     * @return messageType
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public SessionMessageType getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        InboundKeepAliveMessage inboundKeepAliveMessage = (InboundKeepAliveMessage) o;
+        return Objects.equals(this.messageType, inboundKeepAliveMessage.messageType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageType);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class InboundKeepAliveMessage {\n");
+        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static InboundKeepAliveMessage.Builder builder() {
-    return new InboundKeepAliveMessage.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public InboundKeepAliveMessage.Builder toBuilder() {
-    return new InboundKeepAliveMessage.Builder()
-      .messageType(getMessageType());
-  }
+    public static class Builder {
 
+        private InboundKeepAliveMessage instance;
 
+        public Builder() {
+            this(new InboundKeepAliveMessage());
+        }
+
+        protected Builder(InboundKeepAliveMessage instance) {
+            this.instance = instance;
+        }
+
+        public InboundKeepAliveMessage.Builder messageType(SessionMessageType messageType) {
+            this.instance.messageType = messageType;
+            return this;
+        }
+
+        /**
+         * returns a built InboundKeepAliveMessage instance.
+         *
+         * The builder is not reusable.
+         */
+        public InboundKeepAliveMessage build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static InboundKeepAliveMessage.Builder builder() {
+        return new InboundKeepAliveMessage.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public InboundKeepAliveMessage.Builder toBuilder() {
+        return new InboundKeepAliveMessage.Builder().messageType(getMessageType());
+    }
 }
-

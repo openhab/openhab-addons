@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,41 +24,40 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProfileConditionType
  */
 public enum ProfileConditionType {
-  
-  EQUALS("Equals"),
-  
-  NOT_EQUALS("NotEquals"),
-  
-  LESS_THAN_EQUAL("LessThanEqual"),
-  
-  GREATER_THAN_EQUAL("GreaterThanEqual"),
-  
-  EQUALS_ANY("EqualsAny");
 
-  private String value;
+    EQUALS("Equals"),
 
-  ProfileConditionType(String value) {
-    this.value = value;
-  }
+    NOT_EQUALS("NotEquals"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    LESS_THAN_EQUAL("LessThanEqual"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    GREATER_THAN_EQUAL("GreaterThanEqual"),
 
-  @JsonCreator
-  public static ProfileConditionType fromValue(String value) {
-    for (ProfileConditionType b : ProfileConditionType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    EQUALS_ANY("EqualsAny");
+
+    private String value;
+
+    ProfileConditionType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ProfileConditionType fromValue(String value) {
+        for (ProfileConditionType b : ProfileConditionType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

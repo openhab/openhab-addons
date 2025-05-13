@@ -17,744 +17,731 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.DlnaProfileType;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.EncodingContext;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.ProfileCondition;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.TranscodeSeekInfo;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * TranscodingProfile
  */
-@JsonPropertyOrder({
-  TranscodingProfile.JSON_PROPERTY_CONTAINER,
-  TranscodingProfile.JSON_PROPERTY_TYPE,
-  TranscodingProfile.JSON_PROPERTY_VIDEO_CODEC,
-  TranscodingProfile.JSON_PROPERTY_AUDIO_CODEC,
-  TranscodingProfile.JSON_PROPERTY_PROTOCOL,
-  TranscodingProfile.JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH,
-  TranscodingProfile.JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE,
-  TranscodingProfile.JSON_PROPERTY_TRANSCODE_SEEK_INFO,
-  TranscodingProfile.JSON_PROPERTY_COPY_TIMESTAMPS,
-  TranscodingProfile.JSON_PROPERTY_CONTEXT,
-  TranscodingProfile.JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST,
-  TranscodingProfile.JSON_PROPERTY_MAX_AUDIO_CHANNELS,
-  TranscodingProfile.JSON_PROPERTY_MIN_SEGMENTS,
-  TranscodingProfile.JSON_PROPERTY_SEGMENT_LENGTH,
-  TranscodingProfile.JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES,
-  TranscodingProfile.JSON_PROPERTY_CONDITIONS
-})
+@JsonPropertyOrder({ TranscodingProfile.JSON_PROPERTY_CONTAINER, TranscodingProfile.JSON_PROPERTY_TYPE,
+        TranscodingProfile.JSON_PROPERTY_VIDEO_CODEC, TranscodingProfile.JSON_PROPERTY_AUDIO_CODEC,
+        TranscodingProfile.JSON_PROPERTY_PROTOCOL, TranscodingProfile.JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH,
+        TranscodingProfile.JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE, TranscodingProfile.JSON_PROPERTY_TRANSCODE_SEEK_INFO,
+        TranscodingProfile.JSON_PROPERTY_COPY_TIMESTAMPS, TranscodingProfile.JSON_PROPERTY_CONTEXT,
+        TranscodingProfile.JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST,
+        TranscodingProfile.JSON_PROPERTY_MAX_AUDIO_CHANNELS, TranscodingProfile.JSON_PROPERTY_MIN_SEGMENTS,
+        TranscodingProfile.JSON_PROPERTY_SEGMENT_LENGTH, TranscodingProfile.JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES,
+        TranscodingProfile.JSON_PROPERTY_CONDITIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TranscodingProfile {
-  public static final String JSON_PROPERTY_CONTAINER = "Container";
-  @javax.annotation.Nullable
-  private String container;
-
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private DlnaProfileType type;
-
-  public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
-  @javax.annotation.Nullable
-  private String videoCodec;
-
-  public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
-  @javax.annotation.Nullable
-  private String audioCodec;
-
-  public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
-  @javax.annotation.Nullable
-  private String protocol;
-
-  public static final String JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
-  @javax.annotation.Nullable
-  private Boolean estimateContentLength = false;
-
-  public static final String JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
-  @javax.annotation.Nullable
-  private Boolean enableMpegtsM2TsMode = false;
-
-  public static final String JSON_PROPERTY_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
-  @javax.annotation.Nullable
-  private TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
-
-  public static final String JSON_PROPERTY_COPY_TIMESTAMPS = "CopyTimestamps";
-  @javax.annotation.Nullable
-  private Boolean copyTimestamps = false;
-
-  public static final String JSON_PROPERTY_CONTEXT = "Context";
-  @javax.annotation.Nullable
-  private EncodingContext context = EncodingContext.STREAMING;
-
-  public static final String JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
-  @javax.annotation.Nullable
-  private Boolean enableSubtitlesInManifest = false;
-
-  public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
-  @javax.annotation.Nullable
-  private JsonNullable<String> maxAudioChannels = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
-  @javax.annotation.Nullable
-  private Integer minSegments = 0;
-
-  public static final String JSON_PROPERTY_SEGMENT_LENGTH = "SegmentLength";
-  @javax.annotation.Nullable
-  private Integer segmentLength = 0;
-
-  public static final String JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
-  @javax.annotation.Nullable
-  private Boolean breakOnNonKeyFrames = false;
-
-  public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
-  @javax.annotation.Nullable
-  private List<ProfileCondition> conditions = new ArrayList<>();
-
-  public TranscodingProfile() {
-  }
-
-  public TranscodingProfile container(@javax.annotation.Nullable String container) {
-    
-    this.container = container;
-    return this;
-  }
-
-  /**
-   * Get container
-   * @return container
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CONTAINER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getContainer() {
-    return container;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CONTAINER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContainer(@javax.annotation.Nullable String container) {
-    this.container = container;
-  }
-
-  public TranscodingProfile type(@javax.annotation.Nullable DlnaProfileType type) {
-    
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Get type
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public DlnaProfileType getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(@javax.annotation.Nullable DlnaProfileType type) {
-    this.type = type;
-  }
-
-  public TranscodingProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
-    
-    this.videoCodec = videoCodec;
-    return this;
-  }
-
-  /**
-   * Get videoCodec
-   * @return videoCodec
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getVideoCodec() {
-    return videoCodec;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
-    this.videoCodec = videoCodec;
-  }
-
-  public TranscodingProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
-    
-    this.audioCodec = audioCodec;
-    return this;
-  }
-
-  /**
-   * Get audioCodec
-   * @return audioCodec
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getAudioCodec() {
-    return audioCodec;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
-    this.audioCodec = audioCodec;
-  }
-
-  public TranscodingProfile protocol(@javax.annotation.Nullable String protocol) {
-    
-    this.protocol = protocol;
-    return this;
-  }
-
-  /**
-   * Get protocol
-   * @return protocol
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PROTOCOL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getProtocol() {
-    return protocol;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PROTOCOL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setProtocol(@javax.annotation.Nullable String protocol) {
-    this.protocol = protocol;
-  }
-
-  public TranscodingProfile estimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
-    
-    this.estimateContentLength = estimateContentLength;
-    return this;
-  }
-
-  /**
-   * Get estimateContentLength
-   * @return estimateContentLength
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getEstimateContentLength() {
-    return estimateContentLength;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEstimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
-    this.estimateContentLength = estimateContentLength;
-  }
-
-  public TranscodingProfile enableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
-    
-    this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
-    return this;
-  }
-
-  /**
-   * Get enableMpegtsM2TsMode
-   * @return enableMpegtsM2TsMode
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getEnableMpegtsM2TsMode() {
-    return enableMpegtsM2TsMode;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEnableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
-    this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
-  }
-
-  public TranscodingProfile transcodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
-    
-    this.transcodeSeekInfo = transcodeSeekInfo;
-    return this;
-  }
-
-  /**
-   * Get transcodeSeekInfo
-   * @return transcodeSeekInfo
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public TranscodeSeekInfo getTranscodeSeekInfo() {
-    return transcodeSeekInfo;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTranscodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
-    this.transcodeSeekInfo = transcodeSeekInfo;
-  }
-
-  public TranscodingProfile copyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
-    
-    this.copyTimestamps = copyTimestamps;
-    return this;
-  }
-
-  /**
-   * Get copyTimestamps
-   * @return copyTimestamps
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getCopyTimestamps() {
-    return copyTimestamps;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCopyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
-    this.copyTimestamps = copyTimestamps;
-  }
-
-  public TranscodingProfile context(@javax.annotation.Nullable EncodingContext context) {
-    
-    this.context = context;
-    return this;
-  }
-
-  /**
-   * Get context
-   * @return context
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CONTEXT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public EncodingContext getContext() {
-    return context;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CONTEXT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContext(@javax.annotation.Nullable EncodingContext context) {
-    this.context = context;
-  }
-
-  public TranscodingProfile enableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
-    
-    this.enableSubtitlesInManifest = enableSubtitlesInManifest;
-    return this;
-  }
-
-  /**
-   * Get enableSubtitlesInManifest
-   * @return enableSubtitlesInManifest
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getEnableSubtitlesInManifest() {
-    return enableSubtitlesInManifest;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEnableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
-    this.enableSubtitlesInManifest = enableSubtitlesInManifest;
-  }
-
-  public TranscodingProfile maxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-    this.maxAudioChannels = JsonNullable.<String>of(maxAudioChannels);
-    
-    return this;
-  }
-
-  /**
-   * Get maxAudioChannels
-   * @return maxAudioChannels
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getMaxAudioChannels() {
-        return maxAudioChannels.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getMaxAudioChannels_JsonNullable() {
-    return maxAudioChannels;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-  public void setMaxAudioChannels_JsonNullable(JsonNullable<String> maxAudioChannels) {
-    this.maxAudioChannels = maxAudioChannels;
-  }
-
-  public void setMaxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-    this.maxAudioChannels = JsonNullable.<String>of(maxAudioChannels);
-  }
-
-  public TranscodingProfile minSegments(@javax.annotation.Nullable Integer minSegments) {
-    
-    this.minSegments = minSegments;
-    return this;
-  }
-
-  /**
-   * Get minSegments
-   * @return minSegments
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getMinSegments() {
-    return minSegments;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMinSegments(@javax.annotation.Nullable Integer minSegments) {
-    this.minSegments = minSegments;
-  }
-
-  public TranscodingProfile segmentLength(@javax.annotation.Nullable Integer segmentLength) {
-    
-    this.segmentLength = segmentLength;
-    return this;
-  }
-
-  /**
-   * Get segmentLength
-   * @return segmentLength
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getSegmentLength() {
-    return segmentLength;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSegmentLength(@javax.annotation.Nullable Integer segmentLength) {
-    this.segmentLength = segmentLength;
-  }
-
-  public TranscodingProfile breakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
-    
-    this.breakOnNonKeyFrames = breakOnNonKeyFrames;
-    return this;
-  }
-
-  /**
-   * Get breakOnNonKeyFrames
-   * @return breakOnNonKeyFrames
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getBreakOnNonKeyFrames() {
-    return breakOnNonKeyFrames;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBreakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
-    this.breakOnNonKeyFrames = breakOnNonKeyFrames;
-  }
-
-  public TranscodingProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-    
-    this.conditions = conditions;
-    return this;
-  }
-
-  public TranscodingProfile addConditionsItem(ProfileCondition conditionsItem) {
-    if (this.conditions == null) {
-      this.conditions = new ArrayList<>();
-    }
-    this.conditions.add(conditionsItem);
-    return this;
-  }
-
-  /**
-   * Get conditions
-   * @return conditions
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CONDITIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ProfileCondition> getConditions() {
-    return conditions;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CONDITIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-    this.conditions = conditions;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    TranscodingProfile transcodingProfile = (TranscodingProfile) o;
-    return Objects.equals(this.container, transcodingProfile.container) &&
-        Objects.equals(this.type, transcodingProfile.type) &&
-        Objects.equals(this.videoCodec, transcodingProfile.videoCodec) &&
-        Objects.equals(this.audioCodec, transcodingProfile.audioCodec) &&
-        Objects.equals(this.protocol, transcodingProfile.protocol) &&
-        Objects.equals(this.estimateContentLength, transcodingProfile.estimateContentLength) &&
-        Objects.equals(this.enableMpegtsM2TsMode, transcodingProfile.enableMpegtsM2TsMode) &&
-        Objects.equals(this.transcodeSeekInfo, transcodingProfile.transcodeSeekInfo) &&
-        Objects.equals(this.copyTimestamps, transcodingProfile.copyTimestamps) &&
-        Objects.equals(this.context, transcodingProfile.context) &&
-        Objects.equals(this.enableSubtitlesInManifest, transcodingProfile.enableSubtitlesInManifest) &&
-        equalsNullable(this.maxAudioChannels, transcodingProfile.maxAudioChannels) &&
-        Objects.equals(this.minSegments, transcodingProfile.minSegments) &&
-        Objects.equals(this.segmentLength, transcodingProfile.segmentLength) &&
-        Objects.equals(this.breakOnNonKeyFrames, transcodingProfile.breakOnNonKeyFrames) &&
-        Objects.equals(this.conditions, transcodingProfile.conditions);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(container, type, videoCodec, audioCodec, protocol, estimateContentLength, enableMpegtsM2TsMode, transcodeSeekInfo, copyTimestamps, context, enableSubtitlesInManifest, hashCodeNullable(maxAudioChannels), minSegments, segmentLength, breakOnNonKeyFrames, conditions);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class TranscodingProfile {\n");
-    sb.append("    container: ").append(toIndentedString(container)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    videoCodec: ").append(toIndentedString(videoCodec)).append("\n");
-    sb.append("    audioCodec: ").append(toIndentedString(audioCodec)).append("\n");
-    sb.append("    protocol: ").append(toIndentedString(protocol)).append("\n");
-    sb.append("    estimateContentLength: ").append(toIndentedString(estimateContentLength)).append("\n");
-    sb.append("    enableMpegtsM2TsMode: ").append(toIndentedString(enableMpegtsM2TsMode)).append("\n");
-    sb.append("    transcodeSeekInfo: ").append(toIndentedString(transcodeSeekInfo)).append("\n");
-    sb.append("    copyTimestamps: ").append(toIndentedString(copyTimestamps)).append("\n");
-    sb.append("    context: ").append(toIndentedString(context)).append("\n");
-    sb.append("    enableSubtitlesInManifest: ").append(toIndentedString(enableSubtitlesInManifest)).append("\n");
-    sb.append("    maxAudioChannels: ").append(toIndentedString(maxAudioChannels)).append("\n");
-    sb.append("    minSegments: ").append(toIndentedString(minSegments)).append("\n");
-    sb.append("    segmentLength: ").append(toIndentedString(segmentLength)).append("\n");
-    sb.append("    breakOnNonKeyFrames: ").append(toIndentedString(breakOnNonKeyFrames)).append("\n");
-    sb.append("    conditions: ").append(toIndentedString(conditions)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private TranscodingProfile instance;
-
-    public Builder() {
-      this(new TranscodingProfile());
+    public static final String JSON_PROPERTY_CONTAINER = "Container";
+    @javax.annotation.Nullable
+    private String container;
+
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private DlnaProfileType type;
+
+    public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
+    @javax.annotation.Nullable
+    private String videoCodec;
+
+    public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
+    @javax.annotation.Nullable
+    private String audioCodec;
+
+    public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
+    @javax.annotation.Nullable
+    private String protocol;
+
+    public static final String JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
+    @javax.annotation.Nullable
+    private Boolean estimateContentLength = false;
+
+    public static final String JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
+    @javax.annotation.Nullable
+    private Boolean enableMpegtsM2TsMode = false;
+
+    public static final String JSON_PROPERTY_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
+    @javax.annotation.Nullable
+    private TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
+
+    public static final String JSON_PROPERTY_COPY_TIMESTAMPS = "CopyTimestamps";
+    @javax.annotation.Nullable
+    private Boolean copyTimestamps = false;
+
+    public static final String JSON_PROPERTY_CONTEXT = "Context";
+    @javax.annotation.Nullable
+    private EncodingContext context = EncodingContext.STREAMING;
+
+    public static final String JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
+    @javax.annotation.Nullable
+    private Boolean enableSubtitlesInManifest = false;
+
+    public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
+    @javax.annotation.Nullable
+    private JsonNullable<String> maxAudioChannels = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
+    @javax.annotation.Nullable
+    private Integer minSegments = 0;
+
+    public static final String JSON_PROPERTY_SEGMENT_LENGTH = "SegmentLength";
+    @javax.annotation.Nullable
+    private Integer segmentLength = 0;
+
+    public static final String JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
+    @javax.annotation.Nullable
+    private Boolean breakOnNonKeyFrames = false;
+
+    public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
+    @javax.annotation.Nullable
+    private List<ProfileCondition> conditions = new ArrayList<>();
+
+    public TranscodingProfile() {
     }
 
-    protected Builder(TranscodingProfile instance) {
-      this.instance = instance;
-    }
+    public TranscodingProfile container(@javax.annotation.Nullable String container) {
 
-    public TranscodingProfile.Builder container(String container) {
-      this.instance.container = container;
-      return this;
+        this.container = container;
+        return this;
     }
-    public TranscodingProfile.Builder type(DlnaProfileType type) {
-      this.instance.type = type;
-      return this;
-    }
-    public TranscodingProfile.Builder videoCodec(String videoCodec) {
-      this.instance.videoCodec = videoCodec;
-      return this;
-    }
-    public TranscodingProfile.Builder audioCodec(String audioCodec) {
-      this.instance.audioCodec = audioCodec;
-      return this;
-    }
-    public TranscodingProfile.Builder protocol(String protocol) {
-      this.instance.protocol = protocol;
-      return this;
-    }
-    public TranscodingProfile.Builder estimateContentLength(Boolean estimateContentLength) {
-      this.instance.estimateContentLength = estimateContentLength;
-      return this;
-    }
-    public TranscodingProfile.Builder enableMpegtsM2TsMode(Boolean enableMpegtsM2TsMode) {
-      this.instance.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
-      return this;
-    }
-    public TranscodingProfile.Builder transcodeSeekInfo(TranscodeSeekInfo transcodeSeekInfo) {
-      this.instance.transcodeSeekInfo = transcodeSeekInfo;
-      return this;
-    }
-    public TranscodingProfile.Builder copyTimestamps(Boolean copyTimestamps) {
-      this.instance.copyTimestamps = copyTimestamps;
-      return this;
-    }
-    public TranscodingProfile.Builder context(EncodingContext context) {
-      this.instance.context = context;
-      return this;
-    }
-    public TranscodingProfile.Builder enableSubtitlesInManifest(Boolean enableSubtitlesInManifest) {
-      this.instance.enableSubtitlesInManifest = enableSubtitlesInManifest;
-      return this;
-    }
-    public TranscodingProfile.Builder maxAudioChannels(String maxAudioChannels) {
-      this.instance.maxAudioChannels = JsonNullable.<String>of(maxAudioChannels);
-      return this;
-    }
-    public TranscodingProfile.Builder maxAudioChannels(JsonNullable<String> maxAudioChannels) {
-      this.instance.maxAudioChannels = maxAudioChannels;
-      return this;
-    }
-    public TranscodingProfile.Builder minSegments(Integer minSegments) {
-      this.instance.minSegments = minSegments;
-      return this;
-    }
-    public TranscodingProfile.Builder segmentLength(Integer segmentLength) {
-      this.instance.segmentLength = segmentLength;
-      return this;
-    }
-    public TranscodingProfile.Builder breakOnNonKeyFrames(Boolean breakOnNonKeyFrames) {
-      this.instance.breakOnNonKeyFrames = breakOnNonKeyFrames;
-      return this;
-    }
-    public TranscodingProfile.Builder conditions(List<ProfileCondition> conditions) {
-      this.instance.conditions = conditions;
-      return this;
-    }
-
 
     /**
-    * returns a built TranscodingProfile instance.
-    *
-    * The builder is not reusable.
-    */
-    public TranscodingProfile build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get container
+     * 
+     * @return container
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getContainer() {
+        return container;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContainer(@javax.annotation.Nullable String container) {
+        this.container = container;
+    }
+
+    public TranscodingProfile type(@javax.annotation.Nullable DlnaProfileType type) {
+
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Get type
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public DlnaProfileType getType() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable DlnaProfileType type) {
+        this.type = type;
+    }
+
+    public TranscodingProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
+
+        this.videoCodec = videoCodec;
+        return this;
+    }
+
+    /**
+     * Get videoCodec
+     * 
+     * @return videoCodec
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getVideoCodec() {
+        return videoCodec;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
+        this.videoCodec = videoCodec;
+    }
+
+    public TranscodingProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
+
+        this.audioCodec = audioCodec;
+        return this;
+    }
+
+    /**
+     * Get audioCodec
+     * 
+     * @return audioCodec
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getAudioCodec() {
+        return audioCodec;
+    }
+
+    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
+        this.audioCodec = audioCodec;
+    }
+
+    public TranscodingProfile protocol(@javax.annotation.Nullable String protocol) {
+
+        this.protocol = protocol;
+        return this;
+    }
+
+    /**
+     * Get protocol
+     * 
+     * @return protocol
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProtocol(@javax.annotation.Nullable String protocol) {
+        this.protocol = protocol;
+    }
+
+    public TranscodingProfile estimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
+
+        this.estimateContentLength = estimateContentLength;
+        return this;
+    }
+
+    /**
+     * Get estimateContentLength
+     * 
+     * @return estimateContentLength
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getEstimateContentLength() {
+        return estimateContentLength;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEstimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
+        this.estimateContentLength = estimateContentLength;
+    }
+
+    public TranscodingProfile enableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
+
+        this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
+        return this;
+    }
+
+    /**
+     * Get enableMpegtsM2TsMode
+     * 
+     * @return enableMpegtsM2TsMode
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getEnableMpegtsM2TsMode() {
+        return enableMpegtsM2TsMode;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
+        this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
+    }
+
+    public TranscodingProfile transcodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
+
+        this.transcodeSeekInfo = transcodeSeekInfo;
+        return this;
+    }
+
+    /**
+     * Get transcodeSeekInfo
+     * 
+     * @return transcodeSeekInfo
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public TranscodeSeekInfo getTranscodeSeekInfo() {
+        return transcodeSeekInfo;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTranscodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
+        this.transcodeSeekInfo = transcodeSeekInfo;
+    }
+
+    public TranscodingProfile copyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
+
+        this.copyTimestamps = copyTimestamps;
+        return this;
+    }
+
+    /**
+     * Get copyTimestamps
+     * 
+     * @return copyTimestamps
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getCopyTimestamps() {
+        return copyTimestamps;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCopyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
+        this.copyTimestamps = copyTimestamps;
+    }
+
+    public TranscodingProfile context(@javax.annotation.Nullable EncodingContext context) {
+
+        this.context = context;
+        return this;
+    }
+
+    /**
+     * Get context
+     * 
+     * @return context
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CONTEXT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public EncodingContext getContext() {
+        return context;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONTEXT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContext(@javax.annotation.Nullable EncodingContext context) {
+        this.context = context;
+    }
+
+    public TranscodingProfile enableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
+
+        this.enableSubtitlesInManifest = enableSubtitlesInManifest;
+        return this;
+    }
+
+    /**
+     * Get enableSubtitlesInManifest
+     * 
+     * @return enableSubtitlesInManifest
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getEnableSubtitlesInManifest() {
+        return enableSubtitlesInManifest;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
+        this.enableSubtitlesInManifest = enableSubtitlesInManifest;
+    }
+
+    public TranscodingProfile maxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
+        this.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
+
+        return this;
+    }
+
+    /**
+     * Get maxAudioChannels
+     * 
+     * @return maxAudioChannels
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getMaxAudioChannels() {
+        return maxAudioChannels.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getMaxAudioChannels_JsonNullable() {
+        return maxAudioChannels;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    public void setMaxAudioChannels_JsonNullable(JsonNullable<String> maxAudioChannels) {
+        this.maxAudioChannels = maxAudioChannels;
+    }
+
+    public void setMaxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
+        this.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
+    }
+
+    public TranscodingProfile minSegments(@javax.annotation.Nullable Integer minSegments) {
+
+        this.minSegments = minSegments;
+        return this;
+    }
+
+    /**
+     * Get minSegments
+     * 
+     * @return minSegments
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getMinSegments() {
+        return minSegments;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMinSegments(@javax.annotation.Nullable Integer minSegments) {
+        this.minSegments = minSegments;
+    }
+
+    public TranscodingProfile segmentLength(@javax.annotation.Nullable Integer segmentLength) {
+
+        this.segmentLength = segmentLength;
+        return this;
+    }
+
+    /**
+     * Get segmentLength
+     * 
+     * @return segmentLength
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getSegmentLength() {
+        return segmentLength;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSegmentLength(@javax.annotation.Nullable Integer segmentLength) {
+        this.segmentLength = segmentLength;
+    }
+
+    public TranscodingProfile breakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
+
+        this.breakOnNonKeyFrames = breakOnNonKeyFrames;
+        return this;
+    }
+
+    /**
+     * Get breakOnNonKeyFrames
+     * 
+     * @return breakOnNonKeyFrames
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getBreakOnNonKeyFrames() {
+        return breakOnNonKeyFrames;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBreakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
+        this.breakOnNonKeyFrames = breakOnNonKeyFrames;
+    }
+
+    public TranscodingProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+
+        this.conditions = conditions;
+        return this;
+    }
+
+    public TranscodingProfile addConditionsItem(ProfileCondition conditionsItem) {
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
+        }
+        this.conditions.add(conditionsItem);
+        return this;
+    }
+
+    /**
+     * Get conditions
+     * 
+     * @return conditions
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ProfileCondition> getConditions() {
+        return conditions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
+        this.conditions = conditions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TranscodingProfile transcodingProfile = (TranscodingProfile) o;
+        return Objects.equals(this.container, transcodingProfile.container)
+                && Objects.equals(this.type, transcodingProfile.type)
+                && Objects.equals(this.videoCodec, transcodingProfile.videoCodec)
+                && Objects.equals(this.audioCodec, transcodingProfile.audioCodec)
+                && Objects.equals(this.protocol, transcodingProfile.protocol)
+                && Objects.equals(this.estimateContentLength, transcodingProfile.estimateContentLength)
+                && Objects.equals(this.enableMpegtsM2TsMode, transcodingProfile.enableMpegtsM2TsMode)
+                && Objects.equals(this.transcodeSeekInfo, transcodingProfile.transcodeSeekInfo)
+                && Objects.equals(this.copyTimestamps, transcodingProfile.copyTimestamps)
+                && Objects.equals(this.context, transcodingProfile.context)
+                && Objects.equals(this.enableSubtitlesInManifest, transcodingProfile.enableSubtitlesInManifest)
+                && equalsNullable(this.maxAudioChannels, transcodingProfile.maxAudioChannels)
+                && Objects.equals(this.minSegments, transcodingProfile.minSegments)
+                && Objects.equals(this.segmentLength, transcodingProfile.segmentLength)
+                && Objects.equals(this.breakOnNonKeyFrames, transcodingProfile.breakOnNonKeyFrames)
+                && Objects.equals(this.conditions, transcodingProfile.conditions);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(container, type, videoCodec, audioCodec, protocol, estimateContentLength,
+                enableMpegtsM2TsMode, transcodeSeekInfo, copyTimestamps, context, enableSubtitlesInManifest,
+                hashCodeNullable(maxAudioChannels), minSegments, segmentLength, breakOnNonKeyFrames, conditions);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class TranscodingProfile {\n");
+        sb.append("    container: ").append(toIndentedString(container)).append("\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    videoCodec: ").append(toIndentedString(videoCodec)).append("\n");
+        sb.append("    audioCodec: ").append(toIndentedString(audioCodec)).append("\n");
+        sb.append("    protocol: ").append(toIndentedString(protocol)).append("\n");
+        sb.append("    estimateContentLength: ").append(toIndentedString(estimateContentLength)).append("\n");
+        sb.append("    enableMpegtsM2TsMode: ").append(toIndentedString(enableMpegtsM2TsMode)).append("\n");
+        sb.append("    transcodeSeekInfo: ").append(toIndentedString(transcodeSeekInfo)).append("\n");
+        sb.append("    copyTimestamps: ").append(toIndentedString(copyTimestamps)).append("\n");
+        sb.append("    context: ").append(toIndentedString(context)).append("\n");
+        sb.append("    enableSubtitlesInManifest: ").append(toIndentedString(enableSubtitlesInManifest)).append("\n");
+        sb.append("    maxAudioChannels: ").append(toIndentedString(maxAudioChannels)).append("\n");
+        sb.append("    minSegments: ").append(toIndentedString(minSegments)).append("\n");
+        sb.append("    segmentLength: ").append(toIndentedString(segmentLength)).append("\n");
+        sb.append("    breakOnNonKeyFrames: ").append(toIndentedString(breakOnNonKeyFrames)).append("\n");
+        sb.append("    conditions: ").append(toIndentedString(conditions)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static TranscodingProfile.Builder builder() {
-    return new TranscodingProfile.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public TranscodingProfile.Builder toBuilder() {
-    return new TranscodingProfile.Builder()
-      .container(getContainer())
-      .type(getType())
-      .videoCodec(getVideoCodec())
-      .audioCodec(getAudioCodec())
-      .protocol(getProtocol())
-      .estimateContentLength(getEstimateContentLength())
-      .enableMpegtsM2TsMode(getEnableMpegtsM2TsMode())
-      .transcodeSeekInfo(getTranscodeSeekInfo())
-      .copyTimestamps(getCopyTimestamps())
-      .context(getContext())
-      .enableSubtitlesInManifest(getEnableSubtitlesInManifest())
-      .maxAudioChannels(getMaxAudioChannels())
-      .minSegments(getMinSegments())
-      .segmentLength(getSegmentLength())
-      .breakOnNonKeyFrames(getBreakOnNonKeyFrames())
-      .conditions(getConditions());
-  }
+    public static class Builder {
 
+        private TranscodingProfile instance;
 
+        public Builder() {
+            this(new TranscodingProfile());
+        }
+
+        protected Builder(TranscodingProfile instance) {
+            this.instance = instance;
+        }
+
+        public TranscodingProfile.Builder container(String container) {
+            this.instance.container = container;
+            return this;
+        }
+
+        public TranscodingProfile.Builder type(DlnaProfileType type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public TranscodingProfile.Builder videoCodec(String videoCodec) {
+            this.instance.videoCodec = videoCodec;
+            return this;
+        }
+
+        public TranscodingProfile.Builder audioCodec(String audioCodec) {
+            this.instance.audioCodec = audioCodec;
+            return this;
+        }
+
+        public TranscodingProfile.Builder protocol(String protocol) {
+            this.instance.protocol = protocol;
+            return this;
+        }
+
+        public TranscodingProfile.Builder estimateContentLength(Boolean estimateContentLength) {
+            this.instance.estimateContentLength = estimateContentLength;
+            return this;
+        }
+
+        public TranscodingProfile.Builder enableMpegtsM2TsMode(Boolean enableMpegtsM2TsMode) {
+            this.instance.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
+            return this;
+        }
+
+        public TranscodingProfile.Builder transcodeSeekInfo(TranscodeSeekInfo transcodeSeekInfo) {
+            this.instance.transcodeSeekInfo = transcodeSeekInfo;
+            return this;
+        }
+
+        public TranscodingProfile.Builder copyTimestamps(Boolean copyTimestamps) {
+            this.instance.copyTimestamps = copyTimestamps;
+            return this;
+        }
+
+        public TranscodingProfile.Builder context(EncodingContext context) {
+            this.instance.context = context;
+            return this;
+        }
+
+        public TranscodingProfile.Builder enableSubtitlesInManifest(Boolean enableSubtitlesInManifest) {
+            this.instance.enableSubtitlesInManifest = enableSubtitlesInManifest;
+            return this;
+        }
+
+        public TranscodingProfile.Builder maxAudioChannels(String maxAudioChannels) {
+            this.instance.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
+            return this;
+        }
+
+        public TranscodingProfile.Builder maxAudioChannels(JsonNullable<String> maxAudioChannels) {
+            this.instance.maxAudioChannels = maxAudioChannels;
+            return this;
+        }
+
+        public TranscodingProfile.Builder minSegments(Integer minSegments) {
+            this.instance.minSegments = minSegments;
+            return this;
+        }
+
+        public TranscodingProfile.Builder segmentLength(Integer segmentLength) {
+            this.instance.segmentLength = segmentLength;
+            return this;
+        }
+
+        public TranscodingProfile.Builder breakOnNonKeyFrames(Boolean breakOnNonKeyFrames) {
+            this.instance.breakOnNonKeyFrames = breakOnNonKeyFrames;
+            return this;
+        }
+
+        public TranscodingProfile.Builder conditions(List<ProfileCondition> conditions) {
+            this.instance.conditions = conditions;
+            return this;
+        }
+
+        /**
+         * returns a built TranscodingProfile instance.
+         *
+         * The builder is not reusable.
+         */
+        public TranscodingProfile build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static TranscodingProfile.Builder builder() {
+        return new TranscodingProfile.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public TranscodingProfile.Builder toBuilder() {
+        return new TranscodingProfile.Builder().container(getContainer()).type(getType()).videoCodec(getVideoCodec())
+                .audioCodec(getAudioCodec()).protocol(getProtocol()).estimateContentLength(getEstimateContentLength())
+                .enableMpegtsM2TsMode(getEnableMpegtsM2TsMode()).transcodeSeekInfo(getTranscodeSeekInfo())
+                .copyTimestamps(getCopyTimestamps()).context(getContext())
+                .enableSubtitlesInManifest(getEnableSubtitlesInManifest()).maxAudioChannels(getMaxAudioChannels())
+                .minSegments(getMinSegments()).segmentLength(getSegmentLength())
+                .breakOnNonKeyFrames(getBreakOnNonKeyFrames()).conditions(getConditions());
+    }
 }
-

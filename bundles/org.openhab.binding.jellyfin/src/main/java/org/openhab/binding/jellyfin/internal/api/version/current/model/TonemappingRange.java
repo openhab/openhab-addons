@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing tonemapping ranges.
  */
 public enum TonemappingRange {
-  
-  AUTO("auto"),
-  
-  TV("tv"),
-  
-  PC("pc");
 
-  private String value;
+    AUTO("auto"),
 
-  TonemappingRange(String value) {
-    this.value = value;
-  }
+    TV("tv"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    PC("pc");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static TonemappingRange fromValue(String value) {
-    for (TonemappingRange b : TonemappingRange.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    TonemappingRange(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TonemappingRange fromValue(String value) {
+        for (TonemappingRange b : TonemappingRange.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

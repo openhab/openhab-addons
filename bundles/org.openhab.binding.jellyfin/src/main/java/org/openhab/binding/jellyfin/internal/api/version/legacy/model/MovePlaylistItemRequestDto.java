@@ -18,184 +18,172 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class MovePlaylistItemRequestDto.
  */
-@JsonPropertyOrder({
-  MovePlaylistItemRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-  MovePlaylistItemRequestDto.JSON_PROPERTY_NEW_INDEX
-})
+@JsonPropertyOrder({ MovePlaylistItemRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
+        MovePlaylistItemRequestDto.JSON_PROPERTY_NEW_INDEX })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MovePlaylistItemRequestDto {
-  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @javax.annotation.Nullable
-  private UUID playlistItemId;
+    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
+    private UUID playlistItemId;
 
-  public static final String JSON_PROPERTY_NEW_INDEX = "NewIndex";
-  @javax.annotation.Nullable
-  private Integer newIndex;
+    public static final String JSON_PROPERTY_NEW_INDEX = "NewIndex";
+    @javax.annotation.Nullable
+    private Integer newIndex;
 
-  public MovePlaylistItemRequestDto() {
-  }
-
-  public MovePlaylistItemRequestDto playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    
-    this.playlistItemId = playlistItemId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the playlist identifier of the item.
-   * @return playlistItemId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getPlaylistItemId() {
-    return playlistItemId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    this.playlistItemId = playlistItemId;
-  }
-
-  public MovePlaylistItemRequestDto newIndex(@javax.annotation.Nullable Integer newIndex) {
-    
-    this.newIndex = newIndex;
-    return this;
-  }
-
-  /**
-   * Gets or sets the new position.
-   * @return newIndex
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NEW_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getNewIndex() {
-    return newIndex;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NEW_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNewIndex(@javax.annotation.Nullable Integer newIndex) {
-    this.newIndex = newIndex;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MovePlaylistItemRequestDto movePlaylistItemRequestDto = (MovePlaylistItemRequestDto) o;
-    return Objects.equals(this.playlistItemId, movePlaylistItemRequestDto.playlistItemId) &&
-        Objects.equals(this.newIndex, movePlaylistItemRequestDto.newIndex);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(playlistItemId, newIndex);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MovePlaylistItemRequestDto {\n");
-    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-    sb.append("    newIndex: ").append(toIndentedString(newIndex)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MovePlaylistItemRequestDto instance;
-
-    public Builder() {
-      this(new MovePlaylistItemRequestDto());
+    public MovePlaylistItemRequestDto() {
     }
 
-    protected Builder(MovePlaylistItemRequestDto instance) {
-      this.instance = instance;
-    }
+    public MovePlaylistItemRequestDto playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
 
-    public MovePlaylistItemRequestDto.Builder playlistItemId(UUID playlistItemId) {
-      this.instance.playlistItemId = playlistItemId;
-      return this;
+        this.playlistItemId = playlistItemId;
+        return this;
     }
-    public MovePlaylistItemRequestDto.Builder newIndex(Integer newIndex) {
-      this.instance.newIndex = newIndex;
-      return this;
-    }
-
 
     /**
-    * returns a built MovePlaylistItemRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public MovePlaylistItemRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the playlist identifier of the item.
+     * 
+     * @return playlistItemId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getPlaylistItemId() {
+        return playlistItemId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+        this.playlistItemId = playlistItemId;
+    }
+
+    public MovePlaylistItemRequestDto newIndex(@javax.annotation.Nullable Integer newIndex) {
+
+        this.newIndex = newIndex;
+        return this;
+    }
+
+    /**
+     * Gets or sets the new position.
+     * 
+     * @return newIndex
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_NEW_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getNewIndex() {
+        return newIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NEW_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNewIndex(@javax.annotation.Nullable Integer newIndex) {
+        this.newIndex = newIndex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MovePlaylistItemRequestDto movePlaylistItemRequestDto = (MovePlaylistItemRequestDto) o;
+        return Objects.equals(this.playlistItemId, movePlaylistItemRequestDto.playlistItemId)
+                && Objects.equals(this.newIndex, movePlaylistItemRequestDto.newIndex);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playlistItemId, newIndex);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MovePlaylistItemRequestDto {\n");
+        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+        sb.append("    newIndex: ").append(toIndentedString(newIndex)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MovePlaylistItemRequestDto.Builder builder() {
-    return new MovePlaylistItemRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MovePlaylistItemRequestDto.Builder toBuilder() {
-    return new MovePlaylistItemRequestDto.Builder()
-      .playlistItemId(getPlaylistItemId())
-      .newIndex(getNewIndex());
-  }
+    public static class Builder {
 
+        private MovePlaylistItemRequestDto instance;
 
+        public Builder() {
+            this(new MovePlaylistItemRequestDto());
+        }
+
+        protected Builder(MovePlaylistItemRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public MovePlaylistItemRequestDto.Builder playlistItemId(UUID playlistItemId) {
+            this.instance.playlistItemId = playlistItemId;
+            return this;
+        }
+
+        public MovePlaylistItemRequestDto.Builder newIndex(Integer newIndex) {
+            this.instance.newIndex = newIndex;
+            return this;
+        }
+
+        /**
+         * returns a built MovePlaylistItemRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public MovePlaylistItemRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MovePlaylistItemRequestDto.Builder builder() {
+        return new MovePlaylistItemRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MovePlaylistItemRequestDto.Builder toBuilder() {
+        return new MovePlaylistItemRequestDto.Builder().playlistItemId(getPlaylistItemId()).newIndex(getNewIndex());
+    }
 }
-

@@ -18,147 +18,135 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class JoinGroupRequestDto.
  */
-@JsonPropertyOrder({
-  JoinGroupRequestDto.JSON_PROPERTY_GROUP_ID
-})
+@JsonPropertyOrder({ JoinGroupRequestDto.JSON_PROPERTY_GROUP_ID })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class JoinGroupRequestDto {
-  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-  @javax.annotation.Nullable
-  private UUID groupId;
+    public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
+    @javax.annotation.Nullable
+    private UUID groupId;
 
-  public JoinGroupRequestDto() {
-  }
-
-  public JoinGroupRequestDto groupId(@javax.annotation.Nullable UUID groupId) {
-    
-    this.groupId = groupId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the group identifier.
-   * @return groupId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getGroupId() {
-    return groupId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroupId(@javax.annotation.Nullable UUID groupId) {
-    this.groupId = groupId;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    JoinGroupRequestDto joinGroupRequestDto = (JoinGroupRequestDto) o;
-    return Objects.equals(this.groupId, joinGroupRequestDto.groupId);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(groupId);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class JoinGroupRequestDto {\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private JoinGroupRequestDto instance;
-
-    public Builder() {
-      this(new JoinGroupRequestDto());
+    public JoinGroupRequestDto() {
     }
 
-    protected Builder(JoinGroupRequestDto instance) {
-      this.instance = instance;
-    }
+    public JoinGroupRequestDto groupId(@javax.annotation.Nullable UUID groupId) {
 
-    public JoinGroupRequestDto.Builder groupId(UUID groupId) {
-      this.instance.groupId = groupId;
-      return this;
+        this.groupId = groupId;
+        return this;
     }
-
 
     /**
-    * returns a built JoinGroupRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public JoinGroupRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the group identifier.
+     * 
+     * @return groupId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setGroupId(@javax.annotation.Nullable UUID groupId) {
+        this.groupId = groupId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        JoinGroupRequestDto joinGroupRequestDto = (JoinGroupRequestDto) o;
+        return Objects.equals(this.groupId, joinGroupRequestDto.groupId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class JoinGroupRequestDto {\n");
+        sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static JoinGroupRequestDto.Builder builder() {
-    return new JoinGroupRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public JoinGroupRequestDto.Builder toBuilder() {
-    return new JoinGroupRequestDto.Builder()
-      .groupId(getGroupId());
-  }
+    public static class Builder {
 
+        private JoinGroupRequestDto instance;
 
+        public Builder() {
+            this(new JoinGroupRequestDto());
+        }
+
+        protected Builder(JoinGroupRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public JoinGroupRequestDto.Builder groupId(UUID groupId) {
+            this.instance.groupId = groupId;
+            return this;
+        }
+
+        /**
+         * returns a built JoinGroupRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public JoinGroupRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static JoinGroupRequestDto.Builder builder() {
+        return new JoinGroupRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public JoinGroupRequestDto.Builder toBuilder() {
+        return new JoinGroupRequestDto.Builder().groupId(getGroupId());
+    }
 }
-

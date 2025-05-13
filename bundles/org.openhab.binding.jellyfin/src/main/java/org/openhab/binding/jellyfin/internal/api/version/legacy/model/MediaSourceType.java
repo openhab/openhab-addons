@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MediaSourceType
  */
 public enum MediaSourceType {
-  
-  DEFAULT("Default"),
-  
-  GROUPING("Grouping"),
-  
-  PLACEHOLDER("Placeholder");
 
-  private String value;
+    DEFAULT("Default"),
 
-  MediaSourceType(String value) {
-    this.value = value;
-  }
+    GROUPING("Grouping"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    PLACEHOLDER("Placeholder");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static MediaSourceType fromValue(String value) {
-    for (MediaSourceType b : MediaSourceType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    MediaSourceType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static MediaSourceType fromValue(String value) {
+        for (MediaSourceType b : MediaSourceType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

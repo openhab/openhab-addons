@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlaybackErrorCode
  */
 public enum PlaybackErrorCode {
-  
-  NOT_ALLOWED("NotAllowed"),
-  
-  NO_COMPATIBLE_STREAM("NoCompatibleStream"),
-  
-  RATE_LIMIT_EXCEEDED("RateLimitExceeded");
 
-  private String value;
+    NOT_ALLOWED("NotAllowed"),
 
-  PlaybackErrorCode(String value) {
-    this.value = value;
-  }
+    NO_COMPATIBLE_STREAM("NoCompatibleStream"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    RATE_LIMIT_EXCEEDED("RateLimitExceeded");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static PlaybackErrorCode fromValue(String value) {
-    for (PlaybackErrorCode b : PlaybackErrorCode.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PlaybackErrorCode(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PlaybackErrorCode fromValue(String value) {
+        for (PlaybackErrorCode b : PlaybackErrorCode.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

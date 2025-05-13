@@ -17,271 +17,256 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class ThemeMediaResult.
  */
-@JsonPropertyOrder({
-  ThemeMediaResult.JSON_PROPERTY_ITEMS,
-  ThemeMediaResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-  ThemeMediaResult.JSON_PROPERTY_START_INDEX,
-  ThemeMediaResult.JSON_PROPERTY_OWNER_ID
-})
+@JsonPropertyOrder({ ThemeMediaResult.JSON_PROPERTY_ITEMS, ThemeMediaResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+        ThemeMediaResult.JSON_PROPERTY_START_INDEX, ThemeMediaResult.JSON_PROPERTY_OWNER_ID })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ThemeMediaResult {
-  public static final String JSON_PROPERTY_ITEMS = "Items";
-  @javax.annotation.Nullable
-  private List<BaseItemDto> items = new ArrayList<>();
+    public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
+    private List<BaseItemDto> items = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-  @javax.annotation.Nullable
-  private Integer totalRecordCount;
+    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+    @javax.annotation.Nullable
+    private Integer totalRecordCount;
 
-  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-  @javax.annotation.Nullable
-  private Integer startIndex;
+    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+    @javax.annotation.Nullable
+    private Integer startIndex;
 
-  public static final String JSON_PROPERTY_OWNER_ID = "OwnerId";
-  @javax.annotation.Nullable
-  private UUID ownerId;
+    public static final String JSON_PROPERTY_OWNER_ID = "OwnerId";
+    @javax.annotation.Nullable
+    private UUID ownerId;
 
-  public ThemeMediaResult() {
-  }
-
-  public ThemeMediaResult items(@javax.annotation.Nullable List<BaseItemDto> items) {
-    
-    this.items = items;
-    return this;
-  }
-
-  public ThemeMediaResult addItemsItem(BaseItemDto itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the items.
-   * @return items
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<BaseItemDto> getItems() {
-    return items;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
-    this.items = items;
-  }
-
-  public ThemeMediaResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    
-    this.totalRecordCount = totalRecordCount;
-    return this;
-  }
-
-  /**
-   * Gets or sets the total number of records available.
-   * @return totalRecordCount
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getTotalRecordCount() {
-    return totalRecordCount;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    this.totalRecordCount = totalRecordCount;
-  }
-
-  public ThemeMediaResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-    
-    this.startIndex = startIndex;
-    return this;
-  }
-
-  /**
-   * Gets or sets the index of the first record in Items.
-   * @return startIndex
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getStartIndex() {
-    return startIndex;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-    this.startIndex = startIndex;
-  }
-
-  public ThemeMediaResult ownerId(@javax.annotation.Nullable UUID ownerId) {
-    
-    this.ownerId = ownerId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the owner id.
-   * @return ownerId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_OWNER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getOwnerId() {
-    return ownerId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_OWNER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOwnerId(@javax.annotation.Nullable UUID ownerId) {
-    this.ownerId = ownerId;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ThemeMediaResult themeMediaResult = (ThemeMediaResult) o;
-    return Objects.equals(this.items, themeMediaResult.items) &&
-        Objects.equals(this.totalRecordCount, themeMediaResult.totalRecordCount) &&
-        Objects.equals(this.startIndex, themeMediaResult.startIndex) &&
-        Objects.equals(this.ownerId, themeMediaResult.ownerId);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(items, totalRecordCount, startIndex, ownerId);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ThemeMediaResult {\n");
-    sb.append("    items: ").append(toIndentedString(items)).append("\n");
-    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-    sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ThemeMediaResult instance;
-
-    public Builder() {
-      this(new ThemeMediaResult());
+    public ThemeMediaResult() {
     }
 
-    protected Builder(ThemeMediaResult instance) {
-      this.instance = instance;
+    public ThemeMediaResult items(@javax.annotation.Nullable List<BaseItemDto> items) {
+
+        this.items = items;
+        return this;
     }
 
-    public ThemeMediaResult.Builder items(List<BaseItemDto> items) {
-      this.instance.items = items;
-      return this;
+    public ThemeMediaResult addItemsItem(BaseItemDto itemsItem) {
+        if (this.items == null) {
+            this.items = new ArrayList<>();
+        }
+        this.items.add(itemsItem);
+        return this;
     }
-    public ThemeMediaResult.Builder totalRecordCount(Integer totalRecordCount) {
-      this.instance.totalRecordCount = totalRecordCount;
-      return this;
-    }
-    public ThemeMediaResult.Builder startIndex(Integer startIndex) {
-      this.instance.startIndex = startIndex;
-      return this;
-    }
-    public ThemeMediaResult.Builder ownerId(UUID ownerId) {
-      this.instance.ownerId = ownerId;
-      return this;
-    }
-
 
     /**
-    * returns a built ThemeMediaResult instance.
-    *
-    * The builder is not reusable.
-    */
-    public ThemeMediaResult build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the items.
+     * 
+     * @return items
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<BaseItemDto> getItems() {
+        return items;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
+        this.items = items;
+    }
+
+    public ThemeMediaResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
+        this.totalRecordCount = totalRecordCount;
+        return this;
+    }
+
+    /**
+     * Gets or sets the total number of records available.
+     * 
+     * @return totalRecordCount
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getTotalRecordCount() {
+        return totalRecordCount;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+        this.totalRecordCount = totalRecordCount;
+    }
+
+    public ThemeMediaResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
+        this.startIndex = startIndex;
+        return this;
+    }
+
+    /**
+     * Gets or sets the index of the first record in Items.
+     * 
+     * @return startIndex
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getStartIndex() {
+        return startIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public ThemeMediaResult ownerId(@javax.annotation.Nullable UUID ownerId) {
+
+        this.ownerId = ownerId;
+        return this;
+    }
+
+    /**
+     * Gets or sets the owner id.
+     * 
+     * @return ownerId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_OWNER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getOwnerId() {
+        return ownerId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OWNER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOwnerId(@javax.annotation.Nullable UUID ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ThemeMediaResult themeMediaResult = (ThemeMediaResult) o;
+        return Objects.equals(this.items, themeMediaResult.items)
+                && Objects.equals(this.totalRecordCount, themeMediaResult.totalRecordCount)
+                && Objects.equals(this.startIndex, themeMediaResult.startIndex)
+                && Objects.equals(this.ownerId, themeMediaResult.ownerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, totalRecordCount, startIndex, ownerId);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ThemeMediaResult {\n");
+        sb.append("    items: ").append(toIndentedString(items)).append("\n");
+        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+        sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ThemeMediaResult.Builder builder() {
-    return new ThemeMediaResult.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ThemeMediaResult.Builder toBuilder() {
-    return new ThemeMediaResult.Builder()
-      .items(getItems())
-      .totalRecordCount(getTotalRecordCount())
-      .startIndex(getStartIndex())
-      .ownerId(getOwnerId());
-  }
+    public static class Builder {
 
+        private ThemeMediaResult instance;
 
+        public Builder() {
+            this(new ThemeMediaResult());
+        }
+
+        protected Builder(ThemeMediaResult instance) {
+            this.instance = instance;
+        }
+
+        public ThemeMediaResult.Builder items(List<BaseItemDto> items) {
+            this.instance.items = items;
+            return this;
+        }
+
+        public ThemeMediaResult.Builder totalRecordCount(Integer totalRecordCount) {
+            this.instance.totalRecordCount = totalRecordCount;
+            return this;
+        }
+
+        public ThemeMediaResult.Builder startIndex(Integer startIndex) {
+            this.instance.startIndex = startIndex;
+            return this;
+        }
+
+        public ThemeMediaResult.Builder ownerId(UUID ownerId) {
+            this.instance.ownerId = ownerId;
+            return this;
+        }
+
+        /**
+         * returns a built ThemeMediaResult instance.
+         *
+         * The builder is not reusable.
+         */
+        public ThemeMediaResult build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ThemeMediaResult.Builder builder() {
+        return new ThemeMediaResult.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ThemeMediaResult.Builder toBuilder() {
+        return new ThemeMediaResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
+                .startIndex(getStartIndex()).ownerId(getOwnerId());
+    }
 }
-

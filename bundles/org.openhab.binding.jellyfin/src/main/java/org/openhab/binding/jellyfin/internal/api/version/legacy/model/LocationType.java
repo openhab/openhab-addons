@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum LocationType.
  */
 public enum LocationType {
-  
-  FILE_SYSTEM("FileSystem"),
-  
-  REMOTE("Remote"),
-  
-  VIRTUAL("Virtual"),
-  
-  OFFLINE("Offline");
 
-  private String value;
+    FILE_SYSTEM("FileSystem"),
 
-  LocationType(String value) {
-    this.value = value;
-  }
+    REMOTE("Remote"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    VIRTUAL("Virtual"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    OFFLINE("Offline");
 
-  @JsonCreator
-  public static LocationType fromValue(String value) {
-    for (LocationType b : LocationType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    private String value;
+
+    LocationType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static LocationType fromValue(String value) {
+        for (LocationType b : LocationType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

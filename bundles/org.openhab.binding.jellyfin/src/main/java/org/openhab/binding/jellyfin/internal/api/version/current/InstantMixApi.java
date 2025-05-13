@@ -1,33 +1,28 @@
 package org.openhab.binding.jellyfin.internal.api.version.current;
 
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
-
-import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ImageType;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ItemFields;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ProblemDetails;
-import java.util.UUID;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
+import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ImageType;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.ItemFields;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Flux;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class InstantMixApi {
@@ -50,14 +45,18 @@ public class InstantMixApi {
         this.apiClient = apiClient;
     }
 
-    
     /**
      * Creates an instant playlist based on a given album.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -69,11 +68,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromAlbumRequestCreation(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromAlbumRequestCreation(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getInstantMixFromAlbum", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getInstantMixFromAlbum",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -87,32 +90,42 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Albums/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Albums/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given album.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -124,18 +137,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromAlbum(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromAlbum(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given album.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -147,18 +169,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromAlbumWithHttpInfo(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromAlbumWithHttpInfo(UUID itemId, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given album.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -170,17 +201,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromAlbumWithResponseSpec(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromAlbumWithResponseSpec(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromAlbumRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -192,11 +231,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromArtistsRequestCreation(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromArtistsRequestCreation(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getInstantMixFromArtists", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getInstantMixFromArtists",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -210,32 +253,42 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Artists/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Artists/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -247,18 +300,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromArtists(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromArtists(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -270,18 +332,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromArtistsWithHttpInfo(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromArtistsWithHttpInfo(UUID itemId, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -293,17 +364,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromArtistsWithResponseSpec(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromArtistsWithResponseSpec(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromArtistsRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -317,11 +396,15 @@ public class InstantMixApi {
      * @deprecated
      */
     @Deprecated
-    private ResponseSpec getInstantMixFromArtists2RequestCreation(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromArtists2RequestCreation(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'id' is set
         if (id == null) {
-            throw new WebClientResponseException("Missing the required parameter 'id' when calling getInstantMixFromArtists2", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'id' when calling getInstantMixFromArtists2",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -334,32 +417,42 @@ public class InstantMixApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "id", id));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Artists/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Artists/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -371,18 +464,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromArtists2(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromArtists2(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -394,18 +496,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromArtists2WithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromArtists2WithHttpInfo(UUID id, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given artist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -417,17 +528,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromArtists2WithResponseSpec(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromArtists2WithResponseSpec(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromArtists2RequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given item.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -439,11 +558,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromItemRequestCreation(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromItemRequestCreation(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getInstantMixFromItem", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getInstantMixFromItem",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -457,32 +580,42 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Items/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Items/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given item.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -494,18 +627,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromItem(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromItem(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given item.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -517,18 +659,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromItemWithHttpInfo(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromItemWithHttpInfo(UUID itemId, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given item.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -540,17 +691,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromItemWithResponseSpec(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromItemWithResponseSpec(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromItemRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -562,11 +721,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromMusicGenreByIdRequestCreation(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromMusicGenreByIdRequestCreation(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'id' is set
         if (id == null) {
-            throw new WebClientResponseException("Missing the required parameter 'id' when calling getInstantMixFromMusicGenreById", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'id' when calling getInstantMixFromMusicGenreById",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -579,32 +742,42 @@ public class InstantMixApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "id", id));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/MusicGenres/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/MusicGenres/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -616,18 +789,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromMusicGenreById(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromMusicGenreById(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -639,18 +821,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromMusicGenreByIdWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromMusicGenreByIdWithHttpInfo(UUID id,
+            UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param id The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -662,16 +853,23 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromMusicGenreByIdWithResponseSpec(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromMusicGenreByIdWithResponseSpec(UUID id, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromMusicGenreByIdRequestCreation(id, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param name The genre name.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -683,11 +881,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromMusicGenreByNameRequestCreation(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromMusicGenreByNameRequestCreation(String name, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'name' is set
         if (name == null) {
-            throw new WebClientResponseException("Missing the required parameter 'name' when calling getInstantMixFromMusicGenreByName", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'name' when calling getInstantMixFromMusicGenreByName",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -701,31 +903,40 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/MusicGenres/{name}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/MusicGenres/{name}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param name The genre name.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -737,17 +948,25 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByName(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByName(String name, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages,
+                enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param name The genre name.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -759,17 +978,25 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromMusicGenreByNameWithHttpInfo(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromMusicGenreByNameWithHttpInfo(String name,
+            UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages,
+                enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given genre.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param name The genre name.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -781,17 +1008,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromMusicGenreByNameWithResponseSpec(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromMusicGenreByNameWithResponseSpec(String name, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromMusicGenreByNameRequestCreation(name, userId, limit, fields, enableImages,
+                enableUserData, imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given playlist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -803,11 +1038,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromPlaylistRequestCreation(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromPlaylistRequestCreation(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getInstantMixFromPlaylist", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getInstantMixFromPlaylist",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -821,32 +1060,42 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Playlists/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Playlists/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given playlist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -858,18 +1107,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromPlaylist(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromPlaylist(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given playlist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -881,18 +1139,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromPlaylistWithHttpInfo(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromPlaylistWithHttpInfo(UUID itemId, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given playlist.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -904,17 +1171,25 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromPlaylistWithResponseSpec(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromPlaylistWithResponseSpec(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromPlaylistRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 
     /**
      * Creates an instant playlist based on a given song.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -926,11 +1201,15 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getInstantMixFromSongRequestCreation(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+    private ResponseSpec getInstantMixFromSongRequestCreation(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getInstantMixFromSong", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getInstantMixFromSong",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -944,32 +1223,42 @@ public class InstantMixApi {
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "limit", limit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(
+                ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "fields", fields));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableImages", enableImages));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableUserData", enableUserData));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "imageTypeLimit", imageTypeLimit));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)), "enableImageTypes", enableImageTypes));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(
+                apiClient.parameterToMultiValueMap(ApiClient.CollectionFormat.valueOf("multi".toUpperCase(Locale.ROOT)),
+                        "enableImageTypes", enableImageTypes));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return apiClient.invokeAPI("/Songs/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return apiClient.invokeAPI("/Songs/{itemId}/InstantMix", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given song.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -981,18 +1270,27 @@ public class InstantMixApi {
      * @return BaseItemDtoQueryResult
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<BaseItemDtoQueryResult> getInstantMixFromSong(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
+    public Mono<BaseItemDtoQueryResult> getInstantMixFromSong(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).bodyToMono(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given song.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -1004,18 +1302,27 @@ public class InstantMixApi {
      * @return ResponseEntity&lt;BaseItemDtoQueryResult&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromSongWithHttpInfo(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {};
-        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<BaseItemDtoQueryResult>> getInstantMixFromSongWithHttpInfo(UUID itemId, UUID userId,
+            Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData,
+            Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
+        ParameterizedTypeReference<BaseItemDtoQueryResult> localVarReturnType = new ParameterizedTypeReference<BaseItemDtoQueryResult>() {
+        };
+        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes).toEntity(localVarReturnType);
     }
 
     /**
      * Creates an instant playlist based on a given song.
      * 
-     * <p><b>200</b> - Instant playlist returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Instant playlist returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId Optional. Filter by user id, and attach user data.
      * @param limit Optional. The maximum number of records to return.
@@ -1027,7 +1334,10 @@ public class InstantMixApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getInstantMixFromSongWithResponseSpec(UUID itemId, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws WebClientResponseException {
-        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    public ResponseSpec getInstantMixFromSongWithResponseSpec(UUID itemId, UUID userId, Integer limit,
+            List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit,
+            List<ImageType> enableImageTypes) throws WebClientResponseException {
+        return getInstantMixFromSongRequestCreation(itemId, userId, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes);
     }
 }

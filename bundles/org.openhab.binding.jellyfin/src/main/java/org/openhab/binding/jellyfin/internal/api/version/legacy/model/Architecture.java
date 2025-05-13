@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,43 +24,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets Architecture
  */
 public enum Architecture {
-  
-  X86("X86"),
-  
-  X64("X64"),
-  
-  ARM("Arm"),
-  
-  ARM64("Arm64"),
-  
-  WASM("Wasm"),
-  
-  S390X("S390x");
 
-  private String value;
+    X86("X86"),
 
-  Architecture(String value) {
-    this.value = value;
-  }
+    X64("X64"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    ARM("Arm"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    ARM64("Arm64"),
 
-  @JsonCreator
-  public static Architecture fromValue(String value) {
-    for (Architecture b : Architecture.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    WASM("Wasm"),
+
+    S390X("S390x");
+
+    private String value;
+
+    Architecture(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static Architecture fromValue(String value) {
+        for (Architecture b : Architecture.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

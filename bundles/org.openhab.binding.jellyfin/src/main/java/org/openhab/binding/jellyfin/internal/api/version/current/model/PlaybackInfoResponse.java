@@ -17,273 +17,263 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaSourceInfo;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.PlaybackErrorCode;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class PlaybackInfoResponse.
  */
-@JsonPropertyOrder({
-  PlaybackInfoResponse.JSON_PROPERTY_MEDIA_SOURCES,
-  PlaybackInfoResponse.JSON_PROPERTY_PLAY_SESSION_ID,
-  PlaybackInfoResponse.JSON_PROPERTY_ERROR_CODE
-})
+@JsonPropertyOrder({ PlaybackInfoResponse.JSON_PROPERTY_MEDIA_SOURCES,
+        PlaybackInfoResponse.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackInfoResponse.JSON_PROPERTY_ERROR_CODE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlaybackInfoResponse {
-  public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
-  @javax.annotation.Nullable
-  private List<MediaSourceInfo> mediaSources = new ArrayList<>();
+    public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
+    @javax.annotation.Nullable
+    private List<MediaSourceInfo> mediaSources = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
-  @javax.annotation.Nullable
-  private JsonNullable<String> playSessionId = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+    @javax.annotation.Nullable
+    private JsonNullable<String> playSessionId = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
-  @javax.annotation.Nullable
-  private JsonNullable<PlaybackErrorCode> errorCode = JsonNullable.<PlaybackErrorCode>undefined();
+    public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
+    @javax.annotation.Nullable
+    private JsonNullable<PlaybackErrorCode> errorCode = JsonNullable.<PlaybackErrorCode> undefined();
 
-  public PlaybackInfoResponse() {
-  }
-
-  public PlaybackInfoResponse mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
-    
-    this.mediaSources = mediaSources;
-    return this;
-  }
-
-  public PlaybackInfoResponse addMediaSourcesItem(MediaSourceInfo mediaSourcesItem) {
-    if (this.mediaSources == null) {
-      this.mediaSources = new ArrayList<>();
-    }
-    this.mediaSources.add(mediaSourcesItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the media sources.
-   * @return mediaSources
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<MediaSourceInfo> getMediaSources() {
-    return mediaSources;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
-    this.mediaSources = mediaSources;
-  }
-
-  public PlaybackInfoResponse playSessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = JsonNullable.<String>of(playSessionId);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the play session identifier.
-   * @return playSessionId
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPlaySessionId() {
-        return playSessionId.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPlaySessionId_JsonNullable() {
-    return playSessionId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
-  public void setPlaySessionId_JsonNullable(JsonNullable<String> playSessionId) {
-    this.playSessionId = playSessionId;
-  }
-
-  public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = JsonNullable.<String>of(playSessionId);
-  }
-
-  public PlaybackInfoResponse errorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
-    this.errorCode = JsonNullable.<PlaybackErrorCode>of(errorCode);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the error code.
-   * @return errorCode
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public PlaybackErrorCode getErrorCode() {
-        return errorCode.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ERROR_CODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<PlaybackErrorCode> getErrorCode_JsonNullable() {
-    return errorCode;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ERROR_CODE)
-  public void setErrorCode_JsonNullable(JsonNullable<PlaybackErrorCode> errorCode) {
-    this.errorCode = errorCode;
-  }
-
-  public void setErrorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
-    this.errorCode = JsonNullable.<PlaybackErrorCode>of(errorCode);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PlaybackInfoResponse playbackInfoResponse = (PlaybackInfoResponse) o;
-    return Objects.equals(this.mediaSources, playbackInfoResponse.mediaSources) &&
-        equalsNullable(this.playSessionId, playbackInfoResponse.playSessionId) &&
-        equalsNullable(this.errorCode, playbackInfoResponse.errorCode);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(mediaSources, hashCodeNullable(playSessionId), hashCodeNullable(errorCode));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PlaybackInfoResponse {\n");
-    sb.append("    mediaSources: ").append(toIndentedString(mediaSources)).append("\n");
-    sb.append("    playSessionId: ").append(toIndentedString(playSessionId)).append("\n");
-    sb.append("    errorCode: ").append(toIndentedString(errorCode)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private PlaybackInfoResponse instance;
-
-    public Builder() {
-      this(new PlaybackInfoResponse());
+    public PlaybackInfoResponse() {
     }
 
-    protected Builder(PlaybackInfoResponse instance) {
-      this.instance = instance;
+    public PlaybackInfoResponse mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
+
+        this.mediaSources = mediaSources;
+        return this;
     }
 
-    public PlaybackInfoResponse.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
-      this.instance.mediaSources = mediaSources;
-      return this;
+    public PlaybackInfoResponse addMediaSourcesItem(MediaSourceInfo mediaSourcesItem) {
+        if (this.mediaSources == null) {
+            this.mediaSources = new ArrayList<>();
+        }
+        this.mediaSources.add(mediaSourcesItem);
+        return this;
     }
-    public PlaybackInfoResponse.Builder playSessionId(String playSessionId) {
-      this.instance.playSessionId = JsonNullable.<String>of(playSessionId);
-      return this;
-    }
-    public PlaybackInfoResponse.Builder playSessionId(JsonNullable<String> playSessionId) {
-      this.instance.playSessionId = playSessionId;
-      return this;
-    }
-    public PlaybackInfoResponse.Builder errorCode(PlaybackErrorCode errorCode) {
-      this.instance.errorCode = JsonNullable.<PlaybackErrorCode>of(errorCode);
-      return this;
-    }
-    public PlaybackInfoResponse.Builder errorCode(JsonNullable<PlaybackErrorCode> errorCode) {
-      this.instance.errorCode = errorCode;
-      return this;
-    }
-
 
     /**
-    * returns a built PlaybackInfoResponse instance.
-    *
-    * The builder is not reusable.
-    */
-    public PlaybackInfoResponse build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the media sources.
+     * 
+     * @return mediaSources
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<MediaSourceInfo> getMediaSources() {
+        return mediaSources;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
+        this.mediaSources = mediaSources;
+    }
+
+    public PlaybackInfoResponse playSessionId(@javax.annotation.Nullable String playSessionId) {
+        this.playSessionId = JsonNullable.<String> of(playSessionId);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the play session identifier.
+     * 
+     * @return playSessionId
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPlaySessionId() {
+        return playSessionId.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPlaySessionId_JsonNullable() {
+        return playSessionId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    public void setPlaySessionId_JsonNullable(JsonNullable<String> playSessionId) {
+        this.playSessionId = playSessionId;
+    }
+
+    public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
+        this.playSessionId = JsonNullable.<String> of(playSessionId);
+    }
+
+    public PlaybackInfoResponse errorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
+        this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the error code.
+     * 
+     * @return errorCode
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public PlaybackErrorCode getErrorCode() {
+        return errorCode.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<PlaybackErrorCode> getErrorCode_JsonNullable() {
+        return errorCode;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+    public void setErrorCode_JsonNullable(JsonNullable<PlaybackErrorCode> errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setErrorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
+        this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PlaybackInfoResponse playbackInfoResponse = (PlaybackInfoResponse) o;
+        return Objects.equals(this.mediaSources, playbackInfoResponse.mediaSources)
+                && equalsNullable(this.playSessionId, playbackInfoResponse.playSessionId)
+                && equalsNullable(this.errorCode, playbackInfoResponse.errorCode);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mediaSources, hashCodeNullable(playSessionId), hashCodeNullable(errorCode));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PlaybackInfoResponse {\n");
+        sb.append("    mediaSources: ").append(toIndentedString(mediaSources)).append("\n");
+        sb.append("    playSessionId: ").append(toIndentedString(playSessionId)).append("\n");
+        sb.append("    errorCode: ").append(toIndentedString(errorCode)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static PlaybackInfoResponse.Builder builder() {
-    return new PlaybackInfoResponse.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public PlaybackInfoResponse.Builder toBuilder() {
-    return new PlaybackInfoResponse.Builder()
-      .mediaSources(getMediaSources())
-      .playSessionId(getPlaySessionId())
-      .errorCode(getErrorCode());
-  }
+    public static class Builder {
 
+        private PlaybackInfoResponse instance;
 
+        public Builder() {
+            this(new PlaybackInfoResponse());
+        }
+
+        protected Builder(PlaybackInfoResponse instance) {
+            this.instance = instance;
+        }
+
+        public PlaybackInfoResponse.Builder mediaSources(List<MediaSourceInfo> mediaSources) {
+            this.instance.mediaSources = mediaSources;
+            return this;
+        }
+
+        public PlaybackInfoResponse.Builder playSessionId(String playSessionId) {
+            this.instance.playSessionId = JsonNullable.<String> of(playSessionId);
+            return this;
+        }
+
+        public PlaybackInfoResponse.Builder playSessionId(JsonNullable<String> playSessionId) {
+            this.instance.playSessionId = playSessionId;
+            return this;
+        }
+
+        public PlaybackInfoResponse.Builder errorCode(PlaybackErrorCode errorCode) {
+            this.instance.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
+            return this;
+        }
+
+        public PlaybackInfoResponse.Builder errorCode(JsonNullable<PlaybackErrorCode> errorCode) {
+            this.instance.errorCode = errorCode;
+            return this;
+        }
+
+        /**
+         * returns a built PlaybackInfoResponse instance.
+         *
+         * The builder is not reusable.
+         */
+        public PlaybackInfoResponse build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static PlaybackInfoResponse.Builder builder() {
+        return new PlaybackInfoResponse.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public PlaybackInfoResponse.Builder toBuilder() {
+        return new PlaybackInfoResponse.Builder().mediaSources(getMediaSources()).playSessionId(getPlaySessionId())
+                .errorCode(getErrorCode());
+    }
 }
-

@@ -17,309 +17,304 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The update user password request body.
  */
-@JsonPropertyOrder({
-  UpdateUserPassword.JSON_PROPERTY_CURRENT_PASSWORD,
-  UpdateUserPassword.JSON_PROPERTY_CURRENT_PW,
-  UpdateUserPassword.JSON_PROPERTY_NEW_PW,
-  UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD
-})
+@JsonPropertyOrder({ UpdateUserPassword.JSON_PROPERTY_CURRENT_PASSWORD, UpdateUserPassword.JSON_PROPERTY_CURRENT_PW,
+        UpdateUserPassword.JSON_PROPERTY_NEW_PW, UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateUserPassword {
-  public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
-  @javax.annotation.Nullable
-  private JsonNullable<String> currentPassword = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
+    @javax.annotation.Nullable
+    private JsonNullable<String> currentPassword = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
-  @javax.annotation.Nullable
-  private JsonNullable<String> currentPw = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
+    @javax.annotation.Nullable
+    private JsonNullable<String> currentPw = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_NEW_PW = "NewPw";
-  @javax.annotation.Nullable
-  private JsonNullable<String> newPw = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NEW_PW = "NewPw";
+    @javax.annotation.Nullable
+    private JsonNullable<String> newPw = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
-  @javax.annotation.Nullable
-  private Boolean resetPassword;
+    public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
+    @javax.annotation.Nullable
+    private Boolean resetPassword;
 
-  public UpdateUserPassword() {
-  }
-
-  public UpdateUserPassword currentPassword(@javax.annotation.Nullable String currentPassword) {
-    this.currentPassword = JsonNullable.<String>of(currentPassword);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the current sha1-hashed password.
-   * @return currentPassword
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCurrentPassword() {
-        return currentPassword.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCurrentPassword_JsonNullable() {
-    return currentPassword;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
-  public void setCurrentPassword_JsonNullable(JsonNullable<String> currentPassword) {
-    this.currentPassword = currentPassword;
-  }
-
-  public void setCurrentPassword(@javax.annotation.Nullable String currentPassword) {
-    this.currentPassword = JsonNullable.<String>of(currentPassword);
-  }
-
-  public UpdateUserPassword currentPw(@javax.annotation.Nullable String currentPw) {
-    this.currentPw = JsonNullable.<String>of(currentPw);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the current plain text password.
-   * @return currentPw
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCurrentPw() {
-        return currentPw.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CURRENT_PW)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCurrentPw_JsonNullable() {
-    return currentPw;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CURRENT_PW)
-  public void setCurrentPw_JsonNullable(JsonNullable<String> currentPw) {
-    this.currentPw = currentPw;
-  }
-
-  public void setCurrentPw(@javax.annotation.Nullable String currentPw) {
-    this.currentPw = JsonNullable.<String>of(currentPw);
-  }
-
-  public UpdateUserPassword newPw(@javax.annotation.Nullable String newPw) {
-    this.newPw = JsonNullable.<String>of(newPw);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the new plain text password.
-   * @return newPw
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getNewPw() {
-        return newPw.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NEW_PW)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getNewPw_JsonNullable() {
-    return newPw;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NEW_PW)
-  public void setNewPw_JsonNullable(JsonNullable<String> newPw) {
-    this.newPw = newPw;
-  }
-
-  public void setNewPw(@javax.annotation.Nullable String newPw) {
-    this.newPw = JsonNullable.<String>of(newPw);
-  }
-
-  public UpdateUserPassword resetPassword(@javax.annotation.Nullable Boolean resetPassword) {
-    
-    this.resetPassword = resetPassword;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether to reset the password.
-   * @return resetPassword
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getResetPassword() {
-    return resetPassword;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResetPassword(@javax.annotation.Nullable Boolean resetPassword) {
-    this.resetPassword = resetPassword;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UpdateUserPassword updateUserPassword = (UpdateUserPassword) o;
-    return equalsNullable(this.currentPassword, updateUserPassword.currentPassword) &&
-        equalsNullable(this.currentPw, updateUserPassword.currentPw) &&
-        equalsNullable(this.newPw, updateUserPassword.newPw) &&
-        Objects.equals(this.resetPassword, updateUserPassword.resetPassword);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(currentPassword), hashCodeNullable(currentPw), hashCodeNullable(newPw), resetPassword);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateUserPassword {\n");
-    sb.append("    currentPassword: ").append(toIndentedString(currentPassword)).append("\n");
-    sb.append("    currentPw: ").append(toIndentedString(currentPw)).append("\n");
-    sb.append("    newPw: ").append(toIndentedString(newPw)).append("\n");
-    sb.append("    resetPassword: ").append(toIndentedString(resetPassword)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private UpdateUserPassword instance;
-
-    public Builder() {
-      this(new UpdateUserPassword());
+    public UpdateUserPassword() {
     }
 
-    protected Builder(UpdateUserPassword instance) {
-      this.instance = instance;
-    }
+    public UpdateUserPassword currentPassword(@javax.annotation.Nullable String currentPassword) {
+        this.currentPassword = JsonNullable.<String> of(currentPassword);
 
-    public UpdateUserPassword.Builder currentPassword(String currentPassword) {
-      this.instance.currentPassword = JsonNullable.<String>of(currentPassword);
-      return this;
+        return this;
     }
-    public UpdateUserPassword.Builder currentPassword(JsonNullable<String> currentPassword) {
-      this.instance.currentPassword = currentPassword;
-      return this;
-    }
-    public UpdateUserPassword.Builder currentPw(String currentPw) {
-      this.instance.currentPw = JsonNullable.<String>of(currentPw);
-      return this;
-    }
-    public UpdateUserPassword.Builder currentPw(JsonNullable<String> currentPw) {
-      this.instance.currentPw = currentPw;
-      return this;
-    }
-    public UpdateUserPassword.Builder newPw(String newPw) {
-      this.instance.newPw = JsonNullable.<String>of(newPw);
-      return this;
-    }
-    public UpdateUserPassword.Builder newPw(JsonNullable<String> newPw) {
-      this.instance.newPw = newPw;
-      return this;
-    }
-    public UpdateUserPassword.Builder resetPassword(Boolean resetPassword) {
-      this.instance.resetPassword = resetPassword;
-      return this;
-    }
-
 
     /**
-    * returns a built UpdateUserPassword instance.
-    *
-    * The builder is not reusable.
-    */
-    public UpdateUserPassword build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the current sha1-hashed password.
+     * 
+     * @return currentPassword
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCurrentPassword() {
+        return currentPassword.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCurrentPassword_JsonNullable() {
+        return currentPassword;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+    public void setCurrentPassword_JsonNullable(JsonNullable<String> currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
+    public void setCurrentPassword(@javax.annotation.Nullable String currentPassword) {
+        this.currentPassword = JsonNullable.<String> of(currentPassword);
+    }
+
+    public UpdateUserPassword currentPw(@javax.annotation.Nullable String currentPw) {
+        this.currentPw = JsonNullable.<String> of(currentPw);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the current plain text password.
+     * 
+     * @return currentPw
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCurrentPw() {
+        return currentPw.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCurrentPw_JsonNullable() {
+        return currentPw;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+    public void setCurrentPw_JsonNullable(JsonNullable<String> currentPw) {
+        this.currentPw = currentPw;
+    }
+
+    public void setCurrentPw(@javax.annotation.Nullable String currentPw) {
+        this.currentPw = JsonNullable.<String> of(currentPw);
+    }
+
+    public UpdateUserPassword newPw(@javax.annotation.Nullable String newPw) {
+        this.newPw = JsonNullable.<String> of(newPw);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the new plain text password.
+     * 
+     * @return newPw
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getNewPw() {
+        return newPw.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NEW_PW)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getNewPw_JsonNullable() {
+        return newPw;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NEW_PW)
+    public void setNewPw_JsonNullable(JsonNullable<String> newPw) {
+        this.newPw = newPw;
+    }
+
+    public void setNewPw(@javax.annotation.Nullable String newPw) {
+        this.newPw = JsonNullable.<String> of(newPw);
+    }
+
+    public UpdateUserPassword resetPassword(@javax.annotation.Nullable Boolean resetPassword) {
+
+        this.resetPassword = resetPassword;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether to reset the password.
+     * 
+     * @return resetPassword
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getResetPassword() {
+        return resetPassword;
+    }
+
+    @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setResetPassword(@javax.annotation.Nullable Boolean resetPassword) {
+        this.resetPassword = resetPassword;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdateUserPassword updateUserPassword = (UpdateUserPassword) o;
+        return equalsNullable(this.currentPassword, updateUserPassword.currentPassword)
+                && equalsNullable(this.currentPw, updateUserPassword.currentPw)
+                && equalsNullable(this.newPw, updateUserPassword.newPw)
+                && Objects.equals(this.resetPassword, updateUserPassword.resetPassword);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(currentPassword), hashCodeNullable(currentPw), hashCodeNullable(newPw),
+                resetPassword);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UpdateUserPassword {\n");
+        sb.append("    currentPassword: ").append(toIndentedString(currentPassword)).append("\n");
+        sb.append("    currentPw: ").append(toIndentedString(currentPw)).append("\n");
+        sb.append("    newPw: ").append(toIndentedString(newPw)).append("\n");
+        sb.append("    resetPassword: ").append(toIndentedString(resetPassword)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static UpdateUserPassword.Builder builder() {
-    return new UpdateUserPassword.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public UpdateUserPassword.Builder toBuilder() {
-    return new UpdateUserPassword.Builder()
-      .currentPassword(getCurrentPassword())
-      .currentPw(getCurrentPw())
-      .newPw(getNewPw())
-      .resetPassword(getResetPassword());
-  }
+    public static class Builder {
 
+        private UpdateUserPassword instance;
 
+        public Builder() {
+            this(new UpdateUserPassword());
+        }
+
+        protected Builder(UpdateUserPassword instance) {
+            this.instance = instance;
+        }
+
+        public UpdateUserPassword.Builder currentPassword(String currentPassword) {
+            this.instance.currentPassword = JsonNullable.<String> of(currentPassword);
+            return this;
+        }
+
+        public UpdateUserPassword.Builder currentPassword(JsonNullable<String> currentPassword) {
+            this.instance.currentPassword = currentPassword;
+            return this;
+        }
+
+        public UpdateUserPassword.Builder currentPw(String currentPw) {
+            this.instance.currentPw = JsonNullable.<String> of(currentPw);
+            return this;
+        }
+
+        public UpdateUserPassword.Builder currentPw(JsonNullable<String> currentPw) {
+            this.instance.currentPw = currentPw;
+            return this;
+        }
+
+        public UpdateUserPassword.Builder newPw(String newPw) {
+            this.instance.newPw = JsonNullable.<String> of(newPw);
+            return this;
+        }
+
+        public UpdateUserPassword.Builder newPw(JsonNullable<String> newPw) {
+            this.instance.newPw = newPw;
+            return this;
+        }
+
+        public UpdateUserPassword.Builder resetPassword(Boolean resetPassword) {
+            this.instance.resetPassword = resetPassword;
+            return this;
+        }
+
+        /**
+         * returns a built UpdateUserPassword instance.
+         *
+         * The builder is not reusable.
+         */
+        public UpdateUserPassword build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static UpdateUserPassword.Builder builder() {
+        return new UpdateUserPassword.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public UpdateUserPassword.Builder toBuilder() {
+        return new UpdateUserPassword.Builder().currentPassword(getCurrentPassword()).currentPw(getCurrentPw())
+                .newPw(getNewPw()).resetPassword(getResetPassword());
+    }
 }
-

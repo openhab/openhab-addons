@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,41 +24,40 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets Video3DFormat
  */
 public enum Video3DFormat {
-  
-  HALF_SIDE_BY_SIDE("HalfSideBySide"),
-  
-  FULL_SIDE_BY_SIDE("FullSideBySide"),
-  
-  FULL_TOP_AND_BOTTOM("FullTopAndBottom"),
-  
-  HALF_TOP_AND_BOTTOM("HalfTopAndBottom"),
-  
-  MVC("MVC");
 
-  private String value;
+    HALF_SIDE_BY_SIDE("HalfSideBySide"),
 
-  Video3DFormat(String value) {
-    this.value = value;
-  }
+    FULL_SIDE_BY_SIDE("FullSideBySide"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    FULL_TOP_AND_BOTTOM("FullTopAndBottom"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    HALF_TOP_AND_BOTTOM("HalfTopAndBottom"),
 
-  @JsonCreator
-  public static Video3DFormat fromValue(String value) {
-    for (Video3DFormat b : Video3DFormat.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    MVC("MVC");
+
+    private String value;
+
+    Video3DFormat(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static Video3DFormat fromValue(String value) {
+        for (Video3DFormat b : Video3DFormat.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

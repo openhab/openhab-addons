@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,57 +24,56 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Collection type.
  */
 public enum CollectionType {
-  
-  UNKNOWN("unknown"),
-  
-  MOVIES("movies"),
-  
-  TVSHOWS("tvshows"),
-  
-  MUSIC("music"),
-  
-  MUSICVIDEOS("musicvideos"),
-  
-  TRAILERS("trailers"),
-  
-  HOMEVIDEOS("homevideos"),
-  
-  BOXSETS("boxsets"),
-  
-  BOOKS("books"),
-  
-  PHOTOS("photos"),
-  
-  LIVETV("livetv"),
-  
-  PLAYLISTS("playlists"),
-  
-  FOLDERS("folders");
 
-  private String value;
+    UNKNOWN("unknown"),
 
-  CollectionType(String value) {
-    this.value = value;
-  }
+    MOVIES("movies"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    TVSHOWS("tvshows"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    MUSIC("music"),
 
-  @JsonCreator
-  public static CollectionType fromValue(String value) {
-    for (CollectionType b : CollectionType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    MUSICVIDEOS("musicvideos"),
+
+    TRAILERS("trailers"),
+
+    HOMEVIDEOS("homevideos"),
+
+    BOXSETS("boxsets"),
+
+    BOOKS("books"),
+
+    PHOTOS("photos"),
+
+    LIVETV("livetv"),
+
+    PLAYLISTS("playlists"),
+
+    FOLDERS("folders");
+
+    private String value;
+
+    CollectionType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static CollectionType fromValue(String value) {
+        for (CollectionType b : CollectionType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

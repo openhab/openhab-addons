@@ -17,285 +17,275 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The server discovery info model.
  */
-@JsonPropertyOrder({
-  ServerDiscoveryInfo.JSON_PROPERTY_ADDRESS,
-  ServerDiscoveryInfo.JSON_PROPERTY_ID,
-  ServerDiscoveryInfo.JSON_PROPERTY_NAME,
-  ServerDiscoveryInfo.JSON_PROPERTY_ENDPOINT_ADDRESS
-})
+@JsonPropertyOrder({ ServerDiscoveryInfo.JSON_PROPERTY_ADDRESS, ServerDiscoveryInfo.JSON_PROPERTY_ID,
+        ServerDiscoveryInfo.JSON_PROPERTY_NAME, ServerDiscoveryInfo.JSON_PROPERTY_ENDPOINT_ADDRESS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ServerDiscoveryInfo {
-  public static final String JSON_PROPERTY_ADDRESS = "Address";
-  @javax.annotation.Nullable
-  private String address;
+    public static final String JSON_PROPERTY_ADDRESS = "Address";
+    @javax.annotation.Nullable
+    private String address;
 
-  public static final String JSON_PROPERTY_ID = "Id";
-  @javax.annotation.Nullable
-  private String id;
+    public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
+    private String id;
 
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private String name;
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private String name;
 
-  public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
-  @javax.annotation.Nullable
-  private JsonNullable<String> endpointAddress = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
+    @javax.annotation.Nullable
+    private JsonNullable<String> endpointAddress = JsonNullable.<String> undefined();
 
-  public ServerDiscoveryInfo() {
-  }
-
-  public ServerDiscoveryInfo address(@javax.annotation.Nullable String address) {
-    
-    this.address = address;
-    return this;
-  }
-
-  /**
-   * Gets the address.
-   * @return address
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ADDRESS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getAddress() {
-    return address;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ADDRESS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAddress(@javax.annotation.Nullable String address) {
-    this.address = address;
-  }
-
-  public ServerDiscoveryInfo id(@javax.annotation.Nullable String id) {
-    
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Gets the server identifier.
-   * @return id
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getId() {
-    return id;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
-  }
-
-  public ServerDiscoveryInfo name(@javax.annotation.Nullable String name) {
-    
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Gets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getName() {
-    return name;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
-  }
-
-  public ServerDiscoveryInfo endpointAddress(@javax.annotation.Nullable String endpointAddress) {
-    this.endpointAddress = JsonNullable.<String>of(endpointAddress);
-    
-    return this;
-  }
-
-  /**
-   * Gets the endpoint address.
-   * @return endpointAddress
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getEndpointAddress() {
-        return endpointAddress.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getEndpointAddress_JsonNullable() {
-    return endpointAddress;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
-  public void setEndpointAddress_JsonNullable(JsonNullable<String> endpointAddress) {
-    this.endpointAddress = endpointAddress;
-  }
-
-  public void setEndpointAddress(@javax.annotation.Nullable String endpointAddress) {
-    this.endpointAddress = JsonNullable.<String>of(endpointAddress);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ServerDiscoveryInfo serverDiscoveryInfo = (ServerDiscoveryInfo) o;
-    return Objects.equals(this.address, serverDiscoveryInfo.address) &&
-        Objects.equals(this.id, serverDiscoveryInfo.id) &&
-        Objects.equals(this.name, serverDiscoveryInfo.name) &&
-        equalsNullable(this.endpointAddress, serverDiscoveryInfo.endpointAddress);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(address, id, name, hashCodeNullable(endpointAddress));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ServerDiscoveryInfo {\n");
-    sb.append("    address: ").append(toIndentedString(address)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    endpointAddress: ").append(toIndentedString(endpointAddress)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ServerDiscoveryInfo instance;
-
-    public Builder() {
-      this(new ServerDiscoveryInfo());
+    public ServerDiscoveryInfo() {
     }
 
-    protected Builder(ServerDiscoveryInfo instance) {
-      this.instance = instance;
-    }
+    public ServerDiscoveryInfo address(@javax.annotation.Nullable String address) {
 
-    public ServerDiscoveryInfo.Builder address(String address) {
-      this.instance.address = address;
-      return this;
+        this.address = address;
+        return this;
     }
-    public ServerDiscoveryInfo.Builder id(String id) {
-      this.instance.id = id;
-      return this;
-    }
-    public ServerDiscoveryInfo.Builder name(String name) {
-      this.instance.name = name;
-      return this;
-    }
-    public ServerDiscoveryInfo.Builder endpointAddress(String endpointAddress) {
-      this.instance.endpointAddress = JsonNullable.<String>of(endpointAddress);
-      return this;
-    }
-    public ServerDiscoveryInfo.Builder endpointAddress(JsonNullable<String> endpointAddress) {
-      this.instance.endpointAddress = endpointAddress;
-      return this;
-    }
-
 
     /**
-    * returns a built ServerDiscoveryInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public ServerDiscoveryInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets the address.
+     * 
+     * @return address
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ADDRESS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getAddress() {
+        return address;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ADDRESS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAddress(@javax.annotation.Nullable String address) {
+        this.address = address;
+    }
+
+    public ServerDiscoveryInfo id(@javax.annotation.Nullable String id) {
+
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * Gets the server identifier.
+     * 
+     * @return id
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getId() {
+        return id;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
+        this.id = id;
+    }
+
+    public ServerDiscoveryInfo name(@javax.annotation.Nullable String name) {
+
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Gets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getName() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = name;
+    }
+
+    public ServerDiscoveryInfo endpointAddress(@javax.annotation.Nullable String endpointAddress) {
+        this.endpointAddress = JsonNullable.<String> of(endpointAddress);
+
+        return this;
+    }
+
+    /**
+     * Gets the endpoint address.
+     * 
+     * @return endpointAddress
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getEndpointAddress() {
+        return endpointAddress.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getEndpointAddress_JsonNullable() {
+        return endpointAddress;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
+    public void setEndpointAddress_JsonNullable(JsonNullable<String> endpointAddress) {
+        this.endpointAddress = endpointAddress;
+    }
+
+    public void setEndpointAddress(@javax.annotation.Nullable String endpointAddress) {
+        this.endpointAddress = JsonNullable.<String> of(endpointAddress);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ServerDiscoveryInfo serverDiscoveryInfo = (ServerDiscoveryInfo) o;
+        return Objects.equals(this.address, serverDiscoveryInfo.address)
+                && Objects.equals(this.id, serverDiscoveryInfo.id)
+                && Objects.equals(this.name, serverDiscoveryInfo.name)
+                && equalsNullable(this.endpointAddress, serverDiscoveryInfo.endpointAddress);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(address, id, name, hashCodeNullable(endpointAddress));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ServerDiscoveryInfo {\n");
+        sb.append("    address: ").append(toIndentedString(address)).append("\n");
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    endpointAddress: ").append(toIndentedString(endpointAddress)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ServerDiscoveryInfo.Builder builder() {
-    return new ServerDiscoveryInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ServerDiscoveryInfo.Builder toBuilder() {
-    return new ServerDiscoveryInfo.Builder()
-      .address(getAddress())
-      .id(getId())
-      .name(getName())
-      .endpointAddress(getEndpointAddress());
-  }
+    public static class Builder {
 
+        private ServerDiscoveryInfo instance;
 
+        public Builder() {
+            this(new ServerDiscoveryInfo());
+        }
+
+        protected Builder(ServerDiscoveryInfo instance) {
+            this.instance = instance;
+        }
+
+        public ServerDiscoveryInfo.Builder address(String address) {
+            this.instance.address = address;
+            return this;
+        }
+
+        public ServerDiscoveryInfo.Builder id(String id) {
+            this.instance.id = id;
+            return this;
+        }
+
+        public ServerDiscoveryInfo.Builder name(String name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public ServerDiscoveryInfo.Builder endpointAddress(String endpointAddress) {
+            this.instance.endpointAddress = JsonNullable.<String> of(endpointAddress);
+            return this;
+        }
+
+        public ServerDiscoveryInfo.Builder endpointAddress(JsonNullable<String> endpointAddress) {
+            this.instance.endpointAddress = endpointAddress;
+            return this;
+        }
+
+        /**
+         * returns a built ServerDiscoveryInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public ServerDiscoveryInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ServerDiscoveryInfo.Builder builder() {
+        return new ServerDiscoveryInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ServerDiscoveryInfo.Builder toBuilder() {
+        return new ServerDiscoveryInfo.Builder().address(getAddress()).id(getId()).name(getName())
+                .endpointAddress(getEndpointAddress());
+    }
 }
-

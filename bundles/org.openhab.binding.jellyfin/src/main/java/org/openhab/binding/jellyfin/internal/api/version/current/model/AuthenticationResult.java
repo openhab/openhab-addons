@@ -17,323 +17,318 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.UserDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * A class representing an authentication result.
  */
-@JsonPropertyOrder({
-  AuthenticationResult.JSON_PROPERTY_USER,
-  AuthenticationResult.JSON_PROPERTY_SESSION_INFO,
-  AuthenticationResult.JSON_PROPERTY_ACCESS_TOKEN,
-  AuthenticationResult.JSON_PROPERTY_SERVER_ID
-})
+@JsonPropertyOrder({ AuthenticationResult.JSON_PROPERTY_USER, AuthenticationResult.JSON_PROPERTY_SESSION_INFO,
+        AuthenticationResult.JSON_PROPERTY_ACCESS_TOKEN, AuthenticationResult.JSON_PROPERTY_SERVER_ID })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AuthenticationResult {
-  public static final String JSON_PROPERTY_USER = "User";
-  @javax.annotation.Nullable
-  private JsonNullable<UserDto> user = JsonNullable.<UserDto>undefined();
+    public static final String JSON_PROPERTY_USER = "User";
+    @javax.annotation.Nullable
+    private JsonNullable<UserDto> user = JsonNullable.<UserDto> undefined();
 
-  public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
-  @javax.annotation.Nullable
-  private JsonNullable<SessionInfoDto> sessionInfo = JsonNullable.<SessionInfoDto>undefined();
+    public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
+    @javax.annotation.Nullable
+    private JsonNullable<SessionInfoDto> sessionInfo = JsonNullable.<SessionInfoDto> undefined();
 
-  public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
-  @javax.annotation.Nullable
-  private JsonNullable<String> accessToken = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+    @javax.annotation.Nullable
+    private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-  @javax.annotation.Nullable
-  private JsonNullable<String> serverId = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+    @javax.annotation.Nullable
+    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
 
-  public AuthenticationResult() {
-  }
-
-  public AuthenticationResult user(@javax.annotation.Nullable UserDto user) {
-    this.user = JsonNullable.<UserDto>of(user);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the user.
-   * @return user
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public UserDto getUser() {
-        return user.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_USER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<UserDto> getUser_JsonNullable() {
-    return user;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_USER)
-  public void setUser_JsonNullable(JsonNullable<UserDto> user) {
-    this.user = user;
-  }
-
-  public void setUser(@javax.annotation.Nullable UserDto user) {
-    this.user = JsonNullable.<UserDto>of(user);
-  }
-
-  public AuthenticationResult sessionInfo(@javax.annotation.Nullable SessionInfoDto sessionInfo) {
-    this.sessionInfo = JsonNullable.<SessionInfoDto>of(sessionInfo);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the session info.
-   * @return sessionInfo
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public SessionInfoDto getSessionInfo() {
-        return sessionInfo.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SESSION_INFO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<SessionInfoDto> getSessionInfo_JsonNullable() {
-    return sessionInfo;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SESSION_INFO)
-  public void setSessionInfo_JsonNullable(JsonNullable<SessionInfoDto> sessionInfo) {
-    this.sessionInfo = sessionInfo;
-  }
-
-  public void setSessionInfo(@javax.annotation.Nullable SessionInfoDto sessionInfo) {
-    this.sessionInfo = JsonNullable.<SessionInfoDto>of(sessionInfo);
-  }
-
-  public AuthenticationResult accessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = JsonNullable.<String>of(accessToken);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the access token.
-   * @return accessToken
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getAccessToken() {
-        return accessToken.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getAccessToken_JsonNullable() {
-    return accessToken;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
-  public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
-    this.accessToken = accessToken;
-  }
-
-  public void setAccessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = JsonNullable.<String>of(accessToken);
-  }
-
-  public AuthenticationResult serverId(@javax.annotation.Nullable String serverId) {
-    this.serverId = JsonNullable.<String>of(serverId);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the server id.
-   * @return serverId
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getServerId() {
-        return serverId.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SERVER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getServerId_JsonNullable() {
-    return serverId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SERVER_ID)
-  public void setServerId_JsonNullable(JsonNullable<String> serverId) {
-    this.serverId = serverId;
-  }
-
-  public void setServerId(@javax.annotation.Nullable String serverId) {
-    this.serverId = JsonNullable.<String>of(serverId);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    AuthenticationResult authenticationResult = (AuthenticationResult) o;
-    return equalsNullable(this.user, authenticationResult.user) &&
-        equalsNullable(this.sessionInfo, authenticationResult.sessionInfo) &&
-        equalsNullable(this.accessToken, authenticationResult.accessToken) &&
-        equalsNullable(this.serverId, authenticationResult.serverId);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(user), hashCodeNullable(sessionInfo), hashCodeNullable(accessToken), hashCodeNullable(serverId));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class AuthenticationResult {\n");
-    sb.append("    user: ").append(toIndentedString(user)).append("\n");
-    sb.append("    sessionInfo: ").append(toIndentedString(sessionInfo)).append("\n");
-    sb.append("    accessToken: ").append(toIndentedString(accessToken)).append("\n");
-    sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private AuthenticationResult instance;
-
-    public Builder() {
-      this(new AuthenticationResult());
+    public AuthenticationResult() {
     }
 
-    protected Builder(AuthenticationResult instance) {
-      this.instance = instance;
-    }
+    public AuthenticationResult user(@javax.annotation.Nullable UserDto user) {
+        this.user = JsonNullable.<UserDto> of(user);
 
-    public AuthenticationResult.Builder user(UserDto user) {
-      this.instance.user = JsonNullable.<UserDto>of(user);
-      return this;
+        return this;
     }
-    public AuthenticationResult.Builder user(JsonNullable<UserDto> user) {
-      this.instance.user = user;
-      return this;
-    }
-    public AuthenticationResult.Builder sessionInfo(SessionInfoDto sessionInfo) {
-      this.instance.sessionInfo = JsonNullable.<SessionInfoDto>of(sessionInfo);
-      return this;
-    }
-    public AuthenticationResult.Builder sessionInfo(JsonNullable<SessionInfoDto> sessionInfo) {
-      this.instance.sessionInfo = sessionInfo;
-      return this;
-    }
-    public AuthenticationResult.Builder accessToken(String accessToken) {
-      this.instance.accessToken = JsonNullable.<String>of(accessToken);
-      return this;
-    }
-    public AuthenticationResult.Builder accessToken(JsonNullable<String> accessToken) {
-      this.instance.accessToken = accessToken;
-      return this;
-    }
-    public AuthenticationResult.Builder serverId(String serverId) {
-      this.instance.serverId = JsonNullable.<String>of(serverId);
-      return this;
-    }
-    public AuthenticationResult.Builder serverId(JsonNullable<String> serverId) {
-      this.instance.serverId = serverId;
-      return this;
-    }
-
 
     /**
-    * returns a built AuthenticationResult instance.
-    *
-    * The builder is not reusable.
-    */
-    public AuthenticationResult build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the user.
+     * 
+     * @return user
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public UserDto getUser() {
+        return user.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<UserDto> getUser_JsonNullable() {
+        return user;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER)
+    public void setUser_JsonNullable(JsonNullable<UserDto> user) {
+        this.user = user;
+    }
+
+    public void setUser(@javax.annotation.Nullable UserDto user) {
+        this.user = JsonNullable.<UserDto> of(user);
+    }
+
+    public AuthenticationResult sessionInfo(@javax.annotation.Nullable SessionInfoDto sessionInfo) {
+        this.sessionInfo = JsonNullable.<SessionInfoDto> of(sessionInfo);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the session info.
+     * 
+     * @return sessionInfo
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public SessionInfoDto getSessionInfo() {
+        return sessionInfo.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<SessionInfoDto> getSessionInfo_JsonNullable() {
+        return sessionInfo;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+    public void setSessionInfo_JsonNullable(JsonNullable<SessionInfoDto> sessionInfo) {
+        this.sessionInfo = sessionInfo;
+    }
+
+    public void setSessionInfo(@javax.annotation.Nullable SessionInfoDto sessionInfo) {
+        this.sessionInfo = JsonNullable.<SessionInfoDto> of(sessionInfo);
+    }
+
+    public AuthenticationResult accessToken(@javax.annotation.Nullable String accessToken) {
+        this.accessToken = JsonNullable.<String> of(accessToken);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the access token.
+     * 
+     * @return accessToken
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getAccessToken() {
+        return accessToken.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getAccessToken_JsonNullable() {
+        return accessToken;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setAccessToken(@javax.annotation.Nullable String accessToken) {
+        this.accessToken = JsonNullable.<String> of(accessToken);
+    }
+
+    public AuthenticationResult serverId(@javax.annotation.Nullable String serverId) {
+        this.serverId = JsonNullable.<String> of(serverId);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the server id.
+     * 
+     * @return serverId
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getServerId() {
+        return serverId.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getServerId_JsonNullable() {
+        return serverId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+        this.serverId = serverId;
+    }
+
+    public void setServerId(@javax.annotation.Nullable String serverId) {
+        this.serverId = JsonNullable.<String> of(serverId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthenticationResult authenticationResult = (AuthenticationResult) o;
+        return equalsNullable(this.user, authenticationResult.user)
+                && equalsNullable(this.sessionInfo, authenticationResult.sessionInfo)
+                && equalsNullable(this.accessToken, authenticationResult.accessToken)
+                && equalsNullable(this.serverId, authenticationResult.serverId);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(user), hashCodeNullable(sessionInfo), hashCodeNullable(accessToken),
+                hashCodeNullable(serverId));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class AuthenticationResult {\n");
+        sb.append("    user: ").append(toIndentedString(user)).append("\n");
+        sb.append("    sessionInfo: ").append(toIndentedString(sessionInfo)).append("\n");
+        sb.append("    accessToken: ").append(toIndentedString(accessToken)).append("\n");
+        sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static AuthenticationResult.Builder builder() {
-    return new AuthenticationResult.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public AuthenticationResult.Builder toBuilder() {
-    return new AuthenticationResult.Builder()
-      .user(getUser())
-      .sessionInfo(getSessionInfo())
-      .accessToken(getAccessToken())
-      .serverId(getServerId());
-  }
+    public static class Builder {
 
+        private AuthenticationResult instance;
 
+        public Builder() {
+            this(new AuthenticationResult());
+        }
+
+        protected Builder(AuthenticationResult instance) {
+            this.instance = instance;
+        }
+
+        public AuthenticationResult.Builder user(UserDto user) {
+            this.instance.user = JsonNullable.<UserDto> of(user);
+            return this;
+        }
+
+        public AuthenticationResult.Builder user(JsonNullable<UserDto> user) {
+            this.instance.user = user;
+            return this;
+        }
+
+        public AuthenticationResult.Builder sessionInfo(SessionInfoDto sessionInfo) {
+            this.instance.sessionInfo = JsonNullable.<SessionInfoDto> of(sessionInfo);
+            return this;
+        }
+
+        public AuthenticationResult.Builder sessionInfo(JsonNullable<SessionInfoDto> sessionInfo) {
+            this.instance.sessionInfo = sessionInfo;
+            return this;
+        }
+
+        public AuthenticationResult.Builder accessToken(String accessToken) {
+            this.instance.accessToken = JsonNullable.<String> of(accessToken);
+            return this;
+        }
+
+        public AuthenticationResult.Builder accessToken(JsonNullable<String> accessToken) {
+            this.instance.accessToken = accessToken;
+            return this;
+        }
+
+        public AuthenticationResult.Builder serverId(String serverId) {
+            this.instance.serverId = JsonNullable.<String> of(serverId);
+            return this;
+        }
+
+        public AuthenticationResult.Builder serverId(JsonNullable<String> serverId) {
+            this.instance.serverId = serverId;
+            return this;
+        }
+
+        /**
+         * returns a built AuthenticationResult instance.
+         *
+         * The builder is not reusable.
+         */
+        public AuthenticationResult build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static AuthenticationResult.Builder builder() {
+        return new AuthenticationResult.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public AuthenticationResult.Builder toBuilder() {
+        return new AuthenticationResult.Builder().user(getUser()).sessionInfo(getSessionInfo())
+                .accessToken(getAccessToken()).serverId(getServerId());
+    }
 }
-

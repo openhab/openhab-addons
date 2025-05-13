@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,49 +24,48 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ImageResolution.
  */
 public enum ImageResolution {
-  
-  MATCH_SOURCE("MatchSource"),
-  
-  P144("P144"),
-  
-  P240("P240"),
-  
-  P360("P360"),
-  
-  P480("P480"),
-  
-  P720("P720"),
-  
-  P1080("P1080"),
-  
-  P1440("P1440"),
-  
-  P2160("P2160");
 
-  private String value;
+    MATCH_SOURCE("MatchSource"),
 
-  ImageResolution(String value) {
-    this.value = value;
-  }
+    P144("P144"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    P240("P240"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    P360("P360"),
 
-  @JsonCreator
-  public static ImageResolution fromValue(String value) {
-    for (ImageResolution b : ImageResolution.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    P480("P480"),
+
+    P720("P720"),
+
+    P1080("P1080"),
+
+    P1440("P1440"),
+
+    P2160("P2160");
+
+    private String value;
+
+    ImageResolution(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ImageResolution fromValue(String value) {
+        for (ImageResolution b : ImageResolution.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

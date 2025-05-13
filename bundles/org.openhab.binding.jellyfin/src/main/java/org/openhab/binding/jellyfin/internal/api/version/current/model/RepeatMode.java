@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RepeatMode
  */
 public enum RepeatMode {
-  
-  REPEAT_NONE("RepeatNone"),
-  
-  REPEAT_ALL("RepeatAll"),
-  
-  REPEAT_ONE("RepeatOne");
 
-  private String value;
+    REPEAT_NONE("RepeatNone"),
 
-  RepeatMode(String value) {
-    this.value = value;
-  }
+    REPEAT_ALL("RepeatAll"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    REPEAT_ONE("RepeatOne");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static RepeatMode fromValue(String value) {
-    for (RepeatMode b : RepeatMode.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    RepeatMode(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static RepeatMode fromValue(String value) {
+        for (RepeatMode b : RepeatMode.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

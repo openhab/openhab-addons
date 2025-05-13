@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,45 +24,44 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MediaProtocol
  */
 public enum MediaProtocol {
-  
-  FILE("File"),
-  
-  HTTP("Http"),
-  
-  RTMP("Rtmp"),
-  
-  RTSP("Rtsp"),
-  
-  UDP("Udp"),
-  
-  RTP("Rtp"),
-  
-  FTP("Ftp");
 
-  private String value;
+    FILE("File"),
 
-  MediaProtocol(String value) {
-    this.value = value;
-  }
+    HTTP("Http"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    RTMP("Rtmp"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    RTSP("Rtsp"),
 
-  @JsonCreator
-  public static MediaProtocol fromValue(String value) {
-    for (MediaProtocol b : MediaProtocol.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    UDP("Udp"),
+
+    RTP("Rtp"),
+
+    FTP("Ftp");
+
+    private String value;
+
+    MediaProtocol(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static MediaProtocol fromValue(String value) {
+        for (MediaProtocol b : MediaProtocol.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

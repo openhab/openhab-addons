@@ -18,222 +18,206 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.GroupUpdateType;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.PlayQueueUpdate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class GroupUpdate.
  */
-@JsonPropertyOrder({
-  PlayQueueUpdateGroupUpdate.JSON_PROPERTY_GROUP_ID,
-  PlayQueueUpdateGroupUpdate.JSON_PROPERTY_TYPE,
-  PlayQueueUpdateGroupUpdate.JSON_PROPERTY_DATA
-})
+@JsonPropertyOrder({ PlayQueueUpdateGroupUpdate.JSON_PROPERTY_GROUP_ID, PlayQueueUpdateGroupUpdate.JSON_PROPERTY_TYPE,
+        PlayQueueUpdateGroupUpdate.JSON_PROPERTY_DATA })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlayQueueUpdateGroupUpdate {
-  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-  @javax.annotation.Nullable
-  private UUID groupId;
+    public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
+    @javax.annotation.Nullable
+    private UUID groupId;
 
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private GroupUpdateType type;
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private GroupUpdateType type;
 
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nullable
-  private PlayQueueUpdate data;
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
+    private PlayQueueUpdate data;
 
-  public PlayQueueUpdateGroupUpdate() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public PlayQueueUpdateGroupUpdate(
-    @JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId
-  ) {
-    this();
-    this.groupId = groupId;
-  }
-
-  /**
-   * Gets the group identifier.
-   * @return groupId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getGroupId() {
-    return groupId;
-  }
-
-
-
-  public PlayQueueUpdateGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
-    
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Gets the update type.
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public GroupUpdateType getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(@javax.annotation.Nullable GroupUpdateType type) {
-    this.type = type;
-  }
-
-  public PlayQueueUpdateGroupUpdate data(@javax.annotation.Nullable PlayQueueUpdate data) {
-    
-    this.data = data;
-    return this;
-  }
-
-  /**
-   * Gets the update data.
-   * @return data
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public PlayQueueUpdate getData() {
-    return data;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setData(@javax.annotation.Nullable PlayQueueUpdate data) {
-    this.data = data;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public PlayQueueUpdateGroupUpdate() {
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PlayQueueUpdateGroupUpdate playQueueUpdateGroupUpdate = (PlayQueueUpdateGroupUpdate) o;
-    return Objects.equals(this.groupId, playQueueUpdateGroupUpdate.groupId) &&
-        Objects.equals(this.type, playQueueUpdateGroupUpdate.type) &&
-        Objects.equals(this.data, playQueueUpdateGroupUpdate.data);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(groupId, type, data);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PlayQueueUpdateGroupUpdate {\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private PlayQueueUpdateGroupUpdate instance;
-
-    public Builder() {
-      this(new PlayQueueUpdateGroupUpdate());
-    }
-
-    protected Builder(PlayQueueUpdateGroupUpdate instance) {
-      this.instance = instance;
-    }
-
-    public PlayQueueUpdateGroupUpdate.Builder groupId(UUID groupId) {
-      this.instance.groupId = groupId;
-      return this;
-    }
-    public PlayQueueUpdateGroupUpdate.Builder type(GroupUpdateType type) {
-      this.instance.type = type;
-      return this;
-    }
-    public PlayQueueUpdateGroupUpdate.Builder data(PlayQueueUpdate data) {
-      this.instance.data = data;
-      return this;
-    }
-
 
     /**
-    * returns a built PlayQueueUpdateGroupUpdate instance.
-    *
-    * The builder is not reusable.
-    */
-    public PlayQueueUpdateGroupUpdate build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public PlayQueueUpdateGroupUpdate(@JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId) {
+        this();
+        this.groupId = groupId;
+    }
+
+    /**
+     * Gets the group identifier.
+     * 
+     * @return groupId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public PlayQueueUpdateGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
+
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Gets the update type.
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public GroupUpdateType getType() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable GroupUpdateType type) {
+        this.type = type;
+    }
+
+    public PlayQueueUpdateGroupUpdate data(@javax.annotation.Nullable PlayQueueUpdate data) {
+
+        this.data = data;
+        return this;
+    }
+
+    /**
+     * Gets the update data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public PlayQueueUpdate getData() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setData(@javax.annotation.Nullable PlayQueueUpdate data) {
+        this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PlayQueueUpdateGroupUpdate playQueueUpdateGroupUpdate = (PlayQueueUpdateGroupUpdate) o;
+        return Objects.equals(this.groupId, playQueueUpdateGroupUpdate.groupId)
+                && Objects.equals(this.type, playQueueUpdateGroupUpdate.type)
+                && Objects.equals(this.data, playQueueUpdateGroupUpdate.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, type, data);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PlayQueueUpdateGroupUpdate {\n");
+        sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static PlayQueueUpdateGroupUpdate.Builder builder() {
-    return new PlayQueueUpdateGroupUpdate.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public PlayQueueUpdateGroupUpdate.Builder toBuilder() {
-    return new PlayQueueUpdateGroupUpdate.Builder()
-      .groupId(getGroupId())
-      .type(getType())
-      .data(getData());
-  }
+    public static class Builder {
 
+        private PlayQueueUpdateGroupUpdate instance;
 
+        public Builder() {
+            this(new PlayQueueUpdateGroupUpdate());
+        }
+
+        protected Builder(PlayQueueUpdateGroupUpdate instance) {
+            this.instance = instance;
+        }
+
+        public PlayQueueUpdateGroupUpdate.Builder groupId(UUID groupId) {
+            this.instance.groupId = groupId;
+            return this;
+        }
+
+        public PlayQueueUpdateGroupUpdate.Builder type(GroupUpdateType type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public PlayQueueUpdateGroupUpdate.Builder data(PlayQueueUpdate data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        /**
+         * returns a built PlayQueueUpdateGroupUpdate instance.
+         *
+         * The builder is not reusable.
+         */
+        public PlayQueueUpdateGroupUpdate build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static PlayQueueUpdateGroupUpdate.Builder builder() {
+        return new PlayQueueUpdateGroupUpdate.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public PlayQueueUpdateGroupUpdate.Builder toBuilder() {
+        return new PlayQueueUpdateGroupUpdate.Builder().groupId(getGroupId()).type(getType()).data(getData());
+    }
 }
-

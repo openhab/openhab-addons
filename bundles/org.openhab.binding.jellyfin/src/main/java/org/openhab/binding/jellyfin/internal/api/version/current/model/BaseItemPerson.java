@@ -17,398 +17,391 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.BaseItemPersonImageBlurHashes;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.PersonKind;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * This is used by the api to get information about a Person within a BaseItem.
  */
-@JsonPropertyOrder({
-  BaseItemPerson.JSON_PROPERTY_NAME,
-  BaseItemPerson.JSON_PROPERTY_ID,
-  BaseItemPerson.JSON_PROPERTY_ROLE,
-  BaseItemPerson.JSON_PROPERTY_TYPE,
-  BaseItemPerson.JSON_PROPERTY_PRIMARY_IMAGE_TAG,
-  BaseItemPerson.JSON_PROPERTY_IMAGE_BLUR_HASHES
-})
+@JsonPropertyOrder({ BaseItemPerson.JSON_PROPERTY_NAME, BaseItemPerson.JSON_PROPERTY_ID,
+        BaseItemPerson.JSON_PROPERTY_ROLE, BaseItemPerson.JSON_PROPERTY_TYPE,
+        BaseItemPerson.JSON_PROPERTY_PRIMARY_IMAGE_TAG, BaseItemPerson.JSON_PROPERTY_IMAGE_BLUR_HASHES })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemPerson {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_ID = "Id";
-  @javax.annotation.Nullable
-  private UUID id;
+    public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
+    private UUID id;
 
-  public static final String JSON_PROPERTY_ROLE = "Role";
-  @javax.annotation.Nullable
-  private JsonNullable<String> role = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_ROLE = "Role";
+    @javax.annotation.Nullable
+    private JsonNullable<String> role = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private PersonKind type = PersonKind.UNKNOWN;
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private PersonKind type = PersonKind.UNKNOWN;
 
-  public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
-  @javax.annotation.Nullable
-  private JsonNullable<String> primaryImageTag = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
+    @javax.annotation.Nullable
+    private JsonNullable<String> primaryImageTag = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
-  @javax.annotation.Nullable
-  private JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes>undefined();
+    public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
+    @javax.annotation.Nullable
+    private JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes = JsonNullable
+            .<BaseItemPersonImageBlurHashes> undefined();
 
-  public BaseItemPerson() {
-  }
-
-  public BaseItemPerson name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public BaseItemPerson id(@javax.annotation.Nullable UUID id) {
-    
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Gets or sets the identifier.
-   * @return id
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getId() {
-    return id;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setId(@javax.annotation.Nullable UUID id) {
-    this.id = id;
-  }
-
-  public BaseItemPerson role(@javax.annotation.Nullable String role) {
-    this.role = JsonNullable.<String>of(role);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the role.
-   * @return role
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getRole() {
-        return role.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ROLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getRole_JsonNullable() {
-    return role;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ROLE)
-  public void setRole_JsonNullable(JsonNullable<String> role) {
-    this.role = role;
-  }
-
-  public void setRole(@javax.annotation.Nullable String role) {
-    this.role = JsonNullable.<String>of(role);
-  }
-
-  public BaseItemPerson type(@javax.annotation.Nullable PersonKind type) {
-    
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Gets or sets the type.
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public PersonKind getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(@javax.annotation.Nullable PersonKind type) {
-    this.type = type;
-  }
-
-  public BaseItemPerson primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-    this.primaryImageTag = JsonNullable.<String>of(primaryImageTag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the primary image tag.
-   * @return primaryImageTag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPrimaryImageTag() {
-        return primaryImageTag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPrimaryImageTag_JsonNullable() {
-    return primaryImageTag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-  public void setPrimaryImageTag_JsonNullable(JsonNullable<String> primaryImageTag) {
-    this.primaryImageTag = primaryImageTag;
-  }
-
-  public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-    this.primaryImageTag = JsonNullable.<String>of(primaryImageTag);
-  }
-
-  public BaseItemPerson imageBlurHashes(@javax.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes) {
-    this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes>of(imageBlurHashes);
-    
-    return this;
-  }
-
-  /**
-   * Get imageBlurHashes
-   * @return imageBlurHashes
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public BaseItemPersonImageBlurHashes getImageBlurHashes() {
-        return imageBlurHashes.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<BaseItemPersonImageBlurHashes> getImageBlurHashes_JsonNullable() {
-    return imageBlurHashes;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
-  public void setImageBlurHashes_JsonNullable(JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes) {
-    this.imageBlurHashes = imageBlurHashes;
-  }
-
-  public void setImageBlurHashes(@javax.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes) {
-    this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes>of(imageBlurHashes);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BaseItemPerson baseItemPerson = (BaseItemPerson) o;
-    return equalsNullable(this.name, baseItemPerson.name) &&
-        Objects.equals(this.id, baseItemPerson.id) &&
-        equalsNullable(this.role, baseItemPerson.role) &&
-        Objects.equals(this.type, baseItemPerson.type) &&
-        equalsNullable(this.primaryImageTag, baseItemPerson.primaryImageTag) &&
-        equalsNullable(this.imageBlurHashes, baseItemPerson.imageBlurHashes);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), id, hashCodeNullable(role), type, hashCodeNullable(primaryImageTag), hashCodeNullable(imageBlurHashes));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class BaseItemPerson {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    role: ").append(toIndentedString(role)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    primaryImageTag: ").append(toIndentedString(primaryImageTag)).append("\n");
-    sb.append("    imageBlurHashes: ").append(toIndentedString(imageBlurHashes)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private BaseItemPerson instance;
-
-    public Builder() {
-      this(new BaseItemPerson());
+    public BaseItemPerson() {
     }
 
-    protected Builder(BaseItemPerson instance) {
-      this.instance = instance;
-    }
+    public BaseItemPerson name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public BaseItemPerson.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public BaseItemPerson.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public BaseItemPerson.Builder id(UUID id) {
-      this.instance.id = id;
-      return this;
-    }
-    public BaseItemPerson.Builder role(String role) {
-      this.instance.role = JsonNullable.<String>of(role);
-      return this;
-    }
-    public BaseItemPerson.Builder role(JsonNullable<String> role) {
-      this.instance.role = role;
-      return this;
-    }
-    public BaseItemPerson.Builder type(PersonKind type) {
-      this.instance.type = type;
-      return this;
-    }
-    public BaseItemPerson.Builder primaryImageTag(String primaryImageTag) {
-      this.instance.primaryImageTag = JsonNullable.<String>of(primaryImageTag);
-      return this;
-    }
-    public BaseItemPerson.Builder primaryImageTag(JsonNullable<String> primaryImageTag) {
-      this.instance.primaryImageTag = primaryImageTag;
-      return this;
-    }
-    public BaseItemPerson.Builder imageBlurHashes(BaseItemPersonImageBlurHashes imageBlurHashes) {
-      this.instance.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes>of(imageBlurHashes);
-      return this;
-    }
-    public BaseItemPerson.Builder imageBlurHashes(JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes) {
-      this.instance.imageBlurHashes = imageBlurHashes;
-      return this;
-    }
-
 
     /**
-    * returns a built BaseItemPerson instance.
-    *
-    * The builder is not reusable.
-    */
-    public BaseItemPerson build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public BaseItemPerson id(@javax.annotation.Nullable UUID id) {
+
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * Gets or sets the identifier.
+     * 
+     * @return id
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getId() {
+        return id;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable UUID id) {
+        this.id = id;
+    }
+
+    public BaseItemPerson role(@javax.annotation.Nullable String role) {
+        this.role = JsonNullable.<String> of(role);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the role.
+     * 
+     * @return role
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getRole() {
+        return role.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ROLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getRole_JsonNullable() {
+        return role;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ROLE)
+    public void setRole_JsonNullable(JsonNullable<String> role) {
+        this.role = role;
+    }
+
+    public void setRole(@javax.annotation.Nullable String role) {
+        this.role = JsonNullable.<String> of(role);
+    }
+
+    public BaseItemPerson type(@javax.annotation.Nullable PersonKind type) {
+
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Gets or sets the type.
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public PersonKind getType() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable PersonKind type) {
+        this.type = type;
+    }
+
+    public BaseItemPerson primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
+        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the primary image tag.
+     * 
+     * @return primaryImageTag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPrimaryImageTag() {
+        return primaryImageTag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPrimaryImageTag_JsonNullable() {
+        return primaryImageTag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    public void setPrimaryImageTag_JsonNullable(JsonNullable<String> primaryImageTag) {
+        this.primaryImageTag = primaryImageTag;
+    }
+
+    public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
+        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
+    }
+
+    public BaseItemPerson imageBlurHashes(@javax.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes) {
+        this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes> of(imageBlurHashes);
+
+        return this;
+    }
+
+    /**
+     * Get imageBlurHashes
+     * 
+     * @return imageBlurHashes
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public BaseItemPersonImageBlurHashes getImageBlurHashes() {
+        return imageBlurHashes.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<BaseItemPersonImageBlurHashes> getImageBlurHashes_JsonNullable() {
+        return imageBlurHashes;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+    public void setImageBlurHashes_JsonNullable(JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes) {
+        this.imageBlurHashes = imageBlurHashes;
+    }
+
+    public void setImageBlurHashes(@javax.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes) {
+        this.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes> of(imageBlurHashes);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BaseItemPerson baseItemPerson = (BaseItemPerson) o;
+        return equalsNullable(this.name, baseItemPerson.name) && Objects.equals(this.id, baseItemPerson.id)
+                && equalsNullable(this.role, baseItemPerson.role) && Objects.equals(this.type, baseItemPerson.type)
+                && equalsNullable(this.primaryImageTag, baseItemPerson.primaryImageTag)
+                && equalsNullable(this.imageBlurHashes, baseItemPerson.imageBlurHashes);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), id, hashCodeNullable(role), type, hashCodeNullable(primaryImageTag),
+                hashCodeNullable(imageBlurHashes));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class BaseItemPerson {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("    role: ").append(toIndentedString(role)).append("\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    primaryImageTag: ").append(toIndentedString(primaryImageTag)).append("\n");
+        sb.append("    imageBlurHashes: ").append(toIndentedString(imageBlurHashes)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static BaseItemPerson.Builder builder() {
-    return new BaseItemPerson.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public BaseItemPerson.Builder toBuilder() {
-    return new BaseItemPerson.Builder()
-      .name(getName())
-      .id(getId())
-      .role(getRole())
-      .type(getType())
-      .primaryImageTag(getPrimaryImageTag())
-      .imageBlurHashes(getImageBlurHashes());
-  }
+    public static class Builder {
 
+        private BaseItemPerson instance;
 
+        public Builder() {
+            this(new BaseItemPerson());
+        }
+
+        protected Builder(BaseItemPerson instance) {
+            this.instance = instance;
+        }
+
+        public BaseItemPerson.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public BaseItemPerson.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public BaseItemPerson.Builder id(UUID id) {
+            this.instance.id = id;
+            return this;
+        }
+
+        public BaseItemPerson.Builder role(String role) {
+            this.instance.role = JsonNullable.<String> of(role);
+            return this;
+        }
+
+        public BaseItemPerson.Builder role(JsonNullable<String> role) {
+            this.instance.role = role;
+            return this;
+        }
+
+        public BaseItemPerson.Builder type(PersonKind type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public BaseItemPerson.Builder primaryImageTag(String primaryImageTag) {
+            this.instance.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
+            return this;
+        }
+
+        public BaseItemPerson.Builder primaryImageTag(JsonNullable<String> primaryImageTag) {
+            this.instance.primaryImageTag = primaryImageTag;
+            return this;
+        }
+
+        public BaseItemPerson.Builder imageBlurHashes(BaseItemPersonImageBlurHashes imageBlurHashes) {
+            this.instance.imageBlurHashes = JsonNullable.<BaseItemPersonImageBlurHashes> of(imageBlurHashes);
+            return this;
+        }
+
+        public BaseItemPerson.Builder imageBlurHashes(JsonNullable<BaseItemPersonImageBlurHashes> imageBlurHashes) {
+            this.instance.imageBlurHashes = imageBlurHashes;
+            return this;
+        }
+
+        /**
+         * returns a built BaseItemPerson instance.
+         *
+         * The builder is not reusable.
+         */
+        public BaseItemPerson build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static BaseItemPerson.Builder builder() {
+        return new BaseItemPerson.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public BaseItemPerson.Builder toBuilder() {
+        return new BaseItemPerson.Builder().name(getName()).id(getId()).role(getRole()).type(getType())
+                .primaryImageTag(getPrimaryImageTag()).imageBlurHashes(getImageBlurHashes());
+    }
 }
-

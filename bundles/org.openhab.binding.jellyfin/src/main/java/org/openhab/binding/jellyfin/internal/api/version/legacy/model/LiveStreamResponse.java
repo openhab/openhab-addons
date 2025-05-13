@@ -18,147 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaSourceInfo;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * LiveStreamResponse
  */
-@JsonPropertyOrder({
-  LiveStreamResponse.JSON_PROPERTY_MEDIA_SOURCE
-})
+@JsonPropertyOrder({ LiveStreamResponse.JSON_PROPERTY_MEDIA_SOURCE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LiveStreamResponse {
-  public static final String JSON_PROPERTY_MEDIA_SOURCE = "MediaSource";
-  @javax.annotation.Nullable
-  private MediaSourceInfo mediaSource;
+    public static final String JSON_PROPERTY_MEDIA_SOURCE = "MediaSource";
+    @javax.annotation.Nullable
+    private MediaSourceInfo mediaSource;
 
-  public LiveStreamResponse() {
-  }
-
-  public LiveStreamResponse mediaSource(@javax.annotation.Nullable MediaSourceInfo mediaSource) {
-    
-    this.mediaSource = mediaSource;
-    return this;
-  }
-
-  /**
-   * Get mediaSource
-   * @return mediaSource
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public MediaSourceInfo getMediaSource() {
-    return mediaSource;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMediaSource(@javax.annotation.Nullable MediaSourceInfo mediaSource) {
-    this.mediaSource = mediaSource;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LiveStreamResponse liveStreamResponse = (LiveStreamResponse) o;
-    return Objects.equals(this.mediaSource, liveStreamResponse.mediaSource);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(mediaSource);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LiveStreamResponse {\n");
-    sb.append("    mediaSource: ").append(toIndentedString(mediaSource)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LiveStreamResponse instance;
-
-    public Builder() {
-      this(new LiveStreamResponse());
+    public LiveStreamResponse() {
     }
 
-    protected Builder(LiveStreamResponse instance) {
-      this.instance = instance;
-    }
+    public LiveStreamResponse mediaSource(@javax.annotation.Nullable MediaSourceInfo mediaSource) {
 
-    public LiveStreamResponse.Builder mediaSource(MediaSourceInfo mediaSource) {
-      this.instance.mediaSource = mediaSource;
-      return this;
+        this.mediaSource = mediaSource;
+        return this;
     }
-
 
     /**
-    * returns a built LiveStreamResponse instance.
-    *
-    * The builder is not reusable.
-    */
-    public LiveStreamResponse build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get mediaSource
+     * 
+     * @return mediaSource
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public MediaSourceInfo getMediaSource() {
+        return mediaSource;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaSource(@javax.annotation.Nullable MediaSourceInfo mediaSource) {
+        this.mediaSource = mediaSource;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LiveStreamResponse liveStreamResponse = (LiveStreamResponse) o;
+        return Objects.equals(this.mediaSource, liveStreamResponse.mediaSource);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mediaSource);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LiveStreamResponse {\n");
+        sb.append("    mediaSource: ").append(toIndentedString(mediaSource)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LiveStreamResponse.Builder builder() {
-    return new LiveStreamResponse.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LiveStreamResponse.Builder toBuilder() {
-    return new LiveStreamResponse.Builder()
-      .mediaSource(getMediaSource());
-  }
+    public static class Builder {
 
+        private LiveStreamResponse instance;
 
+        public Builder() {
+            this(new LiveStreamResponse());
+        }
+
+        protected Builder(LiveStreamResponse instance) {
+            this.instance = instance;
+        }
+
+        public LiveStreamResponse.Builder mediaSource(MediaSourceInfo mediaSource) {
+            this.instance.mediaSource = mediaSource;
+            return this;
+        }
+
+        /**
+         * returns a built LiveStreamResponse instance.
+         *
+         * The builder is not reusable.
+         */
+        public LiveStreamResponse build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LiveStreamResponse.Builder builder() {
+        return new LiveStreamResponse.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LiveStreamResponse.Builder toBuilder() {
+        return new LiveStreamResponse.Builder().mediaSource(getMediaSource());
+    }
 }
-

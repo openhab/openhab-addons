@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Client log document response dto.
  */
-@JsonPropertyOrder({
-  ClientLogDocumentResponseDto.JSON_PROPERTY_FILE_NAME
-})
+@JsonPropertyOrder({ ClientLogDocumentResponseDto.JSON_PROPERTY_FILE_NAME })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ClientLogDocumentResponseDto {
-  public static final String JSON_PROPERTY_FILE_NAME = "FileName";
-  @javax.annotation.Nullable
-  private String fileName;
+    public static final String JSON_PROPERTY_FILE_NAME = "FileName";
+    @javax.annotation.Nullable
+    private String fileName;
 
-  public ClientLogDocumentResponseDto() {
-  }
-
-  public ClientLogDocumentResponseDto fileName(@javax.annotation.Nullable String fileName) {
-    
-    this.fileName = fileName;
-    return this;
-  }
-
-  /**
-   * Gets the resulting filename.
-   * @return fileName
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_FILE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getFileName() {
-    return fileName;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_FILE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFileName(@javax.annotation.Nullable String fileName) {
-    this.fileName = fileName;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ClientLogDocumentResponseDto clientLogDocumentResponseDto = (ClientLogDocumentResponseDto) o;
-    return Objects.equals(this.fileName, clientLogDocumentResponseDto.fileName);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(fileName);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ClientLogDocumentResponseDto {\n");
-    sb.append("    fileName: ").append(toIndentedString(fileName)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ClientLogDocumentResponseDto instance;
-
-    public Builder() {
-      this(new ClientLogDocumentResponseDto());
+    public ClientLogDocumentResponseDto() {
     }
 
-    protected Builder(ClientLogDocumentResponseDto instance) {
-      this.instance = instance;
-    }
+    public ClientLogDocumentResponseDto fileName(@javax.annotation.Nullable String fileName) {
 
-    public ClientLogDocumentResponseDto.Builder fileName(String fileName) {
-      this.instance.fileName = fileName;
-      return this;
+        this.fileName = fileName;
+        return this;
     }
-
 
     /**
-    * returns a built ClientLogDocumentResponseDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public ClientLogDocumentResponseDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets the resulting filename.
+     * 
+     * @return fileName
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setFileName(@javax.annotation.Nullable String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ClientLogDocumentResponseDto clientLogDocumentResponseDto = (ClientLogDocumentResponseDto) o;
+        return Objects.equals(this.fileName, clientLogDocumentResponseDto.fileName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileName);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ClientLogDocumentResponseDto {\n");
+        sb.append("    fileName: ").append(toIndentedString(fileName)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ClientLogDocumentResponseDto.Builder builder() {
-    return new ClientLogDocumentResponseDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ClientLogDocumentResponseDto.Builder toBuilder() {
-    return new ClientLogDocumentResponseDto.Builder()
-      .fileName(getFileName());
-  }
+    public static class Builder {
 
+        private ClientLogDocumentResponseDto instance;
 
+        public Builder() {
+            this(new ClientLogDocumentResponseDto());
+        }
+
+        protected Builder(ClientLogDocumentResponseDto instance) {
+            this.instance = instance;
+        }
+
+        public ClientLogDocumentResponseDto.Builder fileName(String fileName) {
+            this.instance.fileName = fileName;
+            return this;
+        }
+
+        /**
+         * returns a built ClientLogDocumentResponseDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public ClientLogDocumentResponseDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ClientLogDocumentResponseDto.Builder builder() {
+        return new ClientLogDocumentResponseDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ClientLogDocumentResponseDto.Builder toBuilder() {
+        return new ClientLogDocumentResponseDto.Builder().fileName(getFileName());
+    }
 }
-

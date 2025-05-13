@@ -18,146 +18,138 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * MetadataConfiguration
  */
-@JsonPropertyOrder({
-  MetadataConfiguration.JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED
-})
+@JsonPropertyOrder({ MetadataConfiguration.JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MetadataConfiguration {
-  public static final String JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED = "UseFileCreationTimeForDateAdded";
-  @javax.annotation.Nullable
-  private Boolean useFileCreationTimeForDateAdded;
+    public static final String JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED = "UseFileCreationTimeForDateAdded";
+    @javax.annotation.Nullable
+    private Boolean useFileCreationTimeForDateAdded;
 
-  public MetadataConfiguration() {
-  }
-
-  public MetadataConfiguration useFileCreationTimeForDateAdded(@javax.annotation.Nullable Boolean useFileCreationTimeForDateAdded) {
-    
-    this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
-    return this;
-  }
-
-  /**
-   * Get useFileCreationTimeForDateAdded
-   * @return useFileCreationTimeForDateAdded
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getUseFileCreationTimeForDateAdded() {
-    return useFileCreationTimeForDateAdded;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUseFileCreationTimeForDateAdded(@javax.annotation.Nullable Boolean useFileCreationTimeForDateAdded) {
-    this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MetadataConfiguration metadataConfiguration = (MetadataConfiguration) o;
-    return Objects.equals(this.useFileCreationTimeForDateAdded, metadataConfiguration.useFileCreationTimeForDateAdded);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(useFileCreationTimeForDateAdded);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MetadataConfiguration {\n");
-    sb.append("    useFileCreationTimeForDateAdded: ").append(toIndentedString(useFileCreationTimeForDateAdded)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MetadataConfiguration instance;
-
-    public Builder() {
-      this(new MetadataConfiguration());
+    public MetadataConfiguration() {
     }
 
-    protected Builder(MetadataConfiguration instance) {
-      this.instance = instance;
-    }
+    public MetadataConfiguration useFileCreationTimeForDateAdded(
+            @javax.annotation.Nullable Boolean useFileCreationTimeForDateAdded) {
 
-    public MetadataConfiguration.Builder useFileCreationTimeForDateAdded(Boolean useFileCreationTimeForDateAdded) {
-      this.instance.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
-      return this;
+        this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
+        return this;
     }
-
 
     /**
-    * returns a built MetadataConfiguration instance.
-    *
-    * The builder is not reusable.
-    */
-    public MetadataConfiguration build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get useFileCreationTimeForDateAdded
+     * 
+     * @return useFileCreationTimeForDateAdded
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getUseFileCreationTimeForDateAdded() {
+        return useFileCreationTimeForDateAdded;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUseFileCreationTimeForDateAdded(@javax.annotation.Nullable Boolean useFileCreationTimeForDateAdded) {
+        this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MetadataConfiguration metadataConfiguration = (MetadataConfiguration) o;
+        return Objects.equals(this.useFileCreationTimeForDateAdded,
+                metadataConfiguration.useFileCreationTimeForDateAdded);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(useFileCreationTimeForDateAdded);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MetadataConfiguration {\n");
+        sb.append("    useFileCreationTimeForDateAdded: ").append(toIndentedString(useFileCreationTimeForDateAdded))
+                .append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MetadataConfiguration.Builder builder() {
-    return new MetadataConfiguration.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MetadataConfiguration.Builder toBuilder() {
-    return new MetadataConfiguration.Builder()
-      .useFileCreationTimeForDateAdded(getUseFileCreationTimeForDateAdded());
-  }
+    public static class Builder {
 
+        private MetadataConfiguration instance;
 
+        public Builder() {
+            this(new MetadataConfiguration());
+        }
+
+        protected Builder(MetadataConfiguration instance) {
+            this.instance = instance;
+        }
+
+        public MetadataConfiguration.Builder useFileCreationTimeForDateAdded(Boolean useFileCreationTimeForDateAdded) {
+            this.instance.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
+            return this;
+        }
+
+        /**
+         * returns a built MetadataConfiguration instance.
+         *
+         * The builder is not reusable.
+         */
+        public MetadataConfiguration build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MetadataConfiguration.Builder builder() {
+        return new MetadataConfiguration.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MetadataConfiguration.Builder toBuilder() {
+        return new MetadataConfiguration.Builder()
+                .useFileCreationTimeForDateAdded(getUseFileCreationTimeForDateAdded());
+    }
 }
-

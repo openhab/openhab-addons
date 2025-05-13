@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,49 +24,48 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlaystateCommand.
  */
 public enum PlaystateCommand {
-  
-  STOP("Stop"),
-  
-  PAUSE("Pause"),
-  
-  UNPAUSE("Unpause"),
-  
-  NEXT_TRACK("NextTrack"),
-  
-  PREVIOUS_TRACK("PreviousTrack"),
-  
-  SEEK("Seek"),
-  
-  REWIND("Rewind"),
-  
-  FAST_FORWARD("FastForward"),
-  
-  PLAY_PAUSE("PlayPause");
 
-  private String value;
+    STOP("Stop"),
 
-  PlaystateCommand(String value) {
-    this.value = value;
-  }
+    PAUSE("Pause"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    UNPAUSE("Unpause"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    NEXT_TRACK("NextTrack"),
 
-  @JsonCreator
-  public static PlaystateCommand fromValue(String value) {
-    for (PlaystateCommand b : PlaystateCommand.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PREVIOUS_TRACK("PreviousTrack"),
+
+    SEEK("Seek"),
+
+    REWIND("Rewind"),
+
+    FAST_FORWARD("FastForward"),
+
+    PLAY_PAUSE("PlayPause");
+
+    private String value;
+
+    PlaystateCommand(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PlaystateCommand fromValue(String value) {
+        for (PlaystateCommand b : PlaystateCommand.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

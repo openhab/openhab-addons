@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,41 +24,40 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlayCommand.
  */
 public enum PlayCommand {
-  
-  PLAY_NOW("PlayNow"),
-  
-  PLAY_NEXT("PlayNext"),
-  
-  PLAY_LAST("PlayLast"),
-  
-  PLAY_INSTANT_MIX("PlayInstantMix"),
-  
-  PLAY_SHUFFLE("PlayShuffle");
 
-  private String value;
+    PLAY_NOW("PlayNow"),
 
-  PlayCommand(String value) {
-    this.value = value;
-  }
+    PLAY_NEXT("PlayNext"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    PLAY_LAST("PlayLast"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    PLAY_INSTANT_MIX("PlayInstantMix"),
 
-  @JsonCreator
-  public static PlayCommand fromValue(String value) {
-    for (PlayCommand b : PlayCommand.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PLAY_SHUFFLE("PlayShuffle");
+
+    private String value;
+
+    PlayCommand(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PlayCommand fromValue(String value) {
+        for (PlayCommand b : PlayCommand.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

@@ -17,211 +17,201 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Library option info dto.
  */
-@JsonPropertyOrder({
-  LibraryOptionInfoDto.JSON_PROPERTY_NAME,
-  LibraryOptionInfoDto.JSON_PROPERTY_DEFAULT_ENABLED
-})
+@JsonPropertyOrder({ LibraryOptionInfoDto.JSON_PROPERTY_NAME, LibraryOptionInfoDto.JSON_PROPERTY_DEFAULT_ENABLED })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryOptionInfoDto {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_DEFAULT_ENABLED = "DefaultEnabled";
-  @javax.annotation.Nullable
-  private Boolean defaultEnabled;
+    public static final String JSON_PROPERTY_DEFAULT_ENABLED = "DefaultEnabled";
+    @javax.annotation.Nullable
+    private Boolean defaultEnabled;
 
-  public LibraryOptionInfoDto() {
-  }
-
-  public LibraryOptionInfoDto name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public LibraryOptionInfoDto defaultEnabled(@javax.annotation.Nullable Boolean defaultEnabled) {
-    
-    this.defaultEnabled = defaultEnabled;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether default enabled.
-   * @return defaultEnabled
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getDefaultEnabled() {
-    return defaultEnabled;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefaultEnabled(@javax.annotation.Nullable Boolean defaultEnabled) {
-    this.defaultEnabled = defaultEnabled;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LibraryOptionInfoDto libraryOptionInfoDto = (LibraryOptionInfoDto) o;
-    return equalsNullable(this.name, libraryOptionInfoDto.name) &&
-        Objects.equals(this.defaultEnabled, libraryOptionInfoDto.defaultEnabled);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), defaultEnabled);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LibraryOptionInfoDto {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    defaultEnabled: ").append(toIndentedString(defaultEnabled)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LibraryOptionInfoDto instance;
-
-    public Builder() {
-      this(new LibraryOptionInfoDto());
+    public LibraryOptionInfoDto() {
     }
 
-    protected Builder(LibraryOptionInfoDto instance) {
-      this.instance = instance;
-    }
+    public LibraryOptionInfoDto name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public LibraryOptionInfoDto.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public LibraryOptionInfoDto.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public LibraryOptionInfoDto.Builder defaultEnabled(Boolean defaultEnabled) {
-      this.instance.defaultEnabled = defaultEnabled;
-      return this;
-    }
-
 
     /**
-    * returns a built LibraryOptionInfoDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public LibraryOptionInfoDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public LibraryOptionInfoDto defaultEnabled(@javax.annotation.Nullable Boolean defaultEnabled) {
+
+        this.defaultEnabled = defaultEnabled;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether default enabled.
+     * 
+     * @return defaultEnabled
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getDefaultEnabled() {
+        return defaultEnabled;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDefaultEnabled(@javax.annotation.Nullable Boolean defaultEnabled) {
+        this.defaultEnabled = defaultEnabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LibraryOptionInfoDto libraryOptionInfoDto = (LibraryOptionInfoDto) o;
+        return equalsNullable(this.name, libraryOptionInfoDto.name)
+                && Objects.equals(this.defaultEnabled, libraryOptionInfoDto.defaultEnabled);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), defaultEnabled);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LibraryOptionInfoDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    defaultEnabled: ").append(toIndentedString(defaultEnabled)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LibraryOptionInfoDto.Builder builder() {
-    return new LibraryOptionInfoDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LibraryOptionInfoDto.Builder toBuilder() {
-    return new LibraryOptionInfoDto.Builder()
-      .name(getName())
-      .defaultEnabled(getDefaultEnabled());
-  }
+    public static class Builder {
 
+        private LibraryOptionInfoDto instance;
 
+        public Builder() {
+            this(new LibraryOptionInfoDto());
+        }
+
+        protected Builder(LibraryOptionInfoDto instance) {
+            this.instance = instance;
+        }
+
+        public LibraryOptionInfoDto.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public LibraryOptionInfoDto.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public LibraryOptionInfoDto.Builder defaultEnabled(Boolean defaultEnabled) {
+            this.instance.defaultEnabled = defaultEnabled;
+            return this;
+        }
+
+        /**
+         * returns a built LibraryOptionInfoDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public LibraryOptionInfoDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LibraryOptionInfoDto.Builder builder() {
+        return new LibraryOptionInfoDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LibraryOptionInfoDto.Builder toBuilder() {
+        return new LibraryOptionInfoDto.Builder().name(getName()).defaultEnabled(getDefaultEnabled());
+    }
 }
-

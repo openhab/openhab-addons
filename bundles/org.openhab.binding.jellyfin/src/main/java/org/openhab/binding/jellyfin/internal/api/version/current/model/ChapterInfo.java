@@ -17,347 +17,341 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.time.OffsetDateTime;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class ChapterInfo.
  */
-@JsonPropertyOrder({
-  ChapterInfo.JSON_PROPERTY_START_POSITION_TICKS,
-  ChapterInfo.JSON_PROPERTY_NAME,
-  ChapterInfo.JSON_PROPERTY_IMAGE_PATH,
-  ChapterInfo.JSON_PROPERTY_IMAGE_DATE_MODIFIED,
-  ChapterInfo.JSON_PROPERTY_IMAGE_TAG
-})
+@JsonPropertyOrder({ ChapterInfo.JSON_PROPERTY_START_POSITION_TICKS, ChapterInfo.JSON_PROPERTY_NAME,
+        ChapterInfo.JSON_PROPERTY_IMAGE_PATH, ChapterInfo.JSON_PROPERTY_IMAGE_DATE_MODIFIED,
+        ChapterInfo.JSON_PROPERTY_IMAGE_TAG })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ChapterInfo {
-  public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
-  @javax.annotation.Nullable
-  private Long startPositionTicks;
+    public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
+    @javax.annotation.Nullable
+    private Long startPositionTicks;
 
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_IMAGE_PATH = "ImagePath";
-  @javax.annotation.Nullable
-  private JsonNullable<String> imagePath = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IMAGE_PATH = "ImagePath";
+    @javax.annotation.Nullable
+    private JsonNullable<String> imagePath = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_IMAGE_DATE_MODIFIED = "ImageDateModified";
-  @javax.annotation.Nullable
-  private OffsetDateTime imageDateModified;
+    public static final String JSON_PROPERTY_IMAGE_DATE_MODIFIED = "ImageDateModified";
+    @javax.annotation.Nullable
+    private OffsetDateTime imageDateModified;
 
-  public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
-  @javax.annotation.Nullable
-  private JsonNullable<String> imageTag = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
+    @javax.annotation.Nullable
+    private JsonNullable<String> imageTag = JsonNullable.<String> undefined();
 
-  public ChapterInfo() {
-  }
-
-  public ChapterInfo startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-    
-    this.startPositionTicks = startPositionTicks;
-    return this;
-  }
-
-  /**
-   * Gets or sets the start position ticks.
-   * @return startPositionTicks
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getStartPositionTicks() {
-    return startPositionTicks;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-    this.startPositionTicks = startPositionTicks;
-  }
-
-  public ChapterInfo name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public ChapterInfo imagePath(@javax.annotation.Nullable String imagePath) {
-    this.imagePath = JsonNullable.<String>of(imagePath);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the image path.
-   * @return imagePath
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getImagePath() {
-        return imagePath.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getImagePath_JsonNullable() {
-    return imagePath;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
-  public void setImagePath_JsonNullable(JsonNullable<String> imagePath) {
-    this.imagePath = imagePath;
-  }
-
-  public void setImagePath(@javax.annotation.Nullable String imagePath) {
-    this.imagePath = JsonNullable.<String>of(imagePath);
-  }
-
-  public ChapterInfo imageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
-    
-    this.imageDateModified = imageDateModified;
-    return this;
-  }
-
-  /**
-   * Get imageDateModified
-   * @return imageDateModified
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getImageDateModified() {
-    return imageDateModified;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setImageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
-    this.imageDateModified = imageDateModified;
-  }
-
-  public ChapterInfo imageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = JsonNullable.<String>of(imageTag);
-    
-    return this;
-  }
-
-  /**
-   * Get imageTag
-   * @return imageTag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getImageTag() {
-        return imageTag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getImageTag_JsonNullable() {
-    return imageTag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
-  public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
-    this.imageTag = imageTag;
-  }
-
-  public void setImageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = JsonNullable.<String>of(imageTag);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ChapterInfo chapterInfo = (ChapterInfo) o;
-    return Objects.equals(this.startPositionTicks, chapterInfo.startPositionTicks) &&
-        equalsNullable(this.name, chapterInfo.name) &&
-        equalsNullable(this.imagePath, chapterInfo.imagePath) &&
-        Objects.equals(this.imageDateModified, chapterInfo.imageDateModified) &&
-        equalsNullable(this.imageTag, chapterInfo.imageTag);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(startPositionTicks, hashCodeNullable(name), hashCodeNullable(imagePath), imageDateModified, hashCodeNullable(imageTag));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ChapterInfo {\n");
-    sb.append("    startPositionTicks: ").append(toIndentedString(startPositionTicks)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    imagePath: ").append(toIndentedString(imagePath)).append("\n");
-    sb.append("    imageDateModified: ").append(toIndentedString(imageDateModified)).append("\n");
-    sb.append("    imageTag: ").append(toIndentedString(imageTag)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ChapterInfo instance;
-
-    public Builder() {
-      this(new ChapterInfo());
+    public ChapterInfo() {
     }
 
-    protected Builder(ChapterInfo instance) {
-      this.instance = instance;
-    }
+    public ChapterInfo startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
 
-    public ChapterInfo.Builder startPositionTicks(Long startPositionTicks) {
-      this.instance.startPositionTicks = startPositionTicks;
-      return this;
+        this.startPositionTicks = startPositionTicks;
+        return this;
     }
-    public ChapterInfo.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
-    }
-    public ChapterInfo.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public ChapterInfo.Builder imagePath(String imagePath) {
-      this.instance.imagePath = JsonNullable.<String>of(imagePath);
-      return this;
-    }
-    public ChapterInfo.Builder imagePath(JsonNullable<String> imagePath) {
-      this.instance.imagePath = imagePath;
-      return this;
-    }
-    public ChapterInfo.Builder imageDateModified(OffsetDateTime imageDateModified) {
-      this.instance.imageDateModified = imageDateModified;
-      return this;
-    }
-    public ChapterInfo.Builder imageTag(String imageTag) {
-      this.instance.imageTag = JsonNullable.<String>of(imageTag);
-      return this;
-    }
-    public ChapterInfo.Builder imageTag(JsonNullable<String> imageTag) {
-      this.instance.imageTag = imageTag;
-      return this;
-    }
-
 
     /**
-    * returns a built ChapterInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public ChapterInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the start position ticks.
+     * 
+     * @return startPositionTicks
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getStartPositionTicks() {
+        return startPositionTicks;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
+        this.startPositionTicks = startPositionTicks;
+    }
+
+    public ChapterInfo name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public ChapterInfo imagePath(@javax.annotation.Nullable String imagePath) {
+        this.imagePath = JsonNullable.<String> of(imagePath);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the image path.
+     * 
+     * @return imagePath
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getImagePath() {
+        return imagePath.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getImagePath_JsonNullable() {
+        return imagePath;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
+    public void setImagePath_JsonNullable(JsonNullable<String> imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public void setImagePath(@javax.annotation.Nullable String imagePath) {
+        this.imagePath = JsonNullable.<String> of(imagePath);
+    }
+
+    public ChapterInfo imageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
+
+        this.imageDateModified = imageDateModified;
+        return this;
+    }
+
+    /**
+     * Get imageDateModified
+     * 
+     * @return imageDateModified
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getImageDateModified() {
+        return imageDateModified;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setImageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
+        this.imageDateModified = imageDateModified;
+    }
+
+    public ChapterInfo imageTag(@javax.annotation.Nullable String imageTag) {
+        this.imageTag = JsonNullable.<String> of(imageTag);
+
+        return this;
+    }
+
+    /**
+     * Get imageTag
+     * 
+     * @return imageTag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getImageTag() {
+        return imageTag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getImageTag_JsonNullable() {
+        return imageTag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
+        this.imageTag = imageTag;
+    }
+
+    public void setImageTag(@javax.annotation.Nullable String imageTag) {
+        this.imageTag = JsonNullable.<String> of(imageTag);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChapterInfo chapterInfo = (ChapterInfo) o;
+        return Objects.equals(this.startPositionTicks, chapterInfo.startPositionTicks)
+                && equalsNullable(this.name, chapterInfo.name) && equalsNullable(this.imagePath, chapterInfo.imagePath)
+                && Objects.equals(this.imageDateModified, chapterInfo.imageDateModified)
+                && equalsNullable(this.imageTag, chapterInfo.imageTag);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startPositionTicks, hashCodeNullable(name), hashCodeNullable(imagePath), imageDateModified,
+                hashCodeNullable(imageTag));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ChapterInfo {\n");
+        sb.append("    startPositionTicks: ").append(toIndentedString(startPositionTicks)).append("\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    imagePath: ").append(toIndentedString(imagePath)).append("\n");
+        sb.append("    imageDateModified: ").append(toIndentedString(imageDateModified)).append("\n");
+        sb.append("    imageTag: ").append(toIndentedString(imageTag)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ChapterInfo.Builder builder() {
-    return new ChapterInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ChapterInfo.Builder toBuilder() {
-    return new ChapterInfo.Builder()
-      .startPositionTicks(getStartPositionTicks())
-      .name(getName())
-      .imagePath(getImagePath())
-      .imageDateModified(getImageDateModified())
-      .imageTag(getImageTag());
-  }
+    public static class Builder {
 
+        private ChapterInfo instance;
 
+        public Builder() {
+            this(new ChapterInfo());
+        }
+
+        protected Builder(ChapterInfo instance) {
+            this.instance = instance;
+        }
+
+        public ChapterInfo.Builder startPositionTicks(Long startPositionTicks) {
+            this.instance.startPositionTicks = startPositionTicks;
+            return this;
+        }
+
+        public ChapterInfo.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public ChapterInfo.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public ChapterInfo.Builder imagePath(String imagePath) {
+            this.instance.imagePath = JsonNullable.<String> of(imagePath);
+            return this;
+        }
+
+        public ChapterInfo.Builder imagePath(JsonNullable<String> imagePath) {
+            this.instance.imagePath = imagePath;
+            return this;
+        }
+
+        public ChapterInfo.Builder imageDateModified(OffsetDateTime imageDateModified) {
+            this.instance.imageDateModified = imageDateModified;
+            return this;
+        }
+
+        public ChapterInfo.Builder imageTag(String imageTag) {
+            this.instance.imageTag = JsonNullable.<String> of(imageTag);
+            return this;
+        }
+
+        public ChapterInfo.Builder imageTag(JsonNullable<String> imageTag) {
+            this.instance.imageTag = imageTag;
+            return this;
+        }
+
+        /**
+         * returns a built ChapterInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public ChapterInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ChapterInfo.Builder builder() {
+        return new ChapterInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ChapterInfo.Builder toBuilder() {
+        return new ChapterInfo.Builder().startPositionTicks(getStartPositionTicks()).name(getName())
+                .imagePath(getImagePath()).imageDateModified(getImageDateModified()).imageTag(getImageTag());
+    }
 }
-

@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,43 +24,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProcessPriorityClass
  */
 public enum ProcessPriorityClass {
-  
-  NORMAL("Normal"),
-  
-  IDLE("Idle"),
-  
-  HIGH("High"),
-  
-  REAL_TIME("RealTime"),
-  
-  BELOW_NORMAL("BelowNormal"),
-  
-  ABOVE_NORMAL("AboveNormal");
 
-  private String value;
+    NORMAL("Normal"),
 
-  ProcessPriorityClass(String value) {
-    this.value = value;
-  }
+    IDLE("Idle"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    HIGH("High"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    REAL_TIME("RealTime"),
 
-  @JsonCreator
-  public static ProcessPriorityClass fromValue(String value) {
-    for (ProcessPriorityClass b : ProcessPriorityClass.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    BELOW_NORMAL("BelowNormal"),
+
+    ABOVE_NORMAL("AboveNormal");
+
+    private String value;
+
+    ProcessPriorityClass(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ProcessPriorityClass fromValue(String value) {
+        for (ProcessPriorityClass b : ProcessPriorityClass.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

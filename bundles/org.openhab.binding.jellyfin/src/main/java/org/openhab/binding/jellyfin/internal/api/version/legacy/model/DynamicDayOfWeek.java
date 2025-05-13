@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,51 +24,50 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum that represents a day of the week, weekdays, weekends, or all days.
  */
 public enum DynamicDayOfWeek {
-  
-  SUNDAY("Sunday"),
-  
-  MONDAY("Monday"),
-  
-  TUESDAY("Tuesday"),
-  
-  WEDNESDAY("Wednesday"),
-  
-  THURSDAY("Thursday"),
-  
-  FRIDAY("Friday"),
-  
-  SATURDAY("Saturday"),
-  
-  EVERYDAY("Everyday"),
-  
-  WEEKDAY("Weekday"),
-  
-  WEEKEND("Weekend");
 
-  private String value;
+    SUNDAY("Sunday"),
 
-  DynamicDayOfWeek(String value) {
-    this.value = value;
-  }
+    MONDAY("Monday"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    TUESDAY("Tuesday"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    WEDNESDAY("Wednesday"),
 
-  @JsonCreator
-  public static DynamicDayOfWeek fromValue(String value) {
-    for (DynamicDayOfWeek b : DynamicDayOfWeek.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    THURSDAY("Thursday"),
+
+    FRIDAY("Friday"),
+
+    SATURDAY("Saturday"),
+
+    EVERYDAY("Everyday"),
+
+    WEEKDAY("Weekday"),
+
+    WEEKEND("Weekend");
+
+    private String value;
+
+    DynamicDayOfWeek(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static DynamicDayOfWeek fromValue(String value) {
+        for (DynamicDayOfWeek b : DynamicDayOfWeek.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

@@ -17,260 +17,253 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Validate path object.
  */
-@JsonPropertyOrder({
-  ValidatePathDto.JSON_PROPERTY_VALIDATE_WRITABLE,
-  ValidatePathDto.JSON_PROPERTY_PATH,
-  ValidatePathDto.JSON_PROPERTY_IS_FILE
-})
+@JsonPropertyOrder({ ValidatePathDto.JSON_PROPERTY_VALIDATE_WRITABLE, ValidatePathDto.JSON_PROPERTY_PATH,
+        ValidatePathDto.JSON_PROPERTY_IS_FILE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ValidatePathDto {
-  public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
-  @javax.annotation.Nullable
-  private Boolean validateWritable;
+    public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
+    @javax.annotation.Nullable
+    private Boolean validateWritable;
 
-  public static final String JSON_PROPERTY_PATH = "Path";
-  @javax.annotation.Nullable
-  private JsonNullable<String> path = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
+    private JsonNullable<String> path = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_IS_FILE = "IsFile";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> isFile = JsonNullable.<Boolean>undefined();
+    public static final String JSON_PROPERTY_IS_FILE = "IsFile";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> isFile = JsonNullable.<Boolean> undefined();
 
-  public ValidatePathDto() {
-  }
-
-  public ValidatePathDto validateWritable(@javax.annotation.Nullable Boolean validateWritable) {
-    
-    this.validateWritable = validateWritable;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether validate if path is writable.
-   * @return validateWritable
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getValidateWritable() {
-    return validateWritable;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setValidateWritable(@javax.annotation.Nullable Boolean validateWritable) {
-    this.validateWritable = validateWritable;
-  }
-
-  public ValidatePathDto path(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the path.
-   * @return path
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPath() {
-        return path.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPath_JsonNullable() {
-    return path;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PATH)
-  public void setPath_JsonNullable(JsonNullable<String> path) {
-    this.path = path;
-  }
-
-  public void setPath(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-  }
-
-  public ValidatePathDto isFile(@javax.annotation.Nullable Boolean isFile) {
-    this.isFile = JsonNullable.<Boolean>of(isFile);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets is path file.
-   * @return isFile
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getIsFile() {
-        return isFile.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IS_FILE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getIsFile_JsonNullable() {
-    return isFile;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IS_FILE)
-  public void setIsFile_JsonNullable(JsonNullable<Boolean> isFile) {
-    this.isFile = isFile;
-  }
-
-  public void setIsFile(@javax.annotation.Nullable Boolean isFile) {
-    this.isFile = JsonNullable.<Boolean>of(isFile);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ValidatePathDto validatePathDto = (ValidatePathDto) o;
-    return Objects.equals(this.validateWritable, validatePathDto.validateWritable) &&
-        equalsNullable(this.path, validatePathDto.path) &&
-        equalsNullable(this.isFile, validatePathDto.isFile);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(validateWritable, hashCodeNullable(path), hashCodeNullable(isFile));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ValidatePathDto {\n");
-    sb.append("    validateWritable: ").append(toIndentedString(validateWritable)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    isFile: ").append(toIndentedString(isFile)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ValidatePathDto instance;
-
-    public Builder() {
-      this(new ValidatePathDto());
+    public ValidatePathDto() {
     }
 
-    protected Builder(ValidatePathDto instance) {
-      this.instance = instance;
-    }
+    public ValidatePathDto validateWritable(@javax.annotation.Nullable Boolean validateWritable) {
 
-    public ValidatePathDto.Builder validateWritable(Boolean validateWritable) {
-      this.instance.validateWritable = validateWritable;
-      return this;
+        this.validateWritable = validateWritable;
+        return this;
     }
-    public ValidatePathDto.Builder path(String path) {
-      this.instance.path = JsonNullable.<String>of(path);
-      return this;
-    }
-    public ValidatePathDto.Builder path(JsonNullable<String> path) {
-      this.instance.path = path;
-      return this;
-    }
-    public ValidatePathDto.Builder isFile(Boolean isFile) {
-      this.instance.isFile = JsonNullable.<Boolean>of(isFile);
-      return this;
-    }
-    public ValidatePathDto.Builder isFile(JsonNullable<Boolean> isFile) {
-      this.instance.isFile = isFile;
-      return this;
-    }
-
 
     /**
-    * returns a built ValidatePathDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public ValidatePathDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets a value indicating whether validate if path is writable.
+     * 
+     * @return validateWritable
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getValidateWritable() {
+        return validateWritable;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setValidateWritable(@javax.annotation.Nullable Boolean validateWritable) {
+        this.validateWritable = validateWritable;
+    }
+
+    public ValidatePathDto path(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the path.
+     * 
+     * @return path
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPath() {
+        return path.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPath_JsonNullable() {
+        return path;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    public void setPath_JsonNullable(JsonNullable<String> path) {
+        this.path = path;
+    }
+
+    public void setPath(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+    }
+
+    public ValidatePathDto isFile(@javax.annotation.Nullable Boolean isFile) {
+        this.isFile = JsonNullable.<Boolean> of(isFile);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets is path file.
+     * 
+     * @return isFile
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getIsFile() {
+        return isFile.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_FILE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getIsFile_JsonNullable() {
+        return isFile;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_FILE)
+    public void setIsFile_JsonNullable(JsonNullable<Boolean> isFile) {
+        this.isFile = isFile;
+    }
+
+    public void setIsFile(@javax.annotation.Nullable Boolean isFile) {
+        this.isFile = JsonNullable.<Boolean> of(isFile);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ValidatePathDto validatePathDto = (ValidatePathDto) o;
+        return Objects.equals(this.validateWritable, validatePathDto.validateWritable)
+                && equalsNullable(this.path, validatePathDto.path)
+                && equalsNullable(this.isFile, validatePathDto.isFile);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(validateWritable, hashCodeNullable(path), hashCodeNullable(isFile));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ValidatePathDto {\n");
+        sb.append("    validateWritable: ").append(toIndentedString(validateWritable)).append("\n");
+        sb.append("    path: ").append(toIndentedString(path)).append("\n");
+        sb.append("    isFile: ").append(toIndentedString(isFile)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ValidatePathDto.Builder builder() {
-    return new ValidatePathDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ValidatePathDto.Builder toBuilder() {
-    return new ValidatePathDto.Builder()
-      .validateWritable(getValidateWritable())
-      .path(getPath())
-      .isFile(getIsFile());
-  }
+    public static class Builder {
 
+        private ValidatePathDto instance;
 
+        public Builder() {
+            this(new ValidatePathDto());
+        }
+
+        protected Builder(ValidatePathDto instance) {
+            this.instance = instance;
+        }
+
+        public ValidatePathDto.Builder validateWritable(Boolean validateWritable) {
+            this.instance.validateWritable = validateWritable;
+            return this;
+        }
+
+        public ValidatePathDto.Builder path(String path) {
+            this.instance.path = JsonNullable.<String> of(path);
+            return this;
+        }
+
+        public ValidatePathDto.Builder path(JsonNullable<String> path) {
+            this.instance.path = path;
+            return this;
+        }
+
+        public ValidatePathDto.Builder isFile(Boolean isFile) {
+            this.instance.isFile = JsonNullable.<Boolean> of(isFile);
+            return this;
+        }
+
+        public ValidatePathDto.Builder isFile(JsonNullable<Boolean> isFile) {
+            this.instance.isFile = isFile;
+            return this;
+        }
+
+        /**
+         * returns a built ValidatePathDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public ValidatePathDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ValidatePathDto.Builder builder() {
+        return new ValidatePathDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ValidatePathDto.Builder toBuilder() {
+        return new ValidatePathDto.Builder().validateWritable(getValidateWritable()).path(getPath())
+                .isFile(getIsFile());
+    }
 }
-

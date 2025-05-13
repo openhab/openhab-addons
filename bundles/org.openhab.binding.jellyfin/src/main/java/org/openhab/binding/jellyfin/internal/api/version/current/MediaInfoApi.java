@@ -1,35 +1,29 @@
 package org.openhab.binding.jellyfin.internal.api.version.current;
 
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
-
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.LiveStreamResponse;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.OpenLiveStreamDto;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.PlaybackInfoDto;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.PlaybackInfoResponse;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ProblemDetails;
-import java.util.UUID;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Flux;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaInfoApi {
@@ -52,13 +46,16 @@ public class MediaInfoApi {
         this.apiClient = apiClient;
     }
 
-    
     /**
      * Closes a media source.
      * 
-     * <p><b>204</b> - Livestream closed.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>204</b> - Livestream closed.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param liveStreamId The livestream id.
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -66,7 +63,9 @@ public class MediaInfoApi {
         Object postBody = null;
         // verify the required parameter 'liveStreamId' is set
         if (liveStreamId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'liveStreamId' when calling closeLiveStream", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'liveStreamId' when calling closeLiveStream",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -77,52 +76,70 @@ public class MediaInfoApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "liveStreamId", liveStreamId));
-        
-        final String[] localVarAccepts = { };
+
+        final String[] localVarAccepts = {};
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
-        return apiClient.invokeAPI("/LiveStreams/Close", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
+        return apiClient.invokeAPI("/LiveStreams/Close", HttpMethod.POST, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Closes a media source.
      * 
-     * <p><b>204</b> - Livestream closed.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>204</b> - Livestream closed.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param liveStreamId The livestream id.
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<Void> closeLiveStream(String liveStreamId) throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return closeLiveStreamRequestCreation(liveStreamId).bodyToMono(localVarReturnType);
     }
 
     /**
      * Closes a media source.
      * 
-     * <p><b>204</b> - Livestream closed.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>204</b> - Livestream closed.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param liveStreamId The livestream id.
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<Void>> closeLiveStreamWithHttpInfo(String liveStreamId) throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+    public Mono<ResponseEntity<Void>> closeLiveStreamWithHttpInfo(String liveStreamId)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return closeLiveStreamRequestCreation(liveStreamId).toEntity(localVarReturnType);
     }
 
     /**
      * Closes a media source.
      * 
-     * <p><b>204</b> - Livestream closed.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>204</b> - Livestream closed.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param liveStreamId The livestream id.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
@@ -134,9 +151,13 @@ public class MediaInfoApi {
     /**
      * Tests the network with a request with the size of the bitrate.
      * 
-     * <p><b>200</b> - Test buffer returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Test buffer returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param size The bitrate. Defaults to 102400.
      * @return File
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
@@ -152,56 +173,71 @@ public class MediaInfoApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "size", size));
-        
-        final String[] localVarAccepts = { 
-            "application/octet-stream"
-        };
+
+        final String[] localVarAccepts = { "application/octet-stream" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
-        return apiClient.invokeAPI("/Playback/BitrateTest", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
+        return apiClient.invokeAPI("/Playback/BitrateTest", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Tests the network with a request with the size of the bitrate.
      * 
-     * <p><b>200</b> - Test buffer returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Test buffer returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param size The bitrate. Defaults to 102400.
      * @return File
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<File> getBitrateTestBytes(Integer size) throws WebClientResponseException {
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
         return getBitrateTestBytesRequestCreation(size).bodyToMono(localVarReturnType);
     }
 
     /**
      * Tests the network with a request with the size of the bitrate.
      * 
-     * <p><b>200</b> - Test buffer returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Test buffer returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param size The bitrate. Defaults to 102400.
      * @return ResponseEntity&lt;File&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<File>> getBitrateTestBytesWithHttpInfo(Integer size) throws WebClientResponseException {
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
         return getBitrateTestBytesRequestCreation(size).toEntity(localVarReturnType);
     }
 
     /**
      * Tests the network with a request with the size of the bitrate.
      * 
-     * <p><b>200</b> - Test buffer returned.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Test buffer returned.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param size The bitrate. Defaults to 102400.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
@@ -213,10 +249,15 @@ public class MediaInfoApi {
     /**
      * Gets live playback media info for an item.
      * 
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return PlaybackInfoResponse
@@ -226,7 +267,8 @@ public class MediaInfoApi {
         Object postBody = null;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getPlaybackInfo", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getPlaybackInfo",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -239,61 +281,81 @@ public class MediaInfoApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "userId", userId));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
-        return apiClient.invokeAPI("/Items/{itemId}/PlaybackInfo", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
+        return apiClient.invokeAPI("/Items/{itemId}/PlaybackInfo", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
      * 
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return PlaybackInfoResponse
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<PlaybackInfoResponse> getPlaybackInfo(UUID itemId, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
         return getPlaybackInfoRequestCreation(itemId, userId).bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
      * 
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return ResponseEntity&lt;PlaybackInfoResponse&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<PlaybackInfoResponse>> getPlaybackInfoWithHttpInfo(UUID itemId, UUID userId) throws WebClientResponseException {
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
+    public Mono<ResponseEntity<PlaybackInfoResponse>> getPlaybackInfoWithHttpInfo(UUID itemId, UUID userId)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
         return getPlaybackInfoRequestCreation(itemId, userId).toEntity(localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
      * 
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @return ResponseSpec
@@ -305,11 +367,17 @@ public class MediaInfoApi {
 
     /**
      * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @param maxStreamingBitrate The maximum streaming bitrate.
@@ -329,11 +397,17 @@ public class MediaInfoApi {
      * @return PlaybackInfoResponse
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec getPostedPlaybackInfoRequestCreation(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
+    private ResponseSpec getPostedPlaybackInfoRequestCreation(UUID itemId, UUID userId, Integer maxStreamingBitrate,
+            Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels,
+            String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay,
+            Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy,
+            Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
         Object postBody = playbackInfoDto;
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
-            throw new WebClientResponseException("Missing the required parameter 'itemId' when calling getPostedPlaybackInfo", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException(
+                    "Missing the required parameter 'itemId' when calling getPostedPlaybackInfo",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -359,29 +433,35 @@ public class MediaInfoApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableTranscoding", enableTranscoding));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "allowVideoStreamCopy", allowVideoStreamCopy));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "allowAudioStreamCopy", allowAudioStreamCopy));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { 
-            "application/json", "text/json", "application/*+json"
-        };
+        final String[] localVarContentTypes = { "application/json", "text/json", "application/*+json" };
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
-        return apiClient.invokeAPI("/Items/{itemId}/PlaybackInfo", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
+        return apiClient.invokeAPI("/Items/{itemId}/PlaybackInfo", HttpMethod.POST, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @param maxStreamingBitrate The maximum streaming bitrate.
@@ -401,18 +481,32 @@ public class MediaInfoApi {
      * @return PlaybackInfoResponse
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<PlaybackInfoResponse> getPostedPlaybackInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
-        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto).bodyToMono(localVarReturnType);
+    public Mono<PlaybackInfoResponse> getPostedPlaybackInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate,
+            Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels,
+            String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay,
+            Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy,
+            Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
+        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId,
+                autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy,
+                allowAudioStreamCopy, playbackInfoDto).bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @param maxStreamingBitrate The maximum streaming bitrate.
@@ -432,18 +526,33 @@ public class MediaInfoApi {
      * @return ResponseEntity&lt;PlaybackInfoResponse&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<PlaybackInfoResponse>> getPostedPlaybackInfoWithHttpInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
-        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {};
-        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<PlaybackInfoResponse>> getPostedPlaybackInfoWithHttpInfo(UUID itemId, UUID userId,
+            Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex,
+            Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream,
+            Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding,
+            Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<PlaybackInfoResponse> localVarReturnType = new ParameterizedTypeReference<PlaybackInfoResponse>() {
+        };
+        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId,
+                autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy,
+                allowAudioStreamCopy, playbackInfoDto).toEntity(localVarReturnType);
     }
 
     /**
      * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * <p><b>200</b> - Playback info returned.
-     * <p><b>404</b> - Item not found.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * <p>
+     * <b>200</b> - Playback info returned.
+     * <p>
+     * <b>404</b> - Item not found.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param itemId The item id.
      * @param userId The user id.
      * @param maxStreamingBitrate The maximum streaming bitrate.
@@ -463,16 +572,27 @@ public class MediaInfoApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec getPostedPlaybackInfoWithResponseSpec(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
-        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
+    public ResponseSpec getPostedPlaybackInfoWithResponseSpec(UUID itemId, UUID userId, Integer maxStreamingBitrate,
+            Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels,
+            String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay,
+            Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy,
+            Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws WebClientResponseException {
+        return getPostedPlaybackInfoRequestCreation(itemId, userId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId,
+                autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy,
+                allowAudioStreamCopy, playbackInfoDto);
     }
 
     /**
      * Opens a media source.
      * 
-     * <p><b>200</b> - Media source opened.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Media source opened.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param openToken The open token.
      * @param userId The user id.
      * @param playSessionId The play session id.
@@ -489,7 +609,11 @@ public class MediaInfoApi {
      * @return LiveStreamResponse
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    private ResponseSpec openLiveStreamRequestCreation(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws WebClientResponseException {
+    private ResponseSpec openLiveStreamRequestCreation(String openToken, UUID userId, String playSessionId,
+            Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex,
+            Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream,
+            Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto)
+            throws WebClientResponseException {
         Object postBody = openLiveStreamDto;
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -510,29 +634,34 @@ public class MediaInfoApi {
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "itemId", itemId));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableDirectPlay", enableDirectPlay));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "enableDirectStream", enableDirectStream));
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "alwaysBurnInSubtitleWhenTranscoding", alwaysBurnInSubtitleWhenTranscoding));
-        
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "alwaysBurnInSubtitleWhenTranscoding",
+                alwaysBurnInSubtitleWhenTranscoding));
+
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { 
-            "application/json", "text/json", "application/*+json"
-        };
+        final String[] localVarContentTypes = { "application/json", "text/json", "application/*+json" };
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {};
-        return apiClient.invokeAPI("/LiveStreams/Open", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {
+        };
+        return apiClient.invokeAPI("/LiveStreams/Open", HttpMethod.POST, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Opens a media source.
      * 
-     * <p><b>200</b> - Media source opened.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Media source opened.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param openToken The open token.
      * @param userId The user id.
      * @param playSessionId The play session id.
@@ -549,17 +678,28 @@ public class MediaInfoApi {
      * @return LiveStreamResponse
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<LiveStreamResponse> openLiveStream(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws WebClientResponseException {
-        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {};
-        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto).bodyToMono(localVarReturnType);
+    public Mono<LiveStreamResponse> openLiveStream(String openToken, UUID userId, String playSessionId,
+            Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex,
+            Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream,
+            Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto)
+            throws WebClientResponseException {
+        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {
+        };
+        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream,
+                alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto).bodyToMono(localVarReturnType);
     }
 
     /**
      * Opens a media source.
      * 
-     * <p><b>200</b> - Media source opened.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Media source opened.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param openToken The open token.
      * @param userId The user id.
      * @param playSessionId The play session id.
@@ -576,17 +716,28 @@ public class MediaInfoApi {
      * @return ResponseEntity&lt;LiveStreamResponse&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public Mono<ResponseEntity<LiveStreamResponse>> openLiveStreamWithHttpInfo(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws WebClientResponseException {
-        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {};
-        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto).toEntity(localVarReturnType);
+    public Mono<ResponseEntity<LiveStreamResponse>> openLiveStreamWithHttpInfo(String openToken, UUID userId,
+            String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex,
+            Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay,
+            Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding,
+            OpenLiveStreamDto openLiveStreamDto) throws WebClientResponseException {
+        ParameterizedTypeReference<LiveStreamResponse> localVarReturnType = new ParameterizedTypeReference<LiveStreamResponse>() {
+        };
+        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream,
+                alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto).toEntity(localVarReturnType);
     }
 
     /**
      * Opens a media source.
      * 
-     * <p><b>200</b> - Media source opened.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Media source opened.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @param openToken The open token.
      * @param userId The user id.
      * @param playSessionId The play session id.
@@ -603,7 +754,13 @@ public class MediaInfoApi {
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
-    public ResponseSpec openLiveStreamWithResponseSpec(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws WebClientResponseException {
-        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
+    public ResponseSpec openLiveStreamWithResponseSpec(String openToken, UUID userId, String playSessionId,
+            Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex,
+            Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream,
+            Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto)
+            throws WebClientResponseException {
+        return openLiveStreamRequestCreation(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream,
+                alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
     }
 }

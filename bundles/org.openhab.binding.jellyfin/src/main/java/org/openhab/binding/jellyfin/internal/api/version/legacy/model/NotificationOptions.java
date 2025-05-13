@@ -17,190 +17,179 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.NotificationOption;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * NotificationOptions
  */
-@JsonPropertyOrder({
-  NotificationOptions.JSON_PROPERTY_OPTIONS
-})
+@JsonPropertyOrder({ NotificationOptions.JSON_PROPERTY_OPTIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NotificationOptions {
-  public static final String JSON_PROPERTY_OPTIONS = "Options";
-  @javax.annotation.Nullable
-  private JsonNullable<List<NotificationOption>> options = JsonNullable.<List<NotificationOption>>undefined();
+    public static final String JSON_PROPERTY_OPTIONS = "Options";
+    @javax.annotation.Nullable
+    private JsonNullable<List<NotificationOption>> options = JsonNullable.<List<NotificationOption>> undefined();
 
-  public NotificationOptions() {
-  }
-
-  public NotificationOptions options(@javax.annotation.Nullable List<NotificationOption> options) {
-    this.options = JsonNullable.<List<NotificationOption>>of(options);
-    
-    return this;
-  }
-
-  public NotificationOptions addOptionsItem(NotificationOption optionsItem) {
-    if (this.options == null || !this.options.isPresent()) {
-      this.options = JsonNullable.<List<NotificationOption>>of(new ArrayList<>());
-    }
-    try {
-      this.options.get().add(optionsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Get options
-   * @return options
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<NotificationOption> getOptions() {
-        return options.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<NotificationOption>> getOptions_JsonNullable() {
-    return options;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_OPTIONS)
-  public void setOptions_JsonNullable(JsonNullable<List<NotificationOption>> options) {
-    this.options = options;
-  }
-
-  public void setOptions(@javax.annotation.Nullable List<NotificationOption> options) {
-    this.options = JsonNullable.<List<NotificationOption>>of(options);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    NotificationOptions notificationOptions = (NotificationOptions) o;
-    return equalsNullable(this.options, notificationOptions.options);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(options));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class NotificationOptions {\n");
-    sb.append("    options: ").append(toIndentedString(options)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private NotificationOptions instance;
-
-    public Builder() {
-      this(new NotificationOptions());
+    public NotificationOptions() {
     }
 
-    protected Builder(NotificationOptions instance) {
-      this.instance = instance;
+    public NotificationOptions options(@javax.annotation.Nullable List<NotificationOption> options) {
+        this.options = JsonNullable.<List<NotificationOption>> of(options);
+
+        return this;
     }
 
-    public NotificationOptions.Builder options(List<NotificationOption> options) {
-      this.instance.options = JsonNullable.<List<NotificationOption>>of(options);
-      return this;
+    public NotificationOptions addOptionsItem(NotificationOption optionsItem) {
+        if (this.options == null || !this.options.isPresent()) {
+            this.options = JsonNullable.<List<NotificationOption>> of(new ArrayList<>());
+        }
+        try {
+            this.options.get().add(optionsItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
     }
-    public NotificationOptions.Builder options(JsonNullable<List<NotificationOption>> options) {
-      this.instance.options = options;
-      return this;
-    }
-
 
     /**
-    * returns a built NotificationOptions instance.
-    *
-    * The builder is not reusable.
-    */
-    public NotificationOptions build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get options
+     * 
+     * @return options
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<NotificationOption> getOptions() {
+        return options.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<NotificationOption>> getOptions_JsonNullable() {
+        return options;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OPTIONS)
+    public void setOptions_JsonNullable(JsonNullable<List<NotificationOption>> options) {
+        this.options = options;
+    }
+
+    public void setOptions(@javax.annotation.Nullable List<NotificationOption> options) {
+        this.options = JsonNullable.<List<NotificationOption>> of(options);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NotificationOptions notificationOptions = (NotificationOptions) o;
+        return equalsNullable(this.options, notificationOptions.options);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(options));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class NotificationOptions {\n");
+        sb.append("    options: ").append(toIndentedString(options)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static NotificationOptions.Builder builder() {
-    return new NotificationOptions.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public NotificationOptions.Builder toBuilder() {
-    return new NotificationOptions.Builder()
-      .options(getOptions());
-  }
+    public static class Builder {
 
+        private NotificationOptions instance;
 
+        public Builder() {
+            this(new NotificationOptions());
+        }
+
+        protected Builder(NotificationOptions instance) {
+            this.instance = instance;
+        }
+
+        public NotificationOptions.Builder options(List<NotificationOption> options) {
+            this.instance.options = JsonNullable.<List<NotificationOption>> of(options);
+            return this;
+        }
+
+        public NotificationOptions.Builder options(JsonNullable<List<NotificationOption>> options) {
+            this.instance.options = options;
+            return this;
+        }
+
+        /**
+         * returns a built NotificationOptions instance.
+         *
+         * The builder is not reusable.
+         */
+        public NotificationOptions build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static NotificationOptions.Builder builder() {
+        return new NotificationOptions.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public NotificationOptions.Builder toBuilder() {
+        return new NotificationOptions.Builder().options(getOptions());
+    }
 }
-

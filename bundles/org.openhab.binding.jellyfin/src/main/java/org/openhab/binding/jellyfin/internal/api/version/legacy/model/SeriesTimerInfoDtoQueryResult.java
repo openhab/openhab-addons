@@ -17,264 +17,254 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SeriesTimerInfoDto;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * SeriesTimerInfoDtoQueryResult
  */
-@JsonPropertyOrder({
-  SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_ITEMS,
-  SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-  SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_START_INDEX
-})
+@JsonPropertyOrder({ SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_ITEMS,
+        SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+        SeriesTimerInfoDtoQueryResult.JSON_PROPERTY_START_INDEX })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SeriesTimerInfoDtoQueryResult {
-  public static final String JSON_PROPERTY_ITEMS = "Items";
-  @javax.annotation.Nullable
-  private JsonNullable<List<SeriesTimerInfoDto>> items = JsonNullable.<List<SeriesTimerInfoDto>>undefined();
+    public static final String JSON_PROPERTY_ITEMS = "Items";
+    @javax.annotation.Nullable
+    private JsonNullable<List<SeriesTimerInfoDto>> items = JsonNullable.<List<SeriesTimerInfoDto>> undefined();
 
-  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-  @javax.annotation.Nullable
-  private Integer totalRecordCount;
+    public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
+    @javax.annotation.Nullable
+    private Integer totalRecordCount;
 
-  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-  @javax.annotation.Nullable
-  private Integer startIndex;
+    public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+    @javax.annotation.Nullable
+    private Integer startIndex;
 
-  public SeriesTimerInfoDtoQueryResult() {
-  }
-
-  public SeriesTimerInfoDtoQueryResult items(@javax.annotation.Nullable List<SeriesTimerInfoDto> items) {
-    this.items = JsonNullable.<List<SeriesTimerInfoDto>>of(items);
-    
-    return this;
-  }
-
-  public SeriesTimerInfoDtoQueryResult addItemsItem(SeriesTimerInfoDto itemsItem) {
-    if (this.items == null || !this.items.isPresent()) {
-      this.items = JsonNullable.<List<SeriesTimerInfoDto>>of(new ArrayList<>());
-    }
-    try {
-      this.items.get().add(itemsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Gets or sets the items.
-   * @return items
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<SeriesTimerInfoDto> getItems() {
-        return items.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<SeriesTimerInfoDto>> getItems_JsonNullable() {
-    return items;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ITEMS)
-  public void setItems_JsonNullable(JsonNullable<List<SeriesTimerInfoDto>> items) {
-    this.items = items;
-  }
-
-  public void setItems(@javax.annotation.Nullable List<SeriesTimerInfoDto> items) {
-    this.items = JsonNullable.<List<SeriesTimerInfoDto>>of(items);
-  }
-
-  public SeriesTimerInfoDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    
-    this.totalRecordCount = totalRecordCount;
-    return this;
-  }
-
-  /**
-   * Gets or sets the total number of records available.
-   * @return totalRecordCount
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getTotalRecordCount() {
-    return totalRecordCount;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
-    this.totalRecordCount = totalRecordCount;
-  }
-
-  public SeriesTimerInfoDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
-    
-    this.startIndex = startIndex;
-    return this;
-  }
-
-  /**
-   * Gets or sets the index of the first record in Items.
-   * @return startIndex
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getStartIndex() {
-    return startIndex;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_START_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-    this.startIndex = startIndex;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SeriesTimerInfoDtoQueryResult seriesTimerInfoDtoQueryResult = (SeriesTimerInfoDtoQueryResult) o;
-    return equalsNullable(this.items, seriesTimerInfoDtoQueryResult.items) &&
-        Objects.equals(this.totalRecordCount, seriesTimerInfoDtoQueryResult.totalRecordCount) &&
-        Objects.equals(this.startIndex, seriesTimerInfoDtoQueryResult.startIndex);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SeriesTimerInfoDtoQueryResult {\n");
-    sb.append("    items: ").append(toIndentedString(items)).append("\n");
-    sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
-    sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SeriesTimerInfoDtoQueryResult instance;
-
-    public Builder() {
-      this(new SeriesTimerInfoDtoQueryResult());
+    public SeriesTimerInfoDtoQueryResult() {
     }
 
-    protected Builder(SeriesTimerInfoDtoQueryResult instance) {
-      this.instance = instance;
+    public SeriesTimerInfoDtoQueryResult items(@javax.annotation.Nullable List<SeriesTimerInfoDto> items) {
+        this.items = JsonNullable.<List<SeriesTimerInfoDto>> of(items);
+
+        return this;
     }
 
-    public SeriesTimerInfoDtoQueryResult.Builder items(List<SeriesTimerInfoDto> items) {
-      this.instance.items = JsonNullable.<List<SeriesTimerInfoDto>>of(items);
-      return this;
+    public SeriesTimerInfoDtoQueryResult addItemsItem(SeriesTimerInfoDto itemsItem) {
+        if (this.items == null || !this.items.isPresent()) {
+            this.items = JsonNullable.<List<SeriesTimerInfoDto>> of(new ArrayList<>());
+        }
+        try {
+            this.items.get().add(itemsItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
     }
-    public SeriesTimerInfoDtoQueryResult.Builder items(JsonNullable<List<SeriesTimerInfoDto>> items) {
-      this.instance.items = items;
-      return this;
-    }
-    public SeriesTimerInfoDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
-      this.instance.totalRecordCount = totalRecordCount;
-      return this;
-    }
-    public SeriesTimerInfoDtoQueryResult.Builder startIndex(Integer startIndex) {
-      this.instance.startIndex = startIndex;
-      return this;
-    }
-
 
     /**
-    * returns a built SeriesTimerInfoDtoQueryResult instance.
-    *
-    * The builder is not reusable.
-    */
-    public SeriesTimerInfoDtoQueryResult build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the items.
+     * 
+     * @return items
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<SeriesTimerInfoDto> getItems() {
+        return items.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<SeriesTimerInfoDto>> getItems_JsonNullable() {
+        return items;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ITEMS)
+    public void setItems_JsonNullable(JsonNullable<List<SeriesTimerInfoDto>> items) {
+        this.items = items;
+    }
+
+    public void setItems(@javax.annotation.Nullable List<SeriesTimerInfoDto> items) {
+        this.items = JsonNullable.<List<SeriesTimerInfoDto>> of(items);
+    }
+
+    public SeriesTimerInfoDtoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+
+        this.totalRecordCount = totalRecordCount;
+        return this;
+    }
+
+    /**
+     * Gets or sets the total number of records available.
+     * 
+     * @return totalRecordCount
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getTotalRecordCount() {
+        return totalRecordCount;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
+        this.totalRecordCount = totalRecordCount;
+    }
+
+    public SeriesTimerInfoDtoQueryResult startIndex(@javax.annotation.Nullable Integer startIndex) {
+
+        this.startIndex = startIndex;
+        return this;
+    }
+
+    /**
+     * Gets or sets the index of the first record in Items.
+     * 
+     * @return startIndex
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getStartIndex() {
+        return startIndex;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SeriesTimerInfoDtoQueryResult seriesTimerInfoDtoQueryResult = (SeriesTimerInfoDtoQueryResult) o;
+        return equalsNullable(this.items, seriesTimerInfoDtoQueryResult.items)
+                && Objects.equals(this.totalRecordCount, seriesTimerInfoDtoQueryResult.totalRecordCount)
+                && Objects.equals(this.startIndex, seriesTimerInfoDtoQueryResult.startIndex);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SeriesTimerInfoDtoQueryResult {\n");
+        sb.append("    items: ").append(toIndentedString(items)).append("\n");
+        sb.append("    totalRecordCount: ").append(toIndentedString(totalRecordCount)).append("\n");
+        sb.append("    startIndex: ").append(toIndentedString(startIndex)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SeriesTimerInfoDtoQueryResult.Builder builder() {
-    return new SeriesTimerInfoDtoQueryResult.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SeriesTimerInfoDtoQueryResult.Builder toBuilder() {
-    return new SeriesTimerInfoDtoQueryResult.Builder()
-      .items(getItems())
-      .totalRecordCount(getTotalRecordCount())
-      .startIndex(getStartIndex());
-  }
+    public static class Builder {
 
+        private SeriesTimerInfoDtoQueryResult instance;
 
+        public Builder() {
+            this(new SeriesTimerInfoDtoQueryResult());
+        }
+
+        protected Builder(SeriesTimerInfoDtoQueryResult instance) {
+            this.instance = instance;
+        }
+
+        public SeriesTimerInfoDtoQueryResult.Builder items(List<SeriesTimerInfoDto> items) {
+            this.instance.items = JsonNullable.<List<SeriesTimerInfoDto>> of(items);
+            return this;
+        }
+
+        public SeriesTimerInfoDtoQueryResult.Builder items(JsonNullable<List<SeriesTimerInfoDto>> items) {
+            this.instance.items = items;
+            return this;
+        }
+
+        public SeriesTimerInfoDtoQueryResult.Builder totalRecordCount(Integer totalRecordCount) {
+            this.instance.totalRecordCount = totalRecordCount;
+            return this;
+        }
+
+        public SeriesTimerInfoDtoQueryResult.Builder startIndex(Integer startIndex) {
+            this.instance.startIndex = startIndex;
+            return this;
+        }
+
+        /**
+         * returns a built SeriesTimerInfoDtoQueryResult instance.
+         *
+         * The builder is not reusable.
+         */
+        public SeriesTimerInfoDtoQueryResult build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SeriesTimerInfoDtoQueryResult.Builder builder() {
+        return new SeriesTimerInfoDtoQueryResult.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SeriesTimerInfoDtoQueryResult.Builder toBuilder() {
+        return new SeriesTimerInfoDtoQueryResult.Builder().items(getItems()).totalRecordCount(getTotalRecordCount())
+                .startIndex(getStartIndex());
+    }
 }
-

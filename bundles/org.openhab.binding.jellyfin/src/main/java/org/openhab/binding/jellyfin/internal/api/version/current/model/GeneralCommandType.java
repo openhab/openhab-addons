@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,117 +24,116 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * This exists simply to identify a set of known commands.
  */
 public enum GeneralCommandType {
-  
-  MOVE_UP("MoveUp"),
-  
-  MOVE_DOWN("MoveDown"),
-  
-  MOVE_LEFT("MoveLeft"),
-  
-  MOVE_RIGHT("MoveRight"),
-  
-  PAGE_UP("PageUp"),
-  
-  PAGE_DOWN("PageDown"),
-  
-  PREVIOUS_LETTER("PreviousLetter"),
-  
-  NEXT_LETTER("NextLetter"),
-  
-  TOGGLE_OSD("ToggleOsd"),
-  
-  TOGGLE_CONTEXT_MENU("ToggleContextMenu"),
-  
-  SELECT("Select"),
-  
-  BACK("Back"),
-  
-  TAKE_SCREENSHOT("TakeScreenshot"),
-  
-  SEND_KEY("SendKey"),
-  
-  SEND_STRING("SendString"),
-  
-  GO_HOME("GoHome"),
-  
-  GO_TO_SETTINGS("GoToSettings"),
-  
-  VOLUME_UP("VolumeUp"),
-  
-  VOLUME_DOWN("VolumeDown"),
-  
-  MUTE("Mute"),
-  
-  UNMUTE("Unmute"),
-  
-  TOGGLE_MUTE("ToggleMute"),
-  
-  SET_VOLUME("SetVolume"),
-  
-  SET_AUDIO_STREAM_INDEX("SetAudioStreamIndex"),
-  
-  SET_SUBTITLE_STREAM_INDEX("SetSubtitleStreamIndex"),
-  
-  TOGGLE_FULLSCREEN("ToggleFullscreen"),
-  
-  DISPLAY_CONTENT("DisplayContent"),
-  
-  GO_TO_SEARCH("GoToSearch"),
-  
-  DISPLAY_MESSAGE("DisplayMessage"),
-  
-  SET_REPEAT_MODE("SetRepeatMode"),
-  
-  CHANNEL_UP("ChannelUp"),
-  
-  CHANNEL_DOWN("ChannelDown"),
-  
-  GUIDE("Guide"),
-  
-  TOGGLE_STATS("ToggleStats"),
-  
-  PLAY_MEDIA_SOURCE("PlayMediaSource"),
-  
-  PLAY_TRAILERS("PlayTrailers"),
-  
-  SET_SHUFFLE_QUEUE("SetShuffleQueue"),
-  
-  PLAY_STATE("PlayState"),
-  
-  PLAY_NEXT("PlayNext"),
-  
-  TOGGLE_OSD_MENU("ToggleOsdMenu"),
-  
-  PLAY("Play"),
-  
-  SET_MAX_STREAMING_BITRATE("SetMaxStreamingBitrate"),
-  
-  SET_PLAYBACK_ORDER("SetPlaybackOrder");
 
-  private String value;
+    MOVE_UP("MoveUp"),
 
-  GeneralCommandType(String value) {
-    this.value = value;
-  }
+    MOVE_DOWN("MoveDown"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    MOVE_LEFT("MoveLeft"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    MOVE_RIGHT("MoveRight"),
 
-  @JsonCreator
-  public static GeneralCommandType fromValue(String value) {
-    for (GeneralCommandType b : GeneralCommandType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PAGE_UP("PageUp"),
+
+    PAGE_DOWN("PageDown"),
+
+    PREVIOUS_LETTER("PreviousLetter"),
+
+    NEXT_LETTER("NextLetter"),
+
+    TOGGLE_OSD("ToggleOsd"),
+
+    TOGGLE_CONTEXT_MENU("ToggleContextMenu"),
+
+    SELECT("Select"),
+
+    BACK("Back"),
+
+    TAKE_SCREENSHOT("TakeScreenshot"),
+
+    SEND_KEY("SendKey"),
+
+    SEND_STRING("SendString"),
+
+    GO_HOME("GoHome"),
+
+    GO_TO_SETTINGS("GoToSettings"),
+
+    VOLUME_UP("VolumeUp"),
+
+    VOLUME_DOWN("VolumeDown"),
+
+    MUTE("Mute"),
+
+    UNMUTE("Unmute"),
+
+    TOGGLE_MUTE("ToggleMute"),
+
+    SET_VOLUME("SetVolume"),
+
+    SET_AUDIO_STREAM_INDEX("SetAudioStreamIndex"),
+
+    SET_SUBTITLE_STREAM_INDEX("SetSubtitleStreamIndex"),
+
+    TOGGLE_FULLSCREEN("ToggleFullscreen"),
+
+    DISPLAY_CONTENT("DisplayContent"),
+
+    GO_TO_SEARCH("GoToSearch"),
+
+    DISPLAY_MESSAGE("DisplayMessage"),
+
+    SET_REPEAT_MODE("SetRepeatMode"),
+
+    CHANNEL_UP("ChannelUp"),
+
+    CHANNEL_DOWN("ChannelDown"),
+
+    GUIDE("Guide"),
+
+    TOGGLE_STATS("ToggleStats"),
+
+    PLAY_MEDIA_SOURCE("PlayMediaSource"),
+
+    PLAY_TRAILERS("PlayTrailers"),
+
+    SET_SHUFFLE_QUEUE("SetShuffleQueue"),
+
+    PLAY_STATE("PlayState"),
+
+    PLAY_NEXT("PlayNext"),
+
+    TOGGLE_OSD_MENU("ToggleOsdMenu"),
+
+    PLAY("Play"),
+
+    SET_MAX_STREAMING_BITRATE("SetMaxStreamingBitrate"),
+
+    SET_PLAYBACK_ORDER("SetPlaybackOrder");
+
+    private String value;
+
+    GeneralCommandType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static GeneralCommandType fromValue(String value) {
+        for (GeneralCommandType b : GeneralCommandType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

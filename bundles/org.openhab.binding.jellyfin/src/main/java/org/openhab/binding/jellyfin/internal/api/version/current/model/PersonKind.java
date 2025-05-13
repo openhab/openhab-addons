@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,81 +24,80 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The person kind.
  */
 public enum PersonKind {
-  
-  UNKNOWN("Unknown"),
-  
-  ACTOR("Actor"),
-  
-  DIRECTOR("Director"),
-  
-  COMPOSER("Composer"),
-  
-  WRITER("Writer"),
-  
-  GUEST_STAR("GuestStar"),
-  
-  PRODUCER("Producer"),
-  
-  CONDUCTOR("Conductor"),
-  
-  LYRICIST("Lyricist"),
-  
-  ARRANGER("Arranger"),
-  
-  ENGINEER("Engineer"),
-  
-  MIXER("Mixer"),
-  
-  REMIXER("Remixer"),
-  
-  CREATOR("Creator"),
-  
-  ARTIST("Artist"),
-  
-  ALBUM_ARTIST("AlbumArtist"),
-  
-  AUTHOR("Author"),
-  
-  ILLUSTRATOR("Illustrator"),
-  
-  PENCILLER("Penciller"),
-  
-  INKER("Inker"),
-  
-  COLORIST("Colorist"),
-  
-  LETTERER("Letterer"),
-  
-  COVER_ARTIST("CoverArtist"),
-  
-  EDITOR("Editor"),
-  
-  TRANSLATOR("Translator");
 
-  private String value;
+    UNKNOWN("Unknown"),
 
-  PersonKind(String value) {
-    this.value = value;
-  }
+    ACTOR("Actor"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    DIRECTOR("Director"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    COMPOSER("Composer"),
 
-  @JsonCreator
-  public static PersonKind fromValue(String value) {
-    for (PersonKind b : PersonKind.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    WRITER("Writer"),
+
+    GUEST_STAR("GuestStar"),
+
+    PRODUCER("Producer"),
+
+    CONDUCTOR("Conductor"),
+
+    LYRICIST("Lyricist"),
+
+    ARRANGER("Arranger"),
+
+    ENGINEER("Engineer"),
+
+    MIXER("Mixer"),
+
+    REMIXER("Remixer"),
+
+    CREATOR("Creator"),
+
+    ARTIST("Artist"),
+
+    ALBUM_ARTIST("AlbumArtist"),
+
+    AUTHOR("Author"),
+
+    ILLUSTRATOR("Illustrator"),
+
+    PENCILLER("Penciller"),
+
+    INKER("Inker"),
+
+    COLORIST("Colorist"),
+
+    LETTERER("Letterer"),
+
+    COVER_ARTIST("CoverArtist"),
+
+    EDITOR("Editor"),
+
+    TRANSLATOR("Translator");
+
+    private String value;
+
+    PersonKind(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PersonKind fromValue(String value) {
+        for (PersonKind b : PersonKind.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

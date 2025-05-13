@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,45 +24,44 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets LogLevel
  */
 public enum LogLevel {
-  
-  TRACE("Trace"),
-  
-  DEBUG("Debug"),
-  
-  INFORMATION("Information"),
-  
-  WARNING("Warning"),
-  
-  ERROR("Error"),
-  
-  CRITICAL("Critical"),
-  
-  NONE("None");
 
-  private String value;
+    TRACE("Trace"),
 
-  LogLevel(String value) {
-    this.value = value;
-  }
+    DEBUG("Debug"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    INFORMATION("Information"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    WARNING("Warning"),
 
-  @JsonCreator
-  public static LogLevel fromValue(String value) {
-    for (LogLevel b : LogLevel.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    ERROR("Error"),
+
+    CRITICAL("Critical"),
+
+    NONE("None");
+
+    private String value;
+
+    LogLevel(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static LogLevel fromValue(String value) {
+        for (LogLevel b : LogLevel.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

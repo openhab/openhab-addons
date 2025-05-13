@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets TransportStreamTimestamp
  */
 public enum TransportStreamTimestamp {
-  
-  NONE("None"),
-  
-  ZERO("Zero"),
-  
-  VALID("Valid");
 
-  private String value;
+    NONE("None"),
 
-  TransportStreamTimestamp(String value) {
-    this.value = value;
-  }
+    ZERO("Zero"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    VALID("Valid");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static TransportStreamTimestamp fromValue(String value) {
-    for (TransportStreamTimestamp b : TransportStreamTimestamp.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    TransportStreamTimestamp(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TransportStreamTimestamp fromValue(String value) {
+        for (TransportStreamTimestamp b : TransportStreamTimestamp.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

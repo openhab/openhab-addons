@@ -17,212 +17,202 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class SessionUserInfo.
  */
-@JsonPropertyOrder({
-  SessionUserInfo.JSON_PROPERTY_USER_ID,
-  SessionUserInfo.JSON_PROPERTY_USER_NAME
-})
+@JsonPropertyOrder({ SessionUserInfo.JSON_PROPERTY_USER_ID, SessionUserInfo.JSON_PROPERTY_USER_NAME })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SessionUserInfo {
-  public static final String JSON_PROPERTY_USER_ID = "UserId";
-  @javax.annotation.Nullable
-  private UUID userId;
+    public static final String JSON_PROPERTY_USER_ID = "UserId";
+    @javax.annotation.Nullable
+    private UUID userId;
 
-  public static final String JSON_PROPERTY_USER_NAME = "UserName";
-  @javax.annotation.Nullable
-  private JsonNullable<String> userName = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_USER_NAME = "UserName";
+    @javax.annotation.Nullable
+    private JsonNullable<String> userName = JsonNullable.<String> undefined();
 
-  public SessionUserInfo() {
-  }
-
-  public SessionUserInfo userId(@javax.annotation.Nullable UUID userId) {
-    
-    this.userId = userId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the user identifier.
-   * @return userId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_USER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getUserId() {
-    return userId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_USER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUserId(@javax.annotation.Nullable UUID userId) {
-    this.userId = userId;
-  }
-
-  public SessionUserInfo userName(@javax.annotation.Nullable String userName) {
-    this.userName = JsonNullable.<String>of(userName);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the name of the user.
-   * @return userName
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getUserName() {
-        return userName.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_USER_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getUserName_JsonNullable() {
-    return userName;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_USER_NAME)
-  public void setUserName_JsonNullable(JsonNullable<String> userName) {
-    this.userName = userName;
-  }
-
-  public void setUserName(@javax.annotation.Nullable String userName) {
-    this.userName = JsonNullable.<String>of(userName);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SessionUserInfo sessionUserInfo = (SessionUserInfo) o;
-    return Objects.equals(this.userId, sessionUserInfo.userId) &&
-        equalsNullable(this.userName, sessionUserInfo.userName);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(userId, hashCodeNullable(userName));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SessionUserInfo {\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-    sb.append("    userName: ").append(toIndentedString(userName)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SessionUserInfo instance;
-
-    public Builder() {
-      this(new SessionUserInfo());
+    public SessionUserInfo() {
     }
 
-    protected Builder(SessionUserInfo instance) {
-      this.instance = instance;
-    }
+    public SessionUserInfo userId(@javax.annotation.Nullable UUID userId) {
 
-    public SessionUserInfo.Builder userId(UUID userId) {
-      this.instance.userId = userId;
-      return this;
+        this.userId = userId;
+        return this;
     }
-    public SessionUserInfo.Builder userName(String userName) {
-      this.instance.userName = JsonNullable.<String>of(userName);
-      return this;
-    }
-    public SessionUserInfo.Builder userName(JsonNullable<String> userName) {
-      this.instance.userName = userName;
-      return this;
-    }
-
 
     /**
-    * returns a built SessionUserInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public SessionUserInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the user identifier.
+     * 
+     * @return userId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(@javax.annotation.Nullable UUID userId) {
+        this.userId = userId;
+    }
+
+    public SessionUserInfo userName(@javax.annotation.Nullable String userName) {
+        this.userName = JsonNullable.<String> of(userName);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the name of the user.
+     * 
+     * @return userName
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getUserName() {
+        return userName.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getUserName_JsonNullable() {
+        return userName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    public void setUserName_JsonNullable(JsonNullable<String> userName) {
+        this.userName = userName;
+    }
+
+    public void setUserName(@javax.annotation.Nullable String userName) {
+        this.userName = JsonNullable.<String> of(userName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SessionUserInfo sessionUserInfo = (SessionUserInfo) o;
+        return Objects.equals(this.userId, sessionUserInfo.userId)
+                && equalsNullable(this.userName, sessionUserInfo.userName);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, hashCodeNullable(userName));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SessionUserInfo {\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+        sb.append("    userName: ").append(toIndentedString(userName)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SessionUserInfo.Builder builder() {
-    return new SessionUserInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SessionUserInfo.Builder toBuilder() {
-    return new SessionUserInfo.Builder()
-      .userId(getUserId())
-      .userName(getUserName());
-  }
+    public static class Builder {
 
+        private SessionUserInfo instance;
 
+        public Builder() {
+            this(new SessionUserInfo());
+        }
+
+        protected Builder(SessionUserInfo instance) {
+            this.instance = instance;
+        }
+
+        public SessionUserInfo.Builder userId(UUID userId) {
+            this.instance.userId = userId;
+            return this;
+        }
+
+        public SessionUserInfo.Builder userName(String userName) {
+            this.instance.userName = JsonNullable.<String> of(userName);
+            return this;
+        }
+
+        public SessionUserInfo.Builder userName(JsonNullable<String> userName) {
+            this.instance.userName = userName;
+            return this;
+        }
+
+        /**
+         * returns a built SessionUserInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public SessionUserInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SessionUserInfo.Builder builder() {
+        return new SessionUserInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SessionUserInfo.Builder toBuilder() {
+        return new SessionUserInfo.Builder().userId(getUserId()).userName(getUserName());
+    }
 }
-

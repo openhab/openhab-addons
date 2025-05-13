@@ -17,265 +17,251 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Sessions message.
  */
-@JsonPropertyOrder({
-  SessionsMessage.JSON_PROPERTY_DATA,
-  SessionsMessage.JSON_PROPERTY_MESSAGE_ID,
-  SessionsMessage.JSON_PROPERTY_MESSAGE_TYPE
-})
+@JsonPropertyOrder({ SessionsMessage.JSON_PROPERTY_DATA, SessionsMessage.JSON_PROPERTY_MESSAGE_ID,
+        SessionsMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SessionsMessage {
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nullable
-  private JsonNullable<List<SessionInfoDto>> data = JsonNullable.<List<SessionInfoDto>>undefined();
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
+    private JsonNullable<List<SessionInfoDto>> data = JsonNullable.<List<SessionInfoDto>> undefined();
 
-  public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-  @javax.annotation.Nullable
-  private UUID messageId;
+    public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
+    @javax.annotation.Nullable
+    private UUID messageId;
 
-  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-  @javax.annotation.Nullable
-  private SessionMessageType messageType = SessionMessageType.SESSIONS;
+    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+    @javax.annotation.Nullable
+    private SessionMessageType messageType = SessionMessageType.SESSIONS;
 
-  public SessionsMessage() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public SessionsMessage(
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
-  ) {
-    this();
-    this.messageType = messageType;
-  }
-
-  public SessionsMessage data(@javax.annotation.Nullable List<SessionInfoDto> data) {
-    this.data = JsonNullable.<List<SessionInfoDto>>of(data);
-    
-    return this;
-  }
-
-  public SessionsMessage addDataItem(SessionInfoDto dataItem) {
-    if (this.data == null || !this.data.isPresent()) {
-      this.data = JsonNullable.<List<SessionInfoDto>>of(new ArrayList<>());
+    public SessionsMessage() {
     }
-    try {
-      this.data.get().add(dataItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Gets or sets the data.
-   * @return data
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<SessionInfoDto> getData() {
-        return data.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<SessionInfoDto>> getData_JsonNullable() {
-    return data;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DATA)
-  public void setData_JsonNullable(JsonNullable<List<SessionInfoDto>> data) {
-    this.data = data;
-  }
-
-  public void setData(@javax.annotation.Nullable List<SessionInfoDto> data) {
-    this.data = JsonNullable.<List<SessionInfoDto>>of(data);
-  }
-
-  public SessionsMessage messageId(@javax.annotation.Nullable UUID messageId) {
-    
-    this.messageId = messageId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the message id.
-   * @return messageId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getMessageId() {
-    return messageId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMessageId(@javax.annotation.Nullable UUID messageId) {
-    this.messageId = messageId;
-  }
-
-  /**
-   * The different kinds of messages that are used in the WebSocket api.
-   * @return messageType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public SessionMessageType getMessageType() {
-    return messageType;
-  }
-
-
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SessionsMessage sessionsMessage = (SessionsMessage) o;
-    return equalsNullable(this.data, sessionsMessage.data) &&
-        Objects.equals(this.messageId, sessionsMessage.messageId) &&
-        Objects.equals(this.messageType, sessionsMessage.messageType);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(data), messageId, messageType);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SessionsMessage {\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
-    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SessionsMessage instance;
-
-    public Builder() {
-      this(new SessionsMessage());
-    }
-
-    protected Builder(SessionsMessage instance) {
-      this.instance = instance;
-    }
-
-    public SessionsMessage.Builder data(List<SessionInfoDto> data) {
-      this.instance.data = JsonNullable.<List<SessionInfoDto>>of(data);
-      return this;
-    }
-    public SessionsMessage.Builder data(JsonNullable<List<SessionInfoDto>> data) {
-      this.instance.data = data;
-      return this;
-    }
-    public SessionsMessage.Builder messageId(UUID messageId) {
-      this.instance.messageId = messageId;
-      return this;
-    }
-    public SessionsMessage.Builder messageType(SessionMessageType messageType) {
-      this.instance.messageType = messageType;
-      return this;
-    }
-
 
     /**
-    * returns a built SessionsMessage instance.
-    *
-    * The builder is not reusable.
-    */
-    public SessionsMessage build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public SessionsMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+        this();
+        this.messageType = messageType;
+    }
+
+    public SessionsMessage data(@javax.annotation.Nullable List<SessionInfoDto> data) {
+        this.data = JsonNullable.<List<SessionInfoDto>> of(data);
+
+        return this;
+    }
+
+    public SessionsMessage addDataItem(SessionInfoDto dataItem) {
+        if (this.data == null || !this.data.isPresent()) {
+            this.data = JsonNullable.<List<SessionInfoDto>> of(new ArrayList<>());
+        }
+        try {
+            this.data.get().add(dataItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
+    }
+
+    /**
+     * Gets or sets the data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<SessionInfoDto> getData() {
+        return data.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<SessionInfoDto>> getData_JsonNullable() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    public void setData_JsonNullable(JsonNullable<List<SessionInfoDto>> data) {
+        this.data = data;
+    }
+
+    public void setData(@javax.annotation.Nullable List<SessionInfoDto> data) {
+        this.data = JsonNullable.<List<SessionInfoDto>> of(data);
+    }
+
+    public SessionsMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
+        this.messageId = messageId;
+        return this;
+    }
+
+    /**
+     * Gets or sets the message id.
+     * 
+     * @return messageId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getMessageId() {
+        return messageId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMessageId(@javax.annotation.Nullable UUID messageId) {
+        this.messageId = messageId;
+    }
+
+    /**
+     * The different kinds of messages that are used in the WebSocket api.
+     * 
+     * @return messageType
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public SessionMessageType getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SessionsMessage sessionsMessage = (SessionsMessage) o;
+        return equalsNullable(this.data, sessionsMessage.data)
+                && Objects.equals(this.messageId, sessionsMessage.messageId)
+                && Objects.equals(this.messageType, sessionsMessage.messageType);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(data), messageId, messageType);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SessionsMessage {\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
+        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SessionsMessage.Builder builder() {
-    return new SessionsMessage.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SessionsMessage.Builder toBuilder() {
-    return new SessionsMessage.Builder()
-      .data(getData())
-      .messageId(getMessageId())
-      .messageType(getMessageType());
-  }
+    public static class Builder {
 
+        private SessionsMessage instance;
 
+        public Builder() {
+            this(new SessionsMessage());
+        }
+
+        protected Builder(SessionsMessage instance) {
+            this.instance = instance;
+        }
+
+        public SessionsMessage.Builder data(List<SessionInfoDto> data) {
+            this.instance.data = JsonNullable.<List<SessionInfoDto>> of(data);
+            return this;
+        }
+
+        public SessionsMessage.Builder data(JsonNullable<List<SessionInfoDto>> data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        public SessionsMessage.Builder messageId(UUID messageId) {
+            this.instance.messageId = messageId;
+            return this;
+        }
+
+        public SessionsMessage.Builder messageType(SessionMessageType messageType) {
+            this.instance.messageType = messageType;
+            return this;
+        }
+
+        /**
+         * returns a built SessionsMessage instance.
+         *
+         * The builder is not reusable.
+         */
+        public SessionsMessage build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SessionsMessage.Builder builder() {
+        return new SessionsMessage.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SessionsMessage.Builder toBuilder() {
+        return new SessionsMessage.Builder().data(getData()).messageId(getMessageId()).messageType(getMessageType());
+    }
 }
-

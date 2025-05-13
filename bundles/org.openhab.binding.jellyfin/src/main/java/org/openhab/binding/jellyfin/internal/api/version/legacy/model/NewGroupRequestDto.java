@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class NewGroupRequestDto.
  */
-@JsonPropertyOrder({
-  NewGroupRequestDto.JSON_PROPERTY_GROUP_NAME
-})
+@JsonPropertyOrder({ NewGroupRequestDto.JSON_PROPERTY_GROUP_NAME })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NewGroupRequestDto {
-  public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
-  @javax.annotation.Nullable
-  private String groupName;
+    public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
+    @javax.annotation.Nullable
+    private String groupName;
 
-  public NewGroupRequestDto() {
-  }
-
-  public NewGroupRequestDto groupName(@javax.annotation.Nullable String groupName) {
-    
-    this.groupName = groupName;
-    return this;
-  }
-
-  /**
-   * Gets or sets the group name.
-   * @return groupName
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_GROUP_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getGroupName() {
-    return groupName;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_GROUP_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroupName(@javax.annotation.Nullable String groupName) {
-    this.groupName = groupName;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    NewGroupRequestDto newGroupRequestDto = (NewGroupRequestDto) o;
-    return Objects.equals(this.groupName, newGroupRequestDto.groupName);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(groupName);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class NewGroupRequestDto {\n");
-    sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private NewGroupRequestDto instance;
-
-    public Builder() {
-      this(new NewGroupRequestDto());
+    public NewGroupRequestDto() {
     }
 
-    protected Builder(NewGroupRequestDto instance) {
-      this.instance = instance;
-    }
+    public NewGroupRequestDto groupName(@javax.annotation.Nullable String groupName) {
 
-    public NewGroupRequestDto.Builder groupName(String groupName) {
-      this.instance.groupName = groupName;
-      return this;
+        this.groupName = groupName;
+        return this;
     }
-
 
     /**
-    * returns a built NewGroupRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public NewGroupRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the group name.
+     * 
+     * @return groupName
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setGroupName(@javax.annotation.Nullable String groupName) {
+        this.groupName = groupName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NewGroupRequestDto newGroupRequestDto = (NewGroupRequestDto) o;
+        return Objects.equals(this.groupName, newGroupRequestDto.groupName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupName);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class NewGroupRequestDto {\n");
+        sb.append("    groupName: ").append(toIndentedString(groupName)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static NewGroupRequestDto.Builder builder() {
-    return new NewGroupRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public NewGroupRequestDto.Builder toBuilder() {
-    return new NewGroupRequestDto.Builder()
-      .groupName(getGroupName());
-  }
+    public static class Builder {
 
+        private NewGroupRequestDto instance;
 
+        public Builder() {
+            this(new NewGroupRequestDto());
+        }
+
+        protected Builder(NewGroupRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public NewGroupRequestDto.Builder groupName(String groupName) {
+            this.instance.groupName = groupName;
+            return this;
+        }
+
+        /**
+         * returns a built NewGroupRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public NewGroupRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static NewGroupRequestDto.Builder builder() {
+        return new NewGroupRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public NewGroupRequestDto.Builder toBuilder() {
+        return new NewGroupRequestDto.Builder().groupName(getGroupName());
+    }
 }
-

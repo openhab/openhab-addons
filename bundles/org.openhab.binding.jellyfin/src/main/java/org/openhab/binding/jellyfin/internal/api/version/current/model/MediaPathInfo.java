@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * MediaPathInfo
  */
-@JsonPropertyOrder({
-  MediaPathInfo.JSON_PROPERTY_PATH
-})
+@JsonPropertyOrder({ MediaPathInfo.JSON_PROPERTY_PATH })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaPathInfo {
-  public static final String JSON_PROPERTY_PATH = "Path";
-  @javax.annotation.Nullable
-  private String path;
+    public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
+    private String path;
 
-  public MediaPathInfo() {
-  }
-
-  public MediaPathInfo path(@javax.annotation.Nullable String path) {
-    
-    this.path = path;
-    return this;
-  }
-
-  /**
-   * Get path
-   * @return path
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getPath() {
-    return path;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MediaPathInfo mediaPathInfo = (MediaPathInfo) o;
-    return Objects.equals(this.path, mediaPathInfo.path);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(path);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MediaPathInfo {\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MediaPathInfo instance;
-
-    public Builder() {
-      this(new MediaPathInfo());
+    public MediaPathInfo() {
     }
 
-    protected Builder(MediaPathInfo instance) {
-      this.instance = instance;
-    }
+    public MediaPathInfo path(@javax.annotation.Nullable String path) {
 
-    public MediaPathInfo.Builder path(String path) {
-      this.instance.path = path;
-      return this;
+        this.path = path;
+        return this;
     }
-
 
     /**
-    * returns a built MediaPathInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public MediaPathInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get path
+     * 
+     * @return path
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getPath() {
+        return path;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
+        this.path = path;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MediaPathInfo mediaPathInfo = (MediaPathInfo) o;
+        return Objects.equals(this.path, mediaPathInfo.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MediaPathInfo {\n");
+        sb.append("    path: ").append(toIndentedString(path)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MediaPathInfo.Builder builder() {
-    return new MediaPathInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MediaPathInfo.Builder toBuilder() {
-    return new MediaPathInfo.Builder()
-      .path(getPath());
-  }
+    public static class Builder {
 
+        private MediaPathInfo instance;
 
+        public Builder() {
+            this(new MediaPathInfo());
+        }
+
+        protected Builder(MediaPathInfo instance) {
+            this.instance = instance;
+        }
+
+        public MediaPathInfo.Builder path(String path) {
+            this.instance.path = path;
+            return this;
+        }
+
+        /**
+         * returns a built MediaPathInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public MediaPathInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MediaPathInfo.Builder builder() {
+        return new MediaPathInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MediaPathInfo.Builder toBuilder() {
+        return new MediaPathInfo.Builder().path(getPath());
+    }
 }
-

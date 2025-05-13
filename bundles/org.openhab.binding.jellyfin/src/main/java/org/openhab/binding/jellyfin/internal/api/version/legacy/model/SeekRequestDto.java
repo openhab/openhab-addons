@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class SeekRequestDto.
  */
-@JsonPropertyOrder({
-  SeekRequestDto.JSON_PROPERTY_POSITION_TICKS
-})
+@JsonPropertyOrder({ SeekRequestDto.JSON_PROPERTY_POSITION_TICKS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SeekRequestDto {
-  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-  @javax.annotation.Nullable
-  private Long positionTicks;
+    public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+    @javax.annotation.Nullable
+    private Long positionTicks;
 
-  public SeekRequestDto() {
-  }
-
-  public SeekRequestDto positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    
-    this.positionTicks = positionTicks;
-    return this;
-  }
-
-  /**
-   * Gets or sets the position ticks.
-   * @return positionTicks
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getPositionTicks() {
-    return positionTicks;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SeekRequestDto seekRequestDto = (SeekRequestDto) o;
-    return Objects.equals(this.positionTicks, seekRequestDto.positionTicks);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(positionTicks);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SeekRequestDto {\n");
-    sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SeekRequestDto instance;
-
-    public Builder() {
-      this(new SeekRequestDto());
+    public SeekRequestDto() {
     }
 
-    protected Builder(SeekRequestDto instance) {
-      this.instance = instance;
-    }
+    public SeekRequestDto positionTicks(@javax.annotation.Nullable Long positionTicks) {
 
-    public SeekRequestDto.Builder positionTicks(Long positionTicks) {
-      this.instance.positionTicks = positionTicks;
-      return this;
+        this.positionTicks = positionTicks;
+        return this;
     }
-
 
     /**
-    * returns a built SeekRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public SeekRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the position ticks.
+     * 
+     * @return positionTicks
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getPositionTicks() {
+        return positionTicks;
+    }
+
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
+        this.positionTicks = positionTicks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SeekRequestDto seekRequestDto = (SeekRequestDto) o;
+        return Objects.equals(this.positionTicks, seekRequestDto.positionTicks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(positionTicks);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SeekRequestDto {\n");
+        sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SeekRequestDto.Builder builder() {
-    return new SeekRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SeekRequestDto.Builder toBuilder() {
-    return new SeekRequestDto.Builder()
-      .positionTicks(getPositionTicks());
-  }
+    public static class Builder {
 
+        private SeekRequestDto instance;
 
+        public Builder() {
+            this(new SeekRequestDto());
+        }
+
+        protected Builder(SeekRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public SeekRequestDto.Builder positionTicks(Long positionTicks) {
+            this.instance.positionTicks = positionTicks;
+            return this;
+        }
+
+        /**
+         * returns a built SeekRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public SeekRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SeekRequestDto.Builder builder() {
+        return new SeekRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SeekRequestDto.Builder toBuilder() {
+        return new SeekRequestDto.Builder().positionTicks(getPositionTicks());
+    }
 }
-

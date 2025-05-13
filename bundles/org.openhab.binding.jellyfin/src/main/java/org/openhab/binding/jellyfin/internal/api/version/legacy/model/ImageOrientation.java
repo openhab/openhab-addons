@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,47 +24,46 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ImageOrientation
  */
 public enum ImageOrientation {
-  
-  TOP_LEFT("TopLeft"),
-  
-  TOP_RIGHT("TopRight"),
-  
-  BOTTOM_RIGHT("BottomRight"),
-  
-  BOTTOM_LEFT("BottomLeft"),
-  
-  LEFT_TOP("LeftTop"),
-  
-  RIGHT_TOP("RightTop"),
-  
-  RIGHT_BOTTOM("RightBottom"),
-  
-  LEFT_BOTTOM("LeftBottom");
 
-  private String value;
+    TOP_LEFT("TopLeft"),
 
-  ImageOrientation(String value) {
-    this.value = value;
-  }
+    TOP_RIGHT("TopRight"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    BOTTOM_RIGHT("BottomRight"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    BOTTOM_LEFT("BottomLeft"),
 
-  @JsonCreator
-  public static ImageOrientation fromValue(String value) {
-    for (ImageOrientation b : ImageOrientation.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    LEFT_TOP("LeftTop"),
+
+    RIGHT_TOP("RightTop"),
+
+    RIGHT_BOTTOM("RightBottom"),
+
+    LEFT_BOTTOM("LeftBottom");
+
+    private String value;
+
+    ImageOrientation(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ImageOrientation fromValue(String value) {
+        for (ImageOrientation b : ImageOrientation.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

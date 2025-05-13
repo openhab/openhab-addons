@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets CodecType
  */
 public enum CodecType {
-  
-  VIDEO("Video"),
-  
-  VIDEO_AUDIO("VideoAudio"),
-  
-  AUDIO("Audio");
 
-  private String value;
+    VIDEO("Video"),
 
-  CodecType(String value) {
-    this.value = value;
-  }
+    VIDEO_AUDIO("VideoAudio"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    AUDIO("Audio");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static CodecType fromValue(String value) {
-    for (CodecType b : CodecType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    CodecType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static CodecType fromValue(String value) {
+        for (CodecType b : CodecType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

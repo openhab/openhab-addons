@@ -17,197 +17,180 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LyricLine;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LyricMetadata;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * LyricResponse model.
  */
-@JsonPropertyOrder({
-  LyricDto.JSON_PROPERTY_METADATA,
-  LyricDto.JSON_PROPERTY_LYRICS
-})
+@JsonPropertyOrder({ LyricDto.JSON_PROPERTY_METADATA, LyricDto.JSON_PROPERTY_LYRICS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LyricDto {
-  public static final String JSON_PROPERTY_METADATA = "Metadata";
-  @javax.annotation.Nullable
-  private LyricMetadata metadata;
+    public static final String JSON_PROPERTY_METADATA = "Metadata";
+    @javax.annotation.Nullable
+    private LyricMetadata metadata;
 
-  public static final String JSON_PROPERTY_LYRICS = "Lyrics";
-  @javax.annotation.Nullable
-  private List<LyricLine> lyrics = new ArrayList<>();
+    public static final String JSON_PROPERTY_LYRICS = "Lyrics";
+    @javax.annotation.Nullable
+    private List<LyricLine> lyrics = new ArrayList<>();
 
-  public LyricDto() {
-  }
-
-  public LyricDto metadata(@javax.annotation.Nullable LyricMetadata metadata) {
-    
-    this.metadata = metadata;
-    return this;
-  }
-
-  /**
-   * Gets or sets Metadata for the lyrics.
-   * @return metadata
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_METADATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public LyricMetadata getMetadata() {
-    return metadata;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_METADATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMetadata(@javax.annotation.Nullable LyricMetadata metadata) {
-    this.metadata = metadata;
-  }
-
-  public LyricDto lyrics(@javax.annotation.Nullable List<LyricLine> lyrics) {
-    
-    this.lyrics = lyrics;
-    return this;
-  }
-
-  public LyricDto addLyricsItem(LyricLine lyricsItem) {
-    if (this.lyrics == null) {
-      this.lyrics = new ArrayList<>();
-    }
-    this.lyrics.add(lyricsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets a collection of individual lyric lines.
-   * @return lyrics
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_LYRICS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LyricLine> getLyrics() {
-    return lyrics;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_LYRICS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLyrics(@javax.annotation.Nullable List<LyricLine> lyrics) {
-    this.lyrics = lyrics;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LyricDto lyricDto = (LyricDto) o;
-    return Objects.equals(this.metadata, lyricDto.metadata) &&
-        Objects.equals(this.lyrics, lyricDto.lyrics);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(metadata, lyrics);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LyricDto {\n");
-    sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
-    sb.append("    lyrics: ").append(toIndentedString(lyrics)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LyricDto instance;
-
-    public Builder() {
-      this(new LyricDto());
+    public LyricDto() {
     }
 
-    protected Builder(LyricDto instance) {
-      this.instance = instance;
-    }
+    public LyricDto metadata(@javax.annotation.Nullable LyricMetadata metadata) {
 
-    public LyricDto.Builder metadata(LyricMetadata metadata) {
-      this.instance.metadata = metadata;
-      return this;
+        this.metadata = metadata;
+        return this;
     }
-    public LyricDto.Builder lyrics(List<LyricLine> lyrics) {
-      this.instance.lyrics = lyrics;
-      return this;
-    }
-
 
     /**
-    * returns a built LyricDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public LyricDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets Metadata for the lyrics.
+     * 
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_METADATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public LyricMetadata getMetadata() {
+        return metadata;
+    }
+
+    @JsonProperty(JSON_PROPERTY_METADATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadata(@javax.annotation.Nullable LyricMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public LyricDto lyrics(@javax.annotation.Nullable List<LyricLine> lyrics) {
+
+        this.lyrics = lyrics;
+        return this;
+    }
+
+    public LyricDto addLyricsItem(LyricLine lyricsItem) {
+        if (this.lyrics == null) {
+            this.lyrics = new ArrayList<>();
+        }
+        this.lyrics.add(lyricsItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets a collection of individual lyric lines.
+     * 
+     * @return lyrics
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_LYRICS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LyricLine> getLyrics() {
+        return lyrics;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LYRICS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLyrics(@javax.annotation.Nullable List<LyricLine> lyrics) {
+        this.lyrics = lyrics;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LyricDto lyricDto = (LyricDto) o;
+        return Objects.equals(this.metadata, lyricDto.metadata) && Objects.equals(this.lyrics, lyricDto.lyrics);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metadata, lyrics);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LyricDto {\n");
+        sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
+        sb.append("    lyrics: ").append(toIndentedString(lyrics)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LyricDto.Builder builder() {
-    return new LyricDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LyricDto.Builder toBuilder() {
-    return new LyricDto.Builder()
-      .metadata(getMetadata())
-      .lyrics(getLyrics());
-  }
+    public static class Builder {
 
+        private LyricDto instance;
 
+        public Builder() {
+            this(new LyricDto());
+        }
+
+        protected Builder(LyricDto instance) {
+            this.instance = instance;
+        }
+
+        public LyricDto.Builder metadata(LyricMetadata metadata) {
+            this.instance.metadata = metadata;
+            return this;
+        }
+
+        public LyricDto.Builder lyrics(List<LyricLine> lyrics) {
+            this.instance.lyrics = lyrics;
+            return this;
+        }
+
+        /**
+         * returns a built LyricDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public LyricDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LyricDto.Builder builder() {
+        return new LyricDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LyricDto.Builder toBuilder() {
+        return new LyricDto.Builder().metadata(getMetadata()).lyrics(getLyrics());
+    }
 }
-

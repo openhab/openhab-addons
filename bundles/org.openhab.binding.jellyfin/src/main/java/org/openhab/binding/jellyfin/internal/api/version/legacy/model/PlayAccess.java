@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,35 +24,34 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlayAccess
  */
 public enum PlayAccess {
-  
-  FULL("Full"),
-  
-  NONE("None");
 
-  private String value;
+    FULL("Full"),
 
-  PlayAccess(String value) {
-    this.value = value;
-  }
+    NONE("None");
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    private String value;
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
-
-  @JsonCreator
-  public static PlayAccess fromValue(String value) {
-    for (PlayAccess b : PlayAccess.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    PlayAccess(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static PlayAccess fromValue(String value) {
+        for (PlayAccess b : PlayAccess.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

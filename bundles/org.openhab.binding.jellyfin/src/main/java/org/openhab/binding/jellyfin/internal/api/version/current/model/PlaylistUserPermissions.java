@@ -18,184 +18,171 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class to hold data on user permissions for playlists.
  */
-@JsonPropertyOrder({
-  PlaylistUserPermissions.JSON_PROPERTY_USER_ID,
-  PlaylistUserPermissions.JSON_PROPERTY_CAN_EDIT
-})
+@JsonPropertyOrder({ PlaylistUserPermissions.JSON_PROPERTY_USER_ID, PlaylistUserPermissions.JSON_PROPERTY_CAN_EDIT })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlaylistUserPermissions {
-  public static final String JSON_PROPERTY_USER_ID = "UserId";
-  @javax.annotation.Nullable
-  private UUID userId;
+    public static final String JSON_PROPERTY_USER_ID = "UserId";
+    @javax.annotation.Nullable
+    private UUID userId;
 
-  public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
-  @javax.annotation.Nullable
-  private Boolean canEdit;
+    public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
+    @javax.annotation.Nullable
+    private Boolean canEdit;
 
-  public PlaylistUserPermissions() {
-  }
-
-  public PlaylistUserPermissions userId(@javax.annotation.Nullable UUID userId) {
-    
-    this.userId = userId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the user id.
-   * @return userId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_USER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getUserId() {
-    return userId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_USER_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUserId(@javax.annotation.Nullable UUID userId) {
-    this.userId = userId;
-  }
-
-  public PlaylistUserPermissions canEdit(@javax.annotation.Nullable Boolean canEdit) {
-    
-    this.canEdit = canEdit;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether the user has edit permissions.
-   * @return canEdit
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CAN_EDIT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getCanEdit() {
-    return canEdit;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CAN_EDIT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCanEdit(@javax.annotation.Nullable Boolean canEdit) {
-    this.canEdit = canEdit;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PlaylistUserPermissions playlistUserPermissions = (PlaylistUserPermissions) o;
-    return Objects.equals(this.userId, playlistUserPermissions.userId) &&
-        Objects.equals(this.canEdit, playlistUserPermissions.canEdit);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(userId, canEdit);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PlaylistUserPermissions {\n");
-    sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
-    sb.append("    canEdit: ").append(toIndentedString(canEdit)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private PlaylistUserPermissions instance;
-
-    public Builder() {
-      this(new PlaylistUserPermissions());
+    public PlaylistUserPermissions() {
     }
 
-    protected Builder(PlaylistUserPermissions instance) {
-      this.instance = instance;
-    }
+    public PlaylistUserPermissions userId(@javax.annotation.Nullable UUID userId) {
 
-    public PlaylistUserPermissions.Builder userId(UUID userId) {
-      this.instance.userId = userId;
-      return this;
+        this.userId = userId;
+        return this;
     }
-    public PlaylistUserPermissions.Builder canEdit(Boolean canEdit) {
-      this.instance.canEdit = canEdit;
-      return this;
-    }
-
 
     /**
-    * returns a built PlaylistUserPermissions instance.
-    *
-    * The builder is not reusable.
-    */
-    public PlaylistUserPermissions build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the user id.
+     * 
+     * @return userId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(@javax.annotation.Nullable UUID userId) {
+        this.userId = userId;
+    }
+
+    public PlaylistUserPermissions canEdit(@javax.annotation.Nullable Boolean canEdit) {
+
+        this.canEdit = canEdit;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether the user has edit permissions.
+     * 
+     * @return canEdit
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getCanEdit() {
+        return canEdit;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCanEdit(@javax.annotation.Nullable Boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PlaylistUserPermissions playlistUserPermissions = (PlaylistUserPermissions) o;
+        return Objects.equals(this.userId, playlistUserPermissions.userId)
+                && Objects.equals(this.canEdit, playlistUserPermissions.canEdit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, canEdit);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PlaylistUserPermissions {\n");
+        sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
+        sb.append("    canEdit: ").append(toIndentedString(canEdit)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static PlaylistUserPermissions.Builder builder() {
-    return new PlaylistUserPermissions.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public PlaylistUserPermissions.Builder toBuilder() {
-    return new PlaylistUserPermissions.Builder()
-      .userId(getUserId())
-      .canEdit(getCanEdit());
-  }
+    public static class Builder {
 
+        private PlaylistUserPermissions instance;
 
+        public Builder() {
+            this(new PlaylistUserPermissions());
+        }
+
+        protected Builder(PlaylistUserPermissions instance) {
+            this.instance = instance;
+        }
+
+        public PlaylistUserPermissions.Builder userId(UUID userId) {
+            this.instance.userId = userId;
+            return this;
+        }
+
+        public PlaylistUserPermissions.Builder canEdit(Boolean canEdit) {
+            this.instance.canEdit = canEdit;
+            return this;
+        }
+
+        /**
+         * returns a built PlaylistUserPermissions instance.
+         *
+         * The builder is not reusable.
+         */
+        public PlaylistUserPermissions build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static PlaylistUserPermissions.Builder builder() {
+        return new PlaylistUserPermissions.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public PlaylistUserPermissions.Builder toBuilder() {
+        return new PlaylistUserPermissions.Builder().userId(getUserId()).canEdit(getCanEdit());
+    }
 }
-

@@ -17,211 +17,200 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Lyric model.
  */
-@JsonPropertyOrder({
-  LyricLine.JSON_PROPERTY_TEXT,
-  LyricLine.JSON_PROPERTY_START
-})
+@JsonPropertyOrder({ LyricLine.JSON_PROPERTY_TEXT, LyricLine.JSON_PROPERTY_START })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LyricLine {
-  public static final String JSON_PROPERTY_TEXT = "Text";
-  @javax.annotation.Nullable
-  private String text;
+    public static final String JSON_PROPERTY_TEXT = "Text";
+    @javax.annotation.Nullable
+    private String text;
 
-  public static final String JSON_PROPERTY_START = "Start";
-  @javax.annotation.Nullable
-  private JsonNullable<Long> start = JsonNullable.<Long>undefined();
+    public static final String JSON_PROPERTY_START = "Start";
+    @javax.annotation.Nullable
+    private JsonNullable<Long> start = JsonNullable.<Long> undefined();
 
-  public LyricLine() {
-  }
-
-  public LyricLine text(@javax.annotation.Nullable String text) {
-    
-    this.text = text;
-    return this;
-  }
-
-  /**
-   * Gets the text of this lyric line.
-   * @return text
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TEXT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getText() {
-    return text;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TEXT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setText(@javax.annotation.Nullable String text) {
-    this.text = text;
-  }
-
-  public LyricLine start(@javax.annotation.Nullable Long start) {
-    this.start = JsonNullable.<Long>of(start);
-    
-    return this;
-  }
-
-  /**
-   * Gets the start time in ticks.
-   * @return start
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Long getStart() {
-        return start.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_START)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Long> getStart_JsonNullable() {
-    return start;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_START)
-  public void setStart_JsonNullable(JsonNullable<Long> start) {
-    this.start = start;
-  }
-
-  public void setStart(@javax.annotation.Nullable Long start) {
-    this.start = JsonNullable.<Long>of(start);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LyricLine lyricLine = (LyricLine) o;
-    return Objects.equals(this.text, lyricLine.text) &&
-        equalsNullable(this.start, lyricLine.start);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(text, hashCodeNullable(start));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LyricLine {\n");
-    sb.append("    text: ").append(toIndentedString(text)).append("\n");
-    sb.append("    start: ").append(toIndentedString(start)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LyricLine instance;
-
-    public Builder() {
-      this(new LyricLine());
+    public LyricLine() {
     }
 
-    protected Builder(LyricLine instance) {
-      this.instance = instance;
-    }
+    public LyricLine text(@javax.annotation.Nullable String text) {
 
-    public LyricLine.Builder text(String text) {
-      this.instance.text = text;
-      return this;
+        this.text = text;
+        return this;
     }
-    public LyricLine.Builder start(Long start) {
-      this.instance.start = JsonNullable.<Long>of(start);
-      return this;
-    }
-    public LyricLine.Builder start(JsonNullable<Long> start) {
-      this.instance.start = start;
-      return this;
-    }
-
 
     /**
-    * returns a built LyricLine instance.
-    *
-    * The builder is not reusable.
-    */
-    public LyricLine build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets the text of this lyric line.
+     * 
+     * @return text
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getText() {
+        return text;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setText(@javax.annotation.Nullable String text) {
+        this.text = text;
+    }
+
+    public LyricLine start(@javax.annotation.Nullable Long start) {
+        this.start = JsonNullable.<Long> of(start);
+
+        return this;
+    }
+
+    /**
+     * Gets the start time in ticks.
+     * 
+     * @return start
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Long getStart() {
+        return start.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_START)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Long> getStart_JsonNullable() {
+        return start;
+    }
+
+    @JsonProperty(JSON_PROPERTY_START)
+    public void setStart_JsonNullable(JsonNullable<Long> start) {
+        this.start = start;
+    }
+
+    public void setStart(@javax.annotation.Nullable Long start) {
+        this.start = JsonNullable.<Long> of(start);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LyricLine lyricLine = (LyricLine) o;
+        return Objects.equals(this.text, lyricLine.text) && equalsNullable(this.start, lyricLine.start);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text, hashCodeNullable(start));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LyricLine {\n");
+        sb.append("    text: ").append(toIndentedString(text)).append("\n");
+        sb.append("    start: ").append(toIndentedString(start)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LyricLine.Builder builder() {
-    return new LyricLine.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LyricLine.Builder toBuilder() {
-    return new LyricLine.Builder()
-      .text(getText())
-      .start(getStart());
-  }
+    public static class Builder {
 
+        private LyricLine instance;
 
+        public Builder() {
+            this(new LyricLine());
+        }
+
+        protected Builder(LyricLine instance) {
+            this.instance = instance;
+        }
+
+        public LyricLine.Builder text(String text) {
+            this.instance.text = text;
+            return this;
+        }
+
+        public LyricLine.Builder start(Long start) {
+            this.instance.start = JsonNullable.<Long> of(start);
+            return this;
+        }
+
+        public LyricLine.Builder start(JsonNullable<Long> start) {
+            this.instance.start = start;
+            return this;
+        }
+
+        /**
+         * returns a built LyricLine instance.
+         *
+         * The builder is not reusable.
+         */
+        public LyricLine build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LyricLine.Builder builder() {
+        return new LyricLine.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LyricLine.Builder toBuilder() {
+        return new LyricLine.Builder().text(getText()).start(getStart());
+    }
 }
-

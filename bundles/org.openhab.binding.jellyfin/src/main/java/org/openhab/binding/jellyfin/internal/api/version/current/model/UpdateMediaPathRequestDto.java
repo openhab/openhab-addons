@@ -18,184 +18,170 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.MediaPathInfo;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Update library options dto.
  */
-@JsonPropertyOrder({
-  UpdateMediaPathRequestDto.JSON_PROPERTY_NAME,
-  UpdateMediaPathRequestDto.JSON_PROPERTY_PATH_INFO
-})
+@JsonPropertyOrder({ UpdateMediaPathRequestDto.JSON_PROPERTY_NAME, UpdateMediaPathRequestDto.JSON_PROPERTY_PATH_INFO })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateMediaPathRequestDto {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nonnull
-  private String name;
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nonnull
+    private String name;
 
-  public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
-  @javax.annotation.Nonnull
-  private MediaPathInfo pathInfo;
+    public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
+    @javax.annotation.Nonnull
+    private MediaPathInfo pathInfo;
 
-  public UpdateMediaPathRequestDto() {
-  }
-
-  public UpdateMediaPathRequestDto name(@javax.annotation.Nonnull String name) {
-    
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Gets or sets the library name.
-   * @return name
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getName() {
-    return name;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setName(@javax.annotation.Nonnull String name) {
-    this.name = name;
-  }
-
-  public UpdateMediaPathRequestDto pathInfo(@javax.annotation.Nonnull MediaPathInfo pathInfo) {
-    
-    this.pathInfo = pathInfo;
-    return this;
-  }
-
-  /**
-   * Gets or sets library folder path information.
-   * @return pathInfo
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_PATH_INFO)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public MediaPathInfo getPathInfo() {
-    return pathInfo;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PATH_INFO)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPathInfo(@javax.annotation.Nonnull MediaPathInfo pathInfo) {
-    this.pathInfo = pathInfo;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UpdateMediaPathRequestDto updateMediaPathRequestDto = (UpdateMediaPathRequestDto) o;
-    return Objects.equals(this.name, updateMediaPathRequestDto.name) &&
-        Objects.equals(this.pathInfo, updateMediaPathRequestDto.pathInfo);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, pathInfo);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateMediaPathRequestDto {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    pathInfo: ").append(toIndentedString(pathInfo)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private UpdateMediaPathRequestDto instance;
-
-    public Builder() {
-      this(new UpdateMediaPathRequestDto());
+    public UpdateMediaPathRequestDto() {
     }
 
-    protected Builder(UpdateMediaPathRequestDto instance) {
-      this.instance = instance;
-    }
+    public UpdateMediaPathRequestDto name(@javax.annotation.Nonnull String name) {
 
-    public UpdateMediaPathRequestDto.Builder name(String name) {
-      this.instance.name = name;
-      return this;
+        this.name = name;
+        return this;
     }
-    public UpdateMediaPathRequestDto.Builder pathInfo(MediaPathInfo pathInfo) {
-      this.instance.pathInfo = pathInfo;
-      return this;
-    }
-
 
     /**
-    * returns a built UpdateMediaPathRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public UpdateMediaPathRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the library name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public String getName() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setName(@javax.annotation.Nonnull String name) {
+        this.name = name;
+    }
+
+    public UpdateMediaPathRequestDto pathInfo(@javax.annotation.Nonnull MediaPathInfo pathInfo) {
+
+        this.pathInfo = pathInfo;
+        return this;
+    }
+
+    /**
+     * Gets or sets library folder path information.
+     * 
+     * @return pathInfo
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public MediaPathInfo getPathInfo() {
+        return pathInfo;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setPathInfo(@javax.annotation.Nonnull MediaPathInfo pathInfo) {
+        this.pathInfo = pathInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdateMediaPathRequestDto updateMediaPathRequestDto = (UpdateMediaPathRequestDto) o;
+        return Objects.equals(this.name, updateMediaPathRequestDto.name)
+                && Objects.equals(this.pathInfo, updateMediaPathRequestDto.pathInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, pathInfo);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UpdateMediaPathRequestDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    pathInfo: ").append(toIndentedString(pathInfo)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static UpdateMediaPathRequestDto.Builder builder() {
-    return new UpdateMediaPathRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public UpdateMediaPathRequestDto.Builder toBuilder() {
-    return new UpdateMediaPathRequestDto.Builder()
-      .name(getName())
-      .pathInfo(getPathInfo());
-  }
+    public static class Builder {
 
+        private UpdateMediaPathRequestDto instance;
 
+        public Builder() {
+            this(new UpdateMediaPathRequestDto());
+        }
+
+        protected Builder(UpdateMediaPathRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public UpdateMediaPathRequestDto.Builder name(String name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public UpdateMediaPathRequestDto.Builder pathInfo(MediaPathInfo pathInfo) {
+            this.instance.pathInfo = pathInfo;
+            return this;
+        }
+
+        /**
+         * returns a built UpdateMediaPathRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public UpdateMediaPathRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static UpdateMediaPathRequestDto.Builder builder() {
+        return new UpdateMediaPathRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public UpdateMediaPathRequestDto.Builder toBuilder() {
+        return new UpdateMediaPathRequestDto.Builder().name(getName()).pathInfo(getPathInfo());
+    }
 }
-

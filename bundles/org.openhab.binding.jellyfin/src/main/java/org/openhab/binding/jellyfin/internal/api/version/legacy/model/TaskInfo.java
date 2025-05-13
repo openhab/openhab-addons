@@ -17,609 +17,608 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.TaskResult;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.TaskState;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.TaskTriggerInfo;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class TaskInfo.
  */
-@JsonPropertyOrder({
-  TaskInfo.JSON_PROPERTY_NAME,
-  TaskInfo.JSON_PROPERTY_STATE,
-  TaskInfo.JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE,
-  TaskInfo.JSON_PROPERTY_ID,
-  TaskInfo.JSON_PROPERTY_LAST_EXECUTION_RESULT,
-  TaskInfo.JSON_PROPERTY_TRIGGERS,
-  TaskInfo.JSON_PROPERTY_DESCRIPTION,
-  TaskInfo.JSON_PROPERTY_CATEGORY,
-  TaskInfo.JSON_PROPERTY_IS_HIDDEN,
-  TaskInfo.JSON_PROPERTY_KEY
-})
+@JsonPropertyOrder({ TaskInfo.JSON_PROPERTY_NAME, TaskInfo.JSON_PROPERTY_STATE,
+        TaskInfo.JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, TaskInfo.JSON_PROPERTY_ID,
+        TaskInfo.JSON_PROPERTY_LAST_EXECUTION_RESULT, TaskInfo.JSON_PROPERTY_TRIGGERS,
+        TaskInfo.JSON_PROPERTY_DESCRIPTION, TaskInfo.JSON_PROPERTY_CATEGORY, TaskInfo.JSON_PROPERTY_IS_HIDDEN,
+        TaskInfo.JSON_PROPERTY_KEY })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TaskInfo {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_STATE = "State";
-  @javax.annotation.Nullable
-  private TaskState state;
-
-  public static final String JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
-  @javax.annotation.Nullable
-  private JsonNullable<Double> currentProgressPercentage = JsonNullable.<Double>undefined();
-
-  public static final String JSON_PROPERTY_ID = "Id";
-  @javax.annotation.Nullable
-  private JsonNullable<String> id = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_LAST_EXECUTION_RESULT = "LastExecutionResult";
-  @javax.annotation.Nullable
-  private JsonNullable<TaskResult> lastExecutionResult = JsonNullable.<TaskResult>undefined();
-
-  public static final String JSON_PROPERTY_TRIGGERS = "Triggers";
-  @javax.annotation.Nullable
-  private JsonNullable<List<TaskTriggerInfo>> triggers = JsonNullable.<List<TaskTriggerInfo>>undefined();
-
-  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-  @javax.annotation.Nullable
-  private JsonNullable<String> description = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_CATEGORY = "Category";
-  @javax.annotation.Nullable
-  private JsonNullable<String> category = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
-  @javax.annotation.Nullable
-  private Boolean isHidden;
-
-  public static final String JSON_PROPERTY_KEY = "Key";
-  @javax.annotation.Nullable
-  private JsonNullable<String> key = JsonNullable.<String>undefined();
-
-  public TaskInfo() {
-  }
-
-  public TaskInfo name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
-    return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
-  }
-
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
-  }
-
-  public TaskInfo state(@javax.annotation.Nullable TaskState state) {
-    
-    this.state = state;
-    return this;
-  }
-
-  /**
-   * Gets or sets the state of the task.
-   * @return state
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_STATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public TaskState getState() {
-    return state;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_STATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setState(@javax.annotation.Nullable TaskState state) {
-    this.state = state;
-  }
-
-  public TaskInfo currentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
-    this.currentProgressPercentage = JsonNullable.<Double>of(currentProgressPercentage);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the progress.
-   * @return currentProgressPercentage
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Double getCurrentProgressPercentage() {
-        return currentProgressPercentage.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Double> getCurrentProgressPercentage_JsonNullable() {
-    return currentProgressPercentage;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
-  public void setCurrentProgressPercentage_JsonNullable(JsonNullable<Double> currentProgressPercentage) {
-    this.currentProgressPercentage = currentProgressPercentage;
-  }
-
-  public void setCurrentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
-    this.currentProgressPercentage = JsonNullable.<Double>of(currentProgressPercentage);
-  }
-
-  public TaskInfo id(@javax.annotation.Nullable String id) {
-    this.id = JsonNullable.<String>of(id);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the id.
-   * @return id
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getId() {
-        return id.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getId_JsonNullable() {
-    return id;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ID)
-  public void setId_JsonNullable(JsonNullable<String> id) {
-    this.id = id;
-  }
-
-  public void setId(@javax.annotation.Nullable String id) {
-    this.id = JsonNullable.<String>of(id);
-  }
-
-  public TaskInfo lastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
-    this.lastExecutionResult = JsonNullable.<TaskResult>of(lastExecutionResult);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the last execution result.
-   * @return lastExecutionResult
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public TaskResult getLastExecutionResult() {
-        return lastExecutionResult.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<TaskResult> getLastExecutionResult_JsonNullable() {
-    return lastExecutionResult;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
-  public void setLastExecutionResult_JsonNullable(JsonNullable<TaskResult> lastExecutionResult) {
-    this.lastExecutionResult = lastExecutionResult;
-  }
-
-  public void setLastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
-    this.lastExecutionResult = JsonNullable.<TaskResult>of(lastExecutionResult);
-  }
-
-  public TaskInfo triggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
-    this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(triggers);
-    
-    return this;
-  }
-
-  public TaskInfo addTriggersItem(TaskTriggerInfo triggersItem) {
-    if (this.triggers == null || !this.triggers.isPresent()) {
-      this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(new ArrayList<>());
-    }
-    try {
-      this.triggers.get().add(triggersItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Gets or sets the triggers.
-   * @return triggers
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<TaskTriggerInfo> getTriggers() {
-        return triggers.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TRIGGERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<TaskTriggerInfo>> getTriggers_JsonNullable() {
-    return triggers;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TRIGGERS)
-  public void setTriggers_JsonNullable(JsonNullable<List<TaskTriggerInfo>> triggers) {
-    this.triggers = triggers;
-  }
-
-  public void setTriggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
-    this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(triggers);
-  }
-
-  public TaskInfo description(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the description.
-   * @return description
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getDescription() {
-        return description.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDescription_JsonNullable() {
-    return description;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  public void setDescription_JsonNullable(JsonNullable<String> description) {
-    this.description = description;
-  }
-
-  public void setDescription(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
-  }
-
-  public TaskInfo category(@javax.annotation.Nullable String category) {
-    this.category = JsonNullable.<String>of(category);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the category.
-   * @return category
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCategory() {
-        return category.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CATEGORY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCategory_JsonNullable() {
-    return category;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CATEGORY)
-  public void setCategory_JsonNullable(JsonNullable<String> category) {
-    this.category = category;
-  }
-
-  public void setCategory(@javax.annotation.Nullable String category) {
-    this.category = JsonNullable.<String>of(category);
-  }
-
-  public TaskInfo isHidden(@javax.annotation.Nullable Boolean isHidden) {
-    
-    this.isHidden = isHidden;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is hidden.
-   * @return isHidden
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsHidden() {
-    return isHidden;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsHidden(@javax.annotation.Nullable Boolean isHidden) {
-    this.isHidden = isHidden;
-  }
-
-  public TaskInfo key(@javax.annotation.Nullable String key) {
-    this.key = JsonNullable.<String>of(key);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the key.
-   * @return key
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getKey() {
-        return key.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_KEY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getKey_JsonNullable() {
-    return key;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_KEY)
-  public void setKey_JsonNullable(JsonNullable<String> key) {
-    this.key = key;
-  }
-
-  public void setKey(@javax.annotation.Nullable String key) {
-    this.key = JsonNullable.<String>of(key);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    TaskInfo taskInfo = (TaskInfo) o;
-    return equalsNullable(this.name, taskInfo.name) &&
-        Objects.equals(this.state, taskInfo.state) &&
-        equalsNullable(this.currentProgressPercentage, taskInfo.currentProgressPercentage) &&
-        equalsNullable(this.id, taskInfo.id) &&
-        equalsNullable(this.lastExecutionResult, taskInfo.lastExecutionResult) &&
-        equalsNullable(this.triggers, taskInfo.triggers) &&
-        equalsNullable(this.description, taskInfo.description) &&
-        equalsNullable(this.category, taskInfo.category) &&
-        Objects.equals(this.isHidden, taskInfo.isHidden) &&
-        equalsNullable(this.key, taskInfo.key);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(name), state, hashCodeNullable(currentProgressPercentage), hashCodeNullable(id), hashCodeNullable(lastExecutionResult), hashCodeNullable(triggers), hashCodeNullable(description), hashCodeNullable(category), isHidden, hashCodeNullable(key));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class TaskInfo {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
-    sb.append("    currentProgressPercentage: ").append(toIndentedString(currentProgressPercentage)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    lastExecutionResult: ").append(toIndentedString(lastExecutionResult)).append("\n");
-    sb.append("    triggers: ").append(toIndentedString(triggers)).append("\n");
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    category: ").append(toIndentedString(category)).append("\n");
-    sb.append("    isHidden: ").append(toIndentedString(isHidden)).append("\n");
-    sb.append("    key: ").append(toIndentedString(key)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private TaskInfo instance;
-
-    public Builder() {
-      this(new TaskInfo());
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private JsonNullable<String> name = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_STATE = "State";
+    @javax.annotation.Nullable
+    private TaskState state;
+
+    public static final String JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
+    @javax.annotation.Nullable
+    private JsonNullable<Double> currentProgressPercentage = JsonNullable.<Double> undefined();
+
+    public static final String JSON_PROPERTY_ID = "Id";
+    @javax.annotation.Nullable
+    private JsonNullable<String> id = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LAST_EXECUTION_RESULT = "LastExecutionResult";
+    @javax.annotation.Nullable
+    private JsonNullable<TaskResult> lastExecutionResult = JsonNullable.<TaskResult> undefined();
+
+    public static final String JSON_PROPERTY_TRIGGERS = "Triggers";
+    @javax.annotation.Nullable
+    private JsonNullable<List<TaskTriggerInfo>> triggers = JsonNullable.<List<TaskTriggerInfo>> undefined();
+
+    public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+    @javax.annotation.Nullable
+    private JsonNullable<String> description = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_CATEGORY = "Category";
+    @javax.annotation.Nullable
+    private JsonNullable<String> category = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
+    @javax.annotation.Nullable
+    private Boolean isHidden;
+
+    public static final String JSON_PROPERTY_KEY = "Key";
+    @javax.annotation.Nullable
+    private JsonNullable<String> key = JsonNullable.<String> undefined();
+
+    public TaskInfo() {
     }
 
-    protected Builder(TaskInfo instance) {
-      this.instance = instance;
-    }
+    public TaskInfo name(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
 
-    public TaskInfo.Builder name(String name) {
-      this.instance.name = JsonNullable.<String>of(name);
-      return this;
+        return this;
     }
-    public TaskInfo.Builder name(JsonNullable<String> name) {
-      this.instance.name = name;
-      return this;
-    }
-    public TaskInfo.Builder state(TaskState state) {
-      this.instance.state = state;
-      return this;
-    }
-    public TaskInfo.Builder currentProgressPercentage(Double currentProgressPercentage) {
-      this.instance.currentProgressPercentage = JsonNullable.<Double>of(currentProgressPercentage);
-      return this;
-    }
-    public TaskInfo.Builder currentProgressPercentage(JsonNullable<Double> currentProgressPercentage) {
-      this.instance.currentProgressPercentage = currentProgressPercentage;
-      return this;
-    }
-    public TaskInfo.Builder id(String id) {
-      this.instance.id = JsonNullable.<String>of(id);
-      return this;
-    }
-    public TaskInfo.Builder id(JsonNullable<String> id) {
-      this.instance.id = id;
-      return this;
-    }
-    public TaskInfo.Builder lastExecutionResult(TaskResult lastExecutionResult) {
-      this.instance.lastExecutionResult = JsonNullable.<TaskResult>of(lastExecutionResult);
-      return this;
-    }
-    public TaskInfo.Builder lastExecutionResult(JsonNullable<TaskResult> lastExecutionResult) {
-      this.instance.lastExecutionResult = lastExecutionResult;
-      return this;
-    }
-    public TaskInfo.Builder triggers(List<TaskTriggerInfo> triggers) {
-      this.instance.triggers = JsonNullable.<List<TaskTriggerInfo>>of(triggers);
-      return this;
-    }
-    public TaskInfo.Builder triggers(JsonNullable<List<TaskTriggerInfo>> triggers) {
-      this.instance.triggers = triggers;
-      return this;
-    }
-    public TaskInfo.Builder description(String description) {
-      this.instance.description = JsonNullable.<String>of(description);
-      return this;
-    }
-    public TaskInfo.Builder description(JsonNullable<String> description) {
-      this.instance.description = description;
-      return this;
-    }
-    public TaskInfo.Builder category(String category) {
-      this.instance.category = JsonNullable.<String>of(category);
-      return this;
-    }
-    public TaskInfo.Builder category(JsonNullable<String> category) {
-      this.instance.category = category;
-      return this;
-    }
-    public TaskInfo.Builder isHidden(Boolean isHidden) {
-      this.instance.isHidden = isHidden;
-      return this;
-    }
-    public TaskInfo.Builder key(String key) {
-      this.instance.key = JsonNullable.<String>of(key);
-      return this;
-    }
-    public TaskInfo.Builder key(JsonNullable<String> key) {
-      this.instance.key = key;
-      return this;
-    }
-
 
     /**
-    * returns a built TaskInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public TaskInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getName() {
+        return name.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getName_JsonNullable() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    public void setName_JsonNullable(JsonNullable<String> name) {
+        this.name = name;
+    }
+
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = JsonNullable.<String> of(name);
+    }
+
+    public TaskInfo state(@javax.annotation.Nullable TaskState state) {
+
+        this.state = state;
+        return this;
+    }
+
+    /**
+     * Gets or sets the state of the task.
+     * 
+     * @return state
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public TaskState getState() {
+        return state;
+    }
+
+    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setState(@javax.annotation.Nullable TaskState state) {
+        this.state = state;
+    }
+
+    public TaskInfo currentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
+        this.currentProgressPercentage = JsonNullable.<Double> of(currentProgressPercentage);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the progress.
+     * 
+     * @return currentProgressPercentage
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Double getCurrentProgressPercentage() {
+        return currentProgressPercentage.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Double> getCurrentProgressPercentage_JsonNullable() {
+        return currentProgressPercentage;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+    public void setCurrentProgressPercentage_JsonNullable(JsonNullable<Double> currentProgressPercentage) {
+        this.currentProgressPercentage = currentProgressPercentage;
+    }
+
+    public void setCurrentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
+        this.currentProgressPercentage = JsonNullable.<Double> of(currentProgressPercentage);
+    }
+
+    public TaskInfo id(@javax.annotation.Nullable String id) {
+        this.id = JsonNullable.<String> of(id);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the id.
+     * 
+     * @return id
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getId() {
+        return id.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getId_JsonNullable() {
+        return id;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ID)
+    public void setId_JsonNullable(JsonNullable<String> id) {
+        this.id = id;
+    }
+
+    public void setId(@javax.annotation.Nullable String id) {
+        this.id = JsonNullable.<String> of(id);
+    }
+
+    public TaskInfo lastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
+        this.lastExecutionResult = JsonNullable.<TaskResult> of(lastExecutionResult);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the last execution result.
+     * 
+     * @return lastExecutionResult
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public TaskResult getLastExecutionResult() {
+        return lastExecutionResult.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<TaskResult> getLastExecutionResult_JsonNullable() {
+        return lastExecutionResult;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+    public void setLastExecutionResult_JsonNullable(JsonNullable<TaskResult> lastExecutionResult) {
+        this.lastExecutionResult = lastExecutionResult;
+    }
+
+    public void setLastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
+        this.lastExecutionResult = JsonNullable.<TaskResult> of(lastExecutionResult);
+    }
+
+    public TaskInfo triggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
+        this.triggers = JsonNullable.<List<TaskTriggerInfo>> of(triggers);
+
+        return this;
+    }
+
+    public TaskInfo addTriggersItem(TaskTriggerInfo triggersItem) {
+        if (this.triggers == null || !this.triggers.isPresent()) {
+            this.triggers = JsonNullable.<List<TaskTriggerInfo>> of(new ArrayList<>());
+        }
+        try {
+            this.triggers.get().add(triggersItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
+    }
+
+    /**
+     * Gets or sets the triggers.
+     * 
+     * @return triggers
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<TaskTriggerInfo> getTriggers() {
+        return triggers.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TRIGGERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<TaskTriggerInfo>> getTriggers_JsonNullable() {
+        return triggers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TRIGGERS)
+    public void setTriggers_JsonNullable(JsonNullable<List<TaskTriggerInfo>> triggers) {
+        this.triggers = triggers;
+    }
+
+    public void setTriggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
+        this.triggers = JsonNullable.<List<TaskTriggerInfo>> of(triggers);
+    }
+
+    public TaskInfo description(@javax.annotation.Nullable String description) {
+        this.description = JsonNullable.<String> of(description);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the description.
+     * 
+     * @return description
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getDescription() {
+        return description.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getDescription_JsonNullable() {
+        return description;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    public void setDescription_JsonNullable(JsonNullable<String> description) {
+        this.description = description;
+    }
+
+    public void setDescription(@javax.annotation.Nullable String description) {
+        this.description = JsonNullable.<String> of(description);
+    }
+
+    public TaskInfo category(@javax.annotation.Nullable String category) {
+        this.category = JsonNullable.<String> of(category);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the category.
+     * 
+     * @return category
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCategory() {
+        return category.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCategory_JsonNullable() {
+        return category;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    public void setCategory_JsonNullable(JsonNullable<String> category) {
+        this.category = category;
+    }
+
+    public void setCategory(@javax.annotation.Nullable String category) {
+        this.category = JsonNullable.<String> of(category);
+    }
+
+    public TaskInfo isHidden(@javax.annotation.Nullable Boolean isHidden) {
+
+        this.isHidden = isHidden;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is hidden.
+     * 
+     * @return isHidden
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsHidden() {
+        return isHidden;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsHidden(@javax.annotation.Nullable Boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public TaskInfo key(@javax.annotation.Nullable String key) {
+        this.key = JsonNullable.<String> of(key);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the key.
+     * 
+     * @return key
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getKey() {
+        return key.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getKey_JsonNullable() {
+        return key;
+    }
+
+    @JsonProperty(JSON_PROPERTY_KEY)
+    public void setKey_JsonNullable(JsonNullable<String> key) {
+        this.key = key;
+    }
+
+    public void setKey(@javax.annotation.Nullable String key) {
+        this.key = JsonNullable.<String> of(key);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TaskInfo taskInfo = (TaskInfo) o;
+        return equalsNullable(this.name, taskInfo.name) && Objects.equals(this.state, taskInfo.state)
+                && equalsNullable(this.currentProgressPercentage, taskInfo.currentProgressPercentage)
+                && equalsNullable(this.id, taskInfo.id)
+                && equalsNullable(this.lastExecutionResult, taskInfo.lastExecutionResult)
+                && equalsNullable(this.triggers, taskInfo.triggers)
+                && equalsNullable(this.description, taskInfo.description)
+                && equalsNullable(this.category, taskInfo.category) && Objects.equals(this.isHidden, taskInfo.isHidden)
+                && equalsNullable(this.key, taskInfo.key);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(name), state, hashCodeNullable(currentProgressPercentage),
+                hashCodeNullable(id), hashCodeNullable(lastExecutionResult), hashCodeNullable(triggers),
+                hashCodeNullable(description), hashCodeNullable(category), isHidden, hashCodeNullable(key));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class TaskInfo {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    state: ").append(toIndentedString(state)).append("\n");
+        sb.append("    currentProgressPercentage: ").append(toIndentedString(currentProgressPercentage)).append("\n");
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("    lastExecutionResult: ").append(toIndentedString(lastExecutionResult)).append("\n");
+        sb.append("    triggers: ").append(toIndentedString(triggers)).append("\n");
+        sb.append("    description: ").append(toIndentedString(description)).append("\n");
+        sb.append("    category: ").append(toIndentedString(category)).append("\n");
+        sb.append("    isHidden: ").append(toIndentedString(isHidden)).append("\n");
+        sb.append("    key: ").append(toIndentedString(key)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static TaskInfo.Builder builder() {
-    return new TaskInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public TaskInfo.Builder toBuilder() {
-    return new TaskInfo.Builder()
-      .name(getName())
-      .state(getState())
-      .currentProgressPercentage(getCurrentProgressPercentage())
-      .id(getId())
-      .lastExecutionResult(getLastExecutionResult())
-      .triggers(getTriggers())
-      .description(getDescription())
-      .category(getCategory())
-      .isHidden(getIsHidden())
-      .key(getKey());
-  }
+    public static class Builder {
 
+        private TaskInfo instance;
 
+        public Builder() {
+            this(new TaskInfo());
+        }
+
+        protected Builder(TaskInfo instance) {
+            this.instance = instance;
+        }
+
+        public TaskInfo.Builder name(String name) {
+            this.instance.name = JsonNullable.<String> of(name);
+            return this;
+        }
+
+        public TaskInfo.Builder name(JsonNullable<String> name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public TaskInfo.Builder state(TaskState state) {
+            this.instance.state = state;
+            return this;
+        }
+
+        public TaskInfo.Builder currentProgressPercentage(Double currentProgressPercentage) {
+            this.instance.currentProgressPercentage = JsonNullable.<Double> of(currentProgressPercentage);
+            return this;
+        }
+
+        public TaskInfo.Builder currentProgressPercentage(JsonNullable<Double> currentProgressPercentage) {
+            this.instance.currentProgressPercentage = currentProgressPercentage;
+            return this;
+        }
+
+        public TaskInfo.Builder id(String id) {
+            this.instance.id = JsonNullable.<String> of(id);
+            return this;
+        }
+
+        public TaskInfo.Builder id(JsonNullable<String> id) {
+            this.instance.id = id;
+            return this;
+        }
+
+        public TaskInfo.Builder lastExecutionResult(TaskResult lastExecutionResult) {
+            this.instance.lastExecutionResult = JsonNullable.<TaskResult> of(lastExecutionResult);
+            return this;
+        }
+
+        public TaskInfo.Builder lastExecutionResult(JsonNullable<TaskResult> lastExecutionResult) {
+            this.instance.lastExecutionResult = lastExecutionResult;
+            return this;
+        }
+
+        public TaskInfo.Builder triggers(List<TaskTriggerInfo> triggers) {
+            this.instance.triggers = JsonNullable.<List<TaskTriggerInfo>> of(triggers);
+            return this;
+        }
+
+        public TaskInfo.Builder triggers(JsonNullable<List<TaskTriggerInfo>> triggers) {
+            this.instance.triggers = triggers;
+            return this;
+        }
+
+        public TaskInfo.Builder description(String description) {
+            this.instance.description = JsonNullable.<String> of(description);
+            return this;
+        }
+
+        public TaskInfo.Builder description(JsonNullable<String> description) {
+            this.instance.description = description;
+            return this;
+        }
+
+        public TaskInfo.Builder category(String category) {
+            this.instance.category = JsonNullable.<String> of(category);
+            return this;
+        }
+
+        public TaskInfo.Builder category(JsonNullable<String> category) {
+            this.instance.category = category;
+            return this;
+        }
+
+        public TaskInfo.Builder isHidden(Boolean isHidden) {
+            this.instance.isHidden = isHidden;
+            return this;
+        }
+
+        public TaskInfo.Builder key(String key) {
+            this.instance.key = JsonNullable.<String> of(key);
+            return this;
+        }
+
+        public TaskInfo.Builder key(JsonNullable<String> key) {
+            this.instance.key = key;
+            return this;
+        }
+
+        /**
+         * returns a built TaskInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public TaskInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static TaskInfo.Builder builder() {
+        return new TaskInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public TaskInfo.Builder toBuilder() {
+        return new TaskInfo.Builder().name(getName()).state(getState())
+                .currentProgressPercentage(getCurrentProgressPercentage()).id(getId())
+                .lastExecutionResult(getLastExecutionResult()).triggers(getTriggers()).description(getDescription())
+                .category(getCategory()).isHidden(getIsHidden()).key(getKey());
+    }
 }
-

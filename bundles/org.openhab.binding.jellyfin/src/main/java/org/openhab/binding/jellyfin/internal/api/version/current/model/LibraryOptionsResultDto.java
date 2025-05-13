@@ -17,340 +17,328 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LibraryOptionInfoDto;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LibraryTypeOptionsDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Library options result dto.
  */
-@JsonPropertyOrder({
-  LibraryOptionsResultDto.JSON_PROPERTY_METADATA_SAVERS,
-  LibraryOptionsResultDto.JSON_PROPERTY_METADATA_READERS,
-  LibraryOptionsResultDto.JSON_PROPERTY_SUBTITLE_FETCHERS,
-  LibraryOptionsResultDto.JSON_PROPERTY_LYRIC_FETCHERS,
-  LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS
-})
+@JsonPropertyOrder({ LibraryOptionsResultDto.JSON_PROPERTY_METADATA_SAVERS,
+        LibraryOptionsResultDto.JSON_PROPERTY_METADATA_READERS, LibraryOptionsResultDto.JSON_PROPERTY_SUBTITLE_FETCHERS,
+        LibraryOptionsResultDto.JSON_PROPERTY_LYRIC_FETCHERS, LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryOptionsResultDto {
-  public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> metadataSavers = new ArrayList<>();
+    public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> metadataSavers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_METADATA_READERS = "MetadataReaders";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> metadataReaders = new ArrayList<>();
+    public static final String JSON_PROPERTY_METADATA_READERS = "MetadataReaders";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> metadataReaders = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SUBTITLE_FETCHERS = "SubtitleFetchers";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> subtitleFetchers = new ArrayList<>();
+    public static final String JSON_PROPERTY_SUBTITLE_FETCHERS = "SubtitleFetchers";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> subtitleFetchers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_LYRIC_FETCHERS = "LyricFetchers";
-  @javax.annotation.Nullable
-  private List<LibraryOptionInfoDto> lyricFetchers = new ArrayList<>();
+    public static final String JSON_PROPERTY_LYRIC_FETCHERS = "LyricFetchers";
+    @javax.annotation.Nullable
+    private List<LibraryOptionInfoDto> lyricFetchers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
-  @javax.annotation.Nullable
-  private List<LibraryTypeOptionsDto> typeOptions = new ArrayList<>();
+    public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
+    @javax.annotation.Nullable
+    private List<LibraryTypeOptionsDto> typeOptions = new ArrayList<>();
 
-  public LibraryOptionsResultDto() {
-  }
-
-  public LibraryOptionsResultDto metadataSavers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
-    
-    this.metadataSavers = metadataSavers;
-    return this;
-  }
-
-  public LibraryOptionsResultDto addMetadataSaversItem(LibraryOptionInfoDto metadataSaversItem) {
-    if (this.metadataSavers == null) {
-      this.metadataSavers = new ArrayList<>();
-    }
-    this.metadataSavers.add(metadataSaversItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the metadata savers.
-   * @return metadataSavers
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getMetadataSavers() {
-    return metadataSavers;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMetadataSavers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
-    this.metadataSavers = metadataSavers;
-  }
-
-  public LibraryOptionsResultDto metadataReaders(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataReaders) {
-    
-    this.metadataReaders = metadataReaders;
-    return this;
-  }
-
-  public LibraryOptionsResultDto addMetadataReadersItem(LibraryOptionInfoDto metadataReadersItem) {
-    if (this.metadataReaders == null) {
-      this.metadataReaders = new ArrayList<>();
-    }
-    this.metadataReaders.add(metadataReadersItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the metadata readers.
-   * @return metadataReaders
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_METADATA_READERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getMetadataReaders() {
-    return metadataReaders;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_METADATA_READERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMetadataReaders(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataReaders) {
-    this.metadataReaders = metadataReaders;
-  }
-
-  public LibraryOptionsResultDto subtitleFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> subtitleFetchers) {
-    
-    this.subtitleFetchers = subtitleFetchers;
-    return this;
-  }
-
-  public LibraryOptionsResultDto addSubtitleFetchersItem(LibraryOptionInfoDto subtitleFetchersItem) {
-    if (this.subtitleFetchers == null) {
-      this.subtitleFetchers = new ArrayList<>();
-    }
-    this.subtitleFetchers.add(subtitleFetchersItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the subtitle fetchers.
-   * @return subtitleFetchers
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getSubtitleFetchers() {
-    return subtitleFetchers;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSubtitleFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> subtitleFetchers) {
-    this.subtitleFetchers = subtitleFetchers;
-  }
-
-  public LibraryOptionsResultDto lyricFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> lyricFetchers) {
-    
-    this.lyricFetchers = lyricFetchers;
-    return this;
-  }
-
-  public LibraryOptionsResultDto addLyricFetchersItem(LibraryOptionInfoDto lyricFetchersItem) {
-    if (this.lyricFetchers == null) {
-      this.lyricFetchers = new ArrayList<>();
-    }
-    this.lyricFetchers.add(lyricFetchersItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the list of lyric fetchers.
-   * @return lyricFetchers
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryOptionInfoDto> getLyricFetchers() {
-    return lyricFetchers;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLyricFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> lyricFetchers) {
-    this.lyricFetchers = lyricFetchers;
-  }
-
-  public LibraryOptionsResultDto typeOptions(@javax.annotation.Nullable List<LibraryTypeOptionsDto> typeOptions) {
-    
-    this.typeOptions = typeOptions;
-    return this;
-  }
-
-  public LibraryOptionsResultDto addTypeOptionsItem(LibraryTypeOptionsDto typeOptionsItem) {
-    if (this.typeOptions == null) {
-      this.typeOptions = new ArrayList<>();
-    }
-    this.typeOptions.add(typeOptionsItem);
-    return this;
-  }
-
-  /**
-   * Gets or sets the type options.
-   * @return typeOptions
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<LibraryTypeOptionsDto> getTypeOptions() {
-    return typeOptions;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTypeOptions(@javax.annotation.Nullable List<LibraryTypeOptionsDto> typeOptions) {
-    this.typeOptions = typeOptions;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LibraryOptionsResultDto libraryOptionsResultDto = (LibraryOptionsResultDto) o;
-    return Objects.equals(this.metadataSavers, libraryOptionsResultDto.metadataSavers) &&
-        Objects.equals(this.metadataReaders, libraryOptionsResultDto.metadataReaders) &&
-        Objects.equals(this.subtitleFetchers, libraryOptionsResultDto.subtitleFetchers) &&
-        Objects.equals(this.lyricFetchers, libraryOptionsResultDto.lyricFetchers) &&
-        Objects.equals(this.typeOptions, libraryOptionsResultDto.typeOptions);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(metadataSavers, metadataReaders, subtitleFetchers, lyricFetchers, typeOptions);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LibraryOptionsResultDto {\n");
-    sb.append("    metadataSavers: ").append(toIndentedString(metadataSavers)).append("\n");
-    sb.append("    metadataReaders: ").append(toIndentedString(metadataReaders)).append("\n");
-    sb.append("    subtitleFetchers: ").append(toIndentedString(subtitleFetchers)).append("\n");
-    sb.append("    lyricFetchers: ").append(toIndentedString(lyricFetchers)).append("\n");
-    sb.append("    typeOptions: ").append(toIndentedString(typeOptions)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LibraryOptionsResultDto instance;
-
-    public Builder() {
-      this(new LibraryOptionsResultDto());
+    public LibraryOptionsResultDto() {
     }
 
-    protected Builder(LibraryOptionsResultDto instance) {
-      this.instance = instance;
+    public LibraryOptionsResultDto metadataSavers(
+            @javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
+
+        this.metadataSavers = metadataSavers;
+        return this;
     }
 
-    public LibraryOptionsResultDto.Builder metadataSavers(List<LibraryOptionInfoDto> metadataSavers) {
-      this.instance.metadataSavers = metadataSavers;
-      return this;
+    public LibraryOptionsResultDto addMetadataSaversItem(LibraryOptionInfoDto metadataSaversItem) {
+        if (this.metadataSavers == null) {
+            this.metadataSavers = new ArrayList<>();
+        }
+        this.metadataSavers.add(metadataSaversItem);
+        return this;
     }
-    public LibraryOptionsResultDto.Builder metadataReaders(List<LibraryOptionInfoDto> metadataReaders) {
-      this.instance.metadataReaders = metadataReaders;
-      return this;
-    }
-    public LibraryOptionsResultDto.Builder subtitleFetchers(List<LibraryOptionInfoDto> subtitleFetchers) {
-      this.instance.subtitleFetchers = subtitleFetchers;
-      return this;
-    }
-    public LibraryOptionsResultDto.Builder lyricFetchers(List<LibraryOptionInfoDto> lyricFetchers) {
-      this.instance.lyricFetchers = lyricFetchers;
-      return this;
-    }
-    public LibraryOptionsResultDto.Builder typeOptions(List<LibraryTypeOptionsDto> typeOptions) {
-      this.instance.typeOptions = typeOptions;
-      return this;
-    }
-
 
     /**
-    * returns a built LibraryOptionsResultDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public LibraryOptionsResultDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the metadata savers.
+     * 
+     * @return metadataSavers
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getMetadataSavers() {
+        return metadataSavers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataSavers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
+        this.metadataSavers = metadataSavers;
+    }
+
+    public LibraryOptionsResultDto metadataReaders(
+            @javax.annotation.Nullable List<LibraryOptionInfoDto> metadataReaders) {
+
+        this.metadataReaders = metadataReaders;
+        return this;
+    }
+
+    public LibraryOptionsResultDto addMetadataReadersItem(LibraryOptionInfoDto metadataReadersItem) {
+        if (this.metadataReaders == null) {
+            this.metadataReaders = new ArrayList<>();
+        }
+        this.metadataReaders.add(metadataReadersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the metadata readers.
+     * 
+     * @return metadataReaders
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getMetadataReaders() {
+        return metadataReaders;
+    }
+
+    @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataReaders(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataReaders) {
+        this.metadataReaders = metadataReaders;
+    }
+
+    public LibraryOptionsResultDto subtitleFetchers(
+            @javax.annotation.Nullable List<LibraryOptionInfoDto> subtitleFetchers) {
+
+        this.subtitleFetchers = subtitleFetchers;
+        return this;
+    }
+
+    public LibraryOptionsResultDto addSubtitleFetchersItem(LibraryOptionInfoDto subtitleFetchersItem) {
+        if (this.subtitleFetchers == null) {
+            this.subtitleFetchers = new ArrayList<>();
+        }
+        this.subtitleFetchers.add(subtitleFetchersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the subtitle fetchers.
+     * 
+     * @return subtitleFetchers
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getSubtitleFetchers() {
+        return subtitleFetchers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSubtitleFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> subtitleFetchers) {
+        this.subtitleFetchers = subtitleFetchers;
+    }
+
+    public LibraryOptionsResultDto lyricFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> lyricFetchers) {
+
+        this.lyricFetchers = lyricFetchers;
+        return this;
+    }
+
+    public LibraryOptionsResultDto addLyricFetchersItem(LibraryOptionInfoDto lyricFetchersItem) {
+        if (this.lyricFetchers == null) {
+            this.lyricFetchers = new ArrayList<>();
+        }
+        this.lyricFetchers.add(lyricFetchersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the list of lyric fetchers.
+     * 
+     * @return lyricFetchers
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryOptionInfoDto> getLyricFetchers() {
+        return lyricFetchers;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLyricFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> lyricFetchers) {
+        this.lyricFetchers = lyricFetchers;
+    }
+
+    public LibraryOptionsResultDto typeOptions(@javax.annotation.Nullable List<LibraryTypeOptionsDto> typeOptions) {
+
+        this.typeOptions = typeOptions;
+        return this;
+    }
+
+    public LibraryOptionsResultDto addTypeOptionsItem(LibraryTypeOptionsDto typeOptionsItem) {
+        if (this.typeOptions == null) {
+            this.typeOptions = new ArrayList<>();
+        }
+        this.typeOptions.add(typeOptionsItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the type options.
+     * 
+     * @return typeOptions
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<LibraryTypeOptionsDto> getTypeOptions() {
+        return typeOptions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTypeOptions(@javax.annotation.Nullable List<LibraryTypeOptionsDto> typeOptions) {
+        this.typeOptions = typeOptions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LibraryOptionsResultDto libraryOptionsResultDto = (LibraryOptionsResultDto) o;
+        return Objects.equals(this.metadataSavers, libraryOptionsResultDto.metadataSavers)
+                && Objects.equals(this.metadataReaders, libraryOptionsResultDto.metadataReaders)
+                && Objects.equals(this.subtitleFetchers, libraryOptionsResultDto.subtitleFetchers)
+                && Objects.equals(this.lyricFetchers, libraryOptionsResultDto.lyricFetchers)
+                && Objects.equals(this.typeOptions, libraryOptionsResultDto.typeOptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metadataSavers, metadataReaders, subtitleFetchers, lyricFetchers, typeOptions);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LibraryOptionsResultDto {\n");
+        sb.append("    metadataSavers: ").append(toIndentedString(metadataSavers)).append("\n");
+        sb.append("    metadataReaders: ").append(toIndentedString(metadataReaders)).append("\n");
+        sb.append("    subtitleFetchers: ").append(toIndentedString(subtitleFetchers)).append("\n");
+        sb.append("    lyricFetchers: ").append(toIndentedString(lyricFetchers)).append("\n");
+        sb.append("    typeOptions: ").append(toIndentedString(typeOptions)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LibraryOptionsResultDto.Builder builder() {
-    return new LibraryOptionsResultDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LibraryOptionsResultDto.Builder toBuilder() {
-    return new LibraryOptionsResultDto.Builder()
-      .metadataSavers(getMetadataSavers())
-      .metadataReaders(getMetadataReaders())
-      .subtitleFetchers(getSubtitleFetchers())
-      .lyricFetchers(getLyricFetchers())
-      .typeOptions(getTypeOptions());
-  }
+    public static class Builder {
 
+        private LibraryOptionsResultDto instance;
 
+        public Builder() {
+            this(new LibraryOptionsResultDto());
+        }
+
+        protected Builder(LibraryOptionsResultDto instance) {
+            this.instance = instance;
+        }
+
+        public LibraryOptionsResultDto.Builder metadataSavers(List<LibraryOptionInfoDto> metadataSavers) {
+            this.instance.metadataSavers = metadataSavers;
+            return this;
+        }
+
+        public LibraryOptionsResultDto.Builder metadataReaders(List<LibraryOptionInfoDto> metadataReaders) {
+            this.instance.metadataReaders = metadataReaders;
+            return this;
+        }
+
+        public LibraryOptionsResultDto.Builder subtitleFetchers(List<LibraryOptionInfoDto> subtitleFetchers) {
+            this.instance.subtitleFetchers = subtitleFetchers;
+            return this;
+        }
+
+        public LibraryOptionsResultDto.Builder lyricFetchers(List<LibraryOptionInfoDto> lyricFetchers) {
+            this.instance.lyricFetchers = lyricFetchers;
+            return this;
+        }
+
+        public LibraryOptionsResultDto.Builder typeOptions(List<LibraryTypeOptionsDto> typeOptions) {
+            this.instance.typeOptions = typeOptions;
+            return this;
+        }
+
+        /**
+         * returns a built LibraryOptionsResultDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public LibraryOptionsResultDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LibraryOptionsResultDto.Builder builder() {
+        return new LibraryOptionsResultDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LibraryOptionsResultDto.Builder toBuilder() {
+        return new LibraryOptionsResultDto.Builder().metadataSavers(getMetadataSavers())
+                .metadataReaders(getMetadataReaders()).subtitleFetchers(getSubtitleFetchers())
+                .lyricFetchers(getLyricFetchers()).typeOptions(getTypeOptions());
+    }
 }
-

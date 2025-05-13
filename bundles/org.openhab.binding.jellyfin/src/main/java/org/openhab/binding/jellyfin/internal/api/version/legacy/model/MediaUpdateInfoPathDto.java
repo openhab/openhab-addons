@@ -17,223 +17,215 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * The media update info path.
  */
-@JsonPropertyOrder({
-  MediaUpdateInfoPathDto.JSON_PROPERTY_PATH,
-  MediaUpdateInfoPathDto.JSON_PROPERTY_UPDATE_TYPE
-})
+@JsonPropertyOrder({ MediaUpdateInfoPathDto.JSON_PROPERTY_PATH, MediaUpdateInfoPathDto.JSON_PROPERTY_UPDATE_TYPE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaUpdateInfoPathDto {
-  public static final String JSON_PROPERTY_PATH = "Path";
-  @javax.annotation.Nullable
-  private JsonNullable<String> path = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
+    private JsonNullable<String> path = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
-  @javax.annotation.Nullable
-  private JsonNullable<String> updateType = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
+    @javax.annotation.Nullable
+    private JsonNullable<String> updateType = JsonNullable.<String> undefined();
 
-  public MediaUpdateInfoPathDto() {
-  }
-
-  public MediaUpdateInfoPathDto path(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets media path.
-   * @return path
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPath() {
-        return path.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPath_JsonNullable() {
-    return path;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PATH)
-  public void setPath_JsonNullable(JsonNullable<String> path) {
-    this.path = path;
-  }
-
-  public void setPath(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-  }
-
-  public MediaUpdateInfoPathDto updateType(@javax.annotation.Nullable String updateType) {
-    this.updateType = JsonNullable.<String>of(updateType);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets media update type.  Created, Modified, Deleted.
-   * @return updateType
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getUpdateType() {
-        return updateType.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getUpdateType_JsonNullable() {
-    return updateType;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
-  public void setUpdateType_JsonNullable(JsonNullable<String> updateType) {
-    this.updateType = updateType;
-  }
-
-  public void setUpdateType(@javax.annotation.Nullable String updateType) {
-    this.updateType = JsonNullable.<String>of(updateType);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MediaUpdateInfoPathDto mediaUpdateInfoPathDto = (MediaUpdateInfoPathDto) o;
-    return equalsNullable(this.path, mediaUpdateInfoPathDto.path) &&
-        equalsNullable(this.updateType, mediaUpdateInfoPathDto.updateType);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(path), hashCodeNullable(updateType));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MediaUpdateInfoPathDto {\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    updateType: ").append(toIndentedString(updateType)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MediaUpdateInfoPathDto instance;
-
-    public Builder() {
-      this(new MediaUpdateInfoPathDto());
+    public MediaUpdateInfoPathDto() {
     }
 
-    protected Builder(MediaUpdateInfoPathDto instance) {
-      this.instance = instance;
-    }
+    public MediaUpdateInfoPathDto path(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
 
-    public MediaUpdateInfoPathDto.Builder path(String path) {
-      this.instance.path = JsonNullable.<String>of(path);
-      return this;
+        return this;
     }
-    public MediaUpdateInfoPathDto.Builder path(JsonNullable<String> path) {
-      this.instance.path = path;
-      return this;
-    }
-    public MediaUpdateInfoPathDto.Builder updateType(String updateType) {
-      this.instance.updateType = JsonNullable.<String>of(updateType);
-      return this;
-    }
-    public MediaUpdateInfoPathDto.Builder updateType(JsonNullable<String> updateType) {
-      this.instance.updateType = updateType;
-      return this;
-    }
-
 
     /**
-    * returns a built MediaUpdateInfoPathDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public MediaUpdateInfoPathDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets media path.
+     * 
+     * @return path
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPath() {
+        return path.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPath_JsonNullable() {
+        return path;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    public void setPath_JsonNullable(JsonNullable<String> path) {
+        this.path = path;
+    }
+
+    public void setPath(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+    }
+
+    public MediaUpdateInfoPathDto updateType(@javax.annotation.Nullable String updateType) {
+        this.updateType = JsonNullable.<String> of(updateType);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets media update type. Created, Modified, Deleted.
+     * 
+     * @return updateType
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getUpdateType() {
+        return updateType.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getUpdateType_JsonNullable() {
+        return updateType;
+    }
+
+    @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
+    public void setUpdateType_JsonNullable(JsonNullable<String> updateType) {
+        this.updateType = updateType;
+    }
+
+    public void setUpdateType(@javax.annotation.Nullable String updateType) {
+        this.updateType = JsonNullable.<String> of(updateType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MediaUpdateInfoPathDto mediaUpdateInfoPathDto = (MediaUpdateInfoPathDto) o;
+        return equalsNullable(this.path, mediaUpdateInfoPathDto.path)
+                && equalsNullable(this.updateType, mediaUpdateInfoPathDto.updateType);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(path), hashCodeNullable(updateType));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MediaUpdateInfoPathDto {\n");
+        sb.append("    path: ").append(toIndentedString(path)).append("\n");
+        sb.append("    updateType: ").append(toIndentedString(updateType)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MediaUpdateInfoPathDto.Builder builder() {
-    return new MediaUpdateInfoPathDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MediaUpdateInfoPathDto.Builder toBuilder() {
-    return new MediaUpdateInfoPathDto.Builder()
-      .path(getPath())
-      .updateType(getUpdateType());
-  }
+    public static class Builder {
 
+        private MediaUpdateInfoPathDto instance;
 
+        public Builder() {
+            this(new MediaUpdateInfoPathDto());
+        }
+
+        protected Builder(MediaUpdateInfoPathDto instance) {
+            this.instance = instance;
+        }
+
+        public MediaUpdateInfoPathDto.Builder path(String path) {
+            this.instance.path = JsonNullable.<String> of(path);
+            return this;
+        }
+
+        public MediaUpdateInfoPathDto.Builder path(JsonNullable<String> path) {
+            this.instance.path = path;
+            return this;
+        }
+
+        public MediaUpdateInfoPathDto.Builder updateType(String updateType) {
+            this.instance.updateType = JsonNullable.<String> of(updateType);
+            return this;
+        }
+
+        public MediaUpdateInfoPathDto.Builder updateType(JsonNullable<String> updateType) {
+            this.instance.updateType = updateType;
+            return this;
+        }
+
+        /**
+         * returns a built MediaUpdateInfoPathDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public MediaUpdateInfoPathDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MediaUpdateInfoPathDto.Builder builder() {
+        return new MediaUpdateInfoPathDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MediaUpdateInfoPathDto.Builder toBuilder() {
+        return new MediaUpdateInfoPathDto.Builder().path(getPath()).updateType(getUpdateType());
+    }
 }
-

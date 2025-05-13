@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,43 +24,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ImageOutputFormat.
  */
 public enum ImageFormat {
-  
-  BMP("Bmp"),
-  
-  GIF("Gif"),
-  
-  JPG("Jpg"),
-  
-  PNG("Png"),
-  
-  WEBP("Webp"),
-  
-  SVG("Svg");
 
-  private String value;
+    BMP("Bmp"),
 
-  ImageFormat(String value) {
-    this.value = value;
-  }
+    GIF("Gif"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    JPG("Jpg"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    PNG("Png"),
 
-  @JsonCreator
-  public static ImageFormat fromValue(String value) {
-    for (ImageFormat b : ImageFormat.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    WEBP("Webp"),
+
+    SVG("Svg");
+
+    private String value;
+
+    ImageFormat(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ImageFormat fromValue(String value) {
+        for (ImageFormat b : ImageFormat.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

@@ -17,615 +17,619 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * LyricMetadata model.
  */
-@JsonPropertyOrder({
-  LyricMetadata.JSON_PROPERTY_ARTIST,
-  LyricMetadata.JSON_PROPERTY_ALBUM,
-  LyricMetadata.JSON_PROPERTY_TITLE,
-  LyricMetadata.JSON_PROPERTY_AUTHOR,
-  LyricMetadata.JSON_PROPERTY_LENGTH,
-  LyricMetadata.JSON_PROPERTY_BY,
-  LyricMetadata.JSON_PROPERTY_OFFSET,
-  LyricMetadata.JSON_PROPERTY_CREATOR,
-  LyricMetadata.JSON_PROPERTY_VERSION,
-  LyricMetadata.JSON_PROPERTY_IS_SYNCED
-})
+@JsonPropertyOrder({ LyricMetadata.JSON_PROPERTY_ARTIST, LyricMetadata.JSON_PROPERTY_ALBUM,
+        LyricMetadata.JSON_PROPERTY_TITLE, LyricMetadata.JSON_PROPERTY_AUTHOR, LyricMetadata.JSON_PROPERTY_LENGTH,
+        LyricMetadata.JSON_PROPERTY_BY, LyricMetadata.JSON_PROPERTY_OFFSET, LyricMetadata.JSON_PROPERTY_CREATOR,
+        LyricMetadata.JSON_PROPERTY_VERSION, LyricMetadata.JSON_PROPERTY_IS_SYNCED })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LyricMetadata {
-  public static final String JSON_PROPERTY_ARTIST = "Artist";
-  @javax.annotation.Nullable
-  private JsonNullable<String> artist = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_ALBUM = "Album";
-  @javax.annotation.Nullable
-  private JsonNullable<String> album = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_TITLE = "Title";
-  @javax.annotation.Nullable
-  private JsonNullable<String> title = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_AUTHOR = "Author";
-  @javax.annotation.Nullable
-  private JsonNullable<String> author = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_LENGTH = "Length";
-  @javax.annotation.Nullable
-  private JsonNullable<Long> length = JsonNullable.<Long>undefined();
-
-  public static final String JSON_PROPERTY_BY = "By";
-  @javax.annotation.Nullable
-  private JsonNullable<String> by = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_OFFSET = "Offset";
-  @javax.annotation.Nullable
-  private JsonNullable<Long> offset = JsonNullable.<Long>undefined();
-
-  public static final String JSON_PROPERTY_CREATOR = "Creator";
-  @javax.annotation.Nullable
-  private JsonNullable<String> creator = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_VERSION = "Version";
-  @javax.annotation.Nullable
-  private JsonNullable<String> version = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> isSynced = JsonNullable.<Boolean>undefined();
-
-  public LyricMetadata() {
-  }
-
-  public LyricMetadata artist(@javax.annotation.Nullable String artist) {
-    this.artist = JsonNullable.<String>of(artist);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the song artist.
-   * @return artist
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getArtist() {
-        return artist.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ARTIST)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getArtist_JsonNullable() {
-    return artist;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ARTIST)
-  public void setArtist_JsonNullable(JsonNullable<String> artist) {
-    this.artist = artist;
-  }
-
-  public void setArtist(@javax.annotation.Nullable String artist) {
-    this.artist = JsonNullable.<String>of(artist);
-  }
-
-  public LyricMetadata album(@javax.annotation.Nullable String album) {
-    this.album = JsonNullable.<String>of(album);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the album this song is on.
-   * @return album
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getAlbum() {
-        return album.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ALBUM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getAlbum_JsonNullable() {
-    return album;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ALBUM)
-  public void setAlbum_JsonNullable(JsonNullable<String> album) {
-    this.album = album;
-  }
-
-  public void setAlbum(@javax.annotation.Nullable String album) {
-    this.album = JsonNullable.<String>of(album);
-  }
-
-  public LyricMetadata title(@javax.annotation.Nullable String title) {
-    this.title = JsonNullable.<String>of(title);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the title of the song.
-   * @return title
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getTitle() {
-        return title.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getTitle_JsonNullable() {
-    return title;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TITLE)
-  public void setTitle_JsonNullable(JsonNullable<String> title) {
-    this.title = title;
-  }
-
-  public void setTitle(@javax.annotation.Nullable String title) {
-    this.title = JsonNullable.<String>of(title);
-  }
-
-  public LyricMetadata author(@javax.annotation.Nullable String author) {
-    this.author = JsonNullable.<String>of(author);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the author of the lyric data.
-   * @return author
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getAuthor() {
-        return author.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_AUTHOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getAuthor_JsonNullable() {
-    return author;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_AUTHOR)
-  public void setAuthor_JsonNullable(JsonNullable<String> author) {
-    this.author = author;
-  }
-
-  public void setAuthor(@javax.annotation.Nullable String author) {
-    this.author = JsonNullable.<String>of(author);
-  }
-
-  public LyricMetadata length(@javax.annotation.Nullable Long length) {
-    this.length = JsonNullable.<Long>of(length);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the length of the song in ticks.
-   * @return length
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Long getLength() {
-        return length.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Long> getLength_JsonNullable() {
-    return length;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LENGTH)
-  public void setLength_JsonNullable(JsonNullable<Long> length) {
-    this.length = length;
-  }
-
-  public void setLength(@javax.annotation.Nullable Long length) {
-    this.length = JsonNullable.<Long>of(length);
-  }
-
-  public LyricMetadata by(@javax.annotation.Nullable String by) {
-    this.by = JsonNullable.<String>of(by);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets who the LRC file was created by.
-   * @return by
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getBy() {
-        return by.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_BY)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getBy_JsonNullable() {
-    return by;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BY)
-  public void setBy_JsonNullable(JsonNullable<String> by) {
-    this.by = by;
-  }
-
-  public void setBy(@javax.annotation.Nullable String by) {
-    this.by = JsonNullable.<String>of(by);
-  }
-
-  public LyricMetadata offset(@javax.annotation.Nullable Long offset) {
-    this.offset = JsonNullable.<Long>of(offset);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the lyric offset compared to audio in ticks.
-   * @return offset
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Long getOffset() {
-        return offset.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_OFFSET)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Long> getOffset_JsonNullable() {
-    return offset;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_OFFSET)
-  public void setOffset_JsonNullable(JsonNullable<Long> offset) {
-    this.offset = offset;
-  }
-
-  public void setOffset(@javax.annotation.Nullable Long offset) {
-    this.offset = JsonNullable.<Long>of(offset);
-  }
-
-  public LyricMetadata creator(@javax.annotation.Nullable String creator) {
-    this.creator = JsonNullable.<String>of(creator);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the software used to create the LRC file.
-   * @return creator
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCreator() {
-        return creator.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CREATOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCreator_JsonNullable() {
-    return creator;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CREATOR)
-  public void setCreator_JsonNullable(JsonNullable<String> creator) {
-    this.creator = creator;
-  }
-
-  public void setCreator(@javax.annotation.Nullable String creator) {
-    this.creator = JsonNullable.<String>of(creator);
-  }
-
-  public LyricMetadata version(@javax.annotation.Nullable String version) {
-    this.version = JsonNullable.<String>of(version);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the version of the creator used.
-   * @return version
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getVersion() {
-        return version.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_VERSION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getVersion_JsonNullable() {
-    return version;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_VERSION)
-  public void setVersion_JsonNullable(JsonNullable<String> version) {
-    this.version = version;
-  }
-
-  public void setVersion(@javax.annotation.Nullable String version) {
-    this.version = JsonNullable.<String>of(version);
-  }
-
-  public LyricMetadata isSynced(@javax.annotation.Nullable Boolean isSynced) {
-    this.isSynced = JsonNullable.<Boolean>of(isSynced);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this lyric is synced.
-   * @return isSynced
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getIsSynced() {
-        return isSynced.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IS_SYNCED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getIsSynced_JsonNullable() {
-    return isSynced;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IS_SYNCED)
-  public void setIsSynced_JsonNullable(JsonNullable<Boolean> isSynced) {
-    this.isSynced = isSynced;
-  }
-
-  public void setIsSynced(@javax.annotation.Nullable Boolean isSynced) {
-    this.isSynced = JsonNullable.<Boolean>of(isSynced);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LyricMetadata lyricMetadata = (LyricMetadata) o;
-    return equalsNullable(this.artist, lyricMetadata.artist) &&
-        equalsNullable(this.album, lyricMetadata.album) &&
-        equalsNullable(this.title, lyricMetadata.title) &&
-        equalsNullable(this.author, lyricMetadata.author) &&
-        equalsNullable(this.length, lyricMetadata.length) &&
-        equalsNullable(this.by, lyricMetadata.by) &&
-        equalsNullable(this.offset, lyricMetadata.offset) &&
-        equalsNullable(this.creator, lyricMetadata.creator) &&
-        equalsNullable(this.version, lyricMetadata.version) &&
-        equalsNullable(this.isSynced, lyricMetadata.isSynced);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(artist), hashCodeNullable(album), hashCodeNullable(title), hashCodeNullable(author), hashCodeNullable(length), hashCodeNullable(by), hashCodeNullable(offset), hashCodeNullable(creator), hashCodeNullable(version), hashCodeNullable(isSynced));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LyricMetadata {\n");
-    sb.append("    artist: ").append(toIndentedString(artist)).append("\n");
-    sb.append("    album: ").append(toIndentedString(album)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    author: ").append(toIndentedString(author)).append("\n");
-    sb.append("    length: ").append(toIndentedString(length)).append("\n");
-    sb.append("    by: ").append(toIndentedString(by)).append("\n");
-    sb.append("    offset: ").append(toIndentedString(offset)).append("\n");
-    sb.append("    creator: ").append(toIndentedString(creator)).append("\n");
-    sb.append("    version: ").append(toIndentedString(version)).append("\n");
-    sb.append("    isSynced: ").append(toIndentedString(isSynced)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LyricMetadata instance;
-
-    public Builder() {
-      this(new LyricMetadata());
+    public static final String JSON_PROPERTY_ARTIST = "Artist";
+    @javax.annotation.Nullable
+    private JsonNullable<String> artist = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_ALBUM = "Album";
+    @javax.annotation.Nullable
+    private JsonNullable<String> album = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_TITLE = "Title";
+    @javax.annotation.Nullable
+    private JsonNullable<String> title = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_AUTHOR = "Author";
+    @javax.annotation.Nullable
+    private JsonNullable<String> author = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LENGTH = "Length";
+    @javax.annotation.Nullable
+    private JsonNullable<Long> length = JsonNullable.<Long> undefined();
+
+    public static final String JSON_PROPERTY_BY = "By";
+    @javax.annotation.Nullable
+    private JsonNullable<String> by = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_OFFSET = "Offset";
+    @javax.annotation.Nullable
+    private JsonNullable<Long> offset = JsonNullable.<Long> undefined();
+
+    public static final String JSON_PROPERTY_CREATOR = "Creator";
+    @javax.annotation.Nullable
+    private JsonNullable<String> creator = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_VERSION = "Version";
+    @javax.annotation.Nullable
+    private JsonNullable<String> version = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> isSynced = JsonNullable.<Boolean> undefined();
+
+    public LyricMetadata() {
     }
 
-    protected Builder(LyricMetadata instance) {
-      this.instance = instance;
-    }
+    public LyricMetadata artist(@javax.annotation.Nullable String artist) {
+        this.artist = JsonNullable.<String> of(artist);
 
-    public LyricMetadata.Builder artist(String artist) {
-      this.instance.artist = JsonNullable.<String>of(artist);
-      return this;
+        return this;
     }
-    public LyricMetadata.Builder artist(JsonNullable<String> artist) {
-      this.instance.artist = artist;
-      return this;
-    }
-    public LyricMetadata.Builder album(String album) {
-      this.instance.album = JsonNullable.<String>of(album);
-      return this;
-    }
-    public LyricMetadata.Builder album(JsonNullable<String> album) {
-      this.instance.album = album;
-      return this;
-    }
-    public LyricMetadata.Builder title(String title) {
-      this.instance.title = JsonNullable.<String>of(title);
-      return this;
-    }
-    public LyricMetadata.Builder title(JsonNullable<String> title) {
-      this.instance.title = title;
-      return this;
-    }
-    public LyricMetadata.Builder author(String author) {
-      this.instance.author = JsonNullable.<String>of(author);
-      return this;
-    }
-    public LyricMetadata.Builder author(JsonNullable<String> author) {
-      this.instance.author = author;
-      return this;
-    }
-    public LyricMetadata.Builder length(Long length) {
-      this.instance.length = JsonNullable.<Long>of(length);
-      return this;
-    }
-    public LyricMetadata.Builder length(JsonNullable<Long> length) {
-      this.instance.length = length;
-      return this;
-    }
-    public LyricMetadata.Builder by(String by) {
-      this.instance.by = JsonNullable.<String>of(by);
-      return this;
-    }
-    public LyricMetadata.Builder by(JsonNullable<String> by) {
-      this.instance.by = by;
-      return this;
-    }
-    public LyricMetadata.Builder offset(Long offset) {
-      this.instance.offset = JsonNullable.<Long>of(offset);
-      return this;
-    }
-    public LyricMetadata.Builder offset(JsonNullable<Long> offset) {
-      this.instance.offset = offset;
-      return this;
-    }
-    public LyricMetadata.Builder creator(String creator) {
-      this.instance.creator = JsonNullable.<String>of(creator);
-      return this;
-    }
-    public LyricMetadata.Builder creator(JsonNullable<String> creator) {
-      this.instance.creator = creator;
-      return this;
-    }
-    public LyricMetadata.Builder version(String version) {
-      this.instance.version = JsonNullable.<String>of(version);
-      return this;
-    }
-    public LyricMetadata.Builder version(JsonNullable<String> version) {
-      this.instance.version = version;
-      return this;
-    }
-    public LyricMetadata.Builder isSynced(Boolean isSynced) {
-      this.instance.isSynced = JsonNullable.<Boolean>of(isSynced);
-      return this;
-    }
-    public LyricMetadata.Builder isSynced(JsonNullable<Boolean> isSynced) {
-      this.instance.isSynced = isSynced;
-      return this;
-    }
-
 
     /**
-    * returns a built LyricMetadata instance.
-    *
-    * The builder is not reusable.
-    */
-    public LyricMetadata build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the song artist.
+     * 
+     * @return artist
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getArtist() {
+        return artist.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ARTIST)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getArtist_JsonNullable() {
+        return artist;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ARTIST)
+    public void setArtist_JsonNullable(JsonNullable<String> artist) {
+        this.artist = artist;
+    }
+
+    public void setArtist(@javax.annotation.Nullable String artist) {
+        this.artist = JsonNullable.<String> of(artist);
+    }
+
+    public LyricMetadata album(@javax.annotation.Nullable String album) {
+        this.album = JsonNullable.<String> of(album);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the album this song is on.
+     * 
+     * @return album
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getAlbum() {
+        return album.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ALBUM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getAlbum_JsonNullable() {
+        return album;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ALBUM)
+    public void setAlbum_JsonNullable(JsonNullable<String> album) {
+        this.album = album;
+    }
+
+    public void setAlbum(@javax.annotation.Nullable String album) {
+        this.album = JsonNullable.<String> of(album);
+    }
+
+    public LyricMetadata title(@javax.annotation.Nullable String title) {
+        this.title = JsonNullable.<String> of(title);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the title of the song.
+     * 
+     * @return title
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getTitle() {
+        return title.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getTitle_JsonNullable() {
+        return title;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TITLE)
+    public void setTitle_JsonNullable(JsonNullable<String> title) {
+        this.title = title;
+    }
+
+    public void setTitle(@javax.annotation.Nullable String title) {
+        this.title = JsonNullable.<String> of(title);
+    }
+
+    public LyricMetadata author(@javax.annotation.Nullable String author) {
+        this.author = JsonNullable.<String> of(author);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the author of the lyric data.
+     * 
+     * @return author
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getAuthor() {
+        return author.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getAuthor_JsonNullable() {
+        return author;
+    }
+
+    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    public void setAuthor_JsonNullable(JsonNullable<String> author) {
+        this.author = author;
+    }
+
+    public void setAuthor(@javax.annotation.Nullable String author) {
+        this.author = JsonNullable.<String> of(author);
+    }
+
+    public LyricMetadata length(@javax.annotation.Nullable Long length) {
+        this.length = JsonNullable.<Long> of(length);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the length of the song in ticks.
+     * 
+     * @return length
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Long getLength() {
+        return length.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Long> getLength_JsonNullable() {
+        return length;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LENGTH)
+    public void setLength_JsonNullable(JsonNullable<Long> length) {
+        this.length = length;
+    }
+
+    public void setLength(@javax.annotation.Nullable Long length) {
+        this.length = JsonNullable.<Long> of(length);
+    }
+
+    public LyricMetadata by(@javax.annotation.Nullable String by) {
+        this.by = JsonNullable.<String> of(by);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets who the LRC file was created by.
+     * 
+     * @return by
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getBy() {
+        return by.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_BY)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getBy_JsonNullable() {
+        return by;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BY)
+    public void setBy_JsonNullable(JsonNullable<String> by) {
+        this.by = by;
+    }
+
+    public void setBy(@javax.annotation.Nullable String by) {
+        this.by = JsonNullable.<String> of(by);
+    }
+
+    public LyricMetadata offset(@javax.annotation.Nullable Long offset) {
+        this.offset = JsonNullable.<Long> of(offset);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the lyric offset compared to audio in ticks.
+     * 
+     * @return offset
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Long getOffset() {
+        return offset.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_OFFSET)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Long> getOffset_JsonNullable() {
+        return offset;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OFFSET)
+    public void setOffset_JsonNullable(JsonNullable<Long> offset) {
+        this.offset = offset;
+    }
+
+    public void setOffset(@javax.annotation.Nullable Long offset) {
+        this.offset = JsonNullable.<Long> of(offset);
+    }
+
+    public LyricMetadata creator(@javax.annotation.Nullable String creator) {
+        this.creator = JsonNullable.<String> of(creator);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the software used to create the LRC file.
+     * 
+     * @return creator
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCreator() {
+        return creator.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CREATOR)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCreator_JsonNullable() {
+        return creator;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CREATOR)
+    public void setCreator_JsonNullable(JsonNullable<String> creator) {
+        this.creator = creator;
+    }
+
+    public void setCreator(@javax.annotation.Nullable String creator) {
+        this.creator = JsonNullable.<String> of(creator);
+    }
+
+    public LyricMetadata version(@javax.annotation.Nullable String version) {
+        this.version = JsonNullable.<String> of(version);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the version of the creator used.
+     * 
+     * @return version
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getVersion() {
+        return version.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getVersion_JsonNullable() {
+        return version;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VERSION)
+    public void setVersion_JsonNullable(JsonNullable<String> version) {
+        this.version = version;
+    }
+
+    public void setVersion(@javax.annotation.Nullable String version) {
+        this.version = JsonNullable.<String> of(version);
+    }
+
+    public LyricMetadata isSynced(@javax.annotation.Nullable Boolean isSynced) {
+        this.isSynced = JsonNullable.<Boolean> of(isSynced);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this lyric is synced.
+     * 
+     * @return isSynced
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getIsSynced() {
+        return isSynced.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getIsSynced_JsonNullable() {
+        return isSynced;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+    public void setIsSynced_JsonNullable(JsonNullable<Boolean> isSynced) {
+        this.isSynced = isSynced;
+    }
+
+    public void setIsSynced(@javax.annotation.Nullable Boolean isSynced) {
+        this.isSynced = JsonNullable.<Boolean> of(isSynced);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LyricMetadata lyricMetadata = (LyricMetadata) o;
+        return equalsNullable(this.artist, lyricMetadata.artist) && equalsNullable(this.album, lyricMetadata.album)
+                && equalsNullable(this.title, lyricMetadata.title) && equalsNullable(this.author, lyricMetadata.author)
+                && equalsNullable(this.length, lyricMetadata.length) && equalsNullable(this.by, lyricMetadata.by)
+                && equalsNullable(this.offset, lyricMetadata.offset)
+                && equalsNullable(this.creator, lyricMetadata.creator)
+                && equalsNullable(this.version, lyricMetadata.version)
+                && equalsNullable(this.isSynced, lyricMetadata.isSynced);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(artist), hashCodeNullable(album), hashCodeNullable(title),
+                hashCodeNullable(author), hashCodeNullable(length), hashCodeNullable(by), hashCodeNullable(offset),
+                hashCodeNullable(creator), hashCodeNullable(version), hashCodeNullable(isSynced));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LyricMetadata {\n");
+        sb.append("    artist: ").append(toIndentedString(artist)).append("\n");
+        sb.append("    album: ").append(toIndentedString(album)).append("\n");
+        sb.append("    title: ").append(toIndentedString(title)).append("\n");
+        sb.append("    author: ").append(toIndentedString(author)).append("\n");
+        sb.append("    length: ").append(toIndentedString(length)).append("\n");
+        sb.append("    by: ").append(toIndentedString(by)).append("\n");
+        sb.append("    offset: ").append(toIndentedString(offset)).append("\n");
+        sb.append("    creator: ").append(toIndentedString(creator)).append("\n");
+        sb.append("    version: ").append(toIndentedString(version)).append("\n");
+        sb.append("    isSynced: ").append(toIndentedString(isSynced)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LyricMetadata.Builder builder() {
-    return new LyricMetadata.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LyricMetadata.Builder toBuilder() {
-    return new LyricMetadata.Builder()
-      .artist(getArtist())
-      .album(getAlbum())
-      .title(getTitle())
-      .author(getAuthor())
-      .length(getLength())
-      .by(getBy())
-      .offset(getOffset())
-      .creator(getCreator())
-      .version(getVersion())
-      .isSynced(getIsSynced());
-  }
+    public static class Builder {
 
+        private LyricMetadata instance;
 
+        public Builder() {
+            this(new LyricMetadata());
+        }
+
+        protected Builder(LyricMetadata instance) {
+            this.instance = instance;
+        }
+
+        public LyricMetadata.Builder artist(String artist) {
+            this.instance.artist = JsonNullable.<String> of(artist);
+            return this;
+        }
+
+        public LyricMetadata.Builder artist(JsonNullable<String> artist) {
+            this.instance.artist = artist;
+            return this;
+        }
+
+        public LyricMetadata.Builder album(String album) {
+            this.instance.album = JsonNullable.<String> of(album);
+            return this;
+        }
+
+        public LyricMetadata.Builder album(JsonNullable<String> album) {
+            this.instance.album = album;
+            return this;
+        }
+
+        public LyricMetadata.Builder title(String title) {
+            this.instance.title = JsonNullable.<String> of(title);
+            return this;
+        }
+
+        public LyricMetadata.Builder title(JsonNullable<String> title) {
+            this.instance.title = title;
+            return this;
+        }
+
+        public LyricMetadata.Builder author(String author) {
+            this.instance.author = JsonNullable.<String> of(author);
+            return this;
+        }
+
+        public LyricMetadata.Builder author(JsonNullable<String> author) {
+            this.instance.author = author;
+            return this;
+        }
+
+        public LyricMetadata.Builder length(Long length) {
+            this.instance.length = JsonNullable.<Long> of(length);
+            return this;
+        }
+
+        public LyricMetadata.Builder length(JsonNullable<Long> length) {
+            this.instance.length = length;
+            return this;
+        }
+
+        public LyricMetadata.Builder by(String by) {
+            this.instance.by = JsonNullable.<String> of(by);
+            return this;
+        }
+
+        public LyricMetadata.Builder by(JsonNullable<String> by) {
+            this.instance.by = by;
+            return this;
+        }
+
+        public LyricMetadata.Builder offset(Long offset) {
+            this.instance.offset = JsonNullable.<Long> of(offset);
+            return this;
+        }
+
+        public LyricMetadata.Builder offset(JsonNullable<Long> offset) {
+            this.instance.offset = offset;
+            return this;
+        }
+
+        public LyricMetadata.Builder creator(String creator) {
+            this.instance.creator = JsonNullable.<String> of(creator);
+            return this;
+        }
+
+        public LyricMetadata.Builder creator(JsonNullable<String> creator) {
+            this.instance.creator = creator;
+            return this;
+        }
+
+        public LyricMetadata.Builder version(String version) {
+            this.instance.version = JsonNullable.<String> of(version);
+            return this;
+        }
+
+        public LyricMetadata.Builder version(JsonNullable<String> version) {
+            this.instance.version = version;
+            return this;
+        }
+
+        public LyricMetadata.Builder isSynced(Boolean isSynced) {
+            this.instance.isSynced = JsonNullable.<Boolean> of(isSynced);
+            return this;
+        }
+
+        public LyricMetadata.Builder isSynced(JsonNullable<Boolean> isSynced) {
+            this.instance.isSynced = isSynced;
+            return this;
+        }
+
+        /**
+         * returns a built LyricMetadata instance.
+         *
+         * The builder is not reusable.
+         */
+        public LyricMetadata build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LyricMetadata.Builder builder() {
+        return new LyricMetadata.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LyricMetadata.Builder toBuilder() {
+        return new LyricMetadata.Builder().artist(getArtist()).album(getAlbum()).title(getTitle()).author(getAuthor())
+                .length(getLength()).by(getBy()).offset(getOffset()).creator(getCreator()).version(getVersion())
+                .isSynced(getIsSynced());
+    }
 }
-

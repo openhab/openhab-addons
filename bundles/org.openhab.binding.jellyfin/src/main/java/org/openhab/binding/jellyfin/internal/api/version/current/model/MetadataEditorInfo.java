@@ -17,408 +17,394 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.CollectionType;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.CountryInfo;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.CultureDto;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ExternalIdInfo;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.NameValuePair;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ParentalRating;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * MetadataEditorInfo
  */
-@JsonPropertyOrder({
-  MetadataEditorInfo.JSON_PROPERTY_PARENTAL_RATING_OPTIONS,
-  MetadataEditorInfo.JSON_PROPERTY_COUNTRIES,
-  MetadataEditorInfo.JSON_PROPERTY_CULTURES,
-  MetadataEditorInfo.JSON_PROPERTY_EXTERNAL_ID_INFOS,
-  MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE,
-  MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE_OPTIONS
-})
+@JsonPropertyOrder({ MetadataEditorInfo.JSON_PROPERTY_PARENTAL_RATING_OPTIONS,
+        MetadataEditorInfo.JSON_PROPERTY_COUNTRIES, MetadataEditorInfo.JSON_PROPERTY_CULTURES,
+        MetadataEditorInfo.JSON_PROPERTY_EXTERNAL_ID_INFOS, MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE,
+        MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE_OPTIONS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MetadataEditorInfo {
-  public static final String JSON_PROPERTY_PARENTAL_RATING_OPTIONS = "ParentalRatingOptions";
-  @javax.annotation.Nullable
-  private List<ParentalRating> parentalRatingOptions = new ArrayList<>();
+    public static final String JSON_PROPERTY_PARENTAL_RATING_OPTIONS = "ParentalRatingOptions";
+    @javax.annotation.Nullable
+    private List<ParentalRating> parentalRatingOptions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_COUNTRIES = "Countries";
-  @javax.annotation.Nullable
-  private List<CountryInfo> countries = new ArrayList<>();
+    public static final String JSON_PROPERTY_COUNTRIES = "Countries";
+    @javax.annotation.Nullable
+    private List<CountryInfo> countries = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CULTURES = "Cultures";
-  @javax.annotation.Nullable
-  private List<CultureDto> cultures = new ArrayList<>();
+    public static final String JSON_PROPERTY_CULTURES = "Cultures";
+    @javax.annotation.Nullable
+    private List<CultureDto> cultures = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_EXTERNAL_ID_INFOS = "ExternalIdInfos";
-  @javax.annotation.Nullable
-  private List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
+    public static final String JSON_PROPERTY_EXTERNAL_ID_INFOS = "ExternalIdInfos";
+    @javax.annotation.Nullable
+    private List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
-  @javax.annotation.Nullable
-  private JsonNullable<CollectionType> contentType = JsonNullable.<CollectionType>undefined();
+    public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
+    @javax.annotation.Nullable
+    private JsonNullable<CollectionType> contentType = JsonNullable.<CollectionType> undefined();
 
-  public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
-  @javax.annotation.Nullable
-  private List<NameValuePair> contentTypeOptions = new ArrayList<>();
+    public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
+    @javax.annotation.Nullable
+    private List<NameValuePair> contentTypeOptions = new ArrayList<>();
 
-  public MetadataEditorInfo() {
-  }
-
-  public MetadataEditorInfo parentalRatingOptions(@javax.annotation.Nullable List<ParentalRating> parentalRatingOptions) {
-    
-    this.parentalRatingOptions = parentalRatingOptions;
-    return this;
-  }
-
-  public MetadataEditorInfo addParentalRatingOptionsItem(ParentalRating parentalRatingOptionsItem) {
-    if (this.parentalRatingOptions == null) {
-      this.parentalRatingOptions = new ArrayList<>();
-    }
-    this.parentalRatingOptions.add(parentalRatingOptionsItem);
-    return this;
-  }
-
-  /**
-   * Get parentalRatingOptions
-   * @return parentalRatingOptions
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ParentalRating> getParentalRatingOptions() {
-    return parentalRatingOptions;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParentalRatingOptions(@javax.annotation.Nullable List<ParentalRating> parentalRatingOptions) {
-    this.parentalRatingOptions = parentalRatingOptions;
-  }
-
-  public MetadataEditorInfo countries(@javax.annotation.Nullable List<CountryInfo> countries) {
-    
-    this.countries = countries;
-    return this;
-  }
-
-  public MetadataEditorInfo addCountriesItem(CountryInfo countriesItem) {
-    if (this.countries == null) {
-      this.countries = new ArrayList<>();
-    }
-    this.countries.add(countriesItem);
-    return this;
-  }
-
-  /**
-   * Get countries
-   * @return countries
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_COUNTRIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<CountryInfo> getCountries() {
-    return countries;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_COUNTRIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCountries(@javax.annotation.Nullable List<CountryInfo> countries) {
-    this.countries = countries;
-  }
-
-  public MetadataEditorInfo cultures(@javax.annotation.Nullable List<CultureDto> cultures) {
-    
-    this.cultures = cultures;
-    return this;
-  }
-
-  public MetadataEditorInfo addCulturesItem(CultureDto culturesItem) {
-    if (this.cultures == null) {
-      this.cultures = new ArrayList<>();
-    }
-    this.cultures.add(culturesItem);
-    return this;
-  }
-
-  /**
-   * Get cultures
-   * @return cultures
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CULTURES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<CultureDto> getCultures() {
-    return cultures;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CULTURES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCultures(@javax.annotation.Nullable List<CultureDto> cultures) {
-    this.cultures = cultures;
-  }
-
-  public MetadataEditorInfo externalIdInfos(@javax.annotation.Nullable List<ExternalIdInfo> externalIdInfos) {
-    
-    this.externalIdInfos = externalIdInfos;
-    return this;
-  }
-
-  public MetadataEditorInfo addExternalIdInfosItem(ExternalIdInfo externalIdInfosItem) {
-    if (this.externalIdInfos == null) {
-      this.externalIdInfos = new ArrayList<>();
-    }
-    this.externalIdInfos.add(externalIdInfosItem);
-    return this;
-  }
-
-  /**
-   * Get externalIdInfos
-   * @return externalIdInfos
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<ExternalIdInfo> getExternalIdInfos() {
-    return externalIdInfos;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExternalIdInfos(@javax.annotation.Nullable List<ExternalIdInfo> externalIdInfos) {
-    this.externalIdInfos = externalIdInfos;
-  }
-
-  public MetadataEditorInfo contentType(@javax.annotation.Nullable CollectionType contentType) {
-    this.contentType = JsonNullable.<CollectionType>of(contentType);
-    
-    return this;
-  }
-
-  /**
-   * Get contentType
-   * @return contentType
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public CollectionType getContentType() {
-        return contentType.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<CollectionType> getContentType_JsonNullable() {
-    return contentType;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
-  public void setContentType_JsonNullable(JsonNullable<CollectionType> contentType) {
-    this.contentType = contentType;
-  }
-
-  public void setContentType(@javax.annotation.Nullable CollectionType contentType) {
-    this.contentType = JsonNullable.<CollectionType>of(contentType);
-  }
-
-  public MetadataEditorInfo contentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
-    
-    this.contentTypeOptions = contentTypeOptions;
-    return this;
-  }
-
-  public MetadataEditorInfo addContentTypeOptionsItem(NameValuePair contentTypeOptionsItem) {
-    if (this.contentTypeOptions == null) {
-      this.contentTypeOptions = new ArrayList<>();
-    }
-    this.contentTypeOptions.add(contentTypeOptionsItem);
-    return this;
-  }
-
-  /**
-   * Get contentTypeOptions
-   * @return contentTypeOptions
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<NameValuePair> getContentTypeOptions() {
-    return contentTypeOptions;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
-    this.contentTypeOptions = contentTypeOptions;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MetadataEditorInfo metadataEditorInfo = (MetadataEditorInfo) o;
-    return Objects.equals(this.parentalRatingOptions, metadataEditorInfo.parentalRatingOptions) &&
-        Objects.equals(this.countries, metadataEditorInfo.countries) &&
-        Objects.equals(this.cultures, metadataEditorInfo.cultures) &&
-        Objects.equals(this.externalIdInfos, metadataEditorInfo.externalIdInfos) &&
-        equalsNullable(this.contentType, metadataEditorInfo.contentType) &&
-        Objects.equals(this.contentTypeOptions, metadataEditorInfo.contentTypeOptions);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(parentalRatingOptions, countries, cultures, externalIdInfos, hashCodeNullable(contentType), contentTypeOptions);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MetadataEditorInfo {\n");
-    sb.append("    parentalRatingOptions: ").append(toIndentedString(parentalRatingOptions)).append("\n");
-    sb.append("    countries: ").append(toIndentedString(countries)).append("\n");
-    sb.append("    cultures: ").append(toIndentedString(cultures)).append("\n");
-    sb.append("    externalIdInfos: ").append(toIndentedString(externalIdInfos)).append("\n");
-    sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
-    sb.append("    contentTypeOptions: ").append(toIndentedString(contentTypeOptions)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MetadataEditorInfo instance;
-
-    public Builder() {
-      this(new MetadataEditorInfo());
+    public MetadataEditorInfo() {
     }
 
-    protected Builder(MetadataEditorInfo instance) {
-      this.instance = instance;
+    public MetadataEditorInfo parentalRatingOptions(
+            @javax.annotation.Nullable List<ParentalRating> parentalRatingOptions) {
+
+        this.parentalRatingOptions = parentalRatingOptions;
+        return this;
     }
 
-    public MetadataEditorInfo.Builder parentalRatingOptions(List<ParentalRating> parentalRatingOptions) {
-      this.instance.parentalRatingOptions = parentalRatingOptions;
-      return this;
+    public MetadataEditorInfo addParentalRatingOptionsItem(ParentalRating parentalRatingOptionsItem) {
+        if (this.parentalRatingOptions == null) {
+            this.parentalRatingOptions = new ArrayList<>();
+        }
+        this.parentalRatingOptions.add(parentalRatingOptionsItem);
+        return this;
     }
-    public MetadataEditorInfo.Builder countries(List<CountryInfo> countries) {
-      this.instance.countries = countries;
-      return this;
-    }
-    public MetadataEditorInfo.Builder cultures(List<CultureDto> cultures) {
-      this.instance.cultures = cultures;
-      return this;
-    }
-    public MetadataEditorInfo.Builder externalIdInfos(List<ExternalIdInfo> externalIdInfos) {
-      this.instance.externalIdInfos = externalIdInfos;
-      return this;
-    }
-    public MetadataEditorInfo.Builder contentType(CollectionType contentType) {
-      this.instance.contentType = JsonNullable.<CollectionType>of(contentType);
-      return this;
-    }
-    public MetadataEditorInfo.Builder contentType(JsonNullable<CollectionType> contentType) {
-      this.instance.contentType = contentType;
-      return this;
-    }
-    public MetadataEditorInfo.Builder contentTypeOptions(List<NameValuePair> contentTypeOptions) {
-      this.instance.contentTypeOptions = contentTypeOptions;
-      return this;
-    }
-
 
     /**
-    * returns a built MetadataEditorInfo instance.
-    *
-    * The builder is not reusable.
-    */
-    public MetadataEditorInfo build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get parentalRatingOptions
+     * 
+     * @return parentalRatingOptions
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ParentalRating> getParentalRatingOptions() {
+        return parentalRatingOptions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setParentalRatingOptions(@javax.annotation.Nullable List<ParentalRating> parentalRatingOptions) {
+        this.parentalRatingOptions = parentalRatingOptions;
+    }
+
+    public MetadataEditorInfo countries(@javax.annotation.Nullable List<CountryInfo> countries) {
+
+        this.countries = countries;
+        return this;
+    }
+
+    public MetadataEditorInfo addCountriesItem(CountryInfo countriesItem) {
+        if (this.countries == null) {
+            this.countries = new ArrayList<>();
+        }
+        this.countries.add(countriesItem);
+        return this;
+    }
+
+    /**
+     * Get countries
+     * 
+     * @return countries
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_COUNTRIES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<CountryInfo> getCountries() {
+        return countries;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COUNTRIES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCountries(@javax.annotation.Nullable List<CountryInfo> countries) {
+        this.countries = countries;
+    }
+
+    public MetadataEditorInfo cultures(@javax.annotation.Nullable List<CultureDto> cultures) {
+
+        this.cultures = cultures;
+        return this;
+    }
+
+    public MetadataEditorInfo addCulturesItem(CultureDto culturesItem) {
+        if (this.cultures == null) {
+            this.cultures = new ArrayList<>();
+        }
+        this.cultures.add(culturesItem);
+        return this;
+    }
+
+    /**
+     * Get cultures
+     * 
+     * @return cultures
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CULTURES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<CultureDto> getCultures() {
+        return cultures;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CULTURES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCultures(@javax.annotation.Nullable List<CultureDto> cultures) {
+        this.cultures = cultures;
+    }
+
+    public MetadataEditorInfo externalIdInfos(@javax.annotation.Nullable List<ExternalIdInfo> externalIdInfos) {
+
+        this.externalIdInfos = externalIdInfos;
+        return this;
+    }
+
+    public MetadataEditorInfo addExternalIdInfosItem(ExternalIdInfo externalIdInfosItem) {
+        if (this.externalIdInfos == null) {
+            this.externalIdInfos = new ArrayList<>();
+        }
+        this.externalIdInfos.add(externalIdInfosItem);
+        return this;
+    }
+
+    /**
+     * Get externalIdInfos
+     * 
+     * @return externalIdInfos
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<ExternalIdInfo> getExternalIdInfos() {
+        return externalIdInfos;
+    }
+
+    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setExternalIdInfos(@javax.annotation.Nullable List<ExternalIdInfo> externalIdInfos) {
+        this.externalIdInfos = externalIdInfos;
+    }
+
+    public MetadataEditorInfo contentType(@javax.annotation.Nullable CollectionType contentType) {
+        this.contentType = JsonNullable.<CollectionType> of(contentType);
+
+        return this;
+    }
+
+    /**
+     * Get contentType
+     * 
+     * @return contentType
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public CollectionType getContentType() {
+        return contentType.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<CollectionType> getContentType_JsonNullable() {
+        return contentType;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
+    public void setContentType_JsonNullable(JsonNullable<CollectionType> contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setContentType(@javax.annotation.Nullable CollectionType contentType) {
+        this.contentType = JsonNullable.<CollectionType> of(contentType);
+    }
+
+    public MetadataEditorInfo contentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
+
+        this.contentTypeOptions = contentTypeOptions;
+        return this;
+    }
+
+    public MetadataEditorInfo addContentTypeOptionsItem(NameValuePair contentTypeOptionsItem) {
+        if (this.contentTypeOptions == null) {
+            this.contentTypeOptions = new ArrayList<>();
+        }
+        this.contentTypeOptions.add(contentTypeOptionsItem);
+        return this;
+    }
+
+    /**
+     * Get contentTypeOptions
+     * 
+     * @return contentTypeOptions
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<NameValuePair> getContentTypeOptions() {
+        return contentTypeOptions;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
+        this.contentTypeOptions = contentTypeOptions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MetadataEditorInfo metadataEditorInfo = (MetadataEditorInfo) o;
+        return Objects.equals(this.parentalRatingOptions, metadataEditorInfo.parentalRatingOptions)
+                && Objects.equals(this.countries, metadataEditorInfo.countries)
+                && Objects.equals(this.cultures, metadataEditorInfo.cultures)
+                && Objects.equals(this.externalIdInfos, metadataEditorInfo.externalIdInfos)
+                && equalsNullable(this.contentType, metadataEditorInfo.contentType)
+                && Objects.equals(this.contentTypeOptions, metadataEditorInfo.contentTypeOptions);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parentalRatingOptions, countries, cultures, externalIdInfos, hashCodeNullable(contentType),
+                contentTypeOptions);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MetadataEditorInfo {\n");
+        sb.append("    parentalRatingOptions: ").append(toIndentedString(parentalRatingOptions)).append("\n");
+        sb.append("    countries: ").append(toIndentedString(countries)).append("\n");
+        sb.append("    cultures: ").append(toIndentedString(cultures)).append("\n");
+        sb.append("    externalIdInfos: ").append(toIndentedString(externalIdInfos)).append("\n");
+        sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
+        sb.append("    contentTypeOptions: ").append(toIndentedString(contentTypeOptions)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MetadataEditorInfo.Builder builder() {
-    return new MetadataEditorInfo.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MetadataEditorInfo.Builder toBuilder() {
-    return new MetadataEditorInfo.Builder()
-      .parentalRatingOptions(getParentalRatingOptions())
-      .countries(getCountries())
-      .cultures(getCultures())
-      .externalIdInfos(getExternalIdInfos())
-      .contentType(getContentType())
-      .contentTypeOptions(getContentTypeOptions());
-  }
+    public static class Builder {
 
+        private MetadataEditorInfo instance;
 
+        public Builder() {
+            this(new MetadataEditorInfo());
+        }
+
+        protected Builder(MetadataEditorInfo instance) {
+            this.instance = instance;
+        }
+
+        public MetadataEditorInfo.Builder parentalRatingOptions(List<ParentalRating> parentalRatingOptions) {
+            this.instance.parentalRatingOptions = parentalRatingOptions;
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder countries(List<CountryInfo> countries) {
+            this.instance.countries = countries;
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder cultures(List<CultureDto> cultures) {
+            this.instance.cultures = cultures;
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder externalIdInfos(List<ExternalIdInfo> externalIdInfos) {
+            this.instance.externalIdInfos = externalIdInfos;
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder contentType(CollectionType contentType) {
+            this.instance.contentType = JsonNullable.<CollectionType> of(contentType);
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder contentType(JsonNullable<CollectionType> contentType) {
+            this.instance.contentType = contentType;
+            return this;
+        }
+
+        public MetadataEditorInfo.Builder contentTypeOptions(List<NameValuePair> contentTypeOptions) {
+            this.instance.contentTypeOptions = contentTypeOptions;
+            return this;
+        }
+
+        /**
+         * returns a built MetadataEditorInfo instance.
+         *
+         * The builder is not reusable.
+         */
+        public MetadataEditorInfo build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MetadataEditorInfo.Builder builder() {
+        return new MetadataEditorInfo.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MetadataEditorInfo.Builder toBuilder() {
+        return new MetadataEditorInfo.Builder().parentalRatingOptions(getParentalRatingOptions())
+                .countries(getCountries()).cultures(getCultures()).externalIdInfos(getExternalIdInfos())
+                .contentType(getContentType()).contentTypeOptions(getContentTypeOptions());
+    }
 }
-

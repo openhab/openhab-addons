@@ -17,211 +17,200 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * Activity log entry start message.  Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
+ * Activity log entry start message. Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
  */
-@JsonPropertyOrder({
-  ActivityLogEntryStartMessage.JSON_PROPERTY_DATA,
-  ActivityLogEntryStartMessage.JSON_PROPERTY_MESSAGE_TYPE
-})
+@JsonPropertyOrder({ ActivityLogEntryStartMessage.JSON_PROPERTY_DATA,
+        ActivityLogEntryStartMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryStartMessage {
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nullable
-  private JsonNullable<String> data = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
+    private JsonNullable<String> data = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-  @javax.annotation.Nullable
-  private SessionMessageType messageType = SessionMessageType.ACTIVITY_LOG_ENTRY_START;
+    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+    @javax.annotation.Nullable
+    private SessionMessageType messageType = SessionMessageType.ACTIVITY_LOG_ENTRY_START;
 
-  public ActivityLogEntryStartMessage() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public ActivityLogEntryStartMessage(
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
-  ) {
-    this();
-    this.messageType = messageType;
-  }
-
-  public ActivityLogEntryStartMessage data(@javax.annotation.Nullable String data) {
-    this.data = JsonNullable.<String>of(data);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the data.
-   * @return data
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getData() {
-        return data.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getData_JsonNullable() {
-    return data;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DATA)
-  public void setData_JsonNullable(JsonNullable<String> data) {
-    this.data = data;
-  }
-
-  public void setData(@javax.annotation.Nullable String data) {
-    this.data = JsonNullable.<String>of(data);
-  }
-
-  /**
-   * The different kinds of messages that are used in the WebSocket api.
-   * @return messageType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public SessionMessageType getMessageType() {
-    return messageType;
-  }
-
-
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public ActivityLogEntryStartMessage() {
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ActivityLogEntryStartMessage activityLogEntryStartMessage = (ActivityLogEntryStartMessage) o;
-    return equalsNullable(this.data, activityLogEntryStartMessage.data) &&
-        Objects.equals(this.messageType, activityLogEntryStartMessage.messageType);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(data), messageType);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ActivityLogEntryStartMessage {\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ActivityLogEntryStartMessage instance;
-
-    public Builder() {
-      this(new ActivityLogEntryStartMessage());
-    }
-
-    protected Builder(ActivityLogEntryStartMessage instance) {
-      this.instance = instance;
-    }
-
-    public ActivityLogEntryStartMessage.Builder data(String data) {
-      this.instance.data = JsonNullable.<String>of(data);
-      return this;
-    }
-    public ActivityLogEntryStartMessage.Builder data(JsonNullable<String> data) {
-      this.instance.data = data;
-      return this;
-    }
-    public ActivityLogEntryStartMessage.Builder messageType(SessionMessageType messageType) {
-      this.instance.messageType = messageType;
-      return this;
-    }
-
 
     /**
-    * returns a built ActivityLogEntryStartMessage instance.
-    *
-    * The builder is not reusable.
-    */
-    public ActivityLogEntryStartMessage build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public ActivityLogEntryStartMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+        this();
+        this.messageType = messageType;
+    }
+
+    public ActivityLogEntryStartMessage data(@javax.annotation.Nullable String data) {
+        this.data = JsonNullable.<String> of(data);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getData() {
+        return data.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getData_JsonNullable() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    public void setData_JsonNullable(JsonNullable<String> data) {
+        this.data = data;
+    }
+
+    public void setData(@javax.annotation.Nullable String data) {
+        this.data = JsonNullable.<String> of(data);
+    }
+
+    /**
+     * The different kinds of messages that are used in the WebSocket api.
+     * 
+     * @return messageType
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public SessionMessageType getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ActivityLogEntryStartMessage activityLogEntryStartMessage = (ActivityLogEntryStartMessage) o;
+        return equalsNullable(this.data, activityLogEntryStartMessage.data)
+                && Objects.equals(this.messageType, activityLogEntryStartMessage.messageType);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(data), messageType);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ActivityLogEntryStartMessage {\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ActivityLogEntryStartMessage.Builder builder() {
-    return new ActivityLogEntryStartMessage.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ActivityLogEntryStartMessage.Builder toBuilder() {
-    return new ActivityLogEntryStartMessage.Builder()
-      .data(getData())
-      .messageType(getMessageType());
-  }
+    public static class Builder {
 
+        private ActivityLogEntryStartMessage instance;
 
+        public Builder() {
+            this(new ActivityLogEntryStartMessage());
+        }
+
+        protected Builder(ActivityLogEntryStartMessage instance) {
+            this.instance = instance;
+        }
+
+        public ActivityLogEntryStartMessage.Builder data(String data) {
+            this.instance.data = JsonNullable.<String> of(data);
+            return this;
+        }
+
+        public ActivityLogEntryStartMessage.Builder data(JsonNullable<String> data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        public ActivityLogEntryStartMessage.Builder messageType(SessionMessageType messageType) {
+            this.instance.messageType = messageType;
+            return this;
+        }
+
+        /**
+         * returns a built ActivityLogEntryStartMessage instance.
+         *
+         * The builder is not reusable.
+         */
+        public ActivityLogEntryStartMessage build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ActivityLogEntryStartMessage.Builder builder() {
+        return new ActivityLogEntryStartMessage.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ActivityLogEntryStartMessage.Builder toBuilder() {
+        return new ActivityLogEntryStartMessage.Builder().data(getData()).messageType(getMessageType());
+    }
 }
-

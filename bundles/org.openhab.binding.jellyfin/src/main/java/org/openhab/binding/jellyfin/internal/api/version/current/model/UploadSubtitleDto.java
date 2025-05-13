@@ -18,294 +18,281 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Upload subtitles dto.
  */
-@JsonPropertyOrder({
-  UploadSubtitleDto.JSON_PROPERTY_LANGUAGE,
-  UploadSubtitleDto.JSON_PROPERTY_FORMAT,
-  UploadSubtitleDto.JSON_PROPERTY_IS_FORCED,
-  UploadSubtitleDto.JSON_PROPERTY_IS_HEARING_IMPAIRED,
-  UploadSubtitleDto.JSON_PROPERTY_DATA
-})
+@JsonPropertyOrder({ UploadSubtitleDto.JSON_PROPERTY_LANGUAGE, UploadSubtitleDto.JSON_PROPERTY_FORMAT,
+        UploadSubtitleDto.JSON_PROPERTY_IS_FORCED, UploadSubtitleDto.JSON_PROPERTY_IS_HEARING_IMPAIRED,
+        UploadSubtitleDto.JSON_PROPERTY_DATA })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UploadSubtitleDto {
-  public static final String JSON_PROPERTY_LANGUAGE = "Language";
-  @javax.annotation.Nonnull
-  private String language;
+    public static final String JSON_PROPERTY_LANGUAGE = "Language";
+    @javax.annotation.Nonnull
+    private String language;
 
-  public static final String JSON_PROPERTY_FORMAT = "Format";
-  @javax.annotation.Nonnull
-  private String format;
+    public static final String JSON_PROPERTY_FORMAT = "Format";
+    @javax.annotation.Nonnull
+    private String format;
 
-  public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-  @javax.annotation.Nonnull
-  private Boolean isForced;
+    public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
+    @javax.annotation.Nonnull
+    private Boolean isForced;
 
-  public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
-  @javax.annotation.Nonnull
-  private Boolean isHearingImpaired;
+    public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
+    @javax.annotation.Nonnull
+    private Boolean isHearingImpaired;
 
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nonnull
-  private String data;
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nonnull
+    private String data;
 
-  public UploadSubtitleDto() {
-  }
-
-  public UploadSubtitleDto language(@javax.annotation.Nonnull String language) {
-    
-    this.language = language;
-    return this;
-  }
-
-  /**
-   * Gets or sets the subtitle language.
-   * @return language
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LANGUAGE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getLanguage() {
-    return language;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_LANGUAGE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLanguage(@javax.annotation.Nonnull String language) {
-    this.language = language;
-  }
-
-  public UploadSubtitleDto format(@javax.annotation.Nonnull String format) {
-    
-    this.format = format;
-    return this;
-  }
-
-  /**
-   * Gets or sets the subtitle format.
-   * @return format
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FORMAT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getFormat() {
-    return format;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_FORMAT)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFormat(@javax.annotation.Nonnull String format) {
-    this.format = format;
-  }
-
-  public UploadSubtitleDto isForced(@javax.annotation.Nonnull Boolean isForced) {
-    
-    this.isForced = isForced;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether the subtitle is forced.
-   * @return isForced
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_IS_FORCED)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getIsForced() {
-    return isForced;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_FORCED)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIsForced(@javax.annotation.Nonnull Boolean isForced) {
-    this.isForced = isForced;
-  }
-
-  public UploadSubtitleDto isHearingImpaired(@javax.annotation.Nonnull Boolean isHearingImpaired) {
-    
-    this.isHearingImpaired = isHearingImpaired;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether the subtitle is for hearing impaired.
-   * @return isHearingImpaired
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public Boolean getIsHearingImpaired() {
-    return isHearingImpaired;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIsHearingImpaired(@javax.annotation.Nonnull Boolean isHearingImpaired) {
-    this.isHearingImpaired = isHearingImpaired;
-  }
-
-  public UploadSubtitleDto data(@javax.annotation.Nonnull String data) {
-    
-    this.data = data;
-    return this;
-  }
-
-  /**
-   * Gets or sets the subtitle data.
-   * @return data
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getData() {
-    return data;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setData(@javax.annotation.Nonnull String data) {
-    this.data = data;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UploadSubtitleDto uploadSubtitleDto = (UploadSubtitleDto) o;
-    return Objects.equals(this.language, uploadSubtitleDto.language) &&
-        Objects.equals(this.format, uploadSubtitleDto.format) &&
-        Objects.equals(this.isForced, uploadSubtitleDto.isForced) &&
-        Objects.equals(this.isHearingImpaired, uploadSubtitleDto.isHearingImpaired) &&
-        Objects.equals(this.data, uploadSubtitleDto.data);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(language, format, isForced, isHearingImpaired, data);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UploadSubtitleDto {\n");
-    sb.append("    language: ").append(toIndentedString(language)).append("\n");
-    sb.append("    format: ").append(toIndentedString(format)).append("\n");
-    sb.append("    isForced: ").append(toIndentedString(isForced)).append("\n");
-    sb.append("    isHearingImpaired: ").append(toIndentedString(isHearingImpaired)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private UploadSubtitleDto instance;
-
-    public Builder() {
-      this(new UploadSubtitleDto());
+    public UploadSubtitleDto() {
     }
 
-    protected Builder(UploadSubtitleDto instance) {
-      this.instance = instance;
-    }
+    public UploadSubtitleDto language(@javax.annotation.Nonnull String language) {
 
-    public UploadSubtitleDto.Builder language(String language) {
-      this.instance.language = language;
-      return this;
+        this.language = language;
+        return this;
     }
-    public UploadSubtitleDto.Builder format(String format) {
-      this.instance.format = format;
-      return this;
-    }
-    public UploadSubtitleDto.Builder isForced(Boolean isForced) {
-      this.instance.isForced = isForced;
-      return this;
-    }
-    public UploadSubtitleDto.Builder isHearingImpaired(Boolean isHearingImpaired) {
-      this.instance.isHearingImpaired = isHearingImpaired;
-      return this;
-    }
-    public UploadSubtitleDto.Builder data(String data) {
-      this.instance.data = data;
-      return this;
-    }
-
 
     /**
-    * returns a built UploadSubtitleDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public UploadSubtitleDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the subtitle language.
+     * 
+     * @return language
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public String getLanguage() {
+        return language;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setLanguage(@javax.annotation.Nonnull String language) {
+        this.language = language;
+    }
+
+    public UploadSubtitleDto format(@javax.annotation.Nonnull String format) {
+
+        this.format = format;
+        return this;
+    }
+
+    /**
+     * Gets or sets the subtitle format.
+     * 
+     * @return format
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public String getFormat() {
+        return format;
+    }
+
+    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setFormat(@javax.annotation.Nonnull String format) {
+        this.format = format;
+    }
+
+    public UploadSubtitleDto isForced(@javax.annotation.Nonnull Boolean isForced) {
+
+        this.isForced = isForced;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether the subtitle is forced.
+     * 
+     * @return isForced
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public Boolean getIsForced() {
+        return isForced;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setIsForced(@javax.annotation.Nonnull Boolean isForced) {
+        this.isForced = isForced;
+    }
+
+    public UploadSubtitleDto isHearingImpaired(@javax.annotation.Nonnull Boolean isHearingImpaired) {
+
+        this.isHearingImpaired = isHearingImpaired;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether the subtitle is for hearing impaired.
+     * 
+     * @return isHearingImpaired
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public Boolean getIsHearingImpaired() {
+        return isHearingImpaired;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setIsHearingImpaired(@javax.annotation.Nonnull Boolean isHearingImpaired) {
+        this.isHearingImpaired = isHearingImpaired;
+    }
+
+    public UploadSubtitleDto data(@javax.annotation.Nonnull String data) {
+
+        this.data = data;
+        return this;
+    }
+
+    /**
+     * Gets or sets the subtitle data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public String getData() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setData(@javax.annotation.Nonnull String data) {
+        this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UploadSubtitleDto uploadSubtitleDto = (UploadSubtitleDto) o;
+        return Objects.equals(this.language, uploadSubtitleDto.language)
+                && Objects.equals(this.format, uploadSubtitleDto.format)
+                && Objects.equals(this.isForced, uploadSubtitleDto.isForced)
+                && Objects.equals(this.isHearingImpaired, uploadSubtitleDto.isHearingImpaired)
+                && Objects.equals(this.data, uploadSubtitleDto.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(language, format, isForced, isHearingImpaired, data);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UploadSubtitleDto {\n");
+        sb.append("    language: ").append(toIndentedString(language)).append("\n");
+        sb.append("    format: ").append(toIndentedString(format)).append("\n");
+        sb.append("    isForced: ").append(toIndentedString(isForced)).append("\n");
+        sb.append("    isHearingImpaired: ").append(toIndentedString(isHearingImpaired)).append("\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static UploadSubtitleDto.Builder builder() {
-    return new UploadSubtitleDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public UploadSubtitleDto.Builder toBuilder() {
-    return new UploadSubtitleDto.Builder()
-      .language(getLanguage())
-      .format(getFormat())
-      .isForced(getIsForced())
-      .isHearingImpaired(getIsHearingImpaired())
-      .data(getData());
-  }
+    public static class Builder {
 
+        private UploadSubtitleDto instance;
 
+        public Builder() {
+            this(new UploadSubtitleDto());
+        }
+
+        protected Builder(UploadSubtitleDto instance) {
+            this.instance = instance;
+        }
+
+        public UploadSubtitleDto.Builder language(String language) {
+            this.instance.language = language;
+            return this;
+        }
+
+        public UploadSubtitleDto.Builder format(String format) {
+            this.instance.format = format;
+            return this;
+        }
+
+        public UploadSubtitleDto.Builder isForced(Boolean isForced) {
+            this.instance.isForced = isForced;
+            return this;
+        }
+
+        public UploadSubtitleDto.Builder isHearingImpaired(Boolean isHearingImpaired) {
+            this.instance.isHearingImpaired = isHearingImpaired;
+            return this;
+        }
+
+        public UploadSubtitleDto.Builder data(String data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        /**
+         * returns a built UploadSubtitleDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public UploadSubtitleDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static UploadSubtitleDto.Builder builder() {
+        return new UploadSubtitleDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public UploadSubtitleDto.Builder toBuilder() {
+        return new UploadSubtitleDto.Builder().language(getLanguage()).format(getFormat()).isForced(getIsForced())
+                .isHearingImpaired(getIsHearingImpaired()).data(getData());
+    }
 }
-

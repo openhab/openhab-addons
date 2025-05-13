@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets KeepUntil
  */
 public enum KeepUntil {
-  
-  UNTIL_DELETED("UntilDeleted"),
-  
-  UNTIL_SPACE_NEEDED("UntilSpaceNeeded"),
-  
-  UNTIL_WATCHED("UntilWatched"),
-  
-  UNTIL_DATE("UntilDate");
 
-  private String value;
+    UNTIL_DELETED("UntilDeleted"),
 
-  KeepUntil(String value) {
-    this.value = value;
-  }
+    UNTIL_SPACE_NEEDED("UntilSpaceNeeded"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    UNTIL_WATCHED("UntilWatched"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    UNTIL_DATE("UntilDate");
 
-  @JsonCreator
-  public static KeepUntil fromValue(String value) {
-    for (KeepUntil b : KeepUntil.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    private String value;
+
+    KeepUntil(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static KeepUntil fromValue(String value) {
+        for (KeepUntil b : KeepUntil.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

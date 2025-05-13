@@ -17,2860 +17,2945 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.MediaStreamType;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SubtitleDeliveryMethod;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class MediaStream.
  */
-@JsonPropertyOrder({
-  MediaStream.JSON_PROPERTY_CODEC,
-  MediaStream.JSON_PROPERTY_CODEC_TAG,
-  MediaStream.JSON_PROPERTY_LANGUAGE,
-  MediaStream.JSON_PROPERTY_COLOR_RANGE,
-  MediaStream.JSON_PROPERTY_COLOR_SPACE,
-  MediaStream.JSON_PROPERTY_COLOR_TRANSFER,
-  MediaStream.JSON_PROPERTY_COLOR_PRIMARIES,
-  MediaStream.JSON_PROPERTY_DV_VERSION_MAJOR,
-  MediaStream.JSON_PROPERTY_DV_VERSION_MINOR,
-  MediaStream.JSON_PROPERTY_DV_PROFILE,
-  MediaStream.JSON_PROPERTY_DV_LEVEL,
-  MediaStream.JSON_PROPERTY_RPU_PRESENT_FLAG,
-  MediaStream.JSON_PROPERTY_EL_PRESENT_FLAG,
-  MediaStream.JSON_PROPERTY_BL_PRESENT_FLAG,
-  MediaStream.JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID,
-  MediaStream.JSON_PROPERTY_COMMENT,
-  MediaStream.JSON_PROPERTY_TIME_BASE,
-  MediaStream.JSON_PROPERTY_CODEC_TIME_BASE,
-  MediaStream.JSON_PROPERTY_TITLE,
-  MediaStream.JSON_PROPERTY_VIDEO_RANGE,
-  MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE,
-  MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE,
-  MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED,
-  MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT,
-  MediaStream.JSON_PROPERTY_LOCALIZED_FORCED,
-  MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL,
-  MediaStream.JSON_PROPERTY_DISPLAY_TITLE,
-  MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE,
-  MediaStream.JSON_PROPERTY_IS_INTERLACED,
-  MediaStream.JSON_PROPERTY_IS_A_V_C,
-  MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT,
-  MediaStream.JSON_PROPERTY_BIT_RATE,
-  MediaStream.JSON_PROPERTY_BIT_DEPTH,
-  MediaStream.JSON_PROPERTY_REF_FRAMES,
-  MediaStream.JSON_PROPERTY_PACKET_LENGTH,
-  MediaStream.JSON_PROPERTY_CHANNELS,
-  MediaStream.JSON_PROPERTY_SAMPLE_RATE,
-  MediaStream.JSON_PROPERTY_IS_DEFAULT,
-  MediaStream.JSON_PROPERTY_IS_FORCED,
-  MediaStream.JSON_PROPERTY_HEIGHT,
-  MediaStream.JSON_PROPERTY_WIDTH,
-  MediaStream.JSON_PROPERTY_AVERAGE_FRAME_RATE,
-  MediaStream.JSON_PROPERTY_REAL_FRAME_RATE,
-  MediaStream.JSON_PROPERTY_PROFILE,
-  MediaStream.JSON_PROPERTY_TYPE,
-  MediaStream.JSON_PROPERTY_ASPECT_RATIO,
-  MediaStream.JSON_PROPERTY_INDEX,
-  MediaStream.JSON_PROPERTY_SCORE,
-  MediaStream.JSON_PROPERTY_IS_EXTERNAL,
-  MediaStream.JSON_PROPERTY_DELIVERY_METHOD,
-  MediaStream.JSON_PROPERTY_DELIVERY_URL,
-  MediaStream.JSON_PROPERTY_IS_EXTERNAL_URL,
-  MediaStream.JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM,
-  MediaStream.JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM,
-  MediaStream.JSON_PROPERTY_PATH,
-  MediaStream.JSON_PROPERTY_PIXEL_FORMAT,
-  MediaStream.JSON_PROPERTY_LEVEL,
-  MediaStream.JSON_PROPERTY_IS_ANAMORPHIC
-})
+@JsonPropertyOrder({ MediaStream.JSON_PROPERTY_CODEC, MediaStream.JSON_PROPERTY_CODEC_TAG,
+        MediaStream.JSON_PROPERTY_LANGUAGE, MediaStream.JSON_PROPERTY_COLOR_RANGE,
+        MediaStream.JSON_PROPERTY_COLOR_SPACE, MediaStream.JSON_PROPERTY_COLOR_TRANSFER,
+        MediaStream.JSON_PROPERTY_COLOR_PRIMARIES, MediaStream.JSON_PROPERTY_DV_VERSION_MAJOR,
+        MediaStream.JSON_PROPERTY_DV_VERSION_MINOR, MediaStream.JSON_PROPERTY_DV_PROFILE,
+        MediaStream.JSON_PROPERTY_DV_LEVEL, MediaStream.JSON_PROPERTY_RPU_PRESENT_FLAG,
+        MediaStream.JSON_PROPERTY_EL_PRESENT_FLAG, MediaStream.JSON_PROPERTY_BL_PRESENT_FLAG,
+        MediaStream.JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, MediaStream.JSON_PROPERTY_COMMENT,
+        MediaStream.JSON_PROPERTY_TIME_BASE, MediaStream.JSON_PROPERTY_CODEC_TIME_BASE, MediaStream.JSON_PROPERTY_TITLE,
+        MediaStream.JSON_PROPERTY_VIDEO_RANGE, MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE,
+        MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE, MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED,
+        MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT, MediaStream.JSON_PROPERTY_LOCALIZED_FORCED,
+        MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL, MediaStream.JSON_PROPERTY_DISPLAY_TITLE,
+        MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE, MediaStream.JSON_PROPERTY_IS_INTERLACED,
+        MediaStream.JSON_PROPERTY_IS_A_V_C, MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT,
+        MediaStream.JSON_PROPERTY_BIT_RATE, MediaStream.JSON_PROPERTY_BIT_DEPTH, MediaStream.JSON_PROPERTY_REF_FRAMES,
+        MediaStream.JSON_PROPERTY_PACKET_LENGTH, MediaStream.JSON_PROPERTY_CHANNELS,
+        MediaStream.JSON_PROPERTY_SAMPLE_RATE, MediaStream.JSON_PROPERTY_IS_DEFAULT,
+        MediaStream.JSON_PROPERTY_IS_FORCED, MediaStream.JSON_PROPERTY_HEIGHT, MediaStream.JSON_PROPERTY_WIDTH,
+        MediaStream.JSON_PROPERTY_AVERAGE_FRAME_RATE, MediaStream.JSON_PROPERTY_REAL_FRAME_RATE,
+        MediaStream.JSON_PROPERTY_PROFILE, MediaStream.JSON_PROPERTY_TYPE, MediaStream.JSON_PROPERTY_ASPECT_RATIO,
+        MediaStream.JSON_PROPERTY_INDEX, MediaStream.JSON_PROPERTY_SCORE, MediaStream.JSON_PROPERTY_IS_EXTERNAL,
+        MediaStream.JSON_PROPERTY_DELIVERY_METHOD, MediaStream.JSON_PROPERTY_DELIVERY_URL,
+        MediaStream.JSON_PROPERTY_IS_EXTERNAL_URL, MediaStream.JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM,
+        MediaStream.JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, MediaStream.JSON_PROPERTY_PATH,
+        MediaStream.JSON_PROPERTY_PIXEL_FORMAT, MediaStream.JSON_PROPERTY_LEVEL,
+        MediaStream.JSON_PROPERTY_IS_ANAMORPHIC })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MediaStream {
-  public static final String JSON_PROPERTY_CODEC = "Codec";
-  @javax.annotation.Nullable
-  private JsonNullable<String> codec = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_CODEC = "Codec";
+    @javax.annotation.Nullable
+    private JsonNullable<String> codec = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
+    @javax.annotation.Nullable
+    private JsonNullable<String> codecTag = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LANGUAGE = "Language";
+    @javax.annotation.Nullable
+    private JsonNullable<String> language = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_COLOR_RANGE = "ColorRange";
+    @javax.annotation.Nullable
+    private JsonNullable<String> colorRange = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_COLOR_SPACE = "ColorSpace";
+    @javax.annotation.Nullable
+    private JsonNullable<String> colorSpace = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_COLOR_TRANSFER = "ColorTransfer";
+    @javax.annotation.Nullable
+    private JsonNullable<String> colorTransfer = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_COLOR_PRIMARIES = "ColorPrimaries";
+    @javax.annotation.Nullable
+    private JsonNullable<String> colorPrimaries = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_DV_VERSION_MAJOR = "DvVersionMajor";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> dvVersionMajor = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_DV_VERSION_MINOR = "DvVersionMinor";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> dvVersionMinor = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_DV_PROFILE = "DvProfile";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> dvProfile = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_DV_LEVEL = "DvLevel";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> dvLevel = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_RPU_PRESENT_FLAG = "RpuPresentFlag";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> rpuPresentFlag = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_EL_PRESENT_FLAG = "ElPresentFlag";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> elPresentFlag = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_BL_PRESENT_FLAG = "BlPresentFlag";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> blPresentFlag = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID = "DvBlSignalCompatibilityId";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> dvBlSignalCompatibilityId = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_COMMENT = "Comment";
+    @javax.annotation.Nullable
+    private JsonNullable<String> comment = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_TIME_BASE = "TimeBase";
+    @javax.annotation.Nullable
+    private JsonNullable<String> timeBase = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_CODEC_TIME_BASE = "CodecTimeBase";
+    @javax.annotation.Nullable
+    private JsonNullable<String> codecTimeBase = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_TITLE = "Title";
+    @javax.annotation.Nullable
+    private JsonNullable<String> title = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_VIDEO_RANGE = "VideoRange";
+    @javax.annotation.Nullable
+    private JsonNullable<String> videoRange = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_VIDEO_RANGE_TYPE = "VideoRangeType";
+    @javax.annotation.Nullable
+    private JsonNullable<String> videoRangeType = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_VIDEO_DO_VI_TITLE = "VideoDoViTitle";
+    @javax.annotation.Nullable
+    private JsonNullable<String> videoDoViTitle = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LOCALIZED_UNDEFINED = "LocalizedUndefined";
+    @javax.annotation.Nullable
+    private JsonNullable<String> localizedUndefined = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LOCALIZED_DEFAULT = "LocalizedDefault";
+    @javax.annotation.Nullable
+    private JsonNullable<String> localizedDefault = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LOCALIZED_FORCED = "LocalizedForced";
+    @javax.annotation.Nullable
+    private JsonNullable<String> localizedForced = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_LOCALIZED_EXTERNAL = "LocalizedExternal";
+    @javax.annotation.Nullable
+    private JsonNullable<String> localizedExternal = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_DISPLAY_TITLE = "DisplayTitle";
+    @javax.annotation.Nullable
+    private JsonNullable<String> displayTitle = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_NAL_LENGTH_SIZE = "NalLengthSize";
+    @javax.annotation.Nullable
+    private JsonNullable<String> nalLengthSize = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_IS_INTERLACED = "IsInterlaced";
+    @javax.annotation.Nullable
+    private Boolean isInterlaced;
+
+    public static final String JSON_PROPERTY_IS_A_V_C = "IsAVC";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> isAVC = JsonNullable.<Boolean> undefined();
+
+    public static final String JSON_PROPERTY_CHANNEL_LAYOUT = "ChannelLayout";
+    @javax.annotation.Nullable
+    private JsonNullable<String> channelLayout = JsonNullable.<String> undefined();
+
+    public static final String JSON_PROPERTY_BIT_RATE = "BitRate";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> bitRate = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_BIT_DEPTH = "BitDepth";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> bitDepth = JsonNullable.<Integer> undefined();
+
+    public static final String JSON_PROPERTY_REF_FRAMES = "RefFrames";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> refFrames = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
-  @javax.annotation.Nullable
-  private JsonNullable<String> codecTag = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PACKET_LENGTH = "PacketLength";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> packetLength = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_LANGUAGE = "Language";
-  @javax.annotation.Nullable
-  private JsonNullable<String> language = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_CHANNELS = "Channels";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> channels = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_COLOR_RANGE = "ColorRange";
-  @javax.annotation.Nullable
-  private JsonNullable<String> colorRange = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_SAMPLE_RATE = "SampleRate";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> sampleRate = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_COLOR_SPACE = "ColorSpace";
-  @javax.annotation.Nullable
-  private JsonNullable<String> colorSpace = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_DEFAULT = "IsDefault";
+    @javax.annotation.Nullable
+    private Boolean isDefault;
 
-  public static final String JSON_PROPERTY_COLOR_TRANSFER = "ColorTransfer";
-  @javax.annotation.Nullable
-  private JsonNullable<String> colorTransfer = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
+    @javax.annotation.Nullable
+    private Boolean isForced;
 
-  public static final String JSON_PROPERTY_COLOR_PRIMARIES = "ColorPrimaries";
-  @javax.annotation.Nullable
-  private JsonNullable<String> colorPrimaries = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_HEIGHT = "Height";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_DV_VERSION_MAJOR = "DvVersionMajor";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> dvVersionMajor = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_WIDTH = "Width";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_DV_VERSION_MINOR = "DvVersionMinor";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> dvVersionMinor = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_AVERAGE_FRAME_RATE = "AverageFrameRate";
+    @javax.annotation.Nullable
+    private JsonNullable<Float> averageFrameRate = JsonNullable.<Float> undefined();
 
-  public static final String JSON_PROPERTY_DV_PROFILE = "DvProfile";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> dvProfile = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_REAL_FRAME_RATE = "RealFrameRate";
+    @javax.annotation.Nullable
+    private JsonNullable<Float> realFrameRate = JsonNullable.<Float> undefined();
 
-  public static final String JSON_PROPERTY_DV_LEVEL = "DvLevel";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> dvLevel = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_PROFILE = "Profile";
+    @javax.annotation.Nullable
+    private JsonNullable<String> profile = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_RPU_PRESENT_FLAG = "RpuPresentFlag";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> rpuPresentFlag = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private MediaStreamType type;
 
-  public static final String JSON_PROPERTY_EL_PRESENT_FLAG = "ElPresentFlag";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> elPresentFlag = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
+    @javax.annotation.Nullable
+    private JsonNullable<String> aspectRatio = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_BL_PRESENT_FLAG = "BlPresentFlag";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> blPresentFlag = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_INDEX = "Index";
+    @javax.annotation.Nullable
+    private Integer index;
 
-  public static final String JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID = "DvBlSignalCompatibilityId";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> dvBlSignalCompatibilityId = JsonNullable.<Integer>undefined();
+    public static final String JSON_PROPERTY_SCORE = "Score";
+    @javax.annotation.Nullable
+    private JsonNullable<Integer> score = JsonNullable.<Integer> undefined();
 
-  public static final String JSON_PROPERTY_COMMENT = "Comment";
-  @javax.annotation.Nullable
-  private JsonNullable<String> comment = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_EXTERNAL = "IsExternal";
+    @javax.annotation.Nullable
+    private Boolean isExternal;
 
-  public static final String JSON_PROPERTY_TIME_BASE = "TimeBase";
-  @javax.annotation.Nullable
-  private JsonNullable<String> timeBase = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_DELIVERY_METHOD = "DeliveryMethod";
+    @javax.annotation.Nullable
+    private JsonNullable<SubtitleDeliveryMethod> deliveryMethod = JsonNullable.<SubtitleDeliveryMethod> undefined();
 
-  public static final String JSON_PROPERTY_CODEC_TIME_BASE = "CodecTimeBase";
-  @javax.annotation.Nullable
-  private JsonNullable<String> codecTimeBase = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
+    @javax.annotation.Nullable
+    private JsonNullable<String> deliveryUrl = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_TITLE = "Title";
-  @javax.annotation.Nullable
-  private JsonNullable<String> title = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_EXTERNAL_URL = "IsExternalUrl";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> isExternalUrl = JsonNullable.<Boolean> undefined();
 
-  public static final String JSON_PROPERTY_VIDEO_RANGE = "VideoRange";
-  @javax.annotation.Nullable
-  private JsonNullable<String> videoRange = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM = "IsTextSubtitleStream";
+    @javax.annotation.Nullable
+    private Boolean isTextSubtitleStream;
 
-  public static final String JSON_PROPERTY_VIDEO_RANGE_TYPE = "VideoRangeType";
-  @javax.annotation.Nullable
-  private JsonNullable<String> videoRangeType = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM = "SupportsExternalStream";
+    @javax.annotation.Nullable
+    private Boolean supportsExternalStream;
 
-  public static final String JSON_PROPERTY_VIDEO_DO_VI_TITLE = "VideoDoViTitle";
-  @javax.annotation.Nullable
-  private JsonNullable<String> videoDoViTitle = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PATH = "Path";
+    @javax.annotation.Nullable
+    private JsonNullable<String> path = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_LOCALIZED_UNDEFINED = "LocalizedUndefined";
-  @javax.annotation.Nullable
-  private JsonNullable<String> localizedUndefined = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_PIXEL_FORMAT = "PixelFormat";
+    @javax.annotation.Nullable
+    private JsonNullable<String> pixelFormat = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_LOCALIZED_DEFAULT = "LocalizedDefault";
-  @javax.annotation.Nullable
-  private JsonNullable<String> localizedDefault = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_LEVEL = "Level";
+    @javax.annotation.Nullable
+    private JsonNullable<Double> level = JsonNullable.<Double> undefined();
 
-  public static final String JSON_PROPERTY_LOCALIZED_FORCED = "LocalizedForced";
-  @javax.annotation.Nullable
-  private JsonNullable<String> localizedForced = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_IS_ANAMORPHIC = "IsAnamorphic";
+    @javax.annotation.Nullable
+    private JsonNullable<Boolean> isAnamorphic = JsonNullable.<Boolean> undefined();
 
-  public static final String JSON_PROPERTY_LOCALIZED_EXTERNAL = "LocalizedExternal";
-  @javax.annotation.Nullable
-  private JsonNullable<String> localizedExternal = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_DISPLAY_TITLE = "DisplayTitle";
-  @javax.annotation.Nullable
-  private JsonNullable<String> displayTitle = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_NAL_LENGTH_SIZE = "NalLengthSize";
-  @javax.annotation.Nullable
-  private JsonNullable<String> nalLengthSize = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_IS_INTERLACED = "IsInterlaced";
-  @javax.annotation.Nullable
-  private Boolean isInterlaced;
-
-  public static final String JSON_PROPERTY_IS_A_V_C = "IsAVC";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> isAVC = JsonNullable.<Boolean>undefined();
-
-  public static final String JSON_PROPERTY_CHANNEL_LAYOUT = "ChannelLayout";
-  @javax.annotation.Nullable
-  private JsonNullable<String> channelLayout = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_BIT_RATE = "BitRate";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> bitRate = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_BIT_DEPTH = "BitDepth";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> bitDepth = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_REF_FRAMES = "RefFrames";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> refFrames = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_PACKET_LENGTH = "PacketLength";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> packetLength = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_CHANNELS = "Channels";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> channels = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_SAMPLE_RATE = "SampleRate";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> sampleRate = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_IS_DEFAULT = "IsDefault";
-  @javax.annotation.Nullable
-  private Boolean isDefault;
-
-  public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-  @javax.annotation.Nullable
-  private Boolean isForced;
-
-  public static final String JSON_PROPERTY_HEIGHT = "Height";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_WIDTH = "Width";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_AVERAGE_FRAME_RATE = "AverageFrameRate";
-  @javax.annotation.Nullable
-  private JsonNullable<Float> averageFrameRate = JsonNullable.<Float>undefined();
-
-  public static final String JSON_PROPERTY_REAL_FRAME_RATE = "RealFrameRate";
-  @javax.annotation.Nullable
-  private JsonNullable<Float> realFrameRate = JsonNullable.<Float>undefined();
-
-  public static final String JSON_PROPERTY_PROFILE = "Profile";
-  @javax.annotation.Nullable
-  private JsonNullable<String> profile = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private MediaStreamType type;
-
-  public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
-  @javax.annotation.Nullable
-  private JsonNullable<String> aspectRatio = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_INDEX = "Index";
-  @javax.annotation.Nullable
-  private Integer index;
-
-  public static final String JSON_PROPERTY_SCORE = "Score";
-  @javax.annotation.Nullable
-  private JsonNullable<Integer> score = JsonNullable.<Integer>undefined();
-
-  public static final String JSON_PROPERTY_IS_EXTERNAL = "IsExternal";
-  @javax.annotation.Nullable
-  private Boolean isExternal;
-
-  public static final String JSON_PROPERTY_DELIVERY_METHOD = "DeliveryMethod";
-  @javax.annotation.Nullable
-  private JsonNullable<SubtitleDeliveryMethod> deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>undefined();
-
-  public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
-  @javax.annotation.Nullable
-  private JsonNullable<String> deliveryUrl = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_IS_EXTERNAL_URL = "IsExternalUrl";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> isExternalUrl = JsonNullable.<Boolean>undefined();
-
-  public static final String JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM = "IsTextSubtitleStream";
-  @javax.annotation.Nullable
-  private Boolean isTextSubtitleStream;
-
-  public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM = "SupportsExternalStream";
-  @javax.annotation.Nullable
-  private Boolean supportsExternalStream;
-
-  public static final String JSON_PROPERTY_PATH = "Path";
-  @javax.annotation.Nullable
-  private JsonNullable<String> path = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_PIXEL_FORMAT = "PixelFormat";
-  @javax.annotation.Nullable
-  private JsonNullable<String> pixelFormat = JsonNullable.<String>undefined();
-
-  public static final String JSON_PROPERTY_LEVEL = "Level";
-  @javax.annotation.Nullable
-  private JsonNullable<Double> level = JsonNullable.<Double>undefined();
-
-  public static final String JSON_PROPERTY_IS_ANAMORPHIC = "IsAnamorphic";
-  @javax.annotation.Nullable
-  private JsonNullable<Boolean> isAnamorphic = JsonNullable.<Boolean>undefined();
-
-  public MediaStream() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public MediaStream(
-    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE) String videoRange, 
-    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE) String videoRangeType, 
-    @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE) String videoDoViTitle, 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE) String displayTitle, 
-    @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM) Boolean isTextSubtitleStream
-  ) {
-    this();
-    this.videoRange = videoRange == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoRange);
-    this.videoRangeType = videoRangeType == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoRangeType);
-    this.videoDoViTitle = videoDoViTitle == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoDoViTitle);
-    this.displayTitle = displayTitle == null ? JsonNullable.<String>undefined() : JsonNullable.of(displayTitle);
-    this.isTextSubtitleStream = isTextSubtitleStream;
-  }
-
-  public MediaStream codec(@javax.annotation.Nullable String codec) {
-    this.codec = JsonNullable.<String>of(codec);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the codec.
-   * @return codec
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCodec() {
-        return codec.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CODEC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCodec_JsonNullable() {
-    return codec;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CODEC)
-  public void setCodec_JsonNullable(JsonNullable<String> codec) {
-    this.codec = codec;
-  }
-
-  public void setCodec(@javax.annotation.Nullable String codec) {
-    this.codec = JsonNullable.<String>of(codec);
-  }
-
-  public MediaStream codecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = JsonNullable.<String>of(codecTag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the codec tag.
-   * @return codecTag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCodecTag() {
-        return codecTag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCodecTag_JsonNullable() {
-    return codecTag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
-  public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
-    this.codecTag = codecTag;
-  }
-
-  public void setCodecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = JsonNullable.<String>of(codecTag);
-  }
-
-  public MediaStream language(@javax.annotation.Nullable String language) {
-    this.language = JsonNullable.<String>of(language);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the language.
-   * @return language
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getLanguage() {
-        return language.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LANGUAGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getLanguage_JsonNullable() {
-    return language;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LANGUAGE)
-  public void setLanguage_JsonNullable(JsonNullable<String> language) {
-    this.language = language;
-  }
-
-  public void setLanguage(@javax.annotation.Nullable String language) {
-    this.language = JsonNullable.<String>of(language);
-  }
-
-  public MediaStream colorRange(@javax.annotation.Nullable String colorRange) {
-    this.colorRange = JsonNullable.<String>of(colorRange);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the color range.
-   * @return colorRange
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getColorRange() {
-        return colorRange.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getColorRange_JsonNullable() {
-    return colorRange;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
-  public void setColorRange_JsonNullable(JsonNullable<String> colorRange) {
-    this.colorRange = colorRange;
-  }
-
-  public void setColorRange(@javax.annotation.Nullable String colorRange) {
-    this.colorRange = JsonNullable.<String>of(colorRange);
-  }
-
-  public MediaStream colorSpace(@javax.annotation.Nullable String colorSpace) {
-    this.colorSpace = JsonNullable.<String>of(colorSpace);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the color space.
-   * @return colorSpace
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getColorSpace() {
-        return colorSpace.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getColorSpace_JsonNullable() {
-    return colorSpace;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
-  public void setColorSpace_JsonNullable(JsonNullable<String> colorSpace) {
-    this.colorSpace = colorSpace;
-  }
-
-  public void setColorSpace(@javax.annotation.Nullable String colorSpace) {
-    this.colorSpace = JsonNullable.<String>of(colorSpace);
-  }
-
-  public MediaStream colorTransfer(@javax.annotation.Nullable String colorTransfer) {
-    this.colorTransfer = JsonNullable.<String>of(colorTransfer);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the color transfer.
-   * @return colorTransfer
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getColorTransfer() {
-        return colorTransfer.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getColorTransfer_JsonNullable() {
-    return colorTransfer;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
-  public void setColorTransfer_JsonNullable(JsonNullable<String> colorTransfer) {
-    this.colorTransfer = colorTransfer;
-  }
-
-  public void setColorTransfer(@javax.annotation.Nullable String colorTransfer) {
-    this.colorTransfer = JsonNullable.<String>of(colorTransfer);
-  }
-
-  public MediaStream colorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
-    this.colorPrimaries = JsonNullable.<String>of(colorPrimaries);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the color primaries.
-   * @return colorPrimaries
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getColorPrimaries() {
-        return colorPrimaries.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getColorPrimaries_JsonNullable() {
-    return colorPrimaries;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
-  public void setColorPrimaries_JsonNullable(JsonNullable<String> colorPrimaries) {
-    this.colorPrimaries = colorPrimaries;
-  }
-
-  public void setColorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
-    this.colorPrimaries = JsonNullable.<String>of(colorPrimaries);
-  }
-
-  public MediaStream dvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
-    this.dvVersionMajor = JsonNullable.<Integer>of(dvVersionMajor);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision version major.
-   * @return dvVersionMajor
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getDvVersionMajor() {
-        return dvVersionMajor.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getDvVersionMajor_JsonNullable() {
-    return dvVersionMajor;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
-  public void setDvVersionMajor_JsonNullable(JsonNullable<Integer> dvVersionMajor) {
-    this.dvVersionMajor = dvVersionMajor;
-  }
-
-  public void setDvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
-    this.dvVersionMajor = JsonNullable.<Integer>of(dvVersionMajor);
-  }
-
-  public MediaStream dvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
-    this.dvVersionMinor = JsonNullable.<Integer>of(dvVersionMinor);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision version minor.
-   * @return dvVersionMinor
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getDvVersionMinor() {
-        return dvVersionMinor.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getDvVersionMinor_JsonNullable() {
-    return dvVersionMinor;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
-  public void setDvVersionMinor_JsonNullable(JsonNullable<Integer> dvVersionMinor) {
-    this.dvVersionMinor = dvVersionMinor;
-  }
-
-  public void setDvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
-    this.dvVersionMinor = JsonNullable.<Integer>of(dvVersionMinor);
-  }
-
-  public MediaStream dvProfile(@javax.annotation.Nullable Integer dvProfile) {
-    this.dvProfile = JsonNullable.<Integer>of(dvProfile);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision profile.
-   * @return dvProfile
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getDvProfile() {
-        return dvProfile.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DV_PROFILE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getDvProfile_JsonNullable() {
-    return dvProfile;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DV_PROFILE)
-  public void setDvProfile_JsonNullable(JsonNullable<Integer> dvProfile) {
-    this.dvProfile = dvProfile;
-  }
-
-  public void setDvProfile(@javax.annotation.Nullable Integer dvProfile) {
-    this.dvProfile = JsonNullable.<Integer>of(dvProfile);
-  }
-
-  public MediaStream dvLevel(@javax.annotation.Nullable Integer dvLevel) {
-    this.dvLevel = JsonNullable.<Integer>of(dvLevel);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision level.
-   * @return dvLevel
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getDvLevel() {
-        return dvLevel.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DV_LEVEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getDvLevel_JsonNullable() {
-    return dvLevel;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DV_LEVEL)
-  public void setDvLevel_JsonNullable(JsonNullable<Integer> dvLevel) {
-    this.dvLevel = dvLevel;
-  }
-
-  public void setDvLevel(@javax.annotation.Nullable Integer dvLevel) {
-    this.dvLevel = JsonNullable.<Integer>of(dvLevel);
-  }
-
-  public MediaStream rpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
-    this.rpuPresentFlag = JsonNullable.<Integer>of(rpuPresentFlag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision rpu present flag.
-   * @return rpuPresentFlag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getRpuPresentFlag() {
-        return rpuPresentFlag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getRpuPresentFlag_JsonNullable() {
-    return rpuPresentFlag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
-  public void setRpuPresentFlag_JsonNullable(JsonNullable<Integer> rpuPresentFlag) {
-    this.rpuPresentFlag = rpuPresentFlag;
-  }
-
-  public void setRpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
-    this.rpuPresentFlag = JsonNullable.<Integer>of(rpuPresentFlag);
-  }
-
-  public MediaStream elPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
-    this.elPresentFlag = JsonNullable.<Integer>of(elPresentFlag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision el present flag.
-   * @return elPresentFlag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getElPresentFlag() {
-        return elPresentFlag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getElPresentFlag_JsonNullable() {
-    return elPresentFlag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
-  public void setElPresentFlag_JsonNullable(JsonNullable<Integer> elPresentFlag) {
-    this.elPresentFlag = elPresentFlag;
-  }
-
-  public void setElPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
-    this.elPresentFlag = JsonNullable.<Integer>of(elPresentFlag);
-  }
-
-  public MediaStream blPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
-    this.blPresentFlag = JsonNullable.<Integer>of(blPresentFlag);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision bl present flag.
-   * @return blPresentFlag
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getBlPresentFlag() {
-        return blPresentFlag.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getBlPresentFlag_JsonNullable() {
-    return blPresentFlag;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
-  public void setBlPresentFlag_JsonNullable(JsonNullable<Integer> blPresentFlag) {
-    this.blPresentFlag = blPresentFlag;
-  }
-
-  public void setBlPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
-    this.blPresentFlag = JsonNullable.<Integer>of(blPresentFlag);
-  }
-
-  public MediaStream dvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
-    this.dvBlSignalCompatibilityId = JsonNullable.<Integer>of(dvBlSignalCompatibilityId);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the Dolby Vision bl signal compatibility id.
-   * @return dvBlSignalCompatibilityId
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getDvBlSignalCompatibilityId() {
-        return dvBlSignalCompatibilityId.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getDvBlSignalCompatibilityId_JsonNullable() {
-    return dvBlSignalCompatibilityId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
-  public void setDvBlSignalCompatibilityId_JsonNullable(JsonNullable<Integer> dvBlSignalCompatibilityId) {
-    this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
-  }
-
-  public void setDvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
-    this.dvBlSignalCompatibilityId = JsonNullable.<Integer>of(dvBlSignalCompatibilityId);
-  }
-
-  public MediaStream comment(@javax.annotation.Nullable String comment) {
-    this.comment = JsonNullable.<String>of(comment);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the comment.
-   * @return comment
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getComment() {
-        return comment.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_COMMENT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getComment_JsonNullable() {
-    return comment;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COMMENT)
-  public void setComment_JsonNullable(JsonNullable<String> comment) {
-    this.comment = comment;
-  }
-
-  public void setComment(@javax.annotation.Nullable String comment) {
-    this.comment = JsonNullable.<String>of(comment);
-  }
-
-  public MediaStream timeBase(@javax.annotation.Nullable String timeBase) {
-    this.timeBase = JsonNullable.<String>of(timeBase);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the time base.
-   * @return timeBase
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getTimeBase() {
-        return timeBase.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TIME_BASE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getTimeBase_JsonNullable() {
-    return timeBase;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TIME_BASE)
-  public void setTimeBase_JsonNullable(JsonNullable<String> timeBase) {
-    this.timeBase = timeBase;
-  }
-
-  public void setTimeBase(@javax.annotation.Nullable String timeBase) {
-    this.timeBase = JsonNullable.<String>of(timeBase);
-  }
-
-  public MediaStream codecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
-    this.codecTimeBase = JsonNullable.<String>of(codecTimeBase);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the codec time base.
-   * @return codecTimeBase
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getCodecTimeBase() {
-        return codecTimeBase.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getCodecTimeBase_JsonNullable() {
-    return codecTimeBase;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
-  public void setCodecTimeBase_JsonNullable(JsonNullable<String> codecTimeBase) {
-    this.codecTimeBase = codecTimeBase;
-  }
-
-  public void setCodecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
-    this.codecTimeBase = JsonNullable.<String>of(codecTimeBase);
-  }
-
-  public MediaStream title(@javax.annotation.Nullable String title) {
-    this.title = JsonNullable.<String>of(title);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the title.
-   * @return title
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getTitle() {
-        return title.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getTitle_JsonNullable() {
-    return title;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TITLE)
-  public void setTitle_JsonNullable(JsonNullable<String> title) {
-    this.title = title;
-  }
-
-  public void setTitle(@javax.annotation.Nullable String title) {
-    this.title = JsonNullable.<String>of(title);
-  }
-
-  /**
-   * Gets the video range.
-   * @return videoRange
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getVideoRange() {
-    
-    if (videoRange == null) {
-      videoRange = JsonNullable.<String>undefined();
-    }
-    return videoRange.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getVideoRange_JsonNullable() {
-    return videoRange;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
-  private void setVideoRange_JsonNullable(JsonNullable<String> videoRange) {
-    this.videoRange = videoRange;
-  }
-
-
-  /**
-   * Gets the video range type.
-   * @return videoRangeType
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getVideoRangeType() {
-    
-    if (videoRangeType == null) {
-      videoRangeType = JsonNullable.<String>undefined();
-    }
-    return videoRangeType.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getVideoRangeType_JsonNullable() {
-    return videoRangeType;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
-  private void setVideoRangeType_JsonNullable(JsonNullable<String> videoRangeType) {
-    this.videoRangeType = videoRangeType;
-  }
-
-
-  /**
-   * Gets the video dovi title.
-   * @return videoDoViTitle
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getVideoDoViTitle() {
-    
-    if (videoDoViTitle == null) {
-      videoDoViTitle = JsonNullable.<String>undefined();
-    }
-    return videoDoViTitle.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getVideoDoViTitle_JsonNullable() {
-    return videoDoViTitle;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
-  private void setVideoDoViTitle_JsonNullable(JsonNullable<String> videoDoViTitle) {
-    this.videoDoViTitle = videoDoViTitle;
-  }
-
-
-  public MediaStream localizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
-    this.localizedUndefined = JsonNullable.<String>of(localizedUndefined);
-    
-    return this;
-  }
-
-  /**
-   * Get localizedUndefined
-   * @return localizedUndefined
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getLocalizedUndefined() {
-        return localizedUndefined.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getLocalizedUndefined_JsonNullable() {
-    return localizedUndefined;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
-  public void setLocalizedUndefined_JsonNullable(JsonNullable<String> localizedUndefined) {
-    this.localizedUndefined = localizedUndefined;
-  }
-
-  public void setLocalizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
-    this.localizedUndefined = JsonNullable.<String>of(localizedUndefined);
-  }
-
-  public MediaStream localizedDefault(@javax.annotation.Nullable String localizedDefault) {
-    this.localizedDefault = JsonNullable.<String>of(localizedDefault);
-    
-    return this;
-  }
-
-  /**
-   * Get localizedDefault
-   * @return localizedDefault
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getLocalizedDefault() {
-        return localizedDefault.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getLocalizedDefault_JsonNullable() {
-    return localizedDefault;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
-  public void setLocalizedDefault_JsonNullable(JsonNullable<String> localizedDefault) {
-    this.localizedDefault = localizedDefault;
-  }
-
-  public void setLocalizedDefault(@javax.annotation.Nullable String localizedDefault) {
-    this.localizedDefault = JsonNullable.<String>of(localizedDefault);
-  }
-
-  public MediaStream localizedForced(@javax.annotation.Nullable String localizedForced) {
-    this.localizedForced = JsonNullable.<String>of(localizedForced);
-    
-    return this;
-  }
-
-  /**
-   * Get localizedForced
-   * @return localizedForced
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getLocalizedForced() {
-        return localizedForced.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getLocalizedForced_JsonNullable() {
-    return localizedForced;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
-  public void setLocalizedForced_JsonNullable(JsonNullable<String> localizedForced) {
-    this.localizedForced = localizedForced;
-  }
-
-  public void setLocalizedForced(@javax.annotation.Nullable String localizedForced) {
-    this.localizedForced = JsonNullable.<String>of(localizedForced);
-  }
-
-  public MediaStream localizedExternal(@javax.annotation.Nullable String localizedExternal) {
-    this.localizedExternal = JsonNullable.<String>of(localizedExternal);
-    
-    return this;
-  }
-
-  /**
-   * Get localizedExternal
-   * @return localizedExternal
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getLocalizedExternal() {
-        return localizedExternal.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getLocalizedExternal_JsonNullable() {
-    return localizedExternal;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
-  public void setLocalizedExternal_JsonNullable(JsonNullable<String> localizedExternal) {
-    this.localizedExternal = localizedExternal;
-  }
-
-  public void setLocalizedExternal(@javax.annotation.Nullable String localizedExternal) {
-    this.localizedExternal = JsonNullable.<String>of(localizedExternal);
-  }
-
-  /**
-   * Get displayTitle
-   * @return displayTitle
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getDisplayTitle() {
-    
-    if (displayTitle == null) {
-      displayTitle = JsonNullable.<String>undefined();
-    }
-    return displayTitle.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDisplayTitle_JsonNullable() {
-    return displayTitle;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
-  private void setDisplayTitle_JsonNullable(JsonNullable<String> displayTitle) {
-    this.displayTitle = displayTitle;
-  }
-
-
-  public MediaStream nalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
-    this.nalLengthSize = JsonNullable.<String>of(nalLengthSize);
-    
-    return this;
-  }
-
-  /**
-   * Get nalLengthSize
-   * @return nalLengthSize
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getNalLengthSize() {
-        return nalLengthSize.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getNalLengthSize_JsonNullable() {
-    return nalLengthSize;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
-  public void setNalLengthSize_JsonNullable(JsonNullable<String> nalLengthSize) {
-    this.nalLengthSize = nalLengthSize;
-  }
-
-  public void setNalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
-    this.nalLengthSize = JsonNullable.<String>of(nalLengthSize);
-  }
-
-  public MediaStream isInterlaced(@javax.annotation.Nullable Boolean isInterlaced) {
-    
-    this.isInterlaced = isInterlaced;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is interlaced.
-   * @return isInterlaced
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsInterlaced() {
-    return isInterlaced;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsInterlaced(@javax.annotation.Nullable Boolean isInterlaced) {
-    this.isInterlaced = isInterlaced;
-  }
-
-  public MediaStream isAVC(@javax.annotation.Nullable Boolean isAVC) {
-    this.isAVC = JsonNullable.<Boolean>of(isAVC);
-    
-    return this;
-  }
-
-  /**
-   * Get isAVC
-   * @return isAVC
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getIsAVC() {
-        return isAVC.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IS_A_V_C)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getIsAVC_JsonNullable() {
-    return isAVC;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IS_A_V_C)
-  public void setIsAVC_JsonNullable(JsonNullable<Boolean> isAVC) {
-    this.isAVC = isAVC;
-  }
-
-  public void setIsAVC(@javax.annotation.Nullable Boolean isAVC) {
-    this.isAVC = JsonNullable.<Boolean>of(isAVC);
-  }
-
-  public MediaStream channelLayout(@javax.annotation.Nullable String channelLayout) {
-    this.channelLayout = JsonNullable.<String>of(channelLayout);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the channel layout.
-   * @return channelLayout
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getChannelLayout() {
-        return channelLayout.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getChannelLayout_JsonNullable() {
-    return channelLayout;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
-  public void setChannelLayout_JsonNullable(JsonNullable<String> channelLayout) {
-    this.channelLayout = channelLayout;
-  }
-
-  public void setChannelLayout(@javax.annotation.Nullable String channelLayout) {
-    this.channelLayout = JsonNullable.<String>of(channelLayout);
-  }
-
-  public MediaStream bitRate(@javax.annotation.Nullable Integer bitRate) {
-    this.bitRate = JsonNullable.<Integer>of(bitRate);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the bit rate.
-   * @return bitRate
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getBitRate() {
-        return bitRate.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_BIT_RATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getBitRate_JsonNullable() {
-    return bitRate;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BIT_RATE)
-  public void setBitRate_JsonNullable(JsonNullable<Integer> bitRate) {
-    this.bitRate = bitRate;
-  }
-
-  public void setBitRate(@javax.annotation.Nullable Integer bitRate) {
-    this.bitRate = JsonNullable.<Integer>of(bitRate);
-  }
-
-  public MediaStream bitDepth(@javax.annotation.Nullable Integer bitDepth) {
-    this.bitDepth = JsonNullable.<Integer>of(bitDepth);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the bit depth.
-   * @return bitDepth
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getBitDepth() {
-        return bitDepth.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getBitDepth_JsonNullable() {
-    return bitDepth;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
-  public void setBitDepth_JsonNullable(JsonNullable<Integer> bitDepth) {
-    this.bitDepth = bitDepth;
-  }
-
-  public void setBitDepth(@javax.annotation.Nullable Integer bitDepth) {
-    this.bitDepth = JsonNullable.<Integer>of(bitDepth);
-  }
-
-  public MediaStream refFrames(@javax.annotation.Nullable Integer refFrames) {
-    this.refFrames = JsonNullable.<Integer>of(refFrames);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the reference frames.
-   * @return refFrames
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getRefFrames() {
-        return refFrames.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_REF_FRAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getRefFrames_JsonNullable() {
-    return refFrames;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_REF_FRAMES)
-  public void setRefFrames_JsonNullable(JsonNullable<Integer> refFrames) {
-    this.refFrames = refFrames;
-  }
-
-  public void setRefFrames(@javax.annotation.Nullable Integer refFrames) {
-    this.refFrames = JsonNullable.<Integer>of(refFrames);
-  }
-
-  public MediaStream packetLength(@javax.annotation.Nullable Integer packetLength) {
-    this.packetLength = JsonNullable.<Integer>of(packetLength);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the length of the packet.
-   * @return packetLength
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getPacketLength() {
-        return packetLength.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getPacketLength_JsonNullable() {
-    return packetLength;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
-  public void setPacketLength_JsonNullable(JsonNullable<Integer> packetLength) {
-    this.packetLength = packetLength;
-  }
-
-  public void setPacketLength(@javax.annotation.Nullable Integer packetLength) {
-    this.packetLength = JsonNullable.<Integer>of(packetLength);
-  }
-
-  public MediaStream channels(@javax.annotation.Nullable Integer channels) {
-    this.channels = JsonNullable.<Integer>of(channels);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the channels.
-   * @return channels
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getChannels() {
-        return channels.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_CHANNELS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getChannels_JsonNullable() {
-    return channels;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CHANNELS)
-  public void setChannels_JsonNullable(JsonNullable<Integer> channels) {
-    this.channels = channels;
-  }
-
-  public void setChannels(@javax.annotation.Nullable Integer channels) {
-    this.channels = JsonNullable.<Integer>of(channels);
-  }
-
-  public MediaStream sampleRate(@javax.annotation.Nullable Integer sampleRate) {
-    this.sampleRate = JsonNullable.<Integer>of(sampleRate);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the sample rate.
-   * @return sampleRate
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getSampleRate() {
-        return sampleRate.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getSampleRate_JsonNullable() {
-    return sampleRate;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
-  public void setSampleRate_JsonNullable(JsonNullable<Integer> sampleRate) {
-    this.sampleRate = sampleRate;
-  }
-
-  public void setSampleRate(@javax.annotation.Nullable Integer sampleRate) {
-    this.sampleRate = JsonNullable.<Integer>of(sampleRate);
-  }
-
-  public MediaStream isDefault(@javax.annotation.Nullable Boolean isDefault) {
-    
-    this.isDefault = isDefault;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is default.
-   * @return isDefault
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsDefault() {
-    return isDefault;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
-    this.isDefault = isDefault;
-  }
-
-  public MediaStream isForced(@javax.annotation.Nullable Boolean isForced) {
-    
-    this.isForced = isForced;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is forced.
-   * @return isForced
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_FORCED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsForced() {
-    return isForced;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_FORCED)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsForced(@javax.annotation.Nullable Boolean isForced) {
-    this.isForced = isForced;
-  }
-
-  public MediaStream height(@javax.annotation.Nullable Integer height) {
-    this.height = JsonNullable.<Integer>of(height);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the height.
-   * @return height
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getHeight() {
-        return height.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_HEIGHT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getHeight_JsonNullable() {
-    return height;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_HEIGHT)
-  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
-    this.height = height;
-  }
-
-  public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = JsonNullable.<Integer>of(height);
-  }
-
-  public MediaStream width(@javax.annotation.Nullable Integer width) {
-    this.width = JsonNullable.<Integer>of(width);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the width.
-   * @return width
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getWidth() {
-        return width.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_WIDTH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getWidth_JsonNullable() {
-    return width;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_WIDTH)
-  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
-    this.width = width;
-  }
-
-  public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = JsonNullable.<Integer>of(width);
-  }
-
-  public MediaStream averageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
-    this.averageFrameRate = JsonNullable.<Float>of(averageFrameRate);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the average frame rate.
-   * @return averageFrameRate
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Float getAverageFrameRate() {
-        return averageFrameRate.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Float> getAverageFrameRate_JsonNullable() {
-    return averageFrameRate;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
-  public void setAverageFrameRate_JsonNullable(JsonNullable<Float> averageFrameRate) {
-    this.averageFrameRate = averageFrameRate;
-  }
-
-  public void setAverageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
-    this.averageFrameRate = JsonNullable.<Float>of(averageFrameRate);
-  }
-
-  public MediaStream realFrameRate(@javax.annotation.Nullable Float realFrameRate) {
-    this.realFrameRate = JsonNullable.<Float>of(realFrameRate);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the real frame rate.
-   * @return realFrameRate
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Float getRealFrameRate() {
-        return realFrameRate.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Float> getRealFrameRate_JsonNullable() {
-    return realFrameRate;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
-  public void setRealFrameRate_JsonNullable(JsonNullable<Float> realFrameRate) {
-    this.realFrameRate = realFrameRate;
-  }
-
-  public void setRealFrameRate(@javax.annotation.Nullable Float realFrameRate) {
-    this.realFrameRate = JsonNullable.<Float>of(realFrameRate);
-  }
-
-  public MediaStream profile(@javax.annotation.Nullable String profile) {
-    this.profile = JsonNullable.<String>of(profile);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the profile.
-   * @return profile
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getProfile() {
-        return profile.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PROFILE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getProfile_JsonNullable() {
-    return profile;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PROFILE)
-  public void setProfile_JsonNullable(JsonNullable<String> profile) {
-    this.profile = profile;
-  }
-
-  public void setProfile(@javax.annotation.Nullable String profile) {
-    this.profile = JsonNullable.<String>of(profile);
-  }
-
-  public MediaStream type(@javax.annotation.Nullable MediaStreamType type) {
-    
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Gets or sets the type.
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public MediaStreamType getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(@javax.annotation.Nullable MediaStreamType type) {
-    this.type = type;
-  }
-
-  public MediaStream aspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the aspect ratio.
-   * @return aspectRatio
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getAspectRatio() {
-        return aspectRatio.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getAspectRatio_JsonNullable() {
-    return aspectRatio;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
-  public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
-    this.aspectRatio = aspectRatio;
-  }
-
-  public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
-  }
-
-  public MediaStream index(@javax.annotation.Nullable Integer index) {
-    
-    this.index = index;
-    return this;
-  }
-
-  /**
-   * Gets or sets the index.
-   * @return index
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Integer getIndex() {
-    return index;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_INDEX)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIndex(@javax.annotation.Nullable Integer index) {
-    this.index = index;
-  }
-
-  public MediaStream score(@javax.annotation.Nullable Integer score) {
-    this.score = JsonNullable.<Integer>of(score);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the score.
-   * @return score
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Integer getScore() {
-        return score.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_SCORE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getScore_JsonNullable() {
-    return score;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SCORE)
-  public void setScore_JsonNullable(JsonNullable<Integer> score) {
-    this.score = score;
-  }
-
-  public void setScore(@javax.annotation.Nullable Integer score) {
-    this.score = JsonNullable.<Integer>of(score);
-  }
-
-  public MediaStream isExternal(@javax.annotation.Nullable Boolean isExternal) {
-    
-    this.isExternal = isExternal;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is external.
-   * @return isExternal
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsExternal() {
-    return isExternal;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsExternal(@javax.annotation.Nullable Boolean isExternal) {
-    this.isExternal = isExternal;
-  }
-
-  public MediaStream deliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
-    this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>of(deliveryMethod);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the method.
-   * @return deliveryMethod
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public SubtitleDeliveryMethod getDeliveryMethod() {
-        return deliveryMethod.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<SubtitleDeliveryMethod> getDeliveryMethod_JsonNullable() {
-    return deliveryMethod;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
-  public void setDeliveryMethod_JsonNullable(JsonNullable<SubtitleDeliveryMethod> deliveryMethod) {
-    this.deliveryMethod = deliveryMethod;
-  }
-
-  public void setDeliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
-    this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>of(deliveryMethod);
-  }
-
-  public MediaStream deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the delivery URL.
-   * @return deliveryUrl
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getDeliveryUrl() {
-        return deliveryUrl.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDeliveryUrl_JsonNullable() {
-    return deliveryUrl;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
-  public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
-    this.deliveryUrl = deliveryUrl;
-  }
-
-  public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
-  }
-
-  public MediaStream isExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
-    this.isExternalUrl = JsonNullable.<Boolean>of(isExternalUrl);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether this instance is external URL.
-   * @return isExternalUrl
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getIsExternalUrl() {
-        return isExternalUrl.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getIsExternalUrl_JsonNullable() {
-    return isExternalUrl;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
-  public void setIsExternalUrl_JsonNullable(JsonNullable<Boolean> isExternalUrl) {
-    this.isExternalUrl = isExternalUrl;
-  }
-
-  public void setIsExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
-    this.isExternalUrl = JsonNullable.<Boolean>of(isExternalUrl);
-  }
-
-  /**
-   * Get isTextSubtitleStream
-   * @return isTextSubtitleStream
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsTextSubtitleStream() {
-    return isTextSubtitleStream;
-  }
-
-
-
-  public MediaStream supportsExternalStream(@javax.annotation.Nullable Boolean supportsExternalStream) {
-    
-    this.supportsExternalStream = supportsExternalStream;
-    return this;
-  }
-
-  /**
-   * Gets or sets a value indicating whether [supports external stream].
-   * @return supportsExternalStream
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getSupportsExternalStream() {
-    return supportsExternalStream;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSupportsExternalStream(@javax.annotation.Nullable Boolean supportsExternalStream) {
-    this.supportsExternalStream = supportsExternalStream;
-  }
-
-  public MediaStream path(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the filename.
-   * @return path
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPath() {
-        return path.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PATH)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPath_JsonNullable() {
-    return path;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PATH)
-  public void setPath_JsonNullable(JsonNullable<String> path) {
-    this.path = path;
-  }
-
-  public void setPath(@javax.annotation.Nullable String path) {
-    this.path = JsonNullable.<String>of(path);
-  }
-
-  public MediaStream pixelFormat(@javax.annotation.Nullable String pixelFormat) {
-    this.pixelFormat = JsonNullable.<String>of(pixelFormat);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the pixel format.
-   * @return pixelFormat
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getPixelFormat() {
-        return pixelFormat.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPixelFormat_JsonNullable() {
-    return pixelFormat;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
-  public void setPixelFormat_JsonNullable(JsonNullable<String> pixelFormat) {
-    this.pixelFormat = pixelFormat;
-  }
-
-  public void setPixelFormat(@javax.annotation.Nullable String pixelFormat) {
-    this.pixelFormat = JsonNullable.<String>of(pixelFormat);
-  }
-
-  public MediaStream level(@javax.annotation.Nullable Double level) {
-    this.level = JsonNullable.<Double>of(level);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the level.
-   * @return level
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Double getLevel() {
-        return level.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_LEVEL)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Double> getLevel_JsonNullable() {
-    return level;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LEVEL)
-  public void setLevel_JsonNullable(JsonNullable<Double> level) {
-    this.level = level;
-  }
-
-  public void setLevel(@javax.annotation.Nullable Double level) {
-    this.level = JsonNullable.<Double>of(level);
-  }
-
-  public MediaStream isAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
-    this.isAnamorphic = JsonNullable.<Boolean>of(isAnamorphic);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets whether this instance is anamorphic.
-   * @return isAnamorphic
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Boolean getIsAnamorphic() {
-        return isAnamorphic.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getIsAnamorphic_JsonNullable() {
-    return isAnamorphic;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
-  public void setIsAnamorphic_JsonNullable(JsonNullable<Boolean> isAnamorphic) {
-    this.isAnamorphic = isAnamorphic;
-  }
-
-  public void setIsAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
-    this.isAnamorphic = JsonNullable.<Boolean>of(isAnamorphic);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MediaStream mediaStream = (MediaStream) o;
-    return equalsNullable(this.codec, mediaStream.codec) &&
-        equalsNullable(this.codecTag, mediaStream.codecTag) &&
-        equalsNullable(this.language, mediaStream.language) &&
-        equalsNullable(this.colorRange, mediaStream.colorRange) &&
-        equalsNullable(this.colorSpace, mediaStream.colorSpace) &&
-        equalsNullable(this.colorTransfer, mediaStream.colorTransfer) &&
-        equalsNullable(this.colorPrimaries, mediaStream.colorPrimaries) &&
-        equalsNullable(this.dvVersionMajor, mediaStream.dvVersionMajor) &&
-        equalsNullable(this.dvVersionMinor, mediaStream.dvVersionMinor) &&
-        equalsNullable(this.dvProfile, mediaStream.dvProfile) &&
-        equalsNullable(this.dvLevel, mediaStream.dvLevel) &&
-        equalsNullable(this.rpuPresentFlag, mediaStream.rpuPresentFlag) &&
-        equalsNullable(this.elPresentFlag, mediaStream.elPresentFlag) &&
-        equalsNullable(this.blPresentFlag, mediaStream.blPresentFlag) &&
-        equalsNullable(this.dvBlSignalCompatibilityId, mediaStream.dvBlSignalCompatibilityId) &&
-        equalsNullable(this.comment, mediaStream.comment) &&
-        equalsNullable(this.timeBase, mediaStream.timeBase) &&
-        equalsNullable(this.codecTimeBase, mediaStream.codecTimeBase) &&
-        equalsNullable(this.title, mediaStream.title) &&
-        equalsNullable(this.videoRange, mediaStream.videoRange) &&
-        equalsNullable(this.videoRangeType, mediaStream.videoRangeType) &&
-        equalsNullable(this.videoDoViTitle, mediaStream.videoDoViTitle) &&
-        equalsNullable(this.localizedUndefined, mediaStream.localizedUndefined) &&
-        equalsNullable(this.localizedDefault, mediaStream.localizedDefault) &&
-        equalsNullable(this.localizedForced, mediaStream.localizedForced) &&
-        equalsNullable(this.localizedExternal, mediaStream.localizedExternal) &&
-        equalsNullable(this.displayTitle, mediaStream.displayTitle) &&
-        equalsNullable(this.nalLengthSize, mediaStream.nalLengthSize) &&
-        Objects.equals(this.isInterlaced, mediaStream.isInterlaced) &&
-        equalsNullable(this.isAVC, mediaStream.isAVC) &&
-        equalsNullable(this.channelLayout, mediaStream.channelLayout) &&
-        equalsNullable(this.bitRate, mediaStream.bitRate) &&
-        equalsNullable(this.bitDepth, mediaStream.bitDepth) &&
-        equalsNullable(this.refFrames, mediaStream.refFrames) &&
-        equalsNullable(this.packetLength, mediaStream.packetLength) &&
-        equalsNullable(this.channels, mediaStream.channels) &&
-        equalsNullable(this.sampleRate, mediaStream.sampleRate) &&
-        Objects.equals(this.isDefault, mediaStream.isDefault) &&
-        Objects.equals(this.isForced, mediaStream.isForced) &&
-        equalsNullable(this.height, mediaStream.height) &&
-        equalsNullable(this.width, mediaStream.width) &&
-        equalsNullable(this.averageFrameRate, mediaStream.averageFrameRate) &&
-        equalsNullable(this.realFrameRate, mediaStream.realFrameRate) &&
-        equalsNullable(this.profile, mediaStream.profile) &&
-        Objects.equals(this.type, mediaStream.type) &&
-        equalsNullable(this.aspectRatio, mediaStream.aspectRatio) &&
-        Objects.equals(this.index, mediaStream.index) &&
-        equalsNullable(this.score, mediaStream.score) &&
-        Objects.equals(this.isExternal, mediaStream.isExternal) &&
-        equalsNullable(this.deliveryMethod, mediaStream.deliveryMethod) &&
-        equalsNullable(this.deliveryUrl, mediaStream.deliveryUrl) &&
-        equalsNullable(this.isExternalUrl, mediaStream.isExternalUrl) &&
-        Objects.equals(this.isTextSubtitleStream, mediaStream.isTextSubtitleStream) &&
-        Objects.equals(this.supportsExternalStream, mediaStream.supportsExternalStream) &&
-        equalsNullable(this.path, mediaStream.path) &&
-        equalsNullable(this.pixelFormat, mediaStream.pixelFormat) &&
-        equalsNullable(this.level, mediaStream.level) &&
-        equalsNullable(this.isAnamorphic, mediaStream.isAnamorphic);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(language), hashCodeNullable(colorRange), hashCodeNullable(colorSpace), hashCodeNullable(colorTransfer), hashCodeNullable(colorPrimaries), hashCodeNullable(dvVersionMajor), hashCodeNullable(dvVersionMinor), hashCodeNullable(dvProfile), hashCodeNullable(dvLevel), hashCodeNullable(rpuPresentFlag), hashCodeNullable(elPresentFlag), hashCodeNullable(blPresentFlag), hashCodeNullable(dvBlSignalCompatibilityId), hashCodeNullable(comment), hashCodeNullable(timeBase), hashCodeNullable(codecTimeBase), hashCodeNullable(title), hashCodeNullable(videoRange), hashCodeNullable(videoRangeType), hashCodeNullable(videoDoViTitle), hashCodeNullable(localizedUndefined), hashCodeNullable(localizedDefault), hashCodeNullable(localizedForced), hashCodeNullable(localizedExternal), hashCodeNullable(displayTitle), hashCodeNullable(nalLengthSize), isInterlaced, hashCodeNullable(isAVC), hashCodeNullable(channelLayout), hashCodeNullable(bitRate), hashCodeNullable(bitDepth), hashCodeNullable(refFrames), hashCodeNullable(packetLength), hashCodeNullable(channels), hashCodeNullable(sampleRate), isDefault, isForced, hashCodeNullable(height), hashCodeNullable(width), hashCodeNullable(averageFrameRate), hashCodeNullable(realFrameRate), hashCodeNullable(profile), type, hashCodeNullable(aspectRatio), index, hashCodeNullable(score), isExternal, hashCodeNullable(deliveryMethod), hashCodeNullable(deliveryUrl), hashCodeNullable(isExternalUrl), isTextSubtitleStream, supportsExternalStream, hashCodeNullable(path), hashCodeNullable(pixelFormat), hashCodeNullable(level), hashCodeNullable(isAnamorphic));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MediaStream {\n");
-    sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
-    sb.append("    codecTag: ").append(toIndentedString(codecTag)).append("\n");
-    sb.append("    language: ").append(toIndentedString(language)).append("\n");
-    sb.append("    colorRange: ").append(toIndentedString(colorRange)).append("\n");
-    sb.append("    colorSpace: ").append(toIndentedString(colorSpace)).append("\n");
-    sb.append("    colorTransfer: ").append(toIndentedString(colorTransfer)).append("\n");
-    sb.append("    colorPrimaries: ").append(toIndentedString(colorPrimaries)).append("\n");
-    sb.append("    dvVersionMajor: ").append(toIndentedString(dvVersionMajor)).append("\n");
-    sb.append("    dvVersionMinor: ").append(toIndentedString(dvVersionMinor)).append("\n");
-    sb.append("    dvProfile: ").append(toIndentedString(dvProfile)).append("\n");
-    sb.append("    dvLevel: ").append(toIndentedString(dvLevel)).append("\n");
-    sb.append("    rpuPresentFlag: ").append(toIndentedString(rpuPresentFlag)).append("\n");
-    sb.append("    elPresentFlag: ").append(toIndentedString(elPresentFlag)).append("\n");
-    sb.append("    blPresentFlag: ").append(toIndentedString(blPresentFlag)).append("\n");
-    sb.append("    dvBlSignalCompatibilityId: ").append(toIndentedString(dvBlSignalCompatibilityId)).append("\n");
-    sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
-    sb.append("    timeBase: ").append(toIndentedString(timeBase)).append("\n");
-    sb.append("    codecTimeBase: ").append(toIndentedString(codecTimeBase)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
-    sb.append("    videoRange: ").append(toIndentedString(videoRange)).append("\n");
-    sb.append("    videoRangeType: ").append(toIndentedString(videoRangeType)).append("\n");
-    sb.append("    videoDoViTitle: ").append(toIndentedString(videoDoViTitle)).append("\n");
-    sb.append("    localizedUndefined: ").append(toIndentedString(localizedUndefined)).append("\n");
-    sb.append("    localizedDefault: ").append(toIndentedString(localizedDefault)).append("\n");
-    sb.append("    localizedForced: ").append(toIndentedString(localizedForced)).append("\n");
-    sb.append("    localizedExternal: ").append(toIndentedString(localizedExternal)).append("\n");
-    sb.append("    displayTitle: ").append(toIndentedString(displayTitle)).append("\n");
-    sb.append("    nalLengthSize: ").append(toIndentedString(nalLengthSize)).append("\n");
-    sb.append("    isInterlaced: ").append(toIndentedString(isInterlaced)).append("\n");
-    sb.append("    isAVC: ").append(toIndentedString(isAVC)).append("\n");
-    sb.append("    channelLayout: ").append(toIndentedString(channelLayout)).append("\n");
-    sb.append("    bitRate: ").append(toIndentedString(bitRate)).append("\n");
-    sb.append("    bitDepth: ").append(toIndentedString(bitDepth)).append("\n");
-    sb.append("    refFrames: ").append(toIndentedString(refFrames)).append("\n");
-    sb.append("    packetLength: ").append(toIndentedString(packetLength)).append("\n");
-    sb.append("    channels: ").append(toIndentedString(channels)).append("\n");
-    sb.append("    sampleRate: ").append(toIndentedString(sampleRate)).append("\n");
-    sb.append("    isDefault: ").append(toIndentedString(isDefault)).append("\n");
-    sb.append("    isForced: ").append(toIndentedString(isForced)).append("\n");
-    sb.append("    height: ").append(toIndentedString(height)).append("\n");
-    sb.append("    width: ").append(toIndentedString(width)).append("\n");
-    sb.append("    averageFrameRate: ").append(toIndentedString(averageFrameRate)).append("\n");
-    sb.append("    realFrameRate: ").append(toIndentedString(realFrameRate)).append("\n");
-    sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    aspectRatio: ").append(toIndentedString(aspectRatio)).append("\n");
-    sb.append("    index: ").append(toIndentedString(index)).append("\n");
-    sb.append("    score: ").append(toIndentedString(score)).append("\n");
-    sb.append("    isExternal: ").append(toIndentedString(isExternal)).append("\n");
-    sb.append("    deliveryMethod: ").append(toIndentedString(deliveryMethod)).append("\n");
-    sb.append("    deliveryUrl: ").append(toIndentedString(deliveryUrl)).append("\n");
-    sb.append("    isExternalUrl: ").append(toIndentedString(isExternalUrl)).append("\n");
-    sb.append("    isTextSubtitleStream: ").append(toIndentedString(isTextSubtitleStream)).append("\n");
-    sb.append("    supportsExternalStream: ").append(toIndentedString(supportsExternalStream)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
-    sb.append("    pixelFormat: ").append(toIndentedString(pixelFormat)).append("\n");
-    sb.append("    level: ").append(toIndentedString(level)).append("\n");
-    sb.append("    isAnamorphic: ").append(toIndentedString(isAnamorphic)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private MediaStream instance;
-
-    public Builder() {
-      this(new MediaStream());
-    }
-
-    protected Builder(MediaStream instance) {
-      this.instance = instance;
-    }
-
-    public MediaStream.Builder codec(String codec) {
-      this.instance.codec = JsonNullable.<String>of(codec);
-      return this;
-    }
-    public MediaStream.Builder codec(JsonNullable<String> codec) {
-      this.instance.codec = codec;
-      return this;
-    }
-    public MediaStream.Builder codecTag(String codecTag) {
-      this.instance.codecTag = JsonNullable.<String>of(codecTag);
-      return this;
-    }
-    public MediaStream.Builder codecTag(JsonNullable<String> codecTag) {
-      this.instance.codecTag = codecTag;
-      return this;
-    }
-    public MediaStream.Builder language(String language) {
-      this.instance.language = JsonNullable.<String>of(language);
-      return this;
-    }
-    public MediaStream.Builder language(JsonNullable<String> language) {
-      this.instance.language = language;
-      return this;
-    }
-    public MediaStream.Builder colorRange(String colorRange) {
-      this.instance.colorRange = JsonNullable.<String>of(colorRange);
-      return this;
-    }
-    public MediaStream.Builder colorRange(JsonNullable<String> colorRange) {
-      this.instance.colorRange = colorRange;
-      return this;
-    }
-    public MediaStream.Builder colorSpace(String colorSpace) {
-      this.instance.colorSpace = JsonNullable.<String>of(colorSpace);
-      return this;
-    }
-    public MediaStream.Builder colorSpace(JsonNullable<String> colorSpace) {
-      this.instance.colorSpace = colorSpace;
-      return this;
-    }
-    public MediaStream.Builder colorTransfer(String colorTransfer) {
-      this.instance.colorTransfer = JsonNullable.<String>of(colorTransfer);
-      return this;
-    }
-    public MediaStream.Builder colorTransfer(JsonNullable<String> colorTransfer) {
-      this.instance.colorTransfer = colorTransfer;
-      return this;
-    }
-    public MediaStream.Builder colorPrimaries(String colorPrimaries) {
-      this.instance.colorPrimaries = JsonNullable.<String>of(colorPrimaries);
-      return this;
-    }
-    public MediaStream.Builder colorPrimaries(JsonNullable<String> colorPrimaries) {
-      this.instance.colorPrimaries = colorPrimaries;
-      return this;
-    }
-    public MediaStream.Builder dvVersionMajor(Integer dvVersionMajor) {
-      this.instance.dvVersionMajor = JsonNullable.<Integer>of(dvVersionMajor);
-      return this;
-    }
-    public MediaStream.Builder dvVersionMajor(JsonNullable<Integer> dvVersionMajor) {
-      this.instance.dvVersionMajor = dvVersionMajor;
-      return this;
-    }
-    public MediaStream.Builder dvVersionMinor(Integer dvVersionMinor) {
-      this.instance.dvVersionMinor = JsonNullable.<Integer>of(dvVersionMinor);
-      return this;
-    }
-    public MediaStream.Builder dvVersionMinor(JsonNullable<Integer> dvVersionMinor) {
-      this.instance.dvVersionMinor = dvVersionMinor;
-      return this;
-    }
-    public MediaStream.Builder dvProfile(Integer dvProfile) {
-      this.instance.dvProfile = JsonNullable.<Integer>of(dvProfile);
-      return this;
-    }
-    public MediaStream.Builder dvProfile(JsonNullable<Integer> dvProfile) {
-      this.instance.dvProfile = dvProfile;
-      return this;
-    }
-    public MediaStream.Builder dvLevel(Integer dvLevel) {
-      this.instance.dvLevel = JsonNullable.<Integer>of(dvLevel);
-      return this;
-    }
-    public MediaStream.Builder dvLevel(JsonNullable<Integer> dvLevel) {
-      this.instance.dvLevel = dvLevel;
-      return this;
-    }
-    public MediaStream.Builder rpuPresentFlag(Integer rpuPresentFlag) {
-      this.instance.rpuPresentFlag = JsonNullable.<Integer>of(rpuPresentFlag);
-      return this;
-    }
-    public MediaStream.Builder rpuPresentFlag(JsonNullable<Integer> rpuPresentFlag) {
-      this.instance.rpuPresentFlag = rpuPresentFlag;
-      return this;
-    }
-    public MediaStream.Builder elPresentFlag(Integer elPresentFlag) {
-      this.instance.elPresentFlag = JsonNullable.<Integer>of(elPresentFlag);
-      return this;
-    }
-    public MediaStream.Builder elPresentFlag(JsonNullable<Integer> elPresentFlag) {
-      this.instance.elPresentFlag = elPresentFlag;
-      return this;
-    }
-    public MediaStream.Builder blPresentFlag(Integer blPresentFlag) {
-      this.instance.blPresentFlag = JsonNullable.<Integer>of(blPresentFlag);
-      return this;
-    }
-    public MediaStream.Builder blPresentFlag(JsonNullable<Integer> blPresentFlag) {
-      this.instance.blPresentFlag = blPresentFlag;
-      return this;
-    }
-    public MediaStream.Builder dvBlSignalCompatibilityId(Integer dvBlSignalCompatibilityId) {
-      this.instance.dvBlSignalCompatibilityId = JsonNullable.<Integer>of(dvBlSignalCompatibilityId);
-      return this;
-    }
-    public MediaStream.Builder dvBlSignalCompatibilityId(JsonNullable<Integer> dvBlSignalCompatibilityId) {
-      this.instance.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
-      return this;
-    }
-    public MediaStream.Builder comment(String comment) {
-      this.instance.comment = JsonNullable.<String>of(comment);
-      return this;
-    }
-    public MediaStream.Builder comment(JsonNullable<String> comment) {
-      this.instance.comment = comment;
-      return this;
-    }
-    public MediaStream.Builder timeBase(String timeBase) {
-      this.instance.timeBase = JsonNullable.<String>of(timeBase);
-      return this;
-    }
-    public MediaStream.Builder timeBase(JsonNullable<String> timeBase) {
-      this.instance.timeBase = timeBase;
-      return this;
-    }
-    public MediaStream.Builder codecTimeBase(String codecTimeBase) {
-      this.instance.codecTimeBase = JsonNullable.<String>of(codecTimeBase);
-      return this;
-    }
-    public MediaStream.Builder codecTimeBase(JsonNullable<String> codecTimeBase) {
-      this.instance.codecTimeBase = codecTimeBase;
-      return this;
-    }
-    public MediaStream.Builder title(String title) {
-      this.instance.title = JsonNullable.<String>of(title);
-      return this;
-    }
-    public MediaStream.Builder title(JsonNullable<String> title) {
-      this.instance.title = title;
-      return this;
-    }
-    public MediaStream.Builder videoRange(String videoRange) {
-      this.instance.videoRange = JsonNullable.<String>of(videoRange);
-      return this;
-    }
-    public MediaStream.Builder videoRange(JsonNullable<String> videoRange) {
-      this.instance.videoRange = videoRange;
-      return this;
-    }
-    public MediaStream.Builder videoRangeType(String videoRangeType) {
-      this.instance.videoRangeType = JsonNullable.<String>of(videoRangeType);
-      return this;
-    }
-    public MediaStream.Builder videoRangeType(JsonNullable<String> videoRangeType) {
-      this.instance.videoRangeType = videoRangeType;
-      return this;
-    }
-    public MediaStream.Builder videoDoViTitle(String videoDoViTitle) {
-      this.instance.videoDoViTitle = JsonNullable.<String>of(videoDoViTitle);
-      return this;
-    }
-    public MediaStream.Builder videoDoViTitle(JsonNullable<String> videoDoViTitle) {
-      this.instance.videoDoViTitle = videoDoViTitle;
-      return this;
-    }
-    public MediaStream.Builder localizedUndefined(String localizedUndefined) {
-      this.instance.localizedUndefined = JsonNullable.<String>of(localizedUndefined);
-      return this;
-    }
-    public MediaStream.Builder localizedUndefined(JsonNullable<String> localizedUndefined) {
-      this.instance.localizedUndefined = localizedUndefined;
-      return this;
+    public MediaStream() {
     }
-    public MediaStream.Builder localizedDefault(String localizedDefault) {
-      this.instance.localizedDefault = JsonNullable.<String>of(localizedDefault);
-      return this;
-    }
-    public MediaStream.Builder localizedDefault(JsonNullable<String> localizedDefault) {
-      this.instance.localizedDefault = localizedDefault;
-      return this;
-    }
-    public MediaStream.Builder localizedForced(String localizedForced) {
-      this.instance.localizedForced = JsonNullable.<String>of(localizedForced);
-      return this;
-    }
-    public MediaStream.Builder localizedForced(JsonNullable<String> localizedForced) {
-      this.instance.localizedForced = localizedForced;
-      return this;
-    }
-    public MediaStream.Builder localizedExternal(String localizedExternal) {
-      this.instance.localizedExternal = JsonNullable.<String>of(localizedExternal);
-      return this;
-    }
-    public MediaStream.Builder localizedExternal(JsonNullable<String> localizedExternal) {
-      this.instance.localizedExternal = localizedExternal;
-      return this;
-    }
-    public MediaStream.Builder displayTitle(String displayTitle) {
-      this.instance.displayTitle = JsonNullable.<String>of(displayTitle);
-      return this;
-    }
-    public MediaStream.Builder displayTitle(JsonNullable<String> displayTitle) {
-      this.instance.displayTitle = displayTitle;
-      return this;
-    }
-    public MediaStream.Builder nalLengthSize(String nalLengthSize) {
-      this.instance.nalLengthSize = JsonNullable.<String>of(nalLengthSize);
-      return this;
-    }
-    public MediaStream.Builder nalLengthSize(JsonNullable<String> nalLengthSize) {
-      this.instance.nalLengthSize = nalLengthSize;
-      return this;
-    }
-    public MediaStream.Builder isInterlaced(Boolean isInterlaced) {
-      this.instance.isInterlaced = isInterlaced;
-      return this;
-    }
-    public MediaStream.Builder isAVC(Boolean isAVC) {
-      this.instance.isAVC = JsonNullable.<Boolean>of(isAVC);
-      return this;
-    }
-    public MediaStream.Builder isAVC(JsonNullable<Boolean> isAVC) {
-      this.instance.isAVC = isAVC;
-      return this;
-    }
-    public MediaStream.Builder channelLayout(String channelLayout) {
-      this.instance.channelLayout = JsonNullable.<String>of(channelLayout);
-      return this;
-    }
-    public MediaStream.Builder channelLayout(JsonNullable<String> channelLayout) {
-      this.instance.channelLayout = channelLayout;
-      return this;
-    }
-    public MediaStream.Builder bitRate(Integer bitRate) {
-      this.instance.bitRate = JsonNullable.<Integer>of(bitRate);
-      return this;
-    }
-    public MediaStream.Builder bitRate(JsonNullable<Integer> bitRate) {
-      this.instance.bitRate = bitRate;
-      return this;
-    }
-    public MediaStream.Builder bitDepth(Integer bitDepth) {
-      this.instance.bitDepth = JsonNullable.<Integer>of(bitDepth);
-      return this;
-    }
-    public MediaStream.Builder bitDepth(JsonNullable<Integer> bitDepth) {
-      this.instance.bitDepth = bitDepth;
-      return this;
-    }
-    public MediaStream.Builder refFrames(Integer refFrames) {
-      this.instance.refFrames = JsonNullable.<Integer>of(refFrames);
-      return this;
-    }
-    public MediaStream.Builder refFrames(JsonNullable<Integer> refFrames) {
-      this.instance.refFrames = refFrames;
-      return this;
-    }
-    public MediaStream.Builder packetLength(Integer packetLength) {
-      this.instance.packetLength = JsonNullable.<Integer>of(packetLength);
-      return this;
-    }
-    public MediaStream.Builder packetLength(JsonNullable<Integer> packetLength) {
-      this.instance.packetLength = packetLength;
-      return this;
-    }
-    public MediaStream.Builder channels(Integer channels) {
-      this.instance.channels = JsonNullable.<Integer>of(channels);
-      return this;
-    }
-    public MediaStream.Builder channels(JsonNullable<Integer> channels) {
-      this.instance.channels = channels;
-      return this;
-    }
-    public MediaStream.Builder sampleRate(Integer sampleRate) {
-      this.instance.sampleRate = JsonNullable.<Integer>of(sampleRate);
-      return this;
-    }
-    public MediaStream.Builder sampleRate(JsonNullable<Integer> sampleRate) {
-      this.instance.sampleRate = sampleRate;
-      return this;
-    }
-    public MediaStream.Builder isDefault(Boolean isDefault) {
-      this.instance.isDefault = isDefault;
-      return this;
-    }
-    public MediaStream.Builder isForced(Boolean isForced) {
-      this.instance.isForced = isForced;
-      return this;
-    }
-    public MediaStream.Builder height(Integer height) {
-      this.instance.height = JsonNullable.<Integer>of(height);
-      return this;
-    }
-    public MediaStream.Builder height(JsonNullable<Integer> height) {
-      this.instance.height = height;
-      return this;
-    }
-    public MediaStream.Builder width(Integer width) {
-      this.instance.width = JsonNullable.<Integer>of(width);
-      return this;
-    }
-    public MediaStream.Builder width(JsonNullable<Integer> width) {
-      this.instance.width = width;
-      return this;
-    }
-    public MediaStream.Builder averageFrameRate(Float averageFrameRate) {
-      this.instance.averageFrameRate = JsonNullable.<Float>of(averageFrameRate);
-      return this;
-    }
-    public MediaStream.Builder averageFrameRate(JsonNullable<Float> averageFrameRate) {
-      this.instance.averageFrameRate = averageFrameRate;
-      return this;
-    }
-    public MediaStream.Builder realFrameRate(Float realFrameRate) {
-      this.instance.realFrameRate = JsonNullable.<Float>of(realFrameRate);
-      return this;
-    }
-    public MediaStream.Builder realFrameRate(JsonNullable<Float> realFrameRate) {
-      this.instance.realFrameRate = realFrameRate;
-      return this;
-    }
-    public MediaStream.Builder profile(String profile) {
-      this.instance.profile = JsonNullable.<String>of(profile);
-      return this;
-    }
-    public MediaStream.Builder profile(JsonNullable<String> profile) {
-      this.instance.profile = profile;
-      return this;
-    }
-    public MediaStream.Builder type(MediaStreamType type) {
-      this.instance.type = type;
-      return this;
-    }
-    public MediaStream.Builder aspectRatio(String aspectRatio) {
-      this.instance.aspectRatio = JsonNullable.<String>of(aspectRatio);
-      return this;
-    }
-    public MediaStream.Builder aspectRatio(JsonNullable<String> aspectRatio) {
-      this.instance.aspectRatio = aspectRatio;
-      return this;
-    }
-    public MediaStream.Builder index(Integer index) {
-      this.instance.index = index;
-      return this;
-    }
-    public MediaStream.Builder score(Integer score) {
-      this.instance.score = JsonNullable.<Integer>of(score);
-      return this;
-    }
-    public MediaStream.Builder score(JsonNullable<Integer> score) {
-      this.instance.score = score;
-      return this;
-    }
-    public MediaStream.Builder isExternal(Boolean isExternal) {
-      this.instance.isExternal = isExternal;
-      return this;
-    }
-    public MediaStream.Builder deliveryMethod(SubtitleDeliveryMethod deliveryMethod) {
-      this.instance.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>of(deliveryMethod);
-      return this;
-    }
-    public MediaStream.Builder deliveryMethod(JsonNullable<SubtitleDeliveryMethod> deliveryMethod) {
-      this.instance.deliveryMethod = deliveryMethod;
-      return this;
-    }
-    public MediaStream.Builder deliveryUrl(String deliveryUrl) {
-      this.instance.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
-      return this;
-    }
-    public MediaStream.Builder deliveryUrl(JsonNullable<String> deliveryUrl) {
-      this.instance.deliveryUrl = deliveryUrl;
-      return this;
-    }
-    public MediaStream.Builder isExternalUrl(Boolean isExternalUrl) {
-      this.instance.isExternalUrl = JsonNullable.<Boolean>of(isExternalUrl);
-      return this;
-    }
-    public MediaStream.Builder isExternalUrl(JsonNullable<Boolean> isExternalUrl) {
-      this.instance.isExternalUrl = isExternalUrl;
-      return this;
-    }
-    public MediaStream.Builder isTextSubtitleStream(Boolean isTextSubtitleStream) {
-      this.instance.isTextSubtitleStream = isTextSubtitleStream;
-      return this;
-    }
-    public MediaStream.Builder supportsExternalStream(Boolean supportsExternalStream) {
-      this.instance.supportsExternalStream = supportsExternalStream;
-      return this;
-    }
-    public MediaStream.Builder path(String path) {
-      this.instance.path = JsonNullable.<String>of(path);
-      return this;
-    }
-    public MediaStream.Builder path(JsonNullable<String> path) {
-      this.instance.path = path;
-      return this;
-    }
-    public MediaStream.Builder pixelFormat(String pixelFormat) {
-      this.instance.pixelFormat = JsonNullable.<String>of(pixelFormat);
-      return this;
-    }
-    public MediaStream.Builder pixelFormat(JsonNullable<String> pixelFormat) {
-      this.instance.pixelFormat = pixelFormat;
-      return this;
-    }
-    public MediaStream.Builder level(Double level) {
-      this.instance.level = JsonNullable.<Double>of(level);
-      return this;
-    }
-    public MediaStream.Builder level(JsonNullable<Double> level) {
-      this.instance.level = level;
-      return this;
-    }
-    public MediaStream.Builder isAnamorphic(Boolean isAnamorphic) {
-      this.instance.isAnamorphic = JsonNullable.<Boolean>of(isAnamorphic);
-      return this;
-    }
-    public MediaStream.Builder isAnamorphic(JsonNullable<Boolean> isAnamorphic) {
-      this.instance.isAnamorphic = isAnamorphic;
-      return this;
-    }
-
 
     /**
-    * returns a built MediaStream instance.
-    *
-    * The builder is not reusable.
-    */
-    public MediaStream build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public MediaStream(@JsonProperty(JSON_PROPERTY_VIDEO_RANGE) String videoRange,
+            @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE) String videoRangeType,
+            @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE) String videoDoViTitle,
+            @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE) String displayTitle,
+            @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM) Boolean isTextSubtitleStream) {
+        this();
+        this.videoRange = videoRange == null ? JsonNullable.<String> undefined() : JsonNullable.of(videoRange);
+        this.videoRangeType = videoRangeType == null ? JsonNullable.<String> undefined()
+                : JsonNullable.of(videoRangeType);
+        this.videoDoViTitle = videoDoViTitle == null ? JsonNullable.<String> undefined()
+                : JsonNullable.of(videoDoViTitle);
+        this.displayTitle = displayTitle == null ? JsonNullable.<String> undefined() : JsonNullable.of(displayTitle);
+        this.isTextSubtitleStream = isTextSubtitleStream;
+    }
+
+    public MediaStream codec(@javax.annotation.Nullable String codec) {
+        this.codec = JsonNullable.<String> of(codec);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the codec.
+     * 
+     * @return codec
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCodec() {
+        return codec.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCodec_JsonNullable() {
+        return codec;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC)
+    public void setCodec_JsonNullable(JsonNullable<String> codec) {
+        this.codec = codec;
+    }
+
+    public void setCodec(@javax.annotation.Nullable String codec) {
+        this.codec = JsonNullable.<String> of(codec);
+    }
+
+    public MediaStream codecTag(@javax.annotation.Nullable String codecTag) {
+        this.codecTag = JsonNullable.<String> of(codecTag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the codec tag.
+     * 
+     * @return codecTag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCodecTag() {
+        return codecTag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCodecTag_JsonNullable() {
+        return codecTag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
+        this.codecTag = codecTag;
+    }
+
+    public void setCodecTag(@javax.annotation.Nullable String codecTag) {
+        this.codecTag = JsonNullable.<String> of(codecTag);
+    }
+
+    public MediaStream language(@javax.annotation.Nullable String language) {
+        this.language = JsonNullable.<String> of(language);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the language.
+     * 
+     * @return language
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getLanguage() {
+        return language.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getLanguage_JsonNullable() {
+        return language;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    public void setLanguage_JsonNullable(JsonNullable<String> language) {
+        this.language = language;
+    }
+
+    public void setLanguage(@javax.annotation.Nullable String language) {
+        this.language = JsonNullable.<String> of(language);
+    }
+
+    public MediaStream colorRange(@javax.annotation.Nullable String colorRange) {
+        this.colorRange = JsonNullable.<String> of(colorRange);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the color range.
+     * 
+     * @return colorRange
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getColorRange() {
+        return colorRange.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getColorRange_JsonNullable() {
+        return colorRange;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+    public void setColorRange_JsonNullable(JsonNullable<String> colorRange) {
+        this.colorRange = colorRange;
+    }
+
+    public void setColorRange(@javax.annotation.Nullable String colorRange) {
+        this.colorRange = JsonNullable.<String> of(colorRange);
+    }
+
+    public MediaStream colorSpace(@javax.annotation.Nullable String colorSpace) {
+        this.colorSpace = JsonNullable.<String> of(colorSpace);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the color space.
+     * 
+     * @return colorSpace
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getColorSpace() {
+        return colorSpace.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getColorSpace_JsonNullable() {
+        return colorSpace;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+    public void setColorSpace_JsonNullable(JsonNullable<String> colorSpace) {
+        this.colorSpace = colorSpace;
+    }
+
+    public void setColorSpace(@javax.annotation.Nullable String colorSpace) {
+        this.colorSpace = JsonNullable.<String> of(colorSpace);
+    }
+
+    public MediaStream colorTransfer(@javax.annotation.Nullable String colorTransfer) {
+        this.colorTransfer = JsonNullable.<String> of(colorTransfer);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the color transfer.
+     * 
+     * @return colorTransfer
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getColorTransfer() {
+        return colorTransfer.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getColorTransfer_JsonNullable() {
+        return colorTransfer;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+    public void setColorTransfer_JsonNullable(JsonNullable<String> colorTransfer) {
+        this.colorTransfer = colorTransfer;
+    }
+
+    public void setColorTransfer(@javax.annotation.Nullable String colorTransfer) {
+        this.colorTransfer = JsonNullable.<String> of(colorTransfer);
+    }
+
+    public MediaStream colorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
+        this.colorPrimaries = JsonNullable.<String> of(colorPrimaries);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the color primaries.
+     * 
+     * @return colorPrimaries
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getColorPrimaries() {
+        return colorPrimaries.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getColorPrimaries_JsonNullable() {
+        return colorPrimaries;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+    public void setColorPrimaries_JsonNullable(JsonNullable<String> colorPrimaries) {
+        this.colorPrimaries = colorPrimaries;
+    }
+
+    public void setColorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
+        this.colorPrimaries = JsonNullable.<String> of(colorPrimaries);
+    }
+
+    public MediaStream dvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
+        this.dvVersionMajor = JsonNullable.<Integer> of(dvVersionMajor);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision version major.
+     * 
+     * @return dvVersionMajor
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getDvVersionMajor() {
+        return dvVersionMajor.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getDvVersionMajor_JsonNullable() {
+        return dvVersionMajor;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+    public void setDvVersionMajor_JsonNullable(JsonNullable<Integer> dvVersionMajor) {
+        this.dvVersionMajor = dvVersionMajor;
+    }
+
+    public void setDvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
+        this.dvVersionMajor = JsonNullable.<Integer> of(dvVersionMajor);
+    }
+
+    public MediaStream dvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
+        this.dvVersionMinor = JsonNullable.<Integer> of(dvVersionMinor);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision version minor.
+     * 
+     * @return dvVersionMinor
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getDvVersionMinor() {
+        return dvVersionMinor.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getDvVersionMinor_JsonNullable() {
+        return dvVersionMinor;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+    public void setDvVersionMinor_JsonNullable(JsonNullable<Integer> dvVersionMinor) {
+        this.dvVersionMinor = dvVersionMinor;
+    }
+
+    public void setDvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
+        this.dvVersionMinor = JsonNullable.<Integer> of(dvVersionMinor);
+    }
+
+    public MediaStream dvProfile(@javax.annotation.Nullable Integer dvProfile) {
+        this.dvProfile = JsonNullable.<Integer> of(dvProfile);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision profile.
+     * 
+     * @return dvProfile
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getDvProfile() {
+        return dvProfile.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getDvProfile_JsonNullable() {
+        return dvProfile;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+    public void setDvProfile_JsonNullable(JsonNullable<Integer> dvProfile) {
+        this.dvProfile = dvProfile;
+    }
+
+    public void setDvProfile(@javax.annotation.Nullable Integer dvProfile) {
+        this.dvProfile = JsonNullable.<Integer> of(dvProfile);
+    }
+
+    public MediaStream dvLevel(@javax.annotation.Nullable Integer dvLevel) {
+        this.dvLevel = JsonNullable.<Integer> of(dvLevel);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision level.
+     * 
+     * @return dvLevel
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getDvLevel() {
+        return dvLevel.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getDvLevel_JsonNullable() {
+        return dvLevel;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+    public void setDvLevel_JsonNullable(JsonNullable<Integer> dvLevel) {
+        this.dvLevel = dvLevel;
+    }
+
+    public void setDvLevel(@javax.annotation.Nullable Integer dvLevel) {
+        this.dvLevel = JsonNullable.<Integer> of(dvLevel);
+    }
+
+    public MediaStream rpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
+        this.rpuPresentFlag = JsonNullable.<Integer> of(rpuPresentFlag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision rpu present flag.
+     * 
+     * @return rpuPresentFlag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getRpuPresentFlag() {
+        return rpuPresentFlag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getRpuPresentFlag_JsonNullable() {
+        return rpuPresentFlag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+    public void setRpuPresentFlag_JsonNullable(JsonNullable<Integer> rpuPresentFlag) {
+        this.rpuPresentFlag = rpuPresentFlag;
+    }
+
+    public void setRpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
+        this.rpuPresentFlag = JsonNullable.<Integer> of(rpuPresentFlag);
+    }
+
+    public MediaStream elPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
+        this.elPresentFlag = JsonNullable.<Integer> of(elPresentFlag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision el present flag.
+     * 
+     * @return elPresentFlag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getElPresentFlag() {
+        return elPresentFlag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getElPresentFlag_JsonNullable() {
+        return elPresentFlag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+    public void setElPresentFlag_JsonNullable(JsonNullable<Integer> elPresentFlag) {
+        this.elPresentFlag = elPresentFlag;
+    }
+
+    public void setElPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
+        this.elPresentFlag = JsonNullable.<Integer> of(elPresentFlag);
+    }
+
+    public MediaStream blPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
+        this.blPresentFlag = JsonNullable.<Integer> of(blPresentFlag);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision bl present flag.
+     * 
+     * @return blPresentFlag
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getBlPresentFlag() {
+        return blPresentFlag.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getBlPresentFlag_JsonNullable() {
+        return blPresentFlag;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+    public void setBlPresentFlag_JsonNullable(JsonNullable<Integer> blPresentFlag) {
+        this.blPresentFlag = blPresentFlag;
+    }
+
+    public void setBlPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
+        this.blPresentFlag = JsonNullable.<Integer> of(blPresentFlag);
+    }
+
+    public MediaStream dvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
+        this.dvBlSignalCompatibilityId = JsonNullable.<Integer> of(dvBlSignalCompatibilityId);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the Dolby Vision bl signal compatibility id.
+     * 
+     * @return dvBlSignalCompatibilityId
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getDvBlSignalCompatibilityId() {
+        return dvBlSignalCompatibilityId.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getDvBlSignalCompatibilityId_JsonNullable() {
+        return dvBlSignalCompatibilityId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+    public void setDvBlSignalCompatibilityId_JsonNullable(JsonNullable<Integer> dvBlSignalCompatibilityId) {
+        this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
+    }
+
+    public void setDvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
+        this.dvBlSignalCompatibilityId = JsonNullable.<Integer> of(dvBlSignalCompatibilityId);
+    }
+
+    public MediaStream comment(@javax.annotation.Nullable String comment) {
+        this.comment = JsonNullable.<String> of(comment);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the comment.
+     * 
+     * @return comment
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getComment() {
+        return comment.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getComment_JsonNullable() {
+        return comment;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COMMENT)
+    public void setComment_JsonNullable(JsonNullable<String> comment) {
+        this.comment = comment;
+    }
+
+    public void setComment(@javax.annotation.Nullable String comment) {
+        this.comment = JsonNullable.<String> of(comment);
+    }
+
+    public MediaStream timeBase(@javax.annotation.Nullable String timeBase) {
+        this.timeBase = JsonNullable.<String> of(timeBase);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the time base.
+     * 
+     * @return timeBase
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getTimeBase() {
+        return timeBase.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TIME_BASE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getTimeBase_JsonNullable() {
+        return timeBase;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TIME_BASE)
+    public void setTimeBase_JsonNullable(JsonNullable<String> timeBase) {
+        this.timeBase = timeBase;
+    }
+
+    public void setTimeBase(@javax.annotation.Nullable String timeBase) {
+        this.timeBase = JsonNullable.<String> of(timeBase);
+    }
+
+    public MediaStream codecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
+        this.codecTimeBase = JsonNullable.<String> of(codecTimeBase);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the codec time base.
+     * 
+     * @return codecTimeBase
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getCodecTimeBase() {
+        return codecTimeBase.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getCodecTimeBase_JsonNullable() {
+        return codecTimeBase;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+    public void setCodecTimeBase_JsonNullable(JsonNullable<String> codecTimeBase) {
+        this.codecTimeBase = codecTimeBase;
+    }
+
+    public void setCodecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
+        this.codecTimeBase = JsonNullable.<String> of(codecTimeBase);
+    }
+
+    public MediaStream title(@javax.annotation.Nullable String title) {
+        this.title = JsonNullable.<String> of(title);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the title.
+     * 
+     * @return title
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getTitle() {
+        return title.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getTitle_JsonNullable() {
+        return title;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TITLE)
+    public void setTitle_JsonNullable(JsonNullable<String> title) {
+        this.title = title;
+    }
+
+    public void setTitle(@javax.annotation.Nullable String title) {
+        this.title = JsonNullable.<String> of(title);
+    }
+
+    /**
+     * Gets the video range.
+     * 
+     * @return videoRange
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getVideoRange() {
+
+        if (videoRange == null) {
+            videoRange = JsonNullable.<String> undefined();
+        }
+        return videoRange.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getVideoRange_JsonNullable() {
+        return videoRange;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
+    private void setVideoRange_JsonNullable(JsonNullable<String> videoRange) {
+        this.videoRange = videoRange;
+    }
+
+    /**
+     * Gets the video range type.
+     * 
+     * @return videoRangeType
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getVideoRangeType() {
+
+        if (videoRangeType == null) {
+            videoRangeType = JsonNullable.<String> undefined();
+        }
+        return videoRangeType.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getVideoRangeType_JsonNullable() {
+        return videoRangeType;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
+    private void setVideoRangeType_JsonNullable(JsonNullable<String> videoRangeType) {
+        this.videoRangeType = videoRangeType;
+    }
+
+    /**
+     * Gets the video dovi title.
+     * 
+     * @return videoDoViTitle
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getVideoDoViTitle() {
+
+        if (videoDoViTitle == null) {
+            videoDoViTitle = JsonNullable.<String> undefined();
+        }
+        return videoDoViTitle.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getVideoDoViTitle_JsonNullable() {
+        return videoDoViTitle;
+    }
+
+    @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
+    private void setVideoDoViTitle_JsonNullable(JsonNullable<String> videoDoViTitle) {
+        this.videoDoViTitle = videoDoViTitle;
+    }
+
+    public MediaStream localizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
+        this.localizedUndefined = JsonNullable.<String> of(localizedUndefined);
+
+        return this;
+    }
+
+    /**
+     * Get localizedUndefined
+     * 
+     * @return localizedUndefined
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getLocalizedUndefined() {
+        return localizedUndefined.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getLocalizedUndefined_JsonNullable() {
+        return localizedUndefined;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+    public void setLocalizedUndefined_JsonNullable(JsonNullable<String> localizedUndefined) {
+        this.localizedUndefined = localizedUndefined;
+    }
+
+    public void setLocalizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
+        this.localizedUndefined = JsonNullable.<String> of(localizedUndefined);
+    }
+
+    public MediaStream localizedDefault(@javax.annotation.Nullable String localizedDefault) {
+        this.localizedDefault = JsonNullable.<String> of(localizedDefault);
+
+        return this;
+    }
+
+    /**
+     * Get localizedDefault
+     * 
+     * @return localizedDefault
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getLocalizedDefault() {
+        return localizedDefault.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getLocalizedDefault_JsonNullable() {
+        return localizedDefault;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+    public void setLocalizedDefault_JsonNullable(JsonNullable<String> localizedDefault) {
+        this.localizedDefault = localizedDefault;
+    }
+
+    public void setLocalizedDefault(@javax.annotation.Nullable String localizedDefault) {
+        this.localizedDefault = JsonNullable.<String> of(localizedDefault);
+    }
+
+    public MediaStream localizedForced(@javax.annotation.Nullable String localizedForced) {
+        this.localizedForced = JsonNullable.<String> of(localizedForced);
+
+        return this;
+    }
+
+    /**
+     * Get localizedForced
+     * 
+     * @return localizedForced
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getLocalizedForced() {
+        return localizedForced.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getLocalizedForced_JsonNullable() {
+        return localizedForced;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+    public void setLocalizedForced_JsonNullable(JsonNullable<String> localizedForced) {
+        this.localizedForced = localizedForced;
+    }
+
+    public void setLocalizedForced(@javax.annotation.Nullable String localizedForced) {
+        this.localizedForced = JsonNullable.<String> of(localizedForced);
+    }
+
+    public MediaStream localizedExternal(@javax.annotation.Nullable String localizedExternal) {
+        this.localizedExternal = JsonNullable.<String> of(localizedExternal);
+
+        return this;
+    }
+
+    /**
+     * Get localizedExternal
+     * 
+     * @return localizedExternal
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getLocalizedExternal() {
+        return localizedExternal.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getLocalizedExternal_JsonNullable() {
+        return localizedExternal;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+    public void setLocalizedExternal_JsonNullable(JsonNullable<String> localizedExternal) {
+        this.localizedExternal = localizedExternal;
+    }
+
+    public void setLocalizedExternal(@javax.annotation.Nullable String localizedExternal) {
+        this.localizedExternal = JsonNullable.<String> of(localizedExternal);
+    }
+
+    /**
+     * Get displayTitle
+     * 
+     * @return displayTitle
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getDisplayTitle() {
+
+        if (displayTitle == null) {
+            displayTitle = JsonNullable.<String> undefined();
+        }
+        return displayTitle.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getDisplayTitle_JsonNullable() {
+        return displayTitle;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
+    private void setDisplayTitle_JsonNullable(JsonNullable<String> displayTitle) {
+        this.displayTitle = displayTitle;
+    }
+
+    public MediaStream nalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
+        this.nalLengthSize = JsonNullable.<String> of(nalLengthSize);
+
+        return this;
+    }
+
+    /**
+     * Get nalLengthSize
+     * 
+     * @return nalLengthSize
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getNalLengthSize() {
+        return nalLengthSize.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getNalLengthSize_JsonNullable() {
+        return nalLengthSize;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+    public void setNalLengthSize_JsonNullable(JsonNullable<String> nalLengthSize) {
+        this.nalLengthSize = nalLengthSize;
+    }
+
+    public void setNalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
+        this.nalLengthSize = JsonNullable.<String> of(nalLengthSize);
+    }
+
+    public MediaStream isInterlaced(@javax.annotation.Nullable Boolean isInterlaced) {
+
+        this.isInterlaced = isInterlaced;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is interlaced.
+     * 
+     * @return isInterlaced
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsInterlaced() {
+        return isInterlaced;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsInterlaced(@javax.annotation.Nullable Boolean isInterlaced) {
+        this.isInterlaced = isInterlaced;
+    }
+
+    public MediaStream isAVC(@javax.annotation.Nullable Boolean isAVC) {
+        this.isAVC = JsonNullable.<Boolean> of(isAVC);
+
+        return this;
+    }
+
+    /**
+     * Get isAVC
+     * 
+     * @return isAVC
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getIsAVC() {
+        return isAVC.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getIsAVC_JsonNullable() {
+        return isAVC;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+    public void setIsAVC_JsonNullable(JsonNullable<Boolean> isAVC) {
+        this.isAVC = isAVC;
+    }
+
+    public void setIsAVC(@javax.annotation.Nullable Boolean isAVC) {
+        this.isAVC = JsonNullable.<Boolean> of(isAVC);
+    }
+
+    public MediaStream channelLayout(@javax.annotation.Nullable String channelLayout) {
+        this.channelLayout = JsonNullable.<String> of(channelLayout);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the channel layout.
+     * 
+     * @return channelLayout
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getChannelLayout() {
+        return channelLayout.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getChannelLayout_JsonNullable() {
+        return channelLayout;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+    public void setChannelLayout_JsonNullable(JsonNullable<String> channelLayout) {
+        this.channelLayout = channelLayout;
+    }
+
+    public void setChannelLayout(@javax.annotation.Nullable String channelLayout) {
+        this.channelLayout = JsonNullable.<String> of(channelLayout);
+    }
+
+    public MediaStream bitRate(@javax.annotation.Nullable Integer bitRate) {
+        this.bitRate = JsonNullable.<Integer> of(bitRate);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the bit rate.
+     * 
+     * @return bitRate
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getBitRate() {
+        return bitRate.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_BIT_RATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getBitRate_JsonNullable() {
+        return bitRate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BIT_RATE)
+    public void setBitRate_JsonNullable(JsonNullable<Integer> bitRate) {
+        this.bitRate = bitRate;
+    }
+
+    public void setBitRate(@javax.annotation.Nullable Integer bitRate) {
+        this.bitRate = JsonNullable.<Integer> of(bitRate);
+    }
+
+    public MediaStream bitDepth(@javax.annotation.Nullable Integer bitDepth) {
+        this.bitDepth = JsonNullable.<Integer> of(bitDepth);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the bit depth.
+     * 
+     * @return bitDepth
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getBitDepth() {
+        return bitDepth.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getBitDepth_JsonNullable() {
+        return bitDepth;
+    }
+
+    @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+    public void setBitDepth_JsonNullable(JsonNullable<Integer> bitDepth) {
+        this.bitDepth = bitDepth;
+    }
+
+    public void setBitDepth(@javax.annotation.Nullable Integer bitDepth) {
+        this.bitDepth = JsonNullable.<Integer> of(bitDepth);
+    }
+
+    public MediaStream refFrames(@javax.annotation.Nullable Integer refFrames) {
+        this.refFrames = JsonNullable.<Integer> of(refFrames);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the reference frames.
+     * 
+     * @return refFrames
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getRefFrames() {
+        return refFrames.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getRefFrames_JsonNullable() {
+        return refFrames;
+    }
+
+    @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+    public void setRefFrames_JsonNullable(JsonNullable<Integer> refFrames) {
+        this.refFrames = refFrames;
+    }
+
+    public void setRefFrames(@javax.annotation.Nullable Integer refFrames) {
+        this.refFrames = JsonNullable.<Integer> of(refFrames);
+    }
+
+    public MediaStream packetLength(@javax.annotation.Nullable Integer packetLength) {
+        this.packetLength = JsonNullable.<Integer> of(packetLength);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the length of the packet.
+     * 
+     * @return packetLength
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getPacketLength() {
+        return packetLength.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getPacketLength_JsonNullable() {
+        return packetLength;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+    public void setPacketLength_JsonNullable(JsonNullable<Integer> packetLength) {
+        this.packetLength = packetLength;
+    }
+
+    public void setPacketLength(@javax.annotation.Nullable Integer packetLength) {
+        this.packetLength = JsonNullable.<Integer> of(packetLength);
+    }
+
+    public MediaStream channels(@javax.annotation.Nullable Integer channels) {
+        this.channels = JsonNullable.<Integer> of(channels);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the channels.
+     * 
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getChannels() {
+        return channels.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_CHANNELS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getChannels_JsonNullable() {
+        return channels;
+    }
+
+    @JsonProperty(JSON_PROPERTY_CHANNELS)
+    public void setChannels_JsonNullable(JsonNullable<Integer> channels) {
+        this.channels = channels;
+    }
+
+    public void setChannels(@javax.annotation.Nullable Integer channels) {
+        this.channels = JsonNullable.<Integer> of(channels);
+    }
+
+    public MediaStream sampleRate(@javax.annotation.Nullable Integer sampleRate) {
+        this.sampleRate = JsonNullable.<Integer> of(sampleRate);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the sample rate.
+     * 
+     * @return sampleRate
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getSampleRate() {
+        return sampleRate.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getSampleRate_JsonNullable() {
+        return sampleRate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+    public void setSampleRate_JsonNullable(JsonNullable<Integer> sampleRate) {
+        this.sampleRate = sampleRate;
+    }
+
+    public void setSampleRate(@javax.annotation.Nullable Integer sampleRate) {
+        this.sampleRate = JsonNullable.<Integer> of(sampleRate);
+    }
+
+    public MediaStream isDefault(@javax.annotation.Nullable Boolean isDefault) {
+
+        this.isDefault = isDefault;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is default.
+     * 
+     * @return isDefault
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsDefault() {
+        return isDefault;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public MediaStream isForced(@javax.annotation.Nullable Boolean isForced) {
+
+        this.isForced = isForced;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is forced.
+     * 
+     * @return isForced
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsForced() {
+        return isForced;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsForced(@javax.annotation.Nullable Boolean isForced) {
+        this.isForced = isForced;
+    }
+
+    public MediaStream height(@javax.annotation.Nullable Integer height) {
+        this.height = JsonNullable.<Integer> of(height);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the height.
+     * 
+     * @return height
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getHeight() {
+        return height.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getHeight_JsonNullable() {
+        return height;
+    }
+
+    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+        this.height = height;
+    }
+
+    public void setHeight(@javax.annotation.Nullable Integer height) {
+        this.height = JsonNullable.<Integer> of(height);
+    }
+
+    public MediaStream width(@javax.annotation.Nullable Integer width) {
+        this.width = JsonNullable.<Integer> of(width);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the width.
+     * 
+     * @return width
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getWidth() {
+        return width.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getWidth_JsonNullable() {
+        return width;
+    }
+
+    @JsonProperty(JSON_PROPERTY_WIDTH)
+    public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+        this.width = width;
+    }
+
+    public void setWidth(@javax.annotation.Nullable Integer width) {
+        this.width = JsonNullable.<Integer> of(width);
+    }
+
+    public MediaStream averageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
+        this.averageFrameRate = JsonNullable.<Float> of(averageFrameRate);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the average frame rate.
+     * 
+     * @return averageFrameRate
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Float getAverageFrameRate() {
+        return averageFrameRate.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Float> getAverageFrameRate_JsonNullable() {
+        return averageFrameRate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+    public void setAverageFrameRate_JsonNullable(JsonNullable<Float> averageFrameRate) {
+        this.averageFrameRate = averageFrameRate;
+    }
+
+    public void setAverageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
+        this.averageFrameRate = JsonNullable.<Float> of(averageFrameRate);
+    }
+
+    public MediaStream realFrameRate(@javax.annotation.Nullable Float realFrameRate) {
+        this.realFrameRate = JsonNullable.<Float> of(realFrameRate);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the real frame rate.
+     * 
+     * @return realFrameRate
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Float getRealFrameRate() {
+        return realFrameRate.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Float> getRealFrameRate_JsonNullable() {
+        return realFrameRate;
+    }
+
+    @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+    public void setRealFrameRate_JsonNullable(JsonNullable<Float> realFrameRate) {
+        this.realFrameRate = realFrameRate;
+    }
+
+    public void setRealFrameRate(@javax.annotation.Nullable Float realFrameRate) {
+        this.realFrameRate = JsonNullable.<Float> of(realFrameRate);
+    }
+
+    public MediaStream profile(@javax.annotation.Nullable String profile) {
+        this.profile = JsonNullable.<String> of(profile);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the profile.
+     * 
+     * @return profile
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getProfile() {
+        return profile.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PROFILE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getProfile_JsonNullable() {
+        return profile;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PROFILE)
+    public void setProfile_JsonNullable(JsonNullable<String> profile) {
+        this.profile = profile;
+    }
+
+    public void setProfile(@javax.annotation.Nullable String profile) {
+        this.profile = JsonNullable.<String> of(profile);
+    }
+
+    public MediaStream type(@javax.annotation.Nullable MediaStreamType type) {
+
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Gets or sets the type.
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public MediaStreamType getType() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable MediaStreamType type) {
+        this.type = type;
+    }
+
+    public MediaStream aspectRatio(@javax.annotation.Nullable String aspectRatio) {
+        this.aspectRatio = JsonNullable.<String> of(aspectRatio);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the aspect ratio.
+     * 
+     * @return aspectRatio
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getAspectRatio() {
+        return aspectRatio.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getAspectRatio_JsonNullable() {
+        return aspectRatio;
+    }
+
+    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
+        this.aspectRatio = aspectRatio;
+    }
+
+    public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
+        this.aspectRatio = JsonNullable.<String> of(aspectRatio);
+    }
+
+    public MediaStream index(@javax.annotation.Nullable Integer index) {
+
+        this.index = index;
+        return this;
+    }
+
+    /**
+     * Gets or sets the index.
+     * 
+     * @return index
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIndex(@javax.annotation.Nullable Integer index) {
+        this.index = index;
+    }
+
+    public MediaStream score(@javax.annotation.Nullable Integer score) {
+        this.score = JsonNullable.<Integer> of(score);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the score.
+     * 
+     * @return score
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Integer getScore() {
+        return score.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_SCORE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Integer> getScore_JsonNullable() {
+        return score;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SCORE)
+    public void setScore_JsonNullable(JsonNullable<Integer> score) {
+        this.score = score;
+    }
+
+    public void setScore(@javax.annotation.Nullable Integer score) {
+        this.score = JsonNullable.<Integer> of(score);
+    }
+
+    public MediaStream isExternal(@javax.annotation.Nullable Boolean isExternal) {
+
+        this.isExternal = isExternal;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is external.
+     * 
+     * @return isExternal
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsExternal() {
+        return isExternal;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsExternal(@javax.annotation.Nullable Boolean isExternal) {
+        this.isExternal = isExternal;
+    }
+
+    public MediaStream deliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
+        this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod> of(deliveryMethod);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the method.
+     * 
+     * @return deliveryMethod
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public SubtitleDeliveryMethod getDeliveryMethod() {
+        return deliveryMethod.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<SubtitleDeliveryMethod> getDeliveryMethod_JsonNullable() {
+        return deliveryMethod;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+    public void setDeliveryMethod_JsonNullable(JsonNullable<SubtitleDeliveryMethod> deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
+    public void setDeliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
+        this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod> of(deliveryMethod);
+    }
+
+    public MediaStream deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+        this.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the delivery URL.
+     * 
+     * @return deliveryUrl
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getDeliveryUrl() {
+        return deliveryUrl.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getDeliveryUrl_JsonNullable() {
+        return deliveryUrl;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
+        this.deliveryUrl = deliveryUrl;
+    }
+
+    public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+        this.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
+    }
+
+    public MediaStream isExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
+        this.isExternalUrl = JsonNullable.<Boolean> of(isExternalUrl);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether this instance is external URL.
+     * 
+     * @return isExternalUrl
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getIsExternalUrl() {
+        return isExternalUrl.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getIsExternalUrl_JsonNullable() {
+        return isExternalUrl;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+    public void setIsExternalUrl_JsonNullable(JsonNullable<Boolean> isExternalUrl) {
+        this.isExternalUrl = isExternalUrl;
+    }
+
+    public void setIsExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
+        this.isExternalUrl = JsonNullable.<Boolean> of(isExternalUrl);
+    }
+
+    /**
+     * Get isTextSubtitleStream
+     * 
+     * @return isTextSubtitleStream
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getIsTextSubtitleStream() {
+        return isTextSubtitleStream;
+    }
+
+    public MediaStream supportsExternalStream(@javax.annotation.Nullable Boolean supportsExternalStream) {
+
+        this.supportsExternalStream = supportsExternalStream;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether [supports external stream].
+     * 
+     * @return supportsExternalStream
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Boolean getSupportsExternalStream() {
+        return supportsExternalStream;
+    }
+
+    @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSupportsExternalStream(@javax.annotation.Nullable Boolean supportsExternalStream) {
+        this.supportsExternalStream = supportsExternalStream;
+    }
+
+    public MediaStream path(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the filename.
+     * 
+     * @return path
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPath() {
+        return path.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPath_JsonNullable() {
+        return path;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PATH)
+    public void setPath_JsonNullable(JsonNullable<String> path) {
+        this.path = path;
+    }
+
+    public void setPath(@javax.annotation.Nullable String path) {
+        this.path = JsonNullable.<String> of(path);
+    }
+
+    public MediaStream pixelFormat(@javax.annotation.Nullable String pixelFormat) {
+        this.pixelFormat = JsonNullable.<String> of(pixelFormat);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the pixel format.
+     * 
+     * @return pixelFormat
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getPixelFormat() {
+        return pixelFormat.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getPixelFormat_JsonNullable() {
+        return pixelFormat;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+    public void setPixelFormat_JsonNullable(JsonNullable<String> pixelFormat) {
+        this.pixelFormat = pixelFormat;
+    }
+
+    public void setPixelFormat(@javax.annotation.Nullable String pixelFormat) {
+        this.pixelFormat = JsonNullable.<String> of(pixelFormat);
+    }
+
+    public MediaStream level(@javax.annotation.Nullable Double level) {
+        this.level = JsonNullable.<Double> of(level);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the level.
+     * 
+     * @return level
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Double getLevel() {
+        return level.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_LEVEL)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Double> getLevel_JsonNullable() {
+        return level;
+    }
+
+    @JsonProperty(JSON_PROPERTY_LEVEL)
+    public void setLevel_JsonNullable(JsonNullable<Double> level) {
+        this.level = level;
+    }
+
+    public void setLevel(@javax.annotation.Nullable Double level) {
+        this.level = JsonNullable.<Double> of(level);
+    }
+
+    public MediaStream isAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
+        this.isAnamorphic = JsonNullable.<Boolean> of(isAnamorphic);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets whether this instance is anamorphic.
+     * 
+     * @return isAnamorphic
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Boolean getIsAnamorphic() {
+        return isAnamorphic.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Boolean> getIsAnamorphic_JsonNullable() {
+        return isAnamorphic;
+    }
+
+    @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+    public void setIsAnamorphic_JsonNullable(JsonNullable<Boolean> isAnamorphic) {
+        this.isAnamorphic = isAnamorphic;
+    }
+
+    public void setIsAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
+        this.isAnamorphic = JsonNullable.<Boolean> of(isAnamorphic);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MediaStream mediaStream = (MediaStream) o;
+        return equalsNullable(this.codec, mediaStream.codec) && equalsNullable(this.codecTag, mediaStream.codecTag)
+                && equalsNullable(this.language, mediaStream.language)
+                && equalsNullable(this.colorRange, mediaStream.colorRange)
+                && equalsNullable(this.colorSpace, mediaStream.colorSpace)
+                && equalsNullable(this.colorTransfer, mediaStream.colorTransfer)
+                && equalsNullable(this.colorPrimaries, mediaStream.colorPrimaries)
+                && equalsNullable(this.dvVersionMajor, mediaStream.dvVersionMajor)
+                && equalsNullable(this.dvVersionMinor, mediaStream.dvVersionMinor)
+                && equalsNullable(this.dvProfile, mediaStream.dvProfile)
+                && equalsNullable(this.dvLevel, mediaStream.dvLevel)
+                && equalsNullable(this.rpuPresentFlag, mediaStream.rpuPresentFlag)
+                && equalsNullable(this.elPresentFlag, mediaStream.elPresentFlag)
+                && equalsNullable(this.blPresentFlag, mediaStream.blPresentFlag)
+                && equalsNullable(this.dvBlSignalCompatibilityId, mediaStream.dvBlSignalCompatibilityId)
+                && equalsNullable(this.comment, mediaStream.comment)
+                && equalsNullable(this.timeBase, mediaStream.timeBase)
+                && equalsNullable(this.codecTimeBase, mediaStream.codecTimeBase)
+                && equalsNullable(this.title, mediaStream.title)
+                && equalsNullable(this.videoRange, mediaStream.videoRange)
+                && equalsNullable(this.videoRangeType, mediaStream.videoRangeType)
+                && equalsNullable(this.videoDoViTitle, mediaStream.videoDoViTitle)
+                && equalsNullable(this.localizedUndefined, mediaStream.localizedUndefined)
+                && equalsNullable(this.localizedDefault, mediaStream.localizedDefault)
+                && equalsNullable(this.localizedForced, mediaStream.localizedForced)
+                && equalsNullable(this.localizedExternal, mediaStream.localizedExternal)
+                && equalsNullable(this.displayTitle, mediaStream.displayTitle)
+                && equalsNullable(this.nalLengthSize, mediaStream.nalLengthSize)
+                && Objects.equals(this.isInterlaced, mediaStream.isInterlaced)
+                && equalsNullable(this.isAVC, mediaStream.isAVC)
+                && equalsNullable(this.channelLayout, mediaStream.channelLayout)
+                && equalsNullable(this.bitRate, mediaStream.bitRate)
+                && equalsNullable(this.bitDepth, mediaStream.bitDepth)
+                && equalsNullable(this.refFrames, mediaStream.refFrames)
+                && equalsNullable(this.packetLength, mediaStream.packetLength)
+                && equalsNullable(this.channels, mediaStream.channels)
+                && equalsNullable(this.sampleRate, mediaStream.sampleRate)
+                && Objects.equals(this.isDefault, mediaStream.isDefault)
+                && Objects.equals(this.isForced, mediaStream.isForced)
+                && equalsNullable(this.height, mediaStream.height) && equalsNullable(this.width, mediaStream.width)
+                && equalsNullable(this.averageFrameRate, mediaStream.averageFrameRate)
+                && equalsNullable(this.realFrameRate, mediaStream.realFrameRate)
+                && equalsNullable(this.profile, mediaStream.profile) && Objects.equals(this.type, mediaStream.type)
+                && equalsNullable(this.aspectRatio, mediaStream.aspectRatio)
+                && Objects.equals(this.index, mediaStream.index) && equalsNullable(this.score, mediaStream.score)
+                && Objects.equals(this.isExternal, mediaStream.isExternal)
+                && equalsNullable(this.deliveryMethod, mediaStream.deliveryMethod)
+                && equalsNullable(this.deliveryUrl, mediaStream.deliveryUrl)
+                && equalsNullable(this.isExternalUrl, mediaStream.isExternalUrl)
+                && Objects.equals(this.isTextSubtitleStream, mediaStream.isTextSubtitleStream)
+                && Objects.equals(this.supportsExternalStream, mediaStream.supportsExternalStream)
+                && equalsNullable(this.path, mediaStream.path)
+                && equalsNullable(this.pixelFormat, mediaStream.pixelFormat)
+                && equalsNullable(this.level, mediaStream.level)
+                && equalsNullable(this.isAnamorphic, mediaStream.isAnamorphic);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(language),
+                hashCodeNullable(colorRange), hashCodeNullable(colorSpace), hashCodeNullable(colorTransfer),
+                hashCodeNullable(colorPrimaries), hashCodeNullable(dvVersionMajor), hashCodeNullable(dvVersionMinor),
+                hashCodeNullable(dvProfile), hashCodeNullable(dvLevel), hashCodeNullable(rpuPresentFlag),
+                hashCodeNullable(elPresentFlag), hashCodeNullable(blPresentFlag),
+                hashCodeNullable(dvBlSignalCompatibilityId), hashCodeNullable(comment), hashCodeNullable(timeBase),
+                hashCodeNullable(codecTimeBase), hashCodeNullable(title), hashCodeNullable(videoRange),
+                hashCodeNullable(videoRangeType), hashCodeNullable(videoDoViTitle),
+                hashCodeNullable(localizedUndefined), hashCodeNullable(localizedDefault),
+                hashCodeNullable(localizedForced), hashCodeNullable(localizedExternal), hashCodeNullable(displayTitle),
+                hashCodeNullable(nalLengthSize), isInterlaced, hashCodeNullable(isAVC), hashCodeNullable(channelLayout),
+                hashCodeNullable(bitRate), hashCodeNullable(bitDepth), hashCodeNullable(refFrames),
+                hashCodeNullable(packetLength), hashCodeNullable(channels), hashCodeNullable(sampleRate), isDefault,
+                isForced, hashCodeNullable(height), hashCodeNullable(width), hashCodeNullable(averageFrameRate),
+                hashCodeNullable(realFrameRate), hashCodeNullable(profile), type, hashCodeNullable(aspectRatio), index,
+                hashCodeNullable(score), isExternal, hashCodeNullable(deliveryMethod), hashCodeNullable(deliveryUrl),
+                hashCodeNullable(isExternalUrl), isTextSubtitleStream, supportsExternalStream, hashCodeNullable(path),
+                hashCodeNullable(pixelFormat), hashCodeNullable(level), hashCodeNullable(isAnamorphic));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MediaStream {\n");
+        sb.append("    codec: ").append(toIndentedString(codec)).append("\n");
+        sb.append("    codecTag: ").append(toIndentedString(codecTag)).append("\n");
+        sb.append("    language: ").append(toIndentedString(language)).append("\n");
+        sb.append("    colorRange: ").append(toIndentedString(colorRange)).append("\n");
+        sb.append("    colorSpace: ").append(toIndentedString(colorSpace)).append("\n");
+        sb.append("    colorTransfer: ").append(toIndentedString(colorTransfer)).append("\n");
+        sb.append("    colorPrimaries: ").append(toIndentedString(colorPrimaries)).append("\n");
+        sb.append("    dvVersionMajor: ").append(toIndentedString(dvVersionMajor)).append("\n");
+        sb.append("    dvVersionMinor: ").append(toIndentedString(dvVersionMinor)).append("\n");
+        sb.append("    dvProfile: ").append(toIndentedString(dvProfile)).append("\n");
+        sb.append("    dvLevel: ").append(toIndentedString(dvLevel)).append("\n");
+        sb.append("    rpuPresentFlag: ").append(toIndentedString(rpuPresentFlag)).append("\n");
+        sb.append("    elPresentFlag: ").append(toIndentedString(elPresentFlag)).append("\n");
+        sb.append("    blPresentFlag: ").append(toIndentedString(blPresentFlag)).append("\n");
+        sb.append("    dvBlSignalCompatibilityId: ").append(toIndentedString(dvBlSignalCompatibilityId)).append("\n");
+        sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+        sb.append("    timeBase: ").append(toIndentedString(timeBase)).append("\n");
+        sb.append("    codecTimeBase: ").append(toIndentedString(codecTimeBase)).append("\n");
+        sb.append("    title: ").append(toIndentedString(title)).append("\n");
+        sb.append("    videoRange: ").append(toIndentedString(videoRange)).append("\n");
+        sb.append("    videoRangeType: ").append(toIndentedString(videoRangeType)).append("\n");
+        sb.append("    videoDoViTitle: ").append(toIndentedString(videoDoViTitle)).append("\n");
+        sb.append("    localizedUndefined: ").append(toIndentedString(localizedUndefined)).append("\n");
+        sb.append("    localizedDefault: ").append(toIndentedString(localizedDefault)).append("\n");
+        sb.append("    localizedForced: ").append(toIndentedString(localizedForced)).append("\n");
+        sb.append("    localizedExternal: ").append(toIndentedString(localizedExternal)).append("\n");
+        sb.append("    displayTitle: ").append(toIndentedString(displayTitle)).append("\n");
+        sb.append("    nalLengthSize: ").append(toIndentedString(nalLengthSize)).append("\n");
+        sb.append("    isInterlaced: ").append(toIndentedString(isInterlaced)).append("\n");
+        sb.append("    isAVC: ").append(toIndentedString(isAVC)).append("\n");
+        sb.append("    channelLayout: ").append(toIndentedString(channelLayout)).append("\n");
+        sb.append("    bitRate: ").append(toIndentedString(bitRate)).append("\n");
+        sb.append("    bitDepth: ").append(toIndentedString(bitDepth)).append("\n");
+        sb.append("    refFrames: ").append(toIndentedString(refFrames)).append("\n");
+        sb.append("    packetLength: ").append(toIndentedString(packetLength)).append("\n");
+        sb.append("    channels: ").append(toIndentedString(channels)).append("\n");
+        sb.append("    sampleRate: ").append(toIndentedString(sampleRate)).append("\n");
+        sb.append("    isDefault: ").append(toIndentedString(isDefault)).append("\n");
+        sb.append("    isForced: ").append(toIndentedString(isForced)).append("\n");
+        sb.append("    height: ").append(toIndentedString(height)).append("\n");
+        sb.append("    width: ").append(toIndentedString(width)).append("\n");
+        sb.append("    averageFrameRate: ").append(toIndentedString(averageFrameRate)).append("\n");
+        sb.append("    realFrameRate: ").append(toIndentedString(realFrameRate)).append("\n");
+        sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    aspectRatio: ").append(toIndentedString(aspectRatio)).append("\n");
+        sb.append("    index: ").append(toIndentedString(index)).append("\n");
+        sb.append("    score: ").append(toIndentedString(score)).append("\n");
+        sb.append("    isExternal: ").append(toIndentedString(isExternal)).append("\n");
+        sb.append("    deliveryMethod: ").append(toIndentedString(deliveryMethod)).append("\n");
+        sb.append("    deliveryUrl: ").append(toIndentedString(deliveryUrl)).append("\n");
+        sb.append("    isExternalUrl: ").append(toIndentedString(isExternalUrl)).append("\n");
+        sb.append("    isTextSubtitleStream: ").append(toIndentedString(isTextSubtitleStream)).append("\n");
+        sb.append("    supportsExternalStream: ").append(toIndentedString(supportsExternalStream)).append("\n");
+        sb.append("    path: ").append(toIndentedString(path)).append("\n");
+        sb.append("    pixelFormat: ").append(toIndentedString(pixelFormat)).append("\n");
+        sb.append("    level: ").append(toIndentedString(level)).append("\n");
+        sb.append("    isAnamorphic: ").append(toIndentedString(isAnamorphic)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static MediaStream.Builder builder() {
-    return new MediaStream.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public MediaStream.Builder toBuilder() {
-    return new MediaStream.Builder()
-      .codec(getCodec())
-      .codecTag(getCodecTag())
-      .language(getLanguage())
-      .colorRange(getColorRange())
-      .colorSpace(getColorSpace())
-      .colorTransfer(getColorTransfer())
-      .colorPrimaries(getColorPrimaries())
-      .dvVersionMajor(getDvVersionMajor())
-      .dvVersionMinor(getDvVersionMinor())
-      .dvProfile(getDvProfile())
-      .dvLevel(getDvLevel())
-      .rpuPresentFlag(getRpuPresentFlag())
-      .elPresentFlag(getElPresentFlag())
-      .blPresentFlag(getBlPresentFlag())
-      .dvBlSignalCompatibilityId(getDvBlSignalCompatibilityId())
-      .comment(getComment())
-      .timeBase(getTimeBase())
-      .codecTimeBase(getCodecTimeBase())
-      .title(getTitle())
-      .videoRange(getVideoRange())
-      .videoRangeType(getVideoRangeType())
-      .videoDoViTitle(getVideoDoViTitle())
-      .localizedUndefined(getLocalizedUndefined())
-      .localizedDefault(getLocalizedDefault())
-      .localizedForced(getLocalizedForced())
-      .localizedExternal(getLocalizedExternal())
-      .displayTitle(getDisplayTitle())
-      .nalLengthSize(getNalLengthSize())
-      .isInterlaced(getIsInterlaced())
-      .isAVC(getIsAVC())
-      .channelLayout(getChannelLayout())
-      .bitRate(getBitRate())
-      .bitDepth(getBitDepth())
-      .refFrames(getRefFrames())
-      .packetLength(getPacketLength())
-      .channels(getChannels())
-      .sampleRate(getSampleRate())
-      .isDefault(getIsDefault())
-      .isForced(getIsForced())
-      .height(getHeight())
-      .width(getWidth())
-      .averageFrameRate(getAverageFrameRate())
-      .realFrameRate(getRealFrameRate())
-      .profile(getProfile())
-      .type(getType())
-      .aspectRatio(getAspectRatio())
-      .index(getIndex())
-      .score(getScore())
-      .isExternal(getIsExternal())
-      .deliveryMethod(getDeliveryMethod())
-      .deliveryUrl(getDeliveryUrl())
-      .isExternalUrl(getIsExternalUrl())
-      .isTextSubtitleStream(getIsTextSubtitleStream())
-      .supportsExternalStream(getSupportsExternalStream())
-      .path(getPath())
-      .pixelFormat(getPixelFormat())
-      .level(getLevel())
-      .isAnamorphic(getIsAnamorphic());
-  }
+    public static class Builder {
 
+        private MediaStream instance;
 
+        public Builder() {
+            this(new MediaStream());
+        }
+
+        protected Builder(MediaStream instance) {
+            this.instance = instance;
+        }
+
+        public MediaStream.Builder codec(String codec) {
+            this.instance.codec = JsonNullable.<String> of(codec);
+            return this;
+        }
+
+        public MediaStream.Builder codec(JsonNullable<String> codec) {
+            this.instance.codec = codec;
+            return this;
+        }
+
+        public MediaStream.Builder codecTag(String codecTag) {
+            this.instance.codecTag = JsonNullable.<String> of(codecTag);
+            return this;
+        }
+
+        public MediaStream.Builder codecTag(JsonNullable<String> codecTag) {
+            this.instance.codecTag = codecTag;
+            return this;
+        }
+
+        public MediaStream.Builder language(String language) {
+            this.instance.language = JsonNullable.<String> of(language);
+            return this;
+        }
+
+        public MediaStream.Builder language(JsonNullable<String> language) {
+            this.instance.language = language;
+            return this;
+        }
+
+        public MediaStream.Builder colorRange(String colorRange) {
+            this.instance.colorRange = JsonNullable.<String> of(colorRange);
+            return this;
+        }
+
+        public MediaStream.Builder colorRange(JsonNullable<String> colorRange) {
+            this.instance.colorRange = colorRange;
+            return this;
+        }
+
+        public MediaStream.Builder colorSpace(String colorSpace) {
+            this.instance.colorSpace = JsonNullable.<String> of(colorSpace);
+            return this;
+        }
+
+        public MediaStream.Builder colorSpace(JsonNullable<String> colorSpace) {
+            this.instance.colorSpace = colorSpace;
+            return this;
+        }
+
+        public MediaStream.Builder colorTransfer(String colorTransfer) {
+            this.instance.colorTransfer = JsonNullable.<String> of(colorTransfer);
+            return this;
+        }
+
+        public MediaStream.Builder colorTransfer(JsonNullable<String> colorTransfer) {
+            this.instance.colorTransfer = colorTransfer;
+            return this;
+        }
+
+        public MediaStream.Builder colorPrimaries(String colorPrimaries) {
+            this.instance.colorPrimaries = JsonNullable.<String> of(colorPrimaries);
+            return this;
+        }
+
+        public MediaStream.Builder colorPrimaries(JsonNullable<String> colorPrimaries) {
+            this.instance.colorPrimaries = colorPrimaries;
+            return this;
+        }
+
+        public MediaStream.Builder dvVersionMajor(Integer dvVersionMajor) {
+            this.instance.dvVersionMajor = JsonNullable.<Integer> of(dvVersionMajor);
+            return this;
+        }
+
+        public MediaStream.Builder dvVersionMajor(JsonNullable<Integer> dvVersionMajor) {
+            this.instance.dvVersionMajor = dvVersionMajor;
+            return this;
+        }
+
+        public MediaStream.Builder dvVersionMinor(Integer dvVersionMinor) {
+            this.instance.dvVersionMinor = JsonNullable.<Integer> of(dvVersionMinor);
+            return this;
+        }
+
+        public MediaStream.Builder dvVersionMinor(JsonNullable<Integer> dvVersionMinor) {
+            this.instance.dvVersionMinor = dvVersionMinor;
+            return this;
+        }
+
+        public MediaStream.Builder dvProfile(Integer dvProfile) {
+            this.instance.dvProfile = JsonNullable.<Integer> of(dvProfile);
+            return this;
+        }
+
+        public MediaStream.Builder dvProfile(JsonNullable<Integer> dvProfile) {
+            this.instance.dvProfile = dvProfile;
+            return this;
+        }
+
+        public MediaStream.Builder dvLevel(Integer dvLevel) {
+            this.instance.dvLevel = JsonNullable.<Integer> of(dvLevel);
+            return this;
+        }
+
+        public MediaStream.Builder dvLevel(JsonNullable<Integer> dvLevel) {
+            this.instance.dvLevel = dvLevel;
+            return this;
+        }
+
+        public MediaStream.Builder rpuPresentFlag(Integer rpuPresentFlag) {
+            this.instance.rpuPresentFlag = JsonNullable.<Integer> of(rpuPresentFlag);
+            return this;
+        }
+
+        public MediaStream.Builder rpuPresentFlag(JsonNullable<Integer> rpuPresentFlag) {
+            this.instance.rpuPresentFlag = rpuPresentFlag;
+            return this;
+        }
+
+        public MediaStream.Builder elPresentFlag(Integer elPresentFlag) {
+            this.instance.elPresentFlag = JsonNullable.<Integer> of(elPresentFlag);
+            return this;
+        }
+
+        public MediaStream.Builder elPresentFlag(JsonNullable<Integer> elPresentFlag) {
+            this.instance.elPresentFlag = elPresentFlag;
+            return this;
+        }
+
+        public MediaStream.Builder blPresentFlag(Integer blPresentFlag) {
+            this.instance.blPresentFlag = JsonNullable.<Integer> of(blPresentFlag);
+            return this;
+        }
+
+        public MediaStream.Builder blPresentFlag(JsonNullable<Integer> blPresentFlag) {
+            this.instance.blPresentFlag = blPresentFlag;
+            return this;
+        }
+
+        public MediaStream.Builder dvBlSignalCompatibilityId(Integer dvBlSignalCompatibilityId) {
+            this.instance.dvBlSignalCompatibilityId = JsonNullable.<Integer> of(dvBlSignalCompatibilityId);
+            return this;
+        }
+
+        public MediaStream.Builder dvBlSignalCompatibilityId(JsonNullable<Integer> dvBlSignalCompatibilityId) {
+            this.instance.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
+            return this;
+        }
+
+        public MediaStream.Builder comment(String comment) {
+            this.instance.comment = JsonNullable.<String> of(comment);
+            return this;
+        }
+
+        public MediaStream.Builder comment(JsonNullable<String> comment) {
+            this.instance.comment = comment;
+            return this;
+        }
+
+        public MediaStream.Builder timeBase(String timeBase) {
+            this.instance.timeBase = JsonNullable.<String> of(timeBase);
+            return this;
+        }
+
+        public MediaStream.Builder timeBase(JsonNullable<String> timeBase) {
+            this.instance.timeBase = timeBase;
+            return this;
+        }
+
+        public MediaStream.Builder codecTimeBase(String codecTimeBase) {
+            this.instance.codecTimeBase = JsonNullable.<String> of(codecTimeBase);
+            return this;
+        }
+
+        public MediaStream.Builder codecTimeBase(JsonNullable<String> codecTimeBase) {
+            this.instance.codecTimeBase = codecTimeBase;
+            return this;
+        }
+
+        public MediaStream.Builder title(String title) {
+            this.instance.title = JsonNullable.<String> of(title);
+            return this;
+        }
+
+        public MediaStream.Builder title(JsonNullable<String> title) {
+            this.instance.title = title;
+            return this;
+        }
+
+        public MediaStream.Builder videoRange(String videoRange) {
+            this.instance.videoRange = JsonNullable.<String> of(videoRange);
+            return this;
+        }
+
+        public MediaStream.Builder videoRange(JsonNullable<String> videoRange) {
+            this.instance.videoRange = videoRange;
+            return this;
+        }
+
+        public MediaStream.Builder videoRangeType(String videoRangeType) {
+            this.instance.videoRangeType = JsonNullable.<String> of(videoRangeType);
+            return this;
+        }
+
+        public MediaStream.Builder videoRangeType(JsonNullable<String> videoRangeType) {
+            this.instance.videoRangeType = videoRangeType;
+            return this;
+        }
+
+        public MediaStream.Builder videoDoViTitle(String videoDoViTitle) {
+            this.instance.videoDoViTitle = JsonNullable.<String> of(videoDoViTitle);
+            return this;
+        }
+
+        public MediaStream.Builder videoDoViTitle(JsonNullable<String> videoDoViTitle) {
+            this.instance.videoDoViTitle = videoDoViTitle;
+            return this;
+        }
+
+        public MediaStream.Builder localizedUndefined(String localizedUndefined) {
+            this.instance.localizedUndefined = JsonNullable.<String> of(localizedUndefined);
+            return this;
+        }
+
+        public MediaStream.Builder localizedUndefined(JsonNullable<String> localizedUndefined) {
+            this.instance.localizedUndefined = localizedUndefined;
+            return this;
+        }
+
+        public MediaStream.Builder localizedDefault(String localizedDefault) {
+            this.instance.localizedDefault = JsonNullable.<String> of(localizedDefault);
+            return this;
+        }
+
+        public MediaStream.Builder localizedDefault(JsonNullable<String> localizedDefault) {
+            this.instance.localizedDefault = localizedDefault;
+            return this;
+        }
+
+        public MediaStream.Builder localizedForced(String localizedForced) {
+            this.instance.localizedForced = JsonNullable.<String> of(localizedForced);
+            return this;
+        }
+
+        public MediaStream.Builder localizedForced(JsonNullable<String> localizedForced) {
+            this.instance.localizedForced = localizedForced;
+            return this;
+        }
+
+        public MediaStream.Builder localizedExternal(String localizedExternal) {
+            this.instance.localizedExternal = JsonNullable.<String> of(localizedExternal);
+            return this;
+        }
+
+        public MediaStream.Builder localizedExternal(JsonNullable<String> localizedExternal) {
+            this.instance.localizedExternal = localizedExternal;
+            return this;
+        }
+
+        public MediaStream.Builder displayTitle(String displayTitle) {
+            this.instance.displayTitle = JsonNullable.<String> of(displayTitle);
+            return this;
+        }
+
+        public MediaStream.Builder displayTitle(JsonNullable<String> displayTitle) {
+            this.instance.displayTitle = displayTitle;
+            return this;
+        }
+
+        public MediaStream.Builder nalLengthSize(String nalLengthSize) {
+            this.instance.nalLengthSize = JsonNullable.<String> of(nalLengthSize);
+            return this;
+        }
+
+        public MediaStream.Builder nalLengthSize(JsonNullable<String> nalLengthSize) {
+            this.instance.nalLengthSize = nalLengthSize;
+            return this;
+        }
+
+        public MediaStream.Builder isInterlaced(Boolean isInterlaced) {
+            this.instance.isInterlaced = isInterlaced;
+            return this;
+        }
+
+        public MediaStream.Builder isAVC(Boolean isAVC) {
+            this.instance.isAVC = JsonNullable.<Boolean> of(isAVC);
+            return this;
+        }
+
+        public MediaStream.Builder isAVC(JsonNullable<Boolean> isAVC) {
+            this.instance.isAVC = isAVC;
+            return this;
+        }
+
+        public MediaStream.Builder channelLayout(String channelLayout) {
+            this.instance.channelLayout = JsonNullable.<String> of(channelLayout);
+            return this;
+        }
+
+        public MediaStream.Builder channelLayout(JsonNullable<String> channelLayout) {
+            this.instance.channelLayout = channelLayout;
+            return this;
+        }
+
+        public MediaStream.Builder bitRate(Integer bitRate) {
+            this.instance.bitRate = JsonNullable.<Integer> of(bitRate);
+            return this;
+        }
+
+        public MediaStream.Builder bitRate(JsonNullable<Integer> bitRate) {
+            this.instance.bitRate = bitRate;
+            return this;
+        }
+
+        public MediaStream.Builder bitDepth(Integer bitDepth) {
+            this.instance.bitDepth = JsonNullable.<Integer> of(bitDepth);
+            return this;
+        }
+
+        public MediaStream.Builder bitDepth(JsonNullable<Integer> bitDepth) {
+            this.instance.bitDepth = bitDepth;
+            return this;
+        }
+
+        public MediaStream.Builder refFrames(Integer refFrames) {
+            this.instance.refFrames = JsonNullable.<Integer> of(refFrames);
+            return this;
+        }
+
+        public MediaStream.Builder refFrames(JsonNullable<Integer> refFrames) {
+            this.instance.refFrames = refFrames;
+            return this;
+        }
+
+        public MediaStream.Builder packetLength(Integer packetLength) {
+            this.instance.packetLength = JsonNullable.<Integer> of(packetLength);
+            return this;
+        }
+
+        public MediaStream.Builder packetLength(JsonNullable<Integer> packetLength) {
+            this.instance.packetLength = packetLength;
+            return this;
+        }
+
+        public MediaStream.Builder channels(Integer channels) {
+            this.instance.channels = JsonNullable.<Integer> of(channels);
+            return this;
+        }
+
+        public MediaStream.Builder channels(JsonNullable<Integer> channels) {
+            this.instance.channels = channels;
+            return this;
+        }
+
+        public MediaStream.Builder sampleRate(Integer sampleRate) {
+            this.instance.sampleRate = JsonNullable.<Integer> of(sampleRate);
+            return this;
+        }
+
+        public MediaStream.Builder sampleRate(JsonNullable<Integer> sampleRate) {
+            this.instance.sampleRate = sampleRate;
+            return this;
+        }
+
+        public MediaStream.Builder isDefault(Boolean isDefault) {
+            this.instance.isDefault = isDefault;
+            return this;
+        }
+
+        public MediaStream.Builder isForced(Boolean isForced) {
+            this.instance.isForced = isForced;
+            return this;
+        }
+
+        public MediaStream.Builder height(Integer height) {
+            this.instance.height = JsonNullable.<Integer> of(height);
+            return this;
+        }
+
+        public MediaStream.Builder height(JsonNullable<Integer> height) {
+            this.instance.height = height;
+            return this;
+        }
+
+        public MediaStream.Builder width(Integer width) {
+            this.instance.width = JsonNullable.<Integer> of(width);
+            return this;
+        }
+
+        public MediaStream.Builder width(JsonNullable<Integer> width) {
+            this.instance.width = width;
+            return this;
+        }
+
+        public MediaStream.Builder averageFrameRate(Float averageFrameRate) {
+            this.instance.averageFrameRate = JsonNullable.<Float> of(averageFrameRate);
+            return this;
+        }
+
+        public MediaStream.Builder averageFrameRate(JsonNullable<Float> averageFrameRate) {
+            this.instance.averageFrameRate = averageFrameRate;
+            return this;
+        }
+
+        public MediaStream.Builder realFrameRate(Float realFrameRate) {
+            this.instance.realFrameRate = JsonNullable.<Float> of(realFrameRate);
+            return this;
+        }
+
+        public MediaStream.Builder realFrameRate(JsonNullable<Float> realFrameRate) {
+            this.instance.realFrameRate = realFrameRate;
+            return this;
+        }
+
+        public MediaStream.Builder profile(String profile) {
+            this.instance.profile = JsonNullable.<String> of(profile);
+            return this;
+        }
+
+        public MediaStream.Builder profile(JsonNullable<String> profile) {
+            this.instance.profile = profile;
+            return this;
+        }
+
+        public MediaStream.Builder type(MediaStreamType type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public MediaStream.Builder aspectRatio(String aspectRatio) {
+            this.instance.aspectRatio = JsonNullable.<String> of(aspectRatio);
+            return this;
+        }
+
+        public MediaStream.Builder aspectRatio(JsonNullable<String> aspectRatio) {
+            this.instance.aspectRatio = aspectRatio;
+            return this;
+        }
+
+        public MediaStream.Builder index(Integer index) {
+            this.instance.index = index;
+            return this;
+        }
+
+        public MediaStream.Builder score(Integer score) {
+            this.instance.score = JsonNullable.<Integer> of(score);
+            return this;
+        }
+
+        public MediaStream.Builder score(JsonNullable<Integer> score) {
+            this.instance.score = score;
+            return this;
+        }
+
+        public MediaStream.Builder isExternal(Boolean isExternal) {
+            this.instance.isExternal = isExternal;
+            return this;
+        }
+
+        public MediaStream.Builder deliveryMethod(SubtitleDeliveryMethod deliveryMethod) {
+            this.instance.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod> of(deliveryMethod);
+            return this;
+        }
+
+        public MediaStream.Builder deliveryMethod(JsonNullable<SubtitleDeliveryMethod> deliveryMethod) {
+            this.instance.deliveryMethod = deliveryMethod;
+            return this;
+        }
+
+        public MediaStream.Builder deliveryUrl(String deliveryUrl) {
+            this.instance.deliveryUrl = JsonNullable.<String> of(deliveryUrl);
+            return this;
+        }
+
+        public MediaStream.Builder deliveryUrl(JsonNullable<String> deliveryUrl) {
+            this.instance.deliveryUrl = deliveryUrl;
+            return this;
+        }
+
+        public MediaStream.Builder isExternalUrl(Boolean isExternalUrl) {
+            this.instance.isExternalUrl = JsonNullable.<Boolean> of(isExternalUrl);
+            return this;
+        }
+
+        public MediaStream.Builder isExternalUrl(JsonNullable<Boolean> isExternalUrl) {
+            this.instance.isExternalUrl = isExternalUrl;
+            return this;
+        }
+
+        public MediaStream.Builder isTextSubtitleStream(Boolean isTextSubtitleStream) {
+            this.instance.isTextSubtitleStream = isTextSubtitleStream;
+            return this;
+        }
+
+        public MediaStream.Builder supportsExternalStream(Boolean supportsExternalStream) {
+            this.instance.supportsExternalStream = supportsExternalStream;
+            return this;
+        }
+
+        public MediaStream.Builder path(String path) {
+            this.instance.path = JsonNullable.<String> of(path);
+            return this;
+        }
+
+        public MediaStream.Builder path(JsonNullable<String> path) {
+            this.instance.path = path;
+            return this;
+        }
+
+        public MediaStream.Builder pixelFormat(String pixelFormat) {
+            this.instance.pixelFormat = JsonNullable.<String> of(pixelFormat);
+            return this;
+        }
+
+        public MediaStream.Builder pixelFormat(JsonNullable<String> pixelFormat) {
+            this.instance.pixelFormat = pixelFormat;
+            return this;
+        }
+
+        public MediaStream.Builder level(Double level) {
+            this.instance.level = JsonNullable.<Double> of(level);
+            return this;
+        }
+
+        public MediaStream.Builder level(JsonNullable<Double> level) {
+            this.instance.level = level;
+            return this;
+        }
+
+        public MediaStream.Builder isAnamorphic(Boolean isAnamorphic) {
+            this.instance.isAnamorphic = JsonNullable.<Boolean> of(isAnamorphic);
+            return this;
+        }
+
+        public MediaStream.Builder isAnamorphic(JsonNullable<Boolean> isAnamorphic) {
+            this.instance.isAnamorphic = isAnamorphic;
+            return this;
+        }
+
+        /**
+         * returns a built MediaStream instance.
+         *
+         * The builder is not reusable.
+         */
+        public MediaStream build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static MediaStream.Builder builder() {
+        return new MediaStream.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public MediaStream.Builder toBuilder() {
+        return new MediaStream.Builder().codec(getCodec()).codecTag(getCodecTag()).language(getLanguage())
+                .colorRange(getColorRange()).colorSpace(getColorSpace()).colorTransfer(getColorTransfer())
+                .colorPrimaries(getColorPrimaries()).dvVersionMajor(getDvVersionMajor())
+                .dvVersionMinor(getDvVersionMinor()).dvProfile(getDvProfile()).dvLevel(getDvLevel())
+                .rpuPresentFlag(getRpuPresentFlag()).elPresentFlag(getElPresentFlag()).blPresentFlag(getBlPresentFlag())
+                .dvBlSignalCompatibilityId(getDvBlSignalCompatibilityId()).comment(getComment()).timeBase(getTimeBase())
+                .codecTimeBase(getCodecTimeBase()).title(getTitle()).videoRange(getVideoRange())
+                .videoRangeType(getVideoRangeType()).videoDoViTitle(getVideoDoViTitle())
+                .localizedUndefined(getLocalizedUndefined()).localizedDefault(getLocalizedDefault())
+                .localizedForced(getLocalizedForced()).localizedExternal(getLocalizedExternal())
+                .displayTitle(getDisplayTitle()).nalLengthSize(getNalLengthSize()).isInterlaced(getIsInterlaced())
+                .isAVC(getIsAVC()).channelLayout(getChannelLayout()).bitRate(getBitRate()).bitDepth(getBitDepth())
+                .refFrames(getRefFrames()).packetLength(getPacketLength()).channels(getChannels())
+                .sampleRate(getSampleRate()).isDefault(getIsDefault()).isForced(getIsForced()).height(getHeight())
+                .width(getWidth()).averageFrameRate(getAverageFrameRate()).realFrameRate(getRealFrameRate())
+                .profile(getProfile()).type(getType()).aspectRatio(getAspectRatio()).index(getIndex()).score(getScore())
+                .isExternal(getIsExternal()).deliveryMethod(getDeliveryMethod()).deliveryUrl(getDeliveryUrl())
+                .isExternalUrl(getIsExternalUrl()).isTextSubtitleStream(getIsTextSubtitleStream())
+                .supportsExternalStream(getSupportsExternalStream()).path(getPath()).pixelFormat(getPixelFormat())
+                .level(getLevel()).isAnamorphic(getIsAnamorphic());
+    }
 }
-

@@ -18,147 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.GroupRepeatMode;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class SetRepeatModeRequestDto.
  */
-@JsonPropertyOrder({
-  SetRepeatModeRequestDto.JSON_PROPERTY_MODE
-})
+@JsonPropertyOrder({ SetRepeatModeRequestDto.JSON_PROPERTY_MODE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SetRepeatModeRequestDto {
-  public static final String JSON_PROPERTY_MODE = "Mode";
-  @javax.annotation.Nullable
-  private GroupRepeatMode mode;
+    public static final String JSON_PROPERTY_MODE = "Mode";
+    @javax.annotation.Nullable
+    private GroupRepeatMode mode;
 
-  public SetRepeatModeRequestDto() {
-  }
-
-  public SetRepeatModeRequestDto mode(@javax.annotation.Nullable GroupRepeatMode mode) {
-    
-    this.mode = mode;
-    return this;
-  }
-
-  /**
-   * Enum GroupRepeatMode.
-   * @return mode
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public GroupRepeatMode getMode() {
-    return mode;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MODE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMode(@javax.annotation.Nullable GroupRepeatMode mode) {
-    this.mode = mode;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SetRepeatModeRequestDto setRepeatModeRequestDto = (SetRepeatModeRequestDto) o;
-    return Objects.equals(this.mode, setRepeatModeRequestDto.mode);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(mode);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SetRepeatModeRequestDto {\n");
-    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SetRepeatModeRequestDto instance;
-
-    public Builder() {
-      this(new SetRepeatModeRequestDto());
+    public SetRepeatModeRequestDto() {
     }
 
-    protected Builder(SetRepeatModeRequestDto instance) {
-      this.instance = instance;
-    }
+    public SetRepeatModeRequestDto mode(@javax.annotation.Nullable GroupRepeatMode mode) {
 
-    public SetRepeatModeRequestDto.Builder mode(GroupRepeatMode mode) {
-      this.instance.mode = mode;
-      return this;
+        this.mode = mode;
+        return this;
     }
-
 
     /**
-    * returns a built SetRepeatModeRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public SetRepeatModeRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Enum GroupRepeatMode.
+     * 
+     * @return mode
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public GroupRepeatMode getMode() {
+        return mode;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMode(@javax.annotation.Nullable GroupRepeatMode mode) {
+        this.mode = mode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SetRepeatModeRequestDto setRepeatModeRequestDto = (SetRepeatModeRequestDto) o;
+        return Objects.equals(this.mode, setRepeatModeRequestDto.mode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mode);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SetRepeatModeRequestDto {\n");
+        sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SetRepeatModeRequestDto.Builder builder() {
-    return new SetRepeatModeRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SetRepeatModeRequestDto.Builder toBuilder() {
-    return new SetRepeatModeRequestDto.Builder()
-      .mode(getMode());
-  }
+    public static class Builder {
 
+        private SetRepeatModeRequestDto instance;
 
+        public Builder() {
+            this(new SetRepeatModeRequestDto());
+        }
+
+        protected Builder(SetRepeatModeRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public SetRepeatModeRequestDto.Builder mode(GroupRepeatMode mode) {
+            this.instance.mode = mode;
+            return this;
+        }
+
+        /**
+         * returns a built SetRepeatModeRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public SetRepeatModeRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SetRepeatModeRequestDto.Builder builder() {
+        return new SetRepeatModeRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SetRepeatModeRequestDto.Builder toBuilder() {
+        return new SetRepeatModeRequestDto.Builder().mode(getMode());
+    }
 }
-

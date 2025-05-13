@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,45 +24,44 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets DayOfWeek
  */
 public enum DayOfWeek {
-  
-  SUNDAY("Sunday"),
-  
-  MONDAY("Monday"),
-  
-  TUESDAY("Tuesday"),
-  
-  WEDNESDAY("Wednesday"),
-  
-  THURSDAY("Thursday"),
-  
-  FRIDAY("Friday"),
-  
-  SATURDAY("Saturday");
 
-  private String value;
+    SUNDAY("Sunday"),
 
-  DayOfWeek(String value) {
-    this.value = value;
-  }
+    MONDAY("Monday"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    TUESDAY("Tuesday"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    WEDNESDAY("Wednesday"),
 
-  @JsonCreator
-  public static DayOfWeek fromValue(String value) {
-    for (DayOfWeek b : DayOfWeek.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    THURSDAY("Thursday"),
+
+    FRIDAY("Friday"),
+
+    SATURDAY("Saturday");
+
+    private String value;
+
+    DayOfWeek(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static DayOfWeek fromValue(String value) {
+        for (DayOfWeek b : DayOfWeek.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum FileSystemEntryType.
  */
 public enum FileSystemEntryType {
-  
-  FILE("File"),
-  
-  DIRECTORY("Directory"),
-  
-  NETWORK_COMPUTER("NetworkComputer"),
-  
-  NETWORK_SHARE("NetworkShare");
 
-  private String value;
+    FILE("File"),
 
-  FileSystemEntryType(String value) {
-    this.value = value;
-  }
+    DIRECTORY("Directory"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    NETWORK_COMPUTER("NetworkComputer"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    NETWORK_SHARE("NetworkShare");
 
-  @JsonCreator
-  public static FileSystemEntryType fromValue(String value) {
-    for (FileSystemEntryType b : FileSystemEntryType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    private String value;
+
+    FileSystemEntryType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static FileSystemEntryType fromValue(String value) {
+        for (FileSystemEntryType b : FileSystemEntryType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

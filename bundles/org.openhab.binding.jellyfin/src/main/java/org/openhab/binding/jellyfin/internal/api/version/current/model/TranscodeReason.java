@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,83 +24,82 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets TranscodeReason
  */
 public enum TranscodeReason {
-  
-  CONTAINER_NOT_SUPPORTED("ContainerNotSupported"),
-  
-  VIDEO_CODEC_NOT_SUPPORTED("VideoCodecNotSupported"),
-  
-  AUDIO_CODEC_NOT_SUPPORTED("AudioCodecNotSupported"),
-  
-  SUBTITLE_CODEC_NOT_SUPPORTED("SubtitleCodecNotSupported"),
-  
-  AUDIO_IS_EXTERNAL("AudioIsExternal"),
-  
-  SECONDARY_AUDIO_NOT_SUPPORTED("SecondaryAudioNotSupported"),
-  
-  VIDEO_PROFILE_NOT_SUPPORTED("VideoProfileNotSupported"),
-  
-  VIDEO_LEVEL_NOT_SUPPORTED("VideoLevelNotSupported"),
-  
-  VIDEO_RESOLUTION_NOT_SUPPORTED("VideoResolutionNotSupported"),
-  
-  VIDEO_BIT_DEPTH_NOT_SUPPORTED("VideoBitDepthNotSupported"),
-  
-  VIDEO_FRAMERATE_NOT_SUPPORTED("VideoFramerateNotSupported"),
-  
-  REF_FRAMES_NOT_SUPPORTED("RefFramesNotSupported"),
-  
-  ANAMORPHIC_VIDEO_NOT_SUPPORTED("AnamorphicVideoNotSupported"),
-  
-  INTERLACED_VIDEO_NOT_SUPPORTED("InterlacedVideoNotSupported"),
-  
-  AUDIO_CHANNELS_NOT_SUPPORTED("AudioChannelsNotSupported"),
-  
-  AUDIO_PROFILE_NOT_SUPPORTED("AudioProfileNotSupported"),
-  
-  AUDIO_SAMPLE_RATE_NOT_SUPPORTED("AudioSampleRateNotSupported"),
-  
-  AUDIO_BIT_DEPTH_NOT_SUPPORTED("AudioBitDepthNotSupported"),
-  
-  CONTAINER_BITRATE_EXCEEDS_LIMIT("ContainerBitrateExceedsLimit"),
-  
-  VIDEO_BITRATE_NOT_SUPPORTED("VideoBitrateNotSupported"),
-  
-  AUDIO_BITRATE_NOT_SUPPORTED("AudioBitrateNotSupported"),
-  
-  UNKNOWN_VIDEO_STREAM_INFO("UnknownVideoStreamInfo"),
-  
-  UNKNOWN_AUDIO_STREAM_INFO("UnknownAudioStreamInfo"),
-  
-  DIRECT_PLAY_ERROR("DirectPlayError"),
-  
-  VIDEO_RANGE_TYPE_NOT_SUPPORTED("VideoRangeTypeNotSupported"),
-  
-  VIDEO_CODEC_TAG_NOT_SUPPORTED("VideoCodecTagNotSupported");
 
-  private String value;
+    CONTAINER_NOT_SUPPORTED("ContainerNotSupported"),
 
-  TranscodeReason(String value) {
-    this.value = value;
-  }
+    VIDEO_CODEC_NOT_SUPPORTED("VideoCodecNotSupported"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    AUDIO_CODEC_NOT_SUPPORTED("AudioCodecNotSupported"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    SUBTITLE_CODEC_NOT_SUPPORTED("SubtitleCodecNotSupported"),
 
-  @JsonCreator
-  public static TranscodeReason fromValue(String value) {
-    for (TranscodeReason b : TranscodeReason.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    AUDIO_IS_EXTERNAL("AudioIsExternal"),
+
+    SECONDARY_AUDIO_NOT_SUPPORTED("SecondaryAudioNotSupported"),
+
+    VIDEO_PROFILE_NOT_SUPPORTED("VideoProfileNotSupported"),
+
+    VIDEO_LEVEL_NOT_SUPPORTED("VideoLevelNotSupported"),
+
+    VIDEO_RESOLUTION_NOT_SUPPORTED("VideoResolutionNotSupported"),
+
+    VIDEO_BIT_DEPTH_NOT_SUPPORTED("VideoBitDepthNotSupported"),
+
+    VIDEO_FRAMERATE_NOT_SUPPORTED("VideoFramerateNotSupported"),
+
+    REF_FRAMES_NOT_SUPPORTED("RefFramesNotSupported"),
+
+    ANAMORPHIC_VIDEO_NOT_SUPPORTED("AnamorphicVideoNotSupported"),
+
+    INTERLACED_VIDEO_NOT_SUPPORTED("InterlacedVideoNotSupported"),
+
+    AUDIO_CHANNELS_NOT_SUPPORTED("AudioChannelsNotSupported"),
+
+    AUDIO_PROFILE_NOT_SUPPORTED("AudioProfileNotSupported"),
+
+    AUDIO_SAMPLE_RATE_NOT_SUPPORTED("AudioSampleRateNotSupported"),
+
+    AUDIO_BIT_DEPTH_NOT_SUPPORTED("AudioBitDepthNotSupported"),
+
+    CONTAINER_BITRATE_EXCEEDS_LIMIT("ContainerBitrateExceedsLimit"),
+
+    VIDEO_BITRATE_NOT_SUPPORTED("VideoBitrateNotSupported"),
+
+    AUDIO_BITRATE_NOT_SUPPORTED("AudioBitrateNotSupported"),
+
+    UNKNOWN_VIDEO_STREAM_INFO("UnknownVideoStreamInfo"),
+
+    UNKNOWN_AUDIO_STREAM_INFO("UnknownAudioStreamInfo"),
+
+    DIRECT_PLAY_ERROR("DirectPlayError"),
+
+    VIDEO_RANGE_TYPE_NOT_SUPPORTED("VideoRangeTypeNotSupported"),
+
+    VIDEO_CODEC_TAG_NOT_SUPPORTED("VideoCodecTagNotSupported");
+
+    private String value;
+
+    TranscodeReason(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TranscodeReason fromValue(String value) {
+        for (TranscodeReason b : TranscodeReason.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

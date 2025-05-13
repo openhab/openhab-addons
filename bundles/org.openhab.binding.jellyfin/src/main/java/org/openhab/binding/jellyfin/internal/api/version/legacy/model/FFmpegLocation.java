@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,39 +24,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum describing the location of the FFmpeg tool.
  */
 public enum FFmpegLocation {
-  
-  NOT_FOUND("NotFound"),
-  
-  SET_BY_ARGUMENT("SetByArgument"),
-  
-  CUSTOM("Custom"),
-  
-  SYSTEM("System");
 
-  private String value;
+    NOT_FOUND("NotFound"),
 
-  FFmpegLocation(String value) {
-    this.value = value;
-  }
+    SET_BY_ARGUMENT("SetByArgument"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    CUSTOM("Custom"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    SYSTEM("System");
 
-  @JsonCreator
-  public static FFmpegLocation fromValue(String value) {
-    for (FFmpegLocation b : FFmpegLocation.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    private String value;
+
+    FFmpegLocation(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static FFmpegLocation fromValue(String value) {
+        for (FFmpegLocation b : FFmpegLocation.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

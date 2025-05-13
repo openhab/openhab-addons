@@ -18,222 +18,206 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.GroupInfoDto;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.GroupUpdateType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class GroupUpdate.
  */
-@JsonPropertyOrder({
-  GroupInfoDtoGroupUpdate.JSON_PROPERTY_GROUP_ID,
-  GroupInfoDtoGroupUpdate.JSON_PROPERTY_TYPE,
-  GroupInfoDtoGroupUpdate.JSON_PROPERTY_DATA
-})
+@JsonPropertyOrder({ GroupInfoDtoGroupUpdate.JSON_PROPERTY_GROUP_ID, GroupInfoDtoGroupUpdate.JSON_PROPERTY_TYPE,
+        GroupInfoDtoGroupUpdate.JSON_PROPERTY_DATA })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class GroupInfoDtoGroupUpdate {
-  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-  @javax.annotation.Nullable
-  private UUID groupId;
+    public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
+    @javax.annotation.Nullable
+    private UUID groupId;
 
-  public static final String JSON_PROPERTY_TYPE = "Type";
-  @javax.annotation.Nullable
-  private GroupUpdateType type;
+    public static final String JSON_PROPERTY_TYPE = "Type";
+    @javax.annotation.Nullable
+    private GroupUpdateType type;
 
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nullable
-  private GroupInfoDto data;
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
+    private GroupInfoDto data;
 
-  public GroupInfoDtoGroupUpdate() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public GroupInfoDtoGroupUpdate(
-    @JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId
-  ) {
-    this();
-    this.groupId = groupId;
-  }
-
-  /**
-   * Gets the group identifier.
-   * @return groupId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getGroupId() {
-    return groupId;
-  }
-
-
-
-  public GroupInfoDtoGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
-    
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Gets the update type.
-   * @return type
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public GroupUpdateType getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setType(@javax.annotation.Nullable GroupUpdateType type) {
-    this.type = type;
-  }
-
-  public GroupInfoDtoGroupUpdate data(@javax.annotation.Nullable GroupInfoDto data) {
-    
-    this.data = data;
-    return this;
-  }
-
-  /**
-   * Gets the update data.
-   * @return data
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public GroupInfoDto getData() {
-    return data;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setData(@javax.annotation.Nullable GroupInfoDto data) {
-    this.data = data;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public GroupInfoDtoGroupUpdate() {
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    GroupInfoDtoGroupUpdate groupInfoDtoGroupUpdate = (GroupInfoDtoGroupUpdate) o;
-    return Objects.equals(this.groupId, groupInfoDtoGroupUpdate.groupId) &&
-        Objects.equals(this.type, groupInfoDtoGroupUpdate.type) &&
-        Objects.equals(this.data, groupInfoDtoGroupUpdate.data);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(groupId, type, data);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class GroupInfoDtoGroupUpdate {\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private GroupInfoDtoGroupUpdate instance;
-
-    public Builder() {
-      this(new GroupInfoDtoGroupUpdate());
-    }
-
-    protected Builder(GroupInfoDtoGroupUpdate instance) {
-      this.instance = instance;
-    }
-
-    public GroupInfoDtoGroupUpdate.Builder groupId(UUID groupId) {
-      this.instance.groupId = groupId;
-      return this;
-    }
-    public GroupInfoDtoGroupUpdate.Builder type(GroupUpdateType type) {
-      this.instance.type = type;
-      return this;
-    }
-    public GroupInfoDtoGroupUpdate.Builder data(GroupInfoDto data) {
-      this.instance.data = data;
-      return this;
-    }
-
 
     /**
-    * returns a built GroupInfoDtoGroupUpdate instance.
-    *
-    * The builder is not reusable.
-    */
-    public GroupInfoDtoGroupUpdate build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public GroupInfoDtoGroupUpdate(@JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId) {
+        this();
+        this.groupId = groupId;
+    }
+
+    /**
+     * Gets the group identifier.
+     * 
+     * @return groupId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public GroupInfoDtoGroupUpdate type(@javax.annotation.Nullable GroupUpdateType type) {
+
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * Gets the update type.
+     * 
+     * @return type
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public GroupUpdateType getType() {
+        return type;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable GroupUpdateType type) {
+        this.type = type;
+    }
+
+    public GroupInfoDtoGroupUpdate data(@javax.annotation.Nullable GroupInfoDto data) {
+
+        this.data = data;
+        return this;
+    }
+
+    /**
+     * Gets the update data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public GroupInfoDto getData() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setData(@javax.annotation.Nullable GroupInfoDto data) {
+        this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GroupInfoDtoGroupUpdate groupInfoDtoGroupUpdate = (GroupInfoDtoGroupUpdate) o;
+        return Objects.equals(this.groupId, groupInfoDtoGroupUpdate.groupId)
+                && Objects.equals(this.type, groupInfoDtoGroupUpdate.type)
+                && Objects.equals(this.data, groupInfoDtoGroupUpdate.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, type, data);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class GroupInfoDtoGroupUpdate {\n");
+        sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+        sb.append("    type: ").append(toIndentedString(type)).append("\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static GroupInfoDtoGroupUpdate.Builder builder() {
-    return new GroupInfoDtoGroupUpdate.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public GroupInfoDtoGroupUpdate.Builder toBuilder() {
-    return new GroupInfoDtoGroupUpdate.Builder()
-      .groupId(getGroupId())
-      .type(getType())
-      .data(getData());
-  }
+    public static class Builder {
 
+        private GroupInfoDtoGroupUpdate instance;
 
+        public Builder() {
+            this(new GroupInfoDtoGroupUpdate());
+        }
+
+        protected Builder(GroupInfoDtoGroupUpdate instance) {
+            this.instance = instance;
+        }
+
+        public GroupInfoDtoGroupUpdate.Builder groupId(UUID groupId) {
+            this.instance.groupId = groupId;
+            return this;
+        }
+
+        public GroupInfoDtoGroupUpdate.Builder type(GroupUpdateType type) {
+            this.instance.type = type;
+            return this;
+        }
+
+        public GroupInfoDtoGroupUpdate.Builder data(GroupInfoDto data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        /**
+         * returns a built GroupInfoDtoGroupUpdate instance.
+         *
+         * The builder is not reusable.
+         */
+        public GroupInfoDtoGroupUpdate build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static GroupInfoDtoGroupUpdate.Builder builder() {
+        return new GroupInfoDtoGroupUpdate.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public GroupInfoDtoGroupUpdate.Builder toBuilder() {
+        return new GroupInfoDtoGroupUpdate.Builder().groupId(getGroupId()).type(getType()).data(getData());
+    }
 }
-

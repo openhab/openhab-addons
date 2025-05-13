@@ -1,35 +1,30 @@
 package org.openhab.binding.jellyfin.internal.api.version.current;
 
-import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
-
-import org.openhab.binding.jellyfin.internal.api.version.current.model.EndPointInfo;
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.openhab.binding.jellyfin.internal.api.version.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.version.current.model.EndPointInfo;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.LogFile;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.ProblemDetails;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.PublicSystemInfo;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.version.current.model.WakeOnLanInfo;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Mono;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SystemApi {
@@ -52,13 +47,16 @@ public class SystemApi {
         this.apiClient = apiClient;
     }
 
-    
     /**
      * Gets information about the request endpoint.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get endpoint information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get endpoint information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return EndPointInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -72,53 +70,68 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {};
-        return apiClient.invokeAPI("/System/Endpoint", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {
+        };
+        return apiClient.invokeAPI("/System/Endpoint", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets information about the request endpoint.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get endpoint information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get endpoint information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return EndPointInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<EndPointInfo> getEndpointInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {};
+        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {
+        };
         return getEndpointInfoRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets information about the request endpoint.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get endpoint information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get endpoint information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseEntity&lt;EndPointInfo&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<EndPointInfo>> getEndpointInfoWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {};
+        ParameterizedTypeReference<EndPointInfo> localVarReturnType = new ParameterizedTypeReference<EndPointInfo>() {
+        };
         return getEndpointInfoRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Gets information about the request endpoint.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get endpoint information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get endpoint information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -129,10 +142,15 @@ public class SystemApi {
     /**
      * Gets a log file.
      * 
-     * <p><b>200</b> - Log file retrieved.
-     * <p><b>403</b> - User does not have permission to get log files.
-     * <p><b>404</b> - Could not find a log file with the name.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Log file retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get log files.
+     * <p>
+     * <b>404</b> - Could not find a log file with the name.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @param name The name of the log file to get.
      * @return File
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
@@ -141,7 +159,8 @@ public class SystemApi {
         Object postBody = null;
         // verify the required parameter 'name' is set
         if (name == null) {
-            throw new WebClientResponseException("Missing the required parameter 'name' when calling getLogFile", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
+            throw new WebClientResponseException("Missing the required parameter 'name' when calling getLogFile",
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), null, null, null);
         }
         // create path and map variables
         final Map<String, Object> pathParams = new HashMap<String, Object>();
@@ -152,59 +171,77 @@ public class SystemApi {
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "name", name));
-        
-        final String[] localVarAccepts = { 
-            "text/plain", "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+
+        final String[] localVarAccepts = { "text/plain", "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
-        return apiClient.invokeAPI("/System/Logs/Log", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
+        return apiClient.invokeAPI("/System/Logs/Log", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets a log file.
      * 
-     * <p><b>200</b> - Log file retrieved.
-     * <p><b>403</b> - User does not have permission to get log files.
-     * <p><b>404</b> - Could not find a log file with the name.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Log file retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get log files.
+     * <p>
+     * <b>404</b> - Could not find a log file with the name.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @param name The name of the log file to get.
      * @return File
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<File> getLogFile(String name) throws WebClientResponseException {
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
         return getLogFileRequestCreation(name).bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets a log file.
      * 
-     * <p><b>200</b> - Log file retrieved.
-     * <p><b>403</b> - User does not have permission to get log files.
-     * <p><b>404</b> - Could not find a log file with the name.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Log file retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get log files.
+     * <p>
+     * <b>404</b> - Could not find a log file with the name.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @param name The name of the log file to get.
      * @return ResponseEntity&lt;File&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<File>> getLogFileWithHttpInfo(String name) throws WebClientResponseException {
-        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {};
+        ParameterizedTypeReference<File> localVarReturnType = new ParameterizedTypeReference<File>() {
+        };
         return getLogFileRequestCreation(name).toEntity(localVarReturnType);
     }
 
     /**
      * Gets a log file.
      * 
-     * <p><b>200</b> - Log file retrieved.
-     * <p><b>403</b> - User does not have permission to get log files.
-     * <p><b>404</b> - Could not find a log file with the name.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Log file retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get log files.
+     * <p>
+     * <b>404</b> - Could not find a log file with the name.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @param name The name of the log file to get.
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
@@ -216,7 +253,9 @@ public class SystemApi {
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return String
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -230,47 +269,56 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {};
 
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
-        return apiClient.invokeAPI("/System/Ping", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
+        return apiClient.invokeAPI("/System/Ping", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return String
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<String> getPingSystem() throws WebClientResponseException {
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
         return getPingSystemRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseEntity&lt;String&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<String>> getPingSystemWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
         return getPingSystemRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -281,7 +329,9 @@ public class SystemApi {
     /**
      * Gets public information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return PublicSystemInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -295,47 +345,57 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {};
 
-        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {};
-        return apiClient.invokeAPI("/System/Info/Public", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {
+        };
+        return apiClient.invokeAPI("/System/Info/Public", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Gets public information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return PublicSystemInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<PublicSystemInfo> getPublicSystemInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {};
+        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {
+        };
         return getPublicSystemInfoRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets public information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseEntity&lt;PublicSystemInfo&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<PublicSystemInfo>> getPublicSystemInfoWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {};
+        ParameterizedTypeReference<PublicSystemInfo> localVarReturnType = new ParameterizedTypeReference<PublicSystemInfo>() {
+        };
         return getPublicSystemInfoRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Gets public information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -346,9 +406,13 @@ public class SystemApi {
     /**
      * Gets a list of available server log files.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get server logs.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get server logs.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return List&lt;LogFile&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -362,53 +426,68 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {};
-        return apiClient.invokeAPI("/System/Logs", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {
+        };
+        return apiClient.invokeAPI("/System/Logs", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets a list of available server log files.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get server logs.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get server logs.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return List&lt;LogFile&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Flux<LogFile> getServerLogs() throws WebClientResponseException {
-        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {};
+        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {
+        };
         return getServerLogsRequestCreation().bodyToFlux(localVarReturnType);
     }
 
     /**
      * Gets a list of available server log files.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get server logs.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get server logs.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseEntity&lt;List&lt;LogFile&gt;&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<List<LogFile>>> getServerLogsWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {};
+        ParameterizedTypeReference<LogFile> localVarReturnType = new ParameterizedTypeReference<LogFile>() {
+        };
         return getServerLogsRequestCreation().toEntityList(localVarReturnType);
     }
 
     /**
      * Gets a list of available server log files.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to get server logs.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to get server logs.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -419,9 +498,13 @@ public class SystemApi {
     /**
      * Gets information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to retrieve information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to retrieve information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return SystemInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -435,53 +518,68 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {};
-        return apiClient.invokeAPI("/System/Info", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {
+        };
+        return apiClient.invokeAPI("/System/Info", HttpMethod.GET, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Gets information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to retrieve information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to retrieve information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return SystemInfo
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<SystemInfo> getSystemInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {};
+        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {
+        };
         return getSystemInfoRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Gets information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to retrieve information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to retrieve information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseEntity&lt;SystemInfo&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<SystemInfo>> getSystemInfoWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {};
+        ParameterizedTypeReference<SystemInfo> localVarReturnType = new ParameterizedTypeReference<SystemInfo>() {
+        };
         return getSystemInfoRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Gets information about the server.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>403</b> - User does not have permission to retrieve information.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>403</b> - User does not have permission to retrieve information.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -492,9 +590,13 @@ public class SystemApi {
     /**
      * Gets wake on lan information.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @return List&lt;WakeOnLanInfo&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      * @deprecated
@@ -510,53 +612,69 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {};
-        return apiClient.invokeAPI("/System/WakeOnLanInfo", HttpMethod.GET, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {
+        };
+        return apiClient.invokeAPI("/System/WakeOnLanInfo", HttpMethod.GET, pathParams, queryParams, postBody,
+                headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames,
+                localVarReturnType);
     }
 
     /**
      * Gets wake on lan information.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @return List&lt;WakeOnLanInfo&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Flux<WakeOnLanInfo> getWakeOnLanInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {};
+        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {
+        };
         return getWakeOnLanInfoRequestCreation().bodyToFlux(localVarReturnType);
     }
 
     /**
      * Gets wake on lan information.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @return ResponseEntity&lt;List&lt;WakeOnLanInfo&gt;&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<List<WakeOnLanInfo>>> getWakeOnLanInfoWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {};
+        ParameterizedTypeReference<WakeOnLanInfo> localVarReturnType = new ParameterizedTypeReference<WakeOnLanInfo>() {
+        };
         return getWakeOnLanInfoRequestCreation().toEntityList(localVarReturnType);
     }
 
     /**
      * Gets wake on lan information.
      * 
-     * <p><b>200</b> - Information retrieved.
-     * <p><b>401</b> - Unauthorized
-     * <p><b>403</b> - Forbidden
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * <p>
+     * <b>403</b> - Forbidden
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -567,7 +685,9 @@ public class SystemApi {
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return String
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -581,47 +701,56 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[] {};
 
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
-        return apiClient.invokeAPI("/System/Ping", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
+        return apiClient.invokeAPI("/System/Ping", HttpMethod.POST, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return String
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<String> postPingSystem() throws WebClientResponseException {
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
         return postPingSystemRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseEntity&lt;String&gt;
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<String>> postPingSystemWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {};
+        ParameterizedTypeReference<String> localVarReturnType = new ParameterizedTypeReference<String>() {
+        };
         return postPingSystemRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Pings the system.
      * 
-     * <p><b>200</b> - Information retrieved.
+     * <p>
+     * <b>200</b> - Information retrieved.
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -632,9 +761,13 @@ public class SystemApi {
     /**
      * Restarts the application.
      * 
-     * <p><b>204</b> - Server restarted.
-     * <p><b>403</b> - User does not have permission to restart server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server restarted.
+     * <p>
+     * <b>403</b> - User does not have permission to restart server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     private ResponseSpec restartApplicationRequestCreation() throws WebClientResponseException {
@@ -647,51 +780,66 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
-        return apiClient.invokeAPI("/System/Restart", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
+        return apiClient.invokeAPI("/System/Restart", HttpMethod.POST, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Restarts the application.
      * 
-     * <p><b>204</b> - Server restarted.
-     * <p><b>403</b> - User does not have permission to restart server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server restarted.
+     * <p>
+     * <b>403</b> - User does not have permission to restart server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<Void> restartApplication() throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return restartApplicationRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Restarts the application.
      * 
-     * <p><b>204</b> - Server restarted.
-     * <p><b>403</b> - User does not have permission to restart server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server restarted.
+     * <p>
+     * <b>403</b> - User does not have permission to restart server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<Void>> restartApplicationWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return restartApplicationRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Restarts the application.
      * 
-     * <p><b>204</b> - Server restarted.
-     * <p><b>403</b> - User does not have permission to restart server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server restarted.
+     * <p>
+     * <b>403</b> - User does not have permission to restart server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
@@ -702,9 +850,13 @@ public class SystemApi {
     /**
      * Shuts down the application.
      * 
-     * <p><b>204</b> - Server shut down.
-     * <p><b>403</b> - User does not have permission to shutdown server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server shut down.
+     * <p>
+     * <b>403</b> - User does not have permission to shutdown server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     private ResponseSpec shutdownApplicationRequestCreation() throws WebClientResponseException {
@@ -717,51 +869,66 @@ public class SystemApi {
         final MultiValueMap<String, String> cookieParams = new LinkedMultiValueMap<String, String>();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
 
-        final String[] localVarAccepts = { 
-            "application/json", "application/json; profile=CamelCase", "application/json; profile=PascalCase"
-        };
+        final String[] localVarAccepts = { "application/json", "application/json; profile=CamelCase",
+                "application/json; profile=PascalCase" };
         final List<MediaType> localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        final String[] localVarContentTypes = { };
+        final String[] localVarContentTypes = {};
         final MediaType localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
         String[] localVarAuthNames = new String[] { "CustomAuthentication" };
 
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
-        return apiClient.invokeAPI("/System/Shutdown", HttpMethod.POST, pathParams, queryParams, postBody, headerParams, cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
+        return apiClient.invokeAPI("/System/Shutdown", HttpMethod.POST, pathParams, queryParams, postBody, headerParams,
+                cookieParams, formParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Shuts down the application.
      * 
-     * <p><b>204</b> - Server shut down.
-     * <p><b>403</b> - User does not have permission to shutdown server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server shut down.
+     * <p>
+     * <b>403</b> - User does not have permission to shutdown server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<Void> shutdownApplication() throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return shutdownApplicationRequestCreation().bodyToMono(localVarReturnType);
     }
 
     /**
      * Shuts down the application.
      * 
-     * <p><b>204</b> - Server shut down.
-     * <p><b>403</b> - User does not have permission to shutdown server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server shut down.
+     * <p>
+     * <b>403</b> - User does not have permission to shutdown server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */
     public Mono<ResponseEntity<Void>> shutdownApplicationWithHttpInfo() throws WebClientResponseException {
-        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<Void> localVarReturnType = new ParameterizedTypeReference<Void>() {
+        };
         return shutdownApplicationRequestCreation().toEntity(localVarReturnType);
     }
 
     /**
      * Shuts down the application.
      * 
-     * <p><b>204</b> - Server shut down.
-     * <p><b>403</b> - User does not have permission to shutdown server.
-     * <p><b>401</b> - Unauthorized
+     * <p>
+     * <b>204</b> - Server shut down.
+     * <p>
+     * <b>403</b> - User does not have permission to shutdown server.
+     * <p>
+     * <b>401</b> - Unauthorized
+     * 
      * @return ResponseSpec
      * @throws WebClientResponseException if an error occurs while attempting to invoke the API
      */

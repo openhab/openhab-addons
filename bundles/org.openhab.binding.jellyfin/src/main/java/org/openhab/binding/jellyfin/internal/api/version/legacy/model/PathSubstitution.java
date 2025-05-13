@@ -18,183 +18,169 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Defines the MediaBrowser.Model.Configuration.PathSubstitution.
  */
-@JsonPropertyOrder({
-  PathSubstitution.JSON_PROPERTY_FROM,
-  PathSubstitution.JSON_PROPERTY_TO
-})
+@JsonPropertyOrder({ PathSubstitution.JSON_PROPERTY_FROM, PathSubstitution.JSON_PROPERTY_TO })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PathSubstitution {
-  public static final String JSON_PROPERTY_FROM = "From";
-  @javax.annotation.Nullable
-  private String from;
+    public static final String JSON_PROPERTY_FROM = "From";
+    @javax.annotation.Nullable
+    private String from;
 
-  public static final String JSON_PROPERTY_TO = "To";
-  @javax.annotation.Nullable
-  private String to;
+    public static final String JSON_PROPERTY_TO = "To";
+    @javax.annotation.Nullable
+    private String to;
 
-  public PathSubstitution() {
-  }
-
-  public PathSubstitution from(@javax.annotation.Nullable String from) {
-    
-    this.from = from;
-    return this;
-  }
-
-  /**
-   * Gets or sets the value to substitute.
-   * @return from
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_FROM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getFrom() {
-    return from;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_FROM)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFrom(@javax.annotation.Nullable String from) {
-    this.from = from;
-  }
-
-  public PathSubstitution to(@javax.annotation.Nullable String to) {
-    
-    this.to = to;
-    return this;
-  }
-
-  /**
-   * Gets or sets the value to substitution with.
-   * @return to
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getTo() {
-    return to;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TO)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTo(@javax.annotation.Nullable String to) {
-    this.to = to;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PathSubstitution pathSubstitution = (PathSubstitution) o;
-    return Objects.equals(this.from, pathSubstitution.from) &&
-        Objects.equals(this.to, pathSubstitution.to);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(from, to);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PathSubstitution {\n");
-    sb.append("    from: ").append(toIndentedString(from)).append("\n");
-    sb.append("    to: ").append(toIndentedString(to)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private PathSubstitution instance;
-
-    public Builder() {
-      this(new PathSubstitution());
+    public PathSubstitution() {
     }
 
-    protected Builder(PathSubstitution instance) {
-      this.instance = instance;
-    }
+    public PathSubstitution from(@javax.annotation.Nullable String from) {
 
-    public PathSubstitution.Builder from(String from) {
-      this.instance.from = from;
-      return this;
+        this.from = from;
+        return this;
     }
-    public PathSubstitution.Builder to(String to) {
-      this.instance.to = to;
-      return this;
-    }
-
 
     /**
-    * returns a built PathSubstitution instance.
-    *
-    * The builder is not reusable.
-    */
-    public PathSubstitution build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the value to substitute.
+     * 
+     * @return from
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_FROM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getFrom() {
+        return from;
+    }
+
+    @JsonProperty(JSON_PROPERTY_FROM)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setFrom(@javax.annotation.Nullable String from) {
+        this.from = from;
+    }
+
+    public PathSubstitution to(@javax.annotation.Nullable String to) {
+
+        this.to = to;
+        return this;
+    }
+
+    /**
+     * Gets or sets the value to substitution with.
+     * 
+     * @return to
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getTo() {
+        return to;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TO)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTo(@javax.annotation.Nullable String to) {
+        this.to = to;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PathSubstitution pathSubstitution = (PathSubstitution) o;
+        return Objects.equals(this.from, pathSubstitution.from) && Objects.equals(this.to, pathSubstitution.to);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(from, to);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PathSubstitution {\n");
+        sb.append("    from: ").append(toIndentedString(from)).append("\n");
+        sb.append("    to: ").append(toIndentedString(to)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static PathSubstitution.Builder builder() {
-    return new PathSubstitution.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public PathSubstitution.Builder toBuilder() {
-    return new PathSubstitution.Builder()
-      .from(getFrom())
-      .to(getTo());
-  }
+    public static class Builder {
 
+        private PathSubstitution instance;
 
+        public Builder() {
+            this(new PathSubstitution());
+        }
+
+        protected Builder(PathSubstitution instance) {
+            this.instance = instance;
+        }
+
+        public PathSubstitution.Builder from(String from) {
+            this.instance.from = from;
+            return this;
+        }
+
+        public PathSubstitution.Builder to(String to) {
+            this.instance.to = to;
+            return this;
+        }
+
+        /**
+         * returns a built PathSubstitution instance.
+         *
+         * The builder is not reusable.
+         */
+        public PathSubstitution build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static PathSubstitution.Builder builder() {
+        return new PathSubstitution.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public PathSubstitution.Builder toBuilder() {
+        return new PathSubstitution.Builder().from(getFrom()).to(getTo());
+    }
 }
-

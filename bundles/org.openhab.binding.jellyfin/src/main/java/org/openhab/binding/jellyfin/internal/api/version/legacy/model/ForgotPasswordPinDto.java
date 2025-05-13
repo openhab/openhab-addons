@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Forgot Password Pin enter request body DTO.
  */
-@JsonPropertyOrder({
-  ForgotPasswordPinDto.JSON_PROPERTY_PIN
-})
+@JsonPropertyOrder({ ForgotPasswordPinDto.JSON_PROPERTY_PIN })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ForgotPasswordPinDto {
-  public static final String JSON_PROPERTY_PIN = "Pin";
-  @javax.annotation.Nonnull
-  private String pin;
+    public static final String JSON_PROPERTY_PIN = "Pin";
+    @javax.annotation.Nonnull
+    private String pin;
 
-  public ForgotPasswordPinDto() {
-  }
-
-  public ForgotPasswordPinDto pin(@javax.annotation.Nonnull String pin) {
-    
-    this.pin = pin;
-    return this;
-  }
-
-  /**
-   * Gets or sets the entered pin to have the password reset.
-   * @return pin
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_PIN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getPin() {
-    return pin;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PIN)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPin(@javax.annotation.Nonnull String pin) {
-    this.pin = pin;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ForgotPasswordPinDto forgotPasswordPinDto = (ForgotPasswordPinDto) o;
-    return Objects.equals(this.pin, forgotPasswordPinDto.pin);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(pin);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ForgotPasswordPinDto {\n");
-    sb.append("    pin: ").append(toIndentedString(pin)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private ForgotPasswordPinDto instance;
-
-    public Builder() {
-      this(new ForgotPasswordPinDto());
+    public ForgotPasswordPinDto() {
     }
 
-    protected Builder(ForgotPasswordPinDto instance) {
-      this.instance = instance;
-    }
+    public ForgotPasswordPinDto pin(@javax.annotation.Nonnull String pin) {
 
-    public ForgotPasswordPinDto.Builder pin(String pin) {
-      this.instance.pin = pin;
-      return this;
+        this.pin = pin;
+        return this;
     }
-
 
     /**
-    * returns a built ForgotPasswordPinDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public ForgotPasswordPinDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the entered pin to have the password reset.
+     * 
+     * @return pin
+     */
+    @javax.annotation.Nonnull
+    @JsonProperty(JSON_PROPERTY_PIN)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+    public String getPin() {
+        return pin;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PIN)
+    @JsonInclude(value = JsonInclude.Include.ALWAYS)
+    public void setPin(@javax.annotation.Nonnull String pin) {
+        this.pin = pin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ForgotPasswordPinDto forgotPasswordPinDto = (ForgotPasswordPinDto) o;
+        return Objects.equals(this.pin, forgotPasswordPinDto.pin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pin);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ForgotPasswordPinDto {\n");
+        sb.append("    pin: ").append(toIndentedString(pin)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static ForgotPasswordPinDto.Builder builder() {
-    return new ForgotPasswordPinDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public ForgotPasswordPinDto.Builder toBuilder() {
-    return new ForgotPasswordPinDto.Builder()
-      .pin(getPin());
-  }
+    public static class Builder {
 
+        private ForgotPasswordPinDto instance;
 
+        public Builder() {
+            this(new ForgotPasswordPinDto());
+        }
+
+        protected Builder(ForgotPasswordPinDto instance) {
+            this.instance = instance;
+        }
+
+        public ForgotPasswordPinDto.Builder pin(String pin) {
+            this.instance.pin = pin;
+            return this;
+        }
+
+        /**
+         * returns a built ForgotPasswordPinDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public ForgotPasswordPinDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static ForgotPasswordPinDto.Builder builder() {
+        return new ForgotPasswordPinDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public ForgotPasswordPinDto.Builder toBuilder() {
+        return new ForgotPasswordPinDto.Builder().pin(getPin());
+    }
 }
-

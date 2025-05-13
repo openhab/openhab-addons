@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,55 +24,54 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ExtraType
  */
 public enum ExtraType {
-  
-  UNKNOWN("Unknown"),
-  
-  CLIP("Clip"),
-  
-  TRAILER("Trailer"),
-  
-  BEHIND_THE_SCENES("BehindTheScenes"),
-  
-  DELETED_SCENE("DeletedScene"),
-  
-  INTERVIEW("Interview"),
-  
-  SCENE("Scene"),
-  
-  SAMPLE("Sample"),
-  
-  THEME_SONG("ThemeSong"),
-  
-  THEME_VIDEO("ThemeVideo"),
-  
-  FEATURETTE("Featurette"),
-  
-  SHORT("Short");
 
-  private String value;
+    UNKNOWN("Unknown"),
 
-  ExtraType(String value) {
-    this.value = value;
-  }
+    CLIP("Clip"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    TRAILER("Trailer"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    BEHIND_THE_SCENES("BehindTheScenes"),
 
-  @JsonCreator
-  public static ExtraType fromValue(String value) {
-    for (ExtraType b : ExtraType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    DELETED_SCENE("DeletedScene"),
+
+    INTERVIEW("Interview"),
+
+    SCENE("Scene"),
+
+    SAMPLE("Sample"),
+
+    THEME_SONG("ThemeSong"),
+
+    THEME_VIDEO("ThemeVideo"),
+
+    FEATURETTE("Featurette"),
+
+    SHORT("Short");
+
+    private String value;
+
+    ExtraType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ExtraType fromValue(String value) {
+        for (ExtraType b : ExtraType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

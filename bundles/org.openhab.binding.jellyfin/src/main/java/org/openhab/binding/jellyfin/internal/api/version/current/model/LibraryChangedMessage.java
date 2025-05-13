@@ -17,250 +17,238 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.LibraryUpdateInfo;
-import org.openhab.binding.jellyfin.internal.api.version.current.model.SessionMessageType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Library changed message.
  */
-@JsonPropertyOrder({
-  LibraryChangedMessage.JSON_PROPERTY_DATA,
-  LibraryChangedMessage.JSON_PROPERTY_MESSAGE_ID,
-  LibraryChangedMessage.JSON_PROPERTY_MESSAGE_TYPE
-})
+@JsonPropertyOrder({ LibraryChangedMessage.JSON_PROPERTY_DATA, LibraryChangedMessage.JSON_PROPERTY_MESSAGE_ID,
+        LibraryChangedMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryChangedMessage {
-  public static final String JSON_PROPERTY_DATA = "Data";
-  @javax.annotation.Nullable
-  private JsonNullable<LibraryUpdateInfo> data = JsonNullable.<LibraryUpdateInfo>undefined();
+    public static final String JSON_PROPERTY_DATA = "Data";
+    @javax.annotation.Nullable
+    private JsonNullable<LibraryUpdateInfo> data = JsonNullable.<LibraryUpdateInfo> undefined();
 
-  public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-  @javax.annotation.Nullable
-  private UUID messageId;
+    public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
+    @javax.annotation.Nullable
+    private UUID messageId;
 
-  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-  @javax.annotation.Nullable
-  private SessionMessageType messageType = SessionMessageType.LIBRARY_CHANGED;
+    public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
+    @javax.annotation.Nullable
+    private SessionMessageType messageType = SessionMessageType.LIBRARY_CHANGED;
 
-  public LibraryChangedMessage() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public LibraryChangedMessage(
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
-  ) {
-    this();
-    this.messageType = messageType;
-  }
-
-  public LibraryChangedMessage data(@javax.annotation.Nullable LibraryUpdateInfo data) {
-    this.data = JsonNullable.<LibraryUpdateInfo>of(data);
-    
-    return this;
-  }
-
-  /**
-   * Gets or sets the data.
-   * @return data
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public LibraryUpdateInfo getData() {
-        return data.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_DATA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<LibraryUpdateInfo> getData_JsonNullable() {
-    return data;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DATA)
-  public void setData_JsonNullable(JsonNullable<LibraryUpdateInfo> data) {
-    this.data = data;
-  }
-
-  public void setData(@javax.annotation.Nullable LibraryUpdateInfo data) {
-    this.data = JsonNullable.<LibraryUpdateInfo>of(data);
-  }
-
-  public LibraryChangedMessage messageId(@javax.annotation.Nullable UUID messageId) {
-    
-    this.messageId = messageId;
-    return this;
-  }
-
-  /**
-   * Gets or sets the message id.
-   * @return messageId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getMessageId() {
-    return messageId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMessageId(@javax.annotation.Nullable UUID messageId) {
-    this.messageId = messageId;
-  }
-
-  /**
-   * The different kinds of messages that are used in the WebSocket api.
-   * @return messageType
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public SessionMessageType getMessageType() {
-    return messageType;
-  }
-
-
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public LibraryChangedMessage() {
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    LibraryChangedMessage libraryChangedMessage = (LibraryChangedMessage) o;
-    return equalsNullable(this.data, libraryChangedMessage.data) &&
-        Objects.equals(this.messageId, libraryChangedMessage.messageId) &&
-        Objects.equals(this.messageType, libraryChangedMessage.messageType);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(data), messageId, messageType);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class LibraryChangedMessage {\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
-    sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private LibraryChangedMessage instance;
-
-    public Builder() {
-      this(new LibraryChangedMessage());
-    }
-
-    protected Builder(LibraryChangedMessage instance) {
-      this.instance = instance;
-    }
-
-    public LibraryChangedMessage.Builder data(LibraryUpdateInfo data) {
-      this.instance.data = JsonNullable.<LibraryUpdateInfo>of(data);
-      return this;
-    }
-    public LibraryChangedMessage.Builder data(JsonNullable<LibraryUpdateInfo> data) {
-      this.instance.data = data;
-      return this;
-    }
-    public LibraryChangedMessage.Builder messageId(UUID messageId) {
-      this.instance.messageId = messageId;
-      return this;
-    }
-    public LibraryChangedMessage.Builder messageType(SessionMessageType messageType) {
-      this.instance.messageType = messageType;
-      return this;
-    }
-
 
     /**
-    * returns a built LibraryChangedMessage instance.
-    *
-    * The builder is not reusable.
-    */
-    public LibraryChangedMessage build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public LibraryChangedMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+        this();
+        this.messageType = messageType;
+    }
+
+    public LibraryChangedMessage data(@javax.annotation.Nullable LibraryUpdateInfo data) {
+        this.data = JsonNullable.<LibraryUpdateInfo> of(data);
+
+        return this;
+    }
+
+    /**
+     * Gets or sets the data.
+     * 
+     * @return data
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public LibraryUpdateInfo getData() {
+        return data.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<LibraryUpdateInfo> getData_JsonNullable() {
+        return data;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DATA)
+    public void setData_JsonNullable(JsonNullable<LibraryUpdateInfo> data) {
+        this.data = data;
+    }
+
+    public void setData(@javax.annotation.Nullable LibraryUpdateInfo data) {
+        this.data = JsonNullable.<LibraryUpdateInfo> of(data);
+    }
+
+    public LibraryChangedMessage messageId(@javax.annotation.Nullable UUID messageId) {
+
+        this.messageId = messageId;
+        return this;
+    }
+
+    /**
+     * Gets or sets the message id.
+     * 
+     * @return messageId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getMessageId() {
+        return messageId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMessageId(@javax.annotation.Nullable UUID messageId) {
+        this.messageId = messageId;
+    }
+
+    /**
+     * The different kinds of messages that are used in the WebSocket api.
+     * 
+     * @return messageType
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public SessionMessageType getMessageType() {
+        return messageType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LibraryChangedMessage libraryChangedMessage = (LibraryChangedMessage) o;
+        return equalsNullable(this.data, libraryChangedMessage.data)
+                && Objects.equals(this.messageId, libraryChangedMessage.messageId)
+                && Objects.equals(this.messageType, libraryChangedMessage.messageType);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(data), messageId, messageType);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class LibraryChangedMessage {\n");
+        sb.append("    data: ").append(toIndentedString(data)).append("\n");
+        sb.append("    messageId: ").append(toIndentedString(messageId)).append("\n");
+        sb.append("    messageType: ").append(toIndentedString(messageType)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static LibraryChangedMessage.Builder builder() {
-    return new LibraryChangedMessage.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public LibraryChangedMessage.Builder toBuilder() {
-    return new LibraryChangedMessage.Builder()
-      .data(getData())
-      .messageId(getMessageId())
-      .messageType(getMessageType());
-  }
+    public static class Builder {
 
+        private LibraryChangedMessage instance;
 
+        public Builder() {
+            this(new LibraryChangedMessage());
+        }
+
+        protected Builder(LibraryChangedMessage instance) {
+            this.instance = instance;
+        }
+
+        public LibraryChangedMessage.Builder data(LibraryUpdateInfo data) {
+            this.instance.data = JsonNullable.<LibraryUpdateInfo> of(data);
+            return this;
+        }
+
+        public LibraryChangedMessage.Builder data(JsonNullable<LibraryUpdateInfo> data) {
+            this.instance.data = data;
+            return this;
+        }
+
+        public LibraryChangedMessage.Builder messageId(UUID messageId) {
+            this.instance.messageId = messageId;
+            return this;
+        }
+
+        public LibraryChangedMessage.Builder messageType(SessionMessageType messageType) {
+            this.instance.messageType = messageType;
+            return this;
+        }
+
+        /**
+         * returns a built LibraryChangedMessage instance.
+         *
+         * The builder is not reusable.
+         */
+        public LibraryChangedMessage build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static LibraryChangedMessage.Builder builder() {
+        return new LibraryChangedMessage.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public LibraryChangedMessage.Builder toBuilder() {
+        return new LibraryChangedMessage.Builder().data(getData()).messageId(getMessageId())
+                .messageType(getMessageType());
+    }
 }
-

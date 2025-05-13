@@ -17,362 +17,350 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import java.time.OffsetDateTime;
-import java.util.UUID;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SendCommandType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class SendCommand.
  */
-@JsonPropertyOrder({
-  SendCommand.JSON_PROPERTY_GROUP_ID,
-  SendCommand.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-  SendCommand.JSON_PROPERTY_WHEN,
-  SendCommand.JSON_PROPERTY_POSITION_TICKS,
-  SendCommand.JSON_PROPERTY_COMMAND,
-  SendCommand.JSON_PROPERTY_EMITTED_AT
-})
+@JsonPropertyOrder({ SendCommand.JSON_PROPERTY_GROUP_ID, SendCommand.JSON_PROPERTY_PLAYLIST_ITEM_ID,
+        SendCommand.JSON_PROPERTY_WHEN, SendCommand.JSON_PROPERTY_POSITION_TICKS, SendCommand.JSON_PROPERTY_COMMAND,
+        SendCommand.JSON_PROPERTY_EMITTED_AT })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SendCommand {
-  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-  @javax.annotation.Nullable
-  private UUID groupId;
+    public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
+    @javax.annotation.Nullable
+    private UUID groupId;
 
-  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @javax.annotation.Nullable
-  private UUID playlistItemId;
+    public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+    @javax.annotation.Nullable
+    private UUID playlistItemId;
 
-  public static final String JSON_PROPERTY_WHEN = "When";
-  @javax.annotation.Nullable
-  private OffsetDateTime when;
+    public static final String JSON_PROPERTY_WHEN = "When";
+    @javax.annotation.Nullable
+    private OffsetDateTime when;
 
-  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-  @javax.annotation.Nullable
-  private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();
+    public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+    @javax.annotation.Nullable
+    private JsonNullable<Long> positionTicks = JsonNullable.<Long> undefined();
 
-  public static final String JSON_PROPERTY_COMMAND = "Command";
-  @javax.annotation.Nullable
-  private SendCommandType command;
+    public static final String JSON_PROPERTY_COMMAND = "Command";
+    @javax.annotation.Nullable
+    private SendCommandType command;
 
-  public static final String JSON_PROPERTY_EMITTED_AT = "EmittedAt";
-  @javax.annotation.Nullable
-  private OffsetDateTime emittedAt;
+    public static final String JSON_PROPERTY_EMITTED_AT = "EmittedAt";
+    @javax.annotation.Nullable
+    private OffsetDateTime emittedAt;
 
-  public SendCommand() {
-  }
-
-  public SendCommand groupId(@javax.annotation.Nullable UUID groupId) {
-    
-    this.groupId = groupId;
-    return this;
-  }
-
-  /**
-   * Gets the group identifier.
-   * @return groupId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getGroupId() {
-    return groupId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setGroupId(@javax.annotation.Nullable UUID groupId) {
-    this.groupId = groupId;
-  }
-
-  public SendCommand playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    
-    this.playlistItemId = playlistItemId;
-    return this;
-  }
-
-  /**
-   * Gets the playlist identifier of the playing item.
-   * @return playlistItemId
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UUID getPlaylistItemId() {
-    return playlistItemId;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
-    this.playlistItemId = playlistItemId;
-  }
-
-  public SendCommand when(@javax.annotation.Nullable OffsetDateTime when) {
-    
-    this.when = when;
-    return this;
-  }
-
-  /**
-   * Gets or sets the UTC time when to execute the command.
-   * @return when
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_WHEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getWhen() {
-    return when;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_WHEN)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
-    this.when = when;
-  }
-
-  public SendCommand positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = JsonNullable.<Long>of(positionTicks);
-    
-    return this;
-  }
-
-  /**
-   * Gets the position ticks.
-   * @return positionTicks
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public Long getPositionTicks() {
-        return positionTicks.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Long> getPositionTicks_JsonNullable() {
-    return positionTicks;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-  public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
-    this.positionTicks = positionTicks;
-  }
-
-  public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = JsonNullable.<Long>of(positionTicks);
-  }
-
-  public SendCommand command(@javax.annotation.Nullable SendCommandType command) {
-    
-    this.command = command;
-    return this;
-  }
-
-  /**
-   * Gets the command.
-   * @return command
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_COMMAND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public SendCommandType getCommand() {
-    return command;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_COMMAND)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCommand(@javax.annotation.Nullable SendCommandType command) {
-    this.command = command;
-  }
-
-  public SendCommand emittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
-    
-    this.emittedAt = emittedAt;
-    return this;
-  }
-
-  /**
-   * Gets the UTC time when this command has been emitted.
-   * @return emittedAt
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_EMITTED_AT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public OffsetDateTime getEmittedAt() {
-    return emittedAt;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_EMITTED_AT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEmittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
-    this.emittedAt = emittedAt;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SendCommand sendCommand = (SendCommand) o;
-    return Objects.equals(this.groupId, sendCommand.groupId) &&
-        Objects.equals(this.playlistItemId, sendCommand.playlistItemId) &&
-        Objects.equals(this.when, sendCommand.when) &&
-        equalsNullable(this.positionTicks, sendCommand.positionTicks) &&
-        Objects.equals(this.command, sendCommand.command) &&
-        Objects.equals(this.emittedAt, sendCommand.emittedAt);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(groupId, playlistItemId, when, hashCodeNullable(positionTicks), command, emittedAt);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SendCommand {\n");
-    sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
-    sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
-    sb.append("    when: ").append(toIndentedString(when)).append("\n");
-    sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
-    sb.append("    command: ").append(toIndentedString(command)).append("\n");
-    sb.append("    emittedAt: ").append(toIndentedString(emittedAt)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private SendCommand instance;
-
-    public Builder() {
-      this(new SendCommand());
+    public SendCommand() {
     }
 
-    protected Builder(SendCommand instance) {
-      this.instance = instance;
-    }
+    public SendCommand groupId(@javax.annotation.Nullable UUID groupId) {
 
-    public SendCommand.Builder groupId(UUID groupId) {
-      this.instance.groupId = groupId;
-      return this;
+        this.groupId = groupId;
+        return this;
     }
-    public SendCommand.Builder playlistItemId(UUID playlistItemId) {
-      this.instance.playlistItemId = playlistItemId;
-      return this;
-    }
-    public SendCommand.Builder when(OffsetDateTime when) {
-      this.instance.when = when;
-      return this;
-    }
-    public SendCommand.Builder positionTicks(Long positionTicks) {
-      this.instance.positionTicks = JsonNullable.<Long>of(positionTicks);
-      return this;
-    }
-    public SendCommand.Builder positionTicks(JsonNullable<Long> positionTicks) {
-      this.instance.positionTicks = positionTicks;
-      return this;
-    }
-    public SendCommand.Builder command(SendCommandType command) {
-      this.instance.command = command;
-      return this;
-    }
-    public SendCommand.Builder emittedAt(OffsetDateTime emittedAt) {
-      this.instance.emittedAt = emittedAt;
-      return this;
-    }
-
 
     /**
-    * returns a built SendCommand instance.
-    *
-    * The builder is not reusable.
-    */
-    public SendCommand build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets the group identifier.
+     * 
+     * @return groupId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setGroupId(@javax.annotation.Nullable UUID groupId) {
+        this.groupId = groupId;
+    }
+
+    public SendCommand playlistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+
+        this.playlistItemId = playlistItemId;
+        return this;
+    }
+
+    /**
+     * Gets the playlist identifier of the playing item.
+     * 
+     * @return playlistItemId
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public UUID getPlaylistItemId() {
+        return playlistItemId;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
+        this.playlistItemId = playlistItemId;
+    }
+
+    public SendCommand when(@javax.annotation.Nullable OffsetDateTime when) {
+
+        this.when = when;
+        return this;
+    }
+
+    /**
+     * Gets or sets the UTC time when to execute the command.
+     * 
+     * @return when
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getWhen() {
+        return when;
+    }
+
+    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
+        this.when = when;
+    }
+
+    public SendCommand positionTicks(@javax.annotation.Nullable Long positionTicks) {
+        this.positionTicks = JsonNullable.<Long> of(positionTicks);
+
+        return this;
+    }
+
+    /**
+     * Gets the position ticks.
+     * 
+     * @return positionTicks
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public Long getPositionTicks() {
+        return positionTicks.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<Long> getPositionTicks_JsonNullable() {
+        return positionTicks;
+    }
+
+    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
+        this.positionTicks = positionTicks;
+    }
+
+    public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
+        this.positionTicks = JsonNullable.<Long> of(positionTicks);
+    }
+
+    public SendCommand command(@javax.annotation.Nullable SendCommandType command) {
+
+        this.command = command;
+        return this;
+    }
+
+    /**
+     * Gets the command.
+     * 
+     * @return command
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public SendCommandType getCommand() {
+        return command;
+    }
+
+    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCommand(@javax.annotation.Nullable SendCommandType command) {
+        this.command = command;
+    }
+
+    public SendCommand emittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
+
+        this.emittedAt = emittedAt;
+        return this;
+    }
+
+    /**
+     * Gets the UTC time when this command has been emitted.
+     * 
+     * @return emittedAt
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public OffsetDateTime getEmittedAt() {
+        return emittedAt;
+    }
+
+    @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEmittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
+        this.emittedAt = emittedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SendCommand sendCommand = (SendCommand) o;
+        return Objects.equals(this.groupId, sendCommand.groupId)
+                && Objects.equals(this.playlistItemId, sendCommand.playlistItemId)
+                && Objects.equals(this.when, sendCommand.when)
+                && equalsNullable(this.positionTicks, sendCommand.positionTicks)
+                && Objects.equals(this.command, sendCommand.command)
+                && Objects.equals(this.emittedAt, sendCommand.emittedAt);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, playlistItemId, when, hashCodeNullable(positionTicks), command, emittedAt);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SendCommand {\n");
+        sb.append("    groupId: ").append(toIndentedString(groupId)).append("\n");
+        sb.append("    playlistItemId: ").append(toIndentedString(playlistItemId)).append("\n");
+        sb.append("    when: ").append(toIndentedString(when)).append("\n");
+        sb.append("    positionTicks: ").append(toIndentedString(positionTicks)).append("\n");
+        sb.append("    command: ").append(toIndentedString(command)).append("\n");
+        sb.append("    emittedAt: ").append(toIndentedString(emittedAt)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static SendCommand.Builder builder() {
-    return new SendCommand.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public SendCommand.Builder toBuilder() {
-    return new SendCommand.Builder()
-      .groupId(getGroupId())
-      .playlistItemId(getPlaylistItemId())
-      .when(getWhen())
-      .positionTicks(getPositionTicks())
-      .command(getCommand())
-      .emittedAt(getEmittedAt());
-  }
+    public static class Builder {
 
+        private SendCommand instance;
 
+        public Builder() {
+            this(new SendCommand());
+        }
+
+        protected Builder(SendCommand instance) {
+            this.instance = instance;
+        }
+
+        public SendCommand.Builder groupId(UUID groupId) {
+            this.instance.groupId = groupId;
+            return this;
+        }
+
+        public SendCommand.Builder playlistItemId(UUID playlistItemId) {
+            this.instance.playlistItemId = playlistItemId;
+            return this;
+        }
+
+        public SendCommand.Builder when(OffsetDateTime when) {
+            this.instance.when = when;
+            return this;
+        }
+
+        public SendCommand.Builder positionTicks(Long positionTicks) {
+            this.instance.positionTicks = JsonNullable.<Long> of(positionTicks);
+            return this;
+        }
+
+        public SendCommand.Builder positionTicks(JsonNullable<Long> positionTicks) {
+            this.instance.positionTicks = positionTicks;
+            return this;
+        }
+
+        public SendCommand.Builder command(SendCommandType command) {
+            this.instance.command = command;
+            return this;
+        }
+
+        public SendCommand.Builder emittedAt(OffsetDateTime emittedAt) {
+            this.instance.emittedAt = emittedAt;
+            return this;
+        }
+
+        /**
+         * returns a built SendCommand instance.
+         *
+         * The builder is not reusable.
+         */
+        public SendCommand build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static SendCommand.Builder builder() {
+        return new SendCommand.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public SendCommand.Builder toBuilder() {
+        return new SendCommand.Builder().groupId(getGroupId()).playlistItemId(getPlaylistItemId()).when(getWhen())
+                .positionTicks(getPositionTicks()).command(getCommand()).emittedAt(getEmittedAt());
+    }
 }
-

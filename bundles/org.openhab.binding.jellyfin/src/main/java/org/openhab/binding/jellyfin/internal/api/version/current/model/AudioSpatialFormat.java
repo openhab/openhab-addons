@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,37 +24,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing formats of spatial audio.
  */
 public enum AudioSpatialFormat {
-  
-  NONE("None"),
-  
-  DOLBY_ATMOS("DolbyAtmos"),
-  
-  DTSX("DTSX");
 
-  private String value;
+    NONE("None"),
 
-  AudioSpatialFormat(String value) {
-    this.value = value;
-  }
+    DOLBY_ATMOS("DolbyAtmos"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    DTSX("DTSX");
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    private String value;
 
-  @JsonCreator
-  public static AudioSpatialFormat fromValue(String value) {
-    for (AudioSpatialFormat b : AudioSpatialFormat.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    AudioSpatialFormat(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static AudioSpatialFormat fromValue(String value) {
+        for (AudioSpatialFormat b : AudioSpatialFormat.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

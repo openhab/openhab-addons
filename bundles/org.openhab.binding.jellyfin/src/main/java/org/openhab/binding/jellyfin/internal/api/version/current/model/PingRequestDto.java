@@ -18,146 +18,134 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class PingRequestDto.
  */
-@JsonPropertyOrder({
-  PingRequestDto.JSON_PROPERTY_PING
-})
+@JsonPropertyOrder({ PingRequestDto.JSON_PROPERTY_PING })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PingRequestDto {
-  public static final String JSON_PROPERTY_PING = "Ping";
-  @javax.annotation.Nullable
-  private Long ping;
+    public static final String JSON_PROPERTY_PING = "Ping";
+    @javax.annotation.Nullable
+    private Long ping;
 
-  public PingRequestDto() {
-  }
-
-  public PingRequestDto ping(@javax.annotation.Nullable Long ping) {
-    
-    this.ping = ping;
-    return this;
-  }
-
-  /**
-   * Gets or sets the ping time.
-   * @return ping
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PING)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Long getPing() {
-    return ping;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_PING)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPing(@javax.annotation.Nullable Long ping) {
-    this.ping = ping;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PingRequestDto pingRequestDto = (PingRequestDto) o;
-    return Objects.equals(this.ping, pingRequestDto.ping);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(ping);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PingRequestDto {\n");
-    sb.append("    ping: ").append(toIndentedString(ping)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private PingRequestDto instance;
-
-    public Builder() {
-      this(new PingRequestDto());
+    public PingRequestDto() {
     }
 
-    protected Builder(PingRequestDto instance) {
-      this.instance = instance;
-    }
+    public PingRequestDto ping(@javax.annotation.Nullable Long ping) {
 
-    public PingRequestDto.Builder ping(Long ping) {
-      this.instance.ping = ping;
-      return this;
+        this.ping = ping;
+        return this;
     }
-
 
     /**
-    * returns a built PingRequestDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public PingRequestDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Gets or sets the ping time.
+     * 
+     * @return ping
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_PING)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public Long getPing() {
+        return ping;
+    }
+
+    @JsonProperty(JSON_PROPERTY_PING)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPing(@javax.annotation.Nullable Long ping) {
+        this.ping = ping;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PingRequestDto pingRequestDto = (PingRequestDto) o;
+        return Objects.equals(this.ping, pingRequestDto.ping);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ping);
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PingRequestDto {\n");
+        sb.append("    ping: ").append(toIndentedString(ping)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static PingRequestDto.Builder builder() {
-    return new PingRequestDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public PingRequestDto.Builder toBuilder() {
-    return new PingRequestDto.Builder()
-      .ping(getPing());
-  }
+    public static class Builder {
 
+        private PingRequestDto instance;
 
+        public Builder() {
+            this(new PingRequestDto());
+        }
+
+        protected Builder(PingRequestDto instance) {
+            this.instance = instance;
+        }
+
+        public PingRequestDto.Builder ping(Long ping) {
+            this.instance.ping = ping;
+            return this;
+        }
+
+        /**
+         * returns a built PingRequestDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public PingRequestDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static PingRequestDto.Builder builder() {
+        return new PingRequestDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public PingRequestDto.Builder toBuilder() {
+        return new PingRequestDto.Builder().ping(getPing());
+    }
 }
-

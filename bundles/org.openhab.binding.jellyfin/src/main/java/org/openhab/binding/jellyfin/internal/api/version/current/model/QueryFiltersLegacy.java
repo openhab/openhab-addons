@@ -17,372 +17,368 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * QueryFiltersLegacy
  */
-@JsonPropertyOrder({
-  QueryFiltersLegacy.JSON_PROPERTY_GENRES,
-  QueryFiltersLegacy.JSON_PROPERTY_TAGS,
-  QueryFiltersLegacy.JSON_PROPERTY_OFFICIAL_RATINGS,
-  QueryFiltersLegacy.JSON_PROPERTY_YEARS
-})
+@JsonPropertyOrder({ QueryFiltersLegacy.JSON_PROPERTY_GENRES, QueryFiltersLegacy.JSON_PROPERTY_TAGS,
+        QueryFiltersLegacy.JSON_PROPERTY_OFFICIAL_RATINGS, QueryFiltersLegacy.JSON_PROPERTY_YEARS })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueryFiltersLegacy {
-  public static final String JSON_PROPERTY_GENRES = "Genres";
-  @javax.annotation.Nullable
-  private JsonNullable<List<String>> genres = JsonNullable.<List<String>>undefined();
+    public static final String JSON_PROPERTY_GENRES = "Genres";
+    @javax.annotation.Nullable
+    private JsonNullable<List<String>> genres = JsonNullable.<List<String>> undefined();
 
-  public static final String JSON_PROPERTY_TAGS = "Tags";
-  @javax.annotation.Nullable
-  private JsonNullable<List<String>> tags = JsonNullable.<List<String>>undefined();
+    public static final String JSON_PROPERTY_TAGS = "Tags";
+    @javax.annotation.Nullable
+    private JsonNullable<List<String>> tags = JsonNullable.<List<String>> undefined();
 
-  public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
-  @javax.annotation.Nullable
-  private JsonNullable<List<String>> officialRatings = JsonNullable.<List<String>>undefined();
+    public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
+    @javax.annotation.Nullable
+    private JsonNullable<List<String>> officialRatings = JsonNullable.<List<String>> undefined();
 
-  public static final String JSON_PROPERTY_YEARS = "Years";
-  @javax.annotation.Nullable
-  private JsonNullable<List<Integer>> years = JsonNullable.<List<Integer>>undefined();
+    public static final String JSON_PROPERTY_YEARS = "Years";
+    @javax.annotation.Nullable
+    private JsonNullable<List<Integer>> years = JsonNullable.<List<Integer>> undefined();
 
-  public QueryFiltersLegacy() {
-  }
-
-  public QueryFiltersLegacy genres(@javax.annotation.Nullable List<String> genres) {
-    this.genres = JsonNullable.<List<String>>of(genres);
-    
-    return this;
-  }
-
-  public QueryFiltersLegacy addGenresItem(String genresItem) {
-    if (this.genres == null || !this.genres.isPresent()) {
-      this.genres = JsonNullable.<List<String>>of(new ArrayList<>());
-    }
-    try {
-      this.genres.get().add(genresItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Get genres
-   * @return genres
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<String> getGenres() {
-        return genres.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_GENRES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<String>> getGenres_JsonNullable() {
-    return genres;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_GENRES)
-  public void setGenres_JsonNullable(JsonNullable<List<String>> genres) {
-    this.genres = genres;
-  }
-
-  public void setGenres(@javax.annotation.Nullable List<String> genres) {
-    this.genres = JsonNullable.<List<String>>of(genres);
-  }
-
-  public QueryFiltersLegacy tags(@javax.annotation.Nullable List<String> tags) {
-    this.tags = JsonNullable.<List<String>>of(tags);
-    
-    return this;
-  }
-
-  public QueryFiltersLegacy addTagsItem(String tagsItem) {
-    if (this.tags == null || !this.tags.isPresent()) {
-      this.tags = JsonNullable.<List<String>>of(new ArrayList<>());
-    }
-    try {
-      this.tags.get().add(tagsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Get tags
-   * @return tags
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<String> getTags() {
-        return tags.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_TAGS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<String>> getTags_JsonNullable() {
-    return tags;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TAGS)
-  public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
-    this.tags = tags;
-  }
-
-  public void setTags(@javax.annotation.Nullable List<String> tags) {
-    this.tags = JsonNullable.<List<String>>of(tags);
-  }
-
-  public QueryFiltersLegacy officialRatings(@javax.annotation.Nullable List<String> officialRatings) {
-    this.officialRatings = JsonNullable.<List<String>>of(officialRatings);
-    
-    return this;
-  }
-
-  public QueryFiltersLegacy addOfficialRatingsItem(String officialRatingsItem) {
-    if (this.officialRatings == null || !this.officialRatings.isPresent()) {
-      this.officialRatings = JsonNullable.<List<String>>of(new ArrayList<>());
-    }
-    try {
-      this.officialRatings.get().add(officialRatingsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Get officialRatings
-   * @return officialRatings
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<String> getOfficialRatings() {
-        return officialRatings.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<String>> getOfficialRatings_JsonNullable() {
-    return officialRatings;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
-  public void setOfficialRatings_JsonNullable(JsonNullable<List<String>> officialRatings) {
-    this.officialRatings = officialRatings;
-  }
-
-  public void setOfficialRatings(@javax.annotation.Nullable List<String> officialRatings) {
-    this.officialRatings = JsonNullable.<List<String>>of(officialRatings);
-  }
-
-  public QueryFiltersLegacy years(@javax.annotation.Nullable List<Integer> years) {
-    this.years = JsonNullable.<List<Integer>>of(years);
-    
-    return this;
-  }
-
-  public QueryFiltersLegacy addYearsItem(Integer yearsItem) {
-    if (this.years == null || !this.years.isPresent()) {
-      this.years = JsonNullable.<List<Integer>>of(new ArrayList<>());
-    }
-    try {
-      this.years.get().add(yearsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
-    return this;
-  }
-
-  /**
-   * Get years
-   * @return years
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public List<Integer> getYears() {
-        return years.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_YEARS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<Integer>> getYears_JsonNullable() {
-    return years;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_YEARS)
-  public void setYears_JsonNullable(JsonNullable<List<Integer>> years) {
-    this.years = years;
-  }
-
-  public void setYears(@javax.annotation.Nullable List<Integer> years) {
-    this.years = JsonNullable.<List<Integer>>of(years);
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    QueryFiltersLegacy queryFiltersLegacy = (QueryFiltersLegacy) o;
-    return equalsNullable(this.genres, queryFiltersLegacy.genres) &&
-        equalsNullable(this.tags, queryFiltersLegacy.tags) &&
-        equalsNullable(this.officialRatings, queryFiltersLegacy.officialRatings) &&
-        equalsNullable(this.years, queryFiltersLegacy.years);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(hashCodeNullable(genres), hashCodeNullable(tags), hashCodeNullable(officialRatings), hashCodeNullable(years));
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class QueryFiltersLegacy {\n");
-    sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
-    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
-    sb.append("    officialRatings: ").append(toIndentedString(officialRatings)).append("\n");
-    sb.append("    years: ").append(toIndentedString(years)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private QueryFiltersLegacy instance;
-
-    public Builder() {
-      this(new QueryFiltersLegacy());
+    public QueryFiltersLegacy() {
     }
 
-    protected Builder(QueryFiltersLegacy instance) {
-      this.instance = instance;
+    public QueryFiltersLegacy genres(@javax.annotation.Nullable List<String> genres) {
+        this.genres = JsonNullable.<List<String>> of(genres);
+
+        return this;
     }
 
-    public QueryFiltersLegacy.Builder genres(List<String> genres) {
-      this.instance.genres = JsonNullable.<List<String>>of(genres);
-      return this;
+    public QueryFiltersLegacy addGenresItem(String genresItem) {
+        if (this.genres == null || !this.genres.isPresent()) {
+            this.genres = JsonNullable.<List<String>> of(new ArrayList<>());
+        }
+        try {
+            this.genres.get().add(genresItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
     }
-    public QueryFiltersLegacy.Builder genres(JsonNullable<List<String>> genres) {
-      this.instance.genres = genres;
-      return this;
-    }
-    public QueryFiltersLegacy.Builder tags(List<String> tags) {
-      this.instance.tags = JsonNullable.<List<String>>of(tags);
-      return this;
-    }
-    public QueryFiltersLegacy.Builder tags(JsonNullable<List<String>> tags) {
-      this.instance.tags = tags;
-      return this;
-    }
-    public QueryFiltersLegacy.Builder officialRatings(List<String> officialRatings) {
-      this.instance.officialRatings = JsonNullable.<List<String>>of(officialRatings);
-      return this;
-    }
-    public QueryFiltersLegacy.Builder officialRatings(JsonNullable<List<String>> officialRatings) {
-      this.instance.officialRatings = officialRatings;
-      return this;
-    }
-    public QueryFiltersLegacy.Builder years(List<Integer> years) {
-      this.instance.years = JsonNullable.<List<Integer>>of(years);
-      return this;
-    }
-    public QueryFiltersLegacy.Builder years(JsonNullable<List<Integer>> years) {
-      this.instance.years = years;
-      return this;
-    }
-
 
     /**
-    * returns a built QueryFiltersLegacy instance.
-    *
-    * The builder is not reusable.
-    */
-    public QueryFiltersLegacy build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Get genres
+     * 
+     * @return genres
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<String> getGenres() {
+        return genres.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_GENRES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<String>> getGenres_JsonNullable() {
+        return genres;
+    }
+
+    @JsonProperty(JSON_PROPERTY_GENRES)
+    public void setGenres_JsonNullable(JsonNullable<List<String>> genres) {
+        this.genres = genres;
+    }
+
+    public void setGenres(@javax.annotation.Nullable List<String> genres) {
+        this.genres = JsonNullable.<List<String>> of(genres);
+    }
+
+    public QueryFiltersLegacy tags(@javax.annotation.Nullable List<String> tags) {
+        this.tags = JsonNullable.<List<String>> of(tags);
+
+        return this;
+    }
+
+    public QueryFiltersLegacy addTagsItem(String tagsItem) {
+        if (this.tags == null || !this.tags.isPresent()) {
+            this.tags = JsonNullable.<List<String>> of(new ArrayList<>());
+        }
+        try {
+            this.tags.get().add(tagsItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
+    }
+
+    /**
+     * Get tags
+     * 
+     * @return tags
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<String> getTags() {
+        return tags.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_TAGS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<String>> getTags_JsonNullable() {
+        return tags;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TAGS)
+    public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
+        this.tags = tags;
+    }
+
+    public void setTags(@javax.annotation.Nullable List<String> tags) {
+        this.tags = JsonNullable.<List<String>> of(tags);
+    }
+
+    public QueryFiltersLegacy officialRatings(@javax.annotation.Nullable List<String> officialRatings) {
+        this.officialRatings = JsonNullable.<List<String>> of(officialRatings);
+
+        return this;
+    }
+
+    public QueryFiltersLegacy addOfficialRatingsItem(String officialRatingsItem) {
+        if (this.officialRatings == null || !this.officialRatings.isPresent()) {
+            this.officialRatings = JsonNullable.<List<String>> of(new ArrayList<>());
+        }
+        try {
+            this.officialRatings.get().add(officialRatingsItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
+    }
+
+    /**
+     * Get officialRatings
+     * 
+     * @return officialRatings
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<String> getOfficialRatings() {
+        return officialRatings.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<String>> getOfficialRatings_JsonNullable() {
+        return officialRatings;
+    }
+
+    @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
+    public void setOfficialRatings_JsonNullable(JsonNullable<List<String>> officialRatings) {
+        this.officialRatings = officialRatings;
+    }
+
+    public void setOfficialRatings(@javax.annotation.Nullable List<String> officialRatings) {
+        this.officialRatings = JsonNullable.<List<String>> of(officialRatings);
+    }
+
+    public QueryFiltersLegacy years(@javax.annotation.Nullable List<Integer> years) {
+        this.years = JsonNullable.<List<Integer>> of(years);
+
+        return this;
+    }
+
+    public QueryFiltersLegacy addYearsItem(Integer yearsItem) {
+        if (this.years == null || !this.years.isPresent()) {
+            this.years = JsonNullable.<List<Integer>> of(new ArrayList<>());
+        }
+        try {
+            this.years.get().add(yearsItem);
+        } catch (java.util.NoSuchElementException e) {
+            // this can never happen, as we make sure above that the value is present
+        }
+        return this;
+    }
+
+    /**
+     * Get years
+     * 
+     * @return years
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public List<Integer> getYears() {
+        return years.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_YEARS)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<List<Integer>> getYears_JsonNullable() {
+        return years;
+    }
+
+    @JsonProperty(JSON_PROPERTY_YEARS)
+    public void setYears_JsonNullable(JsonNullable<List<Integer>> years) {
+        this.years = years;
+    }
+
+    public void setYears(@javax.annotation.Nullable List<Integer> years) {
+        this.years = JsonNullable.<List<Integer>> of(years);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        QueryFiltersLegacy queryFiltersLegacy = (QueryFiltersLegacy) o;
+        return equalsNullable(this.genres, queryFiltersLegacy.genres)
+                && equalsNullable(this.tags, queryFiltersLegacy.tags)
+                && equalsNullable(this.officialRatings, queryFiltersLegacy.officialRatings)
+                && equalsNullable(this.years, queryFiltersLegacy.years);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashCodeNullable(genres), hashCodeNullable(tags), hashCodeNullable(officialRatings),
+                hashCodeNullable(years));
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class QueryFiltersLegacy {\n");
+        sb.append("    genres: ").append(toIndentedString(genres)).append("\n");
+        sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+        sb.append("    officialRatings: ").append(toIndentedString(officialRatings)).append("\n");
+        sb.append("    years: ").append(toIndentedString(years)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static QueryFiltersLegacy.Builder builder() {
-    return new QueryFiltersLegacy.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public QueryFiltersLegacy.Builder toBuilder() {
-    return new QueryFiltersLegacy.Builder()
-      .genres(getGenres())
-      .tags(getTags())
-      .officialRatings(getOfficialRatings())
-      .years(getYears());
-  }
+    public static class Builder {
 
+        private QueryFiltersLegacy instance;
 
+        public Builder() {
+            this(new QueryFiltersLegacy());
+        }
+
+        protected Builder(QueryFiltersLegacy instance) {
+            this.instance = instance;
+        }
+
+        public QueryFiltersLegacy.Builder genres(List<String> genres) {
+            this.instance.genres = JsonNullable.<List<String>> of(genres);
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder genres(JsonNullable<List<String>> genres) {
+            this.instance.genres = genres;
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder tags(List<String> tags) {
+            this.instance.tags = JsonNullable.<List<String>> of(tags);
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder tags(JsonNullable<List<String>> tags) {
+            this.instance.tags = tags;
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder officialRatings(List<String> officialRatings) {
+            this.instance.officialRatings = JsonNullable.<List<String>> of(officialRatings);
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder officialRatings(JsonNullable<List<String>> officialRatings) {
+            this.instance.officialRatings = officialRatings;
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder years(List<Integer> years) {
+            this.instance.years = JsonNullable.<List<Integer>> of(years);
+            return this;
+        }
+
+        public QueryFiltersLegacy.Builder years(JsonNullable<List<Integer>> years) {
+            this.instance.years = years;
+            return this;
+        }
+
+        /**
+         * returns a built QueryFiltersLegacy instance.
+         *
+         * The builder is not reusable.
+         */
+        public QueryFiltersLegacy build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static QueryFiltersLegacy.Builder builder() {
+        return new QueryFiltersLegacy.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public QueryFiltersLegacy.Builder toBuilder() {
+        return new QueryFiltersLegacy.Builder().genres(getGenres()).tags(getTags())
+                .officialRatings(getOfficialRatings()).years(getYears());
+    }
 }
-

@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,95 +24,94 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * These represent sort orders.
  */
 public enum ItemSortBy {
-  
-  DEFAULT("Default"),
-  
-  AIRED_EPISODE_ORDER("AiredEpisodeOrder"),
-  
-  ALBUM("Album"),
-  
-  ALBUM_ARTIST("AlbumArtist"),
-  
-  ARTIST("Artist"),
-  
-  DATE_CREATED("DateCreated"),
-  
-  OFFICIAL_RATING("OfficialRating"),
-  
-  DATE_PLAYED("DatePlayed"),
-  
-  PREMIERE_DATE("PremiereDate"),
-  
-  START_DATE("StartDate"),
-  
-  SORT_NAME("SortName"),
-  
-  NAME("Name"),
-  
-  RANDOM("Random"),
-  
-  RUNTIME("Runtime"),
-  
-  COMMUNITY_RATING("CommunityRating"),
-  
-  PRODUCTION_YEAR("ProductionYear"),
-  
-  PLAY_COUNT("PlayCount"),
-  
-  CRITIC_RATING("CriticRating"),
-  
-  IS_FOLDER("IsFolder"),
-  
-  IS_UNPLAYED("IsUnplayed"),
-  
-  IS_PLAYED("IsPlayed"),
-  
-  SERIES_SORT_NAME("SeriesSortName"),
-  
-  VIDEO_BIT_RATE("VideoBitRate"),
-  
-  AIR_TIME("AirTime"),
-  
-  STUDIO("Studio"),
-  
-  IS_FAVORITE_OR_LIKED("IsFavoriteOrLiked"),
-  
-  DATE_LAST_CONTENT_ADDED("DateLastContentAdded"),
-  
-  SERIES_DATE_PLAYED("SeriesDatePlayed"),
-  
-  PARENT_INDEX_NUMBER("ParentIndexNumber"),
-  
-  INDEX_NUMBER("IndexNumber"),
-  
-  SIMILARITY_SCORE("SimilarityScore"),
-  
-  SEARCH_SCORE("SearchScore");
 
-  private String value;
+    DEFAULT("Default"),
 
-  ItemSortBy(String value) {
-    this.value = value;
-  }
+    AIRED_EPISODE_ORDER("AiredEpisodeOrder"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    ALBUM("Album"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    ALBUM_ARTIST("AlbumArtist"),
 
-  @JsonCreator
-  public static ItemSortBy fromValue(String value) {
-    for (ItemSortBy b : ItemSortBy.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    ARTIST("Artist"),
+
+    DATE_CREATED("DateCreated"),
+
+    OFFICIAL_RATING("OfficialRating"),
+
+    DATE_PLAYED("DatePlayed"),
+
+    PREMIERE_DATE("PremiereDate"),
+
+    START_DATE("StartDate"),
+
+    SORT_NAME("SortName"),
+
+    NAME("Name"),
+
+    RANDOM("Random"),
+
+    RUNTIME("Runtime"),
+
+    COMMUNITY_RATING("CommunityRating"),
+
+    PRODUCTION_YEAR("ProductionYear"),
+
+    PLAY_COUNT("PlayCount"),
+
+    CRITIC_RATING("CriticRating"),
+
+    IS_FOLDER("IsFolder"),
+
+    IS_UNPLAYED("IsUnplayed"),
+
+    IS_PLAYED("IsPlayed"),
+
+    SERIES_SORT_NAME("SeriesSortName"),
+
+    VIDEO_BIT_RATE("VideoBitRate"),
+
+    AIR_TIME("AirTime"),
+
+    STUDIO("Studio"),
+
+    IS_FAVORITE_OR_LIKED("IsFavoriteOrLiked"),
+
+    DATE_LAST_CONTENT_ADDED("DateLastContentAdded"),
+
+    SERIES_DATE_PLAYED("SeriesDatePlayed"),
+
+    PARENT_INDEX_NUMBER("ParentIndexNumber"),
+
+    INDEX_NUMBER("IndexNumber"),
+
+    SIMILARITY_SCORE("SimilarityScore"),
+
+    SEARCH_SCORE("SearchScore");
+
+    private String value;
+
+    ItemSortBy(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ItemSortBy fromValue(String value) {
+        for (ItemSortBy b : ItemSortBy.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

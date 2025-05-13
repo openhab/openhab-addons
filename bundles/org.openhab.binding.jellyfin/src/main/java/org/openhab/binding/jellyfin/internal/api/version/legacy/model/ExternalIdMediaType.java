@@ -17,11 +17,6 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -29,55 +24,54 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The specific media type of an MediaBrowser.Model.Providers.ExternalIdInfo.
  */
 public enum ExternalIdMediaType {
-  
-  ALBUM("Album"),
-  
-  ALBUM_ARTIST("AlbumArtist"),
-  
-  ARTIST("Artist"),
-  
-  BOX_SET("BoxSet"),
-  
-  EPISODE("Episode"),
-  
-  MOVIE("Movie"),
-  
-  OTHER_ARTIST("OtherArtist"),
-  
-  PERSON("Person"),
-  
-  RELEASE_GROUP("ReleaseGroup"),
-  
-  SEASON("Season"),
-  
-  SERIES("Series"),
-  
-  TRACK("Track");
 
-  private String value;
+    ALBUM("Album"),
 
-  ExternalIdMediaType(String value) {
-    this.value = value;
-  }
+    ALBUM_ARTIST("AlbumArtist"),
 
-  @JsonValue
-  public String getValue() {
-    return value;
-  }
+    ARTIST("Artist"),
 
-  @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
+    BOX_SET("BoxSet"),
 
-  @JsonCreator
-  public static ExternalIdMediaType fromValue(String value) {
-    for (ExternalIdMediaType b : ExternalIdMediaType.values()) {
-      if (b.value.equals(value)) {
-        return b;
-      }
+    EPISODE("Episode"),
+
+    MOVIE("Movie"),
+
+    OTHER_ARTIST("OtherArtist"),
+
+    PERSON("Person"),
+
+    RELEASE_GROUP("ReleaseGroup"),
+
+    SEASON("Season"),
+
+    SERIES("Series"),
+
+    TRACK("Track");
+
+    private String value;
+
+    ExternalIdMediaType(String value) {
+        this.value = value;
     }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-}
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ExternalIdMediaType fromValue(String value) {
+        for (ExternalIdMediaType b : ExternalIdMediaType.values()) {
+            if (b.value.equals(value)) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+}

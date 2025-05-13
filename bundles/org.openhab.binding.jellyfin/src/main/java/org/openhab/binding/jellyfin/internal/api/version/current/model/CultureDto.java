@@ -17,338 +17,331 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.openapitools.jackson.nullable.JsonNullable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Class CultureDto.
  */
-@JsonPropertyOrder({
-  CultureDto.JSON_PROPERTY_NAME,
-  CultureDto.JSON_PROPERTY_DISPLAY_NAME,
-  CultureDto.JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME,
-  CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
-  CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES
-})
+@JsonPropertyOrder({ CultureDto.JSON_PROPERTY_NAME, CultureDto.JSON_PROPERTY_DISPLAY_NAME,
+        CultureDto.JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME,
+        CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
+        CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CultureDto {
-  public static final String JSON_PROPERTY_NAME = "Name";
-  @javax.annotation.Nullable
-  private String name;
+    public static final String JSON_PROPERTY_NAME = "Name";
+    @javax.annotation.Nullable
+    private String name;
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
-  @javax.annotation.Nullable
-  private String displayName;
+    public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+    @javax.annotation.Nullable
+    private String displayName;
 
-  public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME = "TwoLetterISOLanguageName";
-  @javax.annotation.Nullable
-  private String twoLetterISOLanguageName;
+    public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME = "TwoLetterISOLanguageName";
+    @javax.annotation.Nullable
+    private String twoLetterISOLanguageName;
 
-  public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
-  @javax.annotation.Nullable
-  private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String>undefined();
+    public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
+    @javax.annotation.Nullable
+    private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String> undefined();
 
-  public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
-  @javax.annotation.Nullable
-  private List<String> threeLetterISOLanguageNames = new ArrayList<>();
+    public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
+    @javax.annotation.Nullable
+    private List<String> threeLetterISOLanguageNames = new ArrayList<>();
 
-  public CultureDto() {
-  }
-  /**
-   * Constructor with only readonly parameters
-   */
-  @JsonCreator
-  public CultureDto(
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName
-  ) {
-    this();
-    this.threeLetterISOLanguageName = threeLetterISOLanguageName == null ? JsonNullable.<String>undefined() : JsonNullable.of(threeLetterISOLanguageName);
-  }
-
-  public CultureDto name(@javax.annotation.Nullable String name) {
-    
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Gets the name.
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getName() {
-    return name;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
-  }
-
-  public CultureDto displayName(@javax.annotation.Nullable String displayName) {
-    
-    this.displayName = displayName;
-    return this;
-  }
-
-  /**
-   * Gets the display name.
-   * @return displayName
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDisplayName(@javax.annotation.Nullable String displayName) {
-    this.displayName = displayName;
-  }
-
-  public CultureDto twoLetterISOLanguageName(@javax.annotation.Nullable String twoLetterISOLanguageName) {
-    
-    this.twoLetterISOLanguageName = twoLetterISOLanguageName;
-    return this;
-  }
-
-  /**
-   * Gets the name of the two letter ISO language.
-   * @return twoLetterISOLanguageName
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getTwoLetterISOLanguageName() {
-    return twoLetterISOLanguageName;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTwoLetterISOLanguageName(@javax.annotation.Nullable String twoLetterISOLanguageName) {
-    this.twoLetterISOLanguageName = twoLetterISOLanguageName;
-  }
-
-  /**
-   * Gets the name of the three letter ISO language.
-   * @return threeLetterISOLanguageName
-   */
-  @javax.annotation.Nullable
-  @JsonIgnore
-
-  public String getThreeLetterISOLanguageName() {
-    
-    if (threeLetterISOLanguageName == null) {
-      threeLetterISOLanguageName = JsonNullable.<String>undefined();
+    public CultureDto() {
     }
-    return threeLetterISOLanguageName.orElse(null);
-  }
-
-  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
-    return threeLetterISOLanguageName;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-  private void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
-    this.threeLetterISOLanguageName = threeLetterISOLanguageName;
-  }
-
-
-  public CultureDto threeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
-    
-    this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
-    return this;
-  }
-
-  public CultureDto addThreeLetterISOLanguageNamesItem(String threeLetterISOLanguageNamesItem) {
-    if (this.threeLetterISOLanguageNames == null) {
-      this.threeLetterISOLanguageNames = new ArrayList<>();
-    }
-    this.threeLetterISOLanguageNames.add(threeLetterISOLanguageNamesItem);
-    return this;
-  }
-
-  /**
-   * Get threeLetterISOLanguageNames
-   * @return threeLetterISOLanguageNames
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public List<String> getThreeLetterISOLanguageNames() {
-    return threeLetterISOLanguageNames;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setThreeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
-    this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    CultureDto cultureDto = (CultureDto) o;
-    return Objects.equals(this.name, cultureDto.name) &&
-        Objects.equals(this.displayName, cultureDto.displayName) &&
-        Objects.equals(this.twoLetterISOLanguageName, cultureDto.twoLetterISOLanguageName) &&
-        equalsNullable(this.threeLetterISOLanguageName, cultureDto.threeLetterISOLanguageName) &&
-        Objects.equals(this.threeLetterISOLanguageNames, cultureDto.threeLetterISOLanguageNames);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, displayName, twoLetterISOLanguageName, hashCodeNullable(threeLetterISOLanguageName), threeLetterISOLanguageNames);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class CultureDto {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
-    sb.append("    twoLetterISOLanguageName: ").append(toIndentedString(twoLetterISOLanguageName)).append("\n");
-    sb.append("    threeLetterISOLanguageName: ").append(toIndentedString(threeLetterISOLanguageName)).append("\n");
-    sb.append("    threeLetterISOLanguageNames: ").append(toIndentedString(threeLetterISOLanguageNames)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }
-
-  public static class Builder {
-
-    private CultureDto instance;
-
-    public Builder() {
-      this(new CultureDto());
-    }
-
-    protected Builder(CultureDto instance) {
-      this.instance = instance;
-    }
-
-    public CultureDto.Builder name(String name) {
-      this.instance.name = name;
-      return this;
-    }
-    public CultureDto.Builder displayName(String displayName) {
-      this.instance.displayName = displayName;
-      return this;
-    }
-    public CultureDto.Builder twoLetterISOLanguageName(String twoLetterISOLanguageName) {
-      this.instance.twoLetterISOLanguageName = twoLetterISOLanguageName;
-      return this;
-    }
-    public CultureDto.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
-      this.instance.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
-      return this;
-    }
-    public CultureDto.Builder threeLetterISOLanguageName(JsonNullable<String> threeLetterISOLanguageName) {
-      this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
-      return this;
-    }
-    public CultureDto.Builder threeLetterISOLanguageNames(List<String> threeLetterISOLanguageNames) {
-      this.instance.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
-      return this;
-    }
-
 
     /**
-    * returns a built CultureDto instance.
-    *
-    * The builder is not reusable.
-    */
-    public CultureDto build() {
-      try {
-        return this.instance;
-      } finally {
-        // ensure that this.instance is not reused
-        this.instance = null;
-      }
+     * Constructor with only readonly parameters
+     */
+    @JsonCreator
+    public CultureDto(@JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName) {
+        this();
+        this.threeLetterISOLanguageName = threeLetterISOLanguageName == null ? JsonNullable.<String> undefined()
+                : JsonNullable.of(threeLetterISOLanguageName);
+    }
+
+    public CultureDto name(@javax.annotation.Nullable String name) {
+
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Gets the name.
+     * 
+     * @return name
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getName() {
+        return name;
+    }
+
+    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
+        this.name = name;
+    }
+
+    public CultureDto displayName(@javax.annotation.Nullable String displayName) {
+
+        this.displayName = displayName;
+        return this;
+    }
+
+    /**
+     * Gets the display name.
+     * 
+     * @return displayName
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisplayName(@javax.annotation.Nullable String displayName) {
+        this.displayName = displayName;
+    }
+
+    public CultureDto twoLetterISOLanguageName(@javax.annotation.Nullable String twoLetterISOLanguageName) {
+
+        this.twoLetterISOLanguageName = twoLetterISOLanguageName;
+        return this;
+    }
+
+    /**
+     * Gets the name of the two letter ISO language.
+     * 
+     * @return twoLetterISOLanguageName
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public String getTwoLetterISOLanguageName() {
+        return twoLetterISOLanguageName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTwoLetterISOLanguageName(@javax.annotation.Nullable String twoLetterISOLanguageName) {
+        this.twoLetterISOLanguageName = twoLetterISOLanguageName;
+    }
+
+    /**
+     * Gets the name of the three letter ISO language.
+     * 
+     * @return threeLetterISOLanguageName
+     */
+    @javax.annotation.Nullable
+    @JsonIgnore
+
+    public String getThreeLetterISOLanguageName() {
+
+        if (threeLetterISOLanguageName == null) {
+            threeLetterISOLanguageName = JsonNullable.<String> undefined();
+        }
+        return threeLetterISOLanguageName.orElse(null);
+    }
+
+    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
+        return threeLetterISOLanguageName;
+    }
+
+    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+    private void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
+        this.threeLetterISOLanguageName = threeLetterISOLanguageName;
+    }
+
+    public CultureDto threeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
+
+        this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
+        return this;
+    }
+
+    public CultureDto addThreeLetterISOLanguageNamesItem(String threeLetterISOLanguageNamesItem) {
+        if (this.threeLetterISOLanguageNames == null) {
+            this.threeLetterISOLanguageNames = new ArrayList<>();
+        }
+        this.threeLetterISOLanguageNames.add(threeLetterISOLanguageNamesItem);
+        return this;
+    }
+
+    /**
+     * Get threeLetterISOLanguageNames
+     * 
+     * @return threeLetterISOLanguageNames
+     */
+    @javax.annotation.Nullable
+    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+    public List<String> getThreeLetterISOLanguageNames() {
+        return threeLetterISOLanguageNames;
+    }
+
+    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setThreeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
+        this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CultureDto cultureDto = (CultureDto) o;
+        return Objects.equals(this.name, cultureDto.name) && Objects.equals(this.displayName, cultureDto.displayName)
+                && Objects.equals(this.twoLetterISOLanguageName, cultureDto.twoLetterISOLanguageName)
+                && equalsNullable(this.threeLetterISOLanguageName, cultureDto.threeLetterISOLanguageName)
+                && Objects.equals(this.threeLetterISOLanguageNames, cultureDto.threeLetterISOLanguageNames);
+    }
+
+    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+        return a == b
+                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, displayName, twoLetterISOLanguageName, hashCodeNullable(threeLetterISOLanguageName),
+                threeLetterISOLanguageNames);
+    }
+
+    private static <T> int hashCodeNullable(JsonNullable<T> a) {
+        if (a == null) {
+            return 1;
+        }
+        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
     public String toString() {
-      return getClass() + "=(" + instance + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("class CultureDto {\n");
+        sb.append("    name: ").append(toIndentedString(name)).append("\n");
+        sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+        sb.append("    twoLetterISOLanguageName: ").append(toIndentedString(twoLetterISOLanguageName)).append("\n");
+        sb.append("    threeLetterISOLanguageName: ").append(toIndentedString(threeLetterISOLanguageName)).append("\n");
+        sb.append("    threeLetterISOLanguageNames: ").append(toIndentedString(threeLetterISOLanguageNames))
+                .append("\n");
+        sb.append("}");
+        return sb.toString();
     }
-  }
 
-  /**
-  * Create a builder with no initialized field.
-  */
-  public static CultureDto.Builder builder() {
-    return new CultureDto.Builder();
-  }
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
-  /**
-  * Create a builder with a shallow copy of this instance.
-  */
-  public CultureDto.Builder toBuilder() {
-    return new CultureDto.Builder()
-      .name(getName())
-      .displayName(getDisplayName())
-      .twoLetterISOLanguageName(getTwoLetterISOLanguageName())
-      .threeLetterISOLanguageName(getThreeLetterISOLanguageName())
-      .threeLetterISOLanguageNames(getThreeLetterISOLanguageNames());
-  }
+    public static class Builder {
 
+        private CultureDto instance;
 
+        public Builder() {
+            this(new CultureDto());
+        }
+
+        protected Builder(CultureDto instance) {
+            this.instance = instance;
+        }
+
+        public CultureDto.Builder name(String name) {
+            this.instance.name = name;
+            return this;
+        }
+
+        public CultureDto.Builder displayName(String displayName) {
+            this.instance.displayName = displayName;
+            return this;
+        }
+
+        public CultureDto.Builder twoLetterISOLanguageName(String twoLetterISOLanguageName) {
+            this.instance.twoLetterISOLanguageName = twoLetterISOLanguageName;
+            return this;
+        }
+
+        public CultureDto.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
+            this.instance.threeLetterISOLanguageName = JsonNullable.<String> of(threeLetterISOLanguageName);
+            return this;
+        }
+
+        public CultureDto.Builder threeLetterISOLanguageName(JsonNullable<String> threeLetterISOLanguageName) {
+            this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
+            return this;
+        }
+
+        public CultureDto.Builder threeLetterISOLanguageNames(List<String> threeLetterISOLanguageNames) {
+            this.instance.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
+            return this;
+        }
+
+        /**
+         * returns a built CultureDto instance.
+         *
+         * The builder is not reusable.
+         */
+        public CultureDto build() {
+            try {
+                return this.instance;
+            } finally {
+                // ensure that this.instance is not reused
+                this.instance = null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return getClass() + "=(" + instance + ")";
+        }
+    }
+
+    /**
+     * Create a builder with no initialized field.
+     */
+    public static CultureDto.Builder builder() {
+        return new CultureDto.Builder();
+    }
+
+    /**
+     * Create a builder with a shallow copy of this instance.
+     */
+    public CultureDto.Builder toBuilder() {
+        return new CultureDto.Builder().name(getName()).displayName(getDisplayName())
+                .twoLetterISOLanguageName(getTwoLetterISOLanguageName())
+                .threeLetterISOLanguageName(getThreeLetterISOLanguageName())
+                .threeLetterISOLanguageNames(getThreeLetterISOLanguageNames());
+    }
 }
-
