@@ -1422,12 +1422,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Update the thing's semantic equipment tag. The main determinant for the equipment type is the supported channels.
      * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
-     * considered to be (groups of) light bulbs.
+     * considered to be zones.
      */
     private void updateEquipmentTag() {
         if (!disposing) {
             int sensorCount = 0;
-            SemanticTag equipmentTag = Equipment.LIGHTBULB; // default;
+            SemanticTag equipmentTag = null;
 
             if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
                 equipmentTag = Equipment.ZONE;
@@ -1462,8 +1462,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (sensorCount > 1) {
                 equipmentTag = Equipment.SENSOR;
             }
-            logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
-            updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
+            if (equipmentTag != null) {
+                logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
+                updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
+            }
         }
     }
 }

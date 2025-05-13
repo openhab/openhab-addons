@@ -11,7 +11,6 @@
 
 		<label>Hue Device</label>
 		<description>A Hue API v2 device with channels depending on its actual capabilities.</description>
-		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="color" typeId="system.color">
