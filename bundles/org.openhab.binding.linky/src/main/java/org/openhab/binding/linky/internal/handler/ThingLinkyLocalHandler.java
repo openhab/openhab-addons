@@ -80,6 +80,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     private String ivKey = "";
     private long idd2l = -1;
     private String prmId = "";
+    private long lastFrameTime = -1;
 
     private double cosphi = Double.NaN;
 
@@ -220,6 +221,13 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     protected void handleFrame(LinkyFrame frame) {
         double urms = 0.0;
         double sinst = 0.0;
+
+        long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        if (lastFrameTime != -1 && lastFrameTime + 5 > currentTime) {
+            return;
+        }
+
+        lastFrameTime = currentTime;
 
         if (frameCount == 0) {
             udpateGroupVisibility(frame);
@@ -542,6 +550,11 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         if (timestamp.startsWith("H") || timestamp.startsWith("E") || timestamp.startsWith(" ")) {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyMMdd[HH][mm][ss]");
             res = LocalDateTime.parse(timestamp.substring(1), df);
+
+            // Handle summer time
+            if (timestamp.startsWith("E")) {
+                res = res.minusHours(1);
+            }
         } else {
             DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM ppd yyyy")
                     .toFormatter(Locale.ENGLISH);
