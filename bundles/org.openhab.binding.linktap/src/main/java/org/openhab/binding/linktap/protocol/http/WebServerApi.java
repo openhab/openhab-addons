@@ -90,7 +90,7 @@ public final class WebServerApi {
     private static final WebServerApi INSTANCE = new WebServerApi();
     private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
     private final Logger logger = LoggerFactory.getLogger(WebServerApi.class);
-    public final JettyTraceListener jettyTraceListener = new JettyTraceListener(logger);
+    private final JettyTraceListener jettyTraceListener = new JettyTraceListener(logger);
 
     private @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable TranslationProvider translationProvider;
