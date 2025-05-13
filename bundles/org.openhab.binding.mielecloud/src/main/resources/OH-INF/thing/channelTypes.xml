@@ -267,7 +267,7 @@
 		<description>@text/channel-type.mielecloud.temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -363,7 +363,7 @@
 		<description>@text/channel-type.mielecloud.fridge_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -387,7 +387,7 @@
 		<description>@text/channel-type.mielecloud.freezer_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -411,7 +411,7 @@
 		<description>@text/channel-type.mielecloud.top_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -435,7 +435,7 @@
 		<description>@text/channel-type.mielecloud.middle_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -459,7 +459,7 @@
 		<description>@text/channel-type.mielecloud.bottom_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
