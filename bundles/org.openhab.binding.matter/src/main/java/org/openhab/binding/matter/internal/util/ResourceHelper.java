@@ -23,7 +23,7 @@ import org.osgi.framework.ServiceReference;
 
 /**
  * Helper class to get localized strings from the bundle
- * reused from the huesync binding, thanks to @author Patrik Gfeller
+ * borrowed and slightly modified from the huesync binding
  * 
  * @author Dan Cunningham - Initial Contribution
  */

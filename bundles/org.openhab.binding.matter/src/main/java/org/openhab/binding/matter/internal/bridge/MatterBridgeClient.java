@@ -23,7 +23,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link MatterBridgeClient}
+ * The {@link MatterBridgeClient} is a client for the Matter Bridge service.
+ * 
+ * It is responsible for sending messages to the Matter Bridge websocket server and receiving responses.
  *
  * @author Dan Cunningham - Initial contribution
  */

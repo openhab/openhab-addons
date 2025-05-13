@@ -25,7 +25,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ContactSensorDevice}
+ * The {@link ContactSensorDevice} is a device that represents a Contact Sensor.
  *
  * @author Dan Cunningham - Initial contribution
  */

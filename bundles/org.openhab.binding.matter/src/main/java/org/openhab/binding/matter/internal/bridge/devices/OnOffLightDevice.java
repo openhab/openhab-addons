@@ -30,7 +30,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link OnOffLightDevice}
+ * The {@link OnOffLightDevice} is a device that represents an On/Off Light.
  *
  * @author Dan Cunningham - Initial contribution
  */

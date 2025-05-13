@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.util.ColorUtil;
 
 /**
- * The {@link ColorDevice}
+ * The {@link ColorDevice} is a device that represents a Color Light.
  *
  * @author Dan Cunningham - Initial contribution
  */

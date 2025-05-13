@@ -38,7 +38,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link ThermostatDevice}
+ * The {@link ThermostatDevice} is a device that represents a Thermostat.
  *
  * @author Dan Cunningham - Initial contribution
  */

@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterOTBRActions}
+ * The {@link MatterOTBRActions} exposes Thread Border Router related actions
  *
  * @author Dan Cunningham - Initial contribution
  */

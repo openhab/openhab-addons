@@ -32,7 +32,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link DimmableLightDevice}
+ * The {@link DimmableLightDevice} is a device that represents a Dimmable Light.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -103,8 +103,7 @@ public class DimmableLightDevice extends GenericDevice {
                 lastOnOffState = OnOffType.OFF;
             }
         } else if (state instanceof OnOffType onOffType) {
-            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    onOffType == OnOffType.ON ? true : false);
+            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, onOffType == OnOffType.ON);
             lastOnOffState = onOffType;
         }
     }

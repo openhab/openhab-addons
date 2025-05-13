@@ -27,7 +27,7 @@ import org.openhab.core.types.State;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link OnOffLightDevice}
+ * The {@link OccupancySensorDevice} is a device that represents an Occupancy Sensor.
  *
  * @author Dan Cunningham - Initial contribution
  */

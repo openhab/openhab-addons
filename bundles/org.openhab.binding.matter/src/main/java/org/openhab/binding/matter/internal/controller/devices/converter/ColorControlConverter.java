@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_COLOR_COLOR;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_COLOR_TEMPERATURE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_COLOR;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_TEMPERATURE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

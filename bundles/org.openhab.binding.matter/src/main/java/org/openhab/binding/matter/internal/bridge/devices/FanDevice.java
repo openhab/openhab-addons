@@ -37,7 +37,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link FanDevice}
+ * The {@link FanDevice} is a device that represents a Fan.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -125,7 +125,7 @@ public class FanDevice extends GenericDevice {
                         } else if (genericItem instanceof StringItem stringItem) {
                             stringItem.send(new StringType(mappedMode));
                         } else if (genericItem instanceof SwitchItem switchItem) {
-                            switchItem.send(level > 0 ? OnOffType.ON : OnOffType.OFF);
+                            switchItem.send(OnOffType.from(level > 0));
                         }
                     } catch (FanModeMappingException e) {
                         logger.debug("Could not convert {} to custom value", data);
@@ -145,7 +145,7 @@ public class FanDevice extends GenericDevice {
                     // try and update the on/off state if set
                     genericItem = itemForAttribute(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF);
                     if (genericItem instanceof SwitchItem switchItem) {
-                        switchItem.send(mode > 0 ? OnOffType.ON : OnOffType.OFF);
+                        switchItem.send(OnOffType.from(mode > 0));
                     }
                 }
                     break;

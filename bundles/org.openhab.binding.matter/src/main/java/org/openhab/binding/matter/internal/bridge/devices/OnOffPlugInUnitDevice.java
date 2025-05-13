@@ -18,7 +18,7 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.MetadataRegistry;
 
 /**
- * The {@link OnOffPlugInUnitDevice}
+ * The {@link OnOffPlugInUnitDevice} is a device that represents an On/Off Plug-In Unit.
  *
  * @author Dan Cunningham - Initial contribution
  */

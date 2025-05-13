@@ -23,7 +23,8 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.MetadataRegistry;
 
 /**
- *
+ * The {@link DeviceRegistry} is a registry of device types that are supported by the Matter Bridge service.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault

@@ -66,7 +66,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link MatterBridge}
+ * The {@link MatterBridge} is the main class for the Matter Bridge service.
+ * 
+ * It is responsible for exposing a "Matter Bridge" server and exposing items as endpoint on the bridge.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -317,34 +319,30 @@ public class MatterBridge implements MatterClientListener {
             return;
         }
 
-        try {
-            String folderName = OpenHAB.getUserDataFolder() + File.separator + "matter";
-            File folder = new File(folderName);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            Map<String, String> paramsMap = new HashMap<>();
-
-            paramsMap.put("service", "bridge");
-            paramsMap.put("storagePath", folder.getAbsolutePath());
-
-            // default values the bridge exposes to clients
-            paramsMap.put("deviceName", DEVICE_NAME);
-            paramsMap.put("vendorName", VENDOR_NAME);
-            paramsMap.put("vendorId", VENDOR_ID);
-            paramsMap.put("productId", PRODUCT_ID);
-
-            paramsMap.put("productName", settings.bridgeName);
-            paramsMap.put("passcode", String.valueOf(settings.passcode));
-            paramsMap.put("discriminator", String.valueOf(settings.discriminator));
-            paramsMap.put("port", String.valueOf(settings.port));
-
-            client.addListener(this);
-            client.connectWhenReady(this.websocketService, paramsMap);
-        } catch (Exception e) {
-            logger.error("Error connecting to websocket", e);
+        String folderName = OpenHAB.getUserDataFolder() + File.separator + "matter";
+        File folder = new File(folderName);
+        if (!folder.exists()) {
+            folder.mkdirs();
         }
+
+        Map<String, String> paramsMap = new HashMap<>();
+
+        paramsMap.put("service", "bridge");
+        paramsMap.put("storagePath", folder.getAbsolutePath());
+
+        // default values the bridge exposes to clients
+        paramsMap.put("deviceName", DEVICE_NAME);
+        paramsMap.put("vendorName", VENDOR_NAME);
+        paramsMap.put("vendorId", VENDOR_ID);
+        paramsMap.put("productId", PRODUCT_ID);
+
+        paramsMap.put("productName", settings.bridgeName);
+        paramsMap.put("passcode", String.valueOf(settings.passcode));
+        paramsMap.put("discriminator", String.valueOf(settings.discriminator));
+        paramsMap.put("port", String.valueOf(settings.port));
+
+        client.addListener(this);
+        client.connectWhenReady(this.websocketService, paramsMap);
     }
 
     private void stopClient() {

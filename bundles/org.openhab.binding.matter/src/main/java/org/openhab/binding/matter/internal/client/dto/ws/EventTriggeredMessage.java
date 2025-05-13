@@ -13,7 +13,7 @@
 package org.openhab.binding.matter.internal.client.dto.ws;
 
 /**
- * EventTriggeredMessage
+ * EventTriggeredMessage is a message that is sent when an matter event is triggered.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -24,11 +24,6 @@ public class EventTriggeredMessage {
     public EventTriggeredMessage() {
     }
 
-    /**
-     * @param path
-     * @param version
-     * @param value
-     */
     public EventTriggeredMessage(Path path, TriggerEvent[] events) {
         this.path = path;
         this.events = events;

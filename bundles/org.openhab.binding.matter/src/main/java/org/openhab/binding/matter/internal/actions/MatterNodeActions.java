@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterNodeActions}
+ * The {@link MatterNodeActions} exposes Matter related actions for the Matter Node Thing.
  *
  * @author Dan Cunningham - Initial contribution
  */

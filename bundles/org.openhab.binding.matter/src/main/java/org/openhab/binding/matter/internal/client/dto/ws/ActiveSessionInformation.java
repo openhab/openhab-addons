@@ -15,7 +15,7 @@ package org.openhab.binding.matter.internal.client.dto.ws;
 import java.math.BigInteger;
 
 /**
- * ActiveSessionInformation
+ * ActiveSessionInformation describes an active session with a peer.
  *
  * @author Dan Cunningham - Initial contribution
  */

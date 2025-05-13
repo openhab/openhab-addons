@@ -43,7 +43,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link WindowCoveringDevice}
+ * The {@link WindowCoveringDevice} is a device that represents a Window Covering.
  *
  * @author Dan Cunningham - Initial contribution
  */

@@ -15,7 +15,7 @@ package org.openhab.binding.matter.internal.client.dto.ws;
 import java.math.BigInteger;
 
 /**
- * ExposedFabricInformation
+ * ExposedFabricInformation represents Matter Fabric information from a device.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -26,7 +26,6 @@ public class ExposedFabricInformation {
     public String rootNodeId;
     public byte[] operationalId;
     public byte[] rootPublicKey;
-    // public Key keyPair;
     public Integer rootVendorId;
     public byte[] rootCert;
     public byte[] identityProtectionKey;

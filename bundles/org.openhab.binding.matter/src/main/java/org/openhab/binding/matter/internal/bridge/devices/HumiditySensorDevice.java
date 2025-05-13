@@ -27,7 +27,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link OnOffLightDevice}
+ * The {@link HumiditySensorDevice} is a device that represents a Humidity Sensor.
  *
  * @author Dan Cunningham - Initial contribution
  */

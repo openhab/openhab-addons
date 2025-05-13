@@ -27,7 +27,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link DoorLockDevice}
+ * The {@link DoorLockDevice} is a device that represents a Door Lock.
  *
  * @author Dan Cunningham - Initial contribution
  */

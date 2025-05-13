@@ -15,7 +15,7 @@ package org.openhab.binding.matter.internal.bridge;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MatterBridgeSettings}
+ * The {@link MatterBridgeSettings} is the settings configuration for the Matter Bridge service.
  *
  * @author Dan Cunningham - Initial contribution
  */

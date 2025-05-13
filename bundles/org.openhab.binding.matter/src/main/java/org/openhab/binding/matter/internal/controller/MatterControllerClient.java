@@ -53,8 +53,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * Get all nodes that are commissioned / paired to this controller
      *
      * @param onlyConnected filter to nodes that are currently connected
-     * @return
-     * @throws Exception
+     * @return a list of node IDs
      */
     public CompletableFuture<List<BigInteger>> getCommissionedNodeIds() {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "listNodes", new Object[0]);
@@ -68,9 +67,9 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Initialize a commissioned node, wait for connectionTimeoutMilliseconds for the node to connect before returning
      * 
-     * @param nodeId
-     * @param connectionTimeoutMilliseconds
-     * @return
+     * @param nodeId the node ID to initialize
+     * @param connectionTimeoutMilliseconds the timeout in milliseconds to wait for the node to connect
+     * @return a future that completes when the node is initialized
      */
     public CompletableFuture<Void> initializeNode(BigInteger nodeId, Integer connectionTimeoutMilliseconds) {
         // add 1 second delay to the message timeout to allow the function to complete
@@ -85,8 +84,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * Request all cluster attribute data for the node from the controller, the actual data will be sent via a
      * NodeDataListener event
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to request data for
+     * @return a future that completes when the data is requested
      */
     public CompletableFuture<Void> requestAllNodeData(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestAllData", new Object[] { nodeId });
@@ -98,9 +97,9 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Request all cluster attribute data for a single endpoint and its children
      * 
-     * @param nodeId
-     * @param endpointId
-     * @return
+     * @param nodeId the node ID to request data for
+     * @param endpointId the endpoint ID to request data for
+     * @return a future that completes when the data is requested
      */
     public CompletableFuture<Void> requestEndpointData(BigInteger nodeId, Integer endpointId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
@@ -113,10 +112,10 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Request a specific cluster attribute data for a single endpoint
      * 
-     * @param nodeId
-     * @param endpointId
-     * @param clusterId
-     * @return
+     * @param nodeId the node ID to request data for
+     * @param endpointId the endpoint ID to request data for
+     * @param clusterId the cluster ID to request data for
+     * @return a future that completes when the data is requested
      */
     public CompletableFuture<Void> requestClusterData(BigInteger nodeId, Integer endpointId, Integer clusterId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
@@ -129,8 +128,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Pair a node using a pairing code, either a manual pairing code or a matter QR code (starts with MT:)
      * 
-     * @param code
-     * @return
+     * @param code the pairing code to pair with
+     * @return a future that completes when the node is paired (or fails)
      */
     public CompletableFuture<BigInteger> pairNode(String code) {
         String[] parts = code.trim().split(" ");
@@ -150,8 +149,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Remove a node from the controller
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to remove
+     * @return a future that completes when the node is removed
      */
     public CompletableFuture<Void> removeNode(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "removeNode", new Object[] { nodeId });
@@ -163,8 +162,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Reconnect a node to the controller
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to reconnect
+     * @return a future that completes when the node is reconnected
      */
     public CompletableFuture<Void> reconnectNode(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "reconnectNode", new Object[] { nodeId });
@@ -176,8 +175,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Get the pairing codes for a node
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to get the pairing codes for
+     * @return a future that completes when the pairing codes are retrieved
      */
     public CompletableFuture<PairingCodes> enhancedCommissioningWindow(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "enhancedCommissioningWindow",
@@ -194,8 +193,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Disconnect a node from the controller
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to disconnect
+     * @return a future that completes when the node is disconnected
      */
     public CompletableFuture<Void> disconnectNode(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "disconnectNode", new Object[] { nodeId });
@@ -207,8 +206,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Get the fabrics for a node, fabrics aer the list of matter networks the node is joined to
      * 
-     * @param nodeId
-     * @return
+     * @param nodeId the node ID to get the fabrics for
+     * @return a future that completes when the fabrics are retrieved or an exception is thrown
      */
     public CompletableFuture<List<OperationalCredentialsCluster.FabricDescriptorStruct>> getFabrics(BigInteger nodeId) {
         Object[] clusterArgs = { String.valueOf(nodeId) };
@@ -227,9 +226,9 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Remove a fabric from a node, fabrics are identified by an index in the matter specification
      * 
-     * @param nodeId
-     * @param index
-     * @return
+     * @param nodeId the node ID to remove the fabric from
+     * @param index the index of the fabric to remove
+     * @return a future that completes when the fabric is removed
      */
     public CompletableFuture<Void> removeFabric(BigInteger nodeId, Integer index) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "removeFabric", new Object[] { nodeId, index });
@@ -241,11 +240,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Send a command to a cluster
      * 
-     * @param nodeId
-     * @param endpointId
-     * @param clusterName
-     * @param command
-     * @return
+     * @param nodeId the node ID to send the command to
+     * @param endpointId the endpoint ID to send the command to
+     * @param clusterName the cluster name to send the command to
+     * @param command the command to send
+     * @return a future that completes when the command is sent
      */
     public CompletableFuture<JsonElement> clusterCommand(BigInteger nodeId, Integer endpointId, String clusterName,
             ClusterCommand command) {
@@ -257,12 +256,12 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Write an attribute to a cluster
      * 
-     * @param nodeId
-     * @param endpointId
-     * @param clusterName
-     * @param attributeName
-     * @param value
-     * @return
+     * @param nodeId the node ID to write the attribute to
+     * @param endpointId the endpoint ID to write the attribute to
+     * @param clusterName the cluster name to write the attribute to
+     * @param attributeName the attribute name to write
+     * @param value the value to write
+     * @return a future that completes when the attribute is written
      */
     public CompletableFuture<Void> clusterWriteAttribute(BigInteger nodeId, Integer endpointId, String clusterName,
             String attributeName, String value) {
@@ -274,13 +273,13 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
-     * Read an attribute from a cluster
+     * Read all attributes from a cluster
      * 
-     * @param nodeId
-     * @param endpointId
-     * @param clusterName
-     * @param attributeName
-     * @return
+     * @param type the class class to deserialize the cluster to
+     * @param nodeId the node ID to read the cluster from
+     * @param endpointId the endpoint ID to read the cluster from
+     * @param clusterId the cluster ID to read the cluster from
+     * @return a future that completes when the cluster is read
      */
     public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, BigInteger nodeId,
             Integer endpointId, Integer clusterId) {
@@ -299,11 +298,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Read an attribute from a cluster
      * 
-     * @param nodeId
-     * @param endpointId
-     * @param clusterName
-     * @param attributeName
-     * @return
+     * @param nodeId the node ID to read the attribute from
+     * @param endpointId the endpoint ID to read the attribute from
+     * @param clusterName the cluster name to read the attribute from
+     * @param attributeName the attribute name to read
+     * @return a future that completes when the attribute is read
      */
     public CompletableFuture<String> clusterReadAttribute(BigInteger nodeId, Integer endpointId, String clusterName,
             String attributeName) {
@@ -317,7 +316,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Get the session information for the controller
      * 
-     * @return
+     * @return a future that completes when the session information is retrieved
      */
     public CompletableFuture<ActiveSessionInformation[]> getSessionInformation() {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "sessionInformation", new Object[0]);

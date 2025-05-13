@@ -24,7 +24,7 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.types.State;
 
 /**
- * The {@link OnOffLightDevice}
+ * The {@link TemperatureSensorDevice} is a device that represents a Temperature Sensor.
  *
  * @author Dan Cunningham - Initial contribution
  */
