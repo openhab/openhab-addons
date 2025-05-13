@@ -8,6 +8,7 @@
 	<bridge-type id="home">
 		<label>Tado Home</label>
 		<description>The user's tado home</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
@@ -46,6 +47,7 @@
 
 		<label>Zone</label>
 		<description>A zone of a home</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="currentTemperature" id="currentTemperature"/>
@@ -113,6 +115,7 @@
 
 		<label>Mobile Device</label>
 		<description>Mobile device of a home</description>
+		<semantic-equipment-tag>Smartphone</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="atHome" id="atHome"/>
@@ -141,12 +144,20 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="geofencingEnabled">
 		<item-type>Switch</item-type>
 		<label>Geofencing Enabled</label>
 		<description>Selects if automatic geofencing is enabled or disabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="currentTemperature">
@@ -154,6 +165,10 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -169,6 +184,10 @@
 		<item-type>String</item-type>
 		<label>HVAC Mode</label>
 		<description>Mode of the device (OFF, HEAT, COOL, DRY, FAN, AUTO - if supported)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -186,6 +205,10 @@
 		<label>Target Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -194,6 +217,10 @@
 		<label>Fan Speed</label>
 		<description>AC fan speed (only if supported by AC)</description>
 		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="LOW">Low</option>
@@ -209,6 +236,10 @@
 		<label>Swing</label>
 		<description>State of AC swing (only if supported by AC)</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Airflow</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="light">
@@ -216,6 +247,10 @@
 		<label>Light</label>
 		<description>State of control panel light (only if supported by AC)</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="fanLevel">
@@ -223,6 +258,10 @@
 		<label>Fan Speed</label>
 		<description>AC fan level (only if supported by AC)</description>
 		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="SILENT">SILENT</option>
@@ -241,6 +280,10 @@
 		<label>Horizontal Swing</label>
 		<description>State of AC horizontal swing (only if supported by AC)</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -260,6 +303,10 @@
 		<label>Vertical Swing</label>
 		<description>State of AC vertical swing (only if supported by AC)</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -278,6 +325,10 @@
 		<item-type>String</item-type>
 		<label>Zone Operation Mode</label>
 		<description>Active operation mode (schedule, manual, timer or until next change)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="SCHEDULE">Schedule</option>
@@ -293,6 +344,10 @@
 		<label>Timer Duration</label>
 		<description>Total duration of a timer</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state min="0" step="1" pattern="%d min"/>
 	</channel-type>
 
@@ -301,6 +356,10 @@
 		<label>Overlay End Time</label>
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -308,6 +367,10 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acPower">
@@ -315,6 +378,10 @@
 		<label>Air-conditioning Power</label>
 		<description>Current power state of the air-conditioning</description>
 		<category>Climate</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -323,6 +390,10 @@
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
 		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -331,6 +402,10 @@
 		<label>Override Remaining Time</label>
 		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
 		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
