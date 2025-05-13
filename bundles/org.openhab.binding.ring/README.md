@@ -37,25 +37,23 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 
 | Channel Type ID | Item Type | Description                           |
 |-----------------|-----------|---------------------------------------|
-| Enabled         | Switch    | Enable polling of this device/account |
+| enabled         | Switch    | Enable polling of this device/account |
 
 ### Events group (Ring Account Binding Thing only):
 
-Todo: Move these to the device thing
-
-| Channel Type ID                | Item Type | Description                                                                                  |
-|--------------------------------|-----------|----------------------------------------------------------------------------------------------|
-| URL to recorded video          | String    | The URL to a recorded video (only when subscribed on ring.com)                               |
-| When the event was created     | DateTime  | The date and time the event was created                                                      |
-| The kind of event              | String    | The kind of event, usually 'motion' or 'ding'                                                |
-| The id of the doorbot          | String    | The internal id of the doorbot that generated the currently selected event                   |
-| The description of the doorbot | String    | The description of the doorbot that generated the currently selected event (e.g. Front Door) |
+| Channel Type ID                | Item Type | Description                                                                      |
+|--------------------------------|-----------|----------------------------------------------------------------------------------|
+| url                | String    | The URL to a recorded video (only when subscribed on ring.com)                               |
+| createdAt          | DateTime  | The date and time the event was created                                                      |
+| kind               | String    | The kind of event, usually 'motion' or 'ding'                                                |
+| doorbotId          | String    | The internal id of the doorbot that generated the currently selected event                   |
+| doorbotDescription | String    | The description of the doorbot that generated the currently selected event (e.g. Front Door) |
 
 ### Device Status (Video Doorbell Binding Thing, Stickup Cam Binding Thing, Other Binding Thing only):
 
 | Channel Type ID  | Item Type | Description         |
 |------------------|-----------|---------------------|
-| Battery level    | Number    | Battery level in %  |
+| battery          | Number    | Battery level in %  |
 
 ## Full Example
 
