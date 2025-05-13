@@ -66,6 +66,7 @@
 	<bridge-type id="bridge-api2">
 		<label>Hue API v2 Bridge</label>
 		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="automation" typeId="automation"/>
