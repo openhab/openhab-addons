@@ -543,12 +543,12 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     /**
      * Subclasses should return the protocol prefix for the device type being modelled.
-     * E.g. LUH = The Humidifier Devices; LAP = The Air Purifiers;
+     * E.g. LUH or LEH = The Humidifier Devices; LAP = The Air Purifiers;
      * if irrelevant return a string that will not be used in the protocol e.g. __??__
      *
      * @return - The device type prefix for the device being modelled. E.g. LAP or LUH
      */
-    public abstract String getDeviceFamilyProtocolPrefix();
+    public abstract List<String> getDeviceFamilyProtocolPrefix();
 
     /**
      * Subclasses should return list of VeSyncDeviceMetadata definitions that define the
@@ -560,7 +560,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     public abstract List<VeSyncDeviceMetadata> getSupportedDeviceMetadata();
 
     public static VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType,
-            final String deviceProtocolPrefix, final List<VeSyncDeviceMetadata> metadata) {
+            final List<String> deviceProtocolPrefix, final List<VeSyncDeviceMetadata> metadata) {
         if (deviceType == null) {
             return UNKNOWN;
         }
@@ -574,7 +574,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
         final String[] idParts = deviceType.split("-");
         if (idParts.length == 3) {
-            if (!deviceProtocolPrefix.equals(idParts[0])) {
+            if (!deviceProtocolPrefix.contains(idParts[0])) {
                 return UNKNOWN;
             }
         }

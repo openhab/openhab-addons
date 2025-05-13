@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
-    public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
+    public static final List<String> DEV_TYPE_FAMILY_AIR_HUMIDIFIER = Arrays.asList("LUH", "LEH");
 
     public static final int DEFAULT_AIR_PURIFIER_POLL_RATE = 120;
     private static final int MIN_TARGET_HUMIDITY = 30;
@@ -74,8 +74,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     public static final String DEV_FAMILY_600S = "600S";
     public static final String DEV_FAMILY_OASIS_MIST_EU = "Oasis Mist EU";
     public static final String DEV_FAMILY_OASIS_MIST = "Oasis Mist";
-
     public static final String DEV_FAMILY_OASIS_MIST_1000 = "Oasis Mist 1000";
+    public static final String DEV_FAMILY_SUPERIOR_6000S = "Superior 6000S";
 
     private static final List<String> AUTO_MAN_SLEEP_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL, MODE_SLEEP);
 
@@ -111,8 +111,12 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             DEV_FAMILY_OASIS_MIST_1000, Arrays.asList("M101S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0,
             3, false, Collections.emptyList());
 
+    public static final VeSyncDeviceHumidifierMetadata SUPERIOR_6000S = new VeSyncDeviceHumidifierMetadata(2,
+            DEV_FAMILY_SUPERIOR_6000S, Arrays.asList("S601S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 10, -1,
+            -1, true, Collections.emptyList());
+
     public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(LV600S, CLASSIC300S,
-            CLASSIC200S, DUAL200S, OASIS_MIST, OASIS_MIST_EU);
+            CLASSIC200S, DUAL200S, OASIS_MIST, OASIS_MIST_EU, SUPERIOR_6000S);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
@@ -129,6 +133,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             put(OASIS_MIST.deviceFamilyName, OASIS_MIST);
             put(OASIS_MIST_EU.deviceFamilyName, OASIS_MIST_EU);
             put(OASIS_MIST_1000.deviceFamilyName, OASIS_MIST_1000);
+            put(SUPERIOR_6000S.deviceFamilyName, SUPERIOR_6000S);
         }
     };
 
@@ -194,7 +199,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     }
 
     @Override
-    public String getDeviceFamilyProtocolPrefix() {
+    public List<String> getDeviceFamilyProtocolPrefix() {
         return DEV_TYPE_FAMILY_AIR_HUMIDIFIER;
     }
 
