@@ -34,9 +34,15 @@
 				<autoUpdatePolicy>recommend</autoUpdatePolicy>
 			</channel>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
-			<channel id="indicator-1" typeId="indicator"/>
-			<channel id="indicator-2" typeId="indicator"/>
-			<channel id="indicator-3" typeId="indicator"/>
+			<channel id="indicator-1" typeId="indicator">
+				<label>Indicator 1</label>
+			</channel>
+			<channel id="indicator-2" typeId="indicator">
+				<label>Indicator 2</label>
+			</channel>
+			<channel id="indicator-3" typeId="indicator">
+				<label>Indicator 3</label>
+			</channel>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="lux" typeId="lux"/>
 			<channel id="rssi" typeId="rssi"/>
