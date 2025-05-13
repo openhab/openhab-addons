@@ -357,7 +357,7 @@
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
