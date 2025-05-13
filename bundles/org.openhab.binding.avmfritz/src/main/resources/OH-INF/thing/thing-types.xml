@@ -535,4 +535,43 @@
 
 		<config-description-ref uri="thing-type:avmfritz:fritzgroup"/>
 	</thing-type>
+
+	<thing-type id="HAN_FUN_SENSOR">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Sensor</label>
+		<description>HAN-FUN Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channels>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
+	<thing-type id="HAN_FUN_HOST">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN Host</label>
+		<description>HAN-FUN device (Gerät) hosting one or more HAN-FUN units</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+		<channels>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 </thing:thing-descriptions>

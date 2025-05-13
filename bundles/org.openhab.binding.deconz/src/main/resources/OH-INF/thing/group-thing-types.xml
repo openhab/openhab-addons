@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Light Group</label>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="all_on" id="all_on"/>
 			<channel typeId="any_on" id="any_on"/>
