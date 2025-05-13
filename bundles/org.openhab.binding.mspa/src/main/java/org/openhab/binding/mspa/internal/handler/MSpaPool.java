@@ -30,6 +30,7 @@ import org.openhab.binding.mspa.internal.config.MSpaPoolConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -42,8 +43,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tech.units.indriya.unit.Units;
-
 /**
  * The {@link MSpaPool} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -55,7 +54,7 @@ public class MSpaPool extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MSpaPool.class);
 
-    private Optional<MSpaAccount> account = Optional.empty();
+    private Optional<MSpaBaseAccount> account = Optional.empty();
     private MSpaPoolConfiguration config = new MSpaPoolConfiguration();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private String dataCache = (new JSONObject()).toString();
@@ -70,7 +69,7 @@ public class MSpaPool extends BaseThingHandler {
         if (command instanceof RefreshType) {
             distributeData(dataCache);
         } else {
-            // prepare for real command
+            // prepare for command execution
             JSONObject commandBody = new JSONObject();
             if (command instanceof OnOffType onOff) {
                 int on = OnOffType.ON.equals(onOff) ? 1 : 0;
@@ -100,7 +99,6 @@ public class MSpaPool extends BaseThingHandler {
                 }
                 if (!UNKNOWN.equals(commandDetail)) {
                     String commandString = String.format(COMMAND_TEMPLATE, commandDetail);
-                    System.out.println(commandString);
                     commandBody = new JSONObject(commandString);
                 }
             } else if (command instanceof DecimalType decimal) {
@@ -130,14 +128,9 @@ public class MSpaPool extends BaseThingHandler {
                 }
             }
             // command is calculated so send
-            if (!commandBody.isEmpty()) {
+            if (!commandBody.isEmpty() && !account.isEmpty()) {
                 commandBody.put("device_id", config.deviceId);
                 commandBody.put("product_id", config.productId);
-                logger.warn("Send command {}", commandBody.toString());
-                System.out.println("Send command " + commandBody.toString());
-                if (account.isEmpty()) {
-                    return;
-                }
                 Request commandRequest = account.get().getRequest(POST, COMMAND_ENDPOINT);
                 commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
                 try {
@@ -145,19 +138,19 @@ public class MSpaPool extends BaseThingHandler {
                     int status = cr.getStatus();
                     String response = cr.getContentAsString();
                     if (status == 200) {
-                        logger.info("Command Response {}", response);
+                        logger.trace("Command Response {}", response);
+                        scheduler.schedule(this::updateData, 5, TimeUnit.SECONDS);
                     } else {
                         logger.warn("Error sending command {} - {}", commandBody.toString(), response);
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.warn("Error sending command {} - {}", commandBody.toString(), e.getMessage());
                 }
+            } else {
+                logger.info("Either command ({}) or account ({}) empty", commandBody, account.isEmpty());
             }
         }
     }
-
-    public static final String WATER_TARGET_TEMPERATURE = "target-temperature";
-    public static final String BUBBLE_LEVEL = "bubble-level";
 
     @Override
     public void initialize() {
@@ -172,7 +165,7 @@ public class MSpaPool extends BaseThingHandler {
         if (bridge != null) {
             updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof MSpaAccount accountHandler) {
+            if (handler instanceof MSpaBaseAccount accountHandler) {
                 account = Optional.of(accountHandler);
                 String token = accountHandler.getToken();
                 if (!UNKNOWN.equals(token)) {
@@ -231,11 +224,11 @@ public class MSpaPool extends BaseThingHandler {
             }
             if (rawData.has("water_temperature")) {
                 updateState(WATER_CURRENT_TEMPERATURE,
-                        QuantityType.valueOf(rawData.getInt("water_temperature") / 2, Units.CELSIUS));
+                        QuantityType.valueOf(rawData.getInt("water_temperature") / 2.0, SIUnits.CELSIUS));
             }
             if (rawData.has("temperature_setting")) {
                 updateState(WATER_TARGET_TEMPERATURE,
-                        QuantityType.valueOf(rawData.getInt("temperature_setting") / 2, Units.CELSIUS));
+                        QuantityType.valueOf(rawData.getInt("temperature_setting") / 2.0, SIUnits.CELSIUS));
             }
             if (rawData.has("jet_state")) {
                 updateState(JET_STREAM, OnOffType.from(rawData.getInt("jet_state") == 1));

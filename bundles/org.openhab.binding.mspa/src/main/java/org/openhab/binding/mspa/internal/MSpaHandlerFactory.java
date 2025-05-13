@@ -14,13 +14,12 @@ package org.openhab.binding.mspa.internal;
 
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
-import org.openhab.binding.mspa.internal.handler.MSpaAccount;
+import org.openhab.binding.mspa.internal.handler.MSpaOwnerAccount;
 import org.openhab.binding.mspa.internal.handler.MSpaPool;
+import org.openhab.binding.mspa.internal.handler.MSpaVisitorAccount;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -44,7 +43,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mspa", service = ThingHandlerFactory.class)
 public class MSpaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_POOL);
     private final HttpClientFactory httpFactory;
     private final MSpaDiscoveryService discovery;
     private final Storage<String> store;
@@ -65,13 +63,13 @@ public class MSpaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new MSpaAccount((Bridge) thing, httpFactory.getCommonHttpClient(), discovery, store);
+        if (THING_TYPE_OWNER_ACCOUNT.equals(thingTypeUID)) {
+            return new MSpaOwnerAccount((Bridge) thing, httpFactory.getCommonHttpClient(), discovery, store);
+        } else if (THING_TYPE_VISITOR_ACCOUNT.equals(thingTypeUID)) {
+            return new MSpaVisitorAccount((Bridge) thing, httpFactory.getCommonHttpClient(), discovery, store);
         } else if (THING_TYPE_POOL.equals(thingTypeUID)) {
             return new MSpaPool(thing, httpFactory.getCommonHttpClient());
         }
-
         return null;
     }
 }

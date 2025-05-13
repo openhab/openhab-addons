@@ -24,4 +24,18 @@
 		<label>Temperature</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
+	<channel-type id="set-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state pattern="%.1f %unit%">
+			<options>
+				<option value="40 C">40 C</option>
+				<option value="39 C">39 C</option>
+				<option value="38 C">38 C</option>
+				<option value="37 C">37 C</option>
+				<option value="36 C">36 C</option>
+				<option value="35 C">35 C</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

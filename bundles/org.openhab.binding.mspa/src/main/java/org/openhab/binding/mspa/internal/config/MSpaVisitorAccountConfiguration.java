@@ -17,14 +17,20 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.UNKNOWN;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MSpaAccountConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MSpaVisitorAccountConfiguration} class contains fields mapping for visitor-account configuration
+ * parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MSpaAccountConfiguration {
+public class MSpaVisitorAccountConfiguration {
 
-    public String email = UNKNOWN;
-    public String password = UNKNOWN;
+    public String visitorId = UNKNOWN;
+    public String grantCode = UNKNOWN;
     public String region = UNKNOWN;
+
+    @Override
+    public String toString() {
+        return visitorId + ":" + grantCode + ":" + region;
+    }
 }

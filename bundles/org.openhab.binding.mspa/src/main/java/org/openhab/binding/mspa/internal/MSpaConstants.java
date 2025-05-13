@@ -13,6 +13,7 @@
 package org.openhab.binding.mspa.internal;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,8 +30,11 @@ public class MSpaConstants {
     public static final String BINDING_ID = "mspa";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_OWNER_ACCOUNT = new ThingTypeUID(BINDING_ID, "owner-account");
+    public static final ThingTypeUID THING_TYPE_VISITOR_ACCOUNT = new ThingTypeUID(BINDING_ID, "visitor-account");
     public static final ThingTypeUID THING_TYPE_POOL = new ThingTypeUID(BINDING_ID, "pool");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OWNER_ACCOUNT,
+            THING_TYPE_VISITOR_ACCOUNT, THING_TYPE_POOL);
 
     public static final String REGION_ROW = "ROW";
     public static final String REGION_US = "US";
@@ -55,6 +59,8 @@ public class MSpaConstants {
     public static final String DEVICE_LIST_ENDPOINT = "/api/enduser/devices/";
     public static final String DEVICE_SHADOW_ENDPOINT = "/api/device/thing_shadow/";
     public static final String COMMAND_ENDPOINT = "/api/device/command/";
+    public static final String VISITOR_ENDPOINT = "/api/enduser/visitor/";
+    public static final String GRAND_DEVICE_ENDPOINT = "/api/enduser/grant_device/";
 
     public static final String GET = "GET";
     public static final String POST = "POST";

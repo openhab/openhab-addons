@@ -27,14 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MSpaUtils} class defines common constants, which are
- * used across the whole binding.
+ * The {@link MSpaUtils} providing several helper functions
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class MSpaUtils {
-    private final static Logger logger = LoggerFactory.getLogger(MSpaUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MSpaUtils.class);
 
     public static String getMd5(String input) {
         try {
@@ -43,7 +42,7 @@ public class MSpaUtils {
             byte[] digest = md.digest();
             return DatatypeConverter.printHexBinary(digest);
         } catch (NoSuchAlgorithmException e) {
-            logger.error("MD5 Algorithm not supported");
+            LOGGER.error("MD5 Algorithm not supported");
         }
         return UNKNOWN;
     }
@@ -85,8 +84,7 @@ public class MSpaUtils {
         return getInvalidToken();
     }
 
-    public static AccessTokenResponse decodeStoredToken(String content) {
-        JSONObject json = new JSONObject(content);
+    public static AccessTokenResponse decodeStoredToken(JSONObject json) {
         if (json.has("token") && json.has("created") && json.has("expires")) {
             AccessTokenResponse response = new AccessTokenResponse();
             response.setAccessToken(json.getString("token"));

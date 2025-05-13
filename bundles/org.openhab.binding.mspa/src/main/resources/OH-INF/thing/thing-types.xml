@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="account">
-		<label>MSpa Account</label>
-		<description>Account managing your devices</description>
+	<bridge-type id="owner-account">
+		<label>MSpa Owner Account</label>
+		<description>Owner Account with email and password credentials</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">
-				<context></context>
+				<context>email</context>
 				<label>EMail</label>
 				<description>EMail address of your account</description>
 			</parameter>
@@ -32,9 +32,37 @@
 		</config-description>
 	</bridge-type>
 
+	<bridge-type id="visitor-account">
+		<label>MSpa Visitor Account</label>
+		<description>Visitor account with access via QR code</description>
+
+		<config-description>
+			<parameter name="visitorId" type="text">
+				<label>Visitor ID</label>
+				<description>Random 16 digit id with lower case hex characters</description>
+			</parameter>
+			<parameter name="grantCode" type="text" required="true">
+				<context>password</context>
+				<label>Grant Code</label>
+				<description>Grant from QR code presented by MSpa-Link App</description>
+			</parameter>
+			<parameter name="region" type="text" required="true">
+				<label>Region</label>
+				<description>Region where your country is located</description>
+				<options>
+					<option value="ROW">Rest of World</option>
+					<option value="US">United States</option>
+					<option value="CH">China</option>
+				</options>
+				<default>ROW</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="pool">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account"/>
+			<bridge-type-ref id="owner-account"/>
+			<bridge-type-ref id="visitor-account"/>
 		</supported-bridge-type-refs>
 
 		<label>MSpa Pool</label>
@@ -45,38 +73,48 @@
 				<label>Water Temperature</label>
 				<description>Current water temperature</description>
 			</channel>
-			<channel id="target-temperature" typeId="temperature">
+			<channel id="target-temperature" typeId="set-temperature">
 				<label>Target Water Temperature</label>
 				<description>Temperature to reach with heating</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="heater" typeId="switch">
 				<label>Heater</label>
 				<description>Control water heating</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="jet-stream" typeId="switch">
 				<label>Jet Stream</label>
 				<description>Control jet stream for massage</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="bubbles" typeId="switch">
 				<label>Bubbles</label>
 				<description>Switch bubbles on/off</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="bubble-level" typeId="bubble-level"/>
+			<channel id="bubble-level" typeId="bubble-level">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 			<channel id="circulation" typeId="switch">
 				<label>Circulation Pump</label>
 				<description>Water circulation for filtering</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="uvc" typeId="switch">
 				<label>UVC Cleaning</label>
 				<description>Eliminate germs with Ultraviolet-C water cleaning</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="ozone" typeId="switch">
 				<label>Ozone Cleaning</label>
 				<description>Disinfect with Ozone water cleaning</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="lock" typeId="switch">
 				<label>Lock Panel</label>
 				<description>Lock physical panel for inputs</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
 
@@ -86,10 +124,10 @@
 				<description>Identification number of your device</description>
 			</parameter>
 			<parameter name="productId" type="text" required="true">
-				<label>Device ID</label>
-				<description>Identification number of your device</description>
+				<label>Product ID</label>
+				<description>Product Id of your device</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" unit="min" min="5">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in minutes.</description>
 				<default>15</default>

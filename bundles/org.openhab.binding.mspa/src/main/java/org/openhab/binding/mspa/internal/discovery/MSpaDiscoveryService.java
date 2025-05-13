@@ -19,7 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mspa.internal.MSpaConstants;
-import org.openhab.binding.mspa.internal.handler.MSpaAccount;
+import org.openhab.binding.mspa.internal.handler.MSpaBaseAccount;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { DiscoveryService.class, MSpaDiscoveryService.class }, configurationPid = "discovery.mspa")
 public class MSpaDiscoveryService extends AbstractDiscoveryService {
 
-    private List<MSpaAccount> accountList = new ArrayList<>();
+    private List<MSpaBaseAccount> accountList = new ArrayList<>();
 
     public MSpaDiscoveryService() {
         super(Set.of(MSpaConstants.THING_TYPE_POOL), 0, false);
@@ -50,11 +50,11 @@ public class MSpaDiscoveryService extends AbstractDiscoveryService {
         });
     }
 
-    public void addAccount(MSpaAccount account) {
+    public void addAccount(MSpaBaseAccount account) {
         accountList.add(account);
     }
 
-    public void removeAccount(MSpaAccount account) {
+    public void removeAccount(MSpaBaseAccount account) {
         accountList.remove(account);
     }
 

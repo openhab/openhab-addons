@@ -17,14 +17,14 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.UNKNOWN;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MSpaPoolConfiguration} class contains fields mapping for pool configuration parameters.
+ * The {@link MSpaOwnerAccountConfiguration} class contains fields mapping for owner-account configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MSpaPoolConfiguration {
+public class MSpaOwnerAccountConfiguration {
 
-    public String deviceId = UNKNOWN;
-    public String productId = UNKNOWN;
-    public int refreshInterval = 15;
+    public String email = UNKNOWN;
+    public String password = UNKNOWN;
+    public String region = UNKNOWN;
 }

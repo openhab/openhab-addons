@@ -16,6 +16,7 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +26,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaUtils;
-import org.openhab.binding.mspa.internal.config.MSpaAccountConfiguration;
+import org.openhab.binding.mspa.internal.config.MSpaOwnerAccountConfiguration;
+import org.openhab.binding.mspa.internal.config.MSpaVisitorAccountConfiguration;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.storage.Storage;
@@ -44,23 +46,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MSpaAccount} is responsible for handling commands, which are
- * sent to one of the channels.
+ * {@link MSpaBaseAccount} abstract base class for MSpaVisitor and MSpaOwner accounts
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MSpaAccount extends BaseBridgeHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(MSpaAccount.class);
+public abstract class MSpaBaseAccount extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(MSpaBaseAccount.class);
     private final MSpaDiscoveryService discovery;
-
-    private MSpaAccountConfiguration config = new MSpaAccountConfiguration();
-    private AccessTokenResponse token;
     private HttpClient httpClient;
-    private Storage<String> store;
 
-    public MSpaAccount(Bridge bridge, HttpClient httpClient, MSpaDiscoveryService discovery, Storage<String> store) {
+    protected static final String TOKEN = "accesstoken";
+    protected static final String GRANTS = "grants";
+    protected Optional<MSpaOwnerAccountConfiguration> ownerConfig = Optional.empty();
+    protected Optional<MSpaVisitorAccountConfiguration> visitorConfig = Optional.empty();
+    protected AccessTokenResponse token;
+    protected Storage<String> store;
+
+    public MSpaBaseAccount(Bridge bridge, HttpClient httpClient, MSpaDiscoveryService discovery,
+            Storage<String> store) {
         super(bridge);
         this.httpClient = httpClient;
         this.discovery = discovery;
@@ -75,27 +79,6 @@ public class MSpaAccount extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(MSpaAccountConfiguration.class);
-
-        // check for configuration errors
-        if (UNKNOWN.equals(config.email) || UNKNOWN.equals(config.password) || UNKNOWN.equals(config.region)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing configuration parameters");
-            return;
-        }
-
-        // request token if necessary
-        String tokenResponse = store.get(config.email);
-        if (tokenResponse != null) {
-            token = MSpaUtils.decodeStoredToken(tokenResponse);
-            if (!MSpaUtils.isTokenValid(token)) {
-                requestToken();
-            }
-        } else {
-            requestToken();
-        }
-
-        // check if token is now valid
         if (MSpaUtils.isTokenValid(token)) {
             updateStatus(ThingStatus.ONLINE);
             discovery.addAccount(this);
@@ -117,7 +100,7 @@ public class MSpaAccount extends BaseBridgeHandler {
             int status = cr.getStatus();
             String response = cr.getContentAsString();
             if (status == 200) {
-                logger.info("Device list {}", response);
+                logger.trace("Device list {}", response);
                 decodeDevices(response);
             } else {
                 logger.warn("Failed to get device list - reason {}", response);
@@ -153,34 +136,14 @@ public class MSpaAccount extends BaseBridgeHandler {
         }
     }
 
-    public void requestToken() {
-        logger.info("Request token");
-        Request tokenRequest = getRequest(POST, TOKEN_ENDPOINT);
-        JSONObject body = new JSONObject();
-        body.put("account", config.email);
-        body.put("password", MSpaUtils.getMd5(config.password).toLowerCase());
-        body.put("app_id", APP_IDS.get(config.region));
-        body.put("registration_id", EMPTY);
-        body.put("push_type", "android");
-        tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));
-        try {
-            ContentResponse cr = tokenRequest.timeout(10000, TimeUnit.MILLISECONDS).send();
-            int status = cr.getStatus();
-            if (status == 200) {
-                String response = cr.getContentAsString();
-                token = MSpaUtils.decodeNewToken(response);
-                if (MSpaUtils.isTokenValid(token)) {
-                    JSONObject tokenStore = MSpaUtils.token2Json(token);
-                    store.put(config.email, tokenStore.toString());
-                } else {
-                    logger.warn("Failed to get token - reason {}", response);
-                }
-            } else {
-                logger.warn("Failed to get token - reason {}", cr.getReason());
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Failed to get token - reason {}", e.getMessage());
-        }
+    @Override
+    public void handleRemoval() {
+        // ownerConfig.ifPresent(config -> {
+        // store.remove(config.email);
+        // });
+        // visitorConfig.ifPresent(config -> {
+        // store.remove(config.visitorId);
+        // });
     }
 
     public String getToken() {
@@ -198,31 +161,56 @@ public class MSpaAccount extends BaseBridgeHandler {
     }
 
     public Request getRequest(String method, String endPoint) {
+        String region = "ROW";
+        if (ownerConfig.isPresent()) {
+            region = ownerConfig.get().region;
+        } else if (visitorConfig.isPresent()) {
+            region = visitorConfig.get().region;
+        }
         long timestamp = Instant.now().getEpochSecond();
         String nonce = UUID.randomUUID().toString().replace("-", EMPTY);
 
         Request request;
         if (GET.equals(method)) {
-            request = httpClient.newRequest(HOSTS.get(config.region) + endPoint);
+            request = httpClient.newRequest(HOSTS.get(region) + endPoint);
         } else if (POST.equals(method)) {
-            request = httpClient.POST(HOSTS.get(config.region) + endPoint);
+            request = httpClient.POST(HOSTS.get(region) + endPoint);
         } else {
             logger.info("Request {} not supported", method);
-            return httpClient.newRequest(HOSTS.get(config.region) + endPoint);
+            return httpClient.newRequest(HOSTS.get(region) + endPoint);
         }
 
         request.header("push_type", "Android");
-        request.header("appid", APP_IDS.get(config.region));
+        request.header("appid", APP_IDS.get(region));
         request.header("nonce", nonce);
         request.header("ts", String.valueOf(timestamp));
-        request.header("sign", MSpaUtils.getSignature(nonce, timestamp, config.region));
+        request.header("sign", MSpaUtils.getSignature(nonce, timestamp, region));
         request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
         request.header(HttpHeader.USER_AGENT, "okhttp/4.9.0");
-        // tokenRequest.header("lan_code", "de");
         if (MSpaUtils.isTokenValid(token)) {
             request.header(HttpHeader.AUTHORIZATION, "token " + token.getAccessToken());
         }
 
         return request;
     }
+
+    protected JSONObject getStorage(String id) {
+        String storedString = store.get(id);
+        if (storedString != null) {
+            try {
+                JSONObject storedJson = new JSONObject(storedString);
+                return storedJson;
+            } catch (JSONException e) {
+                logger.warn("Persistence store {} format exception {}", storedString, e.getMessage());
+            }
+        }
+        return new JSONObject("{}");
+    }
+
+    protected void persist(String id, JSONObject json) {
+        logger.trace("Persit {} : {}", id, json);
+        store.put(id, json.toString());
+    }
+
+    public abstract void requestToken();
 }
