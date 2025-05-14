@@ -42,7 +42,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
-    private static final String datetimeFormat = "'%Y-%m-%d %H:%M:%f'";
+    private static final String DATETIME_FORMAT = "'%Y-%m-%d %H:%M:%f'";
 
     /********
      * INIT *
@@ -68,7 +68,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("tablePrimaryValue", "strftime(" + datetimeFormat + " , 'now', 'localtime')");
+        sqlTypes.put("tablePrimaryValue", "strftime(" + DATETIME_FORMAT + " , 'now', 'localtime')");
     }
 
     /**
@@ -133,7 +133,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
-                        "strftime(" + datetimeFormat + " , ?, 'unixepoch', 'localtime')" });
+                        "strftime(" + DATETIME_FORMAT + " , ?, 'unixepoch', 'localtime')" });
 
         double epochSecondsWithMillis = date.toInstant().toEpochMilli() / 1_000.0;
         Object[] params = { epochSecondsWithMillis, storedVO.getValue() };
