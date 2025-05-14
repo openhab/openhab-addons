@@ -17,7 +17,7 @@ This binding defines the following Thing Type IDs:
 - `device`  
   Represents a client/player device connected to the Emby server.
 
-# Automatic Discovery
+## Automatic Discovery
 
 The binding supports automatic discovery for both servers (`controller`) and clients (`device`).
 
