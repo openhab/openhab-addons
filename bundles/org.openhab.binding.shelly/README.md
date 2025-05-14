@@ -125,6 +125,8 @@ See section [Discovery](#discovery) for details.
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
 | shellyproem50       | Shelly Pro EM-50 with 2 power meters and 1 relay         | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
+| shellyprodimmer1pm  | Shelly Pro 1 PM with Dimmer                              | SPDM-001PE01EU                                 |
+| shellyprodimmer2pm  | Shelly Pro 2 PM with 2 Dimmers                           | SPDM-002PE01EU                                 |
 
 ### Shelly BLU
 
