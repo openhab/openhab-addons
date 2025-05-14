@@ -27,7 +27,7 @@ There is no global binding-level configuration required or supported.
 
 # Thing Configuration
 
-## `controller` Bridge Configuration
+### `controller` Bridge Configuration
 
 The following Configuration Parameter Keys are available:
 
