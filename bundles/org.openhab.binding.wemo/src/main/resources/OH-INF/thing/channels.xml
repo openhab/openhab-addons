@@ -508,7 +508,7 @@
 		<description>Time when a WeMo enabled Heater should switch off</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state pattern="%1$tR" readOnly="false"/>
