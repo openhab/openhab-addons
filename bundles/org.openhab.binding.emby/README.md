@@ -91,7 +91,7 @@ Bridge emby:controller:myEmbyServer [
 }
 ```
 
-## `emby.items` Example
+### `emby.items` Example
 
 ```java
 Switch      Emby_PlayPause   "Play/Pause"        { channel="emby:device:myEmbyServer:myClientDevice:control" }
