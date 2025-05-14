@@ -126,7 +126,7 @@ sitemap emby label="Emby Control"
 }
 ```
 
-# Rule Actions
+## Rule Actions
 
 All playback and control commands are now implemented as Rule Actions rather than channels. Use the standard `getActions` API in your rules to invoke these.
 
