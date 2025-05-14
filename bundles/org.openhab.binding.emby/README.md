@@ -138,7 +138,7 @@ All playback and control commands are now implemented as Rule Actions rather tha
 | sendGeneralCommand         | `sendGeneralCommand(CommandName: String)`                                                                                                                                               | Send a generic Emby control command (e.g., MoveUp, ToggleMute, GoHome).                                 |
 | sendGeneralCommandWithArgs | `sendGeneralCommandWithArgs(CommandName: String, Arguments: String)`                                                                                                                    | Send a generic Emby control command with a JSON arguments blob (e.g., SetVolume, DisplayMessage, etc.). |
 
-# Example Rule (XTend)
+### Example Rule (XTend)
 
 ```xtend
 rule "Play Movie on Emby"
