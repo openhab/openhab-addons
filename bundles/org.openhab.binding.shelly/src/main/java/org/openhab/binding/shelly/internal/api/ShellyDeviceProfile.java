@@ -202,8 +202,7 @@ public class ShellyDeviceProfile {
 
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
-                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
-                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERG3)
+                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS) || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERG3)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERG3_STR)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMER10V_STR);
