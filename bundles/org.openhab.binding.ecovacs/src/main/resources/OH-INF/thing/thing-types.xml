@@ -222,7 +222,7 @@
 		<description>Duration of last completed cleaning run</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -265,6 +265,10 @@
 		<item-type>Switch</item-type>
 		<label>Auto Empty</label>
 		<description>Automatically empty dust bin in station</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="cleaning-passes" advanced="true">
@@ -278,6 +282,10 @@
 		<item-type>Switch</item-type>
 		<label>Continuous Cleaning</label>
 		<description>Automatically resume unfinished cleaning after charging</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="suction-power">
@@ -285,8 +293,8 @@
 		<label>Cleaning Power Level</label>
 		<description>Amount of suction power to be used while cleaning</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Control</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state>
 			<options>
@@ -302,6 +310,10 @@
 		<item-type>Switch</item-type>
 		<label>True Detect 3D</label>
 		<description>Enable the True Detect 3D object recognition technology</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="water-system-present">
@@ -310,7 +322,7 @@
 		<description>Water plate with mop attached to device?</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Water</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -333,6 +345,10 @@
 		<label>Wi-Fi Signal Strength</label>
 		<description>Received signal strength indicator for Wi-Fi</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
