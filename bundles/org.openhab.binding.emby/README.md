@@ -7,7 +7,7 @@ For example, you can monitor the currently playing movie title or automatically 
 This binding supports multiple Emby clients connected to a single Emby Media Server.
 It provides functionality similar to the Plex Binding.
 
-# Supported Things
+## Supported Things
 
 This binding defines the following Thing Type IDs:
 
