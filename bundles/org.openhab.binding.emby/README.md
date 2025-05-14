@@ -75,7 +75,7 @@ The following Channel IDs are available for a `device` Thing:
 
 ## Full Example
 
-## `emby.things` Example
+### `emby.things` Example
 
 ```java
 Bridge emby:controller:myEmbyServer [
